@@ -3,6 +3,7 @@ import { PrivateRoutes } from './PrivateRoutes';
 
 // PAGES
 import Dashboard from '../pages/Dashboard';
+import Layout from '../components/Layout';
 import Profile from '../pages/Profile';
 import SignIn from '../pages/Login/SignIn';
 import SignUp from '../pages/Login/SignUp';
@@ -17,8 +18,8 @@ import Board from '../pages/Board';
 import Services from '../pages/Services';
 import Team from '../pages/Team/ListTeam';
 import ListOffice from '../pages/Team/ListOffice';
-import Layout from '../components/Layout';
 import ListFluxo from '../pages/Fluxos/ListFluxo';
+import EditFluxo from '../pages/Fluxos/EditFluxo';
 
 function RoutesAll() {
   return (
@@ -44,10 +45,10 @@ function RoutesAll() {
         />
 
         <Route
-          path="/fluxo"
+          path="/perfil"
           element={
             <PrivateRoutes>
-              <ListFluxo />
+              <Profile />
             </PrivateRoutes>
           }
         />
@@ -74,7 +75,16 @@ function RoutesAll() {
           path="/fluxo"
           element={
             <PrivateRoutes>
-              <Clients />
+              <ListFluxo />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/fluxo/editar/:id"
+          element={
+            <PrivateRoutes>
+              <EditFluxo />
             </PrivateRoutes>
           }
         />

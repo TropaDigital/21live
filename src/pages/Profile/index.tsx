@@ -25,6 +25,7 @@ import {
   SectionCustHours,
   SectionActionForm
 } from './styles';
+import { useToast } from '../../hooks/toast';
 
 interface FormDataProfile {
   profiles: any;
@@ -45,8 +46,9 @@ interface Errors {
 }
 
 export default function Profile() {
-  const { updateUser, user } = useAuth()
+  const { updateUser, user } = useAuth();
   const navigate = useNavigate();
+  const { addToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState({
     isError: false,
@@ -91,29 +93,22 @@ export default function Profile() {
         const data = new FormData();
 
         data.append('image', e.target.files[0]);
+        api.post("/images/upload", data).then(response => {
+          updateUser(response.data.result);
+        });
 
-        api.post("upload", data).then(response => {
-          updateUser(response.data);
-
-          // addToast({
-          //   type: "success",
-          //   title: "Avatar atualizado",
-          // });
+        addToast({
+          type: "success",
+          title: "Avatar atualizado",
         });
       }
-    },
-    []
-  );
+    }, []);
 
   const handleSubmit = useCallback(async (event: any) => {
     try {
       event.preventDefault();
       setLoading(true);
-
-      console.log('DTA', formData)
-
       updateUser(formData);
-
       setLoading(false)
     } catch (e: any) {
       // console.log("Error =>>", e)
