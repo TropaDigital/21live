@@ -24,3 +24,30 @@ export const avatarAll = [
     id: 4,
   }
 ]
+
+export const dataFake = [
+  {
+    id: 1,
+    name: 'Post Web',
+    step: '8',
+    project: '5',
+  },
+  {
+    id: 2,
+    name: 'Campanha',
+    step: '4',
+    project: '3',
+  },
+  {
+    id: 3,
+    name: 'Ação Sazanal',
+    step: '1',
+    project: '2',
+  },
+  {
+    id: 4,
+    name: 'Post Web',
+    step: '8',
+    project: '5',
+  },
+]
