@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { Container } from './styled';
 import HeaderPage from '../../../components/HeaderPage';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
-import { BiEdit, BiPlus, BiSearchAlt, BiTrash, BiX } from 'react-icons/bi';
+import { BiEdit, BiPlus, BiSearchAlt, BiShow, BiTrash, BiX } from 'react-icons/bi';
 import { ContainerGroupTable, ContentDefault, FieldDefault, FieldGroupFormDefault, FooterModal } from '../../../components/UiElements/styles';
 import ScrollAreas from '../../../components/Ui/ScrollAreas';
 import { TableDefault } from '../../../components/TableDefault';
@@ -76,7 +76,7 @@ export default function ListFluxo() {
                   <td>
                     <div className="fieldTableClients">
                       <ButtonDefault typeButton="info" onClick={() => {
-                        navigate(`/fluxo/editar/${row.id}`)
+                        navigate(`/fluxo/editar/${row.name.replaceAll(' ', '_')}`)
                       }}>
                         <BiEdit />
                       </ButtonDefault>

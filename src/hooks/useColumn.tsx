@@ -1,8 +1,5 @@
 import { useCallback } from "react";
-import { v4 as uuidv4 } from "uuid";
-
 import useLocalStorage from "./useLocalStorage";
-import { columnDefault } from "../utils/dataDefault";
 
 function useColumn() {
   const [column, setColumn] = useLocalStorage("COLUMN", []);
@@ -11,7 +8,7 @@ function useColumn() {
     (item: any) => {
       const newItem = {
         card_id: column.length + 1,
-        flow_id: 1,
+        flow_id: column.length + 1,
         user_id: '15852',
         name: 'NOVA COLUNA',
         email_alert: false,
@@ -19,6 +16,7 @@ function useColumn() {
         step: 1,
         next_step: 2,
         previous_step: 0,
+        tasks: []
       }
       setColumn([...column, newItem]);
     },
@@ -39,9 +37,9 @@ function useColumn() {
   );
 
   const updateParcialColumn = useCallback(
-    (id: number, title: string) => {
-      column[id].title = title;
-      setColumn([...column]);
+    (id: any, name: any, value: any) => {
+      column[id][name] = value
+      setColumn([...column])
     },
     [column, setColumn]
   );
@@ -53,12 +51,21 @@ function useColumn() {
     [column, setColumn]
   );
 
+  const moveObject = useCallback((
+    to: any, from: any
+  ) => {
+    column.splice(to, 0, column.splice(from, 1)[0]);
+    return setColumn(column);
+
+  }, [column, setColumn]);
+
   return {
     column,
     addColumn,
     updateColumn,
     deleteColumn,
     updateParcialColumn,
+    moveObject
   };
 }
 

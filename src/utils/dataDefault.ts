@@ -8,6 +8,7 @@ export const columnDefault = {
   step: 1,
   next_step: 2,
   previous_step: 0,
+  tasks: []
 }
 
 const update = {

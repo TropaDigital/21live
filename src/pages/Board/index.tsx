@@ -19,6 +19,8 @@ import {
   ButtonHeaderBoard,
   InfoBoard,
 } from './styles';
+import useLocalStorage from '../../hooks/useLocalStorage';
+import useColumn from '../../hooks/useColumn';
 
 interface ITask {
   id: number;
@@ -100,24 +102,12 @@ const styleButtonTask = {
 };
 
 export default function Board() {
-  const uuid = uuidv4();
-  let currDate = new Date();
+  const [ state ] = useLocalStorage('COLUMN')
+  const { addColumn, updateColumn, deleteColumn, column } = useColumn();
+  const lengthCard = column.length
   const data = loadLists();
-  let hoursMin = currDate.getHours() + ':' + currDate.getMinutes();
 
   const [boards, setBoards] = useState<ITaskColumn[]>(data);
-
-  const [template, setTemplate] = useState<ITaskColumn[]>(() => {
-    const board = localStorage.getItem('board');
-
-    if(board) {
-      return { board: JSON.parse(board) }
-    };
-
-    return {} as any;
-  });
-
-  console.log('TEMP', boards)
 
   const handleCreateBoard = (item: string) => {
     const newItem = {
@@ -157,9 +147,6 @@ export default function Board() {
 
   const handleDeleteBoard = (itemId: number) => {
     setBoards(boards.filter((item) => item.id !== itemId));
-
-    setTemplate(boards.filter((item) => item.id !== itemId));
-    localStorage.setItem('@live:boards', JSON.stringify(boards.filter((item) => item.id !== itemId)));
   };
 
   const updateTask = (
@@ -197,7 +184,7 @@ export default function Board() {
         return {...column};
       })
     );
-  }
+  };
   
   const handleDeleteTask = (column: ITaskColumn, taskId: number) => {
     setBoards(
@@ -211,7 +198,7 @@ export default function Board() {
         return {...column};
       })
     );
-  }
+  };
 
   return (
     <Container>
@@ -280,10 +267,10 @@ export default function Board() {
 
       <ScrollAreas>
         <ContentBoard>
-          {boards.map((row) => (
-            <Column key={row.id} title={row.column}>
-              {row.tasks.map((row) => (
-                <Task key={row.id} />
+          {state.map((row: any) => (
+            <Column key={row.card_id} title={row.name}>
+              {row?.tasks?.map((row: any) => (
+                <Task key={row.card_id} />
               ))}
             </Column>
           ))}

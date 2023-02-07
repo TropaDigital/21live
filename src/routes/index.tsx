@@ -117,7 +117,7 @@ function RoutesAll() {
         />
 
         <Route
-          path="/board"
+          path="/projeto/:id"
           element={
             <PrivateRoutes>
               <Board />

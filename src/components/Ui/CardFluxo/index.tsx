@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { FiMoreHorizontal } from "react-icons/fi";
-import { BiEditAlt, BiPlus } from "react-icons/bi";
+import { BiEditAlt, BiPlus, BiPlusCircle, BiXCircle } from "react-icons/bi";
 
 import { SelectDefault } from "../../Inputs/SelectDefault";
 import { CheckboxDefault } from "../../Inputs/CheckboxDefault";
@@ -17,56 +17,47 @@ import { FieldDefault } from "../../UiElements/styles";
 import ButtonDefault from "../../Buttons/ButtonDefault";
 import { IconArrowFluxo } from "../../assets/icons";
 import useColumn from '../../../hooks/useColumn';
+import ActionPopup from './actionPopup';
 
 interface CardProps {
   isLastItem: boolean;
   handleOnClick: () => void;
-  handleOnUpdate: (item: any) => void;
+  handleOnPosition: (index: any) => void;
   handleOnDelete: (id: any) => void;
+  onUpdate: (index: any, name: any, value: any) => void;
   index: any;
+  length: number;
   data: any;
 }
 
-export default function CardFluxo({ data, isLastItem, handleOnClick, handleOnUpdate, handleOnDelete, index }: CardProps) {
-  const { updateParcialColumn } = useColumn();
-  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newTitle = event.target.value;
-
-    console.log('TE', newTitle);
-
-    updateParcialColumn(index, newTitle);
+export default function CardFluxo({ data, length, isLastItem, handleOnClick, handleOnPosition, handleOnDelete, onUpdate, index }: CardProps) {
+  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = event.target
+    onUpdate(index, name, value)
   }
 
   const handleOnChangeCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const {id, checked} = event.target
-
-    console.log(id, checked);
-
-    // updateParcialColumn(index, newTitle);
+    const { checked, name} = event.target
+    onUpdate(index, name, checked)
   }
 
   return (
     <Container>
       <HeaderCardFluxo>
         <SectionButtonsHeaderFluxo>
-          <ButtonHeaderCardFluxo
-            onClick={handleOnUpdate}
-          >
-            <BiEditAlt color="#6C757D" />
-          </ButtonHeaderCardFluxo>
-
-          <ButtonHeaderCardFluxo
-            onClick={handleOnDelete}
-          >
-            <FiMoreHorizontal color="#6C757D" />
-          </ButtonHeaderCardFluxo>
+          <ActionPopup
+            handleOnDelete={handleOnDelete}
+            handleOnPosition={(index) => handleOnPosition(index)}
+            index={index}
+            length={length}
+          />
         </SectionButtonsHeaderFluxo>
       </HeaderCardFluxo>
 
       <FormCardFluxo>
         <input 
           type="text" 
-          name='title'
+          name='name'
           className="inputCardFluxo"
           placeholder="Nome do fluxo..."
           defaultValue={data.name + "-" + String(index) ?? 'TITULO'}
@@ -76,8 +67,10 @@ export default function CardFluxo({ data, isLastItem, handleOnClick, handleOnUpd
         <FieldDefault style={{ marginBottom: '12px' }}>
           <SelectDefault
             label="Responsável"
-            name="responsable"
+            name="user_id"
             placeHolder="Selecione o cargo"
+            onChange={handleOnChange}
+            value={data.user_id}
           >
             <option value="1">Cargo 1</option>
             <option value="2">Cargo 2</option>
@@ -90,6 +83,8 @@ export default function CardFluxo({ data, isLastItem, handleOnClick, handleOnUpd
             label="Retorna para etapa"
             name="step"
             placeHolder="Selecione a etapa"
+            onChange={handleOnChange}
+            value={data.step}
           >
             <option value="1">Etapa 1</option>
             <option value="2">Etapa 2</option>
@@ -103,16 +98,18 @@ export default function CardFluxo({ data, isLastItem, handleOnClick, handleOnUpd
           <FieldDefault style={{ marginBottom: '8px' }}>
             <CheckboxDefault
               label="Alerta por E-mail"
-              name="email"
+              name="email_alert"
               onChange={handleOnChangeCheckbox}
+              defaultChecked={data.email_alert}
             />
           </FieldDefault>
 
           <FieldDefault style={{ marginBottom: '8px' }}>
             <CheckboxDefault
               label="Upload obrigatório"
-              name="upload"
+              name="necessary_upload"
               onChange={handleOnChangeCheckbox}
+              defaultChecked={data.necessary_upload}
             />
           </FieldDefault>
 
@@ -121,6 +118,7 @@ export default function CardFluxo({ data, isLastItem, handleOnClick, handleOnUpd
               label="Responsavel obrigatório"
               name="responsable"
               onChange={handleOnChangeCheckbox}
+              defaultChecked={data.responsable}
             />
           </FieldDefault>
         </fieldset>

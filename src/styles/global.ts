@@ -346,6 +346,165 @@ p, h1, h2, h3, h4, h5, h6 {
     }
   }
 }
+
+.PopoverContentActionCard {
+  border-radius: 10px;
+  padding: 16px;
+  /* width: 160px; */
+  max-height: 60vh;
+  overflow-y: auto;
+  background-color: white;
+  box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;
+  animation-duration: 400ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.listActionsCardFluxo {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  li {
+    display: flex;
+    align-items: center;
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      font-size: 14px;
+      font-weight: 400;
+      color: #444444;
+
+      transition: all 0.35s ease;
+
+      :hover {
+      transition: all 0.35s ease;
+      opacity: 0.9;
+
+        svg {
+          transform: scale(1.2);
+        }
+      }
+    }
+  }
+
+  .listDeleteCardFluxo {
+    border-top: 1px solid #e3e5ea;
+    padding-top: 12px;
+
+    .buttonDeleteCardFluxo {
+      display: flex;
+      align-items: center;
+      justify-content: baseline;
+      gap: 6px;
+      background: transparent;
+
+      font-size: 14px;
+      font-weight: 400;
+      color: #FF5019;
+    }
+  }
+}
+
+.PopoverArrow {
+  fill: white;
+}
+
+.PopoverContentActionCard:focus {
+  box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px,
+    0 0 0 2px rgba(0, 0, 0, 0.15);
+}
+.PopoverContentActionCard[data-state='open'][data-side='top'] {
+  animation-name: slideDownAndFade;
+}
+.PopoverContentActionCard[data-state='open'][data-side='right'] {
+  animation-name: slideLeftAndFade;
+}
+.PopoverContentActionCard[data-state='open'][data-side='bottom'] {
+  animation-name: slideUpAndFade;
+}
+.PopoverContentActionCard[data-state='open'][data-side='left'] {
+  animation-name: slideRightAndFade;
+}
+
+.PopoverArrow {
+  fill: white;
+}
+
+.PopoverCloseCardFluxo {
+  font-family: inherit;
+  border-radius: 100%;
+  height: 25px;
+  width: 25px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--violet11);
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+
+.PopoverCloseCardFluxo:hover {
+  /* background-color: var(--gray-600); */
+  background: var(--gray-400);
+  /* border: 1px solid var(--gray-600); */
+  box-shadow: 0 0 0 2px ar(--gray-600);
+
+}
+.PopoverCloseCardFluxo:focus {
+  background: transparent;
+  box-shadow: 0 0 0 2px ar(--gray-600);
+}
+
+.PopoverClose {
+  font-family: inherit;
+  border-radius: 100%;
+  height: 25px;
+  width: 25px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--violet11);
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+.PopoverClose:hover {
+  background-color: var(--gray-600);
+}
+.PopoverClose:focus {
+  box-shadow: 0 0 0 2px ar(--gray-600);
+}
+
+.IconButtonPopover {
+  font-family: inherit;
+  border-radius: 100%;
+  height: 22px;
+  width: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--violet11);
+  /* background-color: white; */
+  box-shadow: 0 2px 10px var(--blackA7);
+  margin-left: 8px;
+  border: 2px solid #fff;
+}
+.IconButtonPopover:hover {
+  background-color: #06D6A0;
+
+  transition: all 0.35s ease;
+
+  svg {
+    path {
+      fill: #fff;
+    }
+  }
+}
 /* .IconButtonPopover:focus {
   box-shadow: 0 0 0 1px red;
 } */

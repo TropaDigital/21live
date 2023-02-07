@@ -15,13 +15,12 @@ interface ErrorInput {
 }
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  name: string;
   label: string;
   error?: ErrorInput;
   icon?: React.ComponentType<IconBaseProps>;
 }
 
-export function CheckboxDefault({ name, label, error, icon: Icon, ...rest }: InputProps) {
+export function CheckboxDefault({ label, error, icon: Icon, ...rest }: InputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [isFocused, setIsFocused] = useState(false);
@@ -38,13 +37,12 @@ export function CheckboxDefault({ name, label, error, icon: Icon, ...rest }: Inp
   }, []);
 
   return (
-    <Container htmlFor={name}>
+    <Container>
         <input
           type="checkbox"
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
           ref={inputRef}
-          id={name}
           {...rest}
         />
 

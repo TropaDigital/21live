@@ -1,5 +1,22 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { shade } from "polished";
+
+const bounceIn = keyframes`
+  0% { 
+    opacity: 0; 
+    transform: scale(.3);
+  }
+  50% { 
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+`;
 
 export const Container = styled.div`
   display: flex;
@@ -14,6 +31,9 @@ export const Container = styled.div`
   box-shadow: var(--shadow);
 
   position: relative;
+
+  animation: ${bounceIn} 0.5s linear;
+
 
   .buttonCardFluxo {
     position: absolute;
@@ -137,4 +157,8 @@ export const FormCardFluxo = styled.form`
 
 `;
 
+// POPUP
 
+export const ContainerPopupCard = styled.div`
+
+`;

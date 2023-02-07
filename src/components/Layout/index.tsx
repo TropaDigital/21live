@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import {
   IconClipboard,
   IconDash,
+  IconFile,
   IconTeam,
   IconUsers,
 } from '../assets/icons';
@@ -54,17 +55,16 @@ export default function Layout() {
               name: 'Equipe',
               icon: IconTeam,
             },
-
             {
               to: '/fluxo',
               name: 'Fluxo',
               icon: IconTeam,
             },
-            // {
-            //   to: '/quadros',
-            //   name: 'Quadros',
-            //   icon: IconFile,
-            // },
+            {
+              to: '/projeto',
+              name: 'Projeto',
+              icon: IconFile,
+            },
             // {
             //   to: '/tarefas',
             //   name: 'Tarefas',
