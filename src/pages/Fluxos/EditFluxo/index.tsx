@@ -1,51 +1,68 @@
-import { useState } from 'react'
-import HeaderPage from '../../../components/HeaderPage';
+import { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-import { Container, HeaderEditPlus, ContentEditFluxo } from './styled';
-import { useNavigate, useParams } from 'react-router-dom';
-import CardFluxo from '../../../components/Ui/CardFluxo';
-import useLocalStorage from '../../../hooks/useLocalStorage';
 import useColumn from '../../../hooks/useColumn';
-import ButtonDefault from '../../../components/Buttons/ButtonDefault';
+import { useAuth } from '../../../hooks/AuthContext';
+import { useFetch } from '../../../hooks/useFetch';
 import { BiSave, BiShow } from 'react-icons/bi';
 
+import HeaderPage from '../../../components/HeaderPage';
+import CardFluxo from '../../../components/Ui/CardFluxo';
+import ButtonDefault from '../../../components/Buttons/ButtonDefault';
+
+import { ColumnModel } from '../../../utils/models';
+import api from '../../../services/api';
+
+import { Container, HeaderEditPlus, ContentEditFluxo } from './styled';
+import useLocalStorage from '../../../hooks/useLocalStorage';
+
 export default function EditFluxo() {
+  const { user } = useAuth()
   const navigate = useNavigate();
-  let { id } = useParams();
-  const [ state ] = useLocalStorage('COLUMN');
-  const { addColumn, moveObject, deleteColumn, updateParcialColumn, column } = useColumn();
+  const location = useLocation();
+  const [ state, setState ] = useLocalStorage("COLUMN", [])
+  
+  const { data, isFetching } = useFetch<ColumnModel[]>(`card/${location.state.id}`);
+  const { addColumn, moveObject, deleteColumn, updateParcialColumn, column, setColumn } = useColumn();
   const lengthCard = column.length
 
-  const handleOnClick = () => {
-    addColumn([0,1,2])
+  useEffect(() => {
+    if(!isFetching) {
+      setColumn(data);
+    }
+    if(column.length < 1) {
+      setColumn([{
+        flow_id: String(location.state.id),
+        card_id: String(column.length + 1),
+        step: "0",
+        next_step: "0",
+        previous_step: "0",
+        name: "Novo card",
+        necessary_upload: "true",
+        email_alert: "true",
+        user_id: String(user.user_id),
+        tasks: [],
+      }])
+    }
+  }, [isFetching])
+
+  async function saveFluxo() {
+    try {
+      const response = await api.post('/card', column)
+      setState(column)
+    } catch(err) {
+      console.log('ERR =>', err)
+    }
   }
 
-  const styleDiv = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    marginTop: '20px'
+  async function deleteFluxo(id: any) {
+    try {
+      const response = await api.delete(`/card/${id}`)
+      deleteColumn(id)
+    } catch(err) {
+      console.log('ERR =>', err)
+    }
   }
-
-  const stylebutton = {
-    color: '#fff',
-    borderRadius: '4px',
-    padding: '4px 6px',
-    backgroundColor: 'Lightblue'
-  }
-
-  const update = {
-    card_id: 1,
-    flow_id: lengthCard + 1,
-    user_id: '15852',
-    name: 'NOVA COLUNA',
-    email_alert: false,
-    necessary_upload: false,
-    step: 1,
-    next_step: 2,
-    previous_step: 0,
-    tasks: []
-  };
 
   return (
     <Container>
@@ -53,14 +70,14 @@ export default function EditFluxo() {
         <>
           <ButtonDefault 
             typeButton="info" 
-            onClick={() => {navigate(`/projeto/${id}`)
+            onClick={() => {navigate(`/projeto/${location.state.id}`)
             }}>
               <BiShow />
               Visualizar
             </ButtonDefault>
           <ButtonDefault 
             typeButton='success'
-            onClick={() => console.log('COLUMNS', state)}
+            onClick={saveFluxo}
           >
             <BiSave />
             Salvar
@@ -69,16 +86,11 @@ export default function EditFluxo() {
       </HeaderPage>
 
       <HeaderEditPlus>
-        <h1 className='titleEditFluxo'>Fase do fluxo <span>{id}</span></h1>
+        <h1 className='titleEditFluxo'>Fase do fluxo <span>{location.state.name}</span></h1>
         <h3 className='subTitleEditFluxo'>Adicione ou remova etapas do seu fluxo.</h3>
-
-        <button onClick={addColumn}>
-          CREATE
-        </button>
       </HeaderEditPlus>
 
       <ContentEditFluxo>
-
         {column.map((row: any, index: any) => (
           <CardFluxo
             key={row.card_id}
@@ -86,15 +98,14 @@ export default function EditFluxo() {
             index={index}
             length={lengthCard}
             isLastItem={lengthCard === index + 1}
-            handleOnClick={handleOnClick}
+            columnStep={column.filter((obj:any) => obj.card_id !== row.card_id)}
+            handleOnClick={() => addColumn(user.user_id, location.state.id)}
             handleOnPosition={(newIndex) => moveObject(newIndex, index)}
-            handleOnDelete={() => deleteColumn(row.card_id)}
+            handleOnDelete={() => deleteFluxo(row.card_id)}
             onUpdate={(id, name, value) => updateParcialColumn(id, name, value)}
           />
         ))}
-
       </ContentEditFluxo>
-      
     </Container>
   )
 }

@@ -7,8 +7,8 @@ import {
   IconTeam,
   IconUsers,
 } from '../assets/icons';
-import ScrollAreas from '../Ui/ScrollAreas';
 
+import ScrollAreas from '../Ui/ScrollAreas';
 import Header from './Header';
 import Sidebar from './Sidebar';
 

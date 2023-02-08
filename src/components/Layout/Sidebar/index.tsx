@@ -11,6 +11,10 @@ import ModalDefault from '../../Ui/ModalDefault';
 import { FieldDefault, FooterModal } from '../../UiElements/styles';
 
 import { Container, Ul, Li } from './styles';
+import useColumn from '../../../hooks/useColumn';
+import useTask from '../../../hooks/useTask';
+import useLocalStorage from '../../../hooks/useLocalStorage';
+import { ColumnModel } from '../../../utils/models';
 
 interface IMenu {
   to: string;
@@ -26,7 +30,6 @@ interface ISiderbar {
 }
 
 interface FormDataProps {
-  title: string;
   nome: string;
   cliente: string;
   projeto: string;
@@ -40,12 +43,15 @@ interface FormDataProps {
 }
 
 export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
-  const { addToast } = useToast()
+  const { addToast } = useToast();
+  const [ state ] = useLocalStorage('COLUMN');
+  const { column } = useColumn();
+  const { addTask } = useTask();
   const [modal, setModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
+
   const [formData, setFormData] = useState<FormDataProps>({
-    title: "",
     nome: "",
     cliente: "",
     projeto: "",
@@ -86,6 +92,16 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
 
     try {
       setLoading(true);
+
+      
+      const columnSelected = column.filter((obj: any) => obj.card_id === Number(formData.quadro))
+      
+      const newData = {
+        ...formData,
+        task_id: columnSelected.length + 1
+      }
+
+      addTask(columnSelected[0], newData)
       
       addToast({
         type: "success",
@@ -95,10 +111,10 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
 
       setTimeout(() => {
         setLoading(false);
-
       }, 1000)
 
     }catch(error) {
+      console.log('ERROR', error)
       setLoading(false);
       addToast({
         type: "danger",
@@ -106,19 +122,11 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
         description: "Dados invalidos!",
       });
     }
-
     // await api.post('points', data);
-
-
   }
 
   return (
     <Container modalActive={modalActive}>
-      {/* <Scrollbars
-        renderTrackVertical={() => <div className="scrolltrack" />}
-        style={{ width: '100%', height: '100%' }}
-        autoHide
-      > */}
         <ButtonDefault 
           onClick={modaOpen}
           style={{ marginTop: '20px' }}
@@ -143,7 +151,6 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
             </Li>
           ))}
         </Ul>
-      {/* </Scrollbars> */}
 
       <ModalDefault 
         isOpen={modal}
@@ -151,7 +158,7 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
         onOpenChange={setModal}
       >
         <form onSubmit={handleOnSubmit}>
-          <FieldDefault>
+          <FieldDefault style={{marginBottom: '14px'}}>
             <InputDefault 
               label='Nome'
               name='nome'
@@ -159,7 +166,7 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
             />
           </FieldDefault>
 
-          <FieldDefault>
+          <FieldDefault style={{marginBottom: '14px'}}>
             <InputDefault 
               label='Cliente'
               name='cliente'
@@ -168,7 +175,7 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
             />
           </FieldDefault>
 
-          <FieldDefault>
+          <FieldDefault style={{marginBottom: '14px'}}>
             <InputDefault 
               label='Projeto'
               name='projeto'
@@ -177,7 +184,7 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
             />
           </FieldDefault>
 
-          <FieldDefault>
+          <FieldDefault style={{marginBottom: '14px'}}>
             <InputDefault 
               label='Alocados'
               name='alocados'
@@ -185,19 +192,19 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
             />
           </FieldDefault>
 
-          <FieldDefault>
+          <FieldDefault style={{marginBottom: '14px'}}>
             <SelectDefault
               label='Quadro'
               name='quadro'
               onChange={handleSelectChange}
             >
-              <option value="option1">opção 1</option>
-              <option value="option2">opção 2</option>
-              <option value="option3">opção 3</option>
+              {column.map((row: any) => (
+                <option key={row.card_id} value={row.card_id}>{row.name}</option>
+              ))}
             </SelectDefault>
           </FieldDefault>
 
-          <FieldDefault>
+          <FieldDefault style={{marginBottom: '14px'}}>
             <InputDefault 
               label='Tipo'
               name='tipo'
@@ -205,7 +212,7 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
             />
           </FieldDefault>
 
-          <FieldDefault>
+          <FieldDefault style={{marginBottom: '14px'}}>
             <InputDefault 
               label='Ordem'
               name='ordem'
@@ -213,7 +220,7 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
             />
           </FieldDefault>
 
-          <FieldDefault>
+          <FieldDefault style={{marginBottom: '14px'}}>
             <InputDefault 
               label='Data Final'
               name='dataFinal'
@@ -221,7 +228,7 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
             />
           </FieldDefault>
 
-          <FieldDefault>
+          <FieldDefault style={{marginBottom: '14px'}}>
             <TextAreaDefault 
               label='Descrição' 
               name='descricao'
@@ -254,10 +261,8 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
               </ButtonDefault>
             </div>
           </FooterModal>
-
         </form>
       </ModalDefault>
-
     </Container>
   );
 }

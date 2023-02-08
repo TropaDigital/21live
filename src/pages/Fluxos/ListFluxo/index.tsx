@@ -1,25 +1,26 @@
 import React, { useState } from 'react'
-
-import { Container } from './styled';
-import HeaderPage from '../../../components/HeaderPage';
-import ButtonDefault from '../../../components/Buttons/ButtonDefault';
-import { BiEdit, BiPlus, BiSearchAlt, BiShow, BiTrash, BiX } from 'react-icons/bi';
-import { ContainerGroupTable, ContentDefault, FieldDefault, FieldGroupFormDefault, FooterModal } from '../../../components/UiElements/styles';
-import ScrollAreas from '../../../components/Ui/ScrollAreas';
-import { TableDefault } from '../../../components/TableDefault';
-import { dataFake } from '../../../utils/dataDefault';
-import { InputDefault } from '../../../components/Inputs/InputDefault';
+import { useNavigate } from 'react-router-dom';
+import { useFetch } from '../../../hooks/useFetch';
 
 import * as Dialog from '@radix-ui/react-dialog';
-import { useNavigate } from 'react-router-dom';
+import { BiEdit, BiPlus, BiSearchAlt, BiX } from 'react-icons/bi';
 
+import HeaderPage from '../../../components/HeaderPage';
+import ButtonDefault from '../../../components/Buttons/ButtonDefault';
+import ScrollAreas from '../../../components/Ui/ScrollAreas';
+import { TableDefault } from '../../../components/TableDefault';
+import { InputDefault } from '../../../components/Inputs/InputDefault';
+
+import { ContainerGroupTable, ContentDefault, FieldDefault, FieldGroupFormDefault, FooterModal } from '../../../components/UiElements/styles';
+import { Container } from './styled';
 
 export default function ListFluxo() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [modal, setModal] = useState(false);
   const [formData, setFormData] = useState({
     fluxo: ''
   })
+  const { data } = useFetch<any[]>(`flow`);
 
   const handleInputChange = (
     name: string,
@@ -27,8 +28,6 @@ export default function ListFluxo() {
   ) => {
     setFormData({ ...formData, [name]: event.target.value });
   };
-
-
 
   return (
     <Container>
@@ -65,18 +64,18 @@ export default function ListFluxo() {
             </thead>
 
             <tbody>
-              {dataFake?.map((row) => (
-                <tr key={row.id}>
-                  <td>{row.id}</td>
+              {data?.map((row) => (
+                <tr key={row.flow_id}>
+                  <td>{row.flow_id}</td>
                   <td>
                     {row.name}
                   </td>
-                  <td>{row.step}</td>
-                  <td>{row.project}</td>
+                  <td>{row.steps}</td>
+                  <td>5</td>
                   <td>
                     <div className="fieldTableClients">
                       <ButtonDefault typeButton="info" onClick={() => {
-                        navigate(`/fluxo/editar/${row.name.replaceAll(' ', '_')}`)
+                        navigate(`/fluxo/editar/${row.name.replaceAll(' ', '_')}`, {state: {id: row.flow_id, name: row.name }})
                       }}>
                         <BiEdit />
                       </ButtonDefault>

@@ -39,18 +39,22 @@ export default function ActionPopup({ handleOnDelete, handleOnPosition, index, l
               <ul className="listActionsCardFluxo">
                 {index !== 0 && (
                   <li>
-                    <button onClick={() => handleOnPosition(index - 1)}>
-                      <BiLeftArrowAlt size={18} color='#444444' />
-                      Mover para esquerda
-                    </button>
+                    <Popover.Close asChild>
+                      <button type='button' onClick={() => handleOnPosition(index - 1)}>
+                        <BiLeftArrowAlt size={18} color='#444444' />
+                        Mover para esquerda
+                      </button>
+                    </Popover.Close>
                   </li>
                 )}
                 {(index + 1 < length) && (
                   <li>
-                    <button onClick={() => handleOnPosition(index + 1)}>
-                      <BiRightArrowAlt size={18} color='#444444' />
-                      Mover para direita
-                    </button>
+                    <Popover.Close asChild>
+                      <button type='button' onClick={() => handleOnPosition(index + 1)}>
+                        <BiRightArrowAlt size={18} color='#444444' />
+                        Mover para direita
+                      </button>
+                    </Popover.Close>
                   </li>
                 )}
                 <li className='listDeleteCardFluxo'>

@@ -28,9 +28,10 @@ interface CardProps {
   index: any;
   length: number;
   data: any;
+  columnStep: any;
 }
 
-export default function CardFluxo({ data, length, isLastItem, handleOnClick, handleOnPosition, handleOnDelete, onUpdate, index }: CardProps) {
+export default function CardFluxo({ data, length, columnStep, isLastItem, handleOnClick, handleOnPosition, handleOnDelete, onUpdate, index }: CardProps) {
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = event.target
     onUpdate(index, name, value)
@@ -57,10 +58,10 @@ export default function CardFluxo({ data, length, isLastItem, handleOnClick, han
       <FormCardFluxo>
         <input 
           type="text" 
-          name='name'
+          name="name"
           className="inputCardFluxo"
           placeholder="Nome do fluxo..."
-          defaultValue={data.name + "-" + String(index) ?? 'TITULO'}
+          defaultValue={data.name}
           onChange={handleOnChange}
         />
 
@@ -86,9 +87,9 @@ export default function CardFluxo({ data, length, isLastItem, handleOnClick, han
             onChange={handleOnChange}
             value={data.step}
           >
-            <option value="1">Etapa 1</option>
-            <option value="2">Etapa 2</option>
-            <option value="3">Etapa 3</option>
+            {columnStep.map((row: any) => (
+              <option key={row.card_id} value={row.card_id}>{row.name}</option>
+            ))}
           </SelectDefault>
         </FieldDefault>
 

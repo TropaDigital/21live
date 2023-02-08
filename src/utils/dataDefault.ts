@@ -1,14 +1,14 @@
 export const columnDefault = {
-  card_id: 1,
-  flow_id: 1,
+  card_id: '1',
+  flow_id: '1',
   user_id: '15852',
   name: 'NOVA COLUNA',
-  email_alert: false,
-  necessary_upload: false,
-  step: 1,
-  next_step: 2,
-  previous_step: 0,
-  tasks: []
+  email_alert: 'false',
+  necessary_upload: 'false',
+  step: '1',
+  next_step: '2',
+  previous_step: '0',
+  // tasks: []
 }
 
 const update = {

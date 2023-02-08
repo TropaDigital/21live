@@ -1,24 +1,20 @@
-import { useCallback } from "react";
+import { useCallback, useState, useEffect } from "react";
 import useLocalStorage from "./useLocalStorage";
 
 function useColumn() {
-  const [column, setColumn] = useLocalStorage("COLUMN", []);
+  const [column, setColumn] = useState<any>([]);
 
-  const addColumn = useCallback(
-    (item: any) => {
-      const newItem = {
-        card_id: column.length + 1,
-        flow_id: column.length + 1,
-        user_id: '15852',
-        name: 'NOVA COLUNA',
-        email_alert: false,
-        necessary_upload: false,
-        step: 1,
-        next_step: 2,
-        previous_step: 0,
-        tasks: []
-      }
-      setColumn([...column, newItem]);
+  const addColumn = useCallback((userId: any, flowId: any) => {
+    const newItem = {
+      flow_id: String(flowId),
+      card_id: String(column.length + 1),
+      step: "0",
+      name: "Novo card",
+      necessary_upload: "false",
+      email_alert: "false",
+      // tasks: [],
+    }
+    setColumn([...column, newItem]);
     },
     [column, setColumn]
   );
@@ -37,7 +33,7 @@ function useColumn() {
   );
 
   const updateParcialColumn = useCallback(
-    (id: any, name: any, value: any) => {
+    (id: string, name: string, value: string) => {
       column[id][name] = value
       setColumn([...column])
     },
@@ -54,13 +50,16 @@ function useColumn() {
   const moveObject = useCallback((
     to: any, from: any
   ) => {
-    column.splice(to, 0, column.splice(from, 1)[0]);
-    return setColumn(column);
+    const newArray = [...column];
+    const [removedObject] = newArray.splice(from, 1);
+    newArray.splice(to, 0, removedObject);
+    setColumn(newArray);
 
   }, [column, setColumn]);
 
   return {
     column,
+    setColumn,
     addColumn,
     updateColumn,
     deleteColumn,

@@ -21,6 +21,10 @@ import {
 } from './styles';
 import useLocalStorage from '../../hooks/useLocalStorage';
 import useColumn from '../../hooks/useColumn';
+import useTask from '../../hooks/useTask';
+import { useFetch } from '../../hooks/useFetch';
+import { ColumnModel } from '../../utils/models';
+import { useLocation, useParams } from 'react-router-dom';
 
 interface ITask {
   id: number;
@@ -45,28 +49,6 @@ interface ITaskColumn {
   tasks: ITask[];
 }
 
-const update = {
-  id: 1,
-  title: 'Nova Trafego',
-  creatable: true,
-  column: 'NEWTRAFEGO',
-  date: '09 mar',
-  projects: 5,
-  tasks: [
-    {
-      id: 1,
-      column: 'NEWTRAFEGO',
-      title: 'Titulo da Task',
-      users: [],
-      date: '09 mar',
-      progress: {
-        hoursinvested: '10:00:00',
-        hoursLeft: '05:00:00',
-      },
-      completed: '5/10',
-    },
-  ],
-};
 
 const upTask = {
   id: 1,
@@ -102,109 +84,79 @@ const styleButtonTask = {
 };
 
 export default function Board() {
-  const [ state ] = useLocalStorage('COLUMN')
-  const { addColumn, updateColumn, deleteColumn, column } = useColumn();
-  const lengthCard = column.length
-  const data = loadLists();
+  const [ state ] = useLocalStorage('COLUMN');
+  const { deleteTask } = useTask();
+  // const {id} = useParams();
 
-  const [boards, setBoards] = useState<ITaskColumn[]>(data);
+  // const { data, isFetching } = useFetch<ColumnModel[]>(`card/${id}`);
+  const { column, setColumn } = useColumn();
+  // const lengthCard = column.length
 
-  const handleCreateBoard = (item: string) => {
-    const newItem = {
-      id: 55,
-      title: 'New Board',
-      creatable: true,
-      column: 'NEW_BOARD',
-      date: '09 mar',
-      projects: 5,
-      tasks: [
-        {
-          id: 1,
-          column: 'NEW_BOARD',
-          title: 'Titulo da Task',
-          users: [],
-          date: '09 mar',
-          progress: {
-            hoursinvested: '10:00:00',
-            hoursLeft: '05:00:00',
-          },
-          completed: '5/10',
-        },
-      ],
-    };
-    setBoards([...boards, newItem]);
-  };
-
-  const handleUpdateBoard = (updatedItem: ITaskColumn) => {
-    const updatedItems = boards.map((item) => {
-      if (item.id === updatedItem.id) {
-        return updatedItem;
-      }
-      return item;
-    });
-    setBoards(updatedItems);
-  };
-
-  const handleDeleteBoard = (itemId: number) => {
-    setBoards(boards.filter((item) => item.id !== itemId));
-  };
-
-  const updateTask = (
-    columns: ITaskColumn[],
-    taskId: number,
-    updatedTask: ITask
-  ) => {
-    setBoards(
-      columns.map((column) => {
-        if (column.id === taskId) {
-          return {
-            ...column,
-            tasks: column.tasks.map((task) => {
-              if (task.id === updatedTask.id) {
-                return {...task, ...updatedTask};
-              }
-              return {...task};
-            }),
-          };
-        }
-        return {...column};
-      })
-    );
-  };
-
-  const handleCreateTask = (column: ITaskColumn, task: ITask) => {
-    setBoards(
-      boards.map((obj) => {
-        if (obj.id === column.id) {
-          return {
-            ...column,
-            tasks: [...column.tasks, {...task}],
-          };
-        }
-        return {...column};
-      })
-    );
-  };
   
-  const handleDeleteTask = (column: ITaskColumn, taskId: number) => {
-    setBoards(
-      boards.map((obj) => {
-        if (obj.id === column.id) {
-          return {
-            ...column,
-            tasks: [...column.tasks.filter((task) => task.id !== taskId)],
-          };
-        }
-        return {...column};
-      })
-    );
-  };
+  useEffect(() => {
+    if(state.length > 0) {
+      setColumn(state);
+    }
+  }, [state])
+
+  console.log('state', column)
+
+  // const updateTask = (
+  //   columns: ITaskColumn[],
+  //   taskId: number,
+  //   updatedTask: ITask
+  // ) => {
+  //   setBoards(
+  //     columns.map((column) => {
+  //       if (column.id === taskId) {
+  //         return {
+  //           ...column,
+  //           tasks: column.tasks.map((task) => {
+  //             if (task.id === updatedTask.id) {
+  //               return {...task, ...updatedTask};
+  //             }
+  //             return {...task};
+  //           }),
+  //         };
+  //       }
+  //       return {...column};
+  //     })
+  //   );
+  // };
+
+  // const handleCreateTask = (column: ITaskColumn, task: ITask) => {
+  //   setBoards(
+  //     boards.map((obj) => {
+  //       if (obj.id === column.id) {
+  //         return {
+  //           ...column,
+  //           tasks: [...column.tasks, {...task}],
+  //         };
+  //       }
+  //       return {...column};
+  //     })
+  //   );
+  // };
+  
+  // const handleDeleteTask = (column: ITaskColumn, taskId: number) => {
+  //   setBoards(
+  //     boards.map((obj) => {
+  //       if (obj.id === column.id) {
+  //         return {
+  //           ...column,
+  //           tasks: [...column.tasks.filter((task) => task.id !== taskId)],
+  //         };
+  //       }
+  //       return {...column};
+  //     })
+  //   );
+  // };
 
   return (
     <Container>
       <HeaderPage title="Título do Quadro">
         <>
-          <div
+          {/* <div
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -231,7 +183,7 @@ export default function Board() {
             >
               Delete
             </button>
-          </div>
+          </div> */}
 
           <div
             style={{
@@ -241,7 +193,7 @@ export default function Board() {
               gap: '5px'
             }}
           >
-            <button
+            {/* <button
               style={styleButtonTask}
               onClick={() =>
                 console.log('UPDATETASK', updateTask(boards, 1, upTask))
@@ -251,26 +203,26 @@ export default function Board() {
             </button>
             <button
               style={styleButtonTask}
-              onClick={() => handleCreateTask(boards[0], createTask)}
+              onClick={() => handleCreateTask(state[0], createTask)}
             >
               CreateT
             </button>
             <button
               style={styleButtonTask}
-              onClick={() => handleDeleteTask(boards[0], 11)}
+              onClick={() => deleteTask(state[0], 2)}
             >
               DeleteT
-            </button>
+            </button> */}
           </div>
         </>
       </HeaderPage>
 
       <ScrollAreas>
         <ContentBoard>
-          {state.map((row: any) => (
+          {column.map((row: any) => (
             <Column key={row.card_id} title={row.name}>
               {row?.tasks?.map((row: any) => (
-                <Task key={row.card_id} />
+                <Task key={row.task_id} />
               ))}
             </Column>
           ))}

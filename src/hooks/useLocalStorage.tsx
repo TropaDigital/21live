@@ -1,4 +1,5 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
+import { columnDefault } from '../utils/dataDefault';
 
 function useLocalStorage(key: any, initialValue = []) {
   const [state, setState] = useState(() => {
@@ -10,6 +11,7 @@ function useLocalStorage(key: any, initialValue = []) {
       return initialValue;
     }
   });
+  
 
   const setValue = useCallback((value: any) => {
     try {
@@ -20,7 +22,12 @@ function useLocalStorage(key: any, initialValue = []) {
     }
   }, [key])
 
-  
+  // useEffect(() => {
+  //   if(state.length < 1) {
+  //     setState([columnDefault])
+  //     localStorage.setItem(key, JSON.stringify([columnDefault]));
+  //   }
+  // }, [])
 
   return [state, setValue];
 }

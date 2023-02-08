@@ -1,14 +1,27 @@
-import { ColumnType } from './enums';
 
 export interface TaskModel {
-  id: string;
+  task_id: string;
+  card_id: string;
   title: string;
-  column: ColumnType;
-  color: string;
+  client: string;
+  project: string;
+  frame: string;
+  type: string;
+  order: string;
+  final_data: string;
+  description: string;
 }
 
-export interface DragItem {
-  index: number;
-  id: TaskModel['id'];
-  from: ColumnType;
+export interface ColumnModel {
+  card_id: string;
+  email_alert: string;
+  flow_id: string;
+  idCreator: string;
+  name: string
+  nameCreator: string;
+  necessary_upload: string;
+  next_step: string;
+  previous_step: string;
+  step: string;
+  tasks: TaskModel[]
 }
