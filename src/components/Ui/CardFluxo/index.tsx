@@ -29,9 +29,10 @@ interface CardProps {
   length: number;
   data: any;
   columnStep: any;
+  responseUser: any;
 }
 
-export default function CardFluxo({ data, length, columnStep, isLastItem, handleOnClick, handleOnPosition, handleOnDelete, onUpdate, index }: CardProps) {
+export default function CardFluxo({ data, responseUser, length, columnStep, isLastItem, handleOnClick, handleOnPosition, handleOnDelete, onUpdate, index }: CardProps) {
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = event.target
     onUpdate(index, name, value)
@@ -39,7 +40,7 @@ export default function CardFluxo({ data, length, columnStep, isLastItem, handle
 
   const handleOnChangeCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { checked, name} = event.target
-    onUpdate(index, name, checked)
+    onUpdate(index, name, String(checked))
   }
 
   return (
@@ -71,11 +72,11 @@ export default function CardFluxo({ data, length, columnStep, isLastItem, handle
             name="user_id"
             placeHolder="Selecione o cargo"
             onChange={handleOnChange}
-            value={data.user_id}
+            value={data.user_id ?? ''}
           >
-            <option value="1">Cargo 1</option>
-            <option value="2">Cargo 2</option>
-            <option value="3">Cargo 3</option>
+            {responseUser?.map((row: any) => (
+              <option key={Number(row.user_id)} value={row.user_id}>{row.name}</option>
+            ))}
           </SelectDefault>
         </FieldDefault>
 
@@ -87,8 +88,8 @@ export default function CardFluxo({ data, length, columnStep, isLastItem, handle
             onChange={handleOnChange}
             value={data.step}
           >
-            {columnStep.map((row: any) => (
-              <option key={row.card_id} value={row.card_id}>{row.name}</option>
+            {columnStep.map((row: any, index: any) => (
+              <option key={index} value={row.name}>{row.name}</option>
             ))}
           </SelectDefault>
         </FieldDefault>
@@ -101,7 +102,7 @@ export default function CardFluxo({ data, length, columnStep, isLastItem, handle
               label="Alerta por E-mail"
               name="email_alert"
               onChange={handleOnChangeCheckbox}
-              defaultChecked={data.email_alert}
+              checked={data.email_alert === "true" ? true : false}
             />
           </FieldDefault>
 
@@ -110,7 +111,7 @@ export default function CardFluxo({ data, length, columnStep, isLastItem, handle
               label="Upload obrigatório"
               name="necessary_upload"
               onChange={handleOnChangeCheckbox}
-              defaultChecked={data.necessary_upload}
+              checked={data.necessary_upload === "true" ? true : false}
             />
           </FieldDefault>
 
@@ -119,7 +120,7 @@ export default function CardFluxo({ data, length, columnStep, isLastItem, handle
               label="Responsavel obrigatório"
               name="responsable"
               onChange={handleOnChangeCheckbox}
-              defaultChecked={data.responsable}
+              defaultChecked={data.responsable === "true" ? true : false}
             />
           </FieldDefault>
         </fieldset>

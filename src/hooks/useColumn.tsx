@@ -3,12 +3,13 @@ import useLocalStorage from "./useLocalStorage";
 
 function useColumn() {
   const [column, setColumn] = useState<any>([]);
+  const [ state, setState ] = useLocalStorage("COLUMN", [])
 
   const addColumn = useCallback((userId: any, flowId: any) => {
     const newItem = {
       flow_id: String(flowId),
-      card_id: String(column.length + 1),
-      step: "0",
+      // card_id: String(column.length + 1),
+      step: 0,
       name: "Novo card",
       necessary_upload: "false",
       email_alert: "false",
@@ -43,6 +44,7 @@ function useColumn() {
   const deleteColumn = useCallback(
     (itemId: any) => {
       setColumn(column.filter((item: any) => item.card_id !== itemId));
+      setState(column.filter((item: any) => item.card_id !== itemId));
     },
     [column, setColumn]
   );

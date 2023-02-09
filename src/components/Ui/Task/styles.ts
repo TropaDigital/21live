@@ -3,8 +3,11 @@ import styled from "styled-components";
 
 export const Container = styled.div`
   background: var(--background-primary);
-  box-shadow: var(--shadow-light);
-  border-radius: 10px;
+  /* box-shadow: var(--shadow-light); */
+  border-radius: 8px;
+`;
+
+export const ContentTask = styled.div`
   padding: 10px;
 `;
 
@@ -51,7 +54,7 @@ export const HeaderTaskButton = styled.button`
 export const MainTask = styled.div`
   display: flex;
   flex-direction: column;
-  margin-top: 10px;
+  margin: 10px 0;
 `;
 
 export const TitleTask = styled.h1`
@@ -87,3 +90,6 @@ export const DataSpan = styled.span`
   color: #0046B5;
 `;
 
+export const FooterTask = styled.div`
+  weight: 100%;
+`;

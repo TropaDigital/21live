@@ -85,6 +85,7 @@ const styleButtonTask = {
 
 export default function Board() {
   const [ state ] = useLocalStorage('COLUMN');
+  const location = useLocation();
   const { deleteTask } = useTask();
   // const {id} = useParams();
 
@@ -154,7 +155,7 @@ export default function Board() {
 
   return (
     <Container>
-      <HeaderPage title="Título do Quadro">
+      <HeaderPage title={location.state.name}>
         <>
           {/* <div
             style={{
@@ -221,7 +222,7 @@ export default function Board() {
         <ContentBoard>
           {column.map((row: any) => (
             <Column key={row.card_id} title={row.name}>
-              {row?.tasks?.map((row: any) => (
+              {[0, 1].map((row: any) => (
                 <Task key={row.task_id} />
               ))}
             </Column>

@@ -1,7 +1,8 @@
-import styled, { keyframes } from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 
 interface Props {
   value: number;
+  isRadius?: boolean;
 }
 
 const progressAnimationStrike = (value: any) => keyframes`
@@ -12,6 +13,7 @@ const progressAnimationStrike = (value: any) => keyframes`
 export const Container = styled.div<Props>`
     background: #E3E5EA;
     border-radius: 6px;
+
     /* box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25),
       0 1px rgba(255, 255, 255, 0.08); */
 
@@ -38,4 +40,13 @@ export const Container = styled.div<Props>`
       );
       animation: ${props => progressAnimationStrike(props.value)} 6s;
     }
+
+    ${({ isRadius }) => isRadius && css`
+      border-radius: 0 0 0 8px;
+
+      .progress-bar {
+        border-radius: 0 8px 8px 8px;
+        height: 8px;
+      }
+    `}
 `;

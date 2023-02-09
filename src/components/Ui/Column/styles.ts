@@ -4,14 +4,14 @@ import styled from "styled-components";
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
-  background-color: #E3E5EA;
+  background-color: #EDEFF2;
 
   width: 320px;
 
   padding: 10px;
-  border: 1px solid #c6c7c7;
-  border-radius: 0.625rem;
-  box-shadow: var(--shadow);
+  /* border: 1px solid #c6c7c7; */
+  border-radius: 4px;
+  /* box-shadow: var(--shadow); */
 `;
 
 export const HeaderColumn = styled.div`

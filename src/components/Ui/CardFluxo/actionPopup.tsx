@@ -1,9 +1,10 @@
-import React from 'react'
 import * as Popover from '@radix-ui/react-popover';
+import Alert from '../Alert';
+
+import { FiMoreHorizontal } from 'react-icons/fi';
+import { BiLeftArrowAlt, BiRightArrowAlt, BiX } from 'react-icons/bi';
 
 import { ButtonHeaderCardFluxo, ContainerPopupCard } from './styles'
-import { FiMoreHorizontal } from 'react-icons/fi';
-import { BiLeftArrowAlt, BiRightArrowAlt, BiX, BiXCircle } from 'react-icons/bi';
 
 interface PropsPopup {
   handleOnDelete: (ai: any) => void;
@@ -25,7 +26,7 @@ export default function ActionPopup({ handleOnDelete, handleOnPosition, index, l
           </ButtonHeaderCardFluxo>
         </Popover.Trigger>
         <Popover.Portal>
-          <Popover.Content className="PopoverContentActionCard" sideOffset={5}>
+          <Popover.Content  className="PopoverContentActionCard" sideOffset={5}>
             <div
               style={{
                 display: 'flex',
@@ -58,12 +59,18 @@ export default function ActionPopup({ handleOnDelete, handleOnPosition, index, l
                   </li>
                 )}
                 <li className='listDeleteCardFluxo'>
-                  <button 
-                    className='buttonDeleteCardFluxo'
-                    onClick={handleOnDelete}
+                  <Alert
+                    title='Atenção'
+                    subtitle='Certeza que gostaria de remover esse card? Ao excluir a acão não poderá ser desfeita.'
+                    cancelButton={() => {}}
+                    confirmButton={handleOnDelete}
+                  >
+                    <button 
+                      className='buttonDeleteCardFluxo'
                     >
-                    Excluir etapa
-                  </button>
+                      Excluir etapa
+                    </button>
+                  </Alert>
                 </li>
               </ul>
             </div>

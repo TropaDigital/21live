@@ -5,10 +5,7 @@ export const columnDefault = {
   name: 'NOVA COLUNA',
   email_alert: 'false',
   necessary_upload: 'false',
-  step: '1',
-  next_step: '2',
-  previous_step: '0',
-  // tasks: []
+  step: 0,
 }
 
 const update = {
@@ -63,27 +60,27 @@ export const avatarAll = [
 
 export const dataFake = [
   {
-    id: 1,
-    name: 'Post Web',
-    step: '8',
-    project: '5',
+    flow_id: 1,
+    card_id: 1,
+    step: 1,
+    name: "Novo card",
+    necessary_upload: "false",
+    email_alert: "false",
   },
   {
-    id: 2,
-    name: 'Campanha',
-    step: '4',
-    project: '3',
+    flow_id: 2,
+    card_id: 2,
+    step: 2,
+    name: "Novo card",
+    necessary_upload: "false",
+    email_alert: "false",
   },
   {
-    id: 3,
-    name: 'Ação Sazanal',
-    step: '1',
-    project: '2',
-  },
-  {
-    id: 4,
-    name: 'Post Web',
-    step: '8',
-    project: '5',
+    flow_id: 3,
+    card_id: 3,
+    step: 3,
+    name: "Novo card",
+    necessary_upload: "false",
+    email_alert: "false",
   },
 ]

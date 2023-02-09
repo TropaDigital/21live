@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useFetch } from '../../../hooks/useFetch';
 
@@ -13,21 +13,52 @@ import { InputDefault } from '../../../components/Inputs/InputDefault';
 
 import { ContainerGroupTable, ContentDefault, FieldDefault, FieldGroupFormDefault, FooterModal } from '../../../components/UiElements/styles';
 import { Container } from './styled';
+import { useToast } from '../../../hooks/toast';
+import api from '../../../services/api';
 
 export default function ListFluxo() {
   const navigate = useNavigate();
+  const { addToast } = useToast();
   const [modal, setModal] = useState(false);
   const [formData, setFormData] = useState({
-    fluxo: ''
+    name: ''
   })
-  const { data } = useFetch<any[]>(`flow`);
+  const { data, fetchData } = useFetch<any[]>('flow');
 
   const handleInputChange = (
-    name: string,
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setFormData({ ...formData, [name]: event.target.value });
+    const { name, value } = event.target
+    setFormData({ ...formData, [name]: value });
   };
+
+  const handleOnSubmit = useCallback(async (event: any) => {
+    try {
+      event.preventDefault();
+
+      // Inserir lógica
+      await api.post('flow', formData);
+   
+      addToast({
+        type: 'success',
+        title: 'Sucesso',
+        description: 'Serviço cadastrado com sucesso!',
+      });
+
+      fetchData();
+      setModal(!modal);
+      setFormData({
+        name: ''
+      });
+
+    } catch (e: any) {
+      addToast({
+        type: 'danger',
+        title: 'ATENÇÃO',
+        description: e.response.data.message,
+      });
+    }
+  }, [formData, open]);
 
   return (
     <Container>
@@ -74,9 +105,10 @@ export default function ListFluxo() {
                   <td>5</td>
                   <td>
                     <div className="fieldTableClients">
-                      <ButtonDefault typeButton="info" onClick={() => {
-                        navigate(`/fluxo/editar/${row.name.replaceAll(' ', '_')}`, {state: {id: row.flow_id, name: row.name }})
-                      }}>
+                      <ButtonDefault 
+                        typeButton="info" 
+                        onClick={() => navigate(`/fluxo/editar/${row.name.replaceAll(' ', '_')}`, {state: {id: row.flow_id, name: row.name }})}
+                      >
                         <BiEdit />
                       </ButtonDefault>
                     </div>
@@ -93,14 +125,14 @@ export default function ListFluxo() {
           <Dialog.Overlay className="DialogOverlay" />
           <Dialog.Content className="DialogContent">
             <Dialog.Title className="DialogTitle">Novo Fluxo</Dialog.Title>
-            <form onSubmit={() => console.log('data')}>
+            <form onSubmit={handleOnSubmit}>
               <FieldDefault>
                 <InputDefault
                   label="Nome do Fluxo"
                   placeholder="Digite aqui..."
-                  name="fluxo"
-                  onChange={(event) => handleInputChange('fluxo', event)}
-                  value={formData.fluxo}
+                  name="name"
+                  onChange={handleInputChange}
+                  value={formData.name}
                 />
               </FieldDefault>
 
