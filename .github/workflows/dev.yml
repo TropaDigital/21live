@@ -32,4 +32,4 @@ jobs:
         server: tropadigital.virtuaserver.com.br
         username: admin
         password: xpIB7Q9Ft9h4g77
-        server-dir: /domains/backendtropa.com.br/public_html/21live/
+        server-dir: /domains/frontendtropa.com.br/public_html/21livedeploy/
