@@ -17,21 +17,11 @@ import api from '../../../services/api';
 
 import { Container, HeaderEditPlus, ContentEditFluxo } from './styled';
 
-interface UserProps {
-  name: string;
-  avatar: string;
-  function: string;
+interface OfficeProps {
   function_id: number;
-  birthday: string;
-  email: string;
-  phone: string;
-  username: string;
-  cost_per_hour: string;
-  hiring_date: string;
   tenant_id: number;
-  user_id: number;
-  password: string;
-  confirmPassword: string;
+  function: string;
+  description: string;
 }
 
 export default function EditFluxo() {
@@ -41,7 +31,9 @@ export default function EditFluxo() {
   const location = useLocation();
   const [ state, setState ] = useLocalStorage("COLUMN", [])
 
-  const { data: dataTeam } = useFetch<UserProps[]>(`team?page=${1}&search=${''}`);
+  const { data: dataTeam } = useFetch<OfficeProps[]>(`function`);
+
+  // const { data: dataTeam } = useFetch<UserProps[]>(`team?page=${1}&search=${''}`);
   const latesTeam = dataTeam?.slice(0, 8);
   
   const { data, isFetching } = useFetch<ColumnModel[]>(`card/${location.state.id}`);
@@ -53,19 +45,19 @@ export default function EditFluxo() {
       setColumn(data);
     }
     if(column.length < 1) {
-      setColumn([...column, {
+      setColumn([{
         flow_id: String(location.state.id),
         // card_id: String(column.length + 1),
         step: 0,
         name: "Novo card",
         necessary_upload: "false",
         email_alert: "false",
+        necessary_responsible: "false"
       }])
     }
   }, [isFetching, data])
 
   console.log('COLUMN', column)
-  // console.log('TEAM', dataTeam)
 
   async function saveFluxo() {
     try {

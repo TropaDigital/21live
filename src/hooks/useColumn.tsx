@@ -13,6 +13,7 @@ function useColumn() {
       name: "Novo card",
       necessary_upload: "false",
       email_alert: "false",
+      necessary_responsible: "false"
       // tasks: [],
     }
     setColumn([...column, newItem]);

@@ -43,6 +43,8 @@ export default function CardFluxo({ data, responseUser, length, columnStep, isLa
     onUpdate(index, name, String(checked))
   }
 
+  console.log('ROW', data);
+
   return (
     <Container>
       <HeaderCardFluxo>
@@ -62,20 +64,20 @@ export default function CardFluxo({ data, responseUser, length, columnStep, isLa
           name="name"
           className="inputCardFluxo"
           placeholder="Nome do fluxo..."
-          defaultValue={data.name}
+          value={data.name}
           onChange={handleOnChange}
         />
 
         <FieldDefault style={{ marginBottom: '12px' }}>
           <SelectDefault
             label="Responsável"
-            name="user_id"
+            name="function_id"
             placeHolder="Selecione o cargo"
             onChange={handleOnChange}
-            value={data.user_id ?? ''}
+            value={data.function_id ?? ''}
           >
             {responseUser?.map((row: any) => (
-              <option key={Number(row.user_id)} value={row.user_id}>{row.name}</option>
+              <option key={Number(row.function_id)} value={row.function_id}>{row.function}</option>
             ))}
           </SelectDefault>
         </FieldDefault>
@@ -87,6 +89,7 @@ export default function CardFluxo({ data, responseUser, length, columnStep, isLa
             placeHolder="Selecione a etapa"
             onChange={handleOnChange}
             value={data.step}
+            disabled
           >
             {columnStep.map((row: any, index: any) => (
               <option key={index} value={row.name}>{row.name}</option>
@@ -118,9 +121,9 @@ export default function CardFluxo({ data, responseUser, length, columnStep, isLa
           <FieldDefault style={{ marginBottom: '8px' }}>
             <CheckboxDefault
               label="Responsavel obrigatório"
-              name="responsable"
+              name="necessary_responsible"
               onChange={handleOnChangeCheckbox}
-              defaultChecked={data.responsable === "true" ? true : false}
+              defaultChecked={data.necessary_responsible === "true" ? true : false}
             />
           </FieldDefault>
         </fieldset>
