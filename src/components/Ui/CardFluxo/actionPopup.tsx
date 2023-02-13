@@ -32,6 +32,7 @@ export default function ActionPopup({ handleOnDelete, handleOnPosition, index, l
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 10,
+                minWidth: '70px'
               }}
             >
               <p className="Text" style={{ marginBottom: 2 }}>
@@ -58,20 +59,22 @@ export default function ActionPopup({ handleOnDelete, handleOnPosition, index, l
                     </Popover.Close>
                   </li>
                 )}
-                <li className='listDeleteCardFluxo'>
-                  <Alert
-                    title='Atenção'
-                    subtitle='Certeza que gostaria de remover esse card? Ao excluir a acão não poderá ser desfeita.'
-                    cancelButton={() => {}}
-                    confirmButton={handleOnDelete}
-                  >
-                    <button 
-                      className='buttonDeleteCardFluxo'
+                {index !== 0 && (
+                  <li className='listDeleteCardFluxo'>
+                    <Alert
+                      title='Atenção'
+                      subtitle='Certeza que gostaria de remover esse card? Ao excluir a acão não poderá ser desfeita.'
+                      cancelButton={() => {}}
+                      confirmButton={handleOnDelete}
                     >
-                      Excluir etapa
-                    </button>
-                  </Alert>
-                </li>
+                      <button 
+                        className='buttonDeleteCardFluxo'
+                      >
+                        Excluir etapa
+                      </button>
+                    </Alert>
+                  </li>
+                )}
               </ul>
             </div>
             <Popover.Close className="PopoverCloseCardFluxo" aria-label="Close">

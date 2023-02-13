@@ -1,4 +1,4 @@
-import React, { ButtonHTMLAttributes } from 'react';
+import React, { ButtonHTMLAttributes, useRef } from 'react';
 import Spinner from '../Spinner';
 
 import { Container } from './styles';
@@ -18,26 +18,22 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   sizeButton?: 'small' | 'big';
 }
 
-const ButtonDefault: React.FC<ButtonProps> = ({
-  loading,
-  children,
-  isOutline,
-  sizeButton,
-  typeButton,
-  ...rest
-}) => {
-  return (  
-    <Container
-      typeButton={typeButton}
-      isOutline={isOutline}
-      sizeButton={sizeButton}
-      disabled={loading}
-      type="button"
-      {...rest}
-    >
-      {loading ? <Spinner /> : children}
-    </Container>
-  );
-};
+const ButtonDefault = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ loading, children, isOutline, sizeButton, typeButton, ...rest }, ref) => {
+    return (
+      <Container
+        typeButton={typeButton}
+        isOutline={isOutline}
+        sizeButton={sizeButton}
+        disabled={loading}
+        type="button"
+        ref={ref}
+        {...rest}
+      >
+        {loading ? <Spinner /> : children}
+      </Container>
+    );
+  }
+);
 
 export default ButtonDefault;

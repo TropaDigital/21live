@@ -43,8 +43,6 @@ export default function CardFluxo({ data, responseUser, length, columnStep, isLa
     onUpdate(index, name, String(checked))
   }
 
-  console.log('ROW', data);
-
   return (
     <Container>
       <HeaderCardFluxo>

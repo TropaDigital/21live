@@ -1,5 +1,6 @@
 import * as AlertDialog from '@radix-ui/react-alert-dialog';
 import ButtonDefault from '../../Buttons/ButtonDefault';
+import React from 'react';
 
 interface Props {
   title: string;
@@ -19,7 +20,8 @@ export default function Alert({
   return (
     <AlertDialog.Root>
       <AlertDialog.Trigger asChild>
-          {children}
+        {children}
+
         {/* <button className="Button violet">Delete account</button> */}
       </AlertDialog.Trigger>
       <AlertDialog.Portal>

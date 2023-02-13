@@ -44,20 +44,18 @@ export default function EditFluxo() {
     if(!isFetching) {
       setColumn(data);
     }
-    if(isFetching && column.length < 1) {
-      setColumn([{
-        flow_id: String(location.state.id),
-        // card_id: String(column.length + 1),
-        step: 0,
-        name: "Novo card",
-        necessary_upload: "false",
-        email_alert: "false",
-        necessary_responsible: "false"
-      }])
-    }
+    // if(!isFetching && column.length < 1) {
+    //   setColumn([{
+    //     flow_id: String(location.state.id),
+    //     // card_id: String(column.length + 1),
+    //     step: 0,
+    //     name: "Novo card",
+    //     necessary_upload: "false",
+    //     email_alert: "false",
+    //     necessary_responsible: "false"
+    //   }])
+    // }
   }, [isFetching, data])
-
-  console.log('COLUMN', isFetching)
 
   async function saveFluxo() {
     try {
@@ -111,7 +109,6 @@ export default function EditFluxo() {
         <div style={{ position: 'absolute', right: '30px', display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
           <ButtonDefault 
             typeButton="info" 
-            // onClick={() => navigate(`/projeto/${location.state.id}`)}
             onClick={() => navigate(`/projeto/${location.state.name.replaceAll(' ', '_')}`, {state: {id: location.state.id, name: location.state.name }})}
           >
             <BiShow />
