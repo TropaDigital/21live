@@ -79,7 +79,7 @@ export default function ListFluxo() {
       event.preventDefault();
 
       // Inserir lógica
-      await api.post('flow', formData);
+      const response = await api.post('flow', formData);
    
       addToast({
         type: 'success',
@@ -92,6 +92,8 @@ export default function ListFluxo() {
       setFormData({
         name: ''
       });
+
+      navigate(`/fluxo/editar/${formData.name.replaceAll(' ', '_')}`, {state: {id: response.data.result, name: formData.name }})
 
     } catch (e: any) {
       addToast({

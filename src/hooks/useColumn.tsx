@@ -10,10 +10,12 @@ function useColumn() {
       flow_id: String(flowId),
       // card_id: String(column.length + 1),
       step: 0,
+      function_id: 0,
       name: "Novo card",
       necessary_upload: "false",
       email_alert: "false",
-      necessary_responsible: "false"
+      necessary_responsible: "false",
+      previous_step: 0
       // tasks: [],
     }
     setColumn([...column, newItem]);

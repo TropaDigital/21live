@@ -83,14 +83,13 @@ export default function CardFluxo({ data, responseUser, length, columnStep, isLa
         <FieldDefault style={{ marginBottom: '12px' }}>
           <SelectDefault
             label="Retorna para etapa"
-            name="step"
+            name="previous_step"
             placeHolder="Selecione a etapa"
             onChange={handleOnChange}
-            value={data.step}
-            disabled
+            value={data.previous_step}
           >
             {columnStep.map((row: any, index: any) => (
-              <option key={index} value={row.name}>{row.name}</option>
+              <option key={index} value={row.card_id}>{row.name}</option>
             ))}
           </SelectDefault>
         </FieldDefault>
@@ -121,7 +120,7 @@ export default function CardFluxo({ data, responseUser, length, columnStep, isLa
               label="Responsavel obrigatório"
               name="necessary_responsible"
               onChange={handleOnChangeCheckbox}
-              defaultChecked={data.necessary_responsible === "true" ? true : false}
+              checked={data.necessary_responsible === "true" ? true : false}
             />
           </FieldDefault>
         </fieldset>

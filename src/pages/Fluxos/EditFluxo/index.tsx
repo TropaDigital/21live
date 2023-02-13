@@ -57,6 +57,7 @@ export default function EditFluxo() {
     // }
   }, [isFetching, data])
 
+
   async function saveFluxo() {
     try {
       const response = await api.post('/card', column);
@@ -103,6 +104,11 @@ export default function EditFluxo() {
     }
   }
 
+  function invertScrollDirection(event: React.UIEvent<HTMLElement>) {
+    event.preventDefault();
+    window.scrollTo(event.currentTarget.scrollTop, event.currentTarget.scrollLeft);
+  }
+
   return (
     <Container>
       <HeaderPage title="Fluxos">
@@ -130,7 +136,9 @@ export default function EditFluxo() {
 
       </HeaderEditPlus>
 
-      <ContentEditFluxo>
+      <ContentEditFluxo
+        onWheel={invertScrollDirection}
+      >
         {column.map((row: any, index: any) => (
           <CardFluxo
             key={index}
