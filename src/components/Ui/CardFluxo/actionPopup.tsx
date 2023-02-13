@@ -15,6 +15,9 @@ interface PropsPopup {
 
 export default function ActionPopup({ handleOnDelete, handleOnPosition, index, length }: PropsPopup) {
 
+  console.log('LENGTH', length)
+  console.log('LENGTH', index)
+
   return (
     <ContainerPopupCard>
       <Popover.Root>
@@ -59,7 +62,7 @@ export default function ActionPopup({ handleOnDelete, handleOnPosition, index, l
                     </Popover.Close>
                   </li>
                 )}
-                {index !== 0 && (
+                {!(index === 0 && length <= 1) && (
                   <li className='listDeleteCardFluxo'>
                     <Alert
                       title='Atenção'
