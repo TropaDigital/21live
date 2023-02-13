@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import useColumn from '../../../hooks/useColumn';
@@ -32,7 +32,6 @@ export default function EditFluxo() {
   const [ state, setState ] = useLocalStorage("COLUMN", [])
 
   const { data: dataTeam } = useFetch<OfficeProps[]>(`function`);
-
   // const { data: dataTeam } = useFetch<UserProps[]>(`team?page=${1}&search=${''}`);
   const latesTeam = dataTeam?.slice(0, 8);
   
@@ -44,19 +43,7 @@ export default function EditFluxo() {
     if(!isFetching) {
       setColumn(data);
     }
-    // if(!isFetching && column.length < 1) {
-    //   setColumn([{
-    //     flow_id: String(location.state.id),
-    //     // card_id: String(column.length + 1),
-    //     step: 0,
-    //     name: "Novo card",
-    //     necessary_upload: "false",
-    //     email_alert: "false",
-    //     necessary_responsible: "false"
-    //   }])
-    // }
   }, [isFetching, data])
-
 
   async function saveFluxo() {
     try {
@@ -104,11 +91,6 @@ export default function EditFluxo() {
     }
   }
 
-  function invertScrollDirection(event: React.UIEvent<HTMLElement>) {
-    event.preventDefault();
-    window.scrollTo(event.currentTarget.scrollTop, event.currentTarget.scrollLeft);
-  }
-
   return (
     <Container>
       <HeaderPage title="Fluxos">
@@ -136,9 +118,7 @@ export default function EditFluxo() {
 
       </HeaderEditPlus>
 
-      <ContentEditFluxo
-        onWheel={invertScrollDirection}
-      >
+      <ContentEditFluxo>
         {column.map((row: any, index: any) => (
           <CardFluxo
             key={index}

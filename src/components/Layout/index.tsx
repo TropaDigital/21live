@@ -8,9 +8,9 @@ import {
   IconUsers,
 } from '../assets/icons';
 
-import ScrollAreas from '../Ui/ScrollAreas';
 import Header from './Header';
 import Sidebar from './Sidebar';
+import ScrollAreas from '../Ui/ScrollAreas';
 
 import { Container, Main } from './styles';
 
