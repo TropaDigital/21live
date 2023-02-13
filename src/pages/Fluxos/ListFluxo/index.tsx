@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useFetch } from '../../../hooks/useFetch';
 
@@ -10,11 +10,13 @@ import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import ScrollAreas from '../../../components/Ui/ScrollAreas';
 import { TableDefault } from '../../../components/TableDefault';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
+import Alert from '../../../components/Ui/Alert'
 
 import { ContainerGroupTable, ContentDefault, FieldDefault, FieldGroupFormDefault, FooterModal } from '../../../components/UiElements/styles';
 import { Container } from './styled';
 import { useToast } from '../../../hooks/toast';
 import api from '../../../services/api';
+import { useDebounce } from '../../../utils/useDebounce';
 
 export default function ListFluxo() {
   const navigate = useNavigate();
@@ -23,7 +25,24 @@ export default function ListFluxo() {
   const [formData, setFormData] = useState({
     name: ''
   })
-  const { data, fetchData } = useFetch<any[]>('flow');
+  
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 700);
+  const [search, setSearch] = useState('');
+  const [isSearching, setSearching] = useState(false);
+
+  const { data, fetchData } = useFetch<any[]>(`flow?search=${search}`);
+
+  useEffect(() => {
+    if (debouncedSearchTerm) {
+      setSearching(true);
+      setSearch(searchTerm);
+      setSearching(false);
+    } else {
+      setSearch('')
+      setSearching(false);
+    }
+  }, [debouncedSearchTerm]);
 
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -31,6 +50,29 @@ export default function ListFluxo() {
     const { name, value } = event.target
     setFormData({ ...formData, [name]: value });
   };
+
+  async function handleOnDelete(id: any) {
+    try {
+      const response = await api.delete(`/flow/${id}`)
+
+      addToast({
+        title: 'Sucesso',
+        description: 'Fluxo deletado com sucesso!',
+        type: 'success'
+      })
+
+      fetchData();
+
+    } catch(err: any) {
+      console.log('ERR =>', err)
+
+      addToast({
+        title: 'Atenção',
+        description: err.data.result,
+        type: 'warning'
+      })
+    }
+  }
 
   const handleOnSubmit = useCallback(async (event: any) => {
     try {
@@ -74,8 +116,8 @@ export default function ListFluxo() {
           <InputDefault
             label="Busca"
             name="search"
-            placeholder="Faça sua busca..."
-            onChange={(event) => console.log(event.target.value)}
+            placeholder="Busque pelo nome..."
+            onChange={(event) => setSearchTerm(event.target.value)}
             icon={BiSearchAlt}
           />
         </FieldGroupFormDefault>
@@ -105,6 +147,21 @@ export default function ListFluxo() {
                   <td>5</td>
                   <td>
                     <div className="fieldTableClients">
+                      <Alert
+                        title='Atenção'
+                        subtitle='Certeza que gostaria de remover esse fluxo? Ao excluir a acão não poderá ser desfeita.'
+                        cancelButton={() => {}}
+                        confirmButton={() => handleOnDelete(row.flow_id)}
+                      >
+                        <ButtonDefault 
+                          typeButton="danger"
+                        >
+                          <BiX size={30} />
+                        </ButtonDefault>
+
+                        {/* <button>CLICK</button> */}
+                      </Alert>
+
                       <ButtonDefault 
                         typeButton="info" 
                         onClick={() => navigate(`/fluxo/editar/${row.name.replaceAll(' ', '_')}`, {state: {id: row.flow_id, name: row.name }})}

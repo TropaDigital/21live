@@ -44,7 +44,7 @@ export default function EditFluxo() {
     if(!isFetching) {
       setColumn(data);
     }
-    if(column.length < 1) {
+    if(isFetching && column.length < 1) {
       setColumn([{
         flow_id: String(location.state.id),
         // card_id: String(column.length + 1),
@@ -57,7 +57,7 @@ export default function EditFluxo() {
     }
   }, [isFetching, data])
 
-  console.log('COLUMN', column)
+  console.log('COLUMN', isFetching)
 
   async function saveFluxo() {
     try {

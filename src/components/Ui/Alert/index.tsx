@@ -14,12 +14,12 @@ export default function Alert({
   cancelButton,
   confirmButton,
   title, 
-  subtitle
+  subtitle,
 }: Props) {
   return (
     <AlertDialog.Root>
       <AlertDialog.Trigger asChild>
-        {children}
+          {children}
         {/* <button className="Button violet">Delete account</button> */}
       </AlertDialog.Trigger>
       <AlertDialog.Portal>
