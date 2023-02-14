@@ -1,10 +1,13 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { useFetch } from '../../../hooks/useFetch';
-
 import * as Dialog from '@radix-ui/react-dialog';
 import { BiEdit, BiPlus, BiSearchAlt, BiX } from 'react-icons/bi';
+import api from '../../../services/api';
 
+import { useFetch } from '../../../hooks/useFetch';
+import { useToast } from '../../../hooks/toast';
+
+import { useDebounce } from '../../../utils/useDebounce';
 import HeaderPage from '../../../components/HeaderPage';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import ScrollAreas from '../../../components/Ui/ScrollAreas';
@@ -14,9 +17,6 @@ import Alert from '../../../components/Ui/Alert'
 
 import { ContainerGroupTable, ContentDefault, FieldDefault, FieldGroupFormDefault, FooterModal } from '../../../components/UiElements/styles';
 import { Container } from './styled';
-import { useToast } from '../../../hooks/toast';
-import api from '../../../services/api';
-import { useDebounce } from '../../../utils/useDebounce';
 
 export default function ListFluxo() {
   const navigate = useNavigate();
@@ -25,7 +25,6 @@ export default function ListFluxo() {
   const [formData, setFormData] = useState({
     name: ''
   })
-  
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm, 700);
   const [search, setSearch] = useState('');
@@ -37,7 +36,12 @@ export default function ListFluxo() {
     if (debouncedSearchTerm) {
       setSearching(true);
       setSearch(searchTerm);
-      setSearching(false);
+      const handler = setTimeout(() => {
+        setSearching(false);
+      }, 500);
+      return () => {
+        clearTimeout(handler)
+      }
     } else {
       setSearch('')
       setSearching(false);
@@ -121,6 +125,8 @@ export default function ListFluxo() {
             placeholder="Busque pelo nome..."
             onChange={(event) => setSearchTerm(event.target.value)}
             icon={BiSearchAlt}
+            isLoading={isSearching}
+            value={searchTerm}
           />
         </FieldGroupFormDefault>
       </ContentDefault>
@@ -160,8 +166,6 @@ export default function ListFluxo() {
                         >
                           <BiX size={30} />
                         </ButtonDefault>
-
-                        {/* <button>CLICK</button> */}
                       </Alert>
 
                       <ButtonDefault 

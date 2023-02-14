@@ -4,6 +4,7 @@ import {
   IconClipboard,
   IconDash,
   IconFile,
+  IconFolder,
   IconTeam,
   IconUsers,
 } from '../assets/icons';
@@ -61,9 +62,9 @@ export default function Layout() {
               icon: IconTeam,
             },
             {
-              to: '/projeto',
+              to: '/projetos',
               name: 'Projeto',
-              icon: IconFile,
+              icon: IconFolder,
             },
             // {
             //   to: '/tarefas',

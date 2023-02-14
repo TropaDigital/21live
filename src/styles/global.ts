@@ -908,8 +908,9 @@ p, h1, h2, h3, h4, h5, h6 {
 }
 
 .ProseMirror {
+  min-height: 90px;
   > * + * {
-    margin-top: 0.75em;
+    /* margin-top: 0.75em; */
   }
 
   p.is-editor-empty:first-child::before {
@@ -921,7 +922,7 @@ p, h1, h2, h3, h4, h5, h6 {
   }
 
   border: 1px solid #E3E5EA;
-  border-radius: 5px;
+  border-radius: 2px 2px 5px 5px;
   padding: 10px 16px;
 
   &:focus-visible {
@@ -947,9 +948,37 @@ p, h1, h2, h3, h4, h5, h6 {
     line-height: 1.1;
   }
 
+  ul ul {
+    list-style: circle;
+  }
+
+  ul li {
+    list-style: disc;
+  }
+
+  ol li {
+    list-style: decimal;
+  }
+
+  p {
+    s {
+    text-decoration: line-through;
+  }
+  }
+  a {
+    color: #37C3FF;
+    text-decoration: underline;
+  }
+
   code {
     background-color: rgba(#616161, 0.1);
     color: #616161;
+  }
+
+  mark {
+    border-radius: 0.25em;
+    box-decoration-break: clone;
+    padding: 1px 2px;
   }
 
   pre {
@@ -972,8 +1001,16 @@ p, h1, h2, h3, h4, h5, h6 {
   }
 
   blockquote {
-    padding-left: 1rem;
-    border-left: 2px solid rgba(#0D0D0D, 0.1);
+    padding-left: 14px;
+    border-left: 2px solid #616161;
+
+    /* &:before {
+      content open-quote;
+      position: absolute;
+      left: 12px;
+      top: -5px;
+      font-size: 2rem;
+    } */
   }
 
   hr {

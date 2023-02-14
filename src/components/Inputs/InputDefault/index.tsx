@@ -22,9 +22,10 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   icon?: React.ComponentType<IconBaseProps>;
   alert?: string;
   mask?: 'currency' | 'dateTime';
+  isLoading?: boolean;
 }
 
-export function InputDefault({ required, mask, label, alert, error, icon: Icon, ...rest }: InputProps) {
+export function InputDefault({ required, isLoading, mask, label, alert, error, icon: Icon, ...rest }: InputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [isFocused, setIsFocused] = useState(false);
@@ -63,10 +64,16 @@ export function InputDefault({ required, mask, label, alert, error, icon: Icon, 
         isFocused={isFocused}
         isFilled={isFilled}
         isIcon={!!Icon}
+        isLoad={isLoading}
       >
 
         <div className="leftInputElement">
-          {Icon && <Icon color='rgba(204, 204, 204, 1)' size={22}/>}
+
+          {isLoading ? (
+            <div className="custom-loader" />
+            ) : (
+            Icon && <Icon color='rgba(204, 204, 204, 1)' size={22}/>
+          )}
         </div>
 
         <input

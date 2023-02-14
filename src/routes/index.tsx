@@ -1,25 +1,28 @@
 import { Routes, Route } from 'react-router-dom';
 import { PrivateRoutes } from './PrivateRoutes';
 
+// LAYOUT
+import Layout from '../components/Layout';
+
 // PAGES
 import Dashboard from '../pages/Dashboard';
-import Layout from '../components/Layout';
 import Profile from '../pages/Profile';
 import SignIn from '../pages/Login/SignIn';
 import SignUp from '../pages/Login/SignUp';
 import Clients from '../pages/Clients';
 import Users from '../pages/Users';
-
-// COMPONENTES
-import ComponentsPage from '../pages/components/ComponentsPage';
-import ComponentsForms from '../pages/components/ComponentsForms';
-import ComponentTable from '../pages/components/ComponentTable';
 import Board from '../pages/Board';
 import Services from '../pages/Services';
 import Team from '../pages/Team/ListTeam';
 import ListOffice from '../pages/Team/ListOffice';
 import ListFluxo from '../pages/Fluxos/ListFluxo';
 import EditFluxo from '../pages/Fluxos/EditFluxo';
+import ListProjects from '../pages/Projects/ListProjects';
+
+// COMPONENTES
+import ComponentsPage from '../pages/components/ComponentsPage';
+import ComponentsForms from '../pages/components/ComponentsForms';
+import ComponentTable from '../pages/components/ComponentTable';
 
 function RoutesAll() {
   return (
@@ -112,6 +115,15 @@ function RoutesAll() {
           element={
             <PrivateRoutes>
               <Services />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/projetos"
+          element={
+            <PrivateRoutes>
+              <ListProjects />
             </PrivateRoutes>
           }
         />

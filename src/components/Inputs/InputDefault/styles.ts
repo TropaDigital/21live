@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 import Tooltip from '../../Tooltip';
 
 interface ContainerProps {
@@ -6,6 +6,7 @@ interface ContainerProps {
   isFilled: boolean;
   isErrored: boolean;
   isIcon: boolean;
+  isLoad?: boolean;
 }
 
 export const Container = styled.div`
@@ -19,6 +20,10 @@ export const Container = styled.div`
     color: #6c757d;
     margin-bottom: 5px;
   }
+`;
+
+const load = keyframes`
+  to{transform: rotate(1turn)}
 `;
 
 export const ContainerInput = styled.div<ContainerProps>`
@@ -47,7 +52,7 @@ export const ContainerInput = styled.div<ContainerProps>`
     transition-duration: 200ms;
     font-size: 14px;
     color: #6c757d;
-    padding-inline-start: ${(props) => (props.isIcon ? '2.5rem' : '1rem')};
+    padding-inline-start: ${(props) => ((props.isIcon || props.isLoad) ? '2.5rem' : '1rem')};
     padding-inline-end: ${(props) => (props.isErrored ? '2.5rem' : '1rem')};
     height: 2.5rem;
     border-radius: 0.375rem;
@@ -119,7 +124,23 @@ export const ContainerInput = styled.div<ContainerProps>`
           /* stroke: rgb(49, 130, 206); */
         }
       `}
+
+
+  .custom-loader {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    padding: 1px;
+    background:conic-gradient(#0000 10%, #0046B5) content-box;
+    -webkit-mask:
+      repeating-conic-gradient(#0000 0deg,#000 1deg 20deg,#0000 21deg 36deg),
+      radial-gradient(farthest-side,#0000 calc(100% - 9px),#000 calc(100% - 8px));
+    -webkit-mask-composite: destination-in;
+    mask-composite: intersect;
+    animation: ${load} 1s infinite steps(10);
+    pointer-events: none;
   }
+}
 `;
 
 export const Error = styled(Tooltip)`
