@@ -10,16 +10,29 @@ import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import ProgressBar from '../../../components/Ui/ProgressBar';
 import { SelectDefault } from '../../../components/Inputs/SelectDefault';
 
-import { ContentDefault, FieldGroupFormDefault } from '../../../components/UiElements/styles';
+import { ContentDefault, FieldDefault, FieldGroupFormDefault, FooterModal } from '../../../components/UiElements/styles';
 import { Container, CardProject, TitleCardProject, InfoCardProject, FooterProjectCard, FieldGroupCardProject, ContentCardProject } from './styles';
+import ModalDefault from '../../../components/Ui/ModalDefault';
+import { useSteps } from '../../../hooks/useSteps';
+import InfoGeral from '../ComponentSteps/InfoGeral';
+import InfoRedacao from '../ComponentSteps/InfoRedacao';
+import InfoCreation from '../ComponentSteps/InfoCreation';
+import InfoRevision from '../ComponentSteps/InfoRevision';
+import UploadFiles from '../ComponentSteps/UploadFiles';
+import Steps from '../Steps';
+import { useToast } from '../../../hooks/toast';
 
 export default function ListProjects() {
+  const { addToast } = useToast()
+  const formComponents = [<InfoGeral />, <UploadFiles />, <InfoCreation />, <InfoRevision />];
+  const { changeStep, currentComponent, currentStep, isFirstStep, isLastStep } = useSteps(formComponents);
+  const [modal, setModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm, 700);
   const [search, setSearch] = useState('');
   const [isSearching, setSearching] = useState(false);
 
-  const { data, fetchData } = useFetch<any[]>(`flow?search=${search}`);
+  // const { data, fetchData } = useFetch<any[]>(`flow?search=${search}`);
 
   useEffect(() => {
     if (debouncedSearchTerm) {
@@ -36,10 +49,11 @@ export default function ListProjects() {
       setSearching(false);
     }
   }, [debouncedSearchTerm]);
+
   return (
     <Container>
       <HeaderPage title="Projetos">
-        <ButtonDefault typeButton="success" onClick={() => console.log('!modal')}>
+        <ButtonDefault typeButton="success" onClick={() => setModal(!modal)}>
           <BiPlus color="#fff" />
             Novo Projeto
         </ButtonDefault>
@@ -121,6 +135,53 @@ export default function ListProjects() {
           ))}
         </ContentCardProject>
       </ContentDefault>
+
+      <ModalDefault 
+        isOpen={modal}
+        title='Hello World'
+        onOpenChange={setModal}
+      >
+        <form onSubmit={(e) => changeStep(currentStep + 1, e)}>
+          
+          <Steps currentStep={currentStep} />
+
+          <div>{currentComponent}</div>
+
+          <FooterModal>
+
+            <ButtonDefault typeButton='dark' isOutline>
+              Descartar
+            </ButtonDefault>
+
+            <div className="fieldGroup">
+              {!isFirstStep && (
+                <ButtonDefault
+                  typeButton="primary"
+                  isOutline
+                  onClick={() => changeStep(currentStep - 1)}
+                >
+                  Voltar
+                </ButtonDefault>
+              )}
+
+              {!isLastStep ? (
+                <ButtonDefault
+                  type='submit'
+                  typeButton="primary"
+                >
+                  Próxima etapa
+                </ButtonDefault>
+              ) : (
+                <ButtonDefault
+                  typeButton="primary"
+                >
+                  Salvar
+                </ButtonDefault>
+              )}
+            </div>
+          </FooterModal>
+        </form>
+      </ModalDefault>
     </Container>
   ) 
 }
