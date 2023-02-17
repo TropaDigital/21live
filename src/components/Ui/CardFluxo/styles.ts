@@ -137,7 +137,7 @@ export const FormCardFluxo = styled.form`
 
   }
 
-  fieldset {
+  /* fieldset {
     margin-top: 12px;
     min-inline-size: auto;
     border: 0;
@@ -153,7 +153,7 @@ export const FormCardFluxo = styled.form`
     font-size: 14px;
     font-weight: 600;
     color: #6C757D;
-  }
+  } */
 
 `;
 

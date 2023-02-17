@@ -59,9 +59,9 @@ export const Container = styled.div`
     background: #fff;
 
     span {
-      font-size: 12px;
-      font-weight: 700;
-      color: #EAECF0;
+      font-size: var(--text-smal-xs);
+      font-weight: var(--weight-bold);
+      color: var(--gray-200);
     }
   }
 
@@ -73,7 +73,7 @@ export const Container = styled.div`
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background-color: #EAECF0;
+    background-color: var(--gray-200);
   }
 
   .stepButtonInner {
@@ -117,8 +117,8 @@ export const Container = styled.div`
   }
   .stepSuccess {
     span {
-      color: #344054;
-      font-weight: 500;
+      color: var(--gray-700);
+      font-weight: var(--weight-medium);
     }
     .stepButtonInner {
       background-color: #0046B5;

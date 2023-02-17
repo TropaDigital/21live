@@ -13,9 +13,9 @@ export const Container = styled.div`
   flex-direction: column;
 
   label {
-    font-size: 14px;
-    font-weight: 700;
-    color: #6c757d;
+    font-size: var(--text-smal-sm);
+    font-weight: var(--weight-medium);
+    color: var(--gray-700);
     margin-bottom: 5px;
   }
 `;
@@ -47,9 +47,9 @@ export const ContainerInput = styled.div<ContainerProps>`
     transition-duration: 200ms;
     background: inherit;
     padding-bottom: 1px;
-    line-height: normal;
-    font-size: 14px;
-    color: #6c757d;
+    font-size: var(--text-smal-md);
+    font-weight: var(--weight-reular);
+    color: var(--gray-700);
     padding-inline-start: 1rem;
     height: 2.5rem;
     border-radius: 0.375rem;

@@ -6,6 +6,7 @@ import { Container } from './styles';
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   loading?: boolean;
   isOutline?: boolean;
+  isDashed?: boolean;
   typeButton?:
     | 'primary'
     | 'secondary'
@@ -19,11 +20,12 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const ButtonDefault = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ loading, children, isOutline, sizeButton, typeButton, ...rest }, ref) => {
+  ({ loading, children, isOutline, sizeButton, isDashed, typeButton, ...rest }, ref) => {
     return (
       <Container
         typeButton={typeButton}
         isOutline={isOutline}
+        isDashed={isDashed}
         sizeButton={sizeButton}
         disabled={loading}
         type="button"

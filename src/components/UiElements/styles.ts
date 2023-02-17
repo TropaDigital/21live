@@ -14,6 +14,12 @@ export const FieldDefault = styled.div`
   margin-bottom: 1.25rem;
 `;
 
+export const FieldGroup = styled.div`
+  flex: 1;
+  display: flex;
+  gap: 24px;
+`;
+
 export const FieldFormDefault = styled.div<Props>`
   width: 100%;
   display: flex;
@@ -43,6 +49,7 @@ export const FieldGroupFormDefault = styled.div`
 export const FooterModal = styled.div`
   display: flex;
   justify-content: space-between;
+  margin-top: 20px;
 
   >div {
     display: flex;

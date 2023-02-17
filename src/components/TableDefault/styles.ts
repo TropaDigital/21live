@@ -11,7 +11,7 @@ export const Container = styled.div`
     border-spacing: 5px 0;
 
     tbody > tr:nth-child(2n) td {
-      background-color: #f6f7fb;
+      background-color: var(--gray-50);
     }
 
     th {
@@ -20,15 +20,15 @@ export const Container = styled.div`
       border-radius: 5px;
       text-transform: capitalize;
       font-weight: 700;
-      font-size: var(--small-font-size);
+      font-size: var(--text-smal-sm);
       padding: 1rem 2rem;
       text-align: center;
       line-height: 1.5rem;
     }
     td {
-      font-size: var(--small-font-size);
-      font-weight: 400;
-      color: var(--text-color-light);
+      font-size: var(--text-smal-sm);
+      font-weight: var(--weight-regular);
+      color: var(--gray-800);
       border: 0;
       padding: 1rem 2rem;
       background: #ffffff;
@@ -57,9 +57,9 @@ export const Container = styled.div`
 `;
 
 export const TitleTable = styled.h1`
-  font-size: var(--small-font-size);
+  font-size: var(--text-smal-xl);
   text-transform: capitalize;
-  font-weight: 700;
+  font-weight: var(--weight-semibold);
   color: var(--title-color);
   margin-bottom: 10px;
 `;

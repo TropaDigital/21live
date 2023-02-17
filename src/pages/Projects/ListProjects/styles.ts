@@ -5,7 +5,6 @@ export const Container = styled.div`
 
 export const ContentCardProject = styled.div`
   display: grid;
-  /* grid-template-columns: minmax(260px, max-content) repeat(auto-fill, 180px) 15%; */
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 1rem;
   width: 100%;

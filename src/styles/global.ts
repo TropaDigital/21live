@@ -27,21 +27,24 @@ export const GlobalStyles = createGlobalStyle`
   --secundary-light: #3ED0AE;
 
   //Status-Color
-  --success: #06D6A0;
-  --Danger: #E62965;
-  --Warning: #FAAE42;
-  --Info: #039BE5;
+  --success: #12B76A;
+  --Danger: #F04438;
+  --Warning: #F79009;
+  --Info: #0098FF;
 
   //Gray-Color
-  --gray-100: #f8f9fa;
-  --gray-200: #e9ecef;
-  --gray-300: #dee2e6;
-  --gray-400: #ced4da;
-  --gray-500: #adb5bd;
-  --gray-600: #6c757d;
-  --gray-700: #495057;
-  --gray-800: #343a40;
-  --gray-900: #212529;
+  --gray-25: #FCFCFD;
+  --gray-50: #F9FAFB;
+  --gray-100: #F2F4F7;
+  --gray-200: #EAECF0;
+  --gray-300: #D0D5DD;
+  --gray-400: #98A2B3;
+  --gray-500: #667085;
+  --gray-600: #475467;
+  --gray-700: #344054;
+  --gray-800: #1D2939;
+  --gray-900: #101828;
+
   --dark: #18191A;
   --light: #ffffff;
   --background-primary: #ffffff;
@@ -74,7 +77,7 @@ export const GlobalStyles = createGlobalStyle`
 
   /*========== Fonts ==========*/
   /*.5rem = 8px | 1rem = 16px ...*/
-  --body-font: 'Poppins', sans-serif;
+  /* --body-font: 'Poppins', sans-serif; */
 
   --h1-font-size: 2.5rem; // 45px
   --h2-font-size: 2rem; // 32px
@@ -90,6 +93,31 @@ export const GlobalStyles = createGlobalStyle`
   /*========== Font weight ==========*/
   --font-medium: 400;
   --font-bold: 700;
+
+  /*========== NEW-TOKENS ==========*/
+
+  /*========== Fonts ==========*/
+  /*.5rem = 8px | 1rem = 16px ...*/
+  --body-font: 'Inter', sans-serif;
+
+  --text-smal-xs: 0.75rem; // 12px
+  --text-smal-sm: 0.875rem; // 14px
+  --text-smal-md: 1rem; // 16px
+  --text-smal-lg: 1.125rem; // 18px
+  --text-smal-xl: 1.25rem; // 20px
+  --text-headline-sm: 1.5rem; // 24px
+  --text-headline-md: 1.875rem; // 30px
+  --text-headline-lg: 2.25rem; // 36px
+  --text-display-sm: 3rem; // 48px
+  --text-display-md: 3.75rem; // 60px
+  --text-display-lg: 4.5rem; // 72px
+
+  /*========== Font weight ==========*/
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
 }
 
 html {
@@ -141,6 +169,24 @@ p, h1, h2, h3, h4, h5, h6 {
   font-weight: 400;
 }
 
+fieldset {
+  margin-top: 12px;
+  min-inline-size: auto;
+  border: 0;
+}
+
+legend {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+
+  font-size: var(--text-smal-sm);
+  font-weight: var(--weight-medium);
+  color: var(--gray-700);
+}
+
  // font-size: 16px (desktop)
  html {
     @media (max-width: 1080px) {
@@ -173,13 +219,14 @@ p, h1, h2, h3, h4, h5, h6 {
     transform: translate(-50%, -50%);
     width: 90vw;
     max-width: 600px;
-    max-height: 90vh;
+    /* height: 80vh; */
+    max-height: 95vh;
     overflow-y: auto;
     padding: 20px;
     animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
 
     ::-webkit-scrollbar {
-      width: 0.6rem;
+      width: 0.4rem;
       border-radius: 0.5rem;
       background-color: hsl(220, 8%, 76%);
 
@@ -198,10 +245,10 @@ p, h1, h2, h3, h4, h5, h6 {
   }
 
   .DialogTitle {
+    font-size: var(--text-smal-xl);
+    font-weight: var(--weight-bold);
+    color: var(--gray-600);
     margin: 0 0 14px;
-    font-weight: 700;
-    color: #222222;
-    font-size: 16px;
   }
 
   .DialogDescription {

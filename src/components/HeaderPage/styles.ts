@@ -7,7 +7,7 @@ export const Container = styled.div`
   width: 100%;
 
   border-bottom: 1px solid #e3e5ea;
-  padding-bottom: 4px;
+  padding-bottom: 1rem;
   margin-bottom: 1.87rem;
 
   @media (max-width: 760px) {
@@ -22,10 +22,10 @@ export const SectionTitleHeader = styled.div`
 `;
 
 export const TitleHeader = styled.h1`
-  font-size: 2.5rem;
-  font-weight: 700;
-  line-height: 60px;
-  letter-spacing: -0.02em;
+  font-size: var(--text-headline-md);
+  font-weight: var(--weight-bold);
+  line-height: 38px;
+  /* letter-spacing: -0.02em; */
   color: var(--title-color);
 `;
 

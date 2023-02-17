@@ -2,6 +2,7 @@ import {CircularProgressbar} from "react-circular-progressbar";
 import { MdCheckCircle, MdError, MdLink } from "react-icons/md";
 
 import { Container, FileInfo, Preview } from "./styles";
+import { IconArquive } from "../assets/icons";
 
 interface FileListProps {
   files: Array<{
@@ -22,13 +23,19 @@ const FileList = ({ files, onDelete }: FileListProps) => (
     {files.map(uploadedFile => (
       <li key={uploadedFile.id}>
         <FileInfo>
-          <Preview src={uploadedFile.preview} />
+          <Preview>
+            {uploadedFile.error ? (
+              <IconArquive color="#FEE4E2" subColor="#FEF3F2" stroke="#D92D20" />
+            ) : (
+              <IconArquive />
+            )}
+          </Preview>
           <div>
             <strong>{uploadedFile.name}</strong>
             <span>
               {uploadedFile.readableSize}{" "}
               {!!uploadedFile.url && (
-                <button onClick={() => onDelete(uploadedFile.id)}>
+                <button onClick={() => onDelete(uploadedFile.id)} type="button">
                   Excluir
                 </button>
               )}

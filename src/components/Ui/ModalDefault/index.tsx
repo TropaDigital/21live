@@ -16,7 +16,7 @@ export default function ModalDefault({ children, onOpenChange, isOpen, title }: 
         <Dialog.Overlay className="DialogOverlay" />
         <Dialog.Content className="DialogContent">
           <Dialog.Title className="DialogTitle">{title}</Dialog.Title>
-          {children}
+            {children}
           <Dialog.Close asChild>
             <button className="IconButton" aria-label="Close">
               <BiX size={30} color="#6C757D" />

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { BiEdit, BiPlus, BiSearchAlt, BiShow } from 'react-icons/bi';
 
-import { useFetch } from '../../../hooks/useFetch';
 import { useDebounce } from '../../../utils/useDebounce';
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
@@ -10,29 +9,58 @@ import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import ProgressBar from '../../../components/Ui/ProgressBar';
 import { SelectDefault } from '../../../components/Inputs/SelectDefault';
 
-import { ContentDefault, FieldDefault, FieldGroupFormDefault, FooterModal } from '../../../components/UiElements/styles';
+import { ContentDefault, FieldGroupFormDefault, FooterModal } from '../../../components/UiElements/styles';
 import { Container, CardProject, TitleCardProject, InfoCardProject, FooterProjectCard, FieldGroupCardProject, ContentCardProject } from './styles';
 import ModalDefault from '../../../components/Ui/ModalDefault';
 import { useSteps } from '../../../hooks/useSteps';
 import InfoGeral from '../ComponentSteps/InfoGeral';
-import InfoRedacao from '../ComponentSteps/InfoRedacao';
-import InfoCreation from '../ComponentSteps/InfoCreation';
 import InfoRevision from '../ComponentSteps/InfoRevision';
 import UploadFiles from '../ComponentSteps/UploadFiles';
 import Steps from '../Steps';
-import { useToast } from '../../../hooks/toast';
+import { IProjectCreate } from '../../../types';
+import InfoProducts from '../ComponentSteps/InfoProducts';
 
 export default function ListProjects() {
-  const { addToast } = useToast()
-  const formComponents = [<InfoGeral />, <UploadFiles />, <InfoCreation />, <InfoRevision />];
-  const { changeStep, currentComponent, currentStep, isFirstStep, isLastStep } = useSteps(formComponents);
   const [modal, setModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm, 700);
   const [search, setSearch] = useState('');
   const [isSearching, setSearching] = useState(false);
 
-  // const { data, fetchData } = useFetch<any[]>(`flow?search=${search}`);
+  const [formData, setFormData] = useState<IProjectCreate>({
+    tenant_id: '',
+    title: '',
+    contract_type: '',
+    date_start: '',
+    date_end: '',
+    description: '',
+    forProducts: false,
+    forDescription: false,
+    products: [],
+    files: [],
+  })
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value, } = event.target
+    setFormData((prevData) => {
+      return {...prevData, [name]: value}
+    })
+  }
+
+  const handleOnChangeCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { checked, name} = event.target
+    setFormData((prevData) => {
+      return {...prevData, [name]: checked}
+    })
+  }
+
+  const formComponents = [
+    <InfoGeral data={formData} handleInputChange={handleInputChange} handleOnChangeCheckbox={handleOnChangeCheckbox} />, 
+    <InfoProducts />, 
+    <UploadFiles />, 
+    <InfoRevision />
+  ];
+  const { changeStep, currentComponent, currentStep, isFirstStep, isLastStep } = useSteps(formComponents);
 
   useEffect(() => {
     if (debouncedSearchTerm) {
@@ -138,7 +166,7 @@ export default function ListProjects() {
 
       <ModalDefault 
         isOpen={modal}
-        title='Hello World'
+        title='Criar novo Projeto/Contrato'
         onOpenChange={setModal}
       >
         <form onSubmit={(e) => changeStep(currentStep + 1, e)}>

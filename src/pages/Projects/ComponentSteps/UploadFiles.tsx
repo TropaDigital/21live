@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { v4 as uuidV4 } from 'uuid';
-import { filesize } from 'filesize';
+import { filesize, partial } from 'filesize';
 
 import { Container, Content } from './styles';
 import Upload from '../../../components/Upload';
@@ -41,6 +41,26 @@ interface PostsResponse {
 
 export default function UploadFiles() {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
+  const size = partial({base: 2, standard: "jedec"});
+
+  const fakeData = [
+    {
+      _id: 1,
+      name: 'Um bom nome',
+      size: size(265318),
+      preview: 'https://images.unsplash.com/photo-1542903660-eedba2cda473?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fGRldmVsb3BtZW50fGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
+      uploaded: true,
+      url: 'https://images.unsplash.com/photo-1542903660-eedba2cda473?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fGRldmVsb3BtZW50fGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
+    },
+    {
+      _id: 2,
+      name: 'Outro nome',
+      size: size(378546),
+      preview: 'https://images.unsplash.com/photo-1473073899705-e7b1055a7419?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MjB8fGRldmVsb3BtZW50fGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
+      uploaded: true,
+      url: 'https://images.unsplash.com/photo-1473073899705-e7b1055a7419?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MjB8fGRldmVsb3BtZW50fGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
+    }
+  ]
   
   useEffect(() => {
     async function loadPosts() {
@@ -48,13 +68,13 @@ export default function UploadFiles() {
 
       console.log('RESPONSE', response.data)
 
-      const data = response.data.map(file => ({
+      const data = fakeData.map(file => ({
         id: file._id,
         name: file.name,
-        readableSize: filesize(file.size),
+        readableSize: file.size,
         preview: file.url,
         uploaded: true,
-        url: 'http://192.168.15.25:33332/tmp/4c2bde73a40b0d7edaca-WhatsApp%20Image%202023-02-03%20at%2015.27.06.jpeg',
+        url: file.url,
       }));
 
       setUploadedFiles(data as any);
@@ -86,6 +106,7 @@ export default function UploadFiles() {
       if (!uploadedFile.file) return;
 
       data.append('archive', uploadedFile.file, uploadedFile.name);
+      // data.append('project_id', '1')
 
       const response = await api.post('/archive/upload', data, {
         onUploadProgress: (event: any) => {
