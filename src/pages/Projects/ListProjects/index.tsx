@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { BiEdit, BiPlus, BiSearchAlt, BiShow } from 'react-icons/bi';
 
 import { useDebounce } from '../../../utils/useDebounce';
@@ -19,6 +19,17 @@ import UploadFiles from '../ComponentSteps/UploadFiles';
 import Steps from '../Steps';
 import { IProjectCreate } from '../../../types';
 import InfoProducts from '../ComponentSteps/InfoProducts';
+import { useFetch } from '../../../hooks/useFetch';
+
+export interface OfficeProps {
+  tenant_id: number;
+  description: string;
+  minutes: string;
+  service: string;
+  service_id: string;
+  size: string;
+  type: string;
+}
 
 export default function ListProjects() {
   const [modal, setModal] = useState(false);
@@ -54,9 +65,77 @@ export default function ListProjects() {
     })
   }
 
+  // PRODUTOS
+  const [selectedItems, setSelectedItems] = useState<any[]>([]);
+  const { data: dataOffice } = useFetch<OfficeProps[]>(`services`);
+
+  function handleSelectItem(id: any) {
+    const alreadySelected = selectedItems.findIndex((item) => item.service === id.service);
+
+    if (alreadySelected >= 0) {
+      const filteredItems = selectedItems.filter(item => item.service !== id.service);
+
+      setSelectedItems(filteredItems);
+    } else {
+      setSelectedItems([...selectedItems, id]);
+    }
+  }
+
+  function handleOnAddProducts(items: any) {
+    setFormData({
+      ...formData,
+      products: items
+    })
+  }
+
+  const handleOnIncrememtQtd = useCallback((value: any) => {
+    const qtdValue = 1
+    setFormData((prevState: any) => {
+      const updatedProducts = [...prevState.products];
+      const productIndex = updatedProducts.findIndex(product => product.service_id === value.service_id);
+      const updatedProductCopy = {...updatedProducts[productIndex]};
+      updatedProductCopy.quantity = updatedProductCopy.quantity ? updatedProductCopy.quantity + 1 : qtdValue;
+      updatedProducts[productIndex] = updatedProductCopy;
+      return {...prevState, products: updatedProducts};
+    });
+  }, [setFormData, formData])
+
+  const handleOnDecrementQtd = useCallback((value: any) => {
+    const qtdValue = 1
+    setFormData((prevState: any) => {
+      const updatedProducts = [...prevState.products];
+      const productIndex = updatedProducts.findIndex(product => product.service_id === value.service_id);
+      const updatedProductCopy = {...updatedProducts[productIndex]};
+      updatedProductCopy.quantity = updatedProductCopy.quantity ? updatedProductCopy.quantity - 1 : qtdValue;
+      updatedProducts[productIndex] = updatedProductCopy;
+      return {...prevState, products: updatedProducts};
+    });
+  }, [setFormData, formData])
+
+  const handleOnPeriod = useCallback((value: any, id: any) => {
+    setFormData((prevState: any) => {
+      const updatedProducts = [...prevState.products];
+      const productIndex = updatedProducts.findIndex(product => product.service_id === id);
+      const updatedProductCopy = {...updatedProducts[productIndex]};
+      updatedProductCopy.period = value;
+      updatedProducts[productIndex] = updatedProductCopy;
+      return {...prevState, products: updatedProducts};
+    });
+
+  }, [setFormData, formData])
+
   const formComponents = [
     <InfoGeral data={formData} handleInputChange={handleInputChange} handleOnChangeCheckbox={handleOnChangeCheckbox} />, 
-    <InfoProducts />, 
+    <InfoProducts 
+      handleOnAddProducts={handleOnAddProducts} 
+      handleSelectItem={handleSelectItem} 
+      dataOffice={dataOffice} 
+      dataFilter={formData.products} 
+      selectedItems={selectedItems} 
+      handleOnDecrementQtd={(e) => handleOnDecrementQtd(e)} 
+      handleOnIncrememtQtd={(e) => handleOnIncrememtQtd(e)}
+      handleOnPeriod={(e, id) => handleOnPeriod(e, id)}
+    />, 
     <UploadFiles />, 
     <InfoRevision />
   ];

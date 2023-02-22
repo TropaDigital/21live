@@ -1,37 +1,46 @@
 import { BiMinus, BiPlus } from "react-icons/bi";
 import { Container, Content } from "./styles";
 import { useCallback, useState } from "react";
+import Radio from "../../Inputs/InputRadioDefault";
+import { multiplyTime } from "../../../utils/convertTimes";
 
 interface ProductsProps {
-  // handleOnDecrementQtd: () => void;
-  // handleOnIncrememtQtd: () => void;
+  handleOnDecrementQtd: (e: any) => void;
+  handleOnIncrememtQtd: (e: any) => void;
+  handleOnPeriod: (e: any) => void;
   data: any;
 }
 
-export default function Addproducts({ data }: ProductsProps) {
-  const [count, setCount] = useState(data.qtd)
+export default function Addproducts({ data, handleOnDecrementQtd, handleOnIncrememtQtd, handleOnPeriod }: ProductsProps) {
 
-  const handleOnDecrementQtd = useCallback(() => {
-    setCount(count - 1);
-  }, [setCount, count])
-
-  const handleOnIncrememtQtd = useCallback(() => {
-    setCount(count + 1);
-  }, [setCount, count])
 
   return (
     <Container>
       <Content>
         <div className="postsInfo">
-          <h2>POSTS</h2>
+          <h2>{data.service}</h2>
 
           <div className="quantityAndHours">
             <div className="boxInfopost">
-              <span>Qtd: <strong>{count ?? 0}</strong></span>
+              <span>horas estimadas: <strong>{data.quantity ? multiplyTime(data.minutes, data.quantity) : '00:00:00' }</strong></span>
             </div>
 
             <div className="boxInfopost">
-              <span>horas estimadas: <strong>60:00</strong></span>
+              <Radio 
+                onChange={(e) => handleOnPeriod(e)}
+                value={data.period}
+                name={data.description}
+                options={[
+                  {
+                    label: 'Mensal',
+                    value: 'mensal'
+                  },
+                  {
+                    label: 'Anual',
+                    value: 'anual'
+                  },
+                ]}
+              />
             </div>
           </div>
         </div>
@@ -40,12 +49,13 @@ export default function Addproducts({ data }: ProductsProps) {
           <button
             type="button"
             onClick={handleOnDecrementQtd}
+            disabled={data.quantity <= 0 ? true : false}
           >
             <BiMinus color="#0046B5" />
           </button>
 
           <div className="resultCountPost">
-            {count}
+            {data.quantity ?? 0}
           </div>
 
           <button
