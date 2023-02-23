@@ -1,18 +1,19 @@
-import { BiMinus, BiPlus } from "react-icons/bi";
+import { BiMinus, BiPlus, BiTrash } from "react-icons/bi";
 import { Container, Content } from "./styles";
 import { useCallback, useState } from "react";
 import Radio from "../../Inputs/InputRadioDefault";
 import { multiplyTime } from "../../../utils/convertTimes";
+import ButtonDefault from "../../Buttons/ButtonDefault";
 
 interface ProductsProps {
   handleOnDecrementQtd: (e: any) => void;
   handleOnIncrememtQtd: (e: any) => void;
   handleOnPeriod: (e: any) => void;
+  handleOnDeleteProduct: (item: any) => void;
   data: any;
 }
 
-export default function Addproducts({ data, handleOnDecrementQtd, handleOnIncrememtQtd, handleOnPeriod }: ProductsProps) {
-
+export default function Addproducts({ data, handleOnDecrementQtd, handleOnIncrememtQtd, handleOnPeriod, handleOnDeleteProduct }: ProductsProps) {
 
   return (
     <Container>
@@ -45,26 +46,35 @@ export default function Addproducts({ data, handleOnDecrementQtd, handleOnIncrem
           </div>
         </div>
 
-        <div className="countPost">
-          <button
-            type="button"
-            onClick={handleOnDecrementQtd}
-            disabled={data.quantity <= 0 ? true : false}
-          >
-            <BiMinus color="#0046B5" />
-          </button>
+        <div className="boxRightProducts">
+          <div className="countPost">
+            <button
+              type="button"
+              onClick={handleOnDecrementQtd}
+              disabled={data.quantity <= 0 ? true : false}
+            >
+              <BiMinus color="#0046B5" />
+            </button>
 
-          <div className="resultCountPost">
-            {data.quantity ?? 0}
+            <div className="resultCountPost">
+              {data.quantity ?? 0}
+            </div>
+
+            <button
+              type="button"
+              onClick={handleOnIncrememtQtd}
+            >
+              <BiPlus color="#0046B5" />
+            </button>
           </div>
-
-          <button
-            type="button"
-            onClick={handleOnIncrememtQtd}
+          <ButtonDefault 
+            typeButton="danger"
+            onClick={handleOnDeleteProduct}
           >
-            <BiPlus color="#0046B5" />
-          </button>
+            <BiTrash />
+          </ButtonDefault>
         </div>
+
       </Content>
     </Container>
   )

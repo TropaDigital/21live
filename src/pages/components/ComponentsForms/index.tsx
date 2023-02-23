@@ -10,7 +10,7 @@ export default function ComponentsForms() {
   return (
     <Container>
       <Mentions setDescription={setDescription} description={description} />
-      <Details description={description} />
+      {/* <Details description={description} /> */}
     </Container>
   );
 }

@@ -1,16 +1,18 @@
+import { useState } from 'react';
 import { BiPlus } from 'react-icons/bi'
 
+// UTILS
+import { multiplyTime, sumTimes } from '../../../utils/convertTimes';
+
+// COMPONENTS
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import Addproducts from '../../../components/Ui/Addproducts';
-
-import { useCallback, useState } from 'react';
 import ModalDefault from '../../../components/Ui/ModalDefault';
-import { useFetch } from '../../../hooks/useFetch';
 import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
-import { ContainerInfoProducts, ContainerListproducts } from './styles'
+
+// STYLES
 import { FooterModal } from '../../../components/UiElements/styles';
-import { OfficeProps } from '../ListProjects';
-import { multiplyTime, sumTimes } from '../../../utils/convertTimes';
+import { ContainerInfoProducts, ContainerListproducts } from './styles'
 
 interface PropsProducts {
   dataOffice: any;
@@ -20,6 +22,7 @@ interface PropsProducts {
   handleOnDecrementQtd: (e: any) => void;
   handleOnIncrememtQtd: (e: any) => void;
   handleOnPeriod: (e: any, id: any) => void;
+  handleOnDeleteProduct: (id: any) => void;
   selectedItems: any;
 }
 
@@ -31,10 +34,10 @@ export default function InfoProducts({
   handleSelectItem,
   handleOnDecrementQtd,
   handleOnIncrememtQtd,
-  handleOnPeriod
+  handleOnPeriod,
+  handleOnDeleteProduct
 }: PropsProducts) {
   const [isOpen, setIsOpen] = useState(false)
-
   const minutesAll = dataFilter.map((obj: any) => multiplyTime(obj.minutes, obj.quantity))
 
   function handleOnAddItems(items: any) {
@@ -42,7 +45,9 @@ export default function InfoProducts({
     setIsOpen(!isOpen)
   }
 
-  console.log('TIME', dataFilter)
+  const differentObjects = dataOffice.filter(
+    (object: any) => !dataFilter.find((obj: any) => obj.service_id === object.service_id)
+  );
 
   return (
     <ContainerInfoProducts>
@@ -65,6 +70,7 @@ export default function InfoProducts({
             handleOnDecrementQtd={() => handleOnDecrementQtd(row)} 
             handleOnIncrememtQtd={() => handleOnIncrememtQtd(row)}
             handleOnPeriod={(e) => handleOnPeriod(e, row.service_id)}
+            handleOnDeleteProduct={() => handleOnDeleteProduct(row.service_id)}
           />
         ))}
       </ul>
@@ -85,7 +91,7 @@ export default function InfoProducts({
       >
         <ContainerListproducts>
           <ul>
-            {dataOffice?.map((row: any) => (
+            {differentObjects?.map((row: any) => (
               <li key={row.service_id}>
                 <CheckboxDefault
                   label={row.service}

@@ -37,10 +37,14 @@ interface PostsResponse {
   size: number;
 }
 
-// 04f9c64c81f09e5566c4-WhatsApp Image 2023-02-03 at 15.27.06.jpeg
+interface UploadProps {
+  uploadedFiles: UploadedFilesProps[];
+  setUploadedFiles: (item: any) => void;
+  tenant: any
+}
 
-export default function UploadFiles() {
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
+export default function UploadFiles({uploadedFiles, setUploadedFiles, tenant}: UploadProps) {
+  // const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
   const size = partial({base: 2, standard: "jedec"});
 
   const fakeData = [
@@ -66,8 +70,6 @@ export default function UploadFiles() {
     async function loadPosts() {
       const response = await api.get<PostsResponse[]>('archive');
 
-      console.log('RESPONSE', response.data)
-
       const data = fakeData.map(file => ({
         id: file._id,
         name: file.name,
@@ -90,7 +92,7 @@ export default function UploadFiles() {
   }, [uploadedFiles]);
 
   function updateFile(id: string, data: UpdateFileData) {
-    setUploadedFiles(state => state.map(uploadedFile => {
+    setUploadedFiles((state: any) => state.map((uploadedFile: any) => {
       if (id === uploadedFile.id) {
         return { ...uploadedFile, ...data }
       }
@@ -104,22 +106,20 @@ export default function UploadFiles() {
       const data = new FormData();
 
       if (!uploadedFile.file) return;
-
-      data.append('archive', uploadedFile.file, uploadedFile.name);
-      // data.append('project_id', '1')
-
+      data.append('archive', uploadedFile.file);
+      data.append('tenant', tenant);
+      
       const response = await api.post('/archive/upload', data, {
         onUploadProgress: (event: any) => {
           const progress = Math.round((event.loaded * 100)/event.total);
-          
           updateFile(uploadedFile.id, { progress });
         }
       });
 
       updateFile(uploadedFile.id, {
         uploaded: true,
-        id: response.data._id,
-        url: response.data.url,
+        id: response.data.result.key.split('-')[0], // correto => response.data._id
+        url: response.data.result.url,
       });
     } catch (err) {
       updateFile(uploadedFile.id, {
@@ -150,10 +150,8 @@ export default function UploadFiles() {
   async function handleDelete(id: string) {
     await api.delete(`posts/${id}`);
 
-    setUploadedFiles(files => files.filter(file => file.id !== id));
+    setUploadedFiles((files: any) => files.filter((file: any) => file.id !== id));
   }
-
-  console.log('uploadedFiles', uploadedFiles)
 
   return (
     <Container>

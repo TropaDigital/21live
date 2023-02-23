@@ -42,7 +42,8 @@ export const Content = styled.div`
 
     .quantityAndHours {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
+      flex-direction: column;
       gap: 12px;
     }
 
@@ -58,6 +59,12 @@ export const Content = styled.div`
         }
       }
     }
+  }
+
+  .boxRightProducts {
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
 
   .countPost {

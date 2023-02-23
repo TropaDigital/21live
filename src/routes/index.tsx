@@ -23,6 +23,7 @@ import ListProjects from '../pages/Projects/ListProjects';
 import ComponentsPage from '../pages/components/ComponentsPage';
 import ComponentsForms from '../pages/components/ComponentsForms';
 import ComponentTable from '../pages/components/ComponentTable';
+import ListMeeting from '../pages/Meeting/ListMeeting';
 
 function RoutesAll() {
   return (
@@ -133,6 +134,15 @@ function RoutesAll() {
           element={
             <PrivateRoutes>
               <Board />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/reuniao"
+          element={
+            <PrivateRoutes>
+              <ListMeeting />
             </PrivateRoutes>
           }
         />

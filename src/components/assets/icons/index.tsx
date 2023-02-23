@@ -7,6 +7,14 @@ interface IconProps {
   stroke?: string;
 }
 
+export const IconMeeting: React.FC<IconProps> = () => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="2.5" y="11.667" width="5.83333" height="5.83333" rx="1.34615" stroke="#0065D4" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M8.33331 13.6135L10.0074 12.5815C10.1745 12.4785 10.3843 12.474 10.5557 12.5697C10.7271 12.6654 10.8333 12.8463 10.8333 13.0426V16.1243C10.8333 16.3206 10.7271 16.5016 10.5557 16.5973C10.3843 16.6929 10.1745 16.6884 10.0074 16.5854L8.33331 15.5535" stroke="#0065D4" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M13.3333 15.8333H15.8333C16.7538 15.8333 17.5 15.0871 17.5 14.1667V6.61667C17.5 5.69619 16.7538 4.95 15.8333 4.95H10.441C10.1651 4.95 9.90714 4.8135 9.75197 4.58544L8.58113 2.86456C8.42596 2.63649 8.16797 2.49999 7.89212 2.5H4.16667C3.24619 2.5 2.5 3.24619 2.5 4.16667V9.16667" stroke="#0065D4" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
 export const IconUpload: React.FC<IconProps> = ({ color = "#F2F4F7", subColor = "#F9FAFB", stroke = "#475467" }) => (
   <svg width="46" height="46" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect x="3" y="3" width="40" height="40" rx="20" fill={color}/>

@@ -81,11 +81,22 @@ export default function ListProjects() {
     }
   }
 
-  function handleOnAddProducts(items: any) {
-    setFormData({
-      ...formData,
-      products: items
-    })
+  const handleOnAddProducts = (items: any) => {
+    setFormData((prevFormData: any) => ({
+      ...prevFormData,
+      products: [
+        ...prevFormData.products,
+        ...items
+      ]
+    }));
+    setSelectedItems([])
+  };
+
+  const handleOnDeleteProduct = (id: number) => {
+    setFormData((prevState: any) => ({
+      ...prevState,
+      products: prevState.products.filter((product: any) => product.service_id !== id)
+    }));
   }
 
   const handleOnIncrememtQtd = useCallback((value: any) => {
@@ -135,6 +146,7 @@ export default function ListProjects() {
       handleOnDecrementQtd={(e) => handleOnDecrementQtd(e)} 
       handleOnIncrememtQtd={(e) => handleOnIncrememtQtd(e)}
       handleOnPeriod={(e, id) => handleOnPeriod(e, id)}
+      handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
     />, 
     <UploadFiles />, 
     <InfoRevision />

@@ -7,6 +7,6 @@ export const Container = styled.div`
   gap: 40px;
 
   width: 100%;
-  height: 100vh;
+  /* height: 100vh; */
   
 `;

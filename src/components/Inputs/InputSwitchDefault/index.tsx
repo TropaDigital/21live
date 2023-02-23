@@ -2,10 +2,11 @@ import { InputHTMLAttributes } from 'react';
 import { StyledLabel, StyledInput, StyledSwitch, StyledKnob } from './styles';
 
 interface SwitchProps extends InputHTMLAttributes<HTMLInputElement> {
-  isChecked: boolean;
+  isChecked?: boolean;
+  label?: string;
 }
 
-export default function InputSwitchDefault({ isChecked, ...rest}: SwitchProps) {
+export default function InputSwitchDefault({ isChecked, label, ...rest}: SwitchProps) {
   // const [isChecked, setIsChecked] = useState(false);
 
   // const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,6 +26,7 @@ export default function InputSwitchDefault({ isChecked, ...rest}: SwitchProps) {
           isChecked={isChecked}
         />
       </StyledSwitch>
+      {label}
     </StyledLabel>
   );
 }

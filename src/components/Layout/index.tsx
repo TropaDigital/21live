@@ -5,6 +5,7 @@ import {
   IconDash,
   IconFile,
   IconFolder,
+  IconMeeting,
   IconTeam,
   IconUsers,
 } from '../assets/icons';
@@ -65,6 +66,11 @@ export default function Layout() {
               to: '/projetos',
               name: 'Projeto',
               icon: IconFolder,
+            },
+            {
+              to: '/reuniao',
+              name: 'Atas de Reunião',
+              icon: IconMeeting,
             },
             // {
             //   to: '/tarefas',

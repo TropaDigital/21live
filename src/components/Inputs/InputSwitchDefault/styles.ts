@@ -32,9 +32,13 @@ const gooeyOutInAnimation = css`
 export const StyledLabel = styled.label`
   cursor: pointer;
   align-items: center;
-  justify-content: center;
+  /* justify-content: center; */
   display: flex;
   width: 100%;
+
+  font-size: var(--text-smal-sm);
+  font-weight: var(--weight-reular);
+  color: var(--gray-700);
 `;
 
 export const StyledSwitch = styled.span`
@@ -44,6 +48,7 @@ export const StyledSwitch = styled.span`
   border-radius: 50px;
   background: #E3E5EA;
   transition: all 0.35s;
+  margin-right: 12px;
 `;
 
 export const StyledKnob = styled.span<Props>`

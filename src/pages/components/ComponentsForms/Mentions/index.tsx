@@ -51,9 +51,9 @@ const Mentions = ({ setDescription, description }: any) => {
       <MenuBar editor={editor} />
 
       <EditorContent editor={editor} />
-      <ButtonDefault onClick={() => setDescription(editor.getHTML())} style={{ marginTop: '20px' }}>
+      {/* <ButtonDefault onClick={() => setDescription(editor.getHTML())} style={{ marginTop: '20px' }}>
         Enviar
-      </ButtonDefault>
+      </ButtonDefault> */}
 
     </ContainerMentions>
   )

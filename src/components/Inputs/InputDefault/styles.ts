@@ -62,6 +62,7 @@ export const ContainerInput = styled.div<ContainerProps>`
     border-image: initial;
     border-color: inherit;
     background: inherit;
+    line-height: 40px;
 
     &::placeholder {
       color: #cccccc;
@@ -78,20 +79,44 @@ export const ContainerInput = styled.div<ContainerProps>`
       border-color: #E62965;
       box-shadow: #E62965 0px 0px 0px 1px;
     `} */
+    }
 
+    input[type="file"]{
+      cursor: pointer;
+      position:absolute;
+      top: 0px;
+      cursor: pointer;
+
+      opacity: 0;
+    }
+    ::-webkit-file-upload-button {
+      background: var(--primary);
+      color: #fff;
+      border: 0;
+      border-radius: 0.375rem;
+      height: 2.5rem;
+      
+      width: 25%;
+      position: absolute;
+      right: -4px;
+      opacity: 0.9;
+      cursor: pointer;
+
+
+      &:hover {
+          opacity: 1;
+      }
     }
 
 
-
-  ::-webkit-calendar-picker-indicator {
-    background-color: #cecece;
-    cursor: pointer;
-    border-radius: 3px;
-    position: absolute;
-    left: 0px;
-    opacity: 0;
-  }
-
+    ::-webkit-calendar-picker-indicator {
+      background-color: #cecece;
+      cursor: pointer;
+      border-radius: 3px;
+      position: absolute;
+      left: 0px;
+      opacity: 0;
+    }
   }
 
   .leftInputElement {
