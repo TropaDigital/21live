@@ -12,15 +12,17 @@ interface ErrorInput {
   isError: boolean;
 }
 
-interface InputProps extends InputHTMLAttributes<HTMLSelectElement> {
+interface InputProps  {
   label: string;
   error?: ErrorInput;
   icon?: React.ComponentType<IconBaseProps>;
   options: any
   name: string;
+  isDisabled?: boolean
+  onChange: (options: any, meta: any) => void;
 }
 
-export default function InputMultipleSelect({ label, options, name, error, icon: Icon, }: InputProps) {
+export default function InputMultipleSelect({ label, options, name, onChange, error, icon: Icon, isDisabled }: InputProps) {
 
   return (
     <Container>
@@ -53,6 +55,8 @@ export default function InputMultipleSelect({ label, options, name, error, icon:
               neutral20: '#e2e8f0',
             },
           })}
+          isDisabled={isDisabled}
+          onChange={(options, meta) => onChange(options, meta)}
         />
 
 

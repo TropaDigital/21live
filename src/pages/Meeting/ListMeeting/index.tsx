@@ -1,12 +1,14 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { BiCalendar, BiEdit, BiPlus, BiSearchAlt } from 'react-icons/bi';
+import moment from 'moment';
 
 // HOOKS
 import { useToast } from '../../../hooks/toast';
 import { useFetch } from '../../../hooks/useFetch';
 
 // UTILS
-import { dataFake } from '../../../utils/dataDefault';
+import { MeetingProps, TeamProps, TenantProps } from '../../../utils/models';
+import { useDebounce } from '../../../utils/useDebounce';
 
 // COMPONENTS
 import HeaderPage from '../../../components/HeaderPage';
@@ -17,13 +19,17 @@ import ScrollAreas from '../../../components/Ui/ScrollAreas';
 import { TableDefault } from '../../../components/TableDefault';
 import ModalDefault from '../../../components/Ui/ModalDefault';
 import ComponentsForms from '../../components/ComponentsForms';
+import InputSwitchDefault from '../../../components/Inputs/InputSwitchDefault';
+import InputMultipleSelect from '../../../components/Inputs/InputMultipleSelect';
+import UploadFiles from '../../Projects/ComponentSteps/UploadFiles';
+import Paginate from '../../../components/Paginate';
 
 // STYLES
 import { ContainerGroupTable, ContentDefault, FieldDefault, FieldGroupFormDefault, FooterModal } from '../../../components/UiElements/styles';
 import { Container } from './styles';
-import InputSwitchDefault from '../../../components/Inputs/InputSwitchDefault';
-import InputMultipleSelect from '../../../components/Inputs/InputMultipleSelect';
-import UploadFiles from '../../Projects/ComponentSteps/UploadFiles';
+import useForm from '../../../hooks/useForm';
+import WrapperEditor from '../../../components/WrapperEditor';
+
 
 interface UploadedFilesProps {
   file?: File;
@@ -37,45 +43,79 @@ interface UploadedFilesProps {
   url: string | null;
 }
 
+interface FormProps {
+  title: string;
+  client: any;
+  email_alert: boolean;
+  response: string;
+  members: any;
+  date: string;
+  files: string;
+  description: string;
+}
+
 export default function ListMeeting() {
   const { addToast } = useToast();
-  const [modal, setModal] = useState(false)
-
-  const { data, fetchData } = useFetch<any[]>('meetings');
-  const { data: dataClient, fetchData: fetchClient } = useFetch<any[]>('tenant');
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
-
-  const [selectedItem, setSelectedItem] = useState<any | undefined>(undefined);
-  const [formData, setFormData] = useState({
+  const { formData, setFormValue, handleOnChange, handleOnChangeCheckbox } = useForm({
     title: '',
-    client: {},
-    isEmail: '',
+    client: '',
+    email_alert: false,
     response: '',
     members: [],
-    data: '',
-    uploadList: [],
-    description: ''
-  })
+    date: '',
+    files: '',
+    description: '',
+  } as FormProps)
+  const [modal, setModal] = useState(false)
+  const today = moment();
 
-  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = event.target
-    setFormData({ ...formData, [name]: value })
-  }
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 700);
+  const [search, setSearch] = useState('');
+  const [isSearching, setSearching] = useState(false);
+  const [filterDate, setFilterDate] = useState('');
 
+  const { data, pages } = useFetch<MeetingProps[]>(`meetings?search=${search}&date_start=${filterDate}&date_end=${today.format('YYYY-MM-DD')}`);
+  const { data: dataClient } = useFetch<TenantProps[]>('tenant');
+  const { data: dataTeam } = useFetch<TeamProps[]>('team');
+
+  const selectedTeam = dataTeam?.filter((obj) => obj.user_id !== formData.response)
+  const mentionList = dataTeam?.map((obj) => ({id: obj.user_id, label: obj.username}))
+
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
+  const [selected, setSelected] = useState(1);
+
+  useEffect(() => {
+    if (debouncedSearchTerm) {
+      setSearching(true);
+      setSearch(searchTerm);
+      const handler = setTimeout(() => {
+        setSearching(false);
+      }, 500);
+      return () => {
+        clearTimeout(handler)
+      }
+    } else {
+      setSearch('')
+      setSearching(false);
+    }
+  }, [debouncedSearchTerm]);
+
+  const [selectedItem, setSelectedItem] = useState<any | undefined>(undefined);
+  
   const handleChangeClient = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedIndex = event.target.selectedIndex;
     const selectedId = parseInt(event.target.options[selectedIndex].value);
     const selectedItem = dataClient?.find((item: any) => Number(item.tenant_id) === selectedId);
     setSelectedItem(selectedItem);
-    setFormData({ 
-      ...formData,
-      client: {
-        idbucket: selectedItem?.bucket,
-        name: selectedItem?.name,
-        slug: selectedItem?.slug,
-        tenant_id: selectedItem?.tenant_id
-      }
-    });
+
+    const dataCliente = {
+      idbucket: selectedItem?.bucket,
+      name: selectedItem?.name,
+      slug: selectedItem?.slug,
+      tenant_id: selectedItem?.tenant_id
+    } 
+    setFormValue('client', dataCliente)
   };
 
   const handleOnSubmit = useCallback(async (event: any) => {
@@ -100,6 +140,16 @@ export default function ListMeeting() {
     }
   }, []);
 
+  const onChange = (option: any, actionMeta: any) => {
+    const dataOption = option.map((row: any) => (
+      {user_id: row.value}
+    ))
+    setFormValue('members', dataOption)
+ }
+
+  // console.log("FORMDATA", formData)
+  // console.log("uploadedFiles", uploadedFiles)
+  
   return (
     <Container>
       <HeaderPage title="Atas e Reuniões">
@@ -111,38 +161,34 @@ export default function ListMeeting() {
 
       <ContentDefault style={{ position: 'relative' }}>
         <FieldGroupFormDefault>
-          <SelectDefault
-            label="Filtro por data"
-            name="data"
-            placeHolder="Selecione uma data"
-            onChange={() => {}}
-            value={''}
-          >
-              <option value='0'>Opção um</option>
-              <option value='1'>Opção dois</option>
-              <option value='2'>Opção tres</option>
-          </SelectDefault>
-
+          <InputDefault
+            label="Filtre por data"
+            placeholder="00/00/0000"
+            name="date"
+            type='date'
+            icon={BiCalendar}
+            onChange={(e) => setFilterDate(e.target.value)}
+            value={filterDate}
+          />
           <SelectDefault
             label="Ordenar por"
             name="order"
-            placeHolder="Titulo"
+            placeHolder="Ordenação"
             onChange={() => {}}
             value={''}
           >
-              <option value='0'>Opção um</option>
-              <option value='1'>Opção dois</option>
-              <option value='2'>Opção tres</option>
+            <option value='0'>Mais recente</option>
+            <option value='1'>Mais antigo</option>
           </SelectDefault>
 
           <InputDefault
             label="Busca"
             name="search"
             placeholder="Busque pelo nome..."
-            onChange={(event) => console.log(event.target.value)}
+            onChange={(event) => setSearchTerm(event.target.value)}
             icon={BiSearchAlt}
-            // isLoading={isSearching}
-            // value={searchTerm}
+            isLoading={isSearching}
+            value={searchTerm}
           />
 
         </FieldGroupFormDefault>
@@ -163,20 +209,20 @@ export default function ListMeeting() {
             </thead>
 
             <tbody>
-              {dataFake?.map((row) => (
-                <tr key={row.card_id}>
+              {data?.map((row) => (
+                <tr key={row.meeting_id}>
                   <td>
-                    {row.card_id}
+                    {row.meeting_id}
                   </td>
-                  <td>{row.name}</td>
+                  <td>{row.title}</td>
                   <td>
-                    {row.step}
+                    {row.cliente}
                   </td>
-                  <td>{row.email_alert}</td>
-                  <td>{row.necessary_upload}</td>
+                  <td>{row.responsavel}</td>
+                  <td>{row.date}</td>
                   <td>
                     <div className="fieldTableClients">
-                      <ButtonDefault typeButton="info" onClick={() => console.log(row.card_id)}>
+                      <ButtonDefault typeButton="info" onClick={() => console.log(row.meeting_id)}>
                         <BiEdit />
                       </ButtonDefault>
                     </div>
@@ -188,6 +234,14 @@ export default function ListMeeting() {
         </ScrollAreas>
 
       </ContainerGroupTable>
+
+      <Paginate 
+        total={pages.total}
+        perPage={pages.perPage}
+        currentPage={selected}
+        lastPage={pages.lastPage}
+        onClickPage={(e) => setSelected(e)}
+      />
 
       <ModalDefault
         isOpen={modal}
@@ -221,9 +275,10 @@ export default function ListMeeting() {
 
           <FieldDefault>
             <InputSwitchDefault 
-              name="client"
+              name="email_alert"
               label='Enviar para o cliente por e-mail'
-              onChange={() => {}}
+              onChange={handleOnChangeCheckbox}
+              isChecked={formData.isEmail}
             />
           </FieldDefault>
 
@@ -235,21 +290,21 @@ export default function ListMeeting() {
               onChange={handleOnChange}
               value={formData.response}
             >
-              <option value='0'>Opção um</option>
-              <option value='1'>Opção dois</option>
-              <option value='2'>Opção tres</option>
+              {dataTeam?.map((row) => (
+                <option key={row.user_id} value={row.user_id}>{row.name}</option>
+              ))}
             </SelectDefault>
           </FieldDefault>
 
           <FieldDefault>
             <InputMultipleSelect 
               name='members'
-              options={[
-                { value: 'chocolate', label: 'Chocolate' },
-                { value: 'strawberry', label: 'Strawberry' },
-                { value: 'vanilla', label: 'Vanilla' },
-              ]}
+              options={selectedTeam?.map((row) => (
+                { value: row.user_id, label: row.username }
+              ))}
               label='Membros'
+              isDisabled={formData.response ? false : true}
+              onChange={(option, meta) => onChange(option, meta)}
             />
           </FieldDefault>
 
@@ -266,14 +321,6 @@ export default function ListMeeting() {
           </FieldDefault>
 
           <FieldDefault>
-            {/* <InputDefault
-              label="Escolha um arquivo"
-              // placeholder="00/00/0000"
-              name="file"
-              type='file'
-              // onChange={(event: any) => console.log('name', event.target.files[0])}
-            /> */}
-
             <UploadFiles
               uploadedFiles={uploadedFiles}
               setUploadedFiles={setUploadedFiles}
@@ -282,9 +329,12 @@ export default function ListMeeting() {
           </FieldDefault>
 
           <FieldDefault>
-            <ComponentsForms />
+            <WrapperEditor
+              mentionData={mentionList}
+              value={formData.description}
+              handleOnDescription={(value: any) => setFormValue('description', value)}
+            />
           </FieldDefault>
-             
 
           <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
             <ButtonDefault

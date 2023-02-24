@@ -115,6 +115,8 @@ export const ContainerInput = styled.div<ContainerProps>`
       border-radius: 3px;
       position: absolute;
       left: 0px;
+      height: 2.5rem;
+      width: 2.5rem;
       opacity: 0;
     }
   }

@@ -68,7 +68,7 @@ export default function UploadFiles({uploadedFiles, setUploadedFiles, tenant}: U
   
   useEffect(() => {
     async function loadPosts() {
-      const response = await api.get<PostsResponse[]>('archive');
+      // const response = await api.get<PostsResponse[]>('archive');
 
       const data = fakeData.map(file => ({
         id: file._id,
