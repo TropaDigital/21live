@@ -32,6 +32,13 @@ export interface MeetingProps {
   meeting_id: string;
   responsavel: string;
   title: string;
+  description: string;
+  files: any[];
+  members: any
+
+  tenant_id: any;
+  email_alert: boolean;
+  user_id: string;
 }
 
 export interface TenantProps {

@@ -6,22 +6,26 @@ import { IconArquive } from "../assets/icons";
 
 interface FileListProps {
   files: Array<{
-    id: string;
+    file_id: string;
     preview: string;
-    name: string;
+    // name: string;
     readableSize: string;
     url: string | null;
     uploaded: boolean;
     error?: boolean;
     progress?: number;
-  }>;
+    bucket: string;
+    key: string;
+    size: number;
+    file_name: string;
+  }>
   onDelete: (id: string) => void;
 }
 
 const FileList = ({ files, onDelete }: FileListProps) => (
   <Container>
     {files.map(uploadedFile => (
-      <li key={uploadedFile.id}>
+      <li key={uploadedFile.file_id}>
         <FileInfo>
           <Preview>
             {uploadedFile.error ? (
@@ -31,11 +35,11 @@ const FileList = ({ files, onDelete }: FileListProps) => (
             )}
           </Preview>
           <div>
-            <strong>{uploadedFile.name}</strong>
+            <strong>{uploadedFile.file_name}</strong>
             <span>
-              {uploadedFile.readableSize}{" "}
+              {uploadedFile.size}{" "}
               {!!uploadedFile.url && (
-                <button onClick={() => onDelete(uploadedFile.id)} type="button">
+                <button onClick={() => onDelete(uploadedFile.file_id)} type="button">
                   Excluir
                 </button>
               )}

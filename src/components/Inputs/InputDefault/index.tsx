@@ -9,16 +9,11 @@ import { IoMdHelpCircle } from 'react-icons/io';
 import { FiAlertCircle } from 'react-icons/fi';
 
 import { Container, ContainerInput, Error, Alert } from './styles';
-import { currency, dateTimeMask } from './masks';
-
-interface ErrorInput {
-  message: string;
-  isError: boolean;
-}
+import { dateTimeMask } from './masks';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
-  error?: ErrorInput;
+  error?: string;
   icon?: React.ComponentType<IconBaseProps>;
   alert?: string;
   mask?: 'currency' | 'dateTime';
@@ -60,7 +55,7 @@ export function InputDefault({ required, isLoading, mask, label, alert, error, i
       </div>
 
       <ContainerInput
-        isErrored={!!error?.isError}
+        isErrored={!!error}
         isFocused={isFocused}
         isFilled={isFilled}
         isIcon={!!Icon}
@@ -86,8 +81,8 @@ export function InputDefault({ required, isLoading, mask, label, alert, error, i
           {...rest}
         />
 
-        {error?.isError && (
-          <Error title={error.message}>
+        {error && (
+          <Error title={error}>
             <FiAlertCircle size={20} color="#E62965" />
           </Error>
         )}

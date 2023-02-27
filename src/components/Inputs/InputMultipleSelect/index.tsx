@@ -20,9 +20,10 @@ interface InputProps  {
   name: string;
   isDisabled?: boolean
   onChange: (options: any, meta: any) => void;
+  defaultValue?: any
 }
 
-export default function InputMultipleSelect({ label, options, name, onChange, error, icon: Icon, isDisabled }: InputProps) {
+export default function InputMultipleSelect({ label, options, name, defaultValue, onChange, error, icon: Icon, isDisabled }: InputProps) {
 
   return (
     <Container>
@@ -57,6 +58,7 @@ export default function InputMultipleSelect({ label, options, name, onChange, er
           })}
           isDisabled={isDisabled}
           onChange={(options, meta) => onChange(options, meta)}
+          defaultValue={defaultValue}
         />
 
 

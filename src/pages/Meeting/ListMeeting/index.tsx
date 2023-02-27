@@ -1,10 +1,12 @@
-import { useState, useCallback, useEffect } from 'react';
-import { BiCalendar, BiEdit, BiPlus, BiSearchAlt } from 'react-icons/bi';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { BiCalendar, BiEdit, BiPlus, BiSearchAlt, BiTrash } from 'react-icons/bi';
 import moment from 'moment';
+import api from '../../../services/api';
 
 // HOOKS
 import { useToast } from '../../../hooks/toast';
 import { useFetch } from '../../../hooks/useFetch';
+import useForm from '../../../hooks/useForm';
 
 // UTILS
 import { MeetingProps, TeamProps, TenantProps } from '../../../utils/models';
@@ -18,22 +20,20 @@ import { SelectDefault } from '../../../components/Inputs/SelectDefault';
 import ScrollAreas from '../../../components/Ui/ScrollAreas';
 import { TableDefault } from '../../../components/TableDefault';
 import ModalDefault from '../../../components/Ui/ModalDefault';
-import ComponentsForms from '../../components/ComponentsForms';
 import InputSwitchDefault from '../../../components/Inputs/InputSwitchDefault';
 import InputMultipleSelect from '../../../components/Inputs/InputMultipleSelect';
 import UploadFiles from '../../Projects/ComponentSteps/UploadFiles';
 import Paginate from '../../../components/Paginate';
+import Alert from '../../../components/Ui/Alert';
+import WrapperEditor from '../../../components/WrapperEditor';
 
 // STYLES
 import { ContainerGroupTable, ContentDefault, FieldDefault, FieldGroupFormDefault, FooterModal } from '../../../components/UiElements/styles';
 import { Container } from './styles';
-import useForm from '../../../hooks/useForm';
-import WrapperEditor from '../../../components/WrapperEditor';
-
 
 interface UploadedFilesProps {
   file?: File;
-  id: string;
+  file_id: string;
   name: string;
   readableSize: string;
   preview: string;
@@ -41,13 +41,17 @@ interface UploadedFilesProps {
   uploaded: boolean;
   error?: boolean;
   url: string | null;
+  bucket: string;
+  key: string;
+  size: number;
+  file_name: string;
 }
 
 interface FormProps {
   title: string;
-  client: any;
+  tenant_id: any;
   email_alert: boolean;
-  response: string;
+  user_id: string;
   members: any;
   date: string;
   files: string;
@@ -56,34 +60,45 @@ interface FormProps {
 
 export default function ListMeeting() {
   const { addToast } = useToast();
-  const { formData, setFormValue, handleOnChange, handleOnChangeCheckbox } = useForm({
+  const { formData, setFormValue, setData, handleOnChange, handleOnChangeCheckbox } = useForm({
     title: '',
-    client: '',
+    tenant_id: '',
     email_alert: false,
-    response: '',
+    user_id: '',
     members: [],
     date: '',
     files: '',
     description: '',
   } as FormProps)
-  const [modal, setModal] = useState(false)
+  const [modal, setModal] = useState({
+    isOpen: false,
+    type: 'Criar nova Ata de Reunião'
+  })
   const today = moment();
 
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm, 700);
   const [search, setSearch] = useState('');
   const [isSearching, setSearching] = useState(false);
-  const [filterDate, setFilterDate] = useState('');
+  const [filterDate, setFilterDate] = useState({
+    dateStart: '',
+    dateEnd: ''
+  });
 
-  const { data, pages } = useFetch<MeetingProps[]>(`meetings?search=${search}&date_start=${filterDate}&date_end=${today.format('YYYY-MM-DD')}`);
+  const { data, pages, fetchData } = useFetch<MeetingProps[]>(`meetings?search=${search}&date_start=${filterDate.dateStart}&date_end=${filterDate.dateEnd}`);
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const { data: dataTeam } = useFetch<TeamProps[]>('team');
 
-  const selectedTeam = dataTeam?.filter((obj) => obj.user_id !== formData.response)
+  const selectedTeam = dataTeam?.filter((obj) => obj.user_id !== formData.user_id)
+  const defaultOptionsTeam = dataTeam?.filter((item) =>
+    formData.members.some((member: any) => member.user_id === item.user_id)
+  )
   const mentionList = dataTeam?.map((obj) => ({id: obj.user_id, label: obj.username}))
 
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
   const [selected, setSelected] = useState(1);
+
+  const [text, setText] = useState('');
 
   useEffect(() => {
     if (debouncedSearchTerm) {
@@ -100,45 +115,14 @@ export default function ListMeeting() {
       setSearching(false);
     }
   }, [debouncedSearchTerm]);
-
-  const [selectedItem, setSelectedItem] = useState<any | undefined>(undefined);
   
   const handleChangeClient = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedIndex = event.target.selectedIndex;
     const selectedId = parseInt(event.target.options[selectedIndex].value);
     const selectedItem = dataClient?.find((item: any) => Number(item.tenant_id) === selectedId);
-    setSelectedItem(selectedItem);
-
-    const dataCliente = {
-      idbucket: selectedItem?.bucket,
-      name: selectedItem?.name,
-      slug: selectedItem?.slug,
-      tenant_id: selectedItem?.tenant_id
-    } 
-    setFormValue('client', dataCliente)
+  
+    setFormValue('tenant_id', selectedItem?.tenant_id)
   };
-
-  const handleOnSubmit = useCallback(async (event: any) => {
-    try {
-      event.preventDefault();
-
-      // Inserir lógica
-
-      addToast({
-        type: 'success',
-        title: 'Sucesso',
-        description: 'Serviço cadastrado com sucesso!',
-      });
-
-    } catch (e: any) {
-      // Exibir erro
-      addToast({
-        type: 'danger',
-        title: 'ATENÇÃO',
-        description: e.response.data.message,
-      });
-    }
-  }, []);
 
   const onChange = (option: any, actionMeta: any) => {
     const dataOption = option.map((row: any) => (
@@ -147,13 +131,149 @@ export default function ListMeeting() {
     setFormValue('members', dataOption)
  }
 
-  // console.log("FORMDATA", formData)
-  // console.log("uploadedFiles", uploadedFiles)
+  const handleOnCancel = () => {
+    setModal({ 
+      isOpen: false,
+      type: 'Criar nova Ata de Reunião'
+    });
+    setData({
+      title: '',
+      tenant_id: '',
+      email_alert: false,
+      user_id: '',
+      members: [],
+      date: '',
+      files: '',
+      description: '',
+    } as FormProps);
+    setUploadedFiles([]);
+    setText('');
+    fetchData();
+  }
+
+  function handleOnEdit(data: MeetingProps) {
+    setData(data);
+    setUploadedFiles(data.files);
+    setText(data.description);
+
+    setModal({
+      isOpen: true,
+      type: `Alterar Ata de Reunião: ${data.title}`
+    });
+  }
+
+  const handleOnSubmit = useCallback(async (event: any) => {
+    try {
+      event.preventDefault();
+
+      // Inserir lógica
+      const files = uploadedFiles.map((row) => (
+        {
+          bucket: row.bucket,
+          file_name: row.file_name,
+          key: row.key,
+          size: row.size,
+          url: row.url
+        }
+      ))
+
+      const { title, tenant_id, user_id, date, email_alert, members } = formData
+
+      const newFormData = {
+        files,
+        title,
+        tenant_id,
+        user_id,
+        date,
+        email_alert: String(email_alert),
+        description: text,
+        members      
+      }
+
+      if(modal.type === 'Criar nova Ata de Reunião') {
+        await api.post(`meetings`, newFormData);
+      } else {
+        await api.put(`meetings/${formData.meeting_id}`, newFormData);
+      }
+
+      addToast({
+        type: 'success',
+        title: 'Sucesso',
+        description: 'Serviço cadastrado com sucesso!',
+      });
+
+      setModal({
+        isOpen: false,
+        type: 'Criar nova Ata de Reunião'
+      });
+      setData({
+        title: '',
+        tenant_id: '',
+        email_alert: false,
+        user_id: '',
+        members: [],
+        date: '',
+        files: '',
+        description: '',
+      } as FormProps);
+      setUploadedFiles([]);
+      setText('');
+      fetchData();
+
+    } catch (e: any) {
+      // Exibir erro
+      console.log('ERROR =>', e)
+      addToast({
+        type: 'danger',
+        title: 'ATENÇÃO',
+        description: e.response.data.message,
+      });
+
+    }
+  }, [formData, setFormValue, text, uploadedFiles, modal]);
+
+  const handleOnDelete = async (id: string) => {
+    try {
+
+      await api.delete(`meetings/${id}`);
+
+      addToast({
+        type: 'success',
+        title: 'Sucesso',
+        description: 'Ata/Reunição deletada com sucesso!',
+      });
+
+      setModal({
+        isOpen: false,
+        type: 'Criar nova Ata de Reunião'
+      });
+
+      setData({
+        title: '',
+        tenant_id: '',
+        email_alert: false,
+        user_id: '',
+        members: [],
+        date: '',
+        files: '',
+        description: '',
+      } as FormProps);
+      setUploadedFiles([]);
+      setText('');
+      fetchData();
+    } catch(e: any) {
+      addToast({
+        type: 'danger',
+        title: 'ATENÇÃO',
+        description: e.response.data.message,
+      });
+    }
+  }
   
   return (
     <Container>
       <HeaderPage title="Atas e Reuniões">
-        <ButtonDefault typeButton="success" onClick={() => setModal(!modal)}>
+        <ButtonDefault typeButton="success" onClick={() => setModal({...modal, ['isOpen']: true})}>
           <BiPlus color="#fff" />
             Novo Projeto
         </ButtonDefault>
@@ -161,15 +281,28 @@ export default function ListMeeting() {
 
       <ContentDefault style={{ position: 'relative' }}>
         <FieldGroupFormDefault>
-          <InputDefault
-            label="Filtre por data"
-            placeholder="00/00/0000"
-            name="date"
-            type='date'
-            icon={BiCalendar}
-            onChange={(e) => setFilterDate(e.target.value)}
-            value={filterDate}
-          />
+          <FieldGroupFormDefault>
+            <InputDefault
+              label="Data inicial"
+              placeholder="00/00/0000"
+              name="dateStart"
+              type='date'
+              icon={BiCalendar}
+              onChange={(e) => setFilterDate({...filterDate, ['dateStart']: e.target.value})}
+              value={filterDate.dateStart}
+            />
+
+            <InputDefault
+              label="Data final"
+              placeholder="00/00/0000"
+              name="dateEnd"
+              type='date'
+              icon={BiCalendar}
+              onChange={(e) => setFilterDate({...filterDate, ['dateEnd']: e.target.value})}
+              value={filterDate.dateEnd}
+            />
+
+          </FieldGroupFormDefault>
           <SelectDefault
             label="Ordenar por"
             name="order"
@@ -222,9 +355,21 @@ export default function ListMeeting() {
                   <td>{row.date}</td>
                   <td>
                     <div className="fieldTableClients">
-                      <ButtonDefault typeButton="info" onClick={() => console.log(row.meeting_id)}>
+                      <ButtonDefault typeButton="info" onClick={() => handleOnEdit(row)}>
                         <BiEdit />
                       </ButtonDefault>
+
+                      <Alert
+                        title='Atenção'
+                        subtitle='Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita.'
+                        cancelButton={() => {}}
+                        confirmButton={() => handleOnDelete(row.meeting_id)}
+                      >
+                        <ButtonDefault typeButton="danger">
+                          <BiTrash />
+                        </ButtonDefault>
+                      </Alert>
+
                     </div>
                   </td>
                 </tr>
@@ -244,9 +389,9 @@ export default function ListMeeting() {
       />
 
       <ModalDefault
-        isOpen={modal}
-        onOpenChange={setModal}
-        title='Criar nova Ata de Reunião'
+        isOpen={modal.isOpen}
+        onOpenChange={handleOnCancel}
+        title={modal.type}
       >
         <form onSubmit={handleOnSubmit}>
           <FieldDefault>
@@ -262,10 +407,10 @@ export default function ListMeeting() {
           <FieldDefault>
             <SelectDefault
               label="Cliente"
-              name="client"
+              name="tenant_id"
               placeHolder="Selecione"
               onChange={handleChangeClient}
-              value={selectedItem?.tenant_id}
+              value={formData?.tenant_id}
             >
               {dataClient?.map((row) => (
                 <option key={row.tenant_id} value={row.tenant_id}>{row.name}</option>
@@ -278,17 +423,17 @@ export default function ListMeeting() {
               name="email_alert"
               label='Enviar para o cliente por e-mail'
               onChange={handleOnChangeCheckbox}
-              isChecked={formData.isEmail}
+              isChecked={formData.email_alert === 'true' ? true : false}
             />
           </FieldDefault>
 
           <FieldDefault>
             <SelectDefault
               label="Responsável"
-              name="response"
+              name="user_id"
               placeHolder="Selecione"
               onChange={handleOnChange}
-              value={formData.response}
+              value={formData.user_id}
             >
               {dataTeam?.map((row) => (
                 <option key={row.user_id} value={row.user_id}>{row.name}</option>
@@ -303,8 +448,11 @@ export default function ListMeeting() {
                 { value: row.user_id, label: row.username }
               ))}
               label='Membros'
-              isDisabled={formData.response ? false : true}
+              isDisabled={formData.user_id ? false : true}
               onChange={(option, meta) => onChange(option, meta)}
+              defaultValue={defaultOptionsTeam?.map((row) => (
+                { value: row.user_id, label: row.username }
+              ))}
             />
           </FieldDefault>
 
@@ -316,7 +464,7 @@ export default function ListMeeting() {
               type='date'
               icon={BiCalendar}
               onChange={handleOnChange}
-              value={formData.data}
+              value={formData.date}
             />
           </FieldDefault>
 
@@ -324,15 +472,15 @@ export default function ListMeeting() {
             <UploadFiles
               uploadedFiles={uploadedFiles}
               setUploadedFiles={setUploadedFiles}
-              tenant={selectedItem?.tenant_id}
+              tenant={formData?.tenant_id}
             />
           </FieldDefault>
 
           <FieldDefault>
             <WrapperEditor
               mentionData={mentionList}
-              value={formData.description}
-              handleOnDescription={(value: any) => setFormValue('description', value)}
+              value={text}
+              handleOnDescription={(value: any) => setText(value)}
             />
           </FieldDefault>
 
@@ -340,7 +488,7 @@ export default function ListMeeting() {
             <ButtonDefault
               typeButton="dark"
               isOutline
-              onClick={() => setModal(!modal)}
+              onClick={handleOnCancel}
             >
               Descartar
             </ButtonDefault>
