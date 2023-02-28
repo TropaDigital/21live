@@ -4,6 +4,7 @@ import Tooltip from '../../Tooltip';
 interface ContainerProps {
   isErrored: boolean;
   isIcon: boolean;
+  isDisabled?: boolean;
 }
 
 export const Container = styled.div`
@@ -26,6 +27,10 @@ export const ContainerInput = styled.div<ContainerProps>`
   border-color: #e2e8f0;
   word-wrap: break-word;
 
+  ${(props) => props.isDisabled && css`
+    cursor: not-Allowed;
+  `}
+
   ${(props) =>
     props.isErrored &&
     css`
@@ -33,6 +38,10 @@ export const ContainerInput = styled.div<ContainerProps>`
     `}
 
    .react-select-container {
+
+    .react-select--is-disabled {
+      cursor: not-allowed;
+    }
      .react-select__control {
        .react-select__value-container {
 

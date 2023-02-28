@@ -9,6 +9,17 @@ interface ContainerProps {
   isLoad?: boolean;
 }
 
+const fadeInUp = keyframes`
+	from {
+		opacity: 0;
+		transform: translate3d(0, -20%, 0);
+	}
+	to {
+		opacity: 1;
+		transform: translate3d(0, 0, 0);
+	}
+`
+
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -33,11 +44,13 @@ export const ContainerInput = styled.div<ContainerProps>`
 
   border-color: #e2e8f0;
   word-wrap: break-word;
+  border-radius: 0.375rem;
 
   ${(props) =>
     props.isErrored &&
     css`
       border-color: #E62965;
+      box-shadow: rgb(229 62 62) 0px 0px 0px 1px;
     `}
 
   input {
@@ -201,7 +214,7 @@ export const Error = styled(Tooltip)`
 `;
 
 export const Alert = styled(Tooltip)`
-  z-index: 3;
+  /* z-index: 3; */
   display: grid;
   place-items: center;
   margin-bottom: 5px;
@@ -215,15 +228,22 @@ export const Alert = styled(Tooltip)`
     color: #fff;
 
     left: 200%;
-    /* transform: translateX(-50%); */
-    /* &::before {
-      content: "";
-      position: absolute;
-      top: 100%;
-      left: 50%; */
     &::before {
       left: 33%;
       border-color: #CED4DA transparent;
     }
+  }
+`
+
+export const ErrorInputMessage = styled.div`
+  display: flex;
+  align-items: center;
+  margin-top: 0.2rem;
+  animation: ${fadeInUp} .5s linear;
+
+  span {
+    font-size: 14px;
+    font-weight: 500;
+    color: #E62965;
   }
 `

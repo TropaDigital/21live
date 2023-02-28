@@ -30,6 +30,7 @@ import WrapperEditor from '../../../components/WrapperEditor';
 // STYLES
 import { ContainerGroupTable, ContentDefault, FieldDefault, FieldGroupFormDefault, FooterModal } from '../../../components/UiElements/styles';
 import { Container } from './styles';
+import getVaidationErrors from '../../../utils/getVaidationErrors';
 
 interface UploadedFilesProps {
   file?: File;
@@ -74,6 +75,8 @@ export default function ListMeeting() {
     isOpen: false,
     type: 'Criar nova Ata de Reunião'
   })
+
+  const [errors, setErros] = useState({} as any);
 
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm, 700);
@@ -123,7 +126,7 @@ export default function ListMeeting() {
     setFormValue('tenant_id', selectedItem?.tenant_id)
   };
 
-  const onChange = (option: any, actionMeta: any) => {
+  const onChange = (option: any) => {
     const dataOption = option.map((row: any) => (
       {user_id: row.value}
     ))
@@ -147,6 +150,7 @@ export default function ListMeeting() {
     } as FormProps);
     setUploadedFiles([]);
     setText('');
+    setErros({});
     // fetchData();
   }
 
@@ -228,6 +232,8 @@ export default function ListMeeting() {
         description: e.response.data.message,
       });
 
+      setErros(getVaidationErrors(e.response.data.result))
+
     }
   }, [formData, setFormValue, text, uploadedFiles, modal]);
 
@@ -268,6 +274,8 @@ export default function ListMeeting() {
       });
     }
   }
+
+  console.log('ERRORS =>', errors)
   
   return (
     <Container>
@@ -400,6 +408,8 @@ export default function ListMeeting() {
               name="title"
               onChange={handleOnChange}
               value={formData.title}
+              alert='Titulo é obrigatório'
+              error={errors?.title}
             />
           </FieldDefault>
 
@@ -410,6 +420,8 @@ export default function ListMeeting() {
               placeHolder="Selecione"
               onChange={handleChangeClient}
               value={formData?.tenant_id}
+              alert='Cliente é obrigatório'
+              error={errors?.tenant_id}
             >
               {dataClient?.map((row) => (
                 <option key={row.tenant_id} value={row.tenant_id}>{row.name}</option>
@@ -432,7 +444,9 @@ export default function ListMeeting() {
               name="user_id"
               placeHolder="Selecione"
               onChange={handleOnChange}
+              alert='Responsavel é obrigatório'
               value={formData.user_id}
+              error={errors?.user_id}
             >
               {dataTeam?.map((row) => (
                 <option key={row.user_id} value={row.user_id}>{row.name}</option>
@@ -448,10 +462,12 @@ export default function ListMeeting() {
               ))}
               label='Membros'
               isDisabled={formData.user_id ? false : true}
-              onChange={(option, meta) => onChange(option, meta)}
+              onChange={(option) => onChange(option)}
               defaultValue={defaultOptionsTeam?.map((row) => (
                 { value: row.user_id, label: row.username }
               ))}
+              alert='Selecione pelo menos um Responsável'
+              error={errors?.members}
             />
           </FieldDefault>
 
@@ -464,6 +480,8 @@ export default function ListMeeting() {
               icon={BiCalendar}
               onChange={handleOnChange}
               value={formData.date}
+              alert='Data é obrigatória'
+              error={errors?.date}
             />
           </FieldDefault>
 

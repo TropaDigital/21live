@@ -6,6 +6,8 @@ import { IconBaseProps } from 'react-icons';
 import { FaAngleDown } from 'react-icons/fa';
 
 import { Container, ContainerInput } from './styles';
+import { IoMdHelpCircle } from 'react-icons/io';
+import { Alert, ErrorInputMessage } from '../InputDefault/styles';
 
 interface ErrorInput {
   message: string;
@@ -14,24 +16,33 @@ interface ErrorInput {
 
 interface InputProps  {
   label: string;
-  error?: ErrorInput;
+  error?: string;
   icon?: React.ComponentType<IconBaseProps>;
   options: any
   name: string;
   isDisabled?: boolean
   onChange: (options: any, meta: any) => void;
   defaultValue?: any
+  alert?: string;
 }
 
-export default function InputMultipleSelect({ label, options, name, defaultValue, onChange, error, icon: Icon, isDisabled }: InputProps) {
+export default function InputMultipleSelect({ label, alert, options, name, defaultValue, onChange, error, icon: Icon, isDisabled }: InputProps) {
 
   return (
     <Container>
-      <label htmlFor={label}>{label}</label>
+      <div className="containerAlert" style={{ display: 'flex', alignItems: 'center' }} >
+        <label htmlFor={label}>{label}</label>
+        {alert && (
+          <Alert title={alert ?? 'Campo obrigatório'}>
+            <IoMdHelpCircle size={18} color='#CED4DA' />
+          </Alert>
+        )}
+      </div>
 
       <ContainerInput
-        isErrored={!!error?.isError}
+        isErrored={!!error}
         isIcon={!!Icon}
+        isDisabled={isDisabled}
       >
 
         <div className="leftInputElement">
@@ -39,7 +50,6 @@ export default function InputMultipleSelect({ label, options, name, defaultValue
         </div>
 
         <Select
-          // defaultValue={[colourOptions[2], colourOptions[3]]}
           isMulti
           name={name}
           options={options}
@@ -72,6 +82,12 @@ export default function InputMultipleSelect({ label, options, name, defaultValue
           </Error>
         )} */}
       </ContainerInput>
+
+      {error && (
+          <ErrorInputMessage title={error}>
+            <span>{error}</span>
+          </ErrorInputMessage>
+        )}
     </Container>
   );
 }

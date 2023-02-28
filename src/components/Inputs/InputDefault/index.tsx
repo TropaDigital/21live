@@ -6,9 +6,8 @@ import React, {
 } from 'react';
 import { IconBaseProps } from 'react-icons';
 import { IoMdHelpCircle } from 'react-icons/io';
-import { FiAlertCircle } from 'react-icons/fi';
 
-import { Container, ContainerInput, Error, Alert } from './styles';
+import { Container, ContainerInput, Error, Alert, ErrorInputMessage } from './styles';
 import { dateTimeMask } from './masks';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -77,16 +76,28 @@ export function InputDefault({ isLoading, mask, label, alert, error, icon: Icon,
           id={label}
           role="presentation" autoComplete="off"
           onKeyUp={handleKeyUp}
-          required={alert ? true : false}
+          // required={alert ? true : false}
           {...rest}
         />
 
-        {error && (
+    
+
+        {/* {error && (
           <Error title={error}>
             <FiAlertCircle size={20} color="#E62965" />
           </Error>
-        )}
+        )} */}
+
+          {/* <div className="errorMessage">
+            <span>{error.message}</span>
+          </div> */}
       </ContainerInput>
+
+      {error && (
+          <ErrorInputMessage title={error}>
+            <span>{error}</span>
+          </ErrorInputMessage>
+        )}
     </Container>
   );
 }

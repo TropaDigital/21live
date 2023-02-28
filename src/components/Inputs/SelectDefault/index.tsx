@@ -8,6 +8,8 @@ import { IconBaseProps } from 'react-icons';
 import { FaAngleDown } from 'react-icons/fa';
 
 import { Container, ContainerInput, Error } from './styles';
+import { Alert, ErrorInputMessage } from '../InputDefault/styles';
+import { IoMdHelpCircle } from 'react-icons/io';
 
 interface ErrorInput {
   message: string;
@@ -16,12 +18,13 @@ interface ErrorInput {
 
 interface InputProps extends InputHTMLAttributes<HTMLSelectElement> {
   label: string;
-  error?: ErrorInput;
+  error?: string;
   icon?: React.ComponentType<IconBaseProps>;
   placeHolder?: string;
+  alert?: string;
 }
 
-export function SelectDefault({ label, error, placeHolder, children, icon: Icon, ...rest }: InputProps) {
+export function SelectDefault({ label, alert, error, placeHolder, children, icon: Icon, ...rest }: InputProps) {
   const inputRef = useRef<HTMLSelectElement>(null);
 
   const [isFocused, setIsFocused] = useState(false);
@@ -39,10 +42,18 @@ export function SelectDefault({ label, error, placeHolder, children, icon: Icon,
 
   return (
     <Container>
-      <label htmlFor={label}>{label}</label>
+      <div className="containerAlert" style={{ display: 'flex', alignItems: 'center' }} >
+        <label htmlFor={label}>{label}</label>
+        {alert && (
+          <Alert title={alert ?? 'Campo obrigatório'}>
+            <IoMdHelpCircle size={18} color='#CED4DA' />
+          </Alert>
+        )}
+      </div>
+
 
       <ContainerInput
-        isErrored={!!error?.isError}
+        isErrored={!!error}
         isFocused={isFocused}
         isFilled={isFilled}
         isIcon={!!Icon}
@@ -74,6 +85,12 @@ export function SelectDefault({ label, error, placeHolder, children, icon: Icon,
           </Error>
         )} */}
       </ContainerInput>
+
+      {error && (
+          <ErrorInputMessage title={error}>
+            <span>{error}</span>
+          </ErrorInputMessage>
+        )}
     </Container>
   );
 }

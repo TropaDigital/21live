@@ -27,11 +27,14 @@ export const ContainerInput = styled.div<ContainerProps>`
 
   border-color: #e2e8f0;
   word-wrap: break-word;
+  border-radius: 0.375rem;
 
   ${(props) =>
     props.isErrored &&
     css`
       border-color: #e62965;
+      box-shadow: rgb(229 62 62) 0px 0px 0px 1px;
+
     `}
 
   select {
