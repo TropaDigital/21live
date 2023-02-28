@@ -20,7 +20,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   isLoading?: boolean;
 }
 
-export function InputDefault({ required, isLoading, mask, label, alert, error, icon: Icon, ...rest }: InputProps) {
+export function InputDefault({ isLoading, mask, label, alert, error, icon: Icon, ...rest }: InputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [isFocused, setIsFocused] = useState(false);
@@ -47,7 +47,7 @@ export function InputDefault({ required, isLoading, mask, label, alert, error, i
     <Container>
       <div className="containerAlert" style={{ display: 'flex', alignItems: 'center' }} >
         <label htmlFor={label}>{label}</label>
-        {required && (
+        {alert && (
           <Alert title={alert ?? 'Campo obrigatório'}>
             <IoMdHelpCircle size={18} color='#CED4DA' />
           </Alert>
@@ -63,7 +63,6 @@ export function InputDefault({ required, isLoading, mask, label, alert, error, i
       >
 
         <div className="leftInputElement">
-
           {isLoading ? (
             <div className="custom-loader" />
             ) : (
@@ -78,6 +77,7 @@ export function InputDefault({ required, isLoading, mask, label, alert, error, i
           id={label}
           role="presentation" autoComplete="off"
           onKeyUp={handleKeyUp}
+          required={alert ? true : false}
           {...rest}
         />
 

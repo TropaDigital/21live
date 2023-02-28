@@ -5,9 +5,10 @@ import { IconUpload } from '../assets/icons';
 
 interface UploadProps {
   onUpload: (files: File[]) => void;
+  isDisabled?: boolean
 }
 
-const Upload = ({ onUpload }: UploadProps) => {
+const Upload = ({ onUpload, isDisabled }: UploadProps) => {
   function renderDragMessage(isDragActive: boolean, isDragReject: boolean) {
     if (!isDragActive) {
       return (
@@ -47,10 +48,11 @@ const Upload = ({ onUpload }: UploadProps) => {
     <Dropzone 
       // accept={{'audio/*': ['.mp3', '.mpeg'], 'image/*': ['.png', '.jpeg']}}
       // maxSize={5000}
+      disabled={isDisabled ? true : false}
       onDropAccepted={onUpload}>
       {({ getRootProps, getInputProps, isDragActive, isDragReject }) => (
         <DropContainer
-        {...getRootProps()}
+        {...getRootProps({className: `${isDisabled === true ? 'disabled' : ''}`})}
         isDragActive={isDragActive}
         isDragReject={isDragReject}
         >

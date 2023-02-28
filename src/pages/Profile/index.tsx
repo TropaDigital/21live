@@ -154,7 +154,7 @@ export default function Profile() {
               placeholder="Selecione opção abaixo"
               onChange={(event) => handleSelectChange('language', event)}
               value={formData.language}
-              error={error}
+             
             >
               {optionsLanguage.map((row) => (
                 <option key={row.id} value={row.name}>
@@ -175,7 +175,7 @@ export default function Profile() {
                   placeholder="seu nome"
                   onChange={(event) => handleInputChange('name', event)}
                   value={formData.name}
-                  error={error}
+                 
                   style={{ marginBottom: '14px' }}
                   icon={BiUser}
                 />
@@ -186,7 +186,7 @@ export default function Profile() {
                   placeholder="00/00/00"
                   onChange={(event) => handleInputChange('birthDate', event)}
                   value={formData.birthDate}
-                  error={error}
+                 
                   style={{ marginBottom: '14px' }}
                   icon={BiCalendar}
                 />
@@ -197,7 +197,7 @@ export default function Profile() {
                   placeholder="00/00/00"
                   onChange={(event) => handleInputChange('companySince', event)}
                   value={formData.companySince}
-                  error={error}
+                 
                   style={{ marginBottom: '14px' }}
                   icon={BiCalendar}
                 />
@@ -210,7 +210,7 @@ export default function Profile() {
                   placeholder="Digite seu email"
                   onChange={(event) => handleInputChange('email', event)}
                   value={formData.email}
-                  error={error}
+                 
                   style={{ marginBottom: '14px' }}
                   icon={BiEnvelope}
                 />
@@ -221,7 +221,7 @@ export default function Profile() {
                   placeholder="(00) 0 0000-0000"
                   onChange={(event) => handleInputChange('phone', event)}
                   value={formData.phone}
-                  error={error}
+                 
                   style={{ marginBottom: '14px' }}
                   icon={BiPhone}
                 />
@@ -232,7 +232,7 @@ export default function Profile() {
                   placeholder="Seu cargo"
                   onChange={(event) => handleInputChange('office', event)}
                   value={formData.office}
-                  error={error}
+                 
                   style={{ marginBottom: '14px' }}
                   icon={BiBriefcase}
                 />
@@ -248,7 +248,7 @@ export default function Profile() {
                 placeholder="100,00"
                 onChange={(event) => handleInputChange('costPerhour', event)}
                 value={formData.costPerhour}
-                error={error}
+               
                 icon={BiMoney}
               />
               <span className='custPerHoursInfo'>Não se preocupe, essa informação só sera vísivel para os administradores.</span>

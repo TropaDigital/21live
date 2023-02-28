@@ -192,7 +192,9 @@ export const Error = styled(Tooltip)`
   span {
     background: #E62965;
     color: #fff;
+    left: -100%;
     &::before {
+      left: 88%;  
       border-color: #E62965 transparent;
     }
   }
@@ -211,7 +213,16 @@ export const Alert = styled(Tooltip)`
   span {
     background: #CED4DA;
     color: #fff;
+
+    left: 200%;
+    /* transform: translateX(-50%); */
+    /* &::before {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%; */
     &::before {
+      left: 33%;
       border-color: #CED4DA transparent;
     }
   }

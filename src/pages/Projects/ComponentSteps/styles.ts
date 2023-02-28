@@ -1,11 +1,18 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
-export const Container = styled.div`
+interface Props {
+  isDisabed?: boolean;
+}
 
-`;
+export const Container = styled.div<Props>`
+  ${(props) => props.isDisabed && css`
+    opacity: 0.4;
+    background: #e2e8f0;
+  `}
 
-export const Content = styled.div`
-
+  cursor: not-allowed;
+  width: 100%;
+  height: 100%;
 `;
 
 export const ContainerInfoProducts = styled.div`

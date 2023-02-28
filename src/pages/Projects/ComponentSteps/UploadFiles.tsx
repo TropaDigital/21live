@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { v4 as uuidV4 } from 'uuid';
 import { filesize, partial } from 'filesize';
 
-import { Container, Content } from './styles';
+import { Container } from './styles';
 import Upload from '../../../components/Upload';
 import FileList from '../../../components/FileList';
 import api from '../../../services/api';
@@ -46,12 +46,13 @@ interface PostsResponse {
 interface UploadProps {
   uploadedFiles: UploadedFilesProps[];
   setUploadedFiles: (item: any) => void;
-  tenant: any
+  tenant: any;
+  isDisabed?: boolean;
 }
 
-export default function UploadFiles({uploadedFiles, setUploadedFiles, tenant}: UploadProps) {
+export default function UploadFiles({uploadedFiles, setUploadedFiles, tenant, isDisabed}: UploadProps) {
   // const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
-  const size = partial({base: 2, standard: "jedec"});
+  // const size = partial({base: 2, standard: "jedec"});
   
   // useEffect(() => {
   //   async function loadPosts() {
@@ -153,13 +154,11 @@ export default function UploadFiles({uploadedFiles, setUploadedFiles, tenant}: U
 
 
   return (
-    <Container>
-      <Content>
-        <Upload onUpload={handleUpload} />
-        {!!uploadedFiles.length && (
-          <FileList files={uploadedFiles} onDelete={handleDelete} />
-        )}
-      </Content>
+    <Container isDisabed={isDisabed}>
+      <Upload onUpload={handleUpload} isDisabled={isDisabed}/>
+      {!!uploadedFiles.length && (
+        <FileList files={uploadedFiles} onDelete={handleDelete} />
+      )}
     </Container>
   )
 }

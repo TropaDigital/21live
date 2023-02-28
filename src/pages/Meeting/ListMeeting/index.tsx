@@ -74,7 +74,6 @@ export default function ListMeeting() {
     isOpen: false,
     type: 'Criar nova Ata de Reunião'
   })
-  const today = moment();
 
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm, 700);
@@ -148,7 +147,7 @@ export default function ListMeeting() {
     } as FormProps);
     setUploadedFiles([]);
     setText('');
-    fetchData();
+    // fetchData();
   }
 
   function handleOnEdit(data: MeetingProps) {
@@ -423,7 +422,7 @@ export default function ListMeeting() {
               name="email_alert"
               label='Enviar para o cliente por e-mail'
               onChange={handleOnChangeCheckbox}
-              isChecked={formData.email_alert === 'true' ? true : false}
+              isChecked={String(formData.email_alert) === 'true' ? true : false}
             />
           </FieldDefault>
 
@@ -473,6 +472,7 @@ export default function ListMeeting() {
               uploadedFiles={uploadedFiles}
               setUploadedFiles={setUploadedFiles}
               tenant={formData?.tenant_id}
+              isDisabed={!formData?.tenant_id}
             />
           </FieldDefault>
 

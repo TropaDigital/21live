@@ -148,7 +148,12 @@ export default function ListProjects() {
       handleOnPeriod={(e, id) => handleOnPeriod(e, id)}
       handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
     />, 
-    <UploadFiles />, 
+    // <UploadFiles
+    //   uploadedFiles={uploadedFiles}
+    //   setUploadedFiles={setUploadedFiles}
+    //   tenant={formData?.tenant_id}
+    //   isDisabed={!formData?.tenant_id}
+    // />, 
     <InfoRevision />
   ];
   const { changeStep, currentComponent, currentStep, isFirstStep, isLastStep } = useSteps(formComponents);

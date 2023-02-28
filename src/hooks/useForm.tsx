@@ -40,8 +40,6 @@ const useForm = (initialValues: FormProps): FormHook => {
   }
 
   const setFormValue: SetFormValue = (name, value) => {
-    console.log('NAME', name)
-    console.log('VALUE', value)
     setFormData({ ...formData, [name]: value })
   }
 
