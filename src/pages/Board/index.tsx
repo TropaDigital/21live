@@ -1,9 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
-import { FiClock, FiMoreHorizontal } from 'react-icons/fi';
-import { RiStackLine } from 'react-icons/ri';
-
-import { v4 as uuidv4 } from 'uuid';
-import { loadLists } from '../../components/dataBoard';
+import { useEffect } from 'react';
 
 import HeaderPage from '../../components/HeaderPage';
 import Column from '../../components/Ui/Column';
@@ -13,17 +8,10 @@ import Task from '../../components/Ui/Task';
 import {
   Container,
   ContentBoard,
-  CardBord,
-  HeaderBoard,
-  TitleBoard,
-  ButtonHeaderBoard,
-  InfoBoard,
 } from './styles';
 import useLocalStorage from '../../hooks/useLocalStorage';
 import useColumn from '../../hooks/useColumn';
 import useTask from '../../hooks/useTask';
-import { useFetch } from '../../hooks/useFetch';
-import { ColumnModel } from '../../utils/models';
 import { useLocation, useParams } from 'react-router-dom';
 
 interface ITask {
@@ -48,40 +36,6 @@ interface ITaskColumn {
   projects: number;
   tasks: ITask[];
 }
-
-
-const upTask = {
-  id: 1,
-  column: 'TRAFEGO',
-  title: 'Novo create',
-  users: [],
-  date: '10 mar',
-  progress: {
-    hoursinvested: '14:00:00',
-    hoursLeft: '05:00:00',
-  },
-  completed: '6/10',
-};
-
-const createTask = {
-  id: 11,
-  column: 'TRAFEGO',
-  title: 'NOVA TASK',
-  users: [],
-  date: '10 mar',
-  progress: {
-    hoursinvested: '14:00:00',
-    hoursLeft: '05:00:00',
-  },
-  completed: '6/10',
-}
-
-const styleButtonTask = {
-  padding: '4px',
-  borderRadius: '4px',
-  backgroundColor: 'lightcoral',
-  color: '#fff',
-};
 
 export default function Board() {
   const [ state ] = useLocalStorage('COLUMN');

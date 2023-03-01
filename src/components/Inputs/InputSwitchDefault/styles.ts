@@ -34,7 +34,7 @@ export const StyledLabel = styled.label`
   align-items: center;
   /* justify-content: center; */
   display: flex;
-  width: 100%;
+  /* width: 100%; */
 
   font-size: var(--text-smal-sm);
   font-weight: var(--weight-reular);

@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { v4 as uuidV4 } from 'uuid';
-import { filesize, partial } from 'filesize';
+import { filesize } from 'filesize';
 
-import { Container } from './styles';
-import Upload from '../../../components/Upload';
-import FileList from '../../../components/FileList';
-import api from '../../../services/api';
+import { Container } from '../../pages/Projects/ComponentSteps/styles';
+import Upload from '.';
+import FileList from './FileList';
+import api from '../../services/api';
 
 interface UploadedFilesProps {
   file?: File;

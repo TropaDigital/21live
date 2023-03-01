@@ -16,6 +16,10 @@ interface DropContainerProps extends DropzoneRootProps {
   isDragReject: boolean;
 }
 
+interface PropsFiles {
+  isDisabed?: boolean
+}
+
 const messageColors: MessageColorsProps = {
   default: "#0046B5",
   error: "#e57878",
@@ -70,4 +74,15 @@ export const BoxUploaded = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+`;
+
+export const Container = styled.div<PropsFiles>`
+  ${(props) => props.isDisabed && css`
+    opacity: 0.4;
+    background: #e2e8f0;
+    cursor: not-allowed;
+  `}
+
+  width: 100%;
+  height: 100%;
 `;

@@ -1,6 +1,5 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { BiCalendar, BiEdit, BiPlus, BiSearchAlt, BiTrash } from 'react-icons/bi';
-import moment from 'moment';
 import api from '../../../services/api';
 
 // HOOKS
@@ -10,6 +9,7 @@ import useForm from '../../../hooks/useForm';
 
 // UTILS
 import { MeetingProps, TeamProps, TenantProps } from '../../../utils/models';
+import getVaidationErrors from '../../../utils/getVaidationErrors';
 import { useDebounce } from '../../../utils/useDebounce';
 
 // COMPONENTS
@@ -22,7 +22,7 @@ import { TableDefault } from '../../../components/TableDefault';
 import ModalDefault from '../../../components/Ui/ModalDefault';
 import InputSwitchDefault from '../../../components/Inputs/InputSwitchDefault';
 import InputMultipleSelect from '../../../components/Inputs/InputMultipleSelect';
-import UploadFiles from '../../Projects/ComponentSteps/UploadFiles';
+import UploadFiles from '../../../components/Upload/UploadFiles';
 import Paginate from '../../../components/Paginate';
 import Alert from '../../../components/Ui/Alert';
 import WrapperEditor from '../../../components/WrapperEditor';
@@ -30,7 +30,6 @@ import WrapperEditor from '../../../components/WrapperEditor';
 // STYLES
 import { ContainerGroupTable, ContentDefault, FieldDefault, FieldGroupFormDefault, FooterModal } from '../../../components/UiElements/styles';
 import { Container } from './styles';
-import getVaidationErrors from '../../../utils/getVaidationErrors';
 
 interface UploadedFilesProps {
   file?: File;
@@ -275,14 +274,12 @@ export default function ListMeeting() {
     }
   }
 
-  console.log('ERRORS =>', errors)
-  
   return (
     <Container>
       <HeaderPage title="Atas e Reuniões">
         <ButtonDefault typeButton="success" onClick={() => setModal({...modal, ['isOpen']: true})}>
           <BiPlus color="#fff" />
-            Novo Projeto
+            Nova Ata/Reunião
         </ButtonDefault>
       </HeaderPage>
 
@@ -324,7 +321,7 @@ export default function ListMeeting() {
           <InputDefault
             label="Busca"
             name="search"
-            placeholder="Busque pelo nome..."
+            placeholder="Busque pelo titulo..."
             onChange={(event) => setSearchTerm(event.target.value)}
             icon={BiSearchAlt}
             isLoading={isSearching}

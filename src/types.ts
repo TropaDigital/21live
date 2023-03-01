@@ -30,3 +30,13 @@ export interface IProjectCreate {
   products?: Array<IProduct>
   files?: Array<IDocProject>
 }
+
+export interface IServices {
+  tenant_id: number;
+  description: string;
+  minutes: string;
+  service: string;
+  service_id: string;
+  size: string;
+  type: string;
+}

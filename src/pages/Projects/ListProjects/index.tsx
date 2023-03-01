@@ -1,44 +1,38 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { BiEdit, BiPlus, BiSearchAlt, BiShow } from 'react-icons/bi';
 
-import { useDebounce } from '../../../utils/useDebounce';
+// HOOKS
+import { useSteps } from '../../../hooks/useSteps';
+import { useFetch } from '../../../hooks/useFetch';
+import useForm from '../../../hooks/useForm';
+
+// TYPES
+import { IProjectCreate, IServices } from '../../../types';
+
+// UTILS
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
+
+// COMPONENTS
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import HeaderPage from '../../../components/HeaderPage';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import ProgressBar from '../../../components/Ui/ProgressBar';
 import { SelectDefault } from '../../../components/Inputs/SelectDefault';
-
 import { ContentDefault, FieldGroupFormDefault, FooterModal } from '../../../components/UiElements/styles';
-import { Container, CardProject, TitleCardProject, InfoCardProject, FooterProjectCard, FieldGroupCardProject, ContentCardProject } from './styles';
 import ModalDefault from '../../../components/Ui/ModalDefault';
-import { useSteps } from '../../../hooks/useSteps';
 import InfoGeral from '../ComponentSteps/InfoGeral';
 import InfoRevision from '../ComponentSteps/InfoRevision';
-import UploadFiles from '../ComponentSteps/UploadFiles';
-import Steps from '../Steps';
-import { IProjectCreate } from '../../../types';
 import InfoProducts from '../ComponentSteps/InfoProducts';
-import { useFetch } from '../../../hooks/useFetch';
 
-export interface OfficeProps {
-  tenant_id: number;
-  description: string;
-  minutes: string;
-  service: string;
-  service_id: string;
-  size: string;
-  type: string;
-}
+import Steps from '../Steps';
+// STYLES
+import { Container, CardProject, TitleCardProject, InfoCardProject, FooterProjectCard, FieldGroupCardProject, ContentCardProject } from './styles';
 
 export default function ListProjects() {
   const [modal, setModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const debouncedSearchTerm = useDebounce(searchTerm, 700);
-  const [search, setSearch] = useState('');
-  const [isSearching, setSearching] = useState(false);
 
-  const [formData, setFormData] = useState<IProjectCreate>({
+  const { formData, setFormValue, setData, handleOnChange, handleOnChangeCheckbox } = useForm({
     tenant_id: '',
     title: '',
     contract_type: '',
@@ -49,25 +43,11 @@ export default function ListProjects() {
     forDescription: false,
     products: [],
     files: [],
-  })
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value, } = event.target
-    setFormData((prevData) => {
-      return {...prevData, [name]: value}
-    })
-  }
-
-  const handleOnChangeCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { checked, name} = event.target
-    setFormData((prevData) => {
-      return {...prevData, [name]: checked}
-    })
-  }
-
+  } as IProjectCreate)
+  
   // PRODUTOS
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
-  const { data: dataOffice } = useFetch<OfficeProps[]>(`services`);
+  const { data: dataOffice } = useFetch<IProjectCreate[]>(`services`);
 
   function handleSelectItem(id: any) {
     const alreadySelected = selectedItems.findIndex((item) => item.service === id.service);
@@ -82,61 +62,57 @@ export default function ListProjects() {
   }
 
   const handleOnAddProducts = (items: any) => {
-    setFormData((prevFormData: any) => ({
-      ...prevFormData,
-      products: [
-        ...prevFormData.products,
-        ...items
-      ]
-    }));
+    setFormValue('products', [
+      ...formData.products,
+      ...items
+    ])
+
     setSelectedItems([])
   };
 
   const handleOnDeleteProduct = (id: number) => {
-    setFormData((prevState: any) => ({
-      ...prevState,
-      products: prevState.products.filter((product: any) => product.service_id !== id)
-    }));
+    setFormValue('products', formData.products.filter((product: any) => product.service_id !== id))
   }
 
   const handleOnIncrememtQtd = useCallback((value: any) => {
     const qtdValue = 1
-    setFormData((prevState: any) => {
-      const updatedProducts = [...prevState.products];
-      const productIndex = updatedProducts.findIndex(product => product.service_id === value.service_id);
-      const updatedProductCopy = {...updatedProducts[productIndex]};
-      updatedProductCopy.quantity = updatedProductCopy.quantity ? updatedProductCopy.quantity + 1 : qtdValue;
-      updatedProducts[productIndex] = updatedProductCopy;
-      return {...prevState, products: updatedProducts};
-    });
-  }, [setFormData, formData])
+    const updatedProducts = [...formData.products];
+    const productIndex = updatedProducts.findIndex(product => product.service_id === value.service_id);
+    const updatedProductCopy = {...updatedProducts[productIndex]};
+    updatedProductCopy.quantity = updatedProductCopy.quantity ? updatedProductCopy.quantity + 1 : qtdValue;
+    updatedProducts[productIndex] = updatedProductCopy;
+
+    setFormValue('products', updatedProducts)
+
+  }, [setFormValue, formData])
 
   const handleOnDecrementQtd = useCallback((value: any) => {
-    const qtdValue = 1
-    setFormData((prevState: any) => {
-      const updatedProducts = [...prevState.products];
-      const productIndex = updatedProducts.findIndex(product => product.service_id === value.service_id);
-      const updatedProductCopy = {...updatedProducts[productIndex]};
-      updatedProductCopy.quantity = updatedProductCopy.quantity ? updatedProductCopy.quantity - 1 : qtdValue;
-      updatedProducts[productIndex] = updatedProductCopy;
-      return {...prevState, products: updatedProducts};
-    });
-  }, [setFormData, formData])
+    // const qtdValue = 1
+    // const updatedProducts = [...formData.products];
+    // const productIndex = updatedProducts.findIndex(product => product.service_id === value.service_id);
+    // const updatedProductCopy = {...updatedProducts[productIndex]};
+    // updatedProductCopy.quantity = updatedProductCopy.quantity ? updatedProductCopy.quantity - 1 : qtdValue - 1;
+    // updatedProducts[productIndex] = updatedProductCopy;
+
+    console.log('quantity', !formData.quantity ? 0 : formData.quantity - 1)
+
+    // setFormValue('products', updatedProducts)
+
+  }, [setFormValue, formData])
 
   const handleOnPeriod = useCallback((value: any, id: any) => {
-    setFormData((prevState: any) => {
-      const updatedProducts = [...prevState.products];
-      const productIndex = updatedProducts.findIndex(product => product.service_id === id);
-      const updatedProductCopy = {...updatedProducts[productIndex]};
-      updatedProductCopy.period = value;
-      updatedProducts[productIndex] = updatedProductCopy;
-      return {...prevState, products: updatedProducts};
-    });
+    const updatedProducts = [...formData.products];
+    const productIndex = updatedProducts.findIndex(product => product.service_id === id);
+    const updatedProductCopy = {...updatedProducts[productIndex]};
+    updatedProductCopy.period = value;
+    updatedProducts[productIndex] = updatedProductCopy;
 
-  }, [setFormData, formData])
+    setFormValue('products', updatedProducts)
+
+  }, [setFormValue, formData])
 
   const formComponents = [
-    <InfoGeral data={formData} handleInputChange={handleInputChange} handleOnChangeCheckbox={handleOnChangeCheckbox} />, 
+    <InfoGeral data={formData} handleInputChange={handleOnChange} />, 
     <InfoProducts 
       handleOnAddProducts={handleOnAddProducts} 
       handleSelectItem={handleSelectItem} 
@@ -158,21 +134,7 @@ export default function ListProjects() {
   ];
   const { changeStep, currentComponent, currentStep, isFirstStep, isLastStep } = useSteps(formComponents);
 
-  useEffect(() => {
-    if (debouncedSearchTerm) {
-      setSearching(true);
-      setSearch(searchTerm);
-      const handler = setTimeout(() => {
-        setSearching(false);
-      }, 500);
-      return () => {
-        clearTimeout(handler)
-      }
-    } else {
-      setSearch('')
-      setSearching(false);
-    }
-  }, [debouncedSearchTerm]);
+  console.log('DATA', formData)
 
   return (
     <Container>
@@ -191,7 +153,6 @@ export default function ListProjects() {
             placeholder="Busque pelo nome..."
             onChange={(event) => setSearchTerm(event.target.value)}
             icon={BiSearchAlt}
-            isLoading={isSearching}
             value={searchTerm}
           />
 

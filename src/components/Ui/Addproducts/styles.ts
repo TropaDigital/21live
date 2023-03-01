@@ -28,24 +28,19 @@ export const Content = styled.div`
   justify-content: space-between;
   width: 100%;
 
-  .postsInfo {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-
+  
+  .cardInfoProductsProject {
     h2 {
       font-weight: 600;
       font-size: 16px;
       line-height: 24px;
       color: #101828;
     }
-
-    .quantityAndHours {
-      display: flex;
-      align-items: flex-start;
-      flex-direction: column;
-      gap: 12px;
-    }
+    margin-top: 0px;
+    flex-direction: column;
+    align-items: baseline;
+    gap: 2px;
+  }
 
     .boxInfopost {
       span {
@@ -59,7 +54,20 @@ export const Content = styled.div`
         }
       }
     }
-  }
+
+    .boxInfoMonthlyOrYearly {
+      display: flex;
+      align-items: center;
+      span:first-of-type {
+        margin-right: 8px
+      }
+      span {
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 20px;
+        color: #475467;
+      }
+    }
 
   .boxRightProducts {
     display: flex;

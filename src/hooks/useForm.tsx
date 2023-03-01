@@ -4,7 +4,7 @@ interface FormProps {
   [key: string]: any
 }
 
-type HandleOnChange = (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => void
+type HandleOnChange = (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement> | React.ChangeEvent<HTMLTextAreaElement>) => void
 
 type HandleOnChangeCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => void
 

@@ -1,18 +1,24 @@
-import { useState } from 'react';
-import { BiPlus } from 'react-icons/bi'
+import { useEffect, useState } from 'react';
+import { BiPlus, BiSearchAlt } from 'react-icons/bi'
+
+// TYPES
+import { IServices } from '../../../types';
 
 // UTILS
 import { multiplyTime, sumTimes } from '../../../utils/convertTimes';
+import { useDebounce } from '../../../utils/useDebounce';
 
 // COMPONENTS
-import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import Addproducts from '../../../components/Ui/Addproducts';
-import ModalDefault from '../../../components/Ui/ModalDefault';
-import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
+import Collapsi from '../../../components/Ui/Collapsible.tsx';
+import { InputDefault } from '../../../components/Inputs/InputDefault';
 
 // STYLES
-import { FooterModal } from '../../../components/UiElements/styles';
-import { ContainerInfoProducts, ContainerListproducts } from './styles'
+import { 
+  ContainerInfoProducts, 
+  SectionProductsProject,
+  BoxProductProject,
+} from './styles'
 
 interface PropsProducts {
   dataOffice: any;
@@ -37,43 +43,102 @@ export default function InfoProducts({
   handleOnPeriod,
   handleOnDeleteProduct
 }: PropsProducts) {
-  const [isOpen, setIsOpen] = useState(false)
   const minutesAll = dataFilter.map((obj: any) => multiplyTime(obj.minutes, obj.quantity))
 
   function handleOnAddItems(items: any) {
-    handleOnAddProducts(items)
+    handleOnAddProducts([items])
     setIsOpen(!isOpen)
+    setSearch([])
+    setSearchTerm('')
   }
 
-  const differentObjects = dataOffice.filter(
-    (object: any) => !dataFilter.find((obj: any) => obj.service_id === object.service_id)
-  );
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 700);
+  const [search, setSearch] = useState<IServices[]>([]);
+  const [isSearching, setSearching] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
+
+  useEffect(() => {
+    if (debouncedSearchTerm) {
+      setSearching(true);
+      setSearch(
+        dataOffice.filter((obj: any) => obj.service.toLowerCase().includes(searchTerm.toLowerCase())).filter(
+          (object: any) => !dataFilter.find((obj: any) => obj.service_id === object.service_id)
+        )
+      );
+      const handler = setTimeout(() => {
+        setSearching(false);
+        setIsOpen(true)
+      }, 700);
+      return () => {
+        clearTimeout(handler)
+      }
+    } else {
+      setSearch([])
+      setSearching(false);
+      setIsOpen(true)
+    }
+  }, [debouncedSearchTerm]);
+
 
   return (
     <ContainerInfoProducts>
-      <ButtonDefault 
-        style={{ width: '100%' }}
-        isDashed
-        isOutline
-        typeButton='light'
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <BiPlus />
-        Clique para adicionar um produto
-      </ButtonDefault>
+      <InputDefault
+        label="Buscar produtos"
+        name="search"
+        placeholder="Busque pelo nome..."
+        onChange={(event) => setSearchTerm(event.target.value)}
+        icon={BiSearchAlt}
+        isLoading={isSearching}
+        value={searchTerm}
+      />
 
-      <ul>
-        {dataFilter?.map((row: any) => (
-          <Addproducts
-            key={row.service_id}
-            data={row}
-            handleOnDecrementQtd={() => handleOnDecrementQtd(row)} 
-            handleOnIncrememtQtd={() => handleOnIncrememtQtd(row)}
-            handleOnPeriod={(e) => handleOnPeriod(e, row.service_id)}
-            handleOnDeleteProduct={() => handleOnDeleteProduct(row.service_id)}
-          />
-        ))}
-      </ul>
+        <Collapsi
+          open={isOpen}
+          onOpenChange={() => setIsOpen(!isOpen)}
+        >
+          <SectionProductsProject>
+            {search?.map((row) => (
+              <BoxProductProject
+                key={row.service_id}
+                type='button'
+                onClick={() => handleOnAddItems(row)}
+              >
+                <div className="headerProductProject">
+                  <h3>{row.service}</h3>
+
+                  <div className="boxAdd">
+                    <BiPlus color='#0045B5' />
+                  </div>
+
+                </div>
+                <div className="quantityAndHours">
+                  <div className="boxInfopost">
+                    <span>Horas estimadas: <strong>{sumTimes([row.minutes])}</strong></span>
+                  </div>
+
+                  <div className="boxInfopost">
+                    <span>Categoria: <strong>{row.type}</strong></span>
+                  </div>
+                </div>
+              </BoxProductProject>
+            ))}
+          </SectionProductsProject>
+        </Collapsi>
+
+        <ul>
+          {dataFilter?.map((row: any) => (
+            <Addproducts
+              key={row.service_id}
+              data={row}
+              handleOnDecrementQtd={() => handleOnDecrementQtd(row)} 
+              handleOnIncrememtQtd={() => handleOnIncrememtQtd(row)}
+              handleOnPeriod={(e) => handleOnPeriod(e, row.service_id)}
+              handleOnDeleteProduct={() => handleOnDeleteProduct(row.service_id)}
+            />
+          ))}
+        </ul>
+
       <div className="quantityAndHours">
         <div className="boxInfopost">
           <span>Produtos: <strong>{dataFilter.length}</strong></span>
@@ -84,7 +149,7 @@ export default function InfoProducts({
         </div>
       </div>
 
-      <ModalDefault
+      {/* <ModalDefault
         title='Adicionar Produtos'
         isOpen={isOpen}
         onOpenChange={setIsOpen}
@@ -120,7 +185,7 @@ export default function InfoProducts({
             </ButtonDefault>
           </FooterModal>
         </ContainerListproducts>
-      </ModalDefault>
+      </ModalDefault> */}
     </ContainerInfoProducts>
   )
 }

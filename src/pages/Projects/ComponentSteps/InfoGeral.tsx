@@ -1,22 +1,20 @@
 import React from 'react'
-import { FieldDefault, FieldGroup, FieldGroupFormDefault } from '../../../components/UiElements/styles'
+import { FieldDefault, FieldGroupFormDefault } from '../../../components/UiElements/styles'
 import { InputDefault } from '../../../components/Inputs/InputDefault'
-import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault'
 import { SelectDefault } from '../../../components/Inputs/SelectDefault'
 import { BiCalendar } from 'react-icons/bi'
 
 interface Props {
   data: any;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => void;
-  handleOnChangeCheckbox: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default function InfoGeral({data, handleInputChange, handleOnChangeCheckbox}: Props) {
+export default function InfoGeral({data, handleInputChange}: Props) {
   return (
     <div>
       <FieldDefault style={{marginBottom: '14px'}}>
         <InputDefault 
-          label='Nome do projeto'
+          label='Titulo do Projeto/Contrato'
           placeholder='Nome do projeto'
           name="title"
           value={data.title}
@@ -73,7 +71,7 @@ export default function InfoGeral({data, handleInputChange, handleOnChangeCheckb
         </FieldDefault>
       </FieldGroupFormDefault>
 
-      <fieldset>
+      {/* <fieldset>
         <legend>Ações</legend>
 
         <FieldGroup style={{ marginTop: '10px' }}>
@@ -95,7 +93,7 @@ export default function InfoGeral({data, handleInputChange, handleOnChangeCheckb
             />
           </FieldDefault>
         </FieldGroup>
-      </fieldset>
+      </fieldset> */}
 
     </div>
   )

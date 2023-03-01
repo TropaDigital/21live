@@ -865,6 +865,12 @@ legend {
   }
 }
 
+// COLLAPSI
+
+/* .CollapsibleRoot {
+  width: 300px;
+} */
+
 // MENTIONS
 
 .mentions {
