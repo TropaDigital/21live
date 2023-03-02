@@ -58,16 +58,25 @@ export default function Addproducts({ data, handleOnDecrementQtd, handleOnIncrem
 
         <div className="boxRightProducts">
           <div className="countPost">
-            <button
-              type="button"
-              onClick={handleOnDecrementQtd}
-              disabled={data.quantity <= 0 ? true : false}
-            >
-              <BiMinus color="#0046B5" />
-            </button>
+            {data.quantity === 1 ? (
+              <button 
+                type="button"
+                onClick={handleOnDeleteProduct}
+              >
+                <BiTrash color="#e62965"/>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleOnDecrementQtd}
+                disabled={data.quantity <= 0 ? true : false}
+              >
+                <BiMinus color="#0046B5" />
+              </button>
+            )}
 
             <div className="resultCountPost">
-              {!!data.quantity ? data.quantity : 0 }
+              {data.quantity ?? 0 }
             </div>
 
             <button
@@ -77,12 +86,12 @@ export default function Addproducts({ data, handleOnDecrementQtd, handleOnIncrem
               <BiPlus color="#0046B5" />
             </button>
           </div>
-          <ButtonDefault 
+          {/* <ButtonDefault 
             typeButton="danger"
             onClick={handleOnDeleteProduct}
           >
             <BiTrash />
-          </ButtonDefault>
+          </ButtonDefault> */}
         </div>
 
       </Content>

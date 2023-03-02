@@ -75,28 +75,22 @@ export default function ListProjects() {
   }
 
   const handleOnIncrememtQtd = useCallback((value: any) => {
-    const qtdValue = 1
     const updatedProducts = [...formData.products];
     const productIndex = updatedProducts.findIndex(product => product.service_id === value.service_id);
     const updatedProductCopy = {...updatedProducts[productIndex]};
-    updatedProductCopy.quantity = updatedProductCopy.quantity ? updatedProductCopy.quantity + 1 : qtdValue;
+    updatedProductCopy.quantity = updatedProductCopy.quantity + 1;
     updatedProducts[productIndex] = updatedProductCopy;
-
     setFormValue('products', updatedProducts)
 
   }, [setFormValue, formData])
 
   const handleOnDecrementQtd = useCallback((value: any) => {
-    // const qtdValue = 1
-    // const updatedProducts = [...formData.products];
-    // const productIndex = updatedProducts.findIndex(product => product.service_id === value.service_id);
-    // const updatedProductCopy = {...updatedProducts[productIndex]};
-    // updatedProductCopy.quantity = updatedProductCopy.quantity ? updatedProductCopy.quantity - 1 : qtdValue - 1;
-    // updatedProducts[productIndex] = updatedProductCopy;
-
-    console.log('quantity', !formData.quantity ? 0 : formData.quantity - 1)
-
-    // setFormValue('products', updatedProducts)
+    const updatedProducts = [...formData.products];
+    const productIndex = updatedProducts.findIndex(product => product.service_id === value.service_id);
+    const updatedProductCopy = {...updatedProducts[productIndex]};
+    updatedProductCopy.quantity = updatedProductCopy.quantity - 1;
+    updatedProducts[productIndex] = updatedProductCopy;
+    setFormValue('products', updatedProducts)
 
   }, [setFormValue, formData])
 
