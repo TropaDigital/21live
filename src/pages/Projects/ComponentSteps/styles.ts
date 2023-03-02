@@ -4,6 +4,10 @@ interface Props {
   isDisabed?: boolean;
 }
 
+export const ContainerSteps = styled.div`
+
+`;
+
 export const Container = styled.div<Props>`
   ${(props) => props.isDisabed && css`
     opacity: 0.4;

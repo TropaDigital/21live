@@ -3,13 +3,15 @@ import { FieldDefault, FieldGroupFormDefault } from '../../../components/UiEleme
 import { InputDefault } from '../../../components/Inputs/InputDefault'
 import { SelectDefault } from '../../../components/Inputs/SelectDefault'
 import { BiCalendar } from 'react-icons/bi'
+import { TenantProps } from '../../../utils/models'
 
 interface Props {
   data: any;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => void;
+  clients: TenantProps[] | null
 }
 
-export default function InfoGeral({data, handleInputChange}: Props) {
+export default function InfoGeral({data, handleInputChange, clients}: Props) {
   return (
     <div>
       <FieldDefault style={{marginBottom: '14px'}}>
@@ -29,9 +31,9 @@ export default function InfoGeral({data, handleInputChange}: Props) {
           value={data.tenant_id}
           onChange={handleInputChange}
         >
-          <option value='0'>nome-0</option>
-          <option value='1'>nome-1</option>
-          <option value='2'>nome-2</option>
+          {clients?.map((row) => (
+            <option key={row.tenant_id} value={row.tenant_id}>{row.name}</option>
+          ))}
         </SelectDefault>
       </FieldDefault>
 

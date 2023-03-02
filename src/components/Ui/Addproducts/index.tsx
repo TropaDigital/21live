@@ -1,10 +1,7 @@
 import { BiMinus, BiPlus, BiTrash } from "react-icons/bi";
-import { Container, Content } from "./styles";
-import { useCallback, useState } from "react";
-import Radio from "../../Inputs/InputRadioDefault";
 import { multiplyTime } from "../../../utils/convertTimes";
-import ButtonDefault from "../../Buttons/ButtonDefault";
 import InputSwitchDefault from "../../Inputs/InputSwitchDefault";
+import { Container, Content } from "./styles";
 
 interface ProductsProps {
   handleOnDecrementQtd: (e: any) => void;
@@ -15,8 +12,6 @@ interface ProductsProps {
 }
 
 export default function Addproducts({ data, handleOnDecrementQtd, handleOnIncrememtQtd, handleOnPeriod, handleOnDeleteProduct }: ProductsProps) {
-
-  console.log(data.quantity)
 
   return (
     <Container>
@@ -34,26 +29,11 @@ export default function Addproducts({ data, handleOnDecrementQtd, handleOnIncrem
         <div className="boxInfoMonthlyOrYearly">
           <span>Mensal</span>
           <InputSwitchDefault
-            onChange={(e) => console.log("SWEET =>", e)}
-            // disabled
+            onChange={(e) => handleOnPeriod(e.target.checked)}
+            value={data.period}
           />
           <span>Anual</span>
-
-          {/* <Radio 
-            onChange={(e) => handleOnPeriod(e)}
-            value={data.period}
-            name={data.description}
-            options={[
-              {
-                label: 'Mensal',
-                value: 'mensal'
-              },
-              {
-                label: 'Anual',
-                value: 'anual'
-              },
-            ]}
-          /> */}
+       
         </div>
 
         <div className="boxRightProducts">

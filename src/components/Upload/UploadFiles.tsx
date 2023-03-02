@@ -7,7 +7,7 @@ import Upload from '.';
 import FileList from './FileList';
 import api from '../../services/api';
 
-interface UploadedFilesProps {
+export interface UploadedFilesProps {
   file?: File;
   file_id: string;
   // name: string;

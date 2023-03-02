@@ -7,7 +7,7 @@ import { useFetch } from '../../../hooks/useFetch';
 import useForm from '../../../hooks/useForm';
 
 // TYPES
-import { IProjectCreate, IServices } from '../../../types';
+import { IProjectCreate } from '../../../types';
 
 // UTILS
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
@@ -21,12 +21,15 @@ import { SelectDefault } from '../../../components/Inputs/SelectDefault';
 import { ContentDefault, FieldGroupFormDefault, FooterModal } from '../../../components/UiElements/styles';
 import ModalDefault from '../../../components/Ui/ModalDefault';
 import InfoGeral from '../ComponentSteps/InfoGeral';
-import InfoRevision from '../ComponentSteps/InfoRevision';
 import InfoProducts from '../ComponentSteps/InfoProducts';
+import InfoDescription from '../ComponentSteps/InfoDescription';
+import InfoFiles from '../ComponentSteps/InfoFiles';
 
 import Steps from '../Steps';
 // STYLES
 import { Container, CardProject, TitleCardProject, InfoCardProject, FooterProjectCard, FieldGroupCardProject, ContentCardProject } from './styles';
+import { TenantProps } from '../../../utils/models';
+import { UploadedFilesProps } from '../../../components/Upload/UploadFiles';
 
 export default function ListProjects() {
   const [modal, setModal] = useState(false);
@@ -39,15 +42,16 @@ export default function ListProjects() {
     date_start: '',
     date_end: '',
     description: '',
-    forProducts: false,
-    forDescription: false,
     products: [],
     files: [],
   } as IProjectCreate)
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
+
   
   // PRODUTOS
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const { data: dataOffice } = useFetch<IProjectCreate[]>(`services`);
+  const { data: dataClient } = useFetch<TenantProps[]>('tenant');
 
   function handleSelectItem(id: any) {
     const alreadySelected = selectedItems.findIndex((item) => item.service === id.service);
@@ -106,7 +110,7 @@ export default function ListProjects() {
   }, [setFormValue, formData])
 
   const formComponents = [
-    <InfoGeral data={formData} handleInputChange={handleOnChange} />, 
+    <InfoGeral data={formData} handleInputChange={handleOnChange} clients={dataClient} />, 
     <InfoProducts 
       handleOnAddProducts={handleOnAddProducts} 
       handleSelectItem={handleSelectItem} 
@@ -118,17 +122,21 @@ export default function ListProjects() {
       handleOnPeriod={(e, id) => handleOnPeriod(e, id)}
       handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
     />, 
-    // <UploadFiles
-    //   uploadedFiles={uploadedFiles}
-    //   setUploadedFiles={setUploadedFiles}
-    //   tenant={formData?.tenant_id}
-    //   isDisabed={!formData?.tenant_id}
-    // />, 
-    <InfoRevision />
+    <InfoDescription
+      value={formData?.description}
+      handleOnDescription={(value) => setFormValue('description', value)}
+      mentions={[]}
+    />,
+    <InfoFiles
+      uploadedFiles={uploadedFiles}
+      setUploadedFiles={setUploadedFiles}
+      tenant={formData?.tenant_id}
+      isDisabed={!formData?.tenant_id}
+    />
   ];
   const { changeStep, currentComponent, currentStep, isFirstStep, isLastStep } = useSteps(formComponents);
 
-  console.log('DATA', formData)
+  console.log('FORMDATA', formData)
 
   return (
     <Container>

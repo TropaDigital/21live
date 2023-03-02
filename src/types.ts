@@ -25,8 +25,6 @@ export interface IProjectCreate {
   date_start: string
   date_end: string
   description?: string
-  forProducts?: boolean
-  forDescription?: boolean
   products?: Array<IProduct>
   files?: Array<IDocProject>
 }

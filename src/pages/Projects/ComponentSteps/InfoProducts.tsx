@@ -36,8 +36,6 @@ export default function InfoProducts({
   dataOffice, 
   dataFilter, 
   handleOnAddProducts, 
-  selectedItems, 
-  handleSelectItem,
   handleOnDecrementQtd,
   handleOnIncrememtQtd,
   handleOnPeriod,
@@ -46,7 +44,7 @@ export default function InfoProducts({
   const minutesAll = dataFilter.map((obj: any) => multiplyTime(obj.minutes, obj.quantity))
 
   function handleOnAddItems(items: any) {
-    handleOnAddProducts( [{...items, quantity: 1}])
+    handleOnAddProducts( [{...items, quantity: 1, period: false}])
     setIsOpen(!isOpen)
     setSearch([])
     setSearchTerm('')
@@ -148,44 +146,6 @@ export default function InfoProducts({
           <span>Total de horas estimadas: <strong>{sumTimes(minutesAll)}</strong></span>
         </div>
       </div>
-
-      {/* <ModalDefault
-        title='Adicionar Produtos'
-        isOpen={isOpen}
-        onOpenChange={setIsOpen}
-      >
-        <ContainerListproducts>
-          <ul>
-            {differentObjects?.map((row: any) => (
-              <li key={row.service_id}>
-                <CheckboxDefault
-                  label={row.service}
-                  name={row.service}
-                  onChange={() => handleSelectItem(row)}
-                  checked={selectedItems.filter((obj: any) => obj.service_id === row.service_id).length > 0 ? true : false}
-                />
-              </li>
-            ))}
-          </ul>
-
-          <FooterModal style={{ justifyContent: 'flex-end', gap: '12px' }}>
-            <ButtonDefault
-              typeButton="primary"
-              isOutline
-              onClick={() => setIsOpen(!isOpen)}
-            >
-              Cancelar
-            </ButtonDefault>
-
-            <ButtonDefault
-              typeButton="primary"
-              onClick={() => handleOnAddItems(selectedItems)}
-            >
-              Adicionar produtos
-            </ButtonDefault>
-          </FooterModal>
-        </ContainerListproducts>
-      </ModalDefault> */}
     </ContainerInfoProducts>
   )
 }

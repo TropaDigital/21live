@@ -33,7 +33,7 @@ export default function Steps({ currentStep }: any) {
             <BiCheck color='#fff' style={{ zIndex: 10 }}/>
           )}
         </div>
-        <span>Produtos</span>
+        <span>Descrição</span>
       </div>
 
       <div className={`step ${currentStep >= 3 ? "stepActive" : ""} ${currentStep >= 4 ? "stepSuccess" : ""}`}>
@@ -43,7 +43,7 @@ export default function Steps({ currentStep }: any) {
             <BiCheck color='#fff' style={{ zIndex: 10 }}/>
           )}
         </div>
-        <span>Produtos</span>
+        <span>Anexos</span>
       </div>
 
       <div className="progressStep">
