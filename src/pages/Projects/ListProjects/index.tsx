@@ -39,7 +39,10 @@ interface StateProps {
 
 export default function ListProjects() {
   const { addToast } = useToast()
-  const [modal, setModal] = useState(false);
+  const [modal, setModal] = useState({
+    isOpen: false,
+    type: 'Criar nova Ata de Reunião'
+  })
   const [searchTerm, setSearchTerm] = useState('');
 
   const { formData, setFormValue, setData, handleOnChange, handleOnChangeCheckbox } = useForm({
@@ -200,6 +203,25 @@ export default function ListProjects() {
     }
   }
 
+  const handleOnCancel = () => {
+    setModal({ 
+      isOpen: false,
+      type: 'Criar novo Projeto/Contrato'
+    });
+    setData({
+      tenant_id: '',
+      title: '',
+      contract_type: '',
+      date_start: '',
+      date_end: '',
+      description: '',
+      products: [],
+      files: [],
+    } as IProjectCreate)
+    setUploadedFiles([]);
+    setError({});
+  }
+
   const handleOnSubmit = useCallback(async (event: any) => {
     try {
       event.preventDefault();
@@ -216,10 +238,11 @@ export default function ListProjects() {
       ))
 
       const newArrayProducts = formData.products.map(({ tenant_id, service_id, ...rest }: any) => rest);
+      const updateProducts = formData.products.map(({ service_id, ...rest }: any) => ({ product_id: service_id, ...rest }))
 
       const { title, tenant_id, description, date_start, date_end, contract_type } = formData
 
-      const newData = {
+      const createNewData = {
         title,
         tenant_id,
         products: newArrayProducts,
@@ -230,13 +253,22 @@ export default function ListProjects() {
         files
       }
 
-      await api.post(`project`, newData);
+      const updateData = {
+        title,
+        tenant_id,
+        products: updateProducts,
+        description,
+        date_start,
+        date_end,
+        contract_type,
+        files
+      }
 
-      // if(modal.type === 'Criar nova Ata de Reunião') {
-      //   await api.post(`project`, newFormData);
-      // } else {
-      //   await api.put(`project/${formData.meeting_id}`, newFormData);
-      // }
+      if(modal.type === 'Criar novo Projeto/Contrato') {
+        await api.post(`project`, createNewData);
+      } else {
+        await api.put(`project/${formData.project_id}`, updateData);
+      }
 
       addToast({
         type: 'success',
@@ -255,7 +287,10 @@ export default function ListProjects() {
         files: [],
       } as IProjectCreate)
       setUploadedFiles([]);
-      setModal(false);
+      setModal({ 
+        isOpen: false,
+        type: 'Criar novo Projeto/Contrato'
+      });
       changeStep(0)
 
     } catch (e: any) {
@@ -277,7 +312,10 @@ export default function ListProjects() {
   return (
     <Container>
       <HeaderPage title="Projetos">
-        <ButtonDefault typeButton="success" onClick={() => setModal(!modal)}>
+        <ButtonDefault typeButton="success" onClick={() => setModal({ 
+        isOpen: !modal.isOpen,
+        type: 'Criar novo Projeto/Contrato'
+      })}>
           <BiPlus color="#fff" />
             Novo Projeto
         </ButtonDefault>
@@ -355,7 +393,10 @@ export default function ListProjects() {
                       ...row,
                       products: row.products.map(({ product_id, ...rest }: any) => ({ service_id: product_id, ...rest }))
                     })
-                    setModal(!modal)
+                    setModal({ 
+                      isOpen: !modal.isOpen,
+                      type: `Editar Projeto/Contrato: ${row.title}`
+                    });
                   }}
                   >
                     <BiShow />
@@ -369,9 +410,9 @@ export default function ListProjects() {
       </ContentDefault>
 
       <ModalDefault 
-        isOpen={modal}
-        title='Criar novo Projeto/Contrato'
-        onOpenChange={setModal}
+        isOpen={modal.isOpen}
+        title={modal.type}
+        onOpenChange={handleOnCancel}
       >
         <form onSubmit={handleOnSubmit}>
           
@@ -381,7 +422,12 @@ export default function ListProjects() {
 
           <FooterModal>
 
-            <ButtonDefault typeButton='dark' isOutline type='button'>
+            <ButtonDefault 
+              typeButton='dark' 
+              isOutline 
+              type='button'
+              onClick={handleOnCancel}
+            >
               Descartar
             </ButtonDefault>
 
