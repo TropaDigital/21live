@@ -3,8 +3,8 @@ import axios from 'axios';
 var baseUrl
 
 if(process.env.NODE_ENV === 'development') {
-  // baseUrl = 'http://192.168.15.10:33332/'
-  baseUrl = "https://21live.backendtropa.com.br/"
+  baseUrl = 'http://192.168.15.14:33332/'
+  // baseUrl = "https://21live.backendtropa.com.br/"
 
 } else {
   baseUrl = "https://21live.backendtropa.com.br/"

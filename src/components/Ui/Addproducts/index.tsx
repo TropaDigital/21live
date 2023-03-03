@@ -12,7 +12,7 @@ interface ProductsProps {
 }
 
 export default function Addproducts({ data, handleOnDecrementQtd, handleOnIncrememtQtd, handleOnPeriod, handleOnDeleteProduct }: ProductsProps) {
-
+  const verifyPeriod = data.period === 'mensal' ? false : true
   return (
     <Container>
       <Content>
@@ -30,7 +30,7 @@ export default function Addproducts({ data, handleOnDecrementQtd, handleOnIncrem
           <span>Mensal</span>
           <InputSwitchDefault
             onChange={(e) => handleOnPeriod(e.target.checked)}
-            value={data.period}
+            value={String(verifyPeriod)}
           />
           <span>Anual</span>
        

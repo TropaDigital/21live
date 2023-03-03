@@ -5,13 +5,18 @@ import { SelectDefault } from '../../../components/Inputs/SelectDefault'
 import { BiCalendar } from 'react-icons/bi'
 import { TenantProps } from '../../../utils/models'
 
+interface FormProps {
+  [key: string]: any
+}
+
 interface Props {
   data: any;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => void;
   clients: TenantProps[] | null
+  error: FormProps
 }
 
-export default function InfoGeral({data, handleInputChange, clients}: Props) {
+export default function InfoGeral({data, handleInputChange, clients, error}: Props) {
   return (
     <div>
       <FieldDefault style={{marginBottom: '14px'}}>
@@ -21,6 +26,7 @@ export default function InfoGeral({data, handleInputChange, clients}: Props) {
           name="title"
           value={data.title}
           onChange={handleInputChange}
+          error={error?.title}
         />
       </FieldDefault>
 
@@ -30,6 +36,7 @@ export default function InfoGeral({data, handleInputChange, clients}: Props) {
           name='tenant_id'
           value={data.tenant_id}
           onChange={handleInputChange}
+          error={error?.tenant_id}
         >
           {clients?.map((row) => (
             <option key={row.tenant_id} value={row.tenant_id}>{row.name}</option>
@@ -43,6 +50,7 @@ export default function InfoGeral({data, handleInputChange, clients}: Props) {
           name='contract_type'
           value={data.contract_type}
           onChange={handleInputChange}
+          error={error?.contract_type}
         >
           <option value='fee'>Fee</option>
           <option value='spot'>Spot</option>
@@ -58,6 +66,7 @@ export default function InfoGeral({data, handleInputChange, clients}: Props) {
             icon={BiCalendar}
             value={data.date_start}
             onChange={handleInputChange}
+            error={error?.date_start}
           />
         </FieldDefault>
 
@@ -69,6 +78,7 @@ export default function InfoGeral({data, handleInputChange, clients}: Props) {
             icon={BiCalendar}
             value={data.date_end}
             onChange={handleInputChange}
+            error={error?.date_end}
           />
         </FieldDefault>
       </FieldGroupFormDefault>

@@ -44,7 +44,7 @@ export default function InfoProducts({
   const minutesAll = dataFilter.map((obj: any) => multiplyTime(obj.minutes, obj.quantity))
 
   function handleOnAddItems(items: any) {
-    handleOnAddProducts( [{...items, quantity: 1, period: false}])
+    handleOnAddProducts( [{...items, quantity: 1, period: 'mensal'}])
     setIsOpen(!isOpen)
     setSearch([])
     setSearchTerm('')

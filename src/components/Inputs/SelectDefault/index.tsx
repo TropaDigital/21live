@@ -70,7 +70,7 @@ export function SelectDefault({ label, alert, error, placeHolder, children, icon
           id={label}
           {...rest}
         >
-        <option value="0">{placeHolder ?? 'Selecione uma opção'}</option>
+        <option value="">{placeHolder ?? 'Selecione uma opção'}</option>
           {children}
         </select>
 

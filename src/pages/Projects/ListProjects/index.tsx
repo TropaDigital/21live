@@ -11,6 +11,8 @@ import { IProjectCreate } from '../../../types';
 
 // UTILS
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
+import { TenantProps } from '../../../utils/models';
+import { useToast } from '../../../hooks/toast';
 
 // COMPONENTS
 import { InputDefault } from '../../../components/Inputs/InputDefault';
@@ -24,14 +26,19 @@ import InfoGeral from '../ComponentSteps/InfoGeral';
 import InfoProducts from '../ComponentSteps/InfoProducts';
 import InfoDescription from '../ComponentSteps/InfoDescription';
 import InfoFiles from '../ComponentSteps/InfoFiles';
-
+import { UploadedFilesProps } from '../../../components/Upload/UploadFiles';
 import Steps from '../Steps';
+
 // STYLES
 import { Container, CardProject, TitleCardProject, InfoCardProject, FooterProjectCard, FieldGroupCardProject, ContentCardProject } from './styles';
-import { TenantProps } from '../../../utils/models';
-import { UploadedFilesProps } from '../../../components/Upload/UploadFiles';
+import api from '../../../services/api';
+
+interface StateProps {
+  [key: string]: any;
+}
 
 export default function ListProjects() {
+  const { addToast } = useToast()
   const [modal, setModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -46,12 +53,13 @@ export default function ListProjects() {
     files: [],
   } as IProjectCreate)
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
-
+  const [error, setError] = useState<StateProps>({});
   
   // PRODUTOS
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const { data: dataOffice } = useFetch<IProjectCreate[]>(`services`);
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
+  const { data: dataProject } = useFetch<any[]>('project/21');
 
   function handleSelectItem(id: any) {
     const alreadySelected = selectedItems.findIndex((item) => item.service === id.service);
@@ -99,10 +107,11 @@ export default function ListProjects() {
   }, [setFormValue, formData])
 
   const handleOnPeriod = useCallback((value: any, id: any) => {
+    const verifyPeriod = value ? 'anual' : 'mensal'
     const updatedProducts = [...formData.products];
     const productIndex = updatedProducts.findIndex(product => product.service_id === id);
     const updatedProductCopy = {...updatedProducts[productIndex]};
-    updatedProductCopy.period = value;
+    updatedProductCopy.period = verifyPeriod;
     updatedProducts[productIndex] = updatedProductCopy;
 
     setFormValue('products', updatedProducts)
@@ -110,7 +119,7 @@ export default function ListProjects() {
   }, [setFormValue, formData])
 
   const formComponents = [
-    <InfoGeral data={formData} handleInputChange={handleOnChange} clients={dataClient} />, 
+    <InfoGeral data={formData} handleInputChange={handleOnChange} clients={dataClient} error={error}/>, 
     <InfoProducts 
       handleOnAddProducts={handleOnAddProducts} 
       handleSelectItem={handleSelectItem} 
@@ -136,7 +145,134 @@ export default function ListProjects() {
   ];
   const { changeStep, currentComponent, currentStep, isFirstStep, isLastStep } = useSteps(formComponents);
 
-  console.log('FORMDATA', formData)
+  function setErrorInput(value: any, message: any) {
+    if(!message) {
+      delete error[value]
+    }
+     
+    setError({...error, [value]: message })
+    return message;
+  }
+
+  const validateStep = () => {
+    const { title, tenant_id, contract_type, date_start, date_end } = formData
+
+    try {
+      if (title === "") {
+        throw setErrorInput('title', 'Titulo é obrigatório!');
+      } else {
+        console.log('CAIU AQUI')
+        setErrorInput('title', undefined);
+      }
+
+      if (tenant_id === "") {
+        throw setErrorInput('tenant_id', 'Cliente é obrigatório!');
+      } else {
+        setErrorInput('tenant_id', undefined);
+      }
+
+      if (contract_type === "") {
+        throw setErrorInput('contract_type', 'Contrato é obrigatório!');
+      } else {
+        setErrorInput('contract_type', undefined);
+      }
+
+      if (date_start === "") {
+        throw setErrorInput('date_start', 'Data inicial é obrigatório!');
+      } else {
+        setErrorInput('date_start', undefined);
+      }
+      
+      if (date_end === "") {
+        throw setErrorInput('date_end', 'Data final é obrigatório!')
+      } else {
+        setErrorInput('date_end', undefined);
+      }
+
+      changeStep(currentStep + 1)
+    } catch(error: any) {
+      console.log('ERROR =>', error)
+      addToast({
+        title: 'Atenção',
+        description: error,
+        type: 'warning'
+      })
+    }
+  }
+
+  const handleOnSubmit = useCallback(async (event: any) => {
+    try {
+      event.preventDefault();
+
+      // Inserir lógica
+      const files = uploadedFiles.map((row) => (
+        {
+          bucket: row.bucket,
+          file_name: row.file_name,
+          key: row.key,
+          size: row.size,
+          url: row.url
+        }
+      ))
+
+      const newArrayProducts = formData.products.map(({ tenant_id, service_id, ...rest }: any) => rest);
+
+      const { title, tenant_id, description, date_start, date_end, contract_type } = formData
+
+      const newData = {
+        title,
+        tenant_id,
+        products: newArrayProducts,
+        description,
+        date_start,
+        date_end,
+        contract_type,
+        files
+      }
+
+      await api.post(`project`, newData);
+
+      // if(modal.type === 'Criar nova Ata de Reunião') {
+      //   await api.post(`project`, newFormData);
+      // } else {
+      //   await api.put(`project/${formData.meeting_id}`, newFormData);
+      // }
+
+      addToast({
+        type: 'success',
+        title: 'Sucesso',
+        description: 'Serviço cadastrado com sucesso!',
+      });
+
+      setData({
+        tenant_id: '',
+        title: '',
+        contract_type: '',
+        date_start: '',
+        date_end: '',
+        description: '',
+        products: [],
+        files: [],
+      } as IProjectCreate)
+      setUploadedFiles([]);
+      setModal(false);
+      changeStep(0)
+
+    } catch (e: any) {
+      // Exibir erro
+      console.log('ERROR =>', e)
+      addToast({
+        type: 'danger',
+        title: 'ATENÇÃO',
+        description: e.response.data.message,
+      });
+
+      // setErros(getVaidationErrors(e.response.data.result))
+
+    }
+  }, [formData, setFormValue, uploadedFiles, setUploadedFiles, modal, setData]);
+
+  console.log('formData', formData)
 
   return (
     <Container>
@@ -188,14 +324,14 @@ export default function ListProjects() {
       <ContentDefault style={{ marginTop: '20px' }}>
 
         <ContentCardProject>
-          {[0,1,2,3].map((row) => (
-            <CardProject key={row}>
+          {dataProject?.map((row) => (
+            <CardProject key={row.project_id}>
               <TitleCardProject>
-                Título do projeto
+                {row.title}
               </TitleCardProject>
 
               <InfoCardProject>
-                <h3>Cliente: <span>Tropa</span></h3>
+                <h3>Cliente: <span>{row.contract_type}</span></h3>
 
                 <div className="sectionProgressCardProject">
                   <h3>Atividade: <span>05:50:24</span></h3>
@@ -212,7 +348,16 @@ export default function ListProjects() {
                     <BiEdit />
                   </ButtonDefault>
 
-                  <ButtonDefault typeButton='info'>
+                  <ButtonDefault 
+                    typeButton='info'
+                    onClick={() => {
+                      setData({
+                      ...row,
+                      products: row.products.map(({ product_id, ...rest }: any) => ({ service_id: product_id, ...rest }))
+                    })
+                    setModal(!modal)
+                  }}
+                  >
                     <BiShow />
                     Ver Projeto
                   </ButtonDefault>
@@ -228,7 +373,7 @@ export default function ListProjects() {
         title='Criar novo Projeto/Contrato'
         onOpenChange={setModal}
       >
-        <form onSubmit={(e) => changeStep(currentStep + 1, e)}>
+        <form onSubmit={handleOnSubmit}>
           
           <Steps currentStep={currentStep} />
 
@@ -236,7 +381,7 @@ export default function ListProjects() {
 
           <FooterModal>
 
-            <ButtonDefault typeButton='dark' isOutline>
+            <ButtonDefault typeButton='dark' isOutline type='button'>
               Descartar
             </ButtonDefault>
 
@@ -253,14 +398,17 @@ export default function ListProjects() {
 
               {!isLastStep ? (
                 <ButtonDefault
-                  type='submit'
+                  type='button'
                   typeButton="primary"
+                  onClick={validateStep}
                 >
                   Próxima etapa
                 </ButtonDefault>
               ) : (
                 <ButtonDefault
                   typeButton="primary"
+                  type='button'
+                  onClick={handleOnSubmit}
                 >
                   Salvar
                 </ButtonDefault>
