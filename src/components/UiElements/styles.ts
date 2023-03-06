@@ -4,10 +4,15 @@ interface Props {
   bottom?: number
 }
 
+export const ContainerDefault = styled.div`
+
+`;
+
 export const ContainerGroupTable = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1rem;
+  box-shadow: var(--shadow);
 `;
 
 export const FieldDefault = styled.div`

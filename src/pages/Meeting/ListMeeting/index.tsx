@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
-import { BiCalendar, BiEdit, BiPlus, BiSearchAlt, BiTrash } from 'react-icons/bi';
 import api from '../../../services/api';
+import { BiCalendar, BiPlus, BiSearchAlt } from 'react-icons/bi';
 
 // HOOKS
 import { useToast } from '../../../hooks/toast';
@@ -26,6 +26,7 @@ import UploadFiles from '../../../components/Upload/UploadFiles';
 import Paginate from '../../../components/Paginate';
 import Alert from '../../../components/Ui/Alert';
 import WrapperEditor from '../../../components/WrapperEditor';
+import ButtonTable from '../../../components/Buttons/ButtonTable';
 
 // STYLES
 import { ContainerGroupTable, ContentDefault, FieldDefault, FieldGroupFormDefault, FooterModal } from '../../../components/UiElements/styles';
@@ -359,9 +360,10 @@ export default function ListMeeting() {
                   <td>{row.date}</td>
                   <td>
                     <div className="fieldTableClients">
-                      <ButtonDefault typeButton="info" onClick={() => handleOnEdit(row)}>
-                        <BiEdit />
-                      </ButtonDefault>
+                      <ButtonTable 
+                        typeButton='edit'
+                        onClick={() => handleOnEdit(row)}
+                      />
 
                       <Alert
                         title='Atenção'
@@ -369,9 +371,10 @@ export default function ListMeeting() {
                         cancelButton={() => {}}
                         confirmButton={() => handleOnDelete(row.meeting_id)}
                       >
-                        <ButtonDefault typeButton="danger">
-                          <BiTrash />
-                        </ButtonDefault>
+                        <ButtonTable 
+                          typeButton='delete'
+                          onClick={() => handleOnEdit(row)}
+                        />
                       </Alert>
 
                     </div>

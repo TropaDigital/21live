@@ -2,6 +2,7 @@ import styled, { css, keyframes } from 'styled-components';
 
 interface Props {
   isChecked?: any
+  isLabel?: boolean;
 }
 
 interface Props {
@@ -41,14 +42,17 @@ export const StyledLabel = styled.label`
   color: var(--gray-700);
 `;
 
-export const StyledSwitch = styled.span`
+export const StyledSwitch = styled.span<Props>`
   display: block;
   width: 34px;
   padding: 4px;
   border-radius: 50px;
   background: #E3E5EA;
   transition: all 0.35s;
-  margin-right: 12px;
+
+  ${({ isLabel }) => isLabel && css`
+    margin-right: 12px;
+  `}
 `;
 
 export const StyledKnob = styled.span<Props>`

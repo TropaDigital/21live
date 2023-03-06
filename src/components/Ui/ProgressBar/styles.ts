@@ -18,7 +18,7 @@ export const Container = styled.div<Props>`
       0 1px rgba(255, 255, 255, 0.08); */
 
     .progress-bar {
-      height: 10px;
+      height: 8px;
       background-color: #ee303c;
       border-radius: 4px;
       transition: 0.4s linear;
@@ -26,15 +26,15 @@ export const Container = styled.div<Props>`
     }
 
     .progress-striped .progress-bar {
-      background-color: #FAAE42;
+      background-color: #00C899;
       width: ${({ value }) => value ? `${value+'%'}` : "0%"};
       background-image: linear-gradient(
         45deg,
-        rgb(252, 163, 17) 25%,
+        #3ED0AE 25%,
         transparent 25%,
         transparent 50%,
-        rgb(252, 163, 17) 50%,
-        rgb(252, 163, 17) 75%,
+        #3ED0AE 50%,
+        #3ED0AE 75%,
         transparent 75%,
         transparent
       );

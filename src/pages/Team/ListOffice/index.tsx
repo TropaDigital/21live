@@ -1,40 +1,30 @@
-import { useCallback, useEffect, useId, useState } from 'react';
+import { useCallback, useState } from 'react';
+import { BiPlus, BiX } from 'react-icons/bi';
+
+// SERVICES
 import api from '../../../services/api';
 
-import { BiEdit, BiFilter, BiPlus, BiSearchAlt, BiTrash, BiX, BiXCircle } from 'react-icons/bi';
-import { HiOutlineEye } from 'react-icons/hi';
+// HOOKS
+import { useFetch } from '../../../hooks/useFetch';
+import { useToast } from '../../../hooks/toast';
+
+// COMPONENTS
 import * as Dialog from '@radix-ui/react-dialog';
-
-import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
-import { useDebounce } from '../../../utils/useDebounce';
-
 import HeaderPage from '../../../components/HeaderPage';
-import Avatar from '../../../components/Ui/Avatar';
 import ScrollAreas from '../../../components/Ui/ScrollAreas';
-import InputSwitchDefault from '../../../components/Inputs/InputSwitchDefault';
-import ProgressBar from '../../../components/Ui/ProgressBar';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
-import { SelectDefault } from '../../../components/Inputs/SelectDefault';
 import { TableDefault } from '../../../components/TableDefault';
+import ButtonTable from '../../../components/Buttons/ButtonTable';
 
-import { Container } from './styles';
+// STYLES
 import {
+  ContainerDefault,
   ContainerGroupTable,
-  ContentDefault,
   FieldDefault,
   FieldGroupFormDefault,
   FooterModal,
 } from '../../../components/UiElements/styles';
-import { useFetch } from '../../../hooks/useFetch';
-import { useToast } from '../../../hooks/toast';
-
-interface Avatar {
-  id: number,
-  name: string,
-  url: string,
-  isOnline: boolean,
-}
 
 interface OfficeProps {
   function_id: number;
@@ -172,7 +162,7 @@ export default function ListOffice() {
   }, [openModalDelete]);
 
   return (
-    <Container>
+    <ContainerDefault>
       <HeaderPage title="Cargos">
         <ButtonDefault typeButton="success" onClick={() => setOpen({...open, ['isOpen']: !open.isOpen})}>
           <BiPlus color="#fff" />
@@ -202,12 +192,14 @@ export default function ListOffice() {
                   <td>{row.description}</td>
                   <td>
                     <div className="fieldTableClients">
-                      <ButtonDefault typeButton="danger" onClick={() => handleOnModalDelete(!openModalDelete.isOpen, row)}>
-                        <BiTrash  />
-                      </ButtonDefault>
-                      <ButtonDefault typeButton="info" onClick={() => handleOnModalEdit(row)}>
-                        <BiEdit />
-                      </ButtonDefault>
+                      <ButtonTable 
+                        typeButton='edit'
+                        onClick={() => handleOnModalEdit(row)}
+                      />
+                      <ButtonTable 
+                        typeButton='delete'
+                        onClick={() => handleOnModalDelete(!openModalDelete.isOpen, row)}
+                      />
                     </div>
                   </td>
                 </tr>
@@ -292,6 +284,6 @@ export default function ListOffice() {
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
-    </Container>
+    </ContainerDefault>
   );
 }

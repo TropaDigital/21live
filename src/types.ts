@@ -16,17 +16,27 @@ export interface IDocProject{
   url: string
   key: string
   bucket: string
+
+  file?: File;
+  file_id?: string;
+  readableSize?: string;
+  preview?: string;
+  progress?: number;
+  uploaded?: boolean;
+  error?: boolean;
 }
 
 export interface IProjectCreate {
   tenant_id: number|string //tenant_id
+  project_id: string;
   title: string
   contract_type: string //fee | spot
   date_start: string
   date_end: string
+  client_name?: string
   description?: string
   products?: Array<IProduct>
-  files?: Array<IDocProject>
+  files?: Array<IDocProject> | any
 }
 
 export interface IServices {

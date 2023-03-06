@@ -15,20 +15,20 @@ export const Container = styled.div`
     }
 
     th {
-      color: var(--light);
       background-color: var(--primary);
       border-radius: 5px;
       text-transform: capitalize;
-      font-weight: 700;
       font-size: var(--text-smal-sm);
-      padding: 1rem 2rem;
+      font-weight: var(--weight-bold);
+      color: var(--light);
+      padding: 8px 24px;
       text-align: center;
-      line-height: 1.5rem;
+      line-height: 20px;
     }
     td {
       font-size: var(--text-smal-sm);
-      font-weight: var(--weight-regular);
-      color: var(--gray-800);
+      font-weight: var(--weight-medium);
+      color: var(--gray-700);
       border: 0;
       padding: 1rem 2rem;
       background: #ffffff;
@@ -58,8 +58,9 @@ export const Container = styled.div`
 
 export const TitleTable = styled.h1`
   font-size: var(--text-smal-xl);
-  text-transform: capitalize;
   font-weight: var(--weight-semibold);
   color: var(--title-color);
-  margin-bottom: 10px;
+  text-transform: capitalize;
+  margin-bottom: 1rem;
+  margin-left: 5px;
 `;

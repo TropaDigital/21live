@@ -1,33 +1,39 @@
 import { useCallback, useEffect, useState } from 'react';
-import api from '../../../services/api';
-
 import { BiCalendar, BiEdit, BiEnvelope, BiKey, BiMoney, BiPhoneCall, BiPlus, BiSearchAlt, BiUser, BiX } from 'react-icons/bi';
-import * as Dialog from '@radix-ui/react-dialog';
+import { useNavigate } from 'react-router-dom';
+import moment from 'moment';
 
+// HOOKS
+import { useToast } from '../../../hooks/toast';
+import { useFetch } from '../../../hooks/useFetch';
+
+// UTILS
 import { useDebounce } from '../../../utils/useDebounce';
 
+// SERVICES
+import api from '../../../services/api';
+
+// COMPONENTS
+import * as Dialog from '@radix-ui/react-dialog';
 import HeaderPage from '../../../components/HeaderPage';
 import ScrollAreas from '../../../components/Ui/ScrollAreas';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { SelectDefault } from '../../../components/Inputs/SelectDefault';
 import { TableDefault } from '../../../components/TableDefault';
+import Paginate from '../../../components/Paginate';
+import AvatarDefault from '../../../components/Ui/Avatar/avatarDefault';
+import ButtonTable from '../../../components/Buttons/ButtonTable';
 
+// STYLES
 import {
+  ContainerDefault,
   ContainerGroupTable,
   ContentDefault,
   FieldDefault,
   FieldGroupFormDefault,
   FooterModal,
 } from '../../../components/UiElements/styles';
-import { Container } from './styles';
-import { useNavigate } from 'react-router-dom';
-import { useToast } from '../../../hooks/toast';
-import Paginate from '../../../components/Paginate';
-import moment from 'moment';
-import { useFetch } from '../../../hooks/useFetch';
-import { generateNameAndColor } from '../../../utils/generateNameAndColors';
-import AvatarDefault from '../../../components/Ui/Avatar/avatarDefault';
 
 interface UserProps {
   name: string;
@@ -95,10 +101,6 @@ export default function Team() {
       setSearching(false);
     }
   }, [debouncedSearchTerm]);
-
-  const [searchTeste, setSearchTeste] = useState()
-
-  // const filterResult = searchTerm.length > 0 ? data?.filter((list) => list)
 
   const handleInputChange = (
     name: string,
@@ -191,7 +193,7 @@ export default function Team() {
   }, [formData, dataModal]);
 
   return (
-    <Container>
+    <ContainerDefault>
       <HeaderPage title="Equipe">
         <>
           <ButtonDefault typeButton="info" onClick={() => navigate('cargos')}>
@@ -262,9 +264,10 @@ export default function Team() {
                   <td>{''}</td>
                   <td>
                     <div className="fieldTableClients">
-                      <ButtonDefault typeButton="info" onClick={() => handleOnModalEdit(row.user_id, row)}>
-                        <BiEdit />
-                      </ButtonDefault>
+                      <ButtonTable 
+                        typeButton='edit'
+                        onClick={() => handleOnModalEdit(row.user_id, row)}
+                      />
                     </div>
                   </td>
                 </tr>
@@ -432,7 +435,6 @@ export default function Team() {
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
-
-    </Container>
+    </ContainerDefault>
   );
 }

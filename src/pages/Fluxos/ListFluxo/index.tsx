@@ -1,22 +1,30 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
-import * as Dialog from '@radix-ui/react-dialog';
 import { BiEdit, BiPlus, BiSearchAlt, BiX } from 'react-icons/bi';
-import api from '../../../services/api';
 
+// HOOKS
 import { useFetch } from '../../../hooks/useFetch';
 import { useToast } from '../../../hooks/toast';
 
+// UTILS
 import { useDebounce } from '../../../utils/useDebounce';
+
+// COMPONENTS
+import * as Dialog from '@radix-ui/react-dialog';
 import HeaderPage from '../../../components/HeaderPage';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import ScrollAreas from '../../../components/Ui/ScrollAreas';
 import { TableDefault } from '../../../components/TableDefault';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import Alert from '../../../components/Ui/Alert'
+import ButtonTable from '../../../components/Buttons/ButtonTable';
 
-import { ContainerGroupTable, ContentDefault, FieldDefault, FieldGroupFormDefault, FooterModal } from '../../../components/UiElements/styles';
-import { Container } from './styled';
+// SERVICES
+import api from '../../../services/api';
+
+// STYLES
+
+import { ContainerDefault, ContainerGroupTable, ContentDefault, FieldDefault, FieldGroupFormDefault, FooterModal } from '../../../components/UiElements/styles';
 
 export default function ListFluxo() {
   const navigate = useNavigate();
@@ -109,7 +117,7 @@ export default function ListFluxo() {
   }, [formData, open]);
 
   return (
-    <Container>
+    <ContainerDefault>
       <HeaderPage title="Fluxos">
         <ButtonDefault typeButton="success" onClick={() => setModal(!modal)}>
           <BiPlus color="#fff" />
@@ -155,25 +163,20 @@ export default function ListFluxo() {
                   <td>5</td>
                   <td>
                     <div className="fieldTableClients">
+                      <ButtonTable 
+                        typeButton='edit'
+                        onClick={() => navigate(`/fluxo/editar/${row.name.replaceAll(' ', '_')}`, {state: {id: row.flow_id, name: row.name }})}
+                      />
                       <Alert
                         title='Atenção'
                         subtitle='Certeza que gostaria de remover esse fluxo? Ao excluir a acão não poderá ser desfeita.'
                         cancelButton={() => {}}
                         confirmButton={() => handleOnDelete(row.flow_id)}
                       >
-                        <ButtonDefault 
-                          typeButton="danger"
-                        >
-                          <BiX size={30} />
-                        </ButtonDefault>
+                        <ButtonTable 
+                          typeButton='delete'
+                        />
                       </Alert>
-
-                      <ButtonDefault 
-                        typeButton="info" 
-                        onClick={() => navigate(`/fluxo/editar/${row.name.replaceAll(' ', '_')}`, {state: {id: row.flow_id, name: row.name }})}
-                      >
-                        <BiEdit />
-                      </ButtonDefault>
                     </div>
                   </td>
                 </tr>
@@ -220,6 +223,6 @@ export default function ListFluxo() {
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
-    </Container>
+    </ContainerDefault>
   )
 }

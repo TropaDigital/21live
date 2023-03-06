@@ -23,13 +23,11 @@ import {
 interface PropsProducts {
   dataOffice: any;
   dataFilter: any;
-  handleSelectItem: (e: any) => void;
   handleOnAddProducts: (items: any) => void;
   handleOnDecrementQtd: (e: any) => void;
   handleOnIncrememtQtd: (e: any) => void;
   handleOnPeriod: (e: any, id: any) => void;
   handleOnDeleteProduct: (id: any) => void;
-  selectedItems: any;
 }
 
 export default function InfoProducts({ 
@@ -78,6 +76,7 @@ export default function InfoProducts({
     }
   }, [debouncedSearchTerm]);
 
+  console.log('dataFilter', dataFilter)
 
   return (
     <ContainerInfoProducts>
@@ -127,12 +126,12 @@ export default function InfoProducts({
         <ul>
           {dataFilter?.map((row: any) => (
             <Addproducts
-              key={row.service_id}
+              key={row.product_id}
               data={row}
               handleOnDecrementQtd={() => handleOnDecrementQtd(row)} 
               handleOnIncrememtQtd={() => handleOnIncrememtQtd(row)}
-              handleOnPeriod={(e) => handleOnPeriod(e, row.service_id)}
-              handleOnDeleteProduct={() => handleOnDeleteProduct(row.service_id)}
+              handleOnPeriod={(e) => handleOnPeriod(e, row.product_id)}
+              handleOnDeleteProduct={() => handleOnDeleteProduct(row.product_id)}
             />
           ))}
         </ul>

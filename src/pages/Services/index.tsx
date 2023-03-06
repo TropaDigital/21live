@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import api from '../../services/api';
 import moment from "moment"
 
-import { BiCode, BiEdit, BiFilter, BiPlus, BiSearchAlt, BiTime, BiTrash, BiX } from 'react-icons/bi';
+import { BiCode, BiPlus, BiSearchAlt, BiTime, BiX } from 'react-icons/bi';
 import * as Dialog from '@radix-ui/react-dialog';
 
 import { useToast } from '../../hooks/toast';
@@ -26,6 +26,7 @@ import {
 import { Container } from './styles';
 import { useFetch } from '../../hooks/useFetch';
 import Paginate from '../../components/Paginate';
+import ButtonTable from '../../components/Buttons/ButtonTable';
 
 interface ServicesProps {
   service_id: number;
@@ -61,7 +62,6 @@ export default function Services() {
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState(0);
   const [isSearching, setSearching] = useState(false);
   const [titleModalService, setTitleModalService] = useState('Novo Serviço');
   const [dataDelete, setDataDelete] = useState({
@@ -279,12 +279,14 @@ export default function Services() {
                   </td>
                   <td>
                     <div className="fieldTableClients">
-                      <ButtonDefault typeButton="danger" onClick={() => handleOnModalDelete(row.service_id, row.service)}>
-                        <BiTrash />
-                      </ButtonDefault>
-                      <ButtonDefault typeButton="info" onClick={() => handleOnEditService(row)}>
-                        <BiEdit />
-                      </ButtonDefault>
+                      <ButtonTable 
+                        typeButton='edit'
+                        onClick={() => handleOnEditService(row)}
+                      />
+                      <ButtonTable 
+                        typeButton='delete'
+                        onClick={() => handleOnModalDelete(row.service_id, row.service)}
+                      />
                     </div>
                   </td>
                 </tr>
