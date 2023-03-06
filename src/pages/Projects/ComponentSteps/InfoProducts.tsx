@@ -76,7 +76,6 @@ export default function InfoProducts({
     }
   }, [debouncedSearchTerm]);
 
-  console.log('dataFilter', dataFilter)
 
   return (
     <ContainerInfoProducts>
@@ -126,12 +125,12 @@ export default function InfoProducts({
         <ul>
           {dataFilter?.map((row: any) => (
             <Addproducts
-              key={row.product_id}
+              key={row.service_id}
               data={row}
               handleOnDecrementQtd={() => handleOnDecrementQtd(row)} 
               handleOnIncrememtQtd={() => handleOnIncrememtQtd(row)}
-              handleOnPeriod={(e) => handleOnPeriod(e, row.product_id)}
-              handleOnDeleteProduct={() => handleOnDeleteProduct(row.product_id)}
+              handleOnPeriod={(e) => handleOnPeriod(e, row.service_id)}
+              handleOnDeleteProduct={() => handleOnDeleteProduct(row.service_id)}
             />
           ))}
         </ul>

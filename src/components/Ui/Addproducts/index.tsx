@@ -22,7 +22,7 @@ export default function Addproducts({ data, handleOnDecrementQtd, handleOnIncrem
             <span>horas estimadas: <strong>{data.quantity ? multiplyTime(data.minutes, data.quantity) : '00:00:00' }</strong></span>
           </div>
           <div className="boxInfopost">
-            <span>horas estimadas: <strong>{data.quantity ? multiplyTime(data.minutes, data.quantity) : '00:00:00' }</strong></span>
+            <span>Categoria: <strong>{data.type}</strong></span>
           </div>
         </div>
 

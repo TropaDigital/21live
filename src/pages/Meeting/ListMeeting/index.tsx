@@ -86,8 +86,9 @@ export default function ListMeeting() {
     dateStart: '',
     dateEnd: ''
   });
+  const [filterOrder, setFilterOredr] = useState('')
 
-  const { data, pages, fetchData } = useFetch<MeetingProps[]>(`meetings?search=${search}&date_start=${filterDate.dateStart}&date_end=${filterDate.dateEnd}`);
+  const { data, pages, fetchData } = useFetch<MeetingProps[]>(`meetings?search=${search}&date_start=${filterDate.dateStart}&date_end=${filterDate.dateEnd}&order=${filterOrder}`);
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const { data: dataTeam } = useFetch<TeamProps[]>('team');
 
@@ -312,11 +313,11 @@ export default function ListMeeting() {
             label="Ordenar por"
             name="order"
             placeHolder="Ordenação"
-            onChange={() => {}}
-            value={''}
+            onChange={(e) => setFilterOredr(e.target.value)}
+            value={filterOrder}
           >
-            <option value='0'>Mais recente</option>
-            <option value='1'>Mais antigo</option>
+            <option value='asc'>Mais recente</option>
+            <option value='desc'>Mais antigo</option>
           </SelectDefault>
 
           <InputDefault

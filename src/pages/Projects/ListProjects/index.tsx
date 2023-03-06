@@ -105,12 +105,13 @@ export default function ListProjects() {
   };
 
   const handleOnDeleteProduct = (id: number) => {
+    console.log('ID', id)
     setFormValue('products', formData.products.filter((product: any) => product.service_id !== id))
   }
 
   const handleOnIncrememtQtd = useCallback((value: any) => {
     const updatedProducts = [...formData.products];
-    const productIndex = updatedProducts.findIndex(product => product.product_id === value.product_id);
+    const productIndex = updatedProducts.findIndex(product => product.service_id === value.service_id);
     const updatedProductCopy = {...updatedProducts[productIndex]};
     updatedProductCopy.quantity = Number(updatedProductCopy.quantity) + 1;
     updatedProducts[productIndex] = updatedProductCopy;
@@ -120,7 +121,7 @@ export default function ListProjects() {
 
   const handleOnDecrementQtd = useCallback((value: any) => {
     const updatedProducts = [...formData.products];
-    const productIndex = updatedProducts.findIndex(product => product.product_id === value.product_id);
+    const productIndex = updatedProducts.findIndex(product => product.service_id === value.service_id);
     const updatedProductCopy = {...updatedProducts[productIndex]};
     updatedProductCopy.quantity = Number(updatedProductCopy.quantity) - 1;
     updatedProducts[productIndex] = updatedProductCopy;
@@ -243,14 +244,14 @@ export default function ListProjects() {
     setUploadedFiles(item.files);
 
     setModal({
-      isOpen: !modal.isOpen,
+      isOpen: false,
       type: `Editar Projeto/Contrato: ${item.title}`
     })
   }
 
   const handleOnDelete = async (id: any) => {
     try {
-      api.delete(`project/${id}`);
+      await api.delete(`project/${id}`);
       addToast({
         type: 'success',
         title: 'Sucesso',
@@ -284,8 +285,8 @@ export default function ListProjects() {
         }
       ))
 
-      const newArrayProducts = formData.products.map(({ tenant_id, service_id, ...rest }: any) => rest);
-      const updateProducts = formData.products.map(({ service_id, ...rest }: any) => ({ product_id: service_id, ...rest }))
+      const newArrayProducts = formData.products.map(({ tenant_id, ...rest }: any) => rest);
+      // const updateProducts = formData.products.map(({ service_id, ...rest }: any) => ({ product_id: service_id, ...rest }))
 
       const { title, tenant_id, description, date_start, date_end, contract_type, project_id } = formData
 
@@ -304,7 +305,7 @@ export default function ListProjects() {
         title,
         project_id,
         tenant_id,
-        products: updateProducts,
+        products: newArrayProducts,
         description,
         date_start,
         date_end,
@@ -355,6 +356,8 @@ export default function ListProjects() {
 
     }
   }, [formData, setFormValue, uploadedFiles, setUploadedFiles, modal, setData]);
+
+  console.log('FOMDATA', formData)
 
   return (
     <ContainerDefault>
