@@ -73,6 +73,41 @@ export const Content = styled.div`
     display: flex;
     align-items: center;
     gap: 12px;
+
+    .resultCountPost {
+      width: 40px;
+    }
+
+    .inputProducts {
+      width: 100%;
+      min-width: 0px;
+      outline: transparent solid 2px;
+      outline-offset: 2px;
+      /* position: relative; */
+      appearance: none;
+      transition-property: background-color, border-color, color, fill, stroke,
+        opacity, box-shadow, transform;
+      transition-duration: 200ms;
+      font-size: var(--text-smal-md);
+      font-weight: var(--weight-reular);
+      color: var(--gray-700);
+
+      height: 26px;
+      border-radius: 4px;
+      border-width: 0px;
+      border-style: solid;
+      border-image: initial;
+      border-color: inherit;
+      background: inherit;
+      line-height: 20px;
+      text-align: center;
+
+      &:focus-visible {
+        z-index: 1;
+        border-color: rgb(49, 130, 206);
+        box-shadow: rgb(49 130 206) 0px 0px 0px 1px;
+      }
+    }
   }
 
   .countPost {

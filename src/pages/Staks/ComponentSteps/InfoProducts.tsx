@@ -28,8 +28,6 @@ interface PropsProducts {
   handleOnIncrememtQtd: (e: any) => void;
   handleOnPeriod: (e: any, id: any) => void;
   handleOnDeleteProduct: (id: any) => void;
-  handleInputProduct: (value: any, id: any) => void;
-
 }
 
 export default function InfoProducts({ 
@@ -39,8 +37,7 @@ export default function InfoProducts({
   handleOnDecrementQtd,
   handleOnIncrememtQtd,
   handleOnPeriod,
-  handleOnDeleteProduct,
-  handleInputProduct
+  handleOnDeleteProduct
 }: PropsProducts) {
   const minutesAll = dataFilter.map((obj: any) => multiplyTime(obj.minutes, obj.quantity))
 
@@ -134,7 +131,6 @@ export default function InfoProducts({
               handleOnIncrememtQtd={() => handleOnIncrememtQtd(row)}
               handleOnPeriod={(e) => handleOnPeriod(e, row.service_id)}
               handleOnDeleteProduct={() => handleOnDeleteProduct(row.service_id)}
-              handleInputProduct={(value: any) => handleInputProduct(value, row.service_id)}
             />
           ))}
         </ul>

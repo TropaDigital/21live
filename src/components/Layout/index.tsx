@@ -58,6 +58,11 @@ export default function Layout() {
               icon: IconTeam,
             },
             {
+              to: '/tarefas',
+              name: 'Tarefas',
+              icon: IconClipboard,
+            },
+            {
               to: '/fluxo',
               name: 'Fluxo',
               icon: IconTeam,

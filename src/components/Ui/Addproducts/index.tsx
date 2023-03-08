@@ -1,18 +1,21 @@
-import { BiMinus, BiPlus, BiTrash } from "react-icons/bi";
+import { BiMinus, BiPlus } from "react-icons/bi";
 import { multiplyTime } from "../../../utils/convertTimes";
 import InputSwitchDefault from "../../Inputs/InputSwitchDefault";
 import { Container, Content } from "./styles";
+import ButtonTable from "../../Buttons/ButtonTable";
 
 interface ProductsProps {
   handleOnDecrementQtd: (e: any) => void;
   handleOnIncrememtQtd: (e: any) => void;
   handleOnPeriod: (e: any) => void;
   handleOnDeleteProduct: (item: any) => void;
+  handleInputProduct: (value: any) => void;
   data: any;
 }
 
-export default function Addproducts({ data, handleOnDecrementQtd, handleOnIncrememtQtd, handleOnPeriod, handleOnDeleteProduct }: ProductsProps) {
-  const verifyPeriod = data.period === 'mensal' ? false : true
+export default function Addproducts({ data, handleOnDecrementQtd, handleInputProduct, handleOnIncrememtQtd, handleOnPeriod, handleOnDeleteProduct }: ProductsProps) {
+  const verifyPeriod = data.period === 'mensal' ? false : true;
+
   return (
     <Container>
       <Content>
@@ -38,25 +41,21 @@ export default function Addproducts({ data, handleOnDecrementQtd, handleOnIncrem
 
         <div className="boxRightProducts">
           <div className="countPost">
-            {data.quantity === 1 ? (
-              <button 
-                type="button"
-                onClick={handleOnDeleteProduct}
-              >
-                <BiTrash color="#e62965"/>
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={handleOnDecrementQtd}
-                disabled={data.quantity <= 0 ? true : false}
-              >
-                <BiMinus color="#0046B5" />
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={handleOnDecrementQtd}
+              disabled={data.quantity <= 0 ? true : false}
+            >
+              <BiMinus color="#0046B5" />
+            </button>
 
             <div className="resultCountPost">
-              {data.quantity ?? 0 }
+              <input 
+                type="text" 
+                value={data.quantity} 
+                onChange={(event) => handleInputProduct(event)}
+                className='inputProducts'
+              />
             </div>
 
             <button
@@ -66,12 +65,11 @@ export default function Addproducts({ data, handleOnDecrementQtd, handleOnIncrem
               <BiPlus color="#0046B5" />
             </button>
           </div>
-          {/* <ButtonDefault 
-            typeButton="danger"
+
+          <ButtonTable 
+            typeButton='delete'
             onClick={handleOnDeleteProduct}
-          >
-            <BiTrash />
-          </ButtonDefault> */}
+          />
         </div>
 
       </Content>

@@ -9,11 +9,9 @@ interface InfoFilesSteps {
   setUploadedFiles: (item: any) => void;
   tenant: any;
   isDisabed?: boolean;
-  loading: boolean;
-  setLoading: any;
 }
 
-export default function InfoFiles({uploadedFiles, setUploadedFiles, tenant, isDisabed, loading, setLoading}: InfoFilesSteps) {
+export default function InfoFiles({uploadedFiles, setUploadedFiles, tenant, isDisabed}: InfoFilesSteps) {
   return (
     <ContainerSteps>
       <FieldDefault>
@@ -22,8 +20,6 @@ export default function InfoFiles({uploadedFiles, setUploadedFiles, tenant, isDi
           setUploadedFiles={setUploadedFiles}
           tenant={tenant}
           isDisabed={isDisabed}
-          loading={loading}
-          setLoading={setLoading}
         />
       </FieldDefault>
     </ContainerSteps>

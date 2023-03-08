@@ -18,11 +18,13 @@ interface FileListProps {
     key: string;
     size: number;
     file_name: string;
+    loading: boolean;
   }>
   onDelete: (id: string) => void;
 }
 
 const FileList = ({ files, onDelete }: FileListProps) => (
+
   <Container>
     {files.map(uploadedFile => (
       <li key={uploadedFile.file_id}>
@@ -38,27 +40,27 @@ const FileList = ({ files, onDelete }: FileListProps) => (
             <strong>{uploadedFile.file_name}</strong>
             <span>
               {uploadedFile.size}{" "}
-              {!!uploadedFile.url && (
+              {/* {!!uploadedFile.url && ( */}
                 <button onClick={() => onDelete(uploadedFile.file_id)} type="button">
                   Excluir
                 </button>
-              )}
+        
             </span>
           </div>
         </FileInfo>
 
         <div>
-          {!uploadedFile.uploaded &&
-            !uploadedFile.error && (
-              <CircularProgressbar
-                styles={{
-                  root: { width: 24 },
-                  path: { stroke: "#7159c1" }
-                }}
-                strokeWidth={10}
-                value={uploadedFile.progress || 0}
-              />
-            )}
+          {!uploadedFile.uploaded && !uploadedFile.error && (
+            <CircularProgressbar
+              styles={{
+                root: { width: 24 },
+                path: { stroke: "#7F56D9" },
+                trail: { stroke: !uploadedFile.progress ? '#fff' : '#F9F5FF' }
+              }}
+              strokeWidth={10}
+              value={uploadedFile.progress || 0}
+            />
+          )}
 
           {uploadedFile.url && (
             <a

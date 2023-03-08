@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { v4 as uuidV4 } from 'uuid';
 import { filesize } from 'filesize';
+import axios, { CancelToken } from "axios";
 
 import { Container } from '../../pages/Projects/ComponentSteps/styles';
 import Upload from '.';
@@ -21,6 +22,8 @@ export interface UploadedFilesProps {
   key: string;
   size: number;
   file_name: string;
+  isNew: boolean
+  loading: boolean
 }
 
 interface UpdateFileData {
@@ -31,6 +34,7 @@ interface UpdateFileData {
   url?: string;
   bucket?: string;
   key?: string;
+  loading?: boolean;
 }
 
 interface PostsResponse {
@@ -48,39 +52,37 @@ interface UploadProps {
   setUploadedFiles: (item: any) => void;
   tenant: any;
   isDisabed?: boolean;
+  loading: boolean;
+  setLoading: any;
 }
 
-export default function UploadFiles({uploadedFiles, setUploadedFiles, tenant, isDisabed}: UploadProps) {
+export default function UploadFiles({uploadedFiles, setUploadedFiles, tenant, isDisabed, loading, setLoading}: UploadProps) {
   // const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
   // const size = partial({base: 2, standard: "jedec"});
   
+
   // useEffect(() => {
   //   async function loadPosts() {
   //     // const response = await api.get<PostsResponse[]>('archive');
-
-  //     const fakeData = [{
-  //       _id: 1,
-  //       name: '',
-  //       size: 0,
-  //       preview: '',
-  //       uploaded: false,
-  //       url: ''
-  //     }]
-
-  //     const data = fakeData.map(file => ({
-  //       id: file._id,
-  //       name: file.name,
-  //       readableSize: file.size,
+      
+      
+  //     const data = uploadedFiles.map(file => ({
+  //       file_id: file.file_id,
+  //       file_name: file.file_name,
+  //       size: size(file.size),
   //       preview: file.url,
   //       uploaded: true,
   //       url: file.url,
+  //       bucket: file.bucket,
   //     }));
 
   //     setUploadedFiles(data as any);
+  //     // console.log('DATA', data)
   //   }
 
   //   loadPosts();
   // }, []);
+
 
   useEffect(() => {
     return () => {
@@ -98,19 +100,33 @@ export default function UploadFiles({uploadedFiles, setUploadedFiles, tenant, is
     }));
   }
 
+
+  const [cancelTokenSource, setCancelTokenSource] = useState<any>(null);
+
+  const handleCancelClick = () => {
+    if (cancelTokenSource) {
+      cancelTokenSource.cancel("Requisição cancelada pelo usuário.");
+    }
+  };
+
   async function processUpload(uploadedFile: UploadedFilesProps) {
+    setLoading(true);
     try {
       const data = new FormData();
+      
+      const source = axios.CancelToken.source();
+      setCancelTokenSource(source);
 
       if (!uploadedFile.file) return;
       data.append('archive', uploadedFile.file);
       data.append('tenant', tenant);
-      
+
       const response = await api.post('/archive/upload', data, {
         onUploadProgress: (event: any) => {
           const progress = Math.round((event.loaded * 100)/event.total);
-          updateFile(uploadedFile.file_id, { progress });
-        }
+          updateFile(uploadedFile.file_id, { progress, loading });
+        },
+        cancelToken: source.token 
       });
 
       updateFile(uploadedFile.file_id, {
@@ -119,11 +135,15 @@ export default function UploadFiles({uploadedFiles, setUploadedFiles, tenant, is
         url: response.data.result.url,
         bucket: response.data.result.bucket,
         key: response.data.result.key,
+        loading: loading,
       });
     } catch (err) {
       updateFile(uploadedFile.file_id, {
         error: true,
       });
+    } finally {
+      setLoading(false);
+      setCancelTokenSource(null);
     }
   }
 
@@ -136,8 +156,10 @@ export default function UploadFiles({uploadedFiles, setUploadedFiles, tenant, is
       preview: URL.createObjectURL(file),
       progress: 0,
       uploaded: false,
+      isNew: true,
       error: false,
       url: null,
+      loading: loading
     }));
 
     const newUploadedFiles = [...uploadedFiles, ...formatedFiles]
@@ -147,11 +169,15 @@ export default function UploadFiles({uploadedFiles, setUploadedFiles, tenant, is
   }
 
   async function handleDelete(id: string) {
-    await api.delete(`posts/${id}`);
+    const filterFile = uploadedFiles.filter((obj: any) => obj.file_id === id)[0]
 
-    setUploadedFiles((files: any) => files.filter((file: any) => file.id !== id));
+    if(!filterFile.isNew) {
+      await api.delete(`archive/${id}`);
+    }
+
+    handleCancelClick();
+    setUploadedFiles((files: any) => files.filter((file: any) => file.file_id !== id));
   }
-
 
   return (
     <Container isDisabed={isDisabed}>

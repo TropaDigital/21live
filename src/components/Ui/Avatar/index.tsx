@@ -36,7 +36,7 @@ export default function Avatar({ data }: Props) {
         {latesAvatar.map((row: any) => (
           <li
             key={row.name}
-            className={`avatar-ui ${row.isOnline ? 'isOnline' : ''} ${!row.url ? 'isAvatar' : ''}`}
+            className={`avatar-ui ${!row.url ? 'isAvatar' : ''}`}
           >
             {!!row.url ? (
               <img src={row.url} alt="profile" />

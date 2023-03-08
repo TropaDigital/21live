@@ -12,7 +12,6 @@ import { useToast } from '../../../hooks/toast';
 import { IProjectCreate } from '../../../types';
 
 // UTILS
-import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 import { TenantProps } from '../../../utils/models';
 import { useDebounce } from '../../../utils/useDebounce';
 
@@ -32,7 +31,6 @@ import Paginate from '../../../components/Paginate';
 import ScrollAreas from '../../../components/Ui/ScrollAreas';
 import { TableDefault } from '../../../components/TableDefault';
 import Alert from '../../../components/Ui/Alert';
-import InputSwitchDefault from '../../../components/Inputs/InputSwitchDefault';
 import ButtonTable from '../../../components/Buttons/ButtonTable';
 import Steps from '../Steps';
 
@@ -74,6 +72,7 @@ export default function ListProjects() {
 
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
   const [error, setError] = useState<StateProps>({});
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (debouncedSearchTerm) {
@@ -129,6 +128,30 @@ export default function ListProjects() {
 
   }, [setFormValue, formData])
 
+  function isNumber(value: string) {
+    return /^[0-9]*$/.test(value);
+  }
+
+  const handleInputProduct = useCallback((event: React.ChangeEvent<HTMLInputElement>, id: any) => {
+    const newValue = event.target.value;
+    if (isNumber(newValue)) {
+      const updatedProducts = [...formData.products];
+      const productIndex = updatedProducts.findIndex(product => product.service_id === id);
+      const updatedProductCopy = {...updatedProducts[productIndex]};
+      updatedProductCopy.quantity = newValue;
+      updatedProducts[productIndex] = updatedProductCopy;
+      setFormValue('products', updatedProducts)
+    }
+
+  }, [setFormValue, formData])
+
+  // function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+  //   const newValue = event.target.value;
+  //   if (isNumber(newValue)) {
+  //     setValue(newValue);
+  //   }
+  // }
+
   const handleOnPeriod = useCallback((value: any, id: any) => {
     const verifyPeriod = value ? 'anual' : 'mensal'
     const updatedProducts = [...formData.products];
@@ -151,6 +174,7 @@ export default function ListProjects() {
       handleOnIncrememtQtd={(e) => handleOnIncrememtQtd(e)}
       handleOnPeriod={(e, id) => handleOnPeriod(e, id)}
       handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
+      handleInputProduct={(value, id) => handleInputProduct(value, id)}
     />,
     <InfoDescription
       value={formData?.description}
@@ -162,6 +186,8 @@ export default function ListProjects() {
       setUploadedFiles={setUploadedFiles}
       tenant={formData?.tenant_id}
       isDisabed={!formData?.tenant_id}
+      loading={loading}
+      setLoading={setLoading}
     />
   ];
   const { changeStep, currentComponent, currentStep, isFirstStep, isLastStep } = useSteps(formComponents);
@@ -226,7 +252,7 @@ export default function ListProjects() {
     });
     setData({
       tenant_id: '',
-    project_id: '',
+      project_id: '',
       title: '',
       contract_type: '',
       date_start: '',
@@ -234,9 +260,10 @@ export default function ListProjects() {
       description: '',
       products: [],
       files: [],
-    } as IProjectCreate)
+    } as IProjectCreate);
     setUploadedFiles([]);
     setError({});
+    changeStep(0);
   }
 
   const handleOnEdit = (item: IProjectCreate) => {
@@ -244,7 +271,7 @@ export default function ListProjects() {
     setUploadedFiles(item.files);
 
     setModal({
-      isOpen: false,
+      isOpen: true,
       type: `Editar Projeto/Contrato: ${item.title}`
     })
   }
@@ -278,7 +305,7 @@ export default function ListProjects() {
         {
           bucket: row.bucket,
           file_name: row.file_name,
-          file_id: row.file_id,
+          // file_id: row.file_id,
           key: row.key,
           size: row.size,
           url: row.url
@@ -357,7 +384,7 @@ export default function ListProjects() {
     }
   }, [formData, setFormValue, uploadedFiles, setUploadedFiles, modal, setData]);
 
-  console.log('FOMDATA', formData)
+  console.log('FILES', uploadedFiles)
 
   return (
     <ContainerDefault>
@@ -425,10 +452,7 @@ export default function ListProjects() {
             <thead>
               <tr style={{ whiteSpace: 'nowrap' }}>
                 <th>Titulo</th>
-                <th>Atividades</th>
-                <th>Status</th>
                 <th>Cliente</th>
-                <th>Custo total (RS)</th>
                 <th>Data inicio</th>
                 <th>Entrega estimada</th>
                 <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
@@ -441,7 +465,7 @@ export default function ListProjects() {
                   <td style={{ textTransform: 'uppercase', textAlign: 'initial' }}>
                     {row.contract_type + " | " + row.title}
                   </td>
-                  <td
+                  {/* <td
                     style={{
                       padding: '14px',
                       width: '220px',
@@ -453,17 +477,9 @@ export default function ListProjects() {
                       totalHours={convertToMilliseconds('05:50:24')}
                       restHours={convertToMilliseconds('02:20:36')}
                     />
-                  </td>
-                  <td>
-                  <InputSwitchDefault 
-                    name="status"
-                    // label='Enviar para o cliente por e-mail'
-                    // onChange={handleOnChangeCheckbox}
-                    // isChecked={String(formData.email_alert) === 'true' ? true : false}
-                  />
-                  </td>
+                  </td> */}
+                 
                   <td>{row.client_name}</td>
-                  <td>Custo total</td>
                   <td>{row.date_start}</td>
                   <td>{row.date_end}</td>
                   <td>
@@ -554,6 +570,7 @@ export default function ListProjects() {
                   typeButton="primary"
                   type='button'
                   onClick={handleOnSubmit}
+                  loading={loading}
                 >
                   Salvar
                 </ButtonDefault>

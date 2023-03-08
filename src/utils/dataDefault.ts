@@ -8,29 +8,6 @@ export const columnDefault = {
   step: 0,
 }
 
-const update = {
-  id: 1,
-  title: 'UPDATE BOARD',
-  creatable: true,
-  column: 'NEWTRAFEGO',
-  date: '09 mar',
-  projects: 5,
-  tasks: [
-    {
-      id: 1,
-      column: 'NEWTRAFEGO',
-      title: 'Titulo da Task',
-      users: [],
-      date: '09 mar',
-      progress: {
-        hoursinvested: '10:00:00',
-        hoursLeft: '05:00:00',
-      },
-      completed: '5/10',
-    },
-  ],
-};
-
 export const avatarAll = [
   {
     name: 'João Silva',
