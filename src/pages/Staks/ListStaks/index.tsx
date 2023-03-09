@@ -51,7 +51,7 @@ export default function ListStaks() {
     date_end: '',
   } as any)
 
-  const [components, setComponents] = useState([
+  let components = [
     {
       label: 'Geral',
       success: false,
@@ -71,8 +71,17 @@ export default function ListStaks() {
       label: 'Conclusão',
       success: false,
       component: <InfoGeral data={formData} handleInputChange={handleOnChange} clients={[]} error={[]}/>
-    },
-  ])
+    }
+  ]
+
+  const [steps, setSteps] = useState(() => (
+    components.map((row) => (
+      {
+        label: row.label,
+        success: false,
+      }
+    ))
+  ))
 
   const fillComponents = components.map((row: any) => row.component)
   const { changeStep, currentComponent, currentStep, isFirstStep, isLastStep } = useSteps(fillComponents);
@@ -100,9 +109,11 @@ export default function ListStaks() {
     });
   }
 
+
   const handleOnNextStep = () => {
     changeStep(currentStep + 1)
-    setComponents(prevComponents =>
+
+    setSteps(prevComponents =>
       prevComponents.map((component, i) => ({
         ...component,
         success: i <= currentStep
@@ -112,7 +123,7 @@ export default function ListStaks() {
 
   const handleOnPrevStep = () => {
     changeStep(currentStep - 1)
-    setComponents(prevComponents => {
+    setSteps(prevComponents => {
       return prevComponents.map((component, i) => {
         if (i === currentStep - 1) {
           return {
@@ -285,7 +296,7 @@ export default function ListStaks() {
       >
         <form onSubmit={handleOnSubmit}>
 
-          <Steps currentStep={currentStep} steps={components.filter((component, ...rest) => rest)} />
+          <Steps currentStep={currentStep} steps={steps} />
 
           <div>{currentComponent}</div>
 

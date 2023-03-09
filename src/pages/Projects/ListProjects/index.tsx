@@ -19,7 +19,6 @@ import { useDebounce } from '../../../utils/useDebounce';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import HeaderPage from '../../../components/HeaderPage';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
-import ProgressBar from '../../../components/Ui/ProgressBar';
 import { SelectDefault } from '../../../components/Inputs/SelectDefault';
 import ModalDefault from '../../../components/Ui/ModalDefault';
 import InfoGeral from '../ComponentSteps/InfoGeral';
@@ -32,10 +31,10 @@ import ScrollAreas from '../../../components/Ui/ScrollAreas';
 import { TableDefault } from '../../../components/TableDefault';
 import Alert from '../../../components/Ui/Alert';
 import ButtonTable from '../../../components/Buttons/ButtonTable';
-import Steps from '../Steps';
 
 // STYLES
 import { ContainerDefault, ContainerGroupTable, ContentDefault, FieldGroupFormDefault, FooterModal } from '../../../components/UiElements/styles';
+import Steps from '../../../components/Steps';
 
 interface StateProps {
   [key: string]: any;
@@ -145,13 +144,6 @@ export default function ListProjects() {
 
   }, [setFormValue, formData])
 
-  // function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
-  //   const newValue = event.target.value;
-  //   if (isNumber(newValue)) {
-  //     setValue(newValue);
-  //   }
-  // }
-
   const handleOnPeriod = useCallback((value: any, id: any) => {
     const verifyPeriod = value ? 'anual' : 'mensal'
     const updatedProducts = [...formData.products];
@@ -165,32 +157,59 @@ export default function ListProjects() {
   }, [setFormValue, formData])
 
   const formComponents = [
-    <InfoGeral data={formData} handleInputChange={handleOnChange} clients={dataClient} error={error}/>,
-    <InfoProducts
-      handleOnAddProducts={handleOnAddProducts}
-      dataOffice={dataOffice}
-      dataFilter={formData.products}
-      handleOnDecrementQtd={(e) => handleOnDecrementQtd(e)}
-      handleOnIncrememtQtd={(e) => handleOnIncrememtQtd(e)}
-      handleOnPeriod={(e, id) => handleOnPeriod(e, id)}
-      handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
-      handleInputProduct={(value, id) => handleInputProduct(value, id)}
-    />,
-    <InfoDescription
-      value={formData?.description}
-      handleOnDescription={(value) => setFormValue('description', value)}
-      mentions={[]}
-    />,
-    <InfoFiles
-      uploadedFiles={uploadedFiles}
-      setUploadedFiles={setUploadedFiles}
-      tenant={formData?.tenant_id}
-      isDisabed={!formData?.tenant_id}
-      loading={loading}
-      setLoading={setLoading}
-    />
+    {
+      label: 'Geral',
+      success: false,
+      component: <InfoGeral data={formData} handleInputChange={handleOnChange} clients={dataClient} error={error}/>
+    },
+    {
+      label: 'Produtos',
+      success: false,
+      component: <InfoProducts
+        handleOnAddProducts={handleOnAddProducts}
+        dataOffice={dataOffice}
+        dataFilter={formData.products}
+        handleOnDecrementQtd={(e) => handleOnDecrementQtd(e)}
+        handleOnIncrememtQtd={(e) => handleOnIncrememtQtd(e)}
+        handleOnPeriod={(e, id) => handleOnPeriod(e, id)}
+        handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
+        handleInputProduct={(value, id) => handleInputProduct(value, id)}
+      />,
+    },
+    {
+      label: 'Descrição',
+      success: false,
+      component: <InfoDescription
+        value={formData?.description}
+        handleOnDescription={(value) => setFormValue('description', value)}
+        mentions={[]}
+      />,
+    },
+    {
+      label: 'Anexos',
+      success: false,
+      component: <InfoFiles
+        uploadedFiles={uploadedFiles}
+        setUploadedFiles={setUploadedFiles}
+        tenant={formData?.tenant_id}
+        isDisabed={!formData?.tenant_id}
+        loading={loading}
+        setLoading={setLoading}
+      />
+    },
   ];
-  const { changeStep, currentComponent, currentStep, isFirstStep, isLastStep } = useSteps(formComponents);
+
+  const [steps, setSteps] = useState(() => (
+    formComponents.map((row) => (
+      {
+        label: row.label,
+        success: false,
+      }
+    ))
+  ))
+  
+  const fillComponents = formComponents.map((row: any) => row.component)
+  const { changeStep, currentComponent, currentStep, isFirstStep, isLastStep } = useSteps(fillComponents);
 
   function setErrorInput(value: any, message: any) {
     if(!message) {
@@ -199,6 +218,73 @@ export default function ListProjects() {
 
     setError({...error, [value]: message })
     return message;
+  }
+
+  const handleOnNextStep = () => {
+    const { title, tenant_id, contract_type, date_start, date_end } = formData
+
+    try {
+      if (title === "") {
+        throw setErrorInput('title', 'Titulo é obrigatório!');
+      } else {
+        setErrorInput('title', undefined);
+      }
+
+      if (tenant_id === "") {
+        throw setErrorInput('tenant_id', 'Cliente é obrigatório!');
+      } else {
+        setErrorInput('tenant_id', undefined);
+      }
+
+      if (contract_type === "") {
+        throw setErrorInput('contract_type', 'Contrato é obrigatório!');
+      } else {
+        setErrorInput('contract_type', undefined);
+      }
+
+      if (date_start === "") {
+        throw setErrorInput('date_start', 'Data inicial é obrigatório!');
+      } else {
+        setErrorInput('date_start', undefined);
+      }
+
+      if (date_end === "") {
+        throw setErrorInput('date_end', 'Data final é obrigatório!')
+      } else {
+        setErrorInput('date_end', undefined);
+      }
+
+    changeStep(currentStep + 1)
+
+    setSteps(prevComponents =>
+      prevComponents.map((component, i) => ({
+        ...component,
+        success: i <= currentStep
+      }))
+    );
+
+    } catch(error: any) {
+      addToast({
+        title: 'Atenção',
+        description: error,
+        type: 'warning'
+      })
+    }
+  }
+
+  const handleOnPrevStep = () => {
+    changeStep(currentStep - 1)
+    setSteps(prevComponents => {
+      return prevComponents.map((component, i) => {
+        if (i === currentStep - 1) {
+          return {
+            ...component,
+            success: false
+          };
+        }
+        return component;
+      });
+    });
   }
 
   const validateStep = () => {
@@ -384,7 +470,6 @@ export default function ListProjects() {
     }
   }, [formData, setFormValue, uploadedFiles, setUploadedFiles, modal, setData]);
 
-  console.log('FILES', uploadedFiles)
 
   return (
     <ContainerDefault>
@@ -531,7 +616,8 @@ export default function ListProjects() {
       >
         <form onSubmit={handleOnSubmit}>
 
-          <Steps currentStep={currentStep} />
+          <Steps currentStep={currentStep} steps={steps} />
+
 
           <div>{currentComponent}</div>
 
@@ -551,7 +637,7 @@ export default function ListProjects() {
                 <ButtonDefault
                   typeButton="primary"
                   isOutline
-                  onClick={() => changeStep(currentStep - 1)}
+                  onClick={handleOnPrevStep}
                 >
                   Voltar
                 </ButtonDefault>
@@ -561,7 +647,7 @@ export default function ListProjects() {
                 <ButtonDefault
                   type='button'
                   typeButton="primary"
-                  onClick={validateStep}
+                  onClick={handleOnNextStep}
                 >
                   Próxima etapa
                 </ButtonDefault>
