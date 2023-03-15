@@ -1,22 +1,26 @@
-import { useCallback } from "react";
-import useLocalStorage from "./useLocalStorage";
+import { useCallback } from 'react';
+
+import useLocalStorage from './useLocalStorage';
 
 function useTask() {
-  const [column, setColumn] = useLocalStorage("COLUMN", []);
+  const [column, setColumn] = useLocalStorage('COLUMN', []);
 
-  const addTask = useCallback((item: any, task: any) => {
-    setColumn(
-      column.map((obj: any) => {
-        if (obj.card_id === item.card_id) {
-          return {
-            ...item,
-            tasks: [...item.tasks, {...task}],
-          };
-        }
-        return {...obj};
-      })
-    );
-  }, [column, setColumn])
+  const addTask = useCallback(
+    (item: any, task: any) => {
+      setColumn(
+        column.map((obj: any) => {
+          if (obj.card_id === item.card_id) {
+            return {
+              ...item,
+              tasks: [...item.tasks, { ...task }]
+            };
+          }
+          return { ...obj };
+        })
+      );
+    },
+    [column, setColumn]
+  );
 
   // const updateTask = (
   //   columns: any,
@@ -40,17 +44,17 @@ function useTask() {
   //     })
   //   );
   // };
-  
+
   const deleteTask = (item: any, taskId: number) => {
     setColumn(
       column.map((row: any) => {
         if (row.card_id === item.card_id) {
           return {
             ...item,
-            tasks: [...item.tasks.filter((obj: any) => obj.task_id !== taskId)],
+            tasks: [...item.tasks.filter((obj: any) => obj.task_id !== taskId)]
           };
         }
-        return {...row};
+        return { ...row };
       })
     );
   };
@@ -59,7 +63,7 @@ function useTask() {
     column,
     addTask,
     // updateTask,
-    deleteTask,
+    deleteTask
   };
 }
 

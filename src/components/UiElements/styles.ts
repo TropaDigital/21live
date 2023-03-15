@@ -1,12 +1,10 @@
 import styled from 'styled-components';
 
 interface Props {
-  bottom?: number
+  bottom?: number;
 }
 
-export const ContainerDefault = styled.div`
-
-`;
+export const ContainerDefault = styled.div``;
 
 export const ContainerGroupTable = styled.div`
   display: grid;
@@ -29,7 +27,7 @@ export const FieldFormDefault = styled.div<Props>`
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin-bottom: ${({ bottom }) => bottom ? bottom + 'px' : '24px'};
+  margin-bottom: ${({ bottom }) => (bottom ? bottom + 'px' : '24px')};
 
   @media (max-width: 800px) {
     margin-bottom: 12px;
@@ -41,7 +39,8 @@ export const FieldGroupFormDefault = styled.div`
   display: flex;
   gap: 24px;
 
-  button, > div {
+  button,
+  > div {
     width: 100%;
   }
 
@@ -56,7 +55,7 @@ export const FooterModal = styled.div`
   justify-content: space-between;
   margin-top: 20px;
 
-  >div {
+  > div {
     display: flex;
     gap: 12px;
   }
@@ -72,4 +71,4 @@ export const ContentDefault = styled.div`
   background-color: #fff;
   border-radius: 10px;
   box-shadow: var(--shadow);
-`
+`;

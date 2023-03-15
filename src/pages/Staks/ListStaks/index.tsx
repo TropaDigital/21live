@@ -1,95 +1,106 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from 'react';
+import { BiCalendar, BiFlag, BiPlus, BiSearchAlt } from 'react-icons/bi';
+
+import useForm from '../../../hooks/useForm';
+import { useSteps } from '../../../hooks/useSteps';
+
+import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
+import { avatarAll } from '../../../utils/dataDefault';
+import { useDebounce } from '../../../utils/useDebounce';
+
+import ButtonDefault from '../../../components/Buttons/ButtonDefault';
+import ButtonTable from '../../../components/Buttons/ButtonTable';
+import HeaderPage from '../../../components/HeaderPage';
+import { InputDefault } from '../../../components/Inputs/InputDefault';
+import { SelectDefault } from '../../../components/Inputs/SelectDefault';
+import Steps from '../../../components/Steps';
+import { TableDefault } from '../../../components/TableDefault';
+import Alert from '../../../components/Ui/Alert';
+import Avatar from '../../../components/Ui/Avatar';
+import ModalDefault from '../../../components/Ui/ModalDefault';
+import ProgressBar from '../../../components/Ui/ProgressBar';
+import ScrollAreas from '../../../components/Ui/ScrollAreas';
 import {
   ContainerDefault,
   ContainerGroupTable,
   ContentDefault,
   FieldGroupFormDefault,
-  FooterModal,
-} from "../../../components/UiElements/styles";
-import HeaderPage from "../../../components/HeaderPage";
-import ButtonDefault from "../../../components/Buttons/ButtonDefault";
-import { BiCalendar, BiFlag, BiPlus, BiSearchAlt } from "react-icons/bi";
-import { InputDefault } from "../../../components/Inputs/InputDefault";
-import { SelectDefault } from "../../../components/Inputs/SelectDefault";
-import { useDebounce } from "../../../utils/useDebounce";
-import ScrollAreas from "../../../components/Ui/ScrollAreas";
-import { TableDefault } from "../../../components/TableDefault";
-import ProgressBar from "../../../components/Ui/ProgressBar";
-import { convertToMilliseconds } from "../../../utils/convertToMilliseconds";
-import ButtonTable from "../../../components/Buttons/ButtonTable";
-import Alert from "../../../components/Ui/Alert";
-import Avatar from "../../../components/Ui/Avatar";
-import { avatarAll } from "../../../utils/dataDefault";
-import ModalDefault from "../../../components/Ui/ModalDefault";
-import { useSteps } from "../../../hooks/useSteps";
-import useForm from "../../../hooks/useForm";
-import InfoGeral from "../ComponentSteps/InfoGeral";
-import Steps from "../../../components/Steps";
+  FooterModal
+} from '../../../components/UiElements/styles';
+
+import InfoGeral from '../ComponentSteps/InfoGeral';
 
 export default function ListStaks() {
   const [modal, setModal] = useState({
     isOpen: false,
-    type: "Criar nova Tarefa",
+    type: 'Criar nova Tarefa'
   });
 
   const [filter, setFilter] = useState({
-    dateStart: "",
-    dateEnd: "",
-    order: "",
-    search: "",
+    dateStart: '',
+    dateEnd: '',
+    order: '',
+    search: ''
   });
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm, 700);
   const [isSearching, setSearching] = useState(false);
 
-  const { formData, setFormValue, setData, handleOnChange, handleOnChangeCheckbox } = useForm({
+  const { formData, handleOnChange } = useForm({
     tenant_id: '',
     title: '',
     contract_type: '',
     date_start: '',
-    date_end: '',
-  } as any)
+    date_end: ''
+  } as any);
 
-  let components = [
+  const components = [
     {
       label: 'Geral',
       success: false,
-      component: <InfoGeral data={formData} handleInputChange={handleOnChange} clients={[]} error={[]}/>
+      component: (
+        <InfoGeral data={formData} handleInputChange={handleOnChange} clients={[]} error={[]} />
+      )
     },
     {
       label: 'Produto',
       success: false,
-      component: <InfoGeral data={formData} handleInputChange={handleOnChange} clients={[]} error={[]}/>
+      component: (
+        <InfoGeral data={formData} handleInputChange={handleOnChange} clients={[]} error={[]} />
+      )
     },
     {
       label: 'Anexo',
       success: false,
-      component: <InfoGeral data={formData} handleInputChange={handleOnChange} clients={[]} error={[]}/>
+      component: (
+        <InfoGeral data={formData} handleInputChange={handleOnChange} clients={[]} error={[]} />
+      )
     },
     {
       label: 'Conclusão',
       success: false,
-      component: <InfoGeral data={formData} handleInputChange={handleOnChange} clients={[]} error={[]}/>
+      component: (
+        <InfoGeral data={formData} handleInputChange={handleOnChange} clients={[]} error={[]} />
+      )
     }
-  ]
+  ];
 
-  const [steps, setSteps] = useState(() => (
-    components.map((row) => (
-      {
-        label: row.label,
-        success: false,
-      }
-    ))
-  ))
+  const [steps, setSteps] = useState(() =>
+    components.map((row) => ({
+      label: row.label,
+      success: false
+    }))
+  );
 
-  const fillComponents = components.map((row: any) => row.component)
-  const { changeStep, currentComponent, currentStep, isFirstStep, isLastStep } = useSteps(fillComponents);
+  const fillComponents = components.map((row: any) => row.component);
+  const { changeStep, currentComponent, currentStep, isFirstStep, isLastStep } =
+    useSteps(fillComponents);
 
   useEffect(() => {
     if (debouncedSearchTerm) {
       setSearching(true);
-      setFilter({ ...filter, ["search"]: searchTerm });
+      setFilter({ ...filter, ['search']: searchTerm });
       const handler = setTimeout(() => {
         setSearching(false);
       }, 500);
@@ -97,33 +108,32 @@ export default function ListStaks() {
         clearTimeout(handler);
       };
     } else {
-      setFilter({ ...filter, ["search"]: "" });
+      setFilter({ ...filter, ['search']: '' });
       setSearching(false);
     }
-  }, [debouncedSearchTerm]);
+  }, [debouncedSearchTerm, filter, searchTerm]);
 
   const handleOnCancel = () => {
     setModal({
       isOpen: false,
-      type: "Criar nova Tarefa",
+      type: 'Criar nova Tarefa'
     });
-  }
-
+  };
 
   const handleOnNextStep = () => {
-    changeStep(currentStep + 1)
+    changeStep(currentStep + 1);
 
-    setSteps(prevComponents =>
+    setSteps((prevComponents) =>
       prevComponents.map((component, i) => ({
         ...component,
         success: i <= currentStep
       }))
     );
-  }
+  };
 
   const handleOnPrevStep = () => {
-    changeStep(currentStep - 1)
-    setSteps(prevComponents => {
+    changeStep(currentStep - 1);
+    setSteps((prevComponents) => {
       return prevComponents.map((component, i) => {
         if (i === currentStep - 1) {
           return {
@@ -134,17 +144,17 @@ export default function ListStaks() {
         return component;
       });
     });
-  }
+  };
 
   const handleOnSubmit = useCallback(async (event: any) => {
     try {
       event.preventDefault();
 
-      console.log('SUBMIT')
-    } catch(error: any) {
-
+      console.log('SUBMIT');
+    } catch (error: any) {
+      console.log('ERROR', error);
     }
-  }, [])
+  }, []);
 
   return (
     <ContainerDefault>
@@ -154,7 +164,7 @@ export default function ListStaks() {
           onClick={() =>
             setModal({
               isOpen: !modal.isOpen,
-              type: "Criar novo Projeto/Contrato",
+              type: 'Criar novo Projeto/Contrato'
             })
           }
         >
@@ -172,9 +182,7 @@ export default function ListStaks() {
               name="dateStart"
               type="date"
               icon={BiCalendar}
-              onChange={(e) =>
-                setFilter({ ...filter, ["dateStart"]: e.target.value })
-              }
+              onChange={(e) => setFilter({ ...filter, ['dateStart']: e.target.value })}
               value={filter.dateStart}
             />
 
@@ -184,9 +192,7 @@ export default function ListStaks() {
               name="dateEnd"
               type="date"
               icon={BiCalendar}
-              onChange={(e) =>
-                setFilter({ ...filter, ["dateEnd"]: e.target.value })
-              }
+              onChange={(e) => setFilter({ ...filter, ['dateEnd']: e.target.value })}
               value={filter.dateEnd}
             />
           </FieldGroupFormDefault>
@@ -194,9 +200,7 @@ export default function ListStaks() {
             label="Ordenar por"
             name="order"
             placeHolder="Ordenação"
-            onChange={(e) =>
-              setFilter({ ...filter, ["order"]: e.target.value })
-            }
+            onChange={(e) => setFilter({ ...filter, ['order']: e.target.value })}
             value={filter.order}
           >
             <option value="asc">Mais recente</option>
@@ -215,18 +219,18 @@ export default function ListStaks() {
         </FieldGroupFormDefault>
       </ContentDefault>
 
-      <ContainerGroupTable style={{ marginTop: "1rem" }}>
+      <ContainerGroupTable style={{ marginTop: '1rem' }}>
         <ScrollAreas>
           <TableDefault title="Lista de tarefas">
             <thead>
-              <tr style={{ whiteSpace: "nowrap" }}>
+              <tr style={{ whiteSpace: 'nowrap' }}>
                 <th>ID</th>
                 <th>Titulo</th>
                 <th>Urgente</th>
                 <th>Cliente</th>
                 <th>Progresso</th>
                 <th>usuários</th>
-                <th style={{ display: "grid", placeItems: "center" }}>-</th>
+                <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
               </tr>
             </thead>
 
@@ -235,51 +239,36 @@ export default function ListStaks() {
                 <td>#336</td>
                 <td>Job 1</td>
                 <td>
-                  <BiFlag  size={22}/>
+                  <BiFlag size={22} />
                 </td>
                 <td>MO GROUP</td>
                 <td
                   style={{
-                    padding: "14px",
-                    width: "220px",
-                    textAlign: "left",
+                    padding: '14px',
+                    width: '220px',
+                    textAlign: 'left'
                   }}
                 >
-                  <span style={{ marginBottom: "4px", display: "block" }}>
-                    05:50:24
-                  </span>
+                  <span style={{ marginBottom: '4px', display: 'block' }}>05:50:24</span>
                   <ProgressBar
-                    totalHours={convertToMilliseconds("05:50:24")}
-                    restHours={convertToMilliseconds("02:20:36")}
+                    totalHours={convertToMilliseconds('05:50:24')}
+                    restHours={convertToMilliseconds('02:20:36')}
                   />
                 </td>
                 <td>
-                <Avatar 
-                  data={avatarAll}
-                />
+                  <Avatar data={avatarAll} />
                 </td>
                 <td>
                   <div className="fieldTableClients">
-                    <ButtonTable
-                      typeButton="view"
-                      onClick={() => console.log("row")}
-                    />
-
-                    <ButtonTable
-                      typeButton="edit"
-                      onClick={() => console.log("row")}
-                    />
+                    <ButtonTable typeButton="view" onClick={() => console.log('row')} />
+                    <ButtonTable typeButton="edit" onClick={() => console.log('row')} />
 
                     <Alert
                       title="Atenção"
                       subtitle="Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita."
-                      cancelButton={() => {}}
-                      confirmButton={() => console.log("row.project_id")}
+                      confirmButton={() => console.log('row.project_id')}
                     >
-                      <ButtonTable
-                        typeButton="delete"
-                        onClick={() => console.log("row")}
-                      />
+                      <ButtonTable typeButton="delete" onClick={() => console.log('row')} />
                     </Alert>
                   </div>
                 </td>
@@ -289,53 +278,30 @@ export default function ListStaks() {
         </ScrollAreas>
       </ContainerGroupTable>
 
-      <ModalDefault
-        isOpen={modal.isOpen}
-        title={modal.type}
-        onOpenChange={handleOnCancel}
-      >
+      <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
         <form onSubmit={handleOnSubmit}>
-
           <Steps currentStep={currentStep} steps={steps} />
 
           <div>{currentComponent}</div>
 
           <FooterModal>
-
-            <ButtonDefault
-              typeButton='dark'
-              isOutline
-              type='button'
-              onClick={handleOnCancel}
-            >
+            <ButtonDefault typeButton="dark" isOutline type="button" onClick={handleOnCancel}>
               Descartar
             </ButtonDefault>
 
             <div className="fieldGroup">
               {!isFirstStep && (
-                <ButtonDefault
-                  typeButton="primary"
-                  isOutline
-                  onClick={handleOnPrevStep}
-                >
+                <ButtonDefault typeButton="primary" isOutline onClick={handleOnPrevStep}>
                   Voltar
                 </ButtonDefault>
               )}
 
               {!isLastStep ? (
-                <ButtonDefault
-                  type='button'
-                  typeButton="primary"
-                  onClick={handleOnNextStep}
-                >
+                <ButtonDefault type="button" typeButton="primary" onClick={handleOnNextStep}>
                   Próxima etapa
                 </ButtonDefault>
               ) : (
-                <ButtonDefault
-                  typeButton="primary"
-                  type='button'
-                  onClick={handleOnSubmit}
-                >
+                <ButtonDefault typeButton="primary" type="button" onClick={handleOnSubmit}>
                   Salvar
                 </ButtonDefault>
               )}

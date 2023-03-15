@@ -1,8 +1,9 @@
-import {CircularProgressbar} from "react-circular-progressbar";
-import { MdCheckCircle, MdError, MdLink } from "react-icons/md";
+import { CircularProgressbar } from 'react-circular-progressbar';
+import { MdCheckCircle, MdError, MdLink } from 'react-icons/md';
 
-import { Container, FileInfo, Preview } from "./styles";
-import { IconArquive } from "../../assets/icons";
+import { IconArquive } from '../../../assets/icons';
+
+import { Container, FileInfo, Preview } from './styles';
 
 interface FileListProps {
   files: Array<{
@@ -19,14 +20,13 @@ interface FileListProps {
     size: number;
     file_name: string;
     loading: boolean;
-  }>
+  }>;
   onDelete: (id: string) => void;
 }
 
 const FileList = ({ files, onDelete }: FileListProps) => (
-
   <Container>
-    {files.map(uploadedFile => (
+    {files.map((uploadedFile) => (
       <li key={uploadedFile.file_id}>
         <FileInfo>
           <Preview>
@@ -39,12 +39,10 @@ const FileList = ({ files, onDelete }: FileListProps) => (
           <div>
             <strong>{uploadedFile.file_name}</strong>
             <span>
-              {uploadedFile.size}{" "}
-              {/* {!!uploadedFile.url && ( */}
-                <button onClick={() => onDelete(uploadedFile.file_id)} type="button">
-                  Excluir
-                </button>
-        
+              {uploadedFile.size} {/* {!!uploadedFile.url && ( */}
+              <button onClick={() => onDelete(uploadedFile.file_id)} type="button">
+                Excluir
+              </button>
             </span>
           </div>
         </FileInfo>
@@ -54,7 +52,7 @@ const FileList = ({ files, onDelete }: FileListProps) => (
             <CircularProgressbar
               styles={{
                 root: { width: 24 },
-                path: { stroke: "#7F56D9" },
+                path: { stroke: '#7F56D9' },
                 trail: { stroke: !uploadedFile.progress ? '#fff' : '#F9F5FF' }
               }}
               strokeWidth={10}
@@ -63,11 +61,7 @@ const FileList = ({ files, onDelete }: FileListProps) => (
           )}
 
           {uploadedFile.url && (
-            <a
-              href={uploadedFile.url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href={uploadedFile.url} target="_blank" rel="noopener noreferrer">
               <MdLink style={{ marginRight: 8 }} size={24} color="#222" />
             </a>
           )}

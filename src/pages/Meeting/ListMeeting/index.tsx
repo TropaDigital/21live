@@ -1,5 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
-import api from '../../../services/api';
+import { useCallback, useEffect, useState } from 'react';
 import { BiCalendar, BiPlus, BiSearchAlt } from 'react-icons/bi';
 
 // HOOKS
@@ -8,28 +7,35 @@ import { useFetch } from '../../../hooks/useFetch';
 import useForm from '../../../hooks/useForm';
 
 // UTILS
-import { MeetingProps, TeamProps, TenantProps } from '../../../utils/models';
 import getVaidationErrors from '../../../utils/getVaidationErrors';
+import { MeetingProps, TeamProps, TenantProps } from '../../../utils/models';
 import { useDebounce } from '../../../utils/useDebounce';
 
 // COMPONENTS
-import HeaderPage from '../../../components/HeaderPage';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
-import { InputDefault } from '../../../components/Inputs/InputDefault';
-import { SelectDefault } from '../../../components/Inputs/SelectDefault';
-import ScrollAreas from '../../../components/Ui/ScrollAreas';
-import { TableDefault } from '../../../components/TableDefault';
-import ModalDefault from '../../../components/Ui/ModalDefault';
-import InputSwitchDefault from '../../../components/Inputs/InputSwitchDefault';
-import InputMultipleSelect from '../../../components/Inputs/InputMultipleSelect';
-import UploadFiles from '../../../components/Upload/UploadFiles';
-import Paginate from '../../../components/Paginate';
-import Alert from '../../../components/Ui/Alert';
-import WrapperEditor from '../../../components/WrapperEditor';
 import ButtonTable from '../../../components/Buttons/ButtonTable';
+import HeaderPage from '../../../components/HeaderPage';
+import { InputDefault } from '../../../components/Inputs/InputDefault';
+import InputMultipleSelect from '../../../components/Inputs/InputMultipleSelect';
+import InputSwitchDefault from '../../../components/Inputs/InputSwitchDefault';
+import { SelectDefault } from '../../../components/Inputs/SelectDefault';
+import Paginate from '../../../components/Paginate';
+import { TableDefault } from '../../../components/TableDefault';
+import Alert from '../../../components/Ui/Alert';
+import ModalDefault from '../../../components/Ui/ModalDefault';
+import ScrollAreas from '../../../components/Ui/ScrollAreas';
+import {
+  ContainerGroupTable,
+  ContentDefault,
+  FieldDefault,
+  FieldGroupFormDefault,
+  FooterModal
+} from '../../../components/UiElements/styles';
+import UploadFiles from '../../../components/Upload/UploadFiles';
+import WrapperEditor from '../../../components/WrapperEditor';
 
 // STYLES
-import { ContainerGroupTable, ContentDefault, FieldDefault, FieldGroupFormDefault, FooterModal } from '../../../components/UiElements/styles';
+import api from '../../../services/api';
 import { Container } from './styles';
 
 interface UploadedFilesProps {
@@ -69,12 +75,12 @@ export default function ListMeeting() {
     members: [],
     date: '',
     files: '',
-    description: '',
-  } as FormProps)
+    description: ''
+  } as FormProps);
   const [modal, setModal] = useState({
     isOpen: false,
     type: 'Criar nova Ata de Reunião'
-  })
+  });
 
   const [errors, setErros] = useState({} as any);
 
@@ -86,17 +92,19 @@ export default function ListMeeting() {
     dateStart: '',
     dateEnd: ''
   });
-  const [filterOrder, setFilterOredr] = useState('')
+  const [filterOrder, setFilterOredr] = useState('');
 
-  const { data, pages, fetchData } = useFetch<MeetingProps[]>(`meetings?search=${search}&date_start=${filterDate.dateStart}&date_end=${filterDate.dateEnd}&order=${filterOrder}`);
+  const { data, pages, fetchData } = useFetch<MeetingProps[]>(
+    `meetings?search=${search}&date_start=${filterDate.dateStart}&date_end=${filterDate.dateEnd}&order=${filterOrder}`
+  );
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const { data: dataTeam } = useFetch<TeamProps[]>('team');
 
-  const selectedTeam = dataTeam?.filter((obj) => obj.user_id !== formData.user_id)
+  const selectedTeam = dataTeam?.filter((obj) => obj.user_id !== formData.user_id);
   const defaultOptionsTeam = dataTeam?.filter((item) =>
     formData.members.some((member: any) => member.user_id === item.user_id)
-  )
-  const mentionList = dataTeam?.map((obj) => ({id: obj.user_id, label: obj.username}))
+  );
+  const mentionList = dataTeam?.map((obj) => ({ id: obj.user_id, label: obj.username }));
 
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
   const [selected, setSelected] = useState(1);
@@ -111,31 +119,29 @@ export default function ListMeeting() {
         setSearching(false);
       }, 500);
       return () => {
-        clearTimeout(handler)
-      }
+        clearTimeout(handler);
+      };
     } else {
-      setSearch('')
+      setSearch('');
       setSearching(false);
     }
   }, [debouncedSearchTerm]);
-  
+
   const handleChangeClient = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedIndex = event.target.selectedIndex;
     const selectedId = parseInt(event.target.options[selectedIndex].value);
     const selectedItem = dataClient?.find((item: any) => Number(item.tenant_id) === selectedId);
-  
-    setFormValue('tenant_id', selectedItem?.tenant_id)
+
+    setFormValue('tenant_id', selectedItem?.tenant_id);
   };
 
   const onChange = (option: any) => {
-    const dataOption = option.map((row: any) => (
-      {user_id: row.value}
-    ))
-    setFormValue('members', dataOption)
- }
+    const dataOption = option.map((row: any) => ({ user_id: row.value }));
+    setFormValue('members', dataOption);
+  };
 
   const handleOnCancel = () => {
-    setModal({ 
+    setModal({
       isOpen: false,
       type: 'Criar nova Ata de Reunião'
     });
@@ -147,13 +153,13 @@ export default function ListMeeting() {
       members: [],
       date: '',
       files: '',
-      description: '',
+      description: ''
     } as FormProps);
     setUploadedFiles([]);
     setText('');
     setErros({});
     // fetchData();
-  }
+  };
 
   function handleOnEdit(data: MeetingProps) {
     setData(data);
@@ -166,87 +172,85 @@ export default function ListMeeting() {
     });
   }
 
-  const handleOnSubmit = useCallback(async (event: any) => {
-    try {
-      event.preventDefault();
+  const handleOnSubmit = useCallback(
+    async (event: any) => {
+      try {
+        event.preventDefault();
 
-      // Inserir lógica
-      const files = uploadedFiles.map((row) => (
-        {
+        // Inserir lógica
+        const files = uploadedFiles.map((row) => ({
           bucket: row.bucket,
           file_name: row.file_name,
           key: row.key,
           size: row.size,
           url: row.url
+        }));
+
+        const { title, tenant_id, user_id, date, email_alert, members } = formData;
+
+        const newFormData = {
+          files,
+          title,
+          tenant_id,
+          user_id,
+          date,
+          email_alert: String(email_alert),
+          description: text,
+          members
+        };
+
+        if (modal.type === 'Criar nova Ata de Reunião') {
+          await api.post(`meetings`, newFormData);
+        } else {
+          await api.put(`meetings/${formData.meeting_id}`, newFormData);
         }
-      ))
 
-      const { title, tenant_id, user_id, date, email_alert, members } = formData
+        addToast({
+          type: 'success',
+          title: 'Sucesso',
+          description: 'Serviço cadastrado com sucesso!'
+        });
 
-      const newFormData = {
-        files,
-        title,
-        tenant_id,
-        user_id,
-        date,
-        email_alert: String(email_alert),
-        description: text,
-        members      
+        setModal({
+          isOpen: false,
+          type: 'Criar nova Ata de Reunião'
+        });
+        setData({
+          title: '',
+          tenant_id: '',
+          email_alert: false,
+          user_id: '',
+          members: [],
+          date: '',
+          files: '',
+          description: ''
+        } as FormProps);
+        setUploadedFiles([]);
+        setText('');
+        fetchData();
+      } catch (e: any) {
+        // Exibir erro
+        console.log('ERROR =>', e);
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: e.response.data.message
+        });
+
+        setErros(getVaidationErrors(e.response.data.result));
       }
-
-      if(modal.type === 'Criar nova Ata de Reunião') {
-        await api.post(`meetings`, newFormData);
-      } else {
-        await api.put(`meetings/${formData.meeting_id}`, newFormData);
-      }
-
-      addToast({
-        type: 'success',
-        title: 'Sucesso',
-        description: 'Serviço cadastrado com sucesso!',
-      });
-
-      setModal({
-        isOpen: false,
-        type: 'Criar nova Ata de Reunião'
-      });
-      setData({
-        title: '',
-        tenant_id: '',
-        email_alert: false,
-        user_id: '',
-        members: [],
-        date: '',
-        files: '',
-        description: '',
-      } as FormProps);
-      setUploadedFiles([]);
-      setText('');
-      fetchData();
-
-    } catch (e: any) {
-      // Exibir erro
-      console.log('ERROR =>', e)
-      addToast({
-        type: 'danger',
-        title: 'ATENÇÃO',
-        description: e.response.data.message,
-      });
-
-      setErros(getVaidationErrors(e.response.data.result))
-
-    }
-  }, [formData, setFormValue, text, uploadedFiles, modal]);
+    },
+    [formData, setFormValue, text, uploadedFiles, modal]
+  );
 
   const handleOnDelete = async (id: string) => {
     try {
-
       await api.delete(`meetings/${id}`);
 
       addToast({
         type: 'success',
         title: 'Sucesso',
-        description: 'Ata/Reunição deletada com sucesso!',
+        description: 'Ata/Reunição deletada com sucesso!'
       });
 
       setModal({
@@ -262,26 +266,29 @@ export default function ListMeeting() {
         members: [],
         date: '',
         files: '',
-        description: '',
+        description: ''
       } as FormProps);
       setUploadedFiles([]);
       setText('');
       fetchData();
-    } catch(e: any) {
+    } catch (e: any) {
       addToast({
         type: 'danger',
         title: 'ATENÇÃO',
-        description: e.response.data.message,
+        description: e.response.data.message
       });
     }
-  }
+  };
 
   return (
     <Container>
       <HeaderPage title="Atas e Reuniões">
-        <ButtonDefault typeButton="success" onClick={() => setModal({...modal, ['isOpen']: true})}>
+        <ButtonDefault
+          typeButton="success"
+          onClick={() => setModal({ ...modal, ['isOpen']: true })}
+        >
           <BiPlus color="#fff" />
-            Nova Ata/Reunião
+          Nova Ata/Reunião
         </ButtonDefault>
       </HeaderPage>
 
@@ -292,9 +299,9 @@ export default function ListMeeting() {
               label="Data inicial"
               placeholder="00/00/0000"
               name="dateStart"
-              type='date'
+              type="date"
               icon={BiCalendar}
-              onChange={(e) => setFilterDate({...filterDate, ['dateStart']: e.target.value})}
+              onChange={(e) => setFilterDate({ ...filterDate, ['dateStart']: e.target.value })}
               value={filterDate.dateStart}
             />
 
@@ -302,12 +309,11 @@ export default function ListMeeting() {
               label="Data final"
               placeholder="00/00/0000"
               name="dateEnd"
-              type='date'
+              type="date"
               icon={BiCalendar}
-              onChange={(e) => setFilterDate({...filterDate, ['dateEnd']: e.target.value})}
+              onChange={(e) => setFilterDate({ ...filterDate, ['dateEnd']: e.target.value })}
               value={filterDate.dateEnd}
             />
-
           </FieldGroupFormDefault>
           <SelectDefault
             label="Ordenar por"
@@ -316,8 +322,8 @@ export default function ListMeeting() {
             onChange={(e) => setFilterOredr(e.target.value)}
             value={filterOrder}
           >
-            <option value='asc'>Mais recente</option>
-            <option value='desc'>Mais antigo</option>
+            <option value="asc">Mais recente</option>
+            <option value="desc">Mais antigo</option>
           </SelectDefault>
 
           <InputDefault
@@ -329,7 +335,6 @@ export default function ListMeeting() {
             isLoading={isSearching}
             value={searchTerm}
           />
-
         </FieldGroupFormDefault>
       </ContentDefault>
 
@@ -350,34 +355,22 @@ export default function ListMeeting() {
             <tbody>
               {data?.map((row) => (
                 <tr key={row.meeting_id}>
-                  <td>
-                    {row.meeting_id}
-                  </td>
+                  <td>{row.meeting_id}</td>
                   <td>{row.title}</td>
-                  <td>
-                    {row.cliente}
-                  </td>
+                  <td>{row.cliente}</td>
                   <td>{row.responsavel}</td>
                   <td>{row.date}</td>
                   <td>
                     <div className="fieldTableClients">
-                      <ButtonTable 
-                        typeButton='edit'
-                        onClick={() => handleOnEdit(row)}
-                      />
+                      <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
 
                       <Alert
-                        title='Atenção'
-                        subtitle='Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita.'
-                        cancelButton={() => {}}
+                        title="Atenção"
+                        subtitle="Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita."
                         confirmButton={() => handleOnDelete(row.meeting_id)}
                       >
-                        <ButtonTable 
-                          typeButton='delete'
-                          onClick={() => handleOnEdit(row)}
-                        />
+                        <ButtonTable typeButton="delete" onClick={() => handleOnEdit(row)} />
                       </Alert>
-
                     </div>
                   </td>
                 </tr>
@@ -385,10 +378,9 @@ export default function ListMeeting() {
             </tbody>
           </TableDefault>
         </ScrollAreas>
-
       </ContainerGroupTable>
 
-      <Paginate 
+      <Paginate
         total={pages.total}
         perPage={pages.perPage}
         currentPage={selected}
@@ -396,11 +388,7 @@ export default function ListMeeting() {
         onClickPage={(e) => setSelected(e)}
       />
 
-      <ModalDefault
-        isOpen={modal.isOpen}
-        onOpenChange={handleOnCancel}
-        title={modal.type}
-      >
+      <ModalDefault isOpen={modal.isOpen} onOpenChange={handleOnCancel} title={modal.type}>
         <form onSubmit={handleOnSubmit}>
           <FieldDefault>
             <InputDefault
@@ -409,7 +397,7 @@ export default function ListMeeting() {
               name="title"
               onChange={handleOnChange}
               value={formData.title}
-              alert='Titulo é obrigatório'
+              alert="Titulo é obrigatório"
               error={errors?.title}
             />
           </FieldDefault>
@@ -421,19 +409,21 @@ export default function ListMeeting() {
               placeHolder="Selecione"
               onChange={handleChangeClient}
               value={formData?.tenant_id}
-              alert='Cliente é obrigatório'
+              alert="Cliente é obrigatório"
               error={errors?.tenant_id}
             >
               {dataClient?.map((row) => (
-                <option key={row.tenant_id} value={row.tenant_id}>{row.name}</option>
+                <option key={row.tenant_id} value={row.tenant_id}>
+                  {row.name}
+                </option>
               ))}
             </SelectDefault>
           </FieldDefault>
 
           <FieldDefault>
-            <InputSwitchDefault 
+            <InputSwitchDefault
               name="email_alert"
-              label='Enviar para o cliente por e-mail'
+              label="Enviar para o cliente por e-mail"
               onChange={handleOnChangeCheckbox}
               isChecked={String(formData.email_alert) === 'true' ? true : false}
             />
@@ -445,29 +435,30 @@ export default function ListMeeting() {
               name="user_id"
               placeHolder="Selecione"
               onChange={handleOnChange}
-              alert='Responsavel é obrigatório'
+              alert="Responsavel é obrigatório"
               value={formData.user_id}
               error={errors?.user_id}
             >
               {dataTeam?.map((row) => (
-                <option key={row.user_id} value={row.user_id}>{row.name}</option>
+                <option key={row.user_id} value={row.user_id}>
+                  {row.name}
+                </option>
               ))}
             </SelectDefault>
           </FieldDefault>
 
           <FieldDefault>
-            <InputMultipleSelect 
-              name='members'
-              options={selectedTeam?.map((row) => (
-                { value: row.user_id, label: row.username }
-              ))}
-              label='Membros'
+            <InputMultipleSelect
+              name="members"
+              options={selectedTeam?.map((row) => ({ value: row.user_id, label: row.username }))}
+              label="Membros"
               isDisabled={formData.user_id ? false : true}
               onChange={(option) => onChange(option)}
-              defaultValue={defaultOptionsTeam?.map((row) => (
-                { value: row.user_id, label: row.username }
-              ))}
-              alert='Selecione pelo menos um Responsável'
+              defaultValue={defaultOptionsTeam?.map((row) => ({
+                value: row.user_id,
+                label: row.username
+              }))}
+              alert="Selecione pelo menos um Responsável"
               error={errors?.members}
             />
           </FieldDefault>
@@ -477,11 +468,11 @@ export default function ListMeeting() {
               label="Data"
               placeholder="00/00/0000"
               name="date"
-              type='date'
+              type="date"
               icon={BiCalendar}
               onChange={handleOnChange}
               value={formData.date}
-              alert='Data é obrigatória'
+              alert="Data é obrigatória"
               error={errors?.date}
             />
           </FieldDefault>
@@ -504,11 +495,7 @@ export default function ListMeeting() {
           </FieldDefault>
 
           <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
-            <ButtonDefault
-              typeButton="dark"
-              isOutline
-              onClick={handleOnCancel}
-            >
+            <ButtonDefault typeButton="dark" isOutline onClick={handleOnCancel}>
               Descartar
             </ButtonDefault>
             <ButtonDefault typeButton="primary" isOutline type="submit">
@@ -518,5 +505,5 @@ export default function ListMeeting() {
         </form>
       </ModalDefault>
     </Container>
-  )
+  );
 }

@@ -1,8 +1,7 @@
-import React from 'react'
-import { FieldDefault } from '../../../components/UiElements/styles'
-import UploadFiles, { UploadedFilesProps } from '../../../components/Upload/UploadFiles'
+import { FieldDefault } from '../../../components/UiElements/styles';
+import UploadFiles, { UploadedFilesProps } from '../../../components/Upload/UploadFiles';
 
-import { ContainerSteps } from './styles'
+import { ContainerSteps } from './styles';
 
 interface InfoFilesSteps {
   uploadedFiles: UploadedFilesProps[];
@@ -11,7 +10,12 @@ interface InfoFilesSteps {
   isDisabed?: boolean;
 }
 
-export default function InfoFiles({uploadedFiles, setUploadedFiles, tenant, isDisabed}: InfoFilesSteps) {
+export default function InfoFiles({
+  uploadedFiles,
+  setUploadedFiles,
+  tenant,
+  isDisabed
+}: InfoFilesSteps) {
   return (
     <ContainerSteps>
       <FieldDefault>
@@ -23,5 +27,5 @@ export default function InfoFiles({uploadedFiles, setUploadedFiles, tenant, isDi
         />
       </FieldDefault>
     </ContainerSteps>
-  )
+  );
 }

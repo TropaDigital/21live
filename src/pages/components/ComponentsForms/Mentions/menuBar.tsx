@@ -1,76 +1,69 @@
-import { useCallback } from 'react'
+import { useCallback } from 'react';
+import { BiColorFill, BiFontColor, BiStrikethrough } from 'react-icons/bi';
 
-import { ContainerButtonsMentions, ButtonBar } from './styles'
-import { IconBlockquote, IconBold, IconBulletCircle, IconBulletList, IconItalic, IconLink, IconStrike, IconSubTitle, IconTitle } from '../../../../components/assets/icons'
-import { BiColorFill, BiFontColor, BiStrikethrough } from 'react-icons/bi'
+import {
+  IconBlockquote,
+  IconBold,
+  IconBulletCircle,
+  IconBulletList,
+  IconItalic,
+  IconLink,
+  IconSubTitle,
+  IconTitle
+} from '../../../../assets/icons';
+
+import { ButtonBar, ContainerButtonsMentions } from './styles';
 
 const MenuBar = ({ editor }: any) => {
   const setLink = useCallback(() => {
-    const previousUrl = editor.getAttributes('link').href
-    const url = window.prompt('URL', previousUrl)
+    const previousUrl = editor.getAttributes('link').href;
+    const url = window.prompt('URL', previousUrl);
 
     // cancelled
     if (url === null) {
-      return
+      return;
     }
 
     // empty
     if (url === '') {
-      editor.chain().focus().extendMarkRange('link').unsetLink()
-        .run()
+      editor.chain().focus().extendMarkRange('link').unsetLink().run();
 
-      return
+      return;
     }
 
     // update link
-    editor.chain().focus().extendMarkRange('link').setLink({ href: url })
-      .run()
-  }, [editor])
+    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+  }, [editor]);
 
   if (!editor) {
-    return null
+    return null;
   }
 
   return (
     <ContainerButtonsMentions>
-      <ButtonBar type="button"
+      <ButtonBar
+        type="button"
         onClick={() => editor.chain().focus().toggleBold().run()}
-        disabled={
-          !editor.can()
-            .chain()
-            .focus()
-            .toggleBold()
-            .run()
-        }
+        disabled={!editor.can().chain().focus().toggleBold().run()}
         className={editor.isActive('bold') ? 'is-active' : ''}
       >
         <IconBold />
       </ButtonBar>
-      <ButtonBar type="button"
+      <ButtonBar
+        type="button"
         onClick={() => editor.chain().focus().toggleItalic().run()}
-        disabled={
-          !editor.can()
-            .chain()
-            .focus()
-            .toggleItalic()
-            .run()
-        }
+        disabled={!editor.can().chain().focus().toggleItalic().run()}
         className={editor.isActive('italic') ? 'is-active' : ''}
       >
         <IconItalic />
       </ButtonBar>
-      <ButtonBar type="button"
+      <ButtonBar
+        type="button"
         onClick={() => editor.chain().focus().toggleStrike().run()}
-        disabled={
-          !editor.can()
-            .chain()
-            .focus()
-            .toggleStrike()
-            .run()
-        }
+        disabled={!editor.can().chain().focus().toggleStrike().run()}
         className={editor.isActive('strike') ? 'is-active' : ''}
       >
-        <BiStrikethrough color='#667085' size={22} />
+        <BiStrikethrough color="#667085" size={22} />
       </ButtonBar>
       {/* <ButtonBar type="button"
         onClick={() => editor.chain().focus().toggleCode().run()}
@@ -97,20 +90,26 @@ const MenuBar = ({ editor }: any) => {
       >
         paragraph
       </ButtonBar> */}
-      <ButtonBar type="button"
+      <ButtonBar
+        type="button"
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
         className={editor.isActive('heading', { level: 1 }) ? 'is-active' : ''}
       >
         <IconTitle />
       </ButtonBar>
-      <ButtonBar type="button"
+      <ButtonBar
+        type="button"
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
         className={editor.isActive('heading', { level: 2 }) ? 'is-active' : ''}
       >
         <IconSubTitle />
       </ButtonBar>
 
-      <ButtonBar type="button" onClick={setLink} className={editor.isActive('link') ? 'is-active' : ''}>
+      <ButtonBar
+        type="button"
+        onClick={setLink}
+        className={editor.isActive('link') ? 'is-active' : ''}
+      >
         <IconLink />
       </ButtonBar>
       {/* <ButtonBar type="button"
@@ -155,19 +154,22 @@ const MenuBar = ({ editor }: any) => {
       >
         code block
       </ButtonBar> */}
-      <ButtonBar type="button"
+      <ButtonBar
+        type="button"
         onClick={() => editor.chain().focus().toggleBlockquote().run()}
         className={editor.isActive('blockquote') ? 'is-active' : ''}
       >
         <IconBlockquote />
       </ButtonBar>
-      <ButtonBar type="button"
+      <ButtonBar
+        type="button"
         onClick={() => editor.chain().focus().toggleBulletList().run()}
         className={editor.isActive('bulletList') ? 'is-active' : ''}
       >
         <IconBulletCircle />
       </ButtonBar>
-      <ButtonBar type="button"
+      <ButtonBar
+        type="button"
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
         className={editor.isActive('orderedList') ? 'is-active' : ''}
       >
@@ -175,7 +177,7 @@ const MenuBar = ({ editor }: any) => {
       </ButtonBar>
 
       <div className="butonBarColor">
-        <BiFontColor color='#667085' size={24} />
+        <BiFontColor color="#667085" size={24} />
 
         <input
           type="color"
@@ -185,10 +187,12 @@ const MenuBar = ({ editor }: any) => {
       </div>
 
       <div className="butonBarColor">
-        <BiColorFill color='#667085' size={24} />
+        <BiColorFill color="#667085" size={24} />
         <input
           type="color"
-          onInput={(event: any) => editor.chain().focus().setHighlight({color: event.target.value}).run()}
+          onInput={(event: any) =>
+            editor.chain().focus().setHighlight({ color: event.target.value }).run()
+          }
           value={editor.getAttributes('highlight').color}
         />
       </div>
@@ -224,7 +228,7 @@ const MenuBar = ({ editor }: any) => {
         redo
       </ButtonBar> */}
     </ContainerButtonsMentions>
-  )
-}
+  );
+};
 
-export {MenuBar}
+export { MenuBar };

@@ -1,18 +1,21 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { BiEnvelope, BiLeftArrowAlt, BiLockAlt, BiLogIn, BiUser } from 'react-icons/bi';
+import React, { useCallback, useState } from 'react';
+import { BiEnvelope, BiLeftArrowAlt, BiLockAlt, BiUser } from 'react-icons/bi';
+import { Link, useNavigate } from 'react-router-dom';
+
+import api from '../../../services/api';
 
 import { useAuth } from '../../../hooks/AuthContext';
 import { useToast } from '../../../hooks/toast';
 
-import { InputDefault } from '../../../components/Inputs/InputDefault';
-import ButtonDefault from '../../../components/Buttons/ButtonDefault';
-
-import logo from '../../../components/assets/bg.svg';
-import { Container, Content, AnimationContainer, Background } from "./styles";
-import { FieldFormDefault } from '../../../components/UiElements/styles';
-import api from '../../../services/api';
 import getVaidationErrors from '../../../utils/getVaidationErrors';
+
+import logo from '../../../assets/bg.svg';
+
+import ButtonDefault from '../../../components/Buttons/ButtonDefault';
+import { InputDefault } from '../../../components/Inputs/InputDefault';
+import { FieldFormDefault } from '../../../components/UiElements/styles';
+
+import { AnimationContainer, Background, Container, Content } from './styles';
 
 interface SignInFormData {
   email: string;
@@ -32,7 +35,7 @@ export default function SignUp() {
     email: '',
     username: '',
     password: '',
-    confirmPassword: '',
+    confirmPassword: ''
   });
 
   function handleInputChange(name: string, event: React.ChangeEvent<HTMLInputElement>) {
@@ -52,21 +55,21 @@ export default function SignUp() {
           email,
           password,
           confirmPassword,
-          organization_id: "850",
-          tenant_id: "0",
+          organization_id: '850',
+          tenant_id: '0',
           username,
           name,
-          downlimit: "0",
-          need_fill: "0",
-          askpswd: "0"
+          downlimit: '0',
+          need_fill: '0',
+          askpswd: '0'
         };
 
-       await api.post("login/create", data);
+        await api.post('login/create', data);
 
         addToast({
           type: 'success',
           title: 'Sucesso',
-          description: 'Usuário com sucesso!',
+          description: 'Usuário com sucesso!'
         });
 
         navigate('/login');
@@ -80,7 +83,7 @@ export default function SignUp() {
         addToast({
           type: 'danger',
           title: 'ATENÇÃO',
-          description: e.response.data.result[0].error,
+          description: e.response.data.result[0].error
         });
       }
     },
@@ -99,23 +102,23 @@ export default function SignUp() {
             <h1>Faça seu cadastro</h1>
 
             <FieldFormDefault bottom={12}>
-              <InputDefault 
-                name="name" 
-                icon={BiUser} 
-                type="text" 
+              <InputDefault
+                name="name"
+                icon={BiUser}
+                type="text"
                 placeholder="Nome"
-                label='Nome'
+                label="Nome"
                 onChange={(event) => handleInputChange('name', event)}
               />
             </FieldFormDefault>
 
             <FieldFormDefault bottom={12}>
-              <InputDefault 
-                name="username" 
-                icon={BiUser} 
-                type="text" 
+              <InputDefault
+                name="username"
+                icon={BiUser}
+                type="text"
                 placeholder="username"
-                label='Username'
+                label="Username"
                 onChange={(event) => handleInputChange('username', event)}
               />
             </FieldFormDefault>
@@ -126,7 +129,7 @@ export default function SignUp() {
                 icon={BiEnvelope}
                 type="text"
                 placeholder="E-mail"
-                label='Email'
+                label="Email"
                 onChange={(event) => handleInputChange('email', event)}
               />
             </FieldFormDefault>
@@ -137,7 +140,7 @@ export default function SignUp() {
                 icon={BiLockAlt}
                 type="password"
                 placeholder="Senha"
-                label='Senha'
+                label="Senha"
                 onChange={(event) => handleInputChange('password', event)}
               />
             </FieldFormDefault>

@@ -1,35 +1,37 @@
-import * as Popover from '@radix-ui/react-popover';
-import Alert from '../Alert';
-
-import { FiMoreHorizontal } from 'react-icons/fi';
 import { BiLeftArrowAlt, BiRightArrowAlt, BiX } from 'react-icons/bi';
+import { FiMoreHorizontal } from 'react-icons/fi';
 
-import { ButtonHeaderCardFluxo, ContainerPopupCard } from './styles'
+import * as Popover from '@radix-ui/react-popover';
+
+import Alert from '../Alert';
+import { ButtonHeaderCardFluxo, ContainerPopupCard } from './styles';
 
 interface PropsPopup {
   handleOnDelete: (ai: any) => void;
   handleOnPosition: (index: number) => void;
-  index: any
+  index: any;
   length: number;
 }
 
-export default function ActionPopup({ handleOnDelete, handleOnPosition, index, length }: PropsPopup) {
-
-  console.log('LENGTH', length)
-  console.log('LENGTH', index)
+export default function ActionPopup({
+  handleOnDelete,
+  handleOnPosition,
+  index,
+  length
+}: PropsPopup) {
+  console.log('LENGTH', length);
+  console.log('LENGTH', index);
 
   return (
     <ContainerPopupCard>
       <Popover.Root>
         <Popover.Trigger asChild>
-          <ButtonHeaderCardFluxo
-            aria-label="Update dimensions"
-          >
+          <ButtonHeaderCardFluxo aria-label="Update dimensions">
             <FiMoreHorizontal />
           </ButtonHeaderCardFluxo>
         </Popover.Trigger>
         <Popover.Portal>
-          <Popover.Content  className="PopoverContentActionCard" sideOffset={5}>
+          <Popover.Content className="PopoverContentActionCard" sideOffset={5}>
             <div
               style={{
                 display: 'flex',
@@ -45,36 +47,31 @@ export default function ActionPopup({ handleOnDelete, handleOnPosition, index, l
                 {index !== 0 && (
                   <li>
                     <Popover.Close asChild>
-                      <button type='button' onClick={() => handleOnPosition(index - 1)}>
-                        <BiLeftArrowAlt size={18} color='#444444' />
+                      <button type="button" onClick={() => handleOnPosition(index - 1)}>
+                        <BiLeftArrowAlt size={18} color="#444444" />
                         Mover para esquerda
                       </button>
                     </Popover.Close>
                   </li>
                 )}
-                {(index + 1 < length) && (
+                {index + 1 < length && (
                   <li>
                     <Popover.Close asChild>
-                      <button type='button' onClick={() => handleOnPosition(index + 1)}>
-                        <BiRightArrowAlt size={18} color='#444444' />
+                      <button type="button" onClick={() => handleOnPosition(index + 1)}>
+                        <BiRightArrowAlt size={18} color="#444444" />
                         Mover para direita
                       </button>
                     </Popover.Close>
                   </li>
                 )}
                 {!(index === 0 && length <= 1) && (
-                  <li className='listDeleteCardFluxo'>
+                  <li className="listDeleteCardFluxo">
                     <Alert
-                      title='Atenção'
-                      subtitle='Certeza que gostaria de remover esse card? Ao excluir a acão não poderá ser desfeita.'
-                      cancelButton={() => {}}
+                      title="Atenção"
+                      subtitle="Certeza que gostaria de remover esse card? Ao excluir a acão não poderá ser desfeita."
                       confirmButton={handleOnDelete}
                     >
-                      <button 
-                        className='buttonDeleteCardFluxo'
-                      >
-                        Excluir etapa
-                      </button>
+                      <button className="buttonDeleteCardFluxo">Excluir etapa</button>
                     </Alert>
                   </li>
                 )}
@@ -87,7 +84,6 @@ export default function ActionPopup({ handleOnDelete, handleOnPosition, index, l
           </Popover.Content>
         </Popover.Portal>
       </Popover.Root>
-
     </ContainerPopupCard>
-  )
+  );
 }

@@ -1,51 +1,53 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react';
 import { BiCalendar, BiPlus, BiSearchAlt } from 'react-icons/bi';
+
 import api from '../../../services/api';
 
-// HOOKS
-import { useSteps } from '../../../hooks/useSteps';
+import { useToast } from '../../../hooks/toast';
 import { useFetch } from '../../../hooks/useFetch';
 import useForm from '../../../hooks/useForm';
-import { useToast } from '../../../hooks/toast';
+import { useSteps } from '../../../hooks/useSteps';
 
-// TYPES
-import { IProjectCreate } from '../../../types';
-
-// UTILS
 import { TenantProps } from '../../../utils/models';
 import { useDebounce } from '../../../utils/useDebounce';
 
-// COMPONENTS
-import { InputDefault } from '../../../components/Inputs/InputDefault';
-import HeaderPage from '../../../components/HeaderPage';
+import { IProjectCreate } from '../../../types';
+
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
+import ButtonTable from '../../../components/Buttons/ButtonTable';
+import HeaderPage from '../../../components/HeaderPage';
+import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { SelectDefault } from '../../../components/Inputs/SelectDefault';
-import ModalDefault from '../../../components/Ui/ModalDefault';
-import InfoGeral from '../ComponentSteps/InfoGeral';
-import InfoProducts from '../ComponentSteps/InfoProducts';
-import InfoDescription from '../ComponentSteps/InfoDescription';
-import InfoFiles from '../ComponentSteps/InfoFiles';
-import { UploadedFilesProps } from '../../../components/Upload/UploadFiles';
 import Paginate from '../../../components/Paginate';
-import ScrollAreas from '../../../components/Ui/ScrollAreas';
+import Steps from '../../../components/Steps';
 import { TableDefault } from '../../../components/TableDefault';
 import Alert from '../../../components/Ui/Alert';
-import ButtonTable from '../../../components/Buttons/ButtonTable';
+import ModalDefault from '../../../components/Ui/ModalDefault';
+import ScrollAreas from '../../../components/Ui/ScrollAreas';
+import {
+  ContainerDefault,
+  ContainerGroupTable,
+  ContentDefault,
+  FieldGroupFormDefault,
+  FooterModal
+} from '../../../components/UiElements/styles';
+import { UploadedFilesProps } from '../../../components/Upload/UploadFiles';
 
-// STYLES
-import { ContainerDefault, ContainerGroupTable, ContentDefault, FieldGroupFormDefault, FooterModal } from '../../../components/UiElements/styles';
-import Steps from '../../../components/Steps';
+import InfoDescription from '../ComponentSteps/InfoDescription';
+import InfoFiles from '../ComponentSteps/InfoFiles';
+import InfoGeral from '../ComponentSteps/InfoGeral';
+import InfoProducts from '../ComponentSteps/InfoProducts';
 
 interface StateProps {
   [key: string]: any;
 }
 
 export default function ListProjects() {
-  const { addToast } = useToast()
+  const { addToast } = useToast();
   const [modal, setModal] = useState({
     isOpen: false,
     type: 'Criar nova Ata de Reunião'
-  })
+  });
 
   const { formData, setFormValue, setData, handleOnChange, handleOnChangeCheckbox } = useForm({
     tenant_id: '',
@@ -56,8 +58,8 @@ export default function ListProjects() {
     date_end: '',
     description: '',
     products: [],
-    files: [],
-  } as IProjectCreate)
+    files: []
+  } as IProjectCreate);
 
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm, 700);
@@ -67,7 +69,7 @@ export default function ListProjects() {
     dateStart: '',
     dateEnd: ''
   });
-  const [filterOrder, setFilterOredr] = useState('')
+  const [filterOrder, setFilterOredr] = useState('');
 
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
   const [error, setError] = useState<StateProps>({});
@@ -81,10 +83,10 @@ export default function ListProjects() {
         setSearching(false);
       }, 500);
       return () => {
-        clearTimeout(handler)
-      }
+        clearTimeout(handler);
+      };
     } else {
-      setSearch('')
+      setSearch('');
       setSearching(false);
     }
   }, [debouncedSearchTerm]);
@@ -92,189 +94,218 @@ export default function ListProjects() {
   // PRODUTOS
   const { data: dataOffice } = useFetch<IProjectCreate[]>(`services`);
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
-  const { data: dataProject, fetchData: fetchProject, pages } = useFetch<IProjectCreate[]>(`project?search=${search}&date_start=${filterDate.dateStart}&date_end=${filterDate.dateEnd}&order=${filterOrder}`);
+  const {
+    data: dataProject,
+    fetchData: fetchProject,
+    pages
+  } = useFetch<IProjectCreate[]>(
+    `project?search=${search}&date_start=${filterDate.dateStart}&date_end=${filterDate.dateEnd}&order=${filterOrder}`
+  );
   const [selected, setSelected] = useState(1);
 
   const handleOnAddProducts = (items: any) => {
-    setFormValue('products', [
-      ...formData.products,
-      ...items
-    ])
+    setFormValue('products', [...formData.products, ...items]);
   };
 
   const handleOnDeleteProduct = (id: number) => {
-    console.log('ID', id)
-    setFormValue('products', formData.products.filter((product: any) => product.service_id !== id))
-  }
+    console.log('ID', id);
+    setFormValue(
+      'products',
+      formData.products.filter((product: any) => product.service_id !== id)
+    );
+  };
 
-  const handleOnIncrememtQtd = useCallback((value: any) => {
-    const updatedProducts = [...formData.products];
-    const productIndex = updatedProducts.findIndex(product => product.service_id === value.service_id);
-    const updatedProductCopy = {...updatedProducts[productIndex]};
-    updatedProductCopy.quantity = Number(updatedProductCopy.quantity) + 1;
-    updatedProducts[productIndex] = updatedProductCopy;
-    setFormValue('products', updatedProducts)
+  const handleOnIncrememtQtd = useCallback(
+    (value: any) => {
+      const updatedProducts = [...formData.products];
+      const productIndex = updatedProducts.findIndex(
+        (product) => product.service_id === value.service_id
+      );
+      const updatedProductCopy = { ...updatedProducts[productIndex] };
+      updatedProductCopy.quantity = Number(updatedProductCopy.quantity) + 1;
+      updatedProducts[productIndex] = updatedProductCopy;
+      setFormValue('products', updatedProducts);
+    },
+    [setFormValue, formData]
+  );
 
-  }, [setFormValue, formData])
-
-  const handleOnDecrementQtd = useCallback((value: any) => {
-    const updatedProducts = [...formData.products];
-    const productIndex = updatedProducts.findIndex(product => product.service_id === value.service_id);
-    const updatedProductCopy = {...updatedProducts[productIndex]};
-    updatedProductCopy.quantity = Number(updatedProductCopy.quantity) - 1;
-    updatedProducts[productIndex] = updatedProductCopy;
-    setFormValue('products', updatedProducts)
-
-  }, [setFormValue, formData])
+  const handleOnDecrementQtd = useCallback(
+    (value: any) => {
+      const updatedProducts = [...formData.products];
+      const productIndex = updatedProducts.findIndex(
+        (product) => product.service_id === value.service_id
+      );
+      const updatedProductCopy = { ...updatedProducts[productIndex] };
+      updatedProductCopy.quantity = Number(updatedProductCopy.quantity) - 1;
+      updatedProducts[productIndex] = updatedProductCopy;
+      setFormValue('products', updatedProducts);
+    },
+    [setFormValue, formData]
+  );
 
   function isNumber(value: string) {
     return /^[0-9]*$/.test(value);
   }
 
-  const handleInputProduct = useCallback((event: React.ChangeEvent<HTMLInputElement>, id: any) => {
-    const newValue = event.target.value;
-    if (isNumber(newValue)) {
+  const handleInputProduct = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>, id: any) => {
+      const newValue = event.target.value;
+      if (isNumber(newValue)) {
+        const updatedProducts = [...formData.products];
+        const productIndex = updatedProducts.findIndex((product) => product.service_id === id);
+        const updatedProductCopy = { ...updatedProducts[productIndex] };
+        updatedProductCopy.quantity = newValue;
+        updatedProducts[productIndex] = updatedProductCopy;
+        setFormValue('products', updatedProducts);
+      }
+    },
+    [setFormValue, formData]
+  );
+
+  const handleOnPeriod = useCallback(
+    (value: any, id: any) => {
+      const verifyPeriod = value ? 'anual' : 'mensal';
       const updatedProducts = [...formData.products];
-      const productIndex = updatedProducts.findIndex(product => product.service_id === id);
-      const updatedProductCopy = {...updatedProducts[productIndex]};
-      updatedProductCopy.quantity = newValue;
+      const productIndex = updatedProducts.findIndex((product) => product.service_id === id);
+      const updatedProductCopy = { ...updatedProducts[productIndex] };
+      updatedProductCopy.period = verifyPeriod;
       updatedProducts[productIndex] = updatedProductCopy;
-      setFormValue('products', updatedProducts)
-    }
 
-  }, [setFormValue, formData])
-
-  const handleOnPeriod = useCallback((value: any, id: any) => {
-    const verifyPeriod = value ? 'anual' : 'mensal'
-    const updatedProducts = [...formData.products];
-    const productIndex = updatedProducts.findIndex(product => product.service_id === id);
-    const updatedProductCopy = {...updatedProducts[productIndex]};
-    updatedProductCopy.period = verifyPeriod;
-    updatedProducts[productIndex] = updatedProductCopy;
-
-    setFormValue('products', updatedProducts)
-
-  }, [setFormValue, formData])
+      setFormValue('products', updatedProducts);
+    },
+    [setFormValue, formData]
+  );
 
   const formComponents = [
     {
       label: 'Geral',
       success: false,
-      component: <InfoGeral data={formData} handleInputChange={handleOnChange} clients={dataClient} error={error}/>
+      component: (
+        <InfoGeral
+          data={formData}
+          handleInputChange={handleOnChange}
+          clients={dataClient}
+          error={error}
+        />
+      )
     },
     {
       label: 'Produtos',
       success: false,
-      component: <InfoProducts
-        handleOnAddProducts={handleOnAddProducts}
-        dataOffice={dataOffice}
-        dataFilter={formData.products}
-        handleOnDecrementQtd={(e) => handleOnDecrementQtd(e)}
-        handleOnIncrememtQtd={(e) => handleOnIncrememtQtd(e)}
-        handleOnPeriod={(e, id) => handleOnPeriod(e, id)}
-        handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
-        handleInputProduct={(value, id) => handleInputProduct(value, id)}
-      />,
+      component: (
+        <InfoProducts
+          handleOnAddProducts={handleOnAddProducts}
+          dataOffice={dataOffice}
+          dataFilter={formData.products}
+          handleOnDecrementQtd={(e) => handleOnDecrementQtd(e)}
+          handleOnIncrememtQtd={(e) => handleOnIncrememtQtd(e)}
+          handleOnPeriod={(e, id) => handleOnPeriod(e, id)}
+          handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
+          handleInputProduct={(value, id) => handleInputProduct(value, id)}
+        />
+      )
     },
     {
       label: 'Descrição',
       success: false,
-      component: <InfoDescription
-        value={formData?.description}
-        handleOnDescription={(value) => setFormValue('description', value)}
-        mentions={[]}
-      />,
+      component: (
+        <InfoDescription
+          value={formData?.description}
+          handleOnDescription={(value) => setFormValue('description', value)}
+          mentions={[]}
+        />
+      )
     },
     {
       label: 'Anexos',
       success: false,
-      component: <InfoFiles
-        uploadedFiles={uploadedFiles}
-        setUploadedFiles={setUploadedFiles}
-        tenant={formData?.tenant_id}
-        isDisabed={!formData?.tenant_id}
-        loading={loading}
-        setLoading={setLoading}
-      />
-    },
+      component: (
+        <InfoFiles
+          uploadedFiles={uploadedFiles}
+          setUploadedFiles={setUploadedFiles}
+          tenant={formData?.tenant_id}
+          isDisabed={!formData?.tenant_id}
+          loading={loading}
+          setLoading={setLoading}
+        />
+      )
+    }
   ];
 
-  const [steps, setSteps] = useState(() => (
-    formComponents.map((row) => (
-      {
-        label: row.label,
-        success: false,
-      }
-    ))
-  ))
-  
-  const fillComponents = formComponents.map((row: any) => row.component)
-  const { changeStep, currentComponent, currentStep, isFirstStep, isLastStep } = useSteps(fillComponents);
+  const [steps, setSteps] = useState(() =>
+    formComponents.map((row) => ({
+      label: row.label,
+      success: false
+    }))
+  );
+
+  const fillComponents = formComponents.map((row: any) => row.component);
+  const { changeStep, currentComponent, currentStep, isFirstStep, isLastStep } =
+    useSteps(fillComponents);
 
   function setErrorInput(value: any, message: any) {
-    if(!message) {
-      delete error[value]
+    if (!message) {
+      delete error[value];
     }
 
-    setError({...error, [value]: message })
+    setError({ ...error, [value]: message });
     return message;
   }
 
   const handleOnNextStep = () => {
-    const { title, tenant_id, contract_type, date_start, date_end } = formData
+    const { title, tenant_id, contract_type, date_start, date_end } = formData;
 
     try {
-      if (title === "") {
+      if (title === '') {
         throw setErrorInput('title', 'Titulo é obrigatório!');
       } else {
         setErrorInput('title', undefined);
       }
 
-      if (tenant_id === "") {
+      if (tenant_id === '') {
         throw setErrorInput('tenant_id', 'Cliente é obrigatório!');
       } else {
         setErrorInput('tenant_id', undefined);
       }
 
-      if (contract_type === "") {
+      if (contract_type === '') {
         throw setErrorInput('contract_type', 'Contrato é obrigatório!');
       } else {
         setErrorInput('contract_type', undefined);
       }
 
-      if (date_start === "") {
+      if (date_start === '') {
         throw setErrorInput('date_start', 'Data inicial é obrigatório!');
       } else {
         setErrorInput('date_start', undefined);
       }
 
-      if (date_end === "") {
-        throw setErrorInput('date_end', 'Data final é obrigatório!')
+      if (date_end === '') {
+        throw setErrorInput('date_end', 'Data final é obrigatório!');
       } else {
         setErrorInput('date_end', undefined);
       }
 
-    changeStep(currentStep + 1)
+      changeStep(currentStep + 1);
 
-    setSteps(prevComponents =>
-      prevComponents.map((component, i) => ({
-        ...component,
-        success: i <= currentStep
-      }))
-    );
-
-    } catch(error: any) {
+      setSteps((prevComponents) =>
+        prevComponents.map((component, i) => ({
+          ...component,
+          success: i <= currentStep
+        }))
+      );
+    } catch (error: any) {
       addToast({
         title: 'Atenção',
         description: error,
         type: 'warning'
-      })
+      });
     }
-  }
+  };
 
   const handleOnPrevStep = () => {
-    changeStep(currentStep - 1)
-    setSteps(prevComponents => {
+    changeStep(currentStep - 1);
+    setSteps((prevComponents) => {
       return prevComponents.map((component, i) => {
         if (i === currentStep - 1) {
           return {
@@ -285,51 +316,51 @@ export default function ListProjects() {
         return component;
       });
     });
-  }
+  };
 
   const validateStep = () => {
-    const { title, tenant_id, contract_type, date_start, date_end } = formData
+    const { title, tenant_id, contract_type, date_start, date_end } = formData;
 
     try {
-      if (title === "") {
+      if (title === '') {
         throw setErrorInput('title', 'Titulo é obrigatório!');
       } else {
         setErrorInput('title', undefined);
       }
 
-      if (tenant_id === "") {
+      if (tenant_id === '') {
         throw setErrorInput('tenant_id', 'Cliente é obrigatório!');
       } else {
         setErrorInput('tenant_id', undefined);
       }
 
-      if (contract_type === "") {
+      if (contract_type === '') {
         throw setErrorInput('contract_type', 'Contrato é obrigatório!');
       } else {
         setErrorInput('contract_type', undefined);
       }
 
-      if (date_start === "") {
+      if (date_start === '') {
         throw setErrorInput('date_start', 'Data inicial é obrigatório!');
       } else {
         setErrorInput('date_start', undefined);
       }
 
-      if (date_end === "") {
-        throw setErrorInput('date_end', 'Data final é obrigatório!')
+      if (date_end === '') {
+        throw setErrorInput('date_end', 'Data final é obrigatório!');
       } else {
         setErrorInput('date_end', undefined);
       }
 
-      changeStep(currentStep + 1)
-    } catch(error: any) {
+      changeStep(currentStep + 1);
+    } catch (error: any) {
       addToast({
         title: 'Atenção',
         description: error,
         type: 'warning'
-      })
+      });
     }
-  }
+  };
 
   const handleOnCancel = () => {
     setModal({
@@ -345,12 +376,12 @@ export default function ListProjects() {
       date_end: '',
       description: '',
       products: [],
-      files: [],
+      files: []
     } as IProjectCreate);
     setUploadedFiles([]);
     setError({});
     changeStep(0);
-  }
+  };
 
   const handleOnEdit = (item: IProjectCreate) => {
     setData(item);
@@ -359,8 +390,8 @@ export default function ListProjects() {
     setModal({
       isOpen: true,
       type: `Editar Projeto/Contrato: ${item.title}`
-    })
-  }
+    });
+  };
 
   const handleOnDelete = async (id: any) => {
     try {
@@ -368,131 +399,135 @@ export default function ListProjects() {
       addToast({
         type: 'success',
         title: 'Sucesso',
-        description: 'Projeto foi deletado!',
+        description: 'Projeto foi deletado!'
       });
-  
+
       handleOnCancel();
       fetchProject();
-    } catch(error: any) {
+    } catch (error: any) {
       addToast({
         type: 'danger',
         title: 'ATENÇÃO',
-        description: error.response.data.message,
+        description: error.response.data.message
       });
     }
-  }
+  };
 
-  const handleOnSubmit = useCallback(async (event: any) => {
-    try {
-      event.preventDefault();
+  const handleOnSubmit = useCallback(
+    async (event: any) => {
+      try {
+        event.preventDefault();
 
-      // Inserir lógica
-      const files = uploadedFiles.map((row) => (
-        {
+        // Inserir lógica
+        const files = uploadedFiles.map((row) => ({
           bucket: row.bucket,
           file_name: row.file_name,
           // file_id: row.file_id,
           key: row.key,
           size: row.size,
           url: row.url
+        }));
+
+        const newArrayProducts = formData.products.map(({ tenant_id, ...rest }: any) => rest);
+        // const updateProducts = formData.products.map(({ service_id, ...rest }: any) => ({ product_id: service_id, ...rest }))
+
+        const { title, tenant_id, description, date_start, date_end, contract_type, project_id } =
+          formData;
+
+        const createNewData = {
+          title,
+          tenant_id,
+          products: newArrayProducts,
+          description,
+          date_start,
+          date_end,
+          contract_type,
+          files
+        };
+
+        const updateData = {
+          title,
+          project_id,
+          tenant_id,
+          products: newArrayProducts,
+          description,
+          date_start,
+          date_end,
+          contract_type,
+          files
+        };
+
+        if (modal.type === 'Criar novo Projeto/Contrato') {
+          await api.post(`project`, createNewData);
+        } else {
+          await api.put(`project/${formData.project_id}`, updateData);
         }
-      ))
 
-      const newArrayProducts = formData.products.map(({ tenant_id, ...rest }: any) => rest);
-      // const updateProducts = formData.products.map(({ service_id, ...rest }: any) => ({ product_id: service_id, ...rest }))
+        addToast({
+          type: 'success',
+          title: 'Sucesso',
+          description: 'Serviço cadastrado com sucesso!'
+        });
 
-      const { title, tenant_id, description, date_start, date_end, contract_type, project_id } = formData
+        setData({
+          tenant_id: '',
+          project_id: '',
+          title: '',
+          contract_type: '',
+          date_start: '',
+          date_end: '',
+          description: '',
+          products: [],
+          files: []
+        } as IProjectCreate);
+        setUploadedFiles([]);
+        setModal({
+          isOpen: false,
+          type: 'Criar novo Projeto/Contrato'
+        });
+        changeStep(0);
+        fetchProject();
+      } catch (e: any) {
+        // Exibir erro
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: e.response.data.message
+        });
 
-      const createNewData = {
-        title,
-        tenant_id,
-        products: newArrayProducts,
-        description,
-        date_start,
-        date_end,
-        contract_type,
-        files
+        // setErros(getVaidationErrors(e.response.data.result))
       }
-
-      const updateData = {
-        title,
-        project_id,
-        tenant_id,
-        products: newArrayProducts,
-        description,
-        date_start,
-        date_end,
-        contract_type,
-        files
-      }
-
-      if(modal.type === 'Criar novo Projeto/Contrato') {
-        await api.post(`project`, createNewData);
-      } else {
-        await api.put(`project/${formData.project_id}`, updateData);
-      }
-
-      addToast({
-        type: 'success',
-        title: 'Sucesso',
-        description: 'Serviço cadastrado com sucesso!',
-      });
-
-      setData({
-        tenant_id: '',
-        project_id: '',
-        title: '',
-        contract_type: '',
-        date_start: '',
-        date_end: '',
-        description: '',
-        products: [],
-        files: [],
-      } as IProjectCreate)
-      setUploadedFiles([]);
-      setModal({
-        isOpen: false,
-        type: 'Criar novo Projeto/Contrato'
-      });
-      changeStep(0);
-      fetchProject();
-
-    } catch (e: any) {
-      // Exibir erro
-      addToast({
-        type: 'danger',
-        title: 'ATENÇÃO',
-        description: e.response.data.message,
-      });
-
-      // setErros(getVaidationErrors(e.response.data.result))
-
-    }
-  }, [formData, setFormValue, uploadedFiles, setUploadedFiles, modal, setData]);
-
+    },
+    [formData, setFormValue, uploadedFiles, setUploadedFiles, modal, setData]
+  );
 
   return (
     <ContainerDefault>
       <HeaderPage title="Projetos">
-        <ButtonDefault typeButton="success" onClick={() => setModal({
-        isOpen: !modal.isOpen,
-        type: 'Criar novo Projeto/Contrato'
-      })}>
+        <ButtonDefault
+          typeButton="success"
+          onClick={() =>
+            setModal({
+              isOpen: !modal.isOpen,
+              type: 'Criar novo Projeto/Contrato'
+            })
+          }
+        >
           <BiPlus color="#fff" />
-            Novo Projeto
+          Novo Projeto
         </ButtonDefault>
       </HeaderPage>
 
       <ContentDefault>
-      <FieldGroupFormDefault>
+        <FieldGroupFormDefault>
           <FieldGroupFormDefault>
             <InputDefault
               label="Data inicial"
               placeholder="00/00/0000"
               name="dateStart"
-              type='date'
+              type="date"
               icon={BiCalendar}
-              onChange={(e) => setFilterDate({...filterDate, ['dateStart']: e.target.value})}
+              onChange={(e) => setFilterDate({ ...filterDate, ['dateStart']: e.target.value })}
               value={filterDate.dateStart}
             />
 
@@ -500,12 +535,11 @@ export default function ListProjects() {
               label="Data final"
               placeholder="00/00/0000"
               name="dateEnd"
-              type='date'
+              type="date"
               icon={BiCalendar}
-              onChange={(e) => setFilterDate({...filterDate, ['dateEnd']: e.target.value})}
+              onChange={(e) => setFilterDate({ ...filterDate, ['dateEnd']: e.target.value })}
               value={filterDate.dateEnd}
             />
-
           </FieldGroupFormDefault>
           <SelectDefault
             label="Ordenar por"
@@ -514,8 +548,8 @@ export default function ListProjects() {
             onChange={(e) => setFilterOredr(e.target.value)}
             value={filterOrder}
           >
-            <option value='asc'>Mais recente</option>
-            <option value='desc'>Mais antigo</option>
+            <option value="asc">Mais recente</option>
+            <option value="desc">Mais antigo</option>
           </SelectDefault>
 
           <InputDefault
@@ -527,7 +561,6 @@ export default function ListProjects() {
             isLoading={isSearching}
             value={searchTerm}
           />
-
         </FieldGroupFormDefault>
       </ContentDefault>
 
@@ -548,7 +581,7 @@ export default function ListProjects() {
               {dataProject?.map((row) => (
                 <tr key={row.project_id}>
                   <td style={{ textTransform: 'uppercase', textAlign: 'initial' }}>
-                    {row.contract_type + " | " + row.title}
+                    {row.contract_type + ' | ' + row.title}
                   </td>
                   {/* <td
                     style={{
@@ -563,34 +596,23 @@ export default function ListProjects() {
                       restHours={convertToMilliseconds('02:20:36')}
                     />
                   </td> */}
-                 
+
                   <td>{row.client_name}</td>
                   <td>{row.date_start}</td>
                   <td>{row.date_end}</td>
                   <td>
                     <div className="fieldTableClients">
-                      <ButtonTable 
-                        typeButton='view'
-                        onClick={() => console.log(row)}
-                      />
+                      <ButtonTable typeButton="view" onClick={() => console.log(row)} />
 
-                      <ButtonTable 
-                        typeButton='edit'
-                        onClick={() => handleOnEdit(row)}
-                      />
+                      <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
 
                       <Alert
-                        title='Atenção'
-                        subtitle='Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita.'
-                        cancelButton={() => {}}
+                        title="Atenção"
+                        subtitle="Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita."
                         confirmButton={() => handleOnDelete(row.project_id)}
                       >
-                        <ButtonTable 
-                          typeButton='delete'
-                          onClick={() => handleOnEdit(row)}
-                        />
+                        <ButtonTable typeButton="delete" onClick={() => handleOnEdit(row)} />
                       </Alert>
-
                     </div>
                   </td>
                 </tr>
@@ -598,7 +620,6 @@ export default function ListProjects() {
             </tbody>
           </TableDefault>
         </ScrollAreas>
-
       </ContainerGroupTable>
 
       <Paginate
@@ -609,52 +630,32 @@ export default function ListProjects() {
         onClickPage={(e) => setSelected(e)}
       />
 
-      <ModalDefault
-        isOpen={modal.isOpen}
-        title={modal.type}
-        onOpenChange={handleOnCancel}
-      >
+      <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
         <form onSubmit={handleOnSubmit}>
-
           <Steps currentStep={currentStep} steps={steps} />
-
 
           <div>{currentComponent}</div>
 
           <FooterModal>
-
-            <ButtonDefault
-              typeButton='dark'
-              isOutline
-              type='button'
-              onClick={handleOnCancel}
-            >
+            <ButtonDefault typeButton="dark" isOutline type="button" onClick={handleOnCancel}>
               Descartar
             </ButtonDefault>
 
             <div className="fieldGroup">
               {!isFirstStep && (
-                <ButtonDefault
-                  typeButton="primary"
-                  isOutline
-                  onClick={handleOnPrevStep}
-                >
+                <ButtonDefault typeButton="primary" isOutline onClick={handleOnPrevStep}>
                   Voltar
                 </ButtonDefault>
               )}
 
               {!isLastStep ? (
-                <ButtonDefault
-                  type='button'
-                  typeButton="primary"
-                  onClick={handleOnNextStep}
-                >
+                <ButtonDefault type="button" typeButton="primary" onClick={handleOnNextStep}>
                   Próxima etapa
                 </ButtonDefault>
               ) : (
                 <ButtonDefault
                   typeButton="primary"
-                  type='button'
+                  type="button"
                   onClick={handleOnSubmit}
                   loading={loading}
                 >
@@ -666,5 +667,5 @@ export default function ListProjects() {
         </form>
       </ModalDefault>
     </ContainerDefault>
-  )
+  );
 }

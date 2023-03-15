@@ -1,13 +1,7 @@
-import React from "react";
+import React from 'react';
 
 export const MascoteDanger: React.FC = () => (
-  <svg
-    width="106"
-    height="70"
-    viewBox="0 0 106 70"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+  <svg width="106" height="70" viewBox="0 0 106 70" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       d="M29.7347 38.3558L15.099 30.6519L16.0237 37.8945L5.85468 40.5119L15.2535 46.3666L6.77932 50.8354L13.2497 52.0689L0 58.8462L12.0183 59.0006L4.62115 62.3903H53.7692L29.7347 38.3558Z"
       fill="#D92D20"
@@ -236,13 +230,7 @@ export const MascoteDanger: React.FC = () => (
 );
 
 export const MascoteWarning: React.FC = () => (
-  <svg
-    width="106"
-    height="70"
-    viewBox="0 0 106 70"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+  <svg width="106" height="70" viewBox="0 0 106 70" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g clipPath="url(#clip0_2360_29422)">
       <path
         d="M29.8877 84.2891C29.8877 84.2891 22.7085 87.9917 18.9811 84.3305C15.2537 80.6719 18.6723 78.1273 19.9157 78.3726C19.9157 78.3726 20.6932 76.0402 22.215 75.6102C22.215 75.6102 16.4364 68.9135 16.2214 64.6319C16.0063 60.3476 37.0723 64.2101 37.0723 64.2101L29.8877 84.2891Z"
@@ -402,13 +390,7 @@ export const MascoteWarning: React.FC = () => (
 );
 
 export const MascoteInfo: React.FC = () => (
-  <svg
-    width="106"
-    height="70"
-    viewBox="0 0 106 70"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+  <svg width="106" height="70" viewBox="0 0 106 70" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g clipPath="url(#clip0_2364_30095)">
       <path
         d="M70.0781 68.634L98.1917 72.7973L100.133 63.6421L67.4028 64.8872L106 48.5231L102.936 40.1177L69.0019 57.4631L101.54 25.3527L91.2975 16.4312L63.8342 52.5568L78.2382 11.1154L65.1626 5.9731L56.1393 48.287L50.7586 47.4145L52.4018 0L39.8562 2.13606L42.6911 46.9887L20.4696 8.65533L13.2815 15.5402L33.7465 50.1778L2.55726 39.7428L0 47.9584L31.6868 60.5549L2.36286 63.0103L0.0208283 72.6562L70.0781 68.634Z"
@@ -580,13 +562,7 @@ export const MascoteInfo: React.FC = () => (
 );
 
 export const MascoteSuccess: React.FC = () => (
-  <svg
-    width="106"
-    height="70"
-    viewBox="0 0 106 70"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+  <svg width="106" height="70" viewBox="0 0 106 70" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g clipPath="url(#clip0_2360_29224)">
       <g clipPath="url(#clip1_2360_29224)">
         <path
@@ -761,14 +737,8 @@ export const MascoteSuccess: React.FC = () => (
           d="M44.8547 44.5433L43.3958 44.633C43.3298 44.6382 43.2744 44.5881 43.2718 44.5221C43.2665 44.4509 43.3298 44.3902 43.4011 44.3982L44.8547 44.5433Z"
           fill="black"
         />
-        <path
-          d="M40.5469 40.7653L44.7258 47.833L43.4805 44.4667L40.5469 40.7653Z"
-          fill="black"
-        />
-        <path
-          d="M59.3831 37.734L58.1827 45.6328L58.1484 41.934L59.3831 37.734Z"
-          fill="black"
-        />
+        <path d="M40.5469 40.7653L44.7258 47.833L43.4805 44.4667L40.5469 40.7653Z" fill="black" />
+        <path d="M59.3831 37.734L58.1827 45.6328L58.1484 41.934L59.3831 37.734Z" fill="black" />
         <path
           d="M66.2902 91.7009C66.2902 91.7009 65.359 73.252 79.9561 71.3156C94.5559 69.3765 94.6587 88.7303 94.6587 88.7303C94.6587 88.7303 98.2678 96.0882 98.4155 99.7105C98.5633 103.333 91.4059 105.377 86.9816 106.087C82.5574 106.797 72.7063 98.4336 70.3689 96.2756C69.0551 95.0594 69.8386 90.2842 69.8386 90.2842L66.285 91.7036L66.2902 91.7009Z"
           fill="black"
@@ -820,12 +790,7 @@ export const MascoteSuccess: React.FC = () => (
         <rect width="106" height="70" fill="white" />
       </clipPath>
       <clipPath id="clip1_2360_29224">
-        <rect
-          width="106"
-          height="121.695"
-          fill="white"
-          transform="translate(0 -0.0449219)"
-        />
+        <rect width="106" height="121.695" fill="white" transform="translate(0 -0.0449219)" />
       </clipPath>
     </defs>
   </svg>

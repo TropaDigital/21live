@@ -1,8 +1,10 @@
-import { BiMinus, BiPlus } from "react-icons/bi";
-import { multiplyTime } from "../../../utils/convertTimes";
-import InputSwitchDefault from "../../Inputs/InputSwitchDefault";
-import { Container, Content } from "./styles";
-import ButtonTable from "../../Buttons/ButtonTable";
+import { BiMinus, BiPlus } from 'react-icons/bi';
+
+import { multiplyTime } from '../../../utils/convertTimes';
+
+import ButtonTable from '../../Buttons/ButtonTable';
+import InputSwitchDefault from '../../Inputs/InputSwitchDefault';
+import { Container, Content } from './styles';
 
 interface ProductsProps {
   handleOnDecrementQtd: (e: any) => void;
@@ -13,7 +15,14 @@ interface ProductsProps {
   data: any;
 }
 
-export default function Addproducts({ data, handleOnDecrementQtd, handleInputProduct, handleOnIncrememtQtd, handleOnPeriod, handleOnDeleteProduct }: ProductsProps) {
+export default function Addproducts({
+  data,
+  handleOnDecrementQtd,
+  handleInputProduct,
+  handleOnIncrememtQtd,
+  handleOnPeriod,
+  handleOnDeleteProduct
+}: ProductsProps) {
   const verifyPeriod = data.period === 'mensal' ? false : true;
 
   return (
@@ -22,10 +31,19 @@ export default function Addproducts({ data, handleOnDecrementQtd, handleInputPro
         <div className="cardInfoProductsProject">
           <h2>{data.service}</h2>
           <div className="boxInfopost">
-            <span>horas estimadas: <strong>{data.quantity ? multiplyTime(data.minutes, data.quantity) : '00:00:00' }</strong></span>
+            <span>
+              horas estimadas:{' '}
+              <strong>
+                {data.quantity
+                  ? multiplyTime(data.minutes, data.quantity)
+                  : '00:00:00'}
+              </strong>
+            </span>
           </div>
           <div className="boxInfopost">
-            <span>Categoria: <strong>{data.type}</strong></span>
+            <span>
+              Categoria: <strong>{data.type}</strong>
+            </span>
           </div>
         </div>
 
@@ -36,7 +54,6 @@ export default function Addproducts({ data, handleOnDecrementQtd, handleInputPro
             value={String(verifyPeriod)}
           />
           <span>Anual</span>
-       
         </div>
 
         <div className="boxRightProducts">
@@ -50,29 +67,22 @@ export default function Addproducts({ data, handleOnDecrementQtd, handleInputPro
             </button>
 
             <div className="resultCountPost">
-              <input 
-                type="text" 
-                value={data.quantity} 
+              <input
+                type="text"
+                value={data.quantity}
                 onChange={(event) => handleInputProduct(event)}
-                className='inputProducts'
+                className="inputProducts"
               />
             </div>
 
-            <button
-              type="button"
-              onClick={handleOnIncrememtQtd}
-            >
+            <button type="button" onClick={handleOnIncrememtQtd}>
               <BiPlus color="#0046B5" />
             </button>
           </div>
 
-          <ButtonTable 
-            typeButton='delete'
-            onClick={handleOnDeleteProduct}
-          />
+          <ButtonTable typeButton="delete" onClick={handleOnDeleteProduct} />
         </div>
-
       </Content>
     </Container>
-  )
+  );
 }

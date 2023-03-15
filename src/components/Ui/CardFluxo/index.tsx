@@ -1,23 +1,13 @@
-import { useId, useState } from 'react';
-import { FiMoreHorizontal } from "react-icons/fi";
-import { BiEditAlt, BiPlus, BiPlusCircle, BiXCircle } from "react-icons/bi";
+import { BiPlus } from 'react-icons/bi';
 
-import { SelectDefault } from "../../Inputs/SelectDefault";
-import { CheckboxDefault } from "../../Inputs/CheckboxDefault";
+import { IconArrowFluxo } from '../../../assets/icons';
 
-import { 
-  Container,
-  HeaderCardFluxo,
-  TitleCardFluxo,
-  SectionButtonsHeaderFluxo,
-  ButtonHeaderCardFluxo,
-  FormCardFluxo,
-} from "./styles";
-import { FieldDefault } from "../../UiElements/styles";
-import ButtonDefault from "../../Buttons/ButtonDefault";
-import { IconArrowFluxo } from "../../assets/icons";
-import useColumn from '../../../hooks/useColumn';
+import ButtonDefault from '../../Buttons/ButtonDefault';
+import { CheckboxDefault } from '../../Inputs/CheckboxDefault';
+import { SelectDefault } from '../../Inputs/SelectDefault';
+import { FieldDefault } from '../../UiElements/styles';
 import ActionPopup from './actionPopup';
+import { Container, FormCardFluxo, HeaderCardFluxo, SectionButtonsHeaderFluxo } from './styles';
 
 interface CardProps {
   isLastItem: boolean;
@@ -32,16 +22,29 @@ interface CardProps {
   responseUser: any;
 }
 
-export default function CardFluxo({ data, responseUser, length, columnStep, isLastItem, handleOnClick, handleOnPosition, handleOnDelete, onUpdate, index }: CardProps) {
-  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = event.target
-    onUpdate(index, name, value)
-  }
+export default function CardFluxo({
+  data,
+  responseUser,
+  length,
+  columnStep,
+  isLastItem,
+  handleOnClick,
+  handleOnPosition,
+  handleOnDelete,
+  onUpdate,
+  index
+}: CardProps) {
+  const handleOnChange = (
+    event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const { name, value } = event.target;
+    onUpdate(index, name, value);
+  };
 
   const handleOnChangeCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { checked, name} = event.target
-    onUpdate(index, name, String(checked))
-  }
+    const { checked, name } = event.target;
+    onUpdate(index, name, String(checked));
+  };
 
   return (
     <Container>
@@ -57,8 +60,8 @@ export default function CardFluxo({ data, responseUser, length, columnStep, isLa
       </HeaderCardFluxo>
 
       <FormCardFluxo>
-        <input 
-          type="text" 
+        <input
+          type="text"
           name="name"
           className="inputCardFluxo"
           placeholder="Nome do fluxo..."
@@ -75,7 +78,9 @@ export default function CardFluxo({ data, responseUser, length, columnStep, isLa
             value={data.function_id ?? ''}
           >
             {responseUser?.map((row: any) => (
-              <option key={Number(row.function_id)} value={row.function_id}>{row.function}</option>
+              <option key={Number(row.function_id)} value={row.function_id}>
+                {row.function}
+              </option>
             ))}
           </SelectDefault>
         </FieldDefault>
@@ -89,7 +94,9 @@ export default function CardFluxo({ data, responseUser, length, columnStep, isLa
             value={data.previous_step}
           >
             {columnStep.map((row: any, index: any) => (
-              <option key={index} value={row.card_id}>{row.name}</option>
+              <option key={index} value={row.card_id}>
+                {row.name}
+              </option>
             ))}
           </SelectDefault>
         </FieldDefault>
@@ -102,7 +109,7 @@ export default function CardFluxo({ data, responseUser, length, columnStep, isLa
               label="Alerta por E-mail"
               name="email_alert"
               onChange={handleOnChangeCheckbox}
-              checked={data.email_alert === "true" ? true : false}
+              checked={data.email_alert === 'true' ? true : false}
             />
           </FieldDefault>
 
@@ -111,7 +118,7 @@ export default function CardFluxo({ data, responseUser, length, columnStep, isLa
               label="Upload obrigatório"
               name="necessary_upload"
               onChange={handleOnChangeCheckbox}
-              checked={data.necessary_upload === "true" ? true : false}
+              checked={data.necessary_upload === 'true' ? true : false}
             />
           </FieldDefault>
 
@@ -120,16 +127,15 @@ export default function CardFluxo({ data, responseUser, length, columnStep, isLa
               label="Responsavel obrigatório"
               name="necessary_responsible"
               onChange={handleOnChangeCheckbox}
-              checked={data.necessary_responsible === "true" ? true : false}
+              checked={data.necessary_responsible === 'true' ? true : false}
             />
           </FieldDefault>
         </fieldset>
-
       </FormCardFluxo>
 
       {isLastItem && (
-        <ButtonDefault 
-          className="buttonCardFluxo" 
+        <ButtonDefault
+          className="buttonCardFluxo"
           style={{ borderRadius: '50%', width: '32px', height: '32px', padding: '0px' }}
           onClick={handleOnClick}
         >
@@ -142,7 +148,6 @@ export default function CardFluxo({ data, responseUser, length, columnStep, isLa
           <IconArrowFluxo />
         </div>
       )}
-
     </Container>
-  )
+  );
 }

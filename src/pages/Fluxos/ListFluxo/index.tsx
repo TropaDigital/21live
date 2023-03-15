@@ -1,30 +1,39 @@
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect, useState } from 'react';
+import { BiPlus, BiSearchAlt, BiX } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
-import { BiEdit, BiPlus, BiSearchAlt, BiX } from 'react-icons/bi';
 
 // HOOKS
-import { useFetch } from '../../../hooks/useFetch';
 import { useToast } from '../../../hooks/toast';
+import { useFetch } from '../../../hooks/useFetch';
 
 // UTILS
 import { useDebounce } from '../../../utils/useDebounce';
 
 // COMPONENTS
-import * as Dialog from '@radix-ui/react-dialog';
-import HeaderPage from '../../../components/HeaderPage';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
-import ScrollAreas from '../../../components/Ui/ScrollAreas';
-import { TableDefault } from '../../../components/TableDefault';
-import { InputDefault } from '../../../components/Inputs/InputDefault';
-import Alert from '../../../components/Ui/Alert'
 import ButtonTable from '../../../components/Buttons/ButtonTable';
+import HeaderPage from '../../../components/HeaderPage';
+import { InputDefault } from '../../../components/Inputs/InputDefault';
+import { TableDefault } from '../../../components/TableDefault';
+import Alert from '../../../components/Ui/Alert';
+import ScrollAreas from '../../../components/Ui/ScrollAreas';
 
 // SERVICES
-import api from '../../../services/api';
 
 // STYLES
 
-import { ContainerDefault, ContainerGroupTable, ContentDefault, FieldDefault, FieldGroupFormDefault, FooterModal } from '../../../components/UiElements/styles';
+import {
+  ContainerDefault,
+  ContainerGroupTable,
+  ContentDefault,
+  FieldDefault,
+  FieldGroupFormDefault,
+  FooterModal
+} from '../../../components/UiElements/styles';
+
+import * as Dialog from '@radix-ui/react-dialog';
+
+import api from '../../../services/api';
 
 export default function ListFluxo() {
   const navigate = useNavigate();
@@ -32,7 +41,7 @@ export default function ListFluxo() {
   const [modal, setModal] = useState(false);
   const [formData, setFormData] = useState({
     name: ''
-  })
+  });
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm, 700);
   const [search, setSearch] = useState('');
@@ -48,80 +57,81 @@ export default function ListFluxo() {
         setSearching(false);
       }, 500);
       return () => {
-        clearTimeout(handler)
-      }
+        clearTimeout(handler);
+      };
     } else {
-      setSearch('')
+      setSearch('');
       setSearching(false);
     }
   }, [debouncedSearchTerm]);
 
-  const handleInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const { name, value } = event.target
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   };
 
   async function handleOnDelete(id: any) {
     try {
-      const response = await api.delete(`/flow/${id}`)
+      const response = await api.delete(`/flow/${id}`);
 
       addToast({
         title: 'Sucesso',
         description: 'Fluxo deletado com sucesso!',
         type: 'success'
-      })
+      });
 
       fetchData();
-
-    } catch(err: any) {
-      console.log('ERR =>', err)
+    } catch (err: any) {
+      console.log('ERR =>', err);
 
       addToast({
         title: 'Atenção',
         description: err.data.result,
         type: 'warning'
-      })
+      });
     }
   }
 
-  const handleOnSubmit = useCallback(async (event: any) => {
-    try {
-      event.preventDefault();
+  const handleOnSubmit = useCallback(
+    async (event: any) => {
+      try {
+        event.preventDefault();
 
-      // Inserir lógica
-      const response = await api.post('flow', formData);
-   
-      addToast({
-        type: 'success',
-        title: 'Sucesso',
-        description: 'Serviço cadastrado com sucesso!',
-      });
+        // Inserir lógica
+        const response = await api.post('flow', formData);
 
-      fetchData();
-      setModal(!modal);
-      setFormData({
-        name: ''
-      });
+        addToast({
+          type: 'success',
+          title: 'Sucesso',
+          description: 'Serviço cadastrado com sucesso!'
+        });
 
-      navigate(`/fluxo/editar/${formData.name.replaceAll(' ', '_')}`, {state: {id: response.data.result, name: formData.name }})
+        fetchData();
+        setModal(!modal);
+        setFormData({
+          name: ''
+        });
 
-    } catch (e: any) {
-      addToast({
-        type: 'danger',
-        title: 'ATENÇÃO',
-        description: e.response.data.message,
-      });
-    }
-  }, [formData, open]);
+        navigate(`/fluxo/editar/${formData.name.replaceAll(' ', '_')}`, {
+          state: { id: response.data.result, name: formData.name }
+        });
+      } catch (e: any) {
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: e.response.data.message
+        });
+      }
+    },
+    [formData, open]
+  );
 
   return (
     <ContainerDefault>
       <HeaderPage title="Fluxos">
         <ButtonDefault typeButton="success" onClick={() => setModal(!modal)}>
           <BiPlus color="#fff" />
-            Novo Fluxo
+          Novo Fluxo
         </ButtonDefault>
       </HeaderPage>
 
@@ -156,26 +166,25 @@ export default function ListFluxo() {
               {data?.map((row) => (
                 <tr key={row.flow_id}>
                   <td>{row.flow_id}</td>
-                  <td>
-                    {row.name}
-                  </td>
+                  <td>{row.name}</td>
                   <td>{row.steps}</td>
                   <td>5</td>
                   <td>
                     <div className="fieldTableClients">
-                      <ButtonTable 
-                        typeButton='edit'
-                        onClick={() => navigate(`/fluxo/editar/${row.name.replaceAll(' ', '_')}`, {state: {id: row.flow_id, name: row.name }})}
+                      <ButtonTable
+                        typeButton="edit"
+                        onClick={() =>
+                          navigate(`/fluxo/editar/${row.name.replaceAll(' ', '_')}`, {
+                            state: { id: row.flow_id, name: row.name }
+                          })
+                        }
                       />
                       <Alert
-                        title='Atenção'
-                        subtitle='Certeza que gostaria de remover esse fluxo? Ao excluir a acão não poderá ser desfeita.'
-                        cancelButton={() => {}}
+                        title="Atenção"
+                        subtitle="Certeza que gostaria de remover esse fluxo? Ao excluir a acão não poderá ser desfeita."
                         confirmButton={() => handleOnDelete(row.flow_id)}
                       >
-                        <ButtonTable 
-                          typeButton='delete'
-                        />
+                        <ButtonTable typeButton="delete" />
                       </Alert>
                     </div>
                   </td>
@@ -203,11 +212,7 @@ export default function ListFluxo() {
               </FieldDefault>
 
               <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
-                <ButtonDefault
-                  typeButton="dark"
-                  isOutline
-                  onClick={() => setModal(!modal)}
-                >
+                <ButtonDefault typeButton="dark" isOutline onClick={() => setModal(!modal)}>
                   Descartar
                 </ButtonDefault>
                 <ButtonDefault typeButton="primary" isOutline type="submit">
@@ -224,5 +229,5 @@ export default function ListFluxo() {
         </Dialog.Portal>
       </Dialog.Root>
     </ContainerDefault>
-  )
+  );
 }

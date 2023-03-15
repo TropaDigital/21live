@@ -1,17 +1,16 @@
 import axios from 'axios';
 
-var baseUrl
+let baseUrl;
 
-if(process.env.NODE_ENV === 'development') {
-  baseUrl = 'http://192.168.15.14:33332/'
-  // baseUrl = "https://21live.backendtropa.com.br/"
-
+if (process.env.NODE_ENV === 'development') {
+  // baseUrl = 'http://192.168.15.14:33332/';
+  baseUrl = 'https://21live.backendtropa.com.br/';
 } else {
-  baseUrl = "https://21live.backendtropa.com.br/"
+  baseUrl = 'https://21live.backendtropa.com.br/';
 }
 
 const api = axios.create({
-    baseURL: baseUrl,
-})
+  baseURL: baseUrl
+});
 
-export default api
+export default api;
