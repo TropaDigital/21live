@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BiPlusCircle, BiUser, BiXCircle } from 'react-icons/bi';
+
 import * as Popover from '@radix-ui/react-popover';
 
 import { Container, SectionAllAvatars } from './styles';
@@ -19,7 +20,7 @@ export default function Avatar({ data }: Props) {
   const [avatar, setAvatar] = useState('');
   const latesAvatar = data.slice(0, 4);
   const allAvatar = data.slice(2, data.length);
-  
+
   useEffect(() => {
     getUser();
   }, []);
@@ -29,20 +30,13 @@ export default function Avatar({ data }: Props) {
     const body = await response.json();
     setAvatar(body.avatar_url);
   }
-  
+
   return (
     <Container length={latesAvatar.length}>
       <ul>
         {latesAvatar.map((row: any) => (
-          <li
-            key={row.name}
-            className={`avatar-ui ${!row.url ? 'isAvatar' : ''}`}
-          >
-            {!!row.url ? (
-              <img src={row.url} alt="profile" />
-              ) : (
-              <BiUser size={22} color='#ced4da'/>
-            )}
+          <li key={row.name} className={`avatar-ui ${!row.url ? 'isAvatar' : ''}`}>
+            {row.url ? <img src={row.url} alt="profile" /> : <BiUser size={22} color="#ced4da" />}
             {/* <img src={avatar} alt="imagem usuario" /> */}
           </li>
         ))}
@@ -51,10 +45,7 @@ export default function Avatar({ data }: Props) {
           <SectionAllAvatars>
             <Popover.Root>
               <Popover.Trigger asChild>
-                <button
-                  className="IconButtonPopover"
-                  aria-label="Update dimensions"
-                >
+                <button className="IconButtonPopover" aria-label="Update dimensions">
                   <BiPlusCircle />
                 </button>
               </Popover.Trigger>
@@ -64,7 +55,7 @@ export default function Avatar({ data }: Props) {
                     style={{
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: 10,
+                      gap: 10
                     }}
                   >
                     <p className="Text" style={{ marginBottom: 10 }}>
@@ -72,12 +63,7 @@ export default function Avatar({ data }: Props) {
                     </p>
                     <ul className="listAllAvatars">
                       {allAvatar.map((row) => (
-                        <li
-                          key={row.id}
-                          className={`avatar-al ${
-                            row.isOnline ? 'isOnline' : ''
-                          }`}
-                        >
+                        <li key={row.id} className={`avatar-al ${row.isOnline ? 'isOnline' : ''}`}>
                           <img src={avatar} alt="imagem usuario" />
                           <h2>{row.name}</h2>
                         </li>

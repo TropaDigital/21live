@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { BiCode, BiPlus, BiSearchAlt, BiTime, BiX } from 'react-icons/bi';
+import { BiCode, BiPlus, BiSearchAlt, BiTime } from 'react-icons/bi';
 
 import api from '../../services/api';
 
@@ -16,6 +16,8 @@ import { SelectDefault } from '../../components/Inputs/SelectDefault';
 import { TextAreaDefault } from '../../components/Inputs/TextAreaDefault';
 import Paginate from '../../components/Paginate';
 import { TableDefault } from '../../components/TableDefault';
+import Alert from '../../components/Ui/Alert';
+import ModalDefault from '../../components/Ui/ModalDefault';
 import ScrollAreas from '../../components/Ui/ScrollAreas';
 import {
   ContainerGroupTable,
@@ -25,7 +27,6 @@ import {
   FooterModal
 } from '../../components/UiElements/styles';
 
-import * as Dialog from '@radix-ui/react-dialog';
 import moment from 'moment';
 
 import { Container } from './styles';
@@ -52,8 +53,6 @@ interface FormDataProps {
 
 export default function Services() {
   const { addToast } = useToast();
-  const [open, setOpen] = useState(false);
-  const [modalDelete, setModalDelete] = useState(false);
   const { formData, setData, handleOnChange } = useForm({
     service: '',
     description: '',
@@ -63,36 +62,26 @@ export default function Services() {
     service_id: 0
   } as FormDataProps);
 
+  const [modal, setModal] = useState({
+    isOpen: false,
+    type: 'Novo Serviço'
+  });
+
   const [searchTerm, setSearchTerm] = useState('');
   const [search, setSearch] = useState('');
-  const [titleModalService, setTitleModalService] = useState('Novo Serviço');
-  const [dataDelete, setDataDelete] = useState({
-    text: 'Deseja excluir serviço:',
-    id: 0
-  });
   const { isLoading, debouncedCallback } = useDebouncedCallback(
     (search: string) => setSearch(search),
     700
   );
 
-  const [selected, setSelected] = useState(1);
   const { data, pages, fetchData } = useFetch<ServicesProps[]>(`services?search=${search}`);
+  const [selected, setSelected] = useState(1);
 
-  const handleOnCloseModalDelete = () => {
-    setModalDelete(!modalDelete);
-  };
-
-  function handleOnModalDelete(id: number, service: string) {
-    setDataDelete({
-      text: `Deseja excluir serviço: ${service}`,
-      id
+  const handleOnCancel = useCallback(() => {
+    setModal({
+      isOpen: false,
+      type: 'Novo serviço'
     });
-    setModalDelete(!modalDelete);
-  }
-
-  const handleOnCloseModalService = () => {
-    setOpen(!open);
-    setTitleModalService('Novo serviço');
     setData({
       service: '',
       description: '',
@@ -101,38 +90,35 @@ export default function Services() {
       minutes: '',
       service_id: 0
     } as FormDataProps);
+  }, [setData]);
+
+  const handleOnEdit = (item: FormDataProps) => {
+    setData(item);
+
+    setModal({
+      isOpen: true,
+      type: `Editar serviço: ${item.service}`
+    });
   };
 
-  function handleOnEditService(data: any) {
-    setData(data);
-    setTitleModalService('Edite serviço');
-    setOpen(true);
-  }
-
-  const handleOnToggleModal = (toggle: boolean) => {
-    setOpen(toggle);
-  };
-
-  const handleOnDeleteService = useCallback(async (event: any, data: any) => {
+  const handleOnDelete = async (id: any) => {
     try {
-      event.preventDefault();
-      await api.delete(`services/${data.id}`);
+      await api.delete(`services/${id}`);
       addToast({
         type: 'success',
         title: 'Sucesso',
-        description: `Serviço: ${data.text} deletado com sucesso!`
+        description: 'Serviço foi deletado!'
       });
 
-      setModalDelete(false);
       fetchData();
-    } catch (e: any) {
+    } catch (error: any) {
       addToast({
         type: 'danger',
         title: 'ATENÇÃO',
-        description: e.response.data.message
+        description: error.response.data.message
       });
     }
-  }, []);
+  };
 
   const handleOnSubmit = useCallback(
     async (event: any) => {
@@ -150,10 +136,10 @@ export default function Services() {
           service_id
         };
 
-        if (titleModalService === 'Edite serviço') {
-          await api.put(`services/${formData.service_id}`, newFormData);
-        } else {
+        if (modal.type === 'Novo Serviço') {
           await api.post('services', newFormData);
+        } else {
+          await api.put(`services/${formData.service_id}`, newFormData);
         }
 
         addToast({
@@ -162,15 +148,7 @@ export default function Services() {
           description: 'Serviço cadastrado com sucesso!'
         });
 
-        setOpen(false);
-        setData({
-          service: '',
-          description: '',
-          type: '',
-          size: '',
-          minutes: '',
-          service_id: 0
-        } as FormDataProps);
+        handleOnCancel();
         fetchData();
       } catch (e: any) {
         // Exibir erro
@@ -181,19 +159,27 @@ export default function Services() {
         });
       }
     },
-    [formData, titleModalService, setData]
+    [formData, addToast, fetchData, handleOnCancel, modal]
   );
 
   return (
     <Container>
       <HeaderPage title="Serviços">
-        <ButtonDefault typeButton="success" onClick={handleOnCloseModalService}>
+        <ButtonDefault
+          typeButton="success"
+          onClick={() =>
+            setModal({
+              isOpen: !modal.isOpen,
+              type: 'Novo serviço'
+            })
+          }
+        >
           <BiPlus color="#fff" />
           Novo Serviço
         </ButtonDefault>
       </HeaderPage>
 
-      <ContentDefault style={{ position: 'relative' }}>
+      <ContentDefault>
         <FieldGroupFormDefault>
           {/* <SelectDefault
             label="FILTRO"
@@ -221,12 +207,6 @@ export default function Services() {
             isLoading={isLoading}
           />
         </FieldGroupFormDefault>
-        {/* <ButtonDefault
-          style={{ marginTop: '24px', float: 'right' }}
-          typeButton="info"
-        >
-          <BiFilter />
-        </ButtonDefault> */}
       </ContentDefault>
 
       <ContainerGroupTable style={{ marginTop: '1rem' }}>
@@ -257,11 +237,14 @@ export default function Services() {
                   <td>{moment(row.created).utc().format('DD:MM:YYYY')}</td>
                   <td>
                     <div className="fieldTableClients">
-                      <ButtonTable typeButton="edit" onClick={() => handleOnEditService(row)} />
-                      <ButtonTable
-                        typeButton="delete"
-                        onClick={() => handleOnModalDelete(row.service_id, row.service)}
-                      />
+                      <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
+                      <Alert
+                        title="Atenção"
+                        subtitle="Certeza que gostaria de deletar este Serviço? Ao excluir a acão não poderá ser desfeita."
+                        confirmButton={() => handleOnDelete(row.service_id)}
+                      >
+                        <ButtonTable typeButton="delete" />
+                      </Alert>
                     </div>
                   </td>
                 </tr>
@@ -279,116 +262,77 @@ export default function Services() {
         onClickPage={(e) => setSelected(e)}
       />
 
-      <Dialog.Root open={open} onOpenChange={(open) => handleOnToggleModal(open)}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="DialogOverlay" />
-          <Dialog.Content className="DialogContent">
-            <Dialog.Title className="DialogTitle">{titleModalService}</Dialog.Title>
-            <form onSubmit={handleOnSubmit}>
-              <FieldDefault>
-                <InputDefault
-                  label="Serviço"
-                  placeholder="Digite aqui..."
-                  name="service"
-                  onChange={handleOnChange}
-                  value={formData.service}
-                  required
-                />
-              </FieldDefault>
-              <FieldDefault>
-                <TextAreaDefault
-                  label="Descrição"
-                  placeholder="Digite aqui..."
-                  name="description"
-                  onChange={handleOnChange}
-                  value={formData.description}
-                  required
-                />
-              </FieldDefault>
-              <FieldDefault>
-                <SelectDefault
-                  label="Tipo"
-                  placeholder="Tipo"
-                  name="type"
-                  onChange={handleOnChange}
-                  value={formData.type}
-                  required
-                >
-                  <option key={'impresso'} value={'impresso'}>
-                    Impresso
-                  </option>
-                  <option key={'digital'} value={'digital'}>
-                    Digital
-                  </option>
-                </SelectDefault>
-              </FieldDefault>
-              <FieldDefault>
-                <InputDefault
-                  label="Tamanho"
-                  placeholder="Ex: 170x80"
-                  name="size"
-                  onChange={handleOnChange}
-                  value={formData.size}
-                  icon={BiCode}
-                  required
-                />
-              </FieldDefault>
-              <FieldDefault>
-                <InputDefault
-                  label="Hora / Minutos"
-                  name="minutes"
-                  onChange={handleOnChange}
-                  value={formData.minutes}
-                  type="time"
-                  icon={BiTime}
-                  required
-                />
-              </FieldDefault>
-              <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
-                <ButtonDefault typeButton="dark" isOutline onClick={handleOnCloseModalService}>
-                  Descartar
-                </ButtonDefault>
-                <ButtonDefault typeButton="primary" isOutline type="submit">
-                  Salvar
-                </ButtonDefault>
-              </FooterModal>
-            </form>
-            <Dialog.Close asChild>
-              <button className="IconButton" aria-label="Close">
-                <BiX size={30} color="#6C757D" />
-              </button>
-            </Dialog.Close>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
-
-      <Dialog.Root open={modalDelete} onOpenChange={() => handleOnCloseModalDelete()}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="DialogOverlay" />
-          <Dialog.Content className="DialogContent" style={{ width: '480px' }}>
-            <Dialog.Title className="DialogTitle">{dataDelete.text}</Dialog.Title>
-            <form onSubmit={(event) => handleOnDeleteService(event, dataDelete)}>
-              <FieldGroupFormDefault style={{ marginTop: '40px' }}>
-                <ButtonDefault typeButton="dark" isOutline onClick={handleOnCloseModalDelete}>
-                  Cancelar
-                </ButtonDefault>
-                <ButtonDefault
-                  typeButton="danger"
-                  type="submit"
-                  onClick={(event) => handleOnDeleteService(event, dataDelete)}
-                >
-                  Deletar
-                </ButtonDefault>
-              </FieldGroupFormDefault>
-            </form>
-            <Dialog.Close asChild>
-              <button className="IconButton" aria-label="Close">
-                <BiX size={30} color="#6C757D" />
-              </button>
-            </Dialog.Close>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
+      <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
+        <form onSubmit={handleOnSubmit}>
+          <FieldDefault>
+            <InputDefault
+              label="Serviço"
+              placeholder="Digite aqui..."
+              name="service"
+              onChange={handleOnChange}
+              value={formData.service}
+              required
+            />
+          </FieldDefault>
+          <FieldDefault>
+            <TextAreaDefault
+              label="Descrição"
+              placeholder="Digite aqui..."
+              name="description"
+              onChange={handleOnChange}
+              value={formData.description}
+              required
+            />
+          </FieldDefault>
+          <FieldDefault>
+            <SelectDefault
+              label="Tipo"
+              placeholder="Tipo"
+              name="type"
+              onChange={handleOnChange}
+              value={formData.type}
+              required
+            >
+              <option key={'impresso'} value={'impresso'}>
+                Impresso
+              </option>
+              <option key={'digital'} value={'digital'}>
+                Digital
+              </option>
+            </SelectDefault>
+          </FieldDefault>
+          <FieldDefault>
+            <InputDefault
+              label="Tamanho"
+              placeholder="Ex: 170x80"
+              name="size"
+              onChange={handleOnChange}
+              value={formData.size}
+              icon={BiCode}
+              required
+            />
+          </FieldDefault>
+          <FieldDefault>
+            <InputDefault
+              label="Hora / Minutos"
+              name="minutes"
+              onChange={handleOnChange}
+              value={formData.minutes}
+              type="time"
+              icon={BiTime}
+              required
+            />
+          </FieldDefault>
+          <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
+            <ButtonDefault typeButton="dark" isOutline onClick={handleOnCancel}>
+              Descartar
+            </ButtonDefault>
+            <ButtonDefault typeButton="primary" isOutline type="submit">
+              Salvar
+            </ButtonDefault>
+          </FooterModal>
+        </form>
+      </ModalDefault>
     </Container>
   );
 }

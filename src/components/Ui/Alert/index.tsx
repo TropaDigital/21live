@@ -30,7 +30,7 @@ export default function Alert({ children, confirmButton, title, subtitle }: Prop
             </AlertDialog.Cancel>
             <AlertDialog.Action asChild>
               <ButtonDefault onClick={confirmButton} typeButton="danger">
-                Sim, Deletar card
+                Sim, Deletar!
               </ButtonDefault>
             </AlertDialog.Action>
           </div>

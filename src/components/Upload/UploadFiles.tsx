@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 
+import api from '../../services/api';
+
 import axios from 'axios';
 import { filesize } from 'filesize';
 import { v4 as uuidV4 } from 'uuid';
 
 import Upload from '.';
 import { Container } from '../../pages/Projects/ComponentSteps/styles';
-import api from '../../services/api';
 import FileList from './FileList';
 
 export interface UploadedFilesProps {
@@ -175,26 +176,20 @@ export default function UploadFiles({
   }
 
   async function handleDelete(id: string) {
-    const filterFile = uploadedFiles.filter(
-      (obj: any) => obj.file_id === id
-    )[0];
+    const filterFile = uploadedFiles.filter((obj: any) => obj.file_id === id)[0];
 
     if (!filterFile.isNew) {
       await api.delete(`archive/${id}`);
     }
 
     handleCancelClick();
-    setUploadedFiles((files: any) =>
-      files.filter((file: any) => file.file_id !== id)
-    );
+    setUploadedFiles((files: any) => files.filter((file: any) => file.file_id !== id));
   }
 
   return (
     <Container isDisabed={isDisabed}>
       <Upload onUpload={handleUpload} isDisabled={isDisabed} />
-      {!!uploadedFiles.length && (
-        <FileList files={uploadedFiles} onDelete={handleDelete} />
-      )}
+      {!!uploadedFiles.length && <FileList files={uploadedFiles} onDelete={handleDelete} />}
     </Container>
   );
 }

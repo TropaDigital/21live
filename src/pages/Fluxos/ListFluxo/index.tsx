@@ -1,27 +1,22 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { BiPlus, BiSearchAlt, BiX } from 'react-icons/bi';
+import { useCallback, useState } from 'react';
+import { BiPlus, BiSearchAlt } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 
-// HOOKS
+import api from '../../../services/api';
+
 import { useToast } from '../../../hooks/toast';
+import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useFetch } from '../../../hooks/useFetch';
+import useForm from '../../../hooks/useForm';
 
-// UTILS
-import { useDebounce } from '../../../utils/useDebounce';
-
-// COMPONENTS
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import ButtonTable from '../../../components/Buttons/ButtonTable';
 import HeaderPage from '../../../components/HeaderPage';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { TableDefault } from '../../../components/TableDefault';
 import Alert from '../../../components/Ui/Alert';
+import ModalDefault from '../../../components/Ui/ModalDefault';
 import ScrollAreas from '../../../components/Ui/ScrollAreas';
-
-// SERVICES
-
-// STYLES
-
 import {
   ContainerDefault,
   ContainerGroupTable,
@@ -31,48 +26,34 @@ import {
   FooterModal
 } from '../../../components/UiElements/styles';
 
-import * as Dialog from '@radix-ui/react-dialog';
-
-import api from '../../../services/api';
-
 export default function ListFluxo() {
   const navigate = useNavigate();
   const { addToast } = useToast();
-  const [modal, setModal] = useState(false);
-  const [formData, setFormData] = useState({
+  const { formData, setData, handleOnChange } = useForm({
     name: ''
   });
+
+  const [modal, setModal] = useState(false);
+
   const [searchTerm, setSearchTerm] = useState('');
-  const debouncedSearchTerm = useDebounce(searchTerm, 700);
   const [search, setSearch] = useState('');
-  const [isSearching, setSearching] = useState(false);
+  const { isLoading, debouncedCallback } = useDebouncedCallback(
+    (search: string) => setSearch(search),
+    700
+  );
 
   const { data, fetchData } = useFetch<any[]>(`flow?search=${search}`);
 
-  useEffect(() => {
-    if (debouncedSearchTerm) {
-      setSearching(true);
-      setSearch(searchTerm);
-      const handler = setTimeout(() => {
-        setSearching(false);
-      }, 500);
-      return () => {
-        clearTimeout(handler);
-      };
-    } else {
-      setSearch('');
-      setSearching(false);
-    }
-  }, [debouncedSearchTerm]);
+  const handleOnCancel = useCallback(() => {
+    setModal(!modal);
+    setData({
+      name: ''
+    });
+  }, [setData, modal]);
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  async function handleOnDelete(id: any) {
+  const handleOnDelete = async (id: any) => {
     try {
-      const response = await api.delete(`/flow/${id}`);
+      await api.delete(`/flow/${id}`);
 
       addToast({
         title: 'Sucesso',
@@ -90,14 +71,13 @@ export default function ListFluxo() {
         type: 'warning'
       });
     }
-  }
+  };
 
   const handleOnSubmit = useCallback(
     async (event: any) => {
       try {
         event.preventDefault();
 
-        // Inserir lógica
         const response = await api.post('flow', formData);
 
         addToast({
@@ -108,7 +88,7 @@ export default function ListFluxo() {
 
         fetchData();
         setModal(!modal);
-        setFormData({
+        setData({
           name: ''
         });
 
@@ -123,7 +103,7 @@ export default function ListFluxo() {
         });
       }
     },
-    [formData, open]
+    [formData, addToast, fetchData, modal, setData, navigate]
   );
 
   return (
@@ -135,15 +115,18 @@ export default function ListFluxo() {
         </ButtonDefault>
       </HeaderPage>
 
-      <ContentDefault style={{ position: 'relative' }}>
+      <ContentDefault>
         <FieldGroupFormDefault>
           <InputDefault
             label="Busca"
             name="search"
             placeholder="Busque pelo nome..."
-            onChange={(event) => setSearchTerm(event.target.value)}
+            onChange={(event) => {
+              setSearchTerm(event.target.value);
+              debouncedCallback(event.target.value);
+            }}
             icon={BiSearchAlt}
-            isLoading={isSearching}
+            isLoading={isLoading}
             value={searchTerm}
           />
         </FieldGroupFormDefault>
@@ -195,39 +178,28 @@ export default function ListFluxo() {
         </ScrollAreas>
       </ContainerGroupTable>
 
-      <Dialog.Root open={modal} onOpenChange={setModal}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="DialogOverlay" />
-          <Dialog.Content className="DialogContent">
-            <Dialog.Title className="DialogTitle">Novo Fluxo</Dialog.Title>
-            <form onSubmit={handleOnSubmit}>
-              <FieldDefault>
-                <InputDefault
-                  label="Nome do Fluxo"
-                  placeholder="Digite aqui..."
-                  name="name"
-                  onChange={handleInputChange}
-                  value={formData.name}
-                />
-              </FieldDefault>
+      <ModalDefault isOpen={modal} title={'Novo Fluxo'} onOpenChange={handleOnCancel}>
+        <form onSubmit={handleOnSubmit}>
+          <FieldDefault>
+            <InputDefault
+              label="Nome do Fluxo"
+              placeholder="Digite aqui..."
+              name="name"
+              onChange={handleOnChange}
+              value={formData.name}
+            />
+          </FieldDefault>
 
-              <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
-                <ButtonDefault typeButton="dark" isOutline onClick={() => setModal(!modal)}>
-                  Descartar
-                </ButtonDefault>
-                <ButtonDefault typeButton="primary" isOutline type="submit">
-                  Salvar
-                </ButtonDefault>
-              </FooterModal>
-            </form>
-            <Dialog.Close asChild>
-              <button className="IconButton" aria-label="Close">
-                <BiX size={30} color="#6C757D" />
-              </button>
-            </Dialog.Close>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
+          <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
+            <ButtonDefault typeButton="dark" isOutline onClick={handleOnCancel}>
+              Descartar
+            </ButtonDefault>
+            <ButtonDefault typeButton="primary" isOutline type="submit">
+              Salvar
+            </ButtonDefault>
+          </FooterModal>
+        </form>
+      </ModalDefault>
     </ContainerDefault>
   );
 }

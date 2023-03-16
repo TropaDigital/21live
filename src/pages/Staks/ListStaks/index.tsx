@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { BiCalendar, BiFlag, BiPlus, BiSearchAlt } from 'react-icons/bi';
 
+import useDebouncedCallback from '../../../hooks/useDebounced';
 import useForm from '../../../hooks/useForm';
 import { useSteps } from '../../../hooks/useSteps';
 
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 import { avatarAll } from '../../../utils/dataDefault';
-import { useDebounce } from '../../../utils/useDebounce';
 
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import ButtonTable from '../../../components/Buttons/ButtonTable';
@@ -44,8 +44,11 @@ export default function ListStaks() {
   });
 
   const [searchTerm, setSearchTerm] = useState('');
-  const debouncedSearchTerm = useDebounce(searchTerm, 700);
-  const [isSearching, setSearching] = useState(false);
+  const [search, setSearch] = useState('');
+  const { isLoading, debouncedCallback } = useDebouncedCallback(
+    (search: string) => setSearch(search),
+    700
+  );
 
   const { formData, handleOnChange } = useForm({
     tenant_id: '',
@@ -96,22 +99,6 @@ export default function ListStaks() {
   const fillComponents = components.map((row: any) => row.component);
   const { changeStep, currentComponent, currentStep, isFirstStep, isLastStep } =
     useSteps(fillComponents);
-
-  useEffect(() => {
-    if (debouncedSearchTerm) {
-      setSearching(true);
-      setFilter({ ...filter, ['search']: searchTerm });
-      const handler = setTimeout(() => {
-        setSearching(false);
-      }, 500);
-      return () => {
-        clearTimeout(handler);
-      };
-    } else {
-      setFilter({ ...filter, ['search']: '' });
-      setSearching(false);
-    }
-  }, [debouncedSearchTerm, filter, searchTerm]);
 
   const handleOnCancel = () => {
     setModal({
@@ -211,9 +198,12 @@ export default function ListStaks() {
             label="Busca"
             name="search"
             placeholder="Busque pelo titulo..."
-            onChange={(event) => setSearchTerm(event.target.value)}
+            onChange={(event) => {
+              setSearchTerm(event.target.value);
+              debouncedCallback(event.target.value);
+            }}
             icon={BiSearchAlt}
-            isLoading={isSearching}
+            isLoading={isLoading}
             value={searchTerm}
           />
         </FieldGroupFormDefault>

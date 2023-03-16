@@ -1,15 +1,15 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { BiCalendar, BiPlus, BiSearchAlt } from 'react-icons/bi';
 
 import api from '../../../services/api';
 
 import { useToast } from '../../../hooks/toast';
+import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useFetch } from '../../../hooks/useFetch';
 import useForm from '../../../hooks/useForm';
 import { useSteps } from '../../../hooks/useSteps';
 
 import { TenantProps } from '../../../utils/models';
-import { useDebounce } from '../../../utils/useDebounce';
 
 import { IProjectCreate } from '../../../types';
 
@@ -49,7 +49,7 @@ export default function ListProjects() {
     type: 'Criar nova Ata de Reunião'
   });
 
-  const { formData, setFormValue, setData, handleOnChange, handleOnChangeCheckbox } = useForm({
+  const { formData, setFormValue, setData, handleOnChange } = useForm({
     tenant_id: '',
     title: '',
     contract_type: '',
@@ -62,9 +62,12 @@ export default function ListProjects() {
   } as IProjectCreate);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const debouncedSearchTerm = useDebounce(searchTerm, 700);
   const [search, setSearch] = useState('');
-  const [isSearching, setSearching] = useState(false);
+  const { isLoading, debouncedCallback } = useDebouncedCallback(
+    (search: string) => setSearch(search),
+    700
+  );
+
   const [filterDate, setFilterDate] = useState({
     dateStart: '',
     dateEnd: ''
@@ -74,22 +77,6 @@ export default function ListProjects() {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
   const [error, setError] = useState<StateProps>({});
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (debouncedSearchTerm) {
-      setSearching(true);
-      setSearch(searchTerm);
-      const handler = setTimeout(() => {
-        setSearching(false);
-      }, 500);
-      return () => {
-        clearTimeout(handler);
-      };
-    } else {
-      setSearch('');
-      setSearching(false);
-    }
-  }, [debouncedSearchTerm]);
 
   // PRODUTOS
   const { data: dataOffice } = useFetch<IProjectCreate[]>(`services`);
@@ -402,7 +389,6 @@ export default function ListProjects() {
         description: 'Projeto foi deletado!'
       });
 
-      handleOnCancel();
       fetchProject();
     } catch (error: any) {
       addToast({
@@ -556,9 +542,12 @@ export default function ListProjects() {
             label="Busca"
             name="search"
             placeholder="Busque pelo titulo..."
-            onChange={(event) => setSearchTerm(event.target.value)}
+            onChange={(event) => {
+              setSearchTerm(event.target.value);
+              debouncedCallback(event.target.value);
+            }}
             icon={BiSearchAlt}
-            isLoading={isSearching}
+            isLoading={isLoading}
             value={searchTerm}
           />
         </FieldGroupFormDefault>
@@ -611,7 +600,7 @@ export default function ListProjects() {
                         subtitle="Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita."
                         confirmButton={() => handleOnDelete(row.project_id)}
                       >
-                        <ButtonTable typeButton="delete" onClick={() => handleOnEdit(row)} />
+                        <ButtonTable typeButton="delete" />
                       </Alert>
                     </div>
                   </td>

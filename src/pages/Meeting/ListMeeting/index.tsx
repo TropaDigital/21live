@@ -1,17 +1,16 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { BiCalendar, BiPlus, BiSearchAlt } from 'react-icons/bi';
 
-// HOOKS
+import api from '../../../services/api';
+
 import { useToast } from '../../../hooks/toast';
+import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useFetch } from '../../../hooks/useFetch';
 import useForm from '../../../hooks/useForm';
 
-// UTILS
 import getVaidationErrors from '../../../utils/getVaidationErrors';
 import { MeetingProps, TeamProps, TenantProps } from '../../../utils/models';
-import { useDebounce } from '../../../utils/useDebounce';
 
-// COMPONENTS
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import ButtonTable from '../../../components/Buttons/ButtonTable';
 import HeaderPage from '../../../components/HeaderPage';
@@ -34,8 +33,6 @@ import {
 import UploadFiles from '../../../components/Upload/UploadFiles';
 import WrapperEditor from '../../../components/WrapperEditor';
 
-// STYLES
-import api from '../../../services/api';
 import { Container } from './styles';
 
 interface UploadedFilesProps {
@@ -52,6 +49,8 @@ interface UploadedFilesProps {
   key: string;
   size: number;
   file_name: string;
+  isNew: boolean;
+  loading: boolean;
 }
 
 interface FormProps {
@@ -83,11 +82,13 @@ export default function ListMeeting() {
   });
 
   const [errors, setErros] = useState({} as any);
-
   const [searchTerm, setSearchTerm] = useState('');
-  const debouncedSearchTerm = useDebounce(searchTerm, 700);
   const [search, setSearch] = useState('');
-  const [isSearching, setSearching] = useState(false);
+  const { isLoading, debouncedCallback } = useDebouncedCallback(
+    (search: string) => setSearch(search),
+    700
+  );
+
   const [filterDate, setFilterDate] = useState({
     dateStart: '',
     dateEnd: ''
@@ -110,22 +111,6 @@ export default function ListMeeting() {
   const [selected, setSelected] = useState(1);
 
   const [text, setText] = useState('');
-
-  useEffect(() => {
-    if (debouncedSearchTerm) {
-      setSearching(true);
-      setSearch(searchTerm);
-      const handler = setTimeout(() => {
-        setSearching(false);
-      }, 500);
-      return () => {
-        clearTimeout(handler);
-      };
-    } else {
-      setSearch('');
-      setSearching(false);
-    }
-  }, [debouncedSearchTerm]);
 
   const handleChangeClient = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedIndex = event.target.selectedIndex;
@@ -292,7 +277,7 @@ export default function ListMeeting() {
         </ButtonDefault>
       </HeaderPage>
 
-      <ContentDefault style={{ position: 'relative' }}>
+      <ContentDefault>
         <FieldGroupFormDefault>
           <FieldGroupFormDefault>
             <InputDefault
@@ -330,9 +315,12 @@ export default function ListMeeting() {
             label="Busca"
             name="search"
             placeholder="Busque pelo titulo..."
-            onChange={(event) => setSearchTerm(event.target.value)}
+            onChange={(event) => {
+              setSearchTerm(event.target.value);
+              debouncedCallback(event.target.value);
+            }}
             icon={BiSearchAlt}
-            isLoading={isSearching}
+            isLoading={isLoading}
             value={searchTerm}
           />
         </FieldGroupFormDefault>
