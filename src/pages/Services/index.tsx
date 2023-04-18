@@ -164,7 +164,7 @@ export default function Services() {
 
   return (
     <Container>
-      <HeaderPage title="Serviços">
+      <HeaderPage title="Produtos">
         <ButtonDefault
           typeButton="success"
           onClick={() =>
@@ -175,7 +175,7 @@ export default function Services() {
           }
         >
           <BiPlus color="#fff" />
-          Novo Serviço
+          Adicionar produtos
         </ButtonDefault>
       </HeaderPage>
 
@@ -211,7 +211,7 @@ export default function Services() {
 
       <ContainerGroupTable style={{ marginTop: '1rem' }}>
         <ScrollAreas>
-          <TableDefault title="Serviços">
+          <TableDefault title="Todos os produtos">
             <thead>
               <tr style={{ whiteSpace: 'nowrap' }}>
                 <th>Código</th>

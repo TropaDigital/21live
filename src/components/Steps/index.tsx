@@ -1,4 +1,5 @@
 import { BiCheck } from 'react-icons/bi';
+
 import { Container } from './styles';
 
 interface Step {
@@ -12,24 +13,27 @@ interface StepsProps {
 }
 
 export default function Steps({ currentStep, steps }: StepsProps) {
-  const percent = 33 * currentStep
+  const percent = 33 * currentStep;
 
   return (
     <Container>
       {steps.map((step, index) => (
-        <div className={`step ${currentStep >= index ? "stepActive" : ""} ${step.success ? "stepSuccess" : ""}`} key={index}>
+        <div
+          className={`step ${currentStep >= index ? 'stepActive' : ''} ${
+            step.success ? 'stepSuccess' : ''
+          }`}
+          key={index}
+        >
           <div className="stepButton">
             <div className="stepButtonInner" />
-            {step.success && (
-              <BiCheck color='#fff' style={{ zIndex: 10 }}/>
-            )}
+            {step.success && <BiCheck color="#fff" style={{ zIndex: 10 }} />}
           </div>
           <span>{step.label}</span>
         </div>
       ))}
       <div className="progressStep">
-        <div className="progress-bar-step" style={{ width: `${percent + '%'}`}}/>
-      </div> 
+        <div className="progress-bar-step" style={{ width: `${percent + '%'}` }} />
+      </div>
     </Container>
-  )
+  );
 }
