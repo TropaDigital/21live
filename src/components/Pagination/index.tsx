@@ -1,6 +1,7 @@
 import React, { useEffect, useId, useState } from 'react';
+import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
 
-import { ButtonPaginate, ContainerPaginate } from './styles';
+import { ContainerPaginate } from './styles';
 
 interface Props {
   total: number;
@@ -10,7 +11,7 @@ interface Props {
   onClickPage: (key: number) => void;
 }
 
-const Paginate: React.FC<Props> = (props) => {
+const Pagination: React.FC<Props> = (props) => {
   const prefix1 = useId();
   const [pages, setPages] = useState<any[]>([]);
 
@@ -27,39 +28,45 @@ const Paginate: React.FC<Props> = (props) => {
   const onClickPage = (page: number) => {
     props.onClickPage(page);
   };
+
+  console.log('PROPS', props);
   return (
     <>
       {pages.length > 0 && (
         <ContainerPaginate>
-          <ButtonPaginate
-            isDirect
+          <button
+            className="buttonPagination"
             onClick={() => onClickPage(1)}
             style={{ borderRadius: '4px 0 0 4px' }}
+            disabled={props.currentPage === 1}
           >
-            ˂
-          </ButtonPaginate>
+            <BiLeftArrowAlt size={20} />
+            Anterior
+          </button>
 
           {pages.map((page) => (
-            <ButtonPaginate
+            <button
+              className={`currentButtonPAgination ${props.currentPage === page ? 'isActive' : ''}`}
               key={prefix1 + page}
               onClick={() => onClickPage(page)}
-              isActive={props.currentPage === page}
             >
               {page}
-            </ButtonPaginate>
+            </button>
           ))}
 
-          <ButtonPaginate
-            isDirect
+          <button
+            className="buttonPagination"
             onClick={() => onClickPage(props.lastPage)}
             style={{ borderRadius: '0 4px 4px 0' }}
+            disabled={props.lastPage === 1}
           >
-            ˃
-          </ButtonPaginate>
+            Próximo
+            <BiRightArrowAlt size={20} />
+          </button>
         </ContainerPaginate>
       )}
     </>
   );
 };
 
-export default Paginate;
+export default Pagination;

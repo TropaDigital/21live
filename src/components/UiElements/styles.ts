@@ -6,6 +6,11 @@ interface Props {
 
 export const ContainerDefault = styled.div``;
 
+export const SectionDefault = styled.div`
+  padding: 24px 30px;
+  height: 100%;
+`;
+
 export const ContainerGroupTable = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));

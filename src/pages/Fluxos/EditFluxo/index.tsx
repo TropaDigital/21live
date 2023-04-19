@@ -15,6 +15,7 @@ import { ColumnModel } from '../../../utils/models';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import HeaderPage from '../../../components/HeaderPage';
 import CardFluxo from '../../../components/Ui/CardFluxo';
+import { SectionDefault } from '../../../components/UiElements/styles';
 
 import { Container, ContentEditFluxo, HeaderEditPlus } from './styled';
 
@@ -122,30 +123,32 @@ export default function EditFluxo() {
         </div>
       </HeaderPage>
 
-      <HeaderEditPlus>
-        <h1 className="titleEditFluxo">
-          Fase do fluxo <span>{location.state.name}</span>
-        </h1>
-        <h3 className="subTitleEditFluxo">Adicione ou remova etapas do seu fluxo.</h3>
-      </HeaderEditPlus>
+      <SectionDefault>
+        <HeaderEditPlus>
+          <h1 className="titleEditFluxo">
+            Fase do fluxo <span>{location.state.name}</span>
+          </h1>
+          <h3 className="subTitleEditFluxo">Adicione ou remova etapas do seu fluxo.</h3>
+        </HeaderEditPlus>
 
-      <ContentEditFluxo>
-        {column.map((row: any, index: any) => (
-          <CardFluxo
-            key={index}
-            data={row}
-            index={index}
-            length={lengthCard}
-            isLastItem={lengthCard === index + 1}
-            columnStep={column.filter((obj: any) => obj.card_id !== row.card_id)}
-            responseUser={latesTeam}
-            handleOnClick={() => addColumn(user.user_id, location.state.id)}
-            handleOnPosition={(newIndex) => moveObject(newIndex, index)}
-            handleOnDelete={() => deleteFluxo(row.card_id)}
-            onUpdate={(id, name, value) => updateParcialColumn(id, name, value)}
-          />
-        ))}
-      </ContentEditFluxo>
+        <ContentEditFluxo>
+          {column.map((row: any, index: any) => (
+            <CardFluxo
+              key={index}
+              data={row}
+              index={index}
+              length={lengthCard}
+              isLastItem={lengthCard === index + 1}
+              columnStep={column.filter((obj: any) => obj.card_id !== row.card_id)}
+              responseUser={latesTeam}
+              handleOnClick={() => addColumn(user.user_id, location.state.id)}
+              handleOnPosition={(newIndex) => moveObject(newIndex, index)}
+              handleOnDelete={() => deleteFluxo(row.card_id)}
+              onUpdate={(id, name, value) => updateParcialColumn(id, name, value)}
+            />
+          ))}
+        </ContentEditFluxo>
+      </SectionDefault>
     </Container>
   );
 }

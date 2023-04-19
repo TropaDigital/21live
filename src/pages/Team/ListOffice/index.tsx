@@ -22,7 +22,8 @@ import {
   ContentDefault,
   FieldDefault,
   FieldGroupFormDefault,
-  FooterModal
+  FooterModal,
+  SectionDefault
 } from '../../../components/UiElements/styles';
 
 interface OfficeProps {
@@ -151,59 +152,61 @@ export default function ListOffice() {
         </ButtonDefault>
       </HeaderPage>
 
-      <ContentDefault>
-        <FieldGroupFormDefault>
-          <InputDefault
-            label="BUSCA"
-            name="search"
-            placeholder="Faça sua busca..."
-            onChange={(event) => {
-              setSearchTerm(event.target.value);
-              debouncedCallback(event.target.value);
-            }}
-            value={searchTerm}
-            icon={BiSearchAlt}
-            isLoading={isLoading}
-          />
-        </FieldGroupFormDefault>
-      </ContentDefault>
+      <SectionDefault>
+        <ContentDefault>
+          <FieldGroupFormDefault>
+            <InputDefault
+              label="BUSCA"
+              name="search"
+              placeholder="Faça sua busca..."
+              onChange={(event) => {
+                setSearchTerm(event.target.value);
+                debouncedCallback(event.target.value);
+              }}
+              value={searchTerm}
+              icon={BiSearchAlt}
+              isLoading={isLoading}
+            />
+          </FieldGroupFormDefault>
+        </ContentDefault>
 
-      <ContainerGroupTable style={{ marginTop: '1rem' }}>
-        <ScrollAreas>
-          <TableDefault title="Cargos">
-            <thead>
-              <tr style={{ whiteSpace: 'nowrap' }}>
-                <th>ID</th>
-                <th>Cargo</th>
-                <th>Descrição</th>
-                <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {data?.map((row) => (
-                <tr key={row.function_id}>
-                  <td>{row.function_id}</td>
-                  <td>{row.function}</td>
-                  <td>{row.description}</td>
-                  <td>
-                    <div className="fieldTableClients">
-                      <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
-                      <Alert
-                        title="Atenção"
-                        subtitle="Certeza que gostaria de deletar este Serviço? Ao excluir a acão não poderá ser desfeita."
-                        confirmButton={() => handleOnDelete(row.function_id)}
-                      >
-                        <ButtonTable typeButton="delete" />
-                      </Alert>
-                    </div>
-                  </td>
+        <ContainerGroupTable style={{ marginTop: '1rem' }}>
+          <ScrollAreas>
+            <TableDefault title="Cargos">
+              <thead>
+                <tr style={{ whiteSpace: 'nowrap' }}>
+                  <th>ID</th>
+                  <th>Cargo</th>
+                  <th>Descrição</th>
+                  <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
                 </tr>
-              ))}
-            </tbody>
-          </TableDefault>
-        </ScrollAreas>
-      </ContainerGroupTable>
+              </thead>
+
+              <tbody>
+                {data?.map((row) => (
+                  <tr key={row.function_id}>
+                    <td>{row.function_id}</td>
+                    <td>{row.function}</td>
+                    <td>{row.description}</td>
+                    <td>
+                      <div className="fieldTableClients">
+                        <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
+                        <Alert
+                          title="Atenção"
+                          subtitle="Certeza que gostaria de deletar este Serviço? Ao excluir a acão não poderá ser desfeita."
+                          confirmButton={() => handleOnDelete(row.function_id)}
+                        >
+                          <ButtonTable typeButton="delete" />
+                        </Alert>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </TableDefault>
+          </ScrollAreas>
+        </ContainerGroupTable>
+      </SectionDefault>
 
       <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
         <form onSubmit={handleOnSubmit}>

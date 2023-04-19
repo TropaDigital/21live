@@ -36,7 +36,8 @@ import {
   ContentDefault,
   FieldDefault,
   FieldGroupFormDefault,
-  FooterModal
+  FooterModal,
+  SectionDefault
 } from '../../../components/UiElements/styles';
 
 import moment from 'moment';
@@ -216,86 +217,88 @@ export default function Team() {
         </>
       </HeaderPage>
 
-      <ContentDefault>
-        <FieldGroupFormDefault>
-          {/* <SelectDefault
-            name="filter"
-            label="Filtro"
-            placeholder="Selecione um cargo"
-            onChange={(event) => setFilter(Number(event.target.value))}
-          >
-            {dataOffice?.map((row) => (
-              <option key={row.function_id} value={row.function_id}>
-                {row.function}
-              </option>
-            ))}
-          </SelectDefault> */}
-
-          <InputDefault
-            label="Busca"
-            name="search"
-            placeholder="Faça sua busca..."
-            onChange={(event) => {
-              setSearchTerm(event.target.value);
-              debouncedCallback(event.target.value);
-            }}
-            value={searchTerm}
-            icon={BiSearchAlt}
-            isLoading={isLoading}
-          />
-        </FieldGroupFormDefault>
-      </ContentDefault>
-
-      <ContainerGroupTable style={{ marginTop: '1rem' }}>
-        <ScrollAreas>
-          <TableDefault title="Equipe">
-            <thead>
-              <tr style={{ whiteSpace: 'nowrap' }}>
-                <th>Avatar</th>
-                <th>Nome</th>
-                <th>E-mail</th>
-                <th>Cargo</th>
-                <th>Tarefas na fila</th>
-                <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {data?.map((row) => (
-                <tr key={row.user_id}>
-                  <td style={{ padding: '1rem' }}>
-                    <AvatarDefault url={row.avatar} name={row.name} />
-                  </td>
-                  <td>{row.name}</td>
-                  <td>{row.email}</td>
-                  <td>{row.function}</td>
-                  <td>{''}</td>
-                  <td>
-                    <div className="fieldTableClients">
-                      <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
-                      <Alert
-                        title="Atenção"
-                        subtitle="Certeza que gostaria de deletar esta Equipe? Ao excluir a acão não poderá ser desfeita."
-                        confirmButton={() => handleOnDelete(row.function_id)}
-                      >
-                        <ButtonTable typeButton="delete" />
-                      </Alert>
-                    </div>
-                  </td>
-                </tr>
+      <SectionDefault>
+        <ContentDefault>
+          <FieldGroupFormDefault>
+            {/* <SelectDefault
+              name="filter"
+              label="Filtro"
+              placeholder="Selecione um cargo"
+              onChange={(event) => setFilter(Number(event.target.value))}
+            >
+              {dataOffice?.map((row) => (
+                <option key={row.function_id} value={row.function_id}>
+                  {row.function}
+                </option>
               ))}
-            </tbody>
-          </TableDefault>
-        </ScrollAreas>
-      </ContainerGroupTable>
+            </SelectDefault> */}
 
-      <Paginate
-        total={pages.total}
-        perPage={pages.perPage}
-        currentPage={selected}
-        lastPage={pages.lastPage}
-        onClickPage={(e) => setSelected(e)}
-      />
+            <InputDefault
+              label="Busca"
+              name="search"
+              placeholder="Faça sua busca..."
+              onChange={(event) => {
+                setSearchTerm(event.target.value);
+                debouncedCallback(event.target.value);
+              }}
+              value={searchTerm}
+              icon={BiSearchAlt}
+              isLoading={isLoading}
+            />
+          </FieldGroupFormDefault>
+        </ContentDefault>
+
+        <ContainerGroupTable style={{ marginTop: '1rem' }}>
+          <ScrollAreas>
+            <TableDefault title="Equipe">
+              <thead>
+                <tr style={{ whiteSpace: 'nowrap' }}>
+                  <th>Avatar</th>
+                  <th>Nome</th>
+                  <th>E-mail</th>
+                  <th>Cargo</th>
+                  <th>Tarefas na fila</th>
+                  <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {data?.map((row) => (
+                  <tr key={row.user_id}>
+                    <td style={{ padding: '1rem' }}>
+                      <AvatarDefault url={row.avatar} name={row.name} />
+                    </td>
+                    <td>{row.name}</td>
+                    <td>{row.email}</td>
+                    <td>{row.function}</td>
+                    <td>{''}</td>
+                    <td>
+                      <div className="fieldTableClients">
+                        <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
+                        <Alert
+                          title="Atenção"
+                          subtitle="Certeza que gostaria de deletar esta Equipe? Ao excluir a acão não poderá ser desfeita."
+                          confirmButton={() => handleOnDelete(row.function_id)}
+                        >
+                          <ButtonTable typeButton="delete" />
+                        </Alert>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </TableDefault>
+          </ScrollAreas>
+        </ContainerGroupTable>
+
+        <Paginate
+          total={pages.total}
+          perPage={pages.perPage}
+          currentPage={selected}
+          lastPage={pages.lastPage}
+          onClickPage={(e) => setSelected(e)}
+        />
+      </SectionDefault>
 
       <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
         <form onSubmit={handleOnSubmit}>

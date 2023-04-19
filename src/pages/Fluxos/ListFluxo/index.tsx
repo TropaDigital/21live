@@ -23,7 +23,8 @@ import {
   ContentDefault,
   FieldDefault,
   FieldGroupFormDefault,
-  FooterModal
+  FooterModal,
+  SectionDefault
 } from '../../../components/UiElements/styles';
 
 export default function ListFluxo() {
@@ -115,68 +116,70 @@ export default function ListFluxo() {
         </ButtonDefault>
       </HeaderPage>
 
-      <ContentDefault>
-        <FieldGroupFormDefault>
-          <InputDefault
-            label="Busca"
-            name="search"
-            placeholder="Busque pelo nome..."
-            onChange={(event) => {
-              setSearchTerm(event.target.value);
-              debouncedCallback(event.target.value);
-            }}
-            icon={BiSearchAlt}
-            isLoading={isLoading}
-            value={searchTerm}
-          />
-        </FieldGroupFormDefault>
-      </ContentDefault>
+      <SectionDefault>
+        <ContentDefault>
+          <FieldGroupFormDefault>
+            <InputDefault
+              label="Busca"
+              name="search"
+              placeholder="Busque pelo nome..."
+              onChange={(event) => {
+                setSearchTerm(event.target.value);
+                debouncedCallback(event.target.value);
+              }}
+              icon={BiSearchAlt}
+              isLoading={isLoading}
+              value={searchTerm}
+            />
+          </FieldGroupFormDefault>
+        </ContentDefault>
 
-      <ContainerGroupTable style={{ marginTop: '1rem' }}>
-        <ScrollAreas>
-          <TableDefault title="Cargos">
-            <thead>
-              <tr style={{ whiteSpace: 'nowrap' }}>
-                <th>#</th>
-                <th>Nome</th>
-                <th>Etapas</th>
-                <th>Projetos</th>
-                <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {data?.map((row) => (
-                <tr key={row.flow_id}>
-                  <td>{row.flow_id}</td>
-                  <td>{row.name}</td>
-                  <td>{row.steps}</td>
-                  <td>5</td>
-                  <td>
-                    <div className="fieldTableClients">
-                      <ButtonTable
-                        typeButton="edit"
-                        onClick={() =>
-                          navigate(`/fluxo/editar/${row.name.replaceAll(' ', '_')}`, {
-                            state: { id: row.flow_id, name: row.name }
-                          })
-                        }
-                      />
-                      <Alert
-                        title="Atenção"
-                        subtitle="Certeza que gostaria de remover esse fluxo? Ao excluir a acão não poderá ser desfeita."
-                        confirmButton={() => handleOnDelete(row.flow_id)}
-                      >
-                        <ButtonTable typeButton="delete" />
-                      </Alert>
-                    </div>
-                  </td>
+        <ContainerGroupTable style={{ marginTop: '1rem' }}>
+          <ScrollAreas>
+            <TableDefault title="Cargos">
+              <thead>
+                <tr style={{ whiteSpace: 'nowrap' }}>
+                  <th>#</th>
+                  <th>Nome</th>
+                  <th>Etapas</th>
+                  <th>Projetos</th>
+                  <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
                 </tr>
-              ))}
-            </tbody>
-          </TableDefault>
-        </ScrollAreas>
-      </ContainerGroupTable>
+              </thead>
+
+              <tbody>
+                {data?.map((row) => (
+                  <tr key={row.flow_id}>
+                    <td>{row.flow_id}</td>
+                    <td>{row.name}</td>
+                    <td>{row.steps}</td>
+                    <td>5</td>
+                    <td>
+                      <div className="fieldTableClients">
+                        <ButtonTable
+                          typeButton="edit"
+                          onClick={() =>
+                            navigate(`/fluxo/editar/${row.name.replaceAll(' ', '_')}`, {
+                              state: { id: row.flow_id, name: row.name }
+                            })
+                          }
+                        />
+                        <Alert
+                          title="Atenção"
+                          subtitle="Certeza que gostaria de remover esse fluxo? Ao excluir a acão não poderá ser desfeita."
+                          confirmButton={() => handleOnDelete(row.flow_id)}
+                        >
+                          <ButtonTable typeButton="delete" />
+                        </Alert>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </TableDefault>
+          </ScrollAreas>
+        </ContainerGroupTable>
+      </SectionDefault>
 
       <ModalDefault isOpen={modal} title={'Novo Fluxo'} onOpenChange={handleOnCancel}>
         <form onSubmit={handleOnSubmit}>

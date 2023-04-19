@@ -18,6 +18,8 @@ export const GlobalStyles = createGlobalStyle`
 
   //Color-Primary
   --primary: #0046B5;
+  --primary-50: #E2F2FF;
+  --primary-700: #0077E6;
   --primary-dark: #101E36;
   --primary-light: #3A6EC1;
 
@@ -74,6 +76,7 @@ export const GlobalStyles = createGlobalStyle`
 
   --shadow: 0px 4px 4px rgba(0, 0, 0, 0.05);
   --shadow-light: 0px 4px 4px rgba(0, 0, 0, 0.01);
+  --newShadow: 0px 1px 3px rgba(16, 24, 40, 0.1), 0px 1px 2px rgba(16, 24, 40, 0.06);
 
   /*========== Fonts ==========*/
   /*.5rem = 8px | 1rem = 16px ...*/

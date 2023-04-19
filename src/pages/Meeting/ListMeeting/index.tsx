@@ -28,7 +28,8 @@ import {
   ContentDefault,
   FieldDefault,
   FieldGroupFormDefault,
-  FooterModal
+  FooterModal,
+  SectionDefault
 } from '../../../components/UiElements/styles';
 import UploadFiles from '../../../components/Upload/UploadFiles';
 import WrapperEditor from '../../../components/WrapperEditor';
@@ -277,104 +278,106 @@ export default function ListMeeting() {
         </ButtonDefault>
       </HeaderPage>
 
-      <ContentDefault>
-        <FieldGroupFormDefault>
+      <SectionDefault>
+        <ContentDefault>
           <FieldGroupFormDefault>
-            <InputDefault
-              label="Data inicial"
-              placeholder="00/00/0000"
-              name="dateStart"
-              type="date"
-              icon={BiCalendar}
-              onChange={(e) => setFilterDate({ ...filterDate, ['dateStart']: e.target.value })}
-              value={filterDate.dateStart}
-            />
+            <FieldGroupFormDefault>
+              <InputDefault
+                label="Data inicial"
+                placeholder="00/00/0000"
+                name="dateStart"
+                type="date"
+                icon={BiCalendar}
+                onChange={(e) => setFilterDate({ ...filterDate, ['dateStart']: e.target.value })}
+                value={filterDate.dateStart}
+              />
+
+              <InputDefault
+                label="Data final"
+                placeholder="00/00/0000"
+                name="dateEnd"
+                type="date"
+                icon={BiCalendar}
+                onChange={(e) => setFilterDate({ ...filterDate, ['dateEnd']: e.target.value })}
+                value={filterDate.dateEnd}
+              />
+            </FieldGroupFormDefault>
+            <SelectDefault
+              label="Ordenar por"
+              name="order"
+              placeHolder="Ordenação"
+              onChange={(e) => setFilterOredr(e.target.value)}
+              value={filterOrder}
+            >
+              <option value="asc">Mais recente</option>
+              <option value="desc">Mais antigo</option>
+            </SelectDefault>
 
             <InputDefault
-              label="Data final"
-              placeholder="00/00/0000"
-              name="dateEnd"
-              type="date"
-              icon={BiCalendar}
-              onChange={(e) => setFilterDate({ ...filterDate, ['dateEnd']: e.target.value })}
-              value={filterDate.dateEnd}
+              label="Busca"
+              name="search"
+              placeholder="Busque pelo titulo..."
+              onChange={(event) => {
+                setSearchTerm(event.target.value);
+                debouncedCallback(event.target.value);
+              }}
+              icon={BiSearchAlt}
+              isLoading={isLoading}
+              value={searchTerm}
             />
           </FieldGroupFormDefault>
-          <SelectDefault
-            label="Ordenar por"
-            name="order"
-            placeHolder="Ordenação"
-            onChange={(e) => setFilterOredr(e.target.value)}
-            value={filterOrder}
-          >
-            <option value="asc">Mais recente</option>
-            <option value="desc">Mais antigo</option>
-          </SelectDefault>
+        </ContentDefault>
 
-          <InputDefault
-            label="Busca"
-            name="search"
-            placeholder="Busque pelo titulo..."
-            onChange={(event) => {
-              setSearchTerm(event.target.value);
-              debouncedCallback(event.target.value);
-            }}
-            icon={BiSearchAlt}
-            isLoading={isLoading}
-            value={searchTerm}
-          />
-        </FieldGroupFormDefault>
-      </ContentDefault>
-
-      <ContainerGroupTable style={{ marginTop: '1rem' }}>
-        <ScrollAreas>
-          <TableDefault title="Todas">
-            <thead>
-              <tr style={{ whiteSpace: 'nowrap' }}>
-                <th>ID</th>
-                <th>Titulo</th>
-                <th>Cliente</th>
-                <th>Responsável</th>
-                <th>Data</th>
-                <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {data?.map((row) => (
-                <tr key={row.meeting_id}>
-                  <td>{row.meeting_id}</td>
-                  <td>{row.title}</td>
-                  <td>{row.cliente}</td>
-                  <td>{row.responsavel}</td>
-                  <td>{row.date}</td>
-                  <td>
-                    <div className="fieldTableClients">
-                      <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
-
-                      <Alert
-                        title="Atenção"
-                        subtitle="Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita."
-                        confirmButton={() => handleOnDelete(row.meeting_id)}
-                      >
-                        <ButtonTable typeButton="delete" onClick={() => handleOnEdit(row)} />
-                      </Alert>
-                    </div>
-                  </td>
+        <ContainerGroupTable style={{ marginTop: '1rem' }}>
+          <ScrollAreas>
+            <TableDefault title="Todas">
+              <thead>
+                <tr style={{ whiteSpace: 'nowrap' }}>
+                  <th>ID</th>
+                  <th>Titulo</th>
+                  <th>Cliente</th>
+                  <th>Responsável</th>
+                  <th>Data</th>
+                  <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
                 </tr>
-              ))}
-            </tbody>
-          </TableDefault>
-        </ScrollAreas>
-      </ContainerGroupTable>
+              </thead>
 
-      <Paginate
-        total={pages.total}
-        perPage={pages.perPage}
-        currentPage={selected}
-        lastPage={pages.lastPage}
-        onClickPage={(e) => setSelected(e)}
-      />
+              <tbody>
+                {data?.map((row) => (
+                  <tr key={row.meeting_id}>
+                    <td>{row.meeting_id}</td>
+                    <td>{row.title}</td>
+                    <td>{row.cliente}</td>
+                    <td>{row.responsavel}</td>
+                    <td>{row.date}</td>
+                    <td>
+                      <div className="fieldTableClients">
+                        <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
+
+                        <Alert
+                          title="Atenção"
+                          subtitle="Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita."
+                          confirmButton={() => handleOnDelete(row.meeting_id)}
+                        >
+                          <ButtonTable typeButton="delete" onClick={() => handleOnEdit(row)} />
+                        </Alert>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </TableDefault>
+          </ScrollAreas>
+        </ContainerGroupTable>
+
+        <Paginate
+          total={pages.total}
+          perPage={pages.perPage}
+          currentPage={selected}
+          lastPage={pages.lastPage}
+          onClickPage={(e) => setSelected(e)}
+        />
+      </SectionDefault>
 
       <ModalDefault isOpen={modal.isOpen} onOpenChange={handleOnCancel} title={modal.type}>
         <form onSubmit={handleOnSubmit}>

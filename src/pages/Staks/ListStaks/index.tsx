@@ -25,7 +25,8 @@ import {
   ContainerGroupTable,
   ContentDefault,
   FieldGroupFormDefault,
-  FooterModal
+  FooterModal,
+  SectionDefault
 } from '../../../components/UiElements/styles';
 
 import InfoGeral from '../ComponentSteps/InfoGeral';
@@ -160,113 +161,115 @@ export default function ListStaks() {
         </ButtonDefault>
       </HeaderPage>
 
-      <ContentDefault>
-        <FieldGroupFormDefault>
+      <SectionDefault>
+        <ContentDefault>
           <FieldGroupFormDefault>
-            <InputDefault
-              label="Data inicial"
-              placeholder="00/00/0000"
-              name="dateStart"
-              type="date"
-              icon={BiCalendar}
-              onChange={(e) => setFilter({ ...filter, ['dateStart']: e.target.value })}
-              value={filter.dateStart}
-            />
+            <FieldGroupFormDefault>
+              <InputDefault
+                label="Data inicial"
+                placeholder="00/00/0000"
+                name="dateStart"
+                type="date"
+                icon={BiCalendar}
+                onChange={(e) => setFilter({ ...filter, ['dateStart']: e.target.value })}
+                value={filter.dateStart}
+              />
+
+              <InputDefault
+                label="Data final"
+                placeholder="00/00/0000"
+                name="dateEnd"
+                type="date"
+                icon={BiCalendar}
+                onChange={(e) => setFilter({ ...filter, ['dateEnd']: e.target.value })}
+                value={filter.dateEnd}
+              />
+            </FieldGroupFormDefault>
+            <SelectDefault
+              label="Ordenar por"
+              name="order"
+              placeHolder="Ordenação"
+              onChange={(e) => setFilter({ ...filter, ['order']: e.target.value })}
+              value={filter.order}
+            >
+              <option value="asc">Mais recente</option>
+              <option value="desc">Mais antigo</option>
+            </SelectDefault>
 
             <InputDefault
-              label="Data final"
-              placeholder="00/00/0000"
-              name="dateEnd"
-              type="date"
-              icon={BiCalendar}
-              onChange={(e) => setFilter({ ...filter, ['dateEnd']: e.target.value })}
-              value={filter.dateEnd}
+              label="Busca"
+              name="search"
+              placeholder="Busque pelo titulo..."
+              onChange={(event) => {
+                setSearchTerm(event.target.value);
+                debouncedCallback(event.target.value);
+              }}
+              icon={BiSearchAlt}
+              isLoading={isLoading}
+              value={searchTerm}
             />
           </FieldGroupFormDefault>
-          <SelectDefault
-            label="Ordenar por"
-            name="order"
-            placeHolder="Ordenação"
-            onChange={(e) => setFilter({ ...filter, ['order']: e.target.value })}
-            value={filter.order}
-          >
-            <option value="asc">Mais recente</option>
-            <option value="desc">Mais antigo</option>
-          </SelectDefault>
+        </ContentDefault>
 
-          <InputDefault
-            label="Busca"
-            name="search"
-            placeholder="Busque pelo titulo..."
-            onChange={(event) => {
-              setSearchTerm(event.target.value);
-              debouncedCallback(event.target.value);
-            }}
-            icon={BiSearchAlt}
-            isLoading={isLoading}
-            value={searchTerm}
-          />
-        </FieldGroupFormDefault>
-      </ContentDefault>
+        <ContainerGroupTable style={{ marginTop: '1rem' }}>
+          <ScrollAreas>
+            <TableDefault title="Lista de tarefas">
+              <thead>
+                <tr style={{ whiteSpace: 'nowrap' }}>
+                  <th>ID</th>
+                  <th>Titulo</th>
+                  <th>Urgente</th>
+                  <th>Cliente</th>
+                  <th>Progresso</th>
+                  <th>usuários</th>
+                  <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
+                </tr>
+              </thead>
 
-      <ContainerGroupTable style={{ marginTop: '1rem' }}>
-        <ScrollAreas>
-          <TableDefault title="Lista de tarefas">
-            <thead>
-              <tr style={{ whiteSpace: 'nowrap' }}>
-                <th>ID</th>
-                <th>Titulo</th>
-                <th>Urgente</th>
-                <th>Cliente</th>
-                <th>Progresso</th>
-                <th>usuários</th>
-                <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
-              </tr>
-            </thead>
+              <tbody>
+                <tr>
+                  <td>#336</td>
+                  <td>Job 1</td>
+                  <td>
+                    <BiFlag size={22} />
+                  </td>
+                  <td>MO GROUP</td>
+                  <td
+                    style={{
+                      padding: '14px',
+                      width: '220px',
+                      textAlign: 'left'
+                    }}
+                  >
+                    <span style={{ marginBottom: '4px', display: 'block' }}>05:50:24</span>
+                    <ProgressBar
+                      totalHours={convertToMilliseconds('05:50:24')}
+                      restHours={convertToMilliseconds('02:20:36')}
+                    />
+                  </td>
+                  <td>
+                    <Avatar data={avatarAll} />
+                  </td>
+                  <td>
+                    <div className="fieldTableClients">
+                      <ButtonTable typeButton="view" onClick={() => console.log('row')} />
+                      <ButtonTable typeButton="edit" onClick={() => console.log('row')} />
 
-            <tbody>
-              <tr>
-                <td>#336</td>
-                <td>Job 1</td>
-                <td>
-                  <BiFlag size={22} />
-                </td>
-                <td>MO GROUP</td>
-                <td
-                  style={{
-                    padding: '14px',
-                    width: '220px',
-                    textAlign: 'left'
-                  }}
-                >
-                  <span style={{ marginBottom: '4px', display: 'block' }}>05:50:24</span>
-                  <ProgressBar
-                    totalHours={convertToMilliseconds('05:50:24')}
-                    restHours={convertToMilliseconds('02:20:36')}
-                  />
-                </td>
-                <td>
-                  <Avatar data={avatarAll} />
-                </td>
-                <td>
-                  <div className="fieldTableClients">
-                    <ButtonTable typeButton="view" onClick={() => console.log('row')} />
-                    <ButtonTable typeButton="edit" onClick={() => console.log('row')} />
-
-                    <Alert
-                      title="Atenção"
-                      subtitle="Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita."
-                      confirmButton={() => console.log('row.project_id')}
-                    >
-                      <ButtonTable typeButton="delete" onClick={() => console.log('row')} />
-                    </Alert>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </TableDefault>
-        </ScrollAreas>
-      </ContainerGroupTable>
+                      <Alert
+                        title="Atenção"
+                        subtitle="Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita."
+                        confirmButton={() => console.log('row.project_id')}
+                      >
+                        <ButtonTable typeButton="delete" onClick={() => console.log('row')} />
+                      </Alert>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </TableDefault>
+          </ScrollAreas>
+        </ContainerGroupTable>
+      </SectionDefault>
 
       <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
         <form onSubmit={handleOnSubmit}>

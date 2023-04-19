@@ -1,21 +1,21 @@
-export interface IProduct{
-  project_id?: number
-  service: string
-  description: string
-  type: string
-  size: string
-  minutes: number |string
-  quantity: number
-  period: string
+export interface IProduct {
+  project_id?: number;
+  service: string;
+  description: string;
+  type: string;
+  size: string;
+  minutes: number | string;
+  quantity: number;
+  period: string;
 }
 
-export interface IDocProject{
-  project_id?: number
-  file_name: string
-  size: number
-  url: string
-  key: string
-  bucket: string
+export interface IDocProject {
+  project_id?: number;
+  file_name: string;
+  size: number;
+  url: string;
+  key: string;
+  bucket: string;
 
   file?: File;
   file_id?: string;
@@ -27,16 +27,16 @@ export interface IDocProject{
 }
 
 export interface IProjectCreate {
-  tenant_id: number|string //tenant_id
+  tenant_id: number | string; //tenant_id
   project_id: string;
-  title: string
-  contract_type: string //fee | spot
-  date_start: string
-  date_end: string
-  client_name?: string
-  description?: string
-  products?: Array<IProduct>
-  files?: Array<IDocProject> | any
+  title: string;
+  contract_type: string; //fee | spot
+  date_start: string;
+  date_end: string;
+  client_name?: string;
+  description?: string;
+  products?: Array<IProduct>;
+  files?: Array<IDocProject> | any;
 }
 
 export interface IServices {

@@ -1,14 +1,14 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  padding: 12px 30px;
 
-  border-bottom: 1px solid #e3e5ea;
-  padding-bottom: 1rem;
-  margin-bottom: 1.87rem;
+  border-bottom: 1px solid #eaecf0;
+  /* margin-bottom: 1.5rem; */
 
   @media (max-width: 760px) {
     flex-direction: column;
@@ -30,7 +30,7 @@ export const TitleHeader = styled.h1`
 `;
 
 export const SubTitleHeader = styled.span`
-  font-size: .875rem;
+  font-size: 0.875rem;
   line-height: 18px;
   color: var(--text-color-light);
 `;
@@ -51,4 +51,4 @@ export const SectionActionsHeader = styled.div`
   @media (max-width: 560px) {
     flex-direction: column;
   }
-`
+`;

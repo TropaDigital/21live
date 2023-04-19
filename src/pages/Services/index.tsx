@@ -14,22 +14,20 @@ import HeaderPage from '../../components/HeaderPage';
 import { InputDefault } from '../../components/Inputs/InputDefault';
 import { SelectDefault } from '../../components/Inputs/SelectDefault';
 import { TextAreaDefault } from '../../components/Inputs/TextAreaDefault';
-import Paginate from '../../components/Paginate';
-import { TableDefault } from '../../components/TableDefault';
+import Pagination from '../../components/Pagination';
+import { Table } from '../../components/Table';
+import { TableHead } from '../../components/Table/styles';
 import Alert from '../../components/Ui/Alert';
 import ModalDefault from '../../components/Ui/ModalDefault';
-import ScrollAreas from '../../components/Ui/ScrollAreas';
 import {
-  ContainerGroupTable,
-  ContentDefault,
+  ContainerDefault,
   FieldDefault,
-  FieldGroupFormDefault,
-  FooterModal
+  FieldGroup,
+  FooterModal,
+  SectionDefault
 } from '../../components/UiElements/styles';
 
 import moment from 'moment';
-
-import { Container } from './styles';
 
 interface ServicesProps {
   service_id: number;
@@ -163,7 +161,7 @@ export default function Services() {
   );
 
   return (
-    <Container>
+    <ContainerDefault>
       <HeaderPage title="Produtos">
         <ButtonDefault
           typeButton="success"
@@ -179,39 +177,50 @@ export default function Services() {
         </ButtonDefault>
       </HeaderPage>
 
-      <ContentDefault>
-        <FieldGroupFormDefault>
-          {/* <SelectDefault
-            label="FILTRO"
-            name="filter"
-            onChange={(event) => console.log('filter', event)}
-            placeholder="Todos"
-          >
-            {optionsCoffe.map((row) => (
-              <option key={row.id} value={row.id}>
-                {row.name}
-              </option>
-            ))}
-          </SelectDefault> */}
+      <SectionDefault>
+        {/* <ContentDefault>
+          <FieldGroupFormDefault>
+            <InputDefault
+              label="BUSCA"
+              name="search"
+              placeholder="Faça sua busca..."
+              onChange={(event) => {
+                setSearchTerm(event.target.value);
+                debouncedCallback(event.target.value);
+              }}
+              value={searchTerm}
+              icon={BiSearchAlt}
+              isLoading={isLoading}
+            />
+          </FieldGroupFormDefault>
+        </ContentDefault> */}
 
-          <InputDefault
-            label="BUSCA"
-            name="search"
-            placeholder="Faça sua busca..."
-            onChange={(event) => {
-              setSearchTerm(event.target.value);
-              debouncedCallback(event.target.value);
-            }}
-            value={searchTerm}
-            icon={BiSearchAlt}
-            isLoading={isLoading}
-          />
-        </FieldGroupFormDefault>
-      </ContentDefault>
+        <Table>
+          <TableHead>
+            <div className="groupTable">
+              <h2>
+                Totos os produtos <strong>240 produtos</strong>
+              </h2>
+              <span>Acompanhe seus produtos e serviços pré-cadastrados</span>
+            </div>
 
-      <ContainerGroupTable style={{ marginTop: '1rem' }}>
-        <ScrollAreas>
-          <TableDefault title="Todos os produtos">
+            <FieldGroup style={{ justifyContent: 'flex-end' }}>
+              <InputDefault
+                label=""
+                name="search"
+                placeholder="Faça sua busca..."
+                onChange={(event) => {
+                  setSearchTerm(event.target.value);
+                  debouncedCallback(event.target.value);
+                }}
+                value={searchTerm}
+                icon={BiSearchAlt}
+                isLoading={isLoading}
+              />
+            </FieldGroup>
+          </TableHead>
+
+          <table>
             <thead>
               <tr style={{ whiteSpace: 'nowrap' }}>
                 <th>Código</th>
@@ -250,17 +259,23 @@ export default function Services() {
                 </tr>
               ))}
             </tbody>
-          </TableDefault>
-        </ScrollAreas>
-      </ContainerGroupTable>
 
-      <Paginate
-        total={pages.total}
-        perPage={pages.perPage}
-        currentPage={selected}
-        lastPage={pages.lastPage}
-        onClickPage={(e) => setSelected(e)}
-      />
+            <tfoot>
+              <tr>
+                <td colSpan={100}>
+                  <Pagination
+                    total={pages.total}
+                    perPage={pages.perPage}
+                    currentPage={selected}
+                    lastPage={pages.lastPage}
+                    onClickPage={(e) => setSelected(e)}
+                  />
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </Table>
+      </SectionDefault>
 
       <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
         <form onSubmit={handleOnSubmit}>
@@ -333,6 +348,6 @@ export default function Services() {
           </FooterModal>
         </form>
       </ModalDefault>
-    </Container>
+    </ContainerDefault>
   );
 }
