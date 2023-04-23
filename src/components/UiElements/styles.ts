@@ -4,7 +4,9 @@ interface Props {
   bottom?: number;
 }
 
-export const ContainerDefault = styled.div``;
+export const ContainerDefault = styled.div`
+
+`;
 
 export const SectionDefault = styled.div`
   padding: 24px 30px;

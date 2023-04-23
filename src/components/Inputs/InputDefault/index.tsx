@@ -11,7 +11,7 @@ import { Container, ContainerInput, Error, Alert, ErrorInputMessage } from './st
 import { dateTimeMask } from './masks';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  label: string;
+  label?: string;
   error?: string;
   icon?: React.ComponentType<IconBaseProps>;
   alert?: string;
@@ -45,7 +45,9 @@ export function InputDefault({ isLoading, mask, label, alert, error, icon: Icon,
   return (
     <Container>
       <div className="containerAlert" style={{ display: 'flex', alignItems: 'center' }} >
-        <label htmlFor={label}>{label}</label>
+        {label && (
+          <label htmlFor={label}>{label}</label>
+        )}
         {alert && (
           <Alert title={alert ?? 'Campo obrigatório'}>
             <IoMdHelpCircle size={18} color='#CED4DA' />

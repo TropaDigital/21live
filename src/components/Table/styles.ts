@@ -5,8 +5,9 @@ export const Container = styled.div`
   box-shadow: var(--newShadow);
   border-radius: 8px;
   padding: 1rem 0;
-
+  
   table {
+    
     width: 100%;
     border-spacing: 0;
 
@@ -62,7 +63,6 @@ export const Container = styled.div`
         gap: 5px;
       }
     }
-
     .container {
       margin: 100px auto;
       width: 500px;
@@ -87,6 +87,7 @@ export const TableHead = styled.div`
   width: 100%;
   margin-bottom: 1.6rem;
   padding: 0 1.5rem;
+  gap: 24px;
 
   .groupTable {
     display: flex;
@@ -115,5 +116,25 @@ export const TableHead = styled.div`
       font-size: var(--text-smal-sm);
       color: var(--gray-500);
     }
+  }
+`;
+
+export const FieldTogleButton = styled.div`
+  display: flex;
+  align-items: center;
+
+  padding: 4px;
+  background-color: #F2F4F7;
+  border-radius: 4px;
+`;
+
+export const ContainerTable = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  padding: 24px 30px;
+  
+  .ScrollAreaRoot {
+    border-radius: 8px;
   }
 `;

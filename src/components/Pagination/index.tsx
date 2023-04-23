@@ -29,7 +29,6 @@ const Pagination: React.FC<Props> = (props) => {
     props.onClickPage(page);
   };
 
-  console.log('PROPS', props);
   return (
     <>
       {pages.length > 0 && (

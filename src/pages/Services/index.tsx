@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { BiCode, BiPlus, BiSearchAlt, BiTime } from 'react-icons/bi';
+import { BiCode, BiFilter, BiPlus, BiSearchAlt, BiTime } from 'react-icons/bi';
 
 import api from '../../services/api';
 
@@ -16,7 +16,7 @@ import { SelectDefault } from '../../components/Inputs/SelectDefault';
 import { TextAreaDefault } from '../../components/Inputs/TextAreaDefault';
 import Pagination from '../../components/Pagination';
 import { Table } from '../../components/Table';
-import { TableHead } from '../../components/Table/styles';
+import { FieldTogleButton, TableHead } from '../../components/Table/styles';
 import Alert from '../../components/Ui/Alert';
 import ModalDefault from '../../components/Ui/ModalDefault';
 import {
@@ -24,7 +24,6 @@ import {
   FieldDefault,
   FieldGroup,
   FooterModal,
-  SectionDefault
 } from '../../components/UiElements/styles';
 
 import moment from 'moment';
@@ -72,6 +71,8 @@ export default function Services() {
     700
   );
 
+  const [typeList, setTypeList] = useState('produtos')
+
   const { data, pages, fetchData } = useFetch<ServicesProps[]>(`services?search=${search}`);
   const [selected, setSelected] = useState(1);
 
@@ -117,6 +118,10 @@ export default function Services() {
       });
     }
   };
+
+  const handleOnTypeList = (type: string) => {
+    setTypeList(type)
+  }
 
   const handleOnSubmit = useCallback(
     async (event: any) => {
@@ -177,11 +182,37 @@ export default function Services() {
         </ButtonDefault>
       </HeaderPage>
 
-      <SectionDefault>
-        {/* <ContentDefault>
-          <FieldGroupFormDefault>
+
+      <Table>
+        <TableHead>
+          <div className="groupTable">
+            <h2>
+              Totos os produtos <strong>240 produtos</strong>
+            </h2>
+            <span>Acompanhe seus produtos e serviços pré-cadastrados</span>
+          </div>
+
+          <FieldGroup style={{ justifyContent: 'flex-end' }}>
+
+            <FieldTogleButton>
+              <ButtonDefault
+                onClick={() => handleOnTypeList('produtos')}
+                typeButton={typeList === 'produtos' ? 'dark' : 'light'}
+                style={{ height: '100%', fontSize: '12px' }}
+              >
+                Ver Produtos
+              </ButtonDefault>
+              <ButtonDefault
+                onClick={() => handleOnTypeList('kits')}
+                typeButton={typeList === 'kits' ? 'dark' : 'light'}
+                style={{ height: '100%', fontSize: '12px' }}
+              >
+                Ver kits
+              </ButtonDefault>
+            </FieldTogleButton>
+
             <InputDefault
-              label="BUSCA"
+              label=""
               name="search"
               placeholder="Faça sua busca..."
               onChange={(event) => {
@@ -192,90 +223,71 @@ export default function Services() {
               icon={BiSearchAlt}
               isLoading={isLoading}
             />
-          </FieldGroupFormDefault>
-        </ContentDefault> */}
 
-        <Table>
-          <TableHead>
-            <div className="groupTable">
-              <h2>
-                Totos os produtos <strong>240 produtos</strong>
-              </h2>
-              <span>Acompanhe seus produtos e serviços pré-cadastrados</span>
-            </div>
+            <ButtonDefault
+              typeButton='light'
+            >
+              <BiFilter />
+              Filtrar
+            </ButtonDefault>
+          </FieldGroup>
+        </TableHead>
+        <table>
+          <thead>
+            <tr style={{ whiteSpace: 'nowrap' }}>
+              <th>Código</th>
+              <th>Serviço</th>
+              <th>Descrição</th>
+              <th>Tipo</th>
+              <th>Tamanho</th>
+              <th>Minutos</th>
+              <th>Data</th>
+              <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
+            </tr>
+          </thead>
 
-            <FieldGroup style={{ justifyContent: 'flex-end' }}>
-              <InputDefault
-                label=""
-                name="search"
-                placeholder="Faça sua busca..."
-                onChange={(event) => {
-                  setSearchTerm(event.target.value);
-                  debouncedCallback(event.target.value);
-                }}
-                value={searchTerm}
-                icon={BiSearchAlt}
-                isLoading={isLoading}
-              />
-            </FieldGroup>
-          </TableHead>
-
-          <table>
-            <thead>
-              <tr style={{ whiteSpace: 'nowrap' }}>
-                <th>Código</th>
-                <th>Serviço</th>
-                <th>Descrição</th>
-                <th>Tipo</th>
-                <th>Tamanho</th>
-                <th>Minutos</th>
-                <th>Data</th>
-                <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {data?.map((row) => (
-                <tr key={row.service_id}>
-                  <td>{row.service_id}</td>
-                  <td>{row.service}</td>
-                  <td>{row.description}</td>
-                  <td>{row.type}</td>
-                  <td>{row.size}</td>
-                  <td>{row.minutes}</td>
-                  <td>{moment(row.created).utc().format('DD:MM:YYYY')}</td>
-                  <td>
-                    <div className="fieldTableClients">
-                      <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
-                      <Alert
-                        title="Atenção"
-                        subtitle="Certeza que gostaria de deletar este Serviço? Ao excluir a acão não poderá ser desfeita."
-                        confirmButton={() => handleOnDelete(row.service_id)}
-                      >
-                        <ButtonTable typeButton="delete" />
-                      </Alert>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-
-            <tfoot>
-              <tr>
-                <td colSpan={100}>
-                  <Pagination
-                    total={pages.total}
-                    perPage={pages.perPage}
-                    currentPage={selected}
-                    lastPage={pages.lastPage}
-                    onClickPage={(e) => setSelected(e)}
-                  />
+          <tbody>
+            {data?.map((row) => (
+              <tr key={row.service_id}>
+                <td>{row.service_id}</td>
+                <td>{row.service}</td>
+                <td>{row.description}</td>
+                <td>{row.type}</td>
+                <td>{row.size}</td>
+                <td>{row.minutes}</td>
+                <td>{moment(row.created).utc().format('DD:MM:YYYY')}</td>
+                <td>
+                  <div className="fieldTableClients">
+                    <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
+                    <Alert
+                      title="Atenção"
+                      subtitle="Certeza que gostaria de deletar este Serviço? Ao excluir a acão não poderá ser desfeita."
+                      confirmButton={() => handleOnDelete(row.service_id)}
+                    >
+                      <ButtonTable typeButton="delete" />
+                    </Alert>
+                  </div>
                 </td>
               </tr>
-            </tfoot>
-          </table>
-        </Table>
-      </SectionDefault>
+            ))}
+          </tbody>
+
+          <tfoot>
+            <tr>
+              <td colSpan={100}>
+                <Pagination
+                  total={pages.total}
+                  perPage={pages.perPage}
+                  currentPage={selected}
+                  lastPage={pages.lastPage}
+                  onClickPage={(e) => setSelected(e)}
+                />
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </Table>
+
 
       <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
         <form onSubmit={handleOnSubmit}>
