@@ -19,6 +19,8 @@ export const CardWellcomeDash = styled.div`
       font-size: 2.5rem;
       font-weight: 700;
       color: #fff;
+
+      text-transform: capitalize;
     }
 
     span {
