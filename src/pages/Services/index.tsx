@@ -178,7 +178,7 @@ export default function Services() {
           }
         >
           <BiPlus color="#fff" />
-          Adicionar produtos
+          Adicionar produto
         </ButtonDefault>
       </HeaderPage>
 
@@ -186,26 +186,25 @@ export default function Services() {
         <TableHead>
           <div className="groupTable">
             <h2>
-              Todos os produtos <strong>240 produtos</strong>
+              Lista de produtos <strong>140 produtos</strong>
             </h2>
-            <span>Acompanhe seus produtos e serviços pré-cadastrados</span>
           </div>
 
           <FieldGroup style={{ justifyContent: 'flex-end' }}>
             <FieldTogleButton>
               <ButtonDefault
                 onClick={() => handleOnTypeList('produtos')}
-                typeButton={typeList === 'produtos' ? 'dark' : 'light'}
+                typeButton={typeList === 'produtos' ? 'lightWhite' : 'light'}
                 style={{ height: '100%', fontSize: '12px' }}
               >
                 Ver Produtos
               </ButtonDefault>
               <ButtonDefault
                 onClick={() => handleOnTypeList('kits')}
-                typeButton={typeList === 'kits' ? 'dark' : 'light'}
+                typeButton={typeList === 'kits' ? 'lightWhite' : 'light'}
                 style={{ height: '100%', fontSize: '12px' }}
               >
-                Ver kits
+                Ver Kits
               </ButtonDefault>
             </FieldTogleButton>
 
@@ -224,7 +223,7 @@ export default function Services() {
 
             <ButtonDefault typeButton="light">
               <BiFilter />
-              Filtrar
+              Filtros
             </ButtonDefault>
           </FieldGroup>
         </TableHead>
