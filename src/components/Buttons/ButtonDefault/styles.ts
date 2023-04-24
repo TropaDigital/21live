@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+
 import { shade } from 'polished';
 interface ButtonProps {
   isOutline?: boolean;
@@ -12,6 +13,7 @@ interface ButtonProps {
     | 'warning'
     | 'info'
     | 'light'
+    | 'lightWhite'
     | 'dark';
 }
 
@@ -315,6 +317,34 @@ export const Container = styled.button<ButtonProps>`
 
       &:hover {
         background: ${ props.isDashed ? 'transparent' : shade(0.2, '#343A40')};
+        color: #fff;
+      }
+
+      ${props.isOutline &&
+      css`
+        background-color: transparent;
+        color: #343a40;
+      `}
+
+      ${props.isDashed && (
+        css`
+          border: 2px dashed #343a40;
+          background-color: transparent;
+          
+        `
+      )}
+    `}
+
+  ${(props) =>
+    props.typeButton === 'lightWhite' &&
+    css`
+      background-color: #FFF;
+      border: none;
+      outline: none;
+      color: #000;
+
+      &:hover {
+        background: ${ props.isDashed ? 'transparent' : shade(0.2, '#FFF')};
         color: #fff;
       }
 

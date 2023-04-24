@@ -1,6 +1,6 @@
 import React, { ButtonHTMLAttributes, useRef } from 'react';
-import Spinner from '../Spinner';
 
+import Spinner from '../Spinner';
 import { Container } from './styles';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -15,6 +15,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     | 'warning'
     | 'info'
     | 'light'
+    | 'lightWhite'
     | 'dark';
   sizeButton?: 'small' | 'big';
 }
