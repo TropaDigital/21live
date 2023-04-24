@@ -122,6 +122,7 @@ export const TableHead = styled.div`
 export const FieldTogleButton = styled.div`
   display: flex;
   align-items: center;
+  gap: 8px;
 
   padding: 4px;
   background-color: #F2F4F7;
