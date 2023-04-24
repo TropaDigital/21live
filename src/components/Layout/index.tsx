@@ -37,7 +37,7 @@ export default function Layout() {
             // },
             {
               to: '/servicos',
-              name: 'Serviços',
+              name: 'Produtos',
               icon: IconClipboard
             },
             {
