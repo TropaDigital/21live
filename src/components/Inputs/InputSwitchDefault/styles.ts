@@ -37,7 +37,7 @@ export const StyledLabel = styled.label`
   display: flex;
   /* width: 100%; */
 
-  font-size: var(--text-smal-sm);
+  font-size: var(--text-small-sm);
   font-weight: var(--weight-reular);
   color: var(--gray-700);
 `;

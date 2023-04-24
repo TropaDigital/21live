@@ -15,7 +15,7 @@ export const Container = styled.label`
   gap: 10px;
 
   .labelInput {
-    font-size: var(--text-smal-sm);
+    font-size: var(--text-small-sm);
     font-weight: var(--weight-medium);
     color: var(--gray-500);
     user-select: none;

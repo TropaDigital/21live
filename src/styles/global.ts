@@ -93,21 +93,15 @@ export const GlobalStyles = createGlobalStyle`
   --small-font-size: .875rem; // 14px
   --smaller-font-size: .75rem;  // 12px
 
-  /*========== Font weight ==========*/
-  --font-medium: 400;
-  --font-bold: 700;
-
-  /*========== NEW-TOKENS ==========*/
-
   /*========== Fonts ==========*/
   /*.5rem = 8px | 1rem = 16px ...*/
   --body-font: 'Inter', sans-serif;
 
-  --text-smal-xs: 0.75rem; // 12px
-  --text-smal-sm: 0.875rem; // 14px
-  --text-smal-md: 1rem; // 16px
-  --text-smal-lg: 1.125rem; // 18px
-  --text-smal-xl: 1.25rem; // 20px
+  --text-small-xs: 0.75rem; // 12px
+  --text-small-sm: 0.875rem; // 14px
+  --text-small-md: 1rem; // 16px
+  --text-small-lg: 1.125rem; // 18px
+  --text-small-xl: 1.25rem; // 20px
   --text-headline-sm: 1.5rem; // 24px
   --text-headline-md: 1.875rem; // 30px
   --text-headline-lg: 2.25rem; // 36px
@@ -185,7 +179,7 @@ legend {
   align-items: center;
   margin-bottom: 8px;
 
-  font-size: var(--text-smal-sm);
+  font-size: var(--text-small-sm);
   font-weight: var(--weight-medium);
   color: var(--gray-700);
 }
@@ -248,7 +242,7 @@ legend {
   }
 
   .DialogTitle {
-    font-size: var(--text-smal-xl);
+    font-size: var(--text-small-xl);
     font-weight: var(--weight-bold);
     color: var(--gray-600);
     margin: 0 0 14px;

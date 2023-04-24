@@ -33,7 +33,7 @@ export const Container = styled.div`
       border-bottom: 1px solid #eaecf0;
       /* border-radius: 5px; */
       text-transform: capitalize;
-      font-size: var(--text-smal-xs);
+      font-size: var(--text-small-xs);
       font-weight: var(--weight-medium);
       color: var(--gray-500);
       padding: 0.75rem 1.5rem;
@@ -42,7 +42,7 @@ export const Container = styled.div`
     }
 
     td {
-      font-size: var(--text-smal-sm);
+      font-size: var(--text-small-sm);
       font-weight: var(--weight-medium);
       color: var(--gray-600);
       padding: 1rem 1.5rem;
@@ -72,7 +72,7 @@ export const Container = styled.div`
 `;
 
 export const TitleTable = styled.h1`
-  font-size: var(--text-smal-xl);
+  font-size: var(--text-small-xl);
   font-weight: var(--weight-semibold);
   color: var(--title-color);
   text-transform: capitalize;
@@ -96,12 +96,12 @@ export const TableHead = styled.div`
 
     h2 {
       font-weight: var(--weight-medium);
-      font-size: var(--text-smal-lg);
+      font-size: var(--text-small-lg);
       color: var(--gray-900);
 
       strong {
         font-weight: var(--weight-medium);
-        font-size: var(--text-smal-xs);
+        font-size: var(--text-small-xs);
         color: var(--primary-700);
 
         background-color: var(--primary-50);
@@ -113,7 +113,7 @@ export const TableHead = styled.div`
 
     span {
       font-weight: var(--weight-regular);
-      font-size: var(--text-smal-sm);
+      font-size: var(--text-small-sm);
       color: var(--gray-500);
     }
   }

@@ -18,7 +18,7 @@ export const Container = styled.div`
       background-color: var(--primary);
       border-radius: 5px;
       text-transform: capitalize;
-      font-size: var(--text-smal-sm);
+      font-size: var(--text-small-sm);
       font-weight: var(--weight-bold);
       color: var(--light);
       padding: 8px 24px;
@@ -26,7 +26,7 @@ export const Container = styled.div`
       line-height: 20px;
     }
     td {
-      font-size: var(--text-smal-sm);
+      font-size: var(--text-small-sm);
       font-weight: var(--weight-medium);
       color: var(--gray-700);
       border: 0;
@@ -57,7 +57,7 @@ export const Container = styled.div`
 `;
 
 export const TitleTable = styled.h1`
-  font-size: var(--text-smal-xl);
+  font-size: var(--text-small-xl);
   font-weight: var(--weight-semibold);
   color: var(--title-color);
   text-transform: capitalize;

@@ -88,7 +88,7 @@ export const Content = styled.div`
       transition-property: background-color, border-color, color, fill, stroke,
         opacity, box-shadow, transform;
       transition-duration: 200ms;
-      font-size: var(--text-smal-md);
+      font-size: var(--text-small-md);
       font-weight: var(--weight-reular);
       color: var(--gray-700);
 

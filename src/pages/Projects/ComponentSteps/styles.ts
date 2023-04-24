@@ -134,7 +134,7 @@ export const BoxProductProject = styled.button`
 
     h3 {
       font-weight: var(--weight-semibold);
-      font-size: var(--text-smal-md);
+      font-size: var(--text-small-md);
       color: var(--gray-700);
     }
   }

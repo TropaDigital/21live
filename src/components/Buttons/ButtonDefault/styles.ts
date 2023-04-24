@@ -104,7 +104,7 @@ export const Container = styled.button<ButtonProps>`
   justify-content: center;
   gap: 8px;
 
-  font-size: var(--text-smal-sm);
+  font-size: var(--text-small-sm);
   color: var(--background-primary);
   font-weight: var(--weight-semibold);
   white-space: nowrap;

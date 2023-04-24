@@ -59,7 +59,7 @@ export const Container = styled.div`
     background: #fff;
 
     span {
-      font-size: var(--text-smal-xs);
+      font-size: var(--text-small-xs);
       font-weight: var(--weight-bold);
       color: var(--gray-200);
     }

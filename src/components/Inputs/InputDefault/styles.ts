@@ -27,7 +27,7 @@ export const Container = styled.div`
   position: relative;
 
   label {
-    font-size: var(--text-smal-sm);
+    font-size: var(--text-small-sm);
     font-weight: var(--weight-medium);
     color: var(--gray-700);
     margin-bottom: 5px;
@@ -64,7 +64,7 @@ export const ContainerInput = styled.div<ContainerProps>`
     transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow,
       transform;
     transition-duration: 200ms;
-    font-size: var(--text-smal-md);
+    font-size: var(--text-small-md);
     font-weight: var(--weight-reular);
     color: var(--gray-700);
     padding-inline-start: ${(props) => (props.isIcon || props.isLoad ? '2.5rem' : '1rem')};

@@ -23,7 +23,7 @@ import {
   ContainerDefault,
   FieldDefault,
   FieldGroup,
-  FooterModal,
+  FooterModal
 } from '../../components/UiElements/styles';
 
 import moment from 'moment';
@@ -71,7 +71,7 @@ export default function Services() {
     700
   );
 
-  const [typeList, setTypeList] = useState('produtos')
+  const [typeList, setTypeList] = useState('produtos');
 
   const { data, pages, fetchData } = useFetch<ServicesProps[]>(`services?search=${search}`);
   const [selected, setSelected] = useState(1);
@@ -120,8 +120,8 @@ export default function Services() {
   };
 
   const handleOnTypeList = (type: string) => {
-    setTypeList(type)
-  }
+    setTypeList(type);
+  };
 
   const handleOnSubmit = useCallback(
     async (event: any) => {
@@ -182,18 +182,16 @@ export default function Services() {
         </ButtonDefault>
       </HeaderPage>
 
-
       <Table>
         <TableHead>
           <div className="groupTable">
             <h2>
-              Totos os produtos <strong>240 produtos</strong>
+              Todos os produtos <strong>240 produtos</strong>
             </h2>
             <span>Acompanhe seus produtos e serviços pré-cadastrados</span>
           </div>
 
           <FieldGroup style={{ justifyContent: 'flex-end' }}>
-
             <FieldTogleButton>
               <ButtonDefault
                 onClick={() => handleOnTypeList('produtos')}
@@ -224,9 +222,7 @@ export default function Services() {
               isLoading={isLoading}
             />
 
-            <ButtonDefault
-              typeButton='light'
-            >
+            <ButtonDefault typeButton="light">
               <BiFilter />
               Filtrar
             </ButtonDefault>
@@ -287,7 +283,6 @@ export default function Services() {
           </tfoot>
         </table>
       </Table>
-
 
       <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
         <form onSubmit={handleOnSubmit}>
