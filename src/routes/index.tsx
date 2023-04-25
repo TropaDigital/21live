@@ -1,3 +1,4 @@
+/* eslint-disable import-helpers/order-imports */
 import { Routes, Route } from 'react-router-dom';
 import { PrivateRoutes } from './PrivateRoutes';
 
@@ -20,11 +21,12 @@ import EditFluxo from '../pages/Fluxos/EditFluxo';
 import ListProjects from '../pages/Projects/ListProjects';
 
 // COMPONENTES
-import ComponentsPage from '../pages/components/ComponentsPage';
 import ComponentsForms from '../pages/components/ComponentsForms';
+import ComponentsPage from '../pages/components/ComponentsPage';
 import ComponentTable from '../pages/components/ComponentTable';
 import ListMeeting from '../pages/Meeting/ListMeeting';
 import ListStaks from '../pages/Staks/ListStaks';
+import CreateProject from '../pages/CreateProject';
 
 function RoutesAll() {
   return (
@@ -135,6 +137,15 @@ function RoutesAll() {
           element={
             <PrivateRoutes>
               <Board />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/criar-projeto"
+          element={
+            <PrivateRoutes>
+              <CreateProject />
             </PrivateRoutes>
           }
         />

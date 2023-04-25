@@ -35,6 +35,7 @@ export interface IProjectCreate {
   date_end: string;
   client_name?: string;
   description?: string;
+  time?: string;
   products?: Array<IProduct>;
   files?: Array<IDocProject> | any;
 }
