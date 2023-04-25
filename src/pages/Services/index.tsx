@@ -1,5 +1,7 @@
-import { useCallback, useState } from 'react';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useCallback, useState, useEffect } from 'react';
 import { BiCode, BiFilter, BiPlus, BiSearchAlt, BiTime } from 'react-icons/bi';
+import Switch from 'react-switch';
 
 import api from '../../services/api';
 
@@ -37,6 +39,8 @@ interface ServicesProps {
   minutes: string;
   created: string;
   updated: string;
+  category: string;
+  flag: string;
 }
 
 interface FormDataProps {
@@ -75,6 +79,7 @@ export default function Services() {
 
   const { data, pages, fetchData } = useFetch<ServicesProps[]>(`services?search=${search}`);
   const [selected, setSelected] = useState(1);
+  const [listSelected, setListSelected] = useState<any[]>([]);
 
   const handleOnCancel = useCallback(() => {
     setModal({
@@ -165,6 +170,14 @@ export default function Services() {
     [formData, addToast, fetchData, handleOnCancel, modal]
   );
 
+  function handleList(value: any) {
+    if (listSelected.includes(value)) {
+      setListSelected(listSelected.filter((obj) => obj !== value));
+    } else {
+      setListSelected((obj) => [...obj, value]);
+    }
+  }
+
   return (
     <ContainerDefault>
       <HeaderPage title="Produtos">
@@ -186,8 +199,9 @@ export default function Services() {
         <TableHead>
           <div className="groupTable">
             <h2>
-              Lista de produtos <strong>140 produtos</strong>
+              Todos os produtos <strong>240 produtos</strong>
             </h2>
+            <span>Acompanhe seus produtos e serviços pré-cadastrados</span>
           </div>
 
           <FieldGroup style={{ justifyContent: 'flex-end' }}>
@@ -229,14 +243,11 @@ export default function Services() {
         </TableHead>
         <table>
           <thead>
-            <tr style={{ whiteSpace: 'nowrap' }}>
-              <th>Código</th>
-              <th>Serviço</th>
-              <th>Descrição</th>
-              <th>Tipo</th>
-              <th>Tamanho</th>
-              <th>Minutos</th>
-              <th>Data</th>
+            <tr>
+              <th>ID</th>
+              <th>Produto</th>
+              <th>Categoria</th>
+              <th>Listar produtos</th>
               <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
             </tr>
           </thead>
@@ -244,15 +255,21 @@ export default function Services() {
           <tbody>
             {data?.map((row) => (
               <tr key={row.service_id}>
-                <td>{row.service_id}</td>
+                <td>#{row.service_id}</td>
                 <td>{row.service}</td>
-                <td>{row.description}</td>
-                <td>{row.type}</td>
-                <td>{row.size}</td>
-                <td>{row.minutes}</td>
-                <td>{moment(row.created).utc().format('DD:MM:YYYY')}</td>
+                <td>{row.category}</td>
+                <td>
+                  <Switch
+                    onChange={() => handleList(row.service_id)}
+                    checked={listSelected.includes(row.service_id) ? true : false}
+                    uncheckedIcon={false}
+                    checkedIcon={false}
+                    onColor="#0046B5"
+                  />
+                </td>
                 <td>
                   <div className="fieldTableClients">
+                    <ButtonTable typeButton="view" onClick={() => console.log('row view', row)} />
                     <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
                     <Alert
                       title="Atenção"
