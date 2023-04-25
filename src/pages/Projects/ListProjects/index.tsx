@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback, useState } from 'react';
-import { BiCalendar, BiPlus, BiSearchAlt } from 'react-icons/bi';
+import { BiFilter, BiPlus, BiSearchAlt } from 'react-icons/bi';
+import Switch from 'react-switch';
 
 import api from '../../../services/api';
 
@@ -9,6 +12,7 @@ import { useFetch } from '../../../hooks/useFetch';
 import useForm from '../../../hooks/useForm';
 import { useSteps } from '../../../hooks/useSteps';
 
+import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 import { TenantProps } from '../../../utils/models';
 
 import { IProjectCreate } from '../../../types';
@@ -17,22 +21,17 @@ import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import ButtonTable from '../../../components/Buttons/ButtonTable';
 import HeaderPage from '../../../components/HeaderPage';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
-import { SelectDefault } from '../../../components/Inputs/SelectDefault';
-import Paginate from '../../../components/Paginate';
+import Pagination from '../../../components/Pagination';
 import Steps from '../../../components/Steps';
-import { TableDefault } from '../../../components/TableDefault';
+import { Table } from '../../../components/Table';
+import { FilterGroup, TableHead } from '../../../components/Table/styles';
 import Alert from '../../../components/Ui/Alert';
 import ModalDefault from '../../../components/Ui/ModalDefault';
-import ScrollAreas from '../../../components/Ui/ScrollAreas';
-import {
-  ContainerDefault,
-  ContainerGroupTable,
-  ContentDefault,
-  FieldGroupFormDefault,
-  FooterModal,
-  SectionDefault
-} from '../../../components/UiElements/styles';
+import ProgressBar from '../../../components/Ui/ProgressBar';
+import { ContainerDefault, FooterModal } from '../../../components/UiElements/styles';
 import { UploadedFilesProps } from '../../../components/Upload/UploadFiles';
+
+import moment from 'moment';
 
 import InfoDescription from '../ComponentSteps/InfoDescription';
 import InfoFiles from '../ComponentSteps/InfoFiles';
@@ -69,12 +68,6 @@ export default function ListProjects() {
     700
   );
 
-  const [filterDate, setFilterDate] = useState({
-    dateStart: '',
-    dateEnd: ''
-  });
-  const [filterOrder, setFilterOredr] = useState('');
-
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
   const [error, setError] = useState<StateProps>({});
   const [loading, setLoading] = useState(false);
@@ -86,10 +79,9 @@ export default function ListProjects() {
     data: dataProject,
     fetchData: fetchProject,
     pages
-  } = useFetch<IProjectCreate[]>(
-    `project?search=${search}&date_start=${filterDate.dateStart}&date_end=${filterDate.dateEnd}&order=${filterOrder}`
-  );
+  } = useFetch<IProjectCreate[]>(`project?search=${search}`);
   const [selected, setSelected] = useState(1);
+  const [listSelected, setListSelected] = useState<any[]>([]);
 
   const handleOnAddProducts = (items: any) => {
     setFormValue('products', [...formData.products, ...items]);
@@ -306,50 +298,6 @@ export default function ListProjects() {
     });
   };
 
-  const validateStep = () => {
-    const { title, tenant_id, contract_type, date_start, date_end } = formData;
-
-    try {
-      if (title === '') {
-        throw setErrorInput('title', 'Titulo é obrigatório!');
-      } else {
-        setErrorInput('title', undefined);
-      }
-
-      if (tenant_id === '') {
-        throw setErrorInput('tenant_id', 'Cliente é obrigatório!');
-      } else {
-        setErrorInput('tenant_id', undefined);
-      }
-
-      if (contract_type === '') {
-        throw setErrorInput('contract_type', 'Contrato é obrigatório!');
-      } else {
-        setErrorInput('contract_type', undefined);
-      }
-
-      if (date_start === '') {
-        throw setErrorInput('date_start', 'Data inicial é obrigatório!');
-      } else {
-        setErrorInput('date_start', undefined);
-      }
-
-      if (date_end === '') {
-        throw setErrorInput('date_end', 'Data final é obrigatório!');
-      } else {
-        setErrorInput('date_end', undefined);
-      }
-
-      changeStep(currentStep + 1);
-    } catch (error: any) {
-      addToast({
-        title: 'Atenção',
-        description: error,
-        type: 'warning'
-      });
-    }
-  };
-
   const handleOnCancel = () => {
     setModal({
       isOpen: false,
@@ -488,139 +436,123 @@ export default function ListProjects() {
     [formData, setFormValue, uploadedFiles, setUploadedFiles, modal, setData]
   );
 
+  function handleList(value: any) {
+    if (listSelected.includes(value)) {
+      setListSelected(listSelected.filter((obj) => obj !== value));
+    } else {
+      setListSelected((obj) => [...obj, value]);
+    }
+  }
+
   return (
     <ContainerDefault>
       <HeaderPage title="Projetos">
-        <ButtonDefault
-          typeButton="success"
-          onClick={() =>
-            setModal({
-              isOpen: !modal.isOpen,
-              type: 'Criar novo Projeto/Contrato'
-            })
-          }
-        >
+        <ButtonDefault typeButton="success">
           <BiPlus color="#fff" />
-          Novo Projeto
+          Adicionar Projeto
         </ButtonDefault>
       </HeaderPage>
 
-      <SectionDefault>
-        <ContentDefault>
-          <FieldGroupFormDefault>
-            <FieldGroupFormDefault>
-              <InputDefault
-                label="Data inicial"
-                placeholder="00/00/0000"
-                name="dateStart"
-                type="date"
-                icon={BiCalendar}
-                onChange={(e) => setFilterDate({ ...filterDate, ['dateStart']: e.target.value })}
-                value={filterDate.dateStart}
-              />
+      <Table>
+        <TableHead>
+          <div className="groupTable">
+            <h2>Lista de projetos</h2>
+          </div>
+        </TableHead>
+        <FilterGroup>
+          <InputDefault
+            label=""
+            name="search"
+            placeholder="Search"
+            onChange={(event) => {
+              setSearchTerm(event.target.value);
+              debouncedCallback(event.target.value);
+            }}
+            value={searchTerm}
+            icon={BiSearchAlt}
+            isLoading={isLoading}
+          />
 
-              <InputDefault
-                label="Data final"
-                placeholder="00/00/0000"
-                name="dateEnd"
-                type="date"
-                icon={BiCalendar}
-                onChange={(e) => setFilterDate({ ...filterDate, ['dateEnd']: e.target.value })}
-                value={filterDate.dateEnd}
-              />
-            </FieldGroupFormDefault>
-            <SelectDefault
-              label="Ordenar por"
-              name="order"
-              placeHolder="Ordenação"
-              onChange={(e) => setFilterOredr(e.target.value)}
-              value={filterOrder}
-            >
-              <option value="asc">Mais recente</option>
-              <option value="desc">Mais antigo</option>
-            </SelectDefault>
-
-            <InputDefault
-              label="Busca"
-              name="search"
-              placeholder="Busque pelo titulo..."
-              onChange={(event) => {
-                setSearchTerm(event.target.value);
-                debouncedCallback(event.target.value);
-              }}
-              icon={BiSearchAlt}
-              isLoading={isLoading}
-              value={searchTerm}
-            />
-          </FieldGroupFormDefault>
-        </ContentDefault>
-
-        <ContainerGroupTable style={{ marginTop: '1rem' }}>
-          <ScrollAreas>
-            <TableDefault title="Lista de projetos">
-              <thead>
-                <tr style={{ whiteSpace: 'nowrap' }}>
-                  <th>Titulo</th>
-                  <th>Cliente</th>
-                  <th>Data inicio</th>
-                  <th>Entrega estimada</th>
-                  <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {dataProject?.map((row) => (
-                  <tr key={row.project_id}>
-                    <td style={{ textTransform: 'uppercase', textAlign: 'initial' }}>
-                      {row.contract_type + ' | ' + row.title}
-                    </td>
-                    {/* <td
-                      style={{
-                        padding: '14px',
-                        width: '220px',
-                        textAlign: 'left',
-                      }}
+          <ButtonDefault typeButton="light">
+            <BiFilter />
+            Filtros
+          </ButtonDefault>
+        </FilterGroup>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Título</th>
+              <th>Cliente</th>
+              <th>Tempo</th>
+              <th>Status</th>
+              <th>Data de criação</th>
+              <th>Entrega estimada</th>
+              <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
+            </tr>
+          </thead>
+          <tbody>
+            {dataProject?.map((row) => (
+              <tr key={row.project_id}>
+                <td>#{row.project_id}</td>
+                <td>{row.title}</td>
+                <td>{row.client_name}</td>
+                <td
+                  style={{
+                    padding: '14px',
+                    width: '220px',
+                    textAlign: 'left'
+                  }}
+                >
+                  <span style={{ marginBottom: '4px', display: 'block' }}>05:50:24</span>
+                  <ProgressBar
+                    totalHours={convertToMilliseconds('05:50:24')}
+                    restHours={convertToMilliseconds('02:20:36')}
+                  />
+                </td>
+                <td>
+                  <Switch
+                    onChange={() => handleList(row.project_id)}
+                    checked={listSelected.includes(row.project_id) ? true : false}
+                    uncheckedIcon={false}
+                    checkedIcon={false}
+                    onColor="#0046B5"
+                  />
+                </td>
+                <td>{moment(row.date_start).format('DD/MM/YYYY')}</td>
+                <td>{moment(row.date_end).format('DD/MM/YYYY')}</td>
+                <td>
+                  <div className="fieldTableClients">
+                    <ButtonTable typeButton="view" onClick={() => console.log(row)} />
+                    <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
+                    <Alert
+                      title="Atenção"
+                      subtitle="Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita."
+                      confirmButton={() => handleOnDelete(row.project_id)}
                     >
-                      <span style={{ marginBottom: '4px', display: 'block'}}>05:50:24</span>
-                      <ProgressBar 
-                        totalHours={convertToMilliseconds('05:50:24')}
-                        restHours={convertToMilliseconds('02:20:36')}
-                      />
-                    </td> */}
+                      <ButtonTable typeButton="delete" />
+                    </Alert>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
 
-                    <td>{row.client_name}</td>
-                    <td>{row.date_start}</td>
-                    <td>{row.date_end}</td>
-                    <td>
-                      <div className="fieldTableClients">
-                        <ButtonTable typeButton="view" onClick={() => console.log(row)} />
-
-                        <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
-
-                        <Alert
-                          title="Atenção"
-                          subtitle="Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita."
-                          confirmButton={() => handleOnDelete(row.project_id)}
-                        >
-                          <ButtonTable typeButton="delete" />
-                        </Alert>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </TableDefault>
-          </ScrollAreas>
-        </ContainerGroupTable>
-      </SectionDefault>
-
-      <Paginate
-        total={pages.total}
-        perPage={pages.perPage}
-        currentPage={selected}
-        lastPage={pages.lastPage}
-        onClickPage={(e) => setSelected(e)}
-      />
+          <tfoot>
+            <tr>
+              <td colSpan={100}>
+                <Pagination
+                  total={pages.total}
+                  perPage={pages.perPage}
+                  currentPage={selected}
+                  lastPage={pages.lastPage}
+                  onClickPage={(e) => setSelected(e)}
+                />
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </Table>
 
       <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
         <form onSubmit={handleOnSubmit}>
