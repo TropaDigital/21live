@@ -5,9 +5,8 @@ export const Container = styled.div`
   box-shadow: var(--newShadow);
   border-radius: 8px;
   padding: 1rem 0;
-  
+
   table {
-    
     width: 100%;
     border-spacing: 0;
 
@@ -125,7 +124,7 @@ export const FieldTogleButton = styled.div`
   gap: 8px;
 
   padding: 4px;
-  background-color: #F2F4F7;
+  background-color: #f2f4f7;
   border-radius: 4px;
 `;
 
@@ -134,8 +133,17 @@ export const ContainerTable = styled.div`
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1rem;
   padding: 24px 30px;
-  
+
   .ScrollAreaRoot {
     border-radius: 8px;
   }
+`;
+
+export const FilterGroup = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 1.5rem;
+  margin-bottom: 16px;
 `;

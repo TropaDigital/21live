@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 
-import { Container, ContainerTable } from './styles';
 import ScrollAreas from '../Ui/ScrollAreas';
+import { Container, ContainerTable } from './styles';
 
 interface DataTable {
   children: ReactNode;
@@ -11,9 +11,7 @@ export function Table({ children }: DataTable) {
   return (
     <ContainerTable>
       <ScrollAreas>
-        <Container style={{ marginTop: '1rem' }}>
-          {children}
-        </Container>
+        <Container style={{ marginTop: '1rem' }}>{children}</Container>
       </ScrollAreas>
     </ContainerTable>
   );
