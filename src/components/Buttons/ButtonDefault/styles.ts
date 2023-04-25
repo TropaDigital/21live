@@ -17,89 +17,6 @@ interface ButtonProps {
     | 'dark';
 }
 
-// const colorButtonVariations = {
-//   primary: css`
-//     background: #0046B5;
-//     border: 1px solid #0046B5;
-//     color: #fff;
-
-//     &:hover {
-//       background: ${shade(0.2, '#0046B5')};
-//       color: #fff;
-//     }
-//   `,
-//   secondary: css`
-//     background: #00c899;
-//     border: 1px solid #00c899;
-//     color: #fff;
-
-//     &:hover {
-//       background: ${shade(0.2, '#00c899')};
-//       color: #fff;
-//     }
-//   `,
-//   success: css`
-//     background: #06d6a0;
-//     border: 1px solid #06d6a0;
-//     color: #fff;
-
-//     &:hover {
-//       background: ${shade(0.2, '#06d6a0')};
-//       color: #fff;
-//     }
-//   `,
-//   danger: css`
-//     background: #e62965;
-//     border: 1px solid #e62965;
-//     color: #fff;
-
-//     &:hover {
-//       background: ${shade(0.2, '#e62965')};
-//       color: #fff;
-//     }
-//   `,
-//   warning: css`
-//     background: #faae42;
-//     border: 1px solid #faae42;
-//     color: #fff;
-
-//     &:hover {
-//       background: ${shade(0.2, '#faae42')};
-//       color: #fff;
-//     }
-//   `,
-//   info: css`
-//     background: #039be5;
-//     border: 1px solid #039be5;
-//     color: #fff;
-
-//     &:hover {
-//       background: ${shade(0.2, '#039be5')};
-//       color: #fff;
-//     }
-//   `,
-//   light: css`
-//     background: #e9ecef;
-//     border: 1px solid #e9ecef;
-//     color: #6c757d;
-
-//     &:hover {
-//       background: ${shade(0.2, '#e9ecef')};
-//       color: #6c757d;
-//     }
-//   `,
-//   dark: css`
-//     background: #343a40;
-//     border: 1px solid #343a40;
-//     color: #fff;
-
-//     &:hover {
-//       background: ${shade(0.2, '#343a40')};
-//       color: #fff;
-//     }
-//   `,
-// };
-
 export const Container = styled.button<ButtonProps>`
   display: flex;
   align-items: center;
@@ -111,8 +28,8 @@ export const Container = styled.button<ButtonProps>`
   font-weight: var(--weight-semibold);
   white-space: nowrap;
 
-  background: #0046b5;
-  border: 1px solid #0046b5;
+  background: var(--primary);
+  border: 1px solid var(--primary);
   border-radius: 4px;
   padding: 0 10px;
   height: 40px;
@@ -123,32 +40,29 @@ export const Container = styled.button<ButtonProps>`
     height: 18px;
   }
 
-
   ${(props) =>
     props.typeButton === 'primary' &&
     css`
-      background-color: #0046b5;
-      border: 1px solid #0046b5;
+      background-color: var(--primary);
+      border: 1px solid var(--primary);
       color: #fff;
 
       &:hover {
-        background: ${ props.isDashed ? 'transparent' : shade(0.2, '#0046B5')};
+        background: ${props.isDashed ? 'transparent' : shade(0.2, '#0046B5')};
         color: #fff;
       }
 
       ${props.isOutline &&
       css`
         background-color: transparent;
-        color: #0046b5;
+        color: var(--primary);
       `}
 
-      ${props.isDashed && (
-        css`
-          border: 2px dashed #0046b5;
+      ${props.isDashed &&
+      css`
+          border: 2px dashed var(--primary);
           backgro-coloruntransparentd
-        `
-      )}
-      
+        `}
     `}
 
   ${(props) =>
@@ -159,7 +73,7 @@ export const Container = styled.button<ButtonProps>`
       color: #fff;
 
       &:hover {
-        background: ${ props.isDashed ? 'transparent' : shade(0.2, '#00C899')};
+        background: ${props.isDashed ? 'transparent' : shade(0.2, '#00C899')};
         color: #fff;
       }
 
@@ -169,13 +83,11 @@ export const Container = styled.button<ButtonProps>`
         color: #00c899;
       `}
 
-      ${props.isDashed && (
-        css`
+      ${props.isDashed &&
+      css`
           border: 2px dashed #00c899;
           backgro-coloruntransparentd
-        `
-      )}
-      
+        `}
     `}
 
   ${(props) =>
@@ -185,7 +97,7 @@ export const Container = styled.button<ButtonProps>`
       border: 1px solid #06d6a0;
 
       &:hover {
-        background: ${ props.isDashed ? 'transparent' : shade(0.2, '#06D6A0')};
+        background: ${props.isDashed ? 'transparent' : shade(0.2, '#06D6A0')};
         color: #fff;
       }
 
@@ -195,13 +107,11 @@ export const Container = styled.button<ButtonProps>`
         color: #06d6a0;
       `}
 
-      ${props.isDashed && (
-        css`
+      ${props.isDashed &&
+      css`
           border: 2px dashed #06d6a0;
           backgro-coloruntransparentd
-        `
-      )}
-      
+        `}
     `}
 
   ${(props) =>
@@ -211,7 +121,7 @@ export const Container = styled.button<ButtonProps>`
       border: 1px solid #e62965;
 
       &:hover {
-        background: ${ props.isDashed ? 'transparent' : shade(0.2, '#E62965')};
+        background: ${props.isDashed ? 'transparent' : shade(0.2, '#E62965')};
         color: #fff;
       }
 
@@ -221,13 +131,11 @@ export const Container = styled.button<ButtonProps>`
         color: #e62965;
       `}
 
-      ${props.isDashed && (
-        css`
+      ${props.isDashed &&
+      css`
           border: 2px dashed #e62965;
           backgro-coloruntransparentd
-        `
-      )}
-      
+        `}
     `}
 
   ${(props) =>
@@ -237,7 +145,7 @@ export const Container = styled.button<ButtonProps>`
       border: 1px solid #faae42;
 
       &:hover {
-        background: ${ props.isDashed ? 'transparent' : shade(0.2, '#FAAE42')};
+        background: ${props.isDashed ? 'transparent' : shade(0.2, '#FAAE42')};
         color: #fff;
       }
 
@@ -247,13 +155,11 @@ export const Container = styled.button<ButtonProps>`
         color: #faae42;
       `}
 
-      ${props.isDashed && (
-        css`
+      ${props.isDashed &&
+      css`
           border: 2px dashed #faae42;
           backgro-coloruntransparentd
-        `
-      )}
-      
+        `}
     `}
 
   ${(props) =>
@@ -263,7 +169,7 @@ export const Container = styled.button<ButtonProps>`
       border: 1px solid #039be5;
 
       &:hover {
-        background: ${ props.isDashed ? 'transparent' : shade(0.2, '#039BE5')};
+        background: ${props.isDashed ? 'transparent' : shade(0.2, '#039BE5')};
         color: #fff;
       }
 
@@ -273,13 +179,11 @@ export const Container = styled.button<ButtonProps>`
         color: #039be5;
       `}
 
-      ${props.isDashed && (
-        css`
+      ${props.isDashed &&
+      css`
           border: 2px dashed #039be5;
           backgro-coloruntransparentd
-        `
-      )}
-      
+        `}
     `}
 
   ${(props) =>
@@ -290,7 +194,7 @@ export const Container = styled.button<ButtonProps>`
       color: #6c757d;
 
       &:hover {
-        background: ${ props.isDashed ? 'transparent' : shade(0.2, '#E9ECEF')};
+        background: ${props.isDashed ? 'transparent' : shade(0.2, '#E9ECEF')};
         color: #6c757d;
       }
 
@@ -300,13 +204,11 @@ export const Container = styled.button<ButtonProps>`
         color: #e9ecef;
       `}
 
-      ${props.isDashed && (
-        css`
+      ${props.isDashed &&
+      css`
           border: 2px dashed #e9ecef;
           backgro-coloruntransparentd
-        `
-      )}
-      
+        `}
     `}
 
   ${(props) =>
@@ -316,7 +218,7 @@ export const Container = styled.button<ButtonProps>`
       border: 1px solid #343a40;
 
       &:hover {
-        background: ${ props.isDashed ? 'transparent' : shade(0.2, '#343A40')};
+        background: ${props.isDashed ? 'transparent' : shade(0.2, '#343A40')};
         color: #fff;
       }
 
@@ -326,25 +228,23 @@ export const Container = styled.button<ButtonProps>`
         color: #343a40;
       `}
 
-      ${props.isDashed && (
-        css`
-          border: 2px dashed #343a40;
-          background-color: transparent;
-          
-        `
-      )}
+      ${props.isDashed &&
+      css`
+        border: 2px dashed #343a40;
+        background-color: transparent;
+      `}
     `}
 
   ${(props) =>
     props.typeButton === 'lightWhite' &&
     css`
-      background-color: #FFF;
+      background-color: #fff;
       border: none;
       outline: none;
       color: #000;
 
       &:hover {
-        background: ${ props.isDashed ? 'transparent' : shade(0.2, '#FFF')};
+        background: ${props.isDashed ? 'transparent' : shade(0.2, '#FFF')};
         color: #fff;
       }
 
@@ -354,13 +254,11 @@ export const Container = styled.button<ButtonProps>`
         color: #343a40;
       `}
 
-      ${props.isDashed && (
-        css`
-          border: 2px dashed #343a40;
-          background-color: transparent;
-          
-        `
-      )}
+      ${props.isDashed &&
+      css`
+        border: 2px dashed #343a40;
+        background-color: transparent;
+      `}
     `}
 
   ${(props) =>
