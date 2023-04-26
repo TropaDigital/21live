@@ -2,6 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback, useState } from 'react';
 import { BiFilter, BiPlus, BiSearchAlt } from 'react-icons/bi';
+import { Link } from 'react-router-dom';
 import Switch from 'react-switch';
 
 import api from '../../../services/api';
@@ -212,112 +213,9 @@ export default function ListProjects() {
     }
   ];
 
-  const [steps, setSteps] = useState(() =>
-    formComponents.map((row) => ({
-      label: row.label,
-      success: false
-    }))
-  );
-
   const fillComponents = formComponents.map((row: any) => row.component);
   const { changeStep, currentComponent, currentStep, isFirstStep, isLastStep } =
     useSteps(fillComponents);
-
-  function setErrorInput(value: any, message: any) {
-    if (!message) {
-      delete error[value];
-    }
-
-    setError({ ...error, [value]: message });
-    return message;
-  }
-
-  const handleOnNextStep = () => {
-    const { title, tenant_id, contract_type, date_start, date_end } = formData;
-
-    try {
-      if (title === '') {
-        throw setErrorInput('title', 'Titulo é obrigatório!');
-      } else {
-        setErrorInput('title', undefined);
-      }
-
-      if (tenant_id === '') {
-        throw setErrorInput('tenant_id', 'Cliente é obrigatório!');
-      } else {
-        setErrorInput('tenant_id', undefined);
-      }
-
-      if (contract_type === '') {
-        throw setErrorInput('contract_type', 'Contrato é obrigatório!');
-      } else {
-        setErrorInput('contract_type', undefined);
-      }
-
-      if (date_start === '') {
-        throw setErrorInput('date_start', 'Data inicial é obrigatório!');
-      } else {
-        setErrorInput('date_start', undefined);
-      }
-
-      if (date_end === '') {
-        throw setErrorInput('date_end', 'Data final é obrigatório!');
-      } else {
-        setErrorInput('date_end', undefined);
-      }
-
-      changeStep(currentStep + 1);
-
-      setSteps((prevComponents) =>
-        prevComponents.map((component, i) => ({
-          ...component,
-          success: i <= currentStep
-        }))
-      );
-    } catch (error: any) {
-      addToast({
-        title: 'Atenção',
-        description: error,
-        type: 'warning'
-      });
-    }
-  };
-
-  const handleOnPrevStep = () => {
-    changeStep(currentStep - 1);
-    setSteps((prevComponents) => {
-      return prevComponents.map((component, i) => {
-        if (i === currentStep - 1) {
-          return {
-            ...component,
-            success: false
-          };
-        }
-        return component;
-      });
-    });
-  };
-
-  const handleOnCancel = () => {
-    setModal({
-      isOpen: false,
-      type: 'Criar novo Projeto/Contrato'
-    });
-    setData({
-      tenant_id: '',
-      project_id: '',
-      title: '',
-      contract_type: '',
-      date_start: '',
-      date_end: '',
-      description: '',
-      products: [],
-      files: []
-    } as IProjectCreate);
-    setUploadedFiles([]);
-    setError({});
-    changeStep(0);
-  };
 
   const handleOnEdit = (item: IProjectCreate) => {
     setData(item);
@@ -348,94 +246,6 @@ export default function ListProjects() {
     }
   };
 
-  const handleOnSubmit = useCallback(
-    async (event: any) => {
-      try {
-        event.preventDefault();
-
-        // Inserir lógica
-        const files = uploadedFiles.map((row) => ({
-          bucket: row.bucket,
-          file_name: row.file_name,
-          // file_id: row.file_id,
-          key: row.key,
-          size: row.size,
-          url: row.url
-        }));
-
-        const newArrayProducts = formData.products.map(({ tenant_id, ...rest }: any) => rest);
-        // const updateProducts = formData.products.map(({ service_id, ...rest }: any) => ({ product_id: service_id, ...rest }))
-
-        const { title, tenant_id, description, date_start, date_end, contract_type, project_id } =
-          formData;
-
-        const createNewData = {
-          title,
-          tenant_id,
-          products: newArrayProducts,
-          description,
-          date_start,
-          date_end,
-          contract_type,
-          files
-        };
-
-        const updateData = {
-          title,
-          project_id,
-          tenant_id,
-          products: newArrayProducts,
-          description,
-          date_start,
-          date_end,
-          contract_type,
-          files
-        };
-
-        if (modal.type === 'Criar novo Projeto/Contrato') {
-          await api.post(`project`, createNewData);
-        } else {
-          await api.put(`project/${formData.project_id}`, updateData);
-        }
-
-        addToast({
-          type: 'success',
-          title: 'Sucesso',
-          description: 'Serviço cadastrado com sucesso!'
-        });
-
-        setData({
-          tenant_id: '',
-          project_id: '',
-          title: '',
-          contract_type: '',
-          date_start: '',
-          date_end: '',
-          description: '',
-          products: [],
-          files: []
-        } as IProjectCreate);
-        setUploadedFiles([]);
-        setModal({
-          isOpen: false,
-          type: 'Criar novo Projeto/Contrato'
-        });
-        changeStep(0);
-        fetchProject();
-      } catch (e: any) {
-        // Exibir erro
-        addToast({
-          type: 'danger',
-          title: 'ATENÇÃO',
-          description: e.response.data.message
-        });
-
-        // setErros(getVaidationErrors(e.response.data.result))
-      }
-    },
-    [formData, setFormValue, uploadedFiles, setUploadedFiles, modal, setData]
-  );
-
   function handleList(value: any) {
     if (listSelected.includes(value)) {
       setListSelected(listSelected.filter((obj) => obj !== value));
@@ -447,10 +257,12 @@ export default function ListProjects() {
   return (
     <ContainerDefault>
       <HeaderPage title="Projetos">
-        <ButtonDefault typeButton="success">
-          <BiPlus color="#fff" />
-          Adicionar Projeto
-        </ButtonDefault>
+        <Link to={'/criar-projeto'}>
+          <ButtonDefault typeButton="success">
+            <BiPlus color="#fff" />
+            Adicionar Projeto
+          </ButtonDefault>
+        </Link>
       </HeaderPage>
 
       <Table>
@@ -554,7 +366,7 @@ export default function ListProjects() {
         </table>
       </Table>
 
-      <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
+      {/* <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
         <form onSubmit={handleOnSubmit}>
           <Steps currentStep={currentStep} steps={steps} />
 
@@ -589,7 +401,7 @@ export default function ListProjects() {
             </div>
           </FooterModal>
         </form>
-      </ModalDefault>
+      </ModalDefault> */}
     </ContainerDefault>
   );
 }
