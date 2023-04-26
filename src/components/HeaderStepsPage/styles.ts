@@ -6,7 +6,7 @@ export const Container = styled.div`
   justify-content: flex-start;
   width: 100%;
   padding: 12px 30px;
-
+  background: #fff;
   border-left: 2px solid var(--gray-200);
 
   border-bottom: 1px solid #eaecf0;
@@ -57,14 +57,14 @@ export const StepCounter = styled.div`
   min-width: 620px;
   height: 4px;
   background: var(--gray-300);
-  margin-left: 48px;
+  margin-left: auto;
 
   .step {
     width: 24px;
     height: 24px;
     border-radius: 50%;
     overflow: hidden;
-    
+
     background: var(--gray-300);
     /* border: 4px solid red; */
     box-sizing: content-box;
