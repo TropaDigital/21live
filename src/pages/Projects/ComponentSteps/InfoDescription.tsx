@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+
 import { FieldDefault } from '../../../components/UiElements/styles';
 import WrapperEditor from '../../../components/WrapperEditor';
 
@@ -10,7 +11,11 @@ interface DescriptionStepProps {
   mentions: any;
 }
 
-export default function InfoDescription({ value, handleOnDescription, mentions }: DescriptionStepProps) {
+export default function InfoDescription({
+  value,
+  handleOnDescription,
+  mentions
+}: DescriptionStepProps) {
   return (
     <ContainerSteps>
       <FieldDefault>
@@ -20,7 +25,6 @@ export default function InfoDescription({ value, handleOnDescription, mentions }
           handleOnDescription={(value: any) => handleOnDescription(value)}
         />
       </FieldDefault>
-
     </ContainerSteps>
-  )
+  );
 }

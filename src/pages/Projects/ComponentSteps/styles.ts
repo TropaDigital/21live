@@ -1,23 +1,22 @@
-import styled, { css } from "styled-components";
+import styled, { css } from 'styled-components';
 
 interface Props {
   isDisabed?: boolean;
 }
 
-export const ContainerSteps = styled.div`
-
-`;
+export const ContainerSteps = styled.div``;
 
 export const Container = styled.div<Props>`
-  ${(props) => props.isDisabed && css`
-    opacity: 0.4;
-    background: #e2e8f0;
-    cursor: not-allowed;
-  `}
+  ${(props) =>
+    props.isDisabed &&
+    css`
+      opacity: 0.4;
+      background: #e2e8f0;
+      cursor: not-allowed;
+    `}
 
   width: 100%;
   height: 100%;
-
 `;
 
 export const ContainerInfoProducts = styled.div`
@@ -32,24 +31,24 @@ export const ContainerInfoProducts = styled.div`
   }
 
   .quantityAndHours {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-top: 20px;
-    }
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+  }
 
-    .boxInfopost {
-      span {
-        font-weight: 400;
-        font-size: 14px;
-        line-height: 20px;
-        color: #475467;
+  .boxInfopost {
+    span {
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      color: #475467;
 
-        strong {
-          color: #101828;
-        }
+      strong {
+        color: #101828;
       }
     }
+  }
 `;
 
 export const ContainerListproducts = styled.div`
@@ -62,10 +61,9 @@ export const ContainerListproducts = styled.div`
     flex-direction: column;
     gap: 1rem;
     li {
-      
     }
   }
-`
+`;
 
 export const SectionProductsProject = styled.div`
   display: flex;
@@ -85,9 +83,9 @@ export const BoxProductProject = styled.button`
   background-color: var(--gray-50);
   border: none;
   /* transition: all 0.5s ease; */
-  
+
   :hover {
-    background-color: #E2F2FF;
+    background-color: #e2f2ff;
     cursor: pointer;
 
     .quantityAndHours {
@@ -140,30 +138,37 @@ export const BoxProductProject = styled.button`
   }
 
   .quantityAndHours {
-      align-items: baseline;
-      flex-direction: column;
-      gap: 4px;
-      margin-top: 0px;
-      height: 0;
-      transition: all 0.5s ease;
+    align-items: baseline;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 0px;
+    height: 0;
+    transition: all 0.5s ease;
+  }
 
-    }
+  .boxInfopost {
+    transition: all 0.35s ease;
 
-    .boxInfopost {
-      transition: all .35s ease;
+    opacity: 0;
+    visibility: hidden;
+    span {
+      font-weight: 400;
+      font-size: 0px;
+      line-height: 20px;
+      color: #475467;
 
-      opacity: 0;
-      visibility: hidden;
-      span {
-        font-weight: 400;
-        font-size: 0px;
-        line-height: 20px;
-        color: #475467;
-
-        strong {
-          color: #101828;
-        }
+      strong {
+        color: #101828;
       }
     }
+  }
 `;
 
+export const FlexLine = styled.div`
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 40px;
+  /* width: 1040px; */
+  margin-bottom: 16px;
+`;
