@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+
 import Tooltip from '../../Tooltip';
 
 interface ContainerProps {
@@ -11,6 +12,7 @@ interface ContainerProps {
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
+  flex: 1;
 
   label {
     font-size: var(--text-small-sm);
@@ -34,7 +36,6 @@ export const ContainerInput = styled.div<ContainerProps>`
     css`
       border-color: #e62965;
       box-shadow: rgb(229 62 62) 0px 0px 0px 1px;
-
     `}
 
   select {
@@ -45,8 +46,8 @@ export const ContainerInput = styled.div<ContainerProps>`
     outline-offset: 2px;
     position: relative;
     appearance: none;
-    transition-property: background-color, border-color, color, fill, stroke,
-      opacity, box-shadow, transform;
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow,
+      transform;
     transition-duration: 200ms;
     background: inherit;
     padding-bottom: 1px;
