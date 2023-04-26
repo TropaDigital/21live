@@ -8,7 +8,7 @@ import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useFetch } from '../../../hooks/useFetch';
 import useForm from '../../../hooks/useForm';
 
-import getVaidationErrors from '../../../utils/getVaidationErrors';
+import getValidationErrors from '../../../utils/getValidationErrors';
 import { MeetingProps, TeamProps, TenantProps } from '../../../utils/models';
 
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
@@ -82,7 +82,7 @@ export default function ListMeeting() {
     type: 'Criar nova Ata de Reunião'
   });
 
-  const [errors, setErros] = useState({} as any);
+  const [errors, setErrors] = useState({} as any);
   const [searchTerm, setSearchTerm] = useState('');
   const [search, setSearch] = useState('');
   const { isLoading, debouncedCallback } = useDebouncedCallback(
@@ -143,7 +143,7 @@ export default function ListMeeting() {
     } as FormProps);
     setUploadedFiles([]);
     setText('');
-    setErros({});
+    setErrors({});
     // fetchData();
   };
 
@@ -223,7 +223,7 @@ export default function ListMeeting() {
           description: e.response.data.message
         });
 
-        setErros(getVaidationErrors(e.response.data.result));
+        setErrors(getValidationErrors(e.response.data.result));
       }
     },
     [formData, setFormValue, text, uploadedFiles, modal]
