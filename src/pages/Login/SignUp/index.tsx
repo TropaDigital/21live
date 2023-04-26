@@ -7,7 +7,7 @@ import api from '../../../services/api';
 import { useAuth } from '../../../hooks/AuthContext';
 import { useToast } from '../../../hooks/toast';
 
-import getVaidationErrors from '../../../utils/getVaidationErrors';
+import getValidationErrors from '../../../utils/getValidationErrors';
 
 import logo from '../../../assets/bg.svg';
 
@@ -76,7 +76,7 @@ export default function SignUp() {
 
         setLoading(false);
       } catch (e: any) {
-        const errors = getVaidationErrors(e.response.data.result);
+        const errors = getValidationErrors(e.response.data.result);
 
         console.log('Error =>>', errors);
         setLoading(false);
