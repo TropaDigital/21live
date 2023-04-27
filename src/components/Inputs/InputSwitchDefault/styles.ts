@@ -1,7 +1,7 @@
 import styled, { css, keyframes } from 'styled-components';
 
 interface Props {
-  isChecked?: any
+  isChecked?: any;
   isLabel?: boolean;
 }
 
@@ -29,7 +29,6 @@ const gooeyOutInAnimation = css`
   animation: ${gooeyOut} 0.35s;
 `;
 
-
 export const StyledLabel = styled.label`
   cursor: pointer;
   align-items: center;
@@ -47,12 +46,14 @@ export const StyledSwitch = styled.span<Props>`
   width: 34px;
   padding: 4px;
   border-radius: 50px;
-  background: #E3E5EA;
+  background: #e3e5ea;
   transition: all 0.35s;
 
-  ${({ isLabel }) => isLabel && css`
-    margin-right: 12px;
-  `}
+  ${({ isLabel }) =>
+    isLabel &&
+    css`
+      margin-right: 12px;
+    `}
 `;
 
 export const StyledKnob = styled.span<Props>`
@@ -60,7 +61,7 @@ export const StyledKnob = styled.span<Props>`
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #039BE5;
+  background: #0046B5;
 
   ${({ isChecked }) => !isChecked && gooeyOutInAnimation}
 
@@ -69,20 +70,16 @@ export const StyledKnob = styled.span<Props>`
 
 export const StyledInput = styled.input<Props>`
   position: absolute;
-  transform:  scale(0);
+  transform: scale(0);
 
   &:checked ~ ${StyledSwitch} {
-    background: #039BE5;
+    background: #0046B5;
   }
 
   &:checked ~ ${StyledSwitch} ${StyledKnob} {
     margin-left: 14px;
     background: #fff;
 
-  ${({ isChecked }) => isChecked && gooeyInAnimation}
-
+    ${({ isChecked }) => isChecked && gooeyInAnimation}
   }
 `;
-
-
-
