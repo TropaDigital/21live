@@ -296,4 +296,71 @@ export const IconArrowLeft: React.FC = () => (
   </svg>
 );
 
+export const IconTrash: React.FC = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M10.7588 13.9998H5.23879C4.54079 13.9998 3.96079 13.4612 3.90879 12.7645L3.31079 4.6665H12.6668L12.0888 12.7612C12.0388 13.4592 11.4581 13.9998 10.7588 13.9998V13.9998Z"
+      stroke="#F04438"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M8.00008 7.3335V11.3335"
+      stroke="#F04438"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M2.66675 4.66683H13.3334"
+      stroke="#F04438"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M11.3334 4.66667L10.6581 2.86533C10.4627 2.34467 9.96541 2 9.40941 2H6.59075C6.03475 2 5.53741 2.34467 5.34208 2.86533L4.66675 4.66667"
+      stroke="#F04438"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M10.2867 7.3335L10.0001 11.3335"
+      stroke="#F04438"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M5.71344 7.3335L6.0001 11.3335"
+      stroke="#F04438"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const IconPlus: React.FC = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M7.99992 3.3335V12.6668M3.33325 8.00016H12.6666"
+      stroke="#0045B5"
+      strokeWidth="1.33333"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const IconMinus: React.FC = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M3.33325 8H12.6666"
+      stroke="#D0D5DD"
+      strokeWidth="1.33333"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 export const IconDefault: React.FC = () => <svg />;
