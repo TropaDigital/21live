@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useCallback, useEffect } from 'react';
 
 import { useToast } from '../../hooks/toast';
@@ -16,15 +17,15 @@ import { UploadedFilesProps } from '../../components/Upload/UploadFiles';
 import InfoDescription from '../Projects/ComponentSteps/InfoDescription';
 import InfoFiles from '../Projects/ComponentSteps/InfoFiles';
 import InfoGeral from '../Projects/ComponentSteps/InfoGeral';
-import InfoProducts from '../Projects/ComponentSteps/InfoProducts';
-import { Container, Footer, FormWrapper } from './styles';
+import InfoProducts from '../Projects/ComponentSteps/InfoProducts/InfoProducts';
+import { Container, Footer, FormTitle, FormWrapper } from './styles';
 
 interface StateProps {
   [key: string]: any;
 }
 
 export default function CreateProject() {
-  const [createStep, setCreateStep] = useState<number>(1);
+  const [createStep, setCreateStep] = useState<number>(2);
   const { addToast } = useToast();
   const { formData, setFormValue, setData, handleOnChange } = useForm({
     tenant_id: '',
@@ -544,6 +545,10 @@ export default function CreateProject() {
   //   console.log('log dos steps', currentStep);
   // }, [steps]);
 
+  // useEffect(() => {
+  //   console.log('log do current component', formComponents);
+  // }, [formComponents]);
+
   return (
     <Container>
       <HeaderStepsPage
@@ -555,6 +560,7 @@ export default function CreateProject() {
       <FormWrapper>
         {createStep === 1 && (
           <>
+            <FormTitle>Geral</FormTitle>
             <InfoGeral
               data={formData}
               handleInputChange={handleOnChange}
@@ -571,10 +577,25 @@ export default function CreateProject() {
             </div>
           </>
         )}
+        {createStep === 2 && (
+          <>
+            <FormTitle>Produtos</FormTitle>
+            <InfoProducts
+              handleOnAddProducts={handleOnAddProducts}
+              dataOffice={dataOffice}
+              dataFilter={formData.products}
+              handleOnDecrementQtd={(e) => handleOnDecrementQtd(e)}
+              handleOnIncrememtQtd={(e) => handleOnIncrememtQtd(e)}
+              handleOnPeriod={(e, id) => handleOnPeriod(e, id)}
+              handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
+              handleInputProduct={(value, id) => handleInputProduct(value, id)}
+            />
+          </>
+        )}
       </FormWrapper>
 
       <Footer>
-        <ButtonDefault typeButton="dark" isOutline type="button" onClick={handleOnCancel}>
+        <ButtonDefault typeButton="primary" isOutline type="button" onClick={handleOnCancel}>
           Descartar
         </ButtonDefault>
 
