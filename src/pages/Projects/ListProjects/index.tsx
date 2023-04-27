@@ -37,7 +37,7 @@ import moment from 'moment';
 import InfoDescription from '../ComponentSteps/InfoDescription';
 import InfoFiles from '../ComponentSteps/InfoFiles';
 import InfoGeral from '../ComponentSteps/InfoGeral';
-import InfoProducts from '../ComponentSteps/InfoProducts';
+import InfoProducts from '../ComponentSteps/InfoProducts/InfoProducts';
 
 interface StateProps {
   [key: string]: any;
