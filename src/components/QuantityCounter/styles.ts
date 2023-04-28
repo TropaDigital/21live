@@ -18,3 +18,12 @@ export const CounterFields = styled.div`
   width: 16px;
   height: 100%;
 `;
+
+export const CounterFieldsBtn = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 100%;
+  background: transparent;
+`;

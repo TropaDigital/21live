@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { IconMinus, IconPlus, IconTrash } from '../../assets/icons';
 
 // Styles
-import { Container, CounterFields } from './styles';
+import { Container, CounterFields, CounterFieldsBtn } from './styles';
 
 interface QuantityProps {
   handleQuantity?: any;
@@ -27,7 +27,7 @@ export default function QuantityCounter({
     if (counter > 0) {
       const selectedRow = {
         quantityOfProduct: counter,
-        selectedProduct: rowQuantity
+        rowQuantity
       };
       handleQuantity(selectedRow);
     }
@@ -35,20 +35,20 @@ export default function QuantityCounter({
 
   return (
     <Container>
-      {counter > 0 && (
-        <CounterFields style={{ cursor: 'pointer' }} onClick={() => setCounter(0)}>
+      {counter === 1 && (
+        <CounterFieldsBtn style={{ cursor: 'pointer' }} onClick={() => setCounter(0)}>
           <IconTrash />
-        </CounterFields>
+        </CounterFieldsBtn>
       )}
-      {counter < 1 && (
-        <CounterFields style={{ cursor: 'pointer' }}>
+      {counter !== 1 && (
+        <CounterFieldsBtn style={{ cursor: 'pointer' }} onClick={() => setCounter(counter - 1)}>
           <IconMinus />
-        </CounterFields>
+        </CounterFieldsBtn>
       )}
       <CounterFields>{counter}</CounterFields>
-      <CounterFields style={{ cursor: 'pointer' }} onClick={() => setCounter(counter + 1)}>
+      <CounterFieldsBtn style={{ cursor: 'pointer' }} onClick={() => setCounter(counter + 1)}>
         <IconPlus />
-      </CounterFields>
+      </CounterFieldsBtn>
     </Container>
   );
 }
