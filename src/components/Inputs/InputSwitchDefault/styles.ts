@@ -61,7 +61,7 @@ export const StyledKnob = styled.span<Props>`
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #0046B5;
+  background: white;
 
   ${({ isChecked }) => !isChecked && gooeyOutInAnimation}
 
@@ -73,7 +73,7 @@ export const StyledInput = styled.input<Props>`
   transform: scale(0);
 
   &:checked ~ ${StyledSwitch} {
-    background: #0046B5;
+    background: #0046b5;
   }
 
   &:checked ~ ${StyledSwitch} ${StyledKnob} {
