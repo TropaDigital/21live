@@ -27,6 +27,7 @@ import { Table } from '../../../../components/Table';
 import { FieldTogleButton, TableHead } from '../../../../components/Table/styles';
 import { FieldGroup } from '../../../../components/UiElements/styles';
 import { ProductsWrapper } from './styles';
+import CardProductsSelected from '../../../../components/CardProductsSelected';
 
 interface ServicesProps {
   service_id: number;
@@ -54,13 +55,13 @@ interface PropsProducts {
 
 interface SelectedProducts {
   quantityOfProduct: number;
-  selectedProduct: {
+  rowQuantity: {
     category: string;
     description: string;
     flag: string;
     minutes: string;
     service: string;
-    service_id: string;
+    service_id: number;
     size: string;
     tenant_id: string;
     type: string;
@@ -94,7 +95,7 @@ export default function InfoProducts({
   const [typeList, setTypeList] = useState('produtos');
   const [selected, setSelected] = useState(1);
   const [quantity, setQuantity] = useState<any>();
-  let selectedProducts: SelectedProducts[] = [];
+  const [selectedProducts, setSelectedProducts] = useState<SelectedProducts[]>([]);
 
   useEffect(() => {
     if (debouncedSearchTerm) {
@@ -126,16 +127,21 @@ export default function InfoProducts({
 
   function handleAddProducts() {
     if (quantity.quantityOfProduct !== 0) {
-      selectedProducts.push(quantity);
-      // setQuantity('');
+      setSelectedProducts((obj) => [...obj, quantity]);
     }
   }
 
   function handleDeleteProducts(id: any) {
-    selectedProducts = selectedProducts.filter(
-      (obj) => obj.selectedProduct.service_id === id.service_id
+    setSelectedProducts(
+      selectedProducts.filter((obj) => obj.rowQuantity.service_id !== id.service_id)
     );
+    setQuantity('');
   }
+
+  // useEffect(() => {
+  //   console.log('log do quantity', quantity);
+  //   console.log('log do array selected', selectedProducts);
+  // }, [quantity, selectedProducts]);
 
   return (
     <ProductsWrapper>
@@ -195,17 +201,22 @@ export default function InfoProducts({
                   />
                 </td>
 
-                <td style={{ cursor: 'pointer' }} onClick={handleAddProducts}>
-                  <div style={{ fontSize: '14px', fontWeight: '600', color: '#0045B5' }}>
-                    Adicionar
-                  </div>
-                </td>
-
-                {/* <td style={{ cursor: 'pointer' }}>
+                {quantity && Object.values(quantity.rowQuantity).includes(row.service_id) ? (
+                  <td
+                    style={{ cursor: 'pointer', textAlign: 'center' }}
+                    onClick={handleAddProducts}
+                  >
+                    <div style={{ fontSize: '14px', fontWeight: '600', color: '#0045B5' }}>
+                      Adicionar
+                    </div>
+                  </td>
+                ) : (
+                  <td style={{ textAlign: 'center' }}>
                     <div style={{ fontSize: '14px', fontWeight: '600', color: '#D0D5DD' }}>
                       Adicionar
                     </div>
-                  </td> */}
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
@@ -225,6 +236,7 @@ export default function InfoProducts({
           </tfoot>
         </table>
       </Table>
+      <CardProductsSelected data={data} handleOnPeriod={handleOnPeriod}></CardProductsSelected>
     </ProductsWrapper>
   );
 }

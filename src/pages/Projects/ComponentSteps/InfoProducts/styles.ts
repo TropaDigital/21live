@@ -1,15 +1,18 @@
 import styled from 'styled-components';
 
 export const ProductsWrapper = styled.div`
-  /* display: flex;
-  flex-direction: column;
-  background: var(--background-primary);
-  border: 1px solid #eaecf0;
-  border-radius: 8px;
-  width: 100%;
-  height: 100%;
-  box-shadow: 0px 1px 3px rgba(16, 24, 40, 0.1), 0px 1px 2px rgba(16, 24, 40, 0.06); */
+  display: flex;
+  /* flex-direction: column; */
+  gap: 30px;
   padding-bottom: 28px;
+  margin-left: -30px;
+  margin-top: -42px;
+
+  .teste {
+    width: 322px;
+    height: 300px;
+    background-color: red;
+  }
 `;
 
 export const HeaderSearch = styled.div`
