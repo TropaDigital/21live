@@ -33,3 +33,17 @@ export const ButtonsWrapper = styled.div`
   box-sizing: border-box;
   border-radius: 6px;
 `;
+
+export const WrapperCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  min-width: 320px;
+  max-width: 320px;
+  height: fit-content;
+  border-radius: 12px;
+  background: var(--background-primary);
+
+  margin-top: 40px;
+  overflow: hidden;
+`;

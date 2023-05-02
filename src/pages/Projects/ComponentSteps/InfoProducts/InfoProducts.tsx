@@ -26,7 +26,7 @@ import { Table } from '../../../../components/Table';
 // STYLES
 import { FieldTogleButton, TableHead } from '../../../../components/Table/styles';
 import { FieldGroup } from '../../../../components/UiElements/styles';
-import { ProductsWrapper } from './styles';
+import { ProductsWrapper, WrapperCard } from './styles';
 import CardProductsSelected from '../../../../components/CardProductsSelected';
 
 interface ServicesProps {
@@ -54,27 +54,26 @@ interface PropsProducts {
 }
 
 interface SelectedProducts {
-  quantityOfProduct: number;
+  quantitySelected: number;
   rowQuantity: {
-    category: string;
-    description: string;
-    flag: string;
-    minutes: string;
-    service: string;
     service_id: number;
-    size: string;
-    tenant_id: string;
+    service: string;
+    description: string;
     type: string;
+    size: string;
+    minutes: string;
+    flag: string;
+    tenant_id: string;
+    category: string;
+    quantity: number;
   };
 }
 
 export default function InfoProducts({
   dataOffice,
   dataFilter,
-  handleOnAddProducts,
-  handleOnDecrementQtd,
-  handleOnIncrememtQtd,
   handleOnPeriod,
+  handleOnAddProducts,
   handleOnDeleteProduct,
   handleInputProduct
 }: PropsProducts) {
@@ -126,7 +125,7 @@ export default function InfoProducts({
   };
 
   function handleAddProducts() {
-    if (quantity.quantityOfProduct !== 0) {
+    if (quantity.quantitySelected !== 0) {
       setSelectedProducts((obj) => [...obj, quantity]);
     }
   }
@@ -138,10 +137,10 @@ export default function InfoProducts({
     setQuantity('');
   }
 
-  // useEffect(() => {
-  //   console.log('log do quantity', quantity);
-  //   console.log('log do array selected', selectedProducts);
-  // }, [quantity, selectedProducts]);
+  useEffect(() => {
+    // console.log('log do quantity', quantity);
+    // console.log('log do array selected', selectedProducts);
+  }, [selectedProducts]);
 
   return (
     <ProductsWrapper>
@@ -236,7 +235,22 @@ export default function InfoProducts({
           </tfoot>
         </table>
       </Table>
-      <CardProductsSelected data={data} handleOnPeriod={handleOnPeriod}></CardProductsSelected>
+
+      {selectedProducts.length > 0 && (
+        <WrapperCard>
+          {selectedProducts.map((row: SelectedProducts, index: number) => (
+            <CardProductsSelected
+              handleOnPeriod={handleOnPeriod}
+              id={index + 1}
+              title={row.rowQuantity.service}
+              contract_type={'mensal'}
+              hours_total={0}
+              key={index}
+              data={row.rowQuantity}
+            />
+          ))}
+        </WrapperCard>
+      )}
     </ProductsWrapper>
   );
 }
