@@ -4,9 +4,10 @@ import { useState } from 'react';
 // Icons
 import { IconArrowDown } from '../../assets/icons';
 
-// Styles
+// Components
 import InputSwitchDefault from '../Inputs/InputSwitchDefault';
 import QuantityCounter from '../QuantityCounter';
+// Styles
 import {
   ArrowButton,
   CardBottom,
@@ -15,7 +16,7 @@ import {
   CardTop,
   EstimatedHours,
   SwitchSelector,
-  WrapperCard
+  ContainerCard
 } from './styles';
 
 interface ProductsProps {
@@ -23,13 +24,24 @@ interface ProductsProps {
   // handleOnIncrememtQtd: (e: any) => void;
   handleOnPeriod: (e: any, id: any) => void;
   // handleOnDeleteProduct: (item: any) => void;
-  // handleInputProduct: (value: any) => void;
+  id: number;
+  title: string;
+  contract_type: string;
+  hours_total: number;
   data: any;
 }
 
-export default function CardProductsSelected({ data, handleOnPeriod }: ProductsProps) {
+export default function CardProductsSelected({
+  handleOnPeriod,
+  id,
+  title,
+  contract_type,
+  hours_total,
+  data
+}: ProductsProps) {
   const [openCard, setOpenCard] = useState<boolean>(false);
-  const verifyPeriod = data?.period === 'mensal' ? false : true;
+  const [timeCounter, setTimeCounter] = useState<number>(0);
+  const verifyPeriod = contract_type === 'mensal' ? false : true;
 
   const handleOptions = (status: boolean) => {
     if (status) {
@@ -39,11 +51,24 @@ export default function CardProductsSelected({ data, handleOnPeriod }: ProductsP
     }
   };
 
+  const handleCounter = (counter: any) => {
+    setTimeCounter(counter.quantitySelected);
+
+    if (counter.quantitySelected < timeCounter) {
+      console.log('log do numero diminuindo');
+    } else if (counter.quantitySelected > timeCounter) {
+      console.log('log do numero aumentando');
+    }
+    console.log('log do counter inside card product', counter);
+  };
+
   return (
-    <WrapperCard>
+    <ContainerCard>
       <CardProduct openOptions={openCard}>
         <CardTop>
-          <CardProductTitle>#1 - HORA DE CRIAÇÃO</CardProductTitle>
+          <CardProductTitle>
+            #{id} - {title}
+          </CardProductTitle>
           <ArrowButton onClick={() => handleOptions(openCard)}>
             <IconArrowDown />
           </ArrowButton>
@@ -53,7 +78,7 @@ export default function CardProductsSelected({ data, handleOnPeriod }: ProductsP
             <span>Mensal</span>
             <InputSwitchDefault
               onChange={(e) => {
-                handleOnPeriod(e.target.checked, 1);
+                handleOnPeriod(e.target.checked, id);
               }}
               value={String(verifyPeriod)}
             />
@@ -61,18 +86,16 @@ export default function CardProductsSelected({ data, handleOnPeriod }: ProductsP
           </SwitchSelector>
           <EstimatedHours>
             <div className="hours">
-              Horas estimadas: <strong>01:00</strong>
+              Horas estimadas: <strong>{timeCounter}:00</strong>
             </div>
-            <QuantityCounter clearQuantity={() => ''} />
+            <QuantityCounter
+              clearQuantity={() => setTimeCounter(0)}
+              handleQuantity={handleCounter}
+              rowQuantity={data}
+            />
           </EstimatedHours>
         </CardBottom>
       </CardProduct>
-      {/* <CardProduct>
-        <CardProductTitle>#2 - Diagnóstico 21BRZ</CardProductTitle>
-        <ArrowButton>
-          <IconArrowDown />
-        </ArrowButton>
-      </CardProduct> */}
-    </WrapperCard>
+    </ContainerCard>
   );
 }

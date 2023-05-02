@@ -4,17 +4,7 @@ interface CardProps {
   openOptions: boolean;
 }
 
-export const WrapperCard = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: fit-content;
-  min-width: 320px;
-  max-width: 320px;
-  height: fit-content;
-  border-radius: 12px;
-  background: var(--background-primary);
-  overflow: hidden;
-`;
+export const ContainerCard = styled.div``;
 
 export const CardProduct = styled.div<CardProps>`
   display: flex;
@@ -26,6 +16,7 @@ export const CardProduct = styled.div<CardProps>`
   /* background: var(--background-primary); */
   border-bottom: 1px solid var(--gray-200);
   padding: 16px 24px;
+  overflow: hidden;
 `;
 
 export const CardTop = styled.div`
