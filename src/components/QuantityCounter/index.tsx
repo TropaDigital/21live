@@ -26,7 +26,7 @@ export default function QuantityCounter({
     }
     if (counter > 0) {
       const selectedRow = {
-        quantityOfProduct: counter,
+        quantitySelected: counter,
         rowQuantity
       };
       handleQuantity(selectedRow);
