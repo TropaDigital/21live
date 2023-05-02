@@ -27,6 +27,48 @@ interface StateProps {
 export default function CreateProject() {
   const [createStep, setCreateStep] = useState<number>(2);
   const { addToast } = useToast();
+
+  // {
+  //   "project_id": "27",
+  //   "tenant_id": "7",
+  //   "contract_type": "por produto",
+  //   "date_start": "2023-03-06",
+  //   "date_end": "2023-03-06",
+  //   "description": "descricao top",
+  //   "title": "titulo top",
+  //   "created": "2023-03-06 17:29:55",
+  //   "updated": "2023-03-06 17:29:55",
+  //   "deleted": "",
+  //   "category": "fee",
+  //   "status": "",
+  //   "time": "",
+  //    "time_consumed": "",
+  //   "client_name": "21BRZ",
+  //   "products": [
+  //     {
+  //       "product_id": "19",
+  //       "service": "cat",
+  //       "description": "Boa descrição",
+  //       "type": "impresso",
+  //       "size": "2000",
+  //       "minutes": "32:59:00",
+  //       "quantity": "3",
+  //       "period": "mensal"
+  //     },
+  //     {
+  //       "product_id": "20",
+  //       "service": "cat2",
+  //       "description": "Boa descrição",
+  //       "type": "impresso",
+  //       "size": "2000",
+  //       "minutes": "32:59:00",
+  //       "quantity": "2",
+  //       "period": "mensal"
+  //     }
+  //   ],
+  //   "files": []
+  // }
+
   const { formData, setFormValue, setData, handleOnChange } = useForm({
     tenant_id: '',
     title: '',
@@ -35,6 +77,7 @@ export default function CreateProject() {
     date_start: '',
     date_end: '',
     description: '',
+    category: '',
     products: [],
     files: []
   } as IProjectCreate);
@@ -463,14 +506,23 @@ export default function CreateProject() {
         const newArrayProducts = formData.products.map(({ tenant_id, ...rest }: any) => rest);
         // const updateProducts = formData.products.map(({ service_id, ...rest }: any) => ({ product_id: service_id, ...rest }))
 
-        const { title, tenant_id, description, date_start, date_end, contract_type, project_id } =
-          formData;
+        const {
+          title,
+          tenant_id,
+          description,
+          date_start,
+          date_end,
+          contract_type,
+          category,
+          project_id
+        } = formData;
 
         const createNewData = {
           title,
           tenant_id,
           products: newArrayProducts,
           description,
+          category,
           date_start,
           date_end,
           contract_type,
@@ -509,14 +561,11 @@ export default function CreateProject() {
           date_start: '',
           date_end: '',
           description: '',
+          category: '',
           products: [],
           files: []
         } as IProjectCreate);
         setUploadedFiles([]);
-        // setModal({
-        //   isOpen: false,
-        //   type: 'Criar novo Projeto/Contrato'
-        // });
         changeStep(0);
         fetchProject();
       } catch (e: any) {
@@ -542,7 +591,7 @@ export default function CreateProject() {
   // }
 
   // useEffect(() => {
-  //   console.log('log dos steps', currentStep);
+  //   console.log('log dos steps', isFirstStep);
   // }, [steps]);
 
   // useEffect(() => {
@@ -555,7 +604,7 @@ export default function CreateProject() {
         title="Criar novo projeto/contrato"
         backButton={createStep <= 1}
         stepSelected={createStep}
-      ></HeaderStepsPage>
+      />
 
       <FormWrapper>
         {createStep === 1 && (
