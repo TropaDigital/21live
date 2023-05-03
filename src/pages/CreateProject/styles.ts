@@ -13,6 +13,12 @@ export const FormWrapper = styled.div`
       margin-bottom: 6px;
     }
   }
+
+  .flex-title {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
 `;
 
 export const FormTitle = styled.h2`
@@ -39,5 +45,133 @@ export const Footer = styled.div`
     display: flex;
     align-items: center;
     gap: 16px;
+  }
+`;
+
+export const EmailButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 218px;
+  height: 24px;
+  background: transparent;
+
+  color: var(--primary);
+  font-size: var(--text-small-md);
+  font-weight: var(--weight-semibold);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+`;
+
+export const SummaryWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  width: 100%;
+`;
+
+export const Summary = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+
+  overflow: hidden;
+
+  &.small {
+    max-width: 446px;
+  }
+
+  &.big {
+    max-width: 792px;
+  }
+
+  .title {
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-200);
+    width: 100%;
+    height: 60px;
+
+    color: var(--gray-500);
+    font-size: var(--text-small-lg);
+    font-weight: var(--weight-medium);
+
+    padding: 16px 24px;
+    text-align: left;
+
+    &.small {
+      height: 56px;
+    }
+  }
+`;
+
+export const SummaryCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  height: 110px;
+
+  padding: 24px;
+
+  border-bottom: 1px solid var(--gray-200);
+`;
+
+export const SummaryCardTitle = styled.h3`
+  color: var(--gray-600);
+  font-size: var(--text-small-xl);
+  font-weight: var(--weight-bold);
+  line-height: 30px;
+  text-transform: uppercase;
+`;
+
+export const SummaryCardSubtitle = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  color: var(--gray-500);
+  font-size: var(--text-small-md);
+  font-weight: var(--weight-semibold);
+  line-height: 24px;
+`;
+
+export const SummaryContractCard = styled.div`
+  width: 100%;
+  height: 70px;
+  padding: 20px 24px;
+
+  .products {
+    color: var(--gray-700);
+    font-size: var(--text-small-xl);
+    font-weight: var(--weight-semibold);
+    line-height: 30px;
+  }
+
+  .hours {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--gray-700);
+    font-size: var(--text-small-lg);
+    font-weight: var(--weight-medium);
+    line-height: 28px;
+
+    strong {
+      font-weight: var(--weight-semibold);
+    }
+  }
+
+  .total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--gray-700);
+    font-size: var(--text-headline-sm);
+    font-weight: var(--weight-bold);
+    line-height: 32px;
   }
 `;

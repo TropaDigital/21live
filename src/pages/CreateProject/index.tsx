@@ -1,31 +1,53 @@
+/* eslint-disable import-helpers/order-imports */
 /* eslint-disable react-hooks/exhaustive-deps */
+// React
 import { useState, useCallback, useEffect } from 'react';
 
+// Hooks
 import { useToast } from '../../hooks/toast';
 import { useFetch } from '../../hooks/useFetch';
 import useForm from '../../hooks/useForm';
 import { useSteps } from '../../hooks/useSteps';
 
+// Utils
 import { TenantProps } from '../../utils/models';
 
+// Types
 import { IProjectCreate } from '../../types';
 
+// Icons
+import { IconMail } from '../../assets/icons';
+
+// Components
 import ButtonDefault from '../../components/Buttons/ButtonDefault';
 import HeaderStepsPage from '../../components/HeaderStepsPage';
 import { UploadedFilesProps } from '../../components/Upload/UploadFiles';
-
 import InfoDescription from '../Projects/ComponentSteps/InfoDescription';
 import InfoFiles from '../Projects/ComponentSteps/InfoFiles';
 import InfoGeral from '../Projects/ComponentSteps/InfoGeral';
 import InfoProducts from '../Projects/ComponentSteps/InfoProducts/InfoProducts';
-import { Container, Footer, FormTitle, FormWrapper } from './styles';
+
+// Styles
+import {
+  Container,
+  EmailButton,
+  Footer,
+  FormTitle,
+  FormWrapper,
+  Summary,
+  SummaryCard,
+  SummaryCardSubtitle,
+  SummaryCardTitle,
+  SummaryContractCard,
+  SummaryWrapper
+} from './styles';
 
 interface StateProps {
   [key: string]: any;
 }
 
 export default function CreateProject() {
-  const [createStep, setCreateStep] = useState<number>(2);
+  const [createStep, setCreateStep] = useState<number>(4);
   const { addToast } = useToast();
 
   // {
@@ -598,6 +620,10 @@ export default function CreateProject() {
   //   console.log('log do current component', formComponents);
   // }, [formComponents]);
 
+  useEffect(() => {
+    console.log('log do handlePeriod', formData);
+  }, [formData]);
+
   return (
     <Container>
       <HeaderStepsPage
@@ -639,6 +665,76 @@ export default function CreateProject() {
               handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
               handleInputProduct={(value, id) => handleInputProduct(value, id)}
             />
+          </>
+        )}
+        {createStep === 3 && (
+          <>
+            <FormTitle>Anexos</FormTitle>
+            <InfoFiles
+              uploadedFiles={uploadedFiles}
+              setUploadedFiles={setUploadedFiles}
+              tenant={formData?.tenant_id}
+              // isDisabed={!formData?.tenant_id}
+              isDisabed={false}
+              loading={loading}
+              setLoading={setLoading}
+            />
+          </>
+        )}
+        {createStep === 4 && (
+          <>
+            <div className="flex-title">
+              <FormTitle>Resumo</FormTitle>
+              <EmailButton>
+                <IconMail />
+                Enviar resumo por email
+              </EmailButton>
+            </div>
+            <SummaryWrapper>
+              <Summary className="big">
+                <div className="title">Produtos contratados</div>
+
+                <SummaryCard>
+                  <SummaryCardTitle>#1 - Hora de Criação</SummaryCardTitle>
+                  <SummaryCardSubtitle>
+                    <div>Horas estimadas: 02:00</div>
+                    <div>Categoria: Criação</div>
+                    <div>Quantidade: 12</div>
+                  </SummaryCardSubtitle>
+                </SummaryCard>
+
+                <SummaryCard>
+                  <SummaryCardTitle>#2 - ESTRATÉGIA DE CONTEÚDO</SummaryCardTitle>
+                  <SummaryCardSubtitle>
+                    <div>Horas estimadas: 02:00</div>
+                    <div>Categoria: Criação</div>
+                    <div>Quantidade: 12</div>
+                  </SummaryCardSubtitle>
+                </SummaryCard>
+              </Summary>
+
+              <Summary className="small">
+                <div className="title small">Resumo do contrato</div>
+                <SummaryContractCard>
+                  <div className="products">4 Produtos</div>
+                </SummaryContractCard>
+                <SummaryContractCard>
+                  <div className="hours">
+                    Horas por produto <strong>02:00:00</strong>
+                  </div>
+                </SummaryContractCard>
+                <SummaryContractCard>
+                  <div className="hours">
+                    Horas de criação <strong>02:00:00</strong>
+                  </div>
+                </SummaryContractCard>
+                <SummaryContractCard>
+                  <div className="total">
+                    Total <div>04:00:00</div>
+                  </div>
+                </SummaryContractCard>
+              </Summary>
+            </SummaryWrapper>
           </>
         )}
       </FormWrapper>
