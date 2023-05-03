@@ -65,7 +65,6 @@ interface SelectedProducts {
     flag: string;
     tenant_id: string;
     category: string;
-    quantity: number;
   };
 }
 
@@ -137,10 +136,14 @@ export default function InfoProducts({
     setQuantity('');
   }
 
+  function handleAddHours(value: any) {
+    console.log('log hours selected', value);
+  }
+
   useEffect(() => {
-    // console.log('log do quantity', quantity);
+    // console.log('log do data dentro do info products', data);
     // console.log('log do array selected', selectedProducts);
-  }, [selectedProducts]);
+  }, []);
 
   return (
     <ProductsWrapper>
@@ -243,8 +246,8 @@ export default function InfoProducts({
               handleOnPeriod={handleOnPeriod}
               id={index + 1}
               title={row.rowQuantity.service}
-              contract_type={'mensal'}
-              hours_total={0}
+              contract_type={''}
+              hours_total={handleAddHours}
               key={index}
               data={row.rowQuantity}
             />
