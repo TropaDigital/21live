@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // React
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // Icons
 import { IconArrowDown } from '../../assets/icons';
@@ -26,8 +27,8 @@ interface ProductsProps {
   // handleOnDeleteProduct: (item: any) => void;
   id: number;
   title: string;
-  contract_type: string;
-  hours_total: number;
+  contract_type: any;
+  hours_total: any;
   data: any;
 }
 
@@ -35,13 +36,19 @@ export default function CardProductsSelected({
   handleOnPeriod,
   id,
   title,
-  contract_type,
   hours_total,
   data
 }: ProductsProps) {
   const [openCard, setOpenCard] = useState<boolean>(false);
   const [timeCounter, setTimeCounter] = useState<number>(0);
-  const verifyPeriod = contract_type === 'mensal' ? false : true;
+  const [contractType, setContractType] = useState<any>('');
+  const verifyPeriod = contractType === 'mensal' ? false : true;
+  const productChoose = {
+    id: id,
+    titleSelected: title,
+    timeSelected: verifyPeriod,
+    estimatedHours: timeCounter
+  };
 
   const handleOptions = (status: boolean) => {
     if (status) {
@@ -59,8 +66,17 @@ export default function CardProductsSelected({
     } else if (counter.quantitySelected > timeCounter) {
       console.log('log do numero aumentando');
     }
-    console.log('log do counter inside card product', counter);
   };
+
+  const handleSwitch = (value: any, id: any) => {
+    handleOnPeriod(value, id);
+    setContractType(value === true ? 'anual' : 'mensal');
+  };
+
+  useEffect(() => {
+    // console.log('log product', productChoose);
+    hours_total(timeCounter);
+  }, [timeCounter]);
 
   return (
     <ContainerCard>
@@ -78,7 +94,7 @@ export default function CardProductsSelected({
             <span>Mensal</span>
             <InputSwitchDefault
               onChange={(e) => {
-                handleOnPeriod(e.target.checked, id);
+                handleSwitch(e.target.checked, id);
               }}
               value={String(verifyPeriod)}
             />
