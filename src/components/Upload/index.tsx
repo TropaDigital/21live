@@ -21,7 +21,7 @@ const Upload = ({ onUpload, isDisabled }: UploadProps) => {
             Escolha um arquivo <span>ou arraste e solte</span>
           </UploadMessage>
           <UploadMessage>
-            <span>(max. 500MB)</span>
+            <span>SVG, PNG, JPG or PDF (max. 500MB)</span>
           </UploadMessage>
         </BoxUploaded>
       );
