@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const Container = styled.ul`
   margin-top: 20px;
@@ -9,6 +9,15 @@ export const Container = styled.ul`
     color: #444;
     & + li {
       margin-top: 15px;
+    }
+    background-color: #e2f2ff;
+    border: 1px solid var(--primary);
+    border-radius: 6px;
+    padding: 8px;
+
+    &.error {
+      border: 1px solid #d92d20;
+      background-color: #fef3f2;
     }
   }
 `;
@@ -24,6 +33,9 @@ export const FileInfo = styled.div`
       font-weight: 500;
       font-size: 14px;
       color: #344054;
+      &.error {
+        color: #e57878;
+      }
     }
 
     span {
