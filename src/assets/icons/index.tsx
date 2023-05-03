@@ -5,6 +5,8 @@ interface IconProps {
   subColor?: string;
   size?: string;
   stroke?: string;
+  width?: string;
+  height?: string;
 }
 
 export const IconMeeting: React.FC<IconProps> = () => (
@@ -68,15 +70,15 @@ export const IconArquive: React.FC<IconProps> = ({
   stroke = '#0046B5'
 }) => (
   <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="2" y="2" width="32" height="32" rx="16" fill="#BADFFF" />
+    <rect x="2" y="2" width="32" height="32" rx="16" fill={color} />
     <path
       d="M18.6667 11.3335H14.0001C13.6465 11.3335 13.3073 11.474 13.0573 11.724C12.8072 11.9741 12.6667 12.3132 12.6667 12.6668V23.3335C12.6667 23.6871 12.8072 24.0263 13.0573 24.2763C13.3073 24.5264 13.6465 24.6668 14.0001 24.6668H22.0001C22.3537 24.6668 22.6928 24.5264 22.9429 24.2763C23.1929 24.0263 23.3334 23.6871 23.3334 23.3335V16.0002M18.6667 11.3335L23.3334 16.0002M18.6667 11.3335V16.0002H23.3334"
-      stroke="#0046B5"
+      stroke={stroke}
       strokeWidth="1.33333"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
-    <rect x="2" y="2" width="32" height="32" rx="16" stroke="#E2F2FF" strokeWidth="4" />
+    <rect x="2" y="2" width="32" height="32" rx="16" stroke={subColor} strokeWidth="4" />
   </svg>
 );
 
@@ -308,8 +310,14 @@ export const IconArrowDown: React.FC = () => (
   </svg>
 );
 
-export const IconTrash: React.FC = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+export const IconTrash: React.FC<IconProps> = ({ width = '16px', height = '16px' }: IconProps) => (
+  <svg
+    width={width}
+    height={height}
+    viewBox="0 0 16 16"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
     <path
       fillRule="evenodd"
       clipRule="evenodd"
@@ -369,6 +377,41 @@ export const IconMinus: React.FC = () => (
       d="M3.33325 8H12.6666"
       stroke="#D0D5DD"
       strokeWidth="1.33333"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const IconMail: React.FC = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M3 6.8V6.8C3 7.4 3.3 7.9 3.8 8.3L9.8 12.4C11.2 13.3 12.9 13.3 14.3 12.4L20.3 8.4C20.7 7.9 21 7.4 21 6.8V6.8C21 5.8 20.2 5 19.2 5H4.8C3.8 5 3 5.8 3 6.8Z"
+      stroke="#0045B5"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M3 7V17C3 18.1 3.9 19 5 19H19C20.1 19 21 18.1 21 17V7"
+      stroke="#0045B5"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M3.58789 18.4119L9.68189 12.3179"
+      stroke="#0045B5"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M14.3604 12.3599L20.4124 18.4119"
+      stroke="#0045B5"
+      strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
