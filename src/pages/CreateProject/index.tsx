@@ -2,6 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 // React
 import { useState, useCallback, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 // Hooks
 import { useToast } from '../../hooks/toast';
@@ -16,7 +17,7 @@ import { TenantProps } from '../../utils/models';
 import { IProjectCreate } from '../../types';
 
 // Icons
-import { IconMail } from '../../assets/icons';
+import { IconChecked, IconMail } from '../../assets/icons';
 
 // Components
 import ButtonDefault from '../../components/Buttons/ButtonDefault';
@@ -26,11 +27,15 @@ import InfoDescription from '../Projects/ComponentSteps/InfoDescription';
 import InfoFiles from '../Projects/ComponentSteps/InfoFiles';
 import InfoGeral from '../Projects/ComponentSteps/InfoGeral';
 import InfoProducts from '../Projects/ComponentSteps/InfoProducts/InfoProducts';
+import ModalDefault from '../../components/Ui/ModalDefault';
 
 // Styles
 import {
   Container,
   EmailButton,
+  FinishModal,
+  FinishModalButtons,
+  FinishModalMessage,
   Footer,
   FormTitle,
   FormWrapper,
@@ -41,13 +46,14 @@ import {
   SummaryContractCard,
   SummaryWrapper
 } from './styles';
+import { SaveButton } from '../Projects/ComponentSteps/InfoProducts/styles';
 
 interface StateProps {
   [key: string]: any;
 }
 
 export default function CreateProject() {
-  const [createStep, setCreateStep] = useState<number>(4);
+  const [createStep, setCreateStep] = useState<number>(1);
   const { addToast } = useToast();
 
   // {
@@ -113,11 +119,13 @@ export default function CreateProject() {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
   const [error, setError] = useState<StateProps>({});
   const [loading, setLoading] = useState(false);
-
   const { data: dataOffice } = useFetch<IProjectCreate[]>(`services`);
+  const [finishModal, setFinishModal] = useState<boolean>(false);
+  const [showSave, setShowSave] = useState<any>(false);
 
   const handleOnAddProducts = (items: any) => {
-    setFormValue('products', [...formData.products, ...items]);
+    console.log('log do add products', items);
+    setFormValue('products', [...formData.products, items]);
   };
 
   const handleOnDeleteProduct = (id: number) => {
@@ -215,6 +223,7 @@ export default function CreateProject() {
           handleOnPeriod={(e, id) => handleOnPeriod(e, id)}
           handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
           handleInputProduct={(value, id) => handleInputProduct(value, id)}
+          okToSave
         />
       )
     },
@@ -612,16 +621,8 @@ export default function CreateProject() {
   //   }
   // }
 
-  // useEffect(() => {
-  //   console.log('log dos steps', isFirstStep);
-  // }, [steps]);
-
-  // useEffect(() => {
-  //   console.log('log do current component', formComponents);
-  // }, [formComponents]);
-
   useEffect(() => {
-    console.log('log do handlePeriod', formData);
+    console.log('log do formdata', formData);
   }, [formData]);
 
   return (
@@ -645,7 +646,7 @@ export default function CreateProject() {
             <div className="label-observation">
               <p>Observações</p>
               <InfoDescription
-                value={formData?.description}
+                value={formData.description}
                 handleOnDescription={(value) => setFormValue('description', value)}
                 mentions={[]}
               />
@@ -664,6 +665,7 @@ export default function CreateProject() {
               handleOnPeriod={(e, id) => handleOnPeriod(e, id)}
               handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
               handleInputProduct={(value, id) => handleInputProduct(value, id)}
+              okToSave={setShowSave}
             />
           </>
         )}
@@ -739,34 +741,78 @@ export default function CreateProject() {
         )}
       </FormWrapper>
 
-      <Footer>
-        <ButtonDefault typeButton="primary" isOutline type="button" onClick={handleOnCancel}>
-          Descartar
-        </ButtonDefault>
-
-        <div className="fieldGroup">
-          {!isFirstStep && (
-            <ButtonDefault typeButton="primary" isOutline onClick={handleOnPrevStep}>
-              Voltar
-            </ButtonDefault>
+      {!isLastStep && (
+        <Footer>
+          {showSave && (
+            <SaveButton>
+              <ButtonDefault>Salvar</ButtonDefault>
+            </SaveButton>
           )}
 
-          {!isLastStep ? (
-            <ButtonDefault type="button" typeButton="primary" onClick={handleOnNextStep}>
-              Continuar
-            </ButtonDefault>
-          ) : (
-            <ButtonDefault
-              typeButton="primary"
-              type="button"
-              onClick={handleOnSubmit}
-              loading={loading}
-            >
-              Salvar
-            </ButtonDefault>
+          {!showSave && (
+            <>
+              <Link to={'/projetos'}>
+                <ButtonDefault
+                  typeButton="primary"
+                  isOutline
+                  type="button"
+                  onClick={handleOnCancel}
+                >
+                  Descartar
+                </ButtonDefault>
+              </Link>
+
+              <div className="fieldGroup">
+                {!isFirstStep && (
+                  <ButtonDefault typeButton="primary" isOutline onClick={handleOnPrevStep}>
+                    Voltar
+                  </ButtonDefault>
+                )}
+
+                {!isLastStep ? (
+                  <ButtonDefault type="button" typeButton="primary" onClick={handleOnNextStep}>
+                    Continuar
+                  </ButtonDefault>
+                ) : (
+                  <ButtonDefault
+                    typeButton="primary"
+                    type="button"
+                    onClick={handleOnSubmit}
+                    loading={loading}
+                  >
+                    Salvar
+                  </ButtonDefault>
+                )}
+              </div>
+            </>
           )}
-        </div>
-      </Footer>
+        </Footer>
+      )}
+
+      <ModalDefault
+        isOpen={finishModal}
+        onOpenChange={() => setFinishModal(false)}
+        maxWidth="400px"
+      >
+        <FinishModal>
+          <div>
+            <IconChecked />
+          </div>
+          <FinishModalMessage>
+            <div className="modal-title">Projeto criado com sucesso</div>
+            <div className="modal-subtitle">
+              O projeto foi criado com êxito, visualize os detalhes na página de projetos salvos.
+            </div>
+          </FinishModalMessage>
+
+          <FinishModalButtons>
+            <ButtonDefault typeButton="dark" isOutline onClick={() => setFinishModal(false)}>
+              Cancelar
+            </ButtonDefault>
+            <ButtonDefault typeButton="primary">Confirmar</ButtonDefault>
+          </FinishModalButtons>
+        </FinishModal>
+      </ModalDefault>
     </Container>
   );
 }

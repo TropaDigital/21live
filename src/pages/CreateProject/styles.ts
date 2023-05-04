@@ -65,7 +65,6 @@ export const EmailButton = styled.button`
 
 export const SummaryWrapper = styled.div`
   display: flex;
-  align-items: center;
   gap: 30px;
   width: 100%;
 `;
@@ -173,5 +172,41 @@ export const SummaryContractCard = styled.div`
     font-size: var(--text-headline-sm);
     font-weight: var(--weight-bold);
     line-height: 32px;
+  }
+`;
+
+export const FinishModal = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  /* padding: 24px; */
+  background: var(--background-primary);
+  border-radius: 12px;
+`;
+
+export const FinishModalMessage = styled.div`
+  .modal-title {
+    color: var(--gray-900);
+    font-size: var(--text-small-lg);
+    font-weight: var(--weight-semibold);
+    line-height: 28px;
+  }
+
+  .modal-subtitle {
+    color: var(--gray-500);
+    font-size: var(--text-small-sm);
+    font-weight: var(--weight-regular);
+    line-height: 20px;
+  }
+`;
+
+export const FinishModalButtons = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+
+  button {
+    width: 100%;
   }
 `;
