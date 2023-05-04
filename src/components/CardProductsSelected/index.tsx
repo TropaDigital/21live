@@ -43,12 +43,6 @@ export default function CardProductsSelected({
   const [timeCounter, setTimeCounter] = useState<number>(0);
   const [contractType, setContractType] = useState<any>('');
   const verifyPeriod = contractType === 'mensal' ? false : true;
-  const productChoose = {
-    id: id,
-    titleSelected: title,
-    timeSelected: verifyPeriod,
-    estimatedHours: timeCounter
-  };
 
   const handleOptions = (status: boolean) => {
     if (status) {
@@ -68,14 +62,12 @@ export default function CardProductsSelected({
     }
   };
 
-  const handleSwitch = (value: any, id: any) => {
-    handleOnPeriod(value, id);
+  const handleSwitch = (value: any) => {
     setContractType(value === true ? 'anual' : 'mensal');
   };
 
   useEffect(() => {
-    // console.log('log product', productChoose);
-    hours_total(timeCounter);
+    hours_total({ timeCounter, contractType });
   }, [timeCounter]);
 
   return (
@@ -94,7 +86,7 @@ export default function CardProductsSelected({
             <span>Mensal</span>
             <InputSwitchDefault
               onChange={(e) => {
-                handleSwitch(e.target.checked, id);
+                handleSwitch(e.target.checked);
               }}
               value={String(verifyPeriod)}
             />
