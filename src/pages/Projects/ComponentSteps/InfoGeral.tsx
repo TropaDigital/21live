@@ -63,13 +63,13 @@ export default function InfoGeral({ data, handleInputChange, clients, error }: P
 
         <SelectDefault
           label="Tipo de contrato"
-          name="contract_type"
-          value={data.contract_type}
+          name="category"
+          value={data.category}
           onChange={handleInputChange}
-          error={error?.contract_type}
+          error={error?.category}
         >
-          <option value="fee">Fee</option>
-          <option value="spot">Spot</option>
+          <option value="free">Livre</option>
+          <option value="product">Por Produto</option>
         </SelectDefault>
       </FlexLine>
 
