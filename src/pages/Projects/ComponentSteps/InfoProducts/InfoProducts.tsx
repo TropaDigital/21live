@@ -14,7 +14,7 @@ import { multiplyTime } from '../../../../utils/convertTimes';
 import { useDebounce } from '../../../../utils/useDebounce';
 
 // Types
-import { IServices } from '../../../../types';
+import { IProduct, IServices } from '../../../../types';
 
 // COMPONENTS
 import ButtonDefault from '../../../../components/Buttons/ButtonDefault';
@@ -51,6 +51,7 @@ interface PropsProducts {
   handleOnPeriod: (e: any, id: any) => void;
   handleOnDeleteProduct: (id: any) => void;
   handleInputProduct: (value: any, id: any) => void;
+  okToSave: any;
 }
 
 interface SelectedProducts {
@@ -74,9 +75,10 @@ export default function InfoProducts({
   handleOnPeriod,
   handleOnAddProducts,
   handleOnDeleteProduct,
-  handleInputProduct
+  handleInputProduct,
+  okToSave
 }: PropsProducts) {
-  const minutesAll = dataFilter.map((obj: any) => multiplyTime(obj.minutes, obj.quantity));
+  // const minutesAll = dataFilter.map((obj: any) => multiplyTime(obj.minutes, obj.quantity));
 
   // function handleOnAddItems(items: any) {
   //   handleOnAddProducts([{ ...items, quantity: 1, period: 'mensal' }]);
@@ -94,6 +96,7 @@ export default function InfoProducts({
   const [selected, setSelected] = useState(1);
   const [quantity, setQuantity] = useState<any>();
   const [selectedProducts, setSelectedProducts] = useState<SelectedProducts[]>([]);
+  const [selectedProductsWithTime, setSelectedProductsWithTime] = useState<SelectedProducts[]>([]);
 
   useEffect(() => {
     if (debouncedSearchTerm) {
@@ -136,14 +139,32 @@ export default function InfoProducts({
     setQuantity('');
   }
 
-  function handleAddHours(value: any) {
-    console.log('log hours selected', value);
+  function handleAddHours(value: any, product: SelectedProducts) {
+    console.log('log hours selected', value, product);
+    const productSelected: IProduct = {
+      service: product.rowQuantity.service,
+      description: product.rowQuantity.description,
+      type: product.rowQuantity.type,
+      size: product.rowQuantity.size,
+      quantity: product.quantitySelected,
+      minutes: value.timeCounter,
+      period: value.contractType
+    };
+
+    // setTimeout(() => {
+    //   console.log('log do setTimeOut');
+    // }, 2000);
   }
 
   useEffect(() => {
-    // console.log('log do data dentro do info products', data);
-    // console.log('log do array selected', selectedProducts);
-  }, []);
+    if (selectedProducts.length > 0) {
+      okToSave(true);
+    }
+
+    if (selectedProducts.length <= 0) {
+      okToSave(false);
+    }
+  }, [selectedProducts]);
 
   return (
     <ProductsWrapper>
@@ -247,7 +268,7 @@ export default function InfoProducts({
               id={index + 1}
               title={row.rowQuantity.service}
               contract_type={''}
-              hours_total={handleAddHours}
+              hours_total={(e: any) => handleAddHours(e, row)}
               key={index}
               data={row.rowQuantity}
             />

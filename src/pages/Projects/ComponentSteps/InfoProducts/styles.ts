@@ -47,3 +47,11 @@ export const WrapperCard = styled.div`
   margin-top: 40px;
   overflow: hidden;
 `;
+
+export const SaveButton = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  height: 40px;
+`;
