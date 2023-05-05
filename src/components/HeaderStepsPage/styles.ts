@@ -59,6 +59,75 @@ export const StepCounter = styled.div`
   background: var(--gray-300);
   margin-left: auto;
 
+  &.one {
+    background: linear-gradient(to right, #0046b5 0%, #0046b5 0%, #d0d5dd 0%, #d0d5dd 100%);
+    background: -moz-linear-gradient(
+      left,
+      #0046b5 0%,
+      #0046b5 0%,
+      #d0d5dd 7%,
+      #d0d5dd 100%
+    ); /* FF3.6-15 */
+    background: -webkit-linear-gradient(
+      left,
+      #0046b5 0%,
+      #0046b5 0%,
+      #d0d5dd 0%,
+      #d0d5dd 100%
+    ); /* Chrome10-25,Safari5.1-6 */
+  }
+  &.two {
+    background: linear-gradient(to right, #0046b5 0%, #0046b5 25%, #d0d5dd 25%, #d0d5dd 100%);
+    background: -moz-linear-gradient(
+      left,
+      #0046b5 0%,
+      #0046b5 25%,
+      #d0d5dd 25%,
+      #d0d5dd 100%
+    ); /* FF3.6-15 */
+    background: -webkit-linear-gradient(
+      left,
+      #0046b5 0%,
+      #0046b5 25%,
+      #d0d5dd 25%,
+      #d0d5dd 100%
+    ); /* Chrome10-25,Safari5.1-6 */
+  }
+  &.three {
+    background: linear-gradient(to right, #0046b5 0%, #0046b5 68%, #d0d5dd 68%, #d0d5dd 100%);
+    background: -moz-linear-gradient(
+      left,
+      #0046b5 0%,
+      #0046b5 68%,
+      #d0d5dd 68%,
+      #d0d5dd 100%
+    ); /* FF3.6-15 */
+    background: -webkit-linear-gradient(
+      left,
+      #0046b5 0%,
+      #0046b5 68%,
+      #d0d5dd 68%,
+      #d0d5dd 100%
+    ); /* Chrome10-25,Safari5.1-6 */
+  }
+  &.four {
+    background: linear-gradient(to right, #0046b5 0%, #0046b5 99%, #d0d5dd 99%, #d0d5dd 100%);
+    background: -moz-linear-gradient(
+      left,
+      #0046b5 0%,
+      #0046b5 100%,
+      #d0d5dd 100%,
+      #d0d5dd 100%
+    ); /* FF3.6-15 */
+    background: -webkit-linear-gradient(
+      left,
+      #0046b5 0%,
+      #0046b5 100%,
+      #d0d5dd 100%,
+      #d0d5dd 100%
+    ); /* Chrome10-25,Safari5.1-6 */
+  }
+
   .step {
     width: 24px;
     height: 24px;
@@ -71,12 +140,22 @@ export const StepCounter = styled.div`
 
     position: relative;
 
+    .checked {
+      width: 100%;
+      height: 100%;
+      background-color: var(--primary);
+      z-index: 99;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
     &.active {
       background: var(--primary);
       border: 4px solid var(--primary-50);
     }
 
-    &::before {
+    &::after {
       content: '';
       width: 8px;
       height: 8px;
@@ -87,6 +166,10 @@ export const StepCounter = styled.div`
       left: 50%;
       transform: translateX(-50%) translateY(-50%);
       background: var(--light);
+    }
+
+    &:nth-last-child(1) {
+      margin-left: 2px;
     }
   }
 `;

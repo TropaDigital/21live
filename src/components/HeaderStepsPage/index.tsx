@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-import { IconArrowLeft } from '../../assets/icons';
+import { IconArrowLeft, IconCheckedBlue } from '../../assets/icons';
 
 import { BackButton, Container, SectionTitleHeader, StepCounter, TitleHeader } from './styles';
 
@@ -27,11 +27,47 @@ export default function HeaderStepsPage({ title, backButton, stepSelected }: Hea
           <TitleHeader>{title}</TitleHeader>
         </SectionTitleHeader>
 
-        <StepCounter>
-          <div className={stepSelected >= 1 ? 'step active' : 'step'}></div>
-          <div className={stepSelected >= 2 ? 'step active' : 'step'}></div>
-          <div className={stepSelected >= 3 ? 'step active' : 'step'}></div>
-          <div className={stepSelected >= 4 ? 'step active' : 'step'}></div>
+        <StepCounter
+          className={
+            stepSelected === 1
+              ? 'one'
+              : stepSelected === 2
+              ? 'two'
+              : stepSelected === 3
+              ? 'three'
+              : stepSelected === 4
+              ? 'four'
+              : ''
+          }
+        >
+          <div className={stepSelected === 1 ? 'step active' : 'step'}>
+            {stepSelected > 1 && (
+              <div className="checked">
+                <IconCheckedBlue />
+              </div>
+            )}
+          </div>
+          <div className={stepSelected === 2 ? 'step active' : 'step'}>
+            {stepSelected > 2 && (
+              <div className="checked">
+                <IconCheckedBlue />
+              </div>
+            )}
+          </div>
+          <div className={stepSelected === 3 ? 'step active' : 'step'}>
+            {stepSelected > 3 && (
+              <div className="checked">
+                <IconCheckedBlue />
+              </div>
+            )}
+          </div>
+          <div className={stepSelected === 4 ? 'step active' : 'step'}>
+            {stepSelected > 4 && (
+              <div className="checked">
+                <IconCheckedBlue />
+              </div>
+            )}
+          </div>
         </StepCounter>
       </Container>
     </>
