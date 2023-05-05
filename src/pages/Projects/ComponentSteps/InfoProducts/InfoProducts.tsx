@@ -52,6 +52,7 @@ interface PropsProducts {
   handleOnDeleteProduct: (id: any) => void;
   handleInputProduct: (value: any, id: any) => void;
   okToSave: any;
+  setSave: any;
 }
 
 interface SelectedProducts {
@@ -76,7 +77,8 @@ export default function InfoProducts({
   handleOnAddProducts,
   handleOnDeleteProduct,
   handleInputProduct,
-  okToSave
+  okToSave,
+  setSave
 }: PropsProducts) {
   // const minutesAll = dataFilter.map((obj: any) => multiplyTime(obj.minutes, obj.quantity));
 
@@ -96,7 +98,11 @@ export default function InfoProducts({
   const [selected, setSelected] = useState(1);
   const [quantity, setQuantity] = useState<any>();
   const [selectedProducts, setSelectedProducts] = useState<SelectedProducts[]>([]);
-  const [selectedProductsWithTime, setSelectedProductsWithTime] = useState<SelectedProducts[]>([]);
+  const [selectedProductsWithTime, setSelectedProductsWithTime] = useState<any[]>([]);
+
+  const save = () => {
+    selectedProductsWithTime.map((row: any) => handleOnAddProducts(row));
+  };
 
   useEffect(() => {
     if (debouncedSearchTerm) {
@@ -140,8 +146,8 @@ export default function InfoProducts({
   }
 
   function handleAddHours(value: any, product: SelectedProducts) {
-    console.log('log hours selected', value, product);
     const productSelected: IProduct = {
+      project_id: product.rowQuantity.service_id,
       service: product.rowQuantity.service,
       description: product.rowQuantity.description,
       type: product.rowQuantity.type,
@@ -151,9 +157,26 @@ export default function InfoProducts({
       period: value.contractType
     };
 
-    // setTimeout(() => {
-    //   console.log('log do setTimeOut');
-    // }, 2000);
+    const newArray = selectedProductsWithTime;
+
+    if (selectedProductsWithTime.length > 0) {
+      const indexInArray: any = newArray.findIndex(
+        (obj: IProduct) => obj.project_id === product.rowQuantity?.service_id
+      );
+      if (indexInArray === -1) {
+        console.log('não existe no array', newArray, product);
+        setSelectedProductsWithTime((obj: any) => [...obj, productSelected]);
+      } else {
+        console.log('existe no array', newArray);
+        newArray[indexInArray] = productSelected;
+        console.log('array atualizado', newArray);
+        setSelectedProductsWithTime(newArray);
+      }
+    } else {
+      if (value.timeCounter > 0) {
+        setSelectedProductsWithTime((obj: any) => [...obj, productSelected]);
+      }
+    }
   }
 
   useEffect(() => {
@@ -165,6 +188,10 @@ export default function InfoProducts({
       okToSave(false);
     }
   }, [selectedProducts]);
+
+  useEffect(() => {
+    if (setSave === 'Go') save();
+  }, [setSave]);
 
   return (
     <ProductsWrapper>
