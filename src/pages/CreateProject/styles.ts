@@ -81,7 +81,7 @@ export const Summary = styled.div`
   overflow: hidden;
 
   &.small {
-    max-width: 446px;
+    max-width: 100%;
   }
 
   &.big {
@@ -209,4 +209,10 @@ export const FinishModalButtons = styled.div`
   button {
     width: 100%;
   }
+`;
+
+export const FinishButtons = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 `;

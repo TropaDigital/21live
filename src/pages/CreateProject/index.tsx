@@ -14,7 +14,7 @@ import { useSteps } from '../../hooks/useSteps';
 import { TenantProps } from '../../utils/models';
 
 // Types
-import { IProjectCreate } from '../../types';
+import { IProduct, IProjectCreate } from '../../types';
 
 // Icons
 import { IconChecked, IconMail } from '../../assets/icons';
@@ -28,11 +28,13 @@ import InfoFiles from '../Projects/ComponentSteps/InfoFiles';
 import InfoGeral from '../Projects/ComponentSteps/InfoGeral';
 import InfoProducts from '../Projects/ComponentSteps/InfoProducts/InfoProducts';
 import ModalDefault from '../../components/Ui/ModalDefault';
+import { SaveButton } from '../Projects/ComponentSteps/InfoProducts/styles';
 
 // Styles
 import {
   Container,
   EmailButton,
+  FinishButtons,
   FinishModal,
   FinishModalButtons,
   FinishModalMessage,
@@ -46,56 +48,17 @@ import {
   SummaryContractCard,
   SummaryWrapper
 } from './styles';
-import { SaveButton } from '../Projects/ComponentSteps/InfoProducts/styles';
+
+// Services
+import api from '../../services/api';
 
 interface StateProps {
   [key: string]: any;
 }
 
 export default function CreateProject() {
-  const [createStep, setCreateStep] = useState<number>(1);
+  const [createStep, setCreateStep] = useState<number>(4);
   const { addToast } = useToast();
-
-  // {
-  //   "project_id": "27",
-  //   "tenant_id": "7",
-  //   "contract_type": "por produto",
-  //   "date_start": "2023-03-06",
-  //   "date_end": "2023-03-06",
-  //   "description": "descricao top",
-  //   "title": "titulo top",
-  //   "created": "2023-03-06 17:29:55",
-  //   "updated": "2023-03-06 17:29:55",
-  //   "deleted": "",
-  //   "category": "fee",
-  //   "status": "",
-  //   "time": "",
-  //    "time_consumed": "",
-  //   "client_name": "21BRZ",
-  //   "products": [
-  //     {
-  //       "product_id": "19",
-  //       "service": "cat",
-  //       "description": "Boa descrição",
-  //       "type": "impresso",
-  //       "size": "2000",
-  //       "minutes": "32:59:00",
-  //       "quantity": "3",
-  //       "period": "mensal"
-  //     },
-  //     {
-  //       "product_id": "20",
-  //       "service": "cat2",
-  //       "description": "Boa descrição",
-  //       "type": "impresso",
-  //       "size": "2000",
-  //       "minutes": "32:59:00",
-  //       "quantity": "2",
-  //       "period": "mensal"
-  //     }
-  //   ],
-  //   "files": []
-  // }
 
   const { formData, setFormValue, setData, handleOnChange } = useForm({
     tenant_id: '',
@@ -122,6 +85,7 @@ export default function CreateProject() {
   const { data: dataOffice } = useFetch<IProjectCreate[]>(`services`);
   const [finishModal, setFinishModal] = useState<boolean>(false);
   const [showSave, setShowSave] = useState<any>(false);
+  const [saveProducts, setSaveProducts] = useState<any>('');
 
   const handleOnAddProducts = (items: any) => {
     console.log('log do add products', items);
@@ -224,6 +188,7 @@ export default function CreateProject() {
           handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
           handleInputProduct={(value, id) => handleInputProduct(value, id)}
           okToSave
+          setSave={saveProducts}
         />
       )
     },
@@ -572,12 +537,12 @@ export default function CreateProject() {
           files
         };
 
+        await api.post(`project`, createNewData);
         // if (modal.type === 'Criar novo Projeto/Contrato') {
-        //   await api.post(`project`, createNewData);
         // } else {
         //   await api.put(`project/${formData.project_id}`, updateData);
         // }
-
+        setFinishModal(true);
         addToast({
           type: 'success',
           title: 'Sucesso',
@@ -666,6 +631,7 @@ export default function CreateProject() {
               handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
               handleInputProduct={(value, id) => handleInputProduct(value, id)}
               okToSave={setShowSave}
+              setSave={saveProducts}
             />
           </>
         )}
@@ -695,56 +661,68 @@ export default function CreateProject() {
             <SummaryWrapper>
               <Summary className="big">
                 <div className="title">Produtos contratados</div>
-
-                <SummaryCard>
-                  <SummaryCardTitle>#1 - Hora de Criação</SummaryCardTitle>
-                  <SummaryCardSubtitle>
-                    <div>Horas estimadas: 02:00</div>
-                    <div>Categoria: Criação</div>
-                    <div>Quantidade: 12</div>
-                  </SummaryCardSubtitle>
-                </SummaryCard>
-
-                <SummaryCard>
-                  <SummaryCardTitle>#2 - ESTRATÉGIA DE CONTEÚDO</SummaryCardTitle>
-                  <SummaryCardSubtitle>
-                    <div>Horas estimadas: 02:00</div>
-                    <div>Categoria: Criação</div>
-                    <div>Quantidade: 12</div>
-                  </SummaryCardSubtitle>
-                </SummaryCard>
+                {formData.products.map((row: IProduct, index: number) => (
+                  <SummaryCard key={index}>
+                    <SummaryCardTitle>
+                      #{index + 1} - {row.service}
+                    </SummaryCardTitle>
+                    <SummaryCardSubtitle>
+                      <div>Horas estimadas: {row.minutes}:00</div>
+                      <div>Categoria: {row.type}</div>
+                      <div>Quantidade: {row.quantity}</div>
+                    </SummaryCardSubtitle>
+                  </SummaryCard>
+                ))}
               </Summary>
+              <div
+                style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '446px' }}
+              >
+                <Summary className="small">
+                  <div className="title small">Resumo do contrato</div>
+                  <SummaryContractCard>
+                    <div className="products">{formData.products.length} Produto(s)</div>
+                  </SummaryContractCard>
+                  <SummaryContractCard>
+                    <div className="hours">
+                      Horas por produto <strong>02:00:00</strong>
+                    </div>
+                  </SummaryContractCard>
+                  <SummaryContractCard>
+                    <div className="hours">
+                      Horas de criação <strong>02:00:00</strong>
+                    </div>
+                  </SummaryContractCard>
+                  <SummaryContractCard>
+                    <div className="total">
+                      Total <div>04:00:00</div>
+                    </div>
+                  </SummaryContractCard>
+                </Summary>
 
-              <Summary className="small">
-                <div className="title small">Resumo do contrato</div>
-                <SummaryContractCard>
-                  <div className="products">4 Produtos</div>
-                </SummaryContractCard>
-                <SummaryContractCard>
-                  <div className="hours">
-                    Horas por produto <strong>02:00:00</strong>
-                  </div>
-                </SummaryContractCard>
-                <SummaryContractCard>
-                  <div className="hours">
-                    Horas de criação <strong>02:00:00</strong>
-                  </div>
-                </SummaryContractCard>
-                <SummaryContractCard>
-                  <div className="total">
-                    Total <div>04:00:00</div>
-                  </div>
-                </SummaryContractCard>
-              </Summary>
+                <FinishButtons>
+                  <ButtonDefault onClick={handleOnSubmit}>Salvar Projeto/Contrato</ButtonDefault>
+                  <ButtonDefault typeButton="primary" isOutline onClick={() => setCreateStep(2)}>
+                    Editar produtos
+                  </ButtonDefault>
+                </FinishButtons>
+              </div>
             </SummaryWrapper>
           </>
         )}
       </FormWrapper>
 
-      {!isLastStep && (
+      {createStep !== 4 && (
         <Footer>
           {showSave && (
-            <SaveButton>
+            <SaveButton
+              onClick={() => {
+                setSaveProducts('Go');
+                setTimeout(() => {
+                  setCreateStep(createStep + 1);
+                  setShowSave(false);
+                }, 1500);
+              }}
+            >
               <ButtonDefault>Salvar</ButtonDefault>
             </SaveButton>
           )}
@@ -763,7 +741,7 @@ export default function CreateProject() {
               </Link>
 
               <div className="fieldGroup">
-                {!isFirstStep && (
+                {createStep !== 1 && (
                   <ButtonDefault typeButton="primary" isOutline onClick={handleOnPrevStep}>
                     Voltar
                   </ButtonDefault>
