@@ -280,11 +280,11 @@ export default function CreateProject() {
         setErrorInput('date_end', undefined);
       }
 
-      // if (description === '') {
-      //   throw setErrorInput('description', 'Observações são obrigatórias!');
-      // } else {
-      //   setErrorInput('description', undefined);
-      // }
+      if (description === '') {
+        throw setErrorInput('description', 'Observações são obrigatórias!');
+      } else {
+        setErrorInput('description', undefined);
+      }
 
       changeStep(currentStep + 1);
       setCreateStep(createStep + 1);
@@ -593,9 +593,9 @@ export default function CreateProject() {
   //   }
   // }
 
-  // useEffect(() => {
-  //   console.log('log do formdata', formData);
-  // }, [formData]);
+  useEffect(() => {
+    console.log('log do formdata', formData);
+  }, [formData]);
 
   return (
     <Container>
@@ -619,8 +619,8 @@ export default function CreateProject() {
               <p>Observações</p>
               <InfoDescription
                 value={formData.description}
-                // handleOnDescription={(value) => setFormValue('description', value)}
-                handleOnDescription={(value) => console.log('description', value)}
+                handleOnDescription={(value) => setFormValue('description', value)}
+                // handleOnDescription={(value) => console.log('description', value)}
                 mentions={[]}
               />
             </div>
@@ -682,6 +682,7 @@ export default function CreateProject() {
                   </SummaryCard>
                 ))}
               </Summary>
+
               <div
                 style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '446px' }}
               >
@@ -728,6 +729,7 @@ export default function CreateProject() {
                 setTimeout(() => {
                   setCreateStep(createStep + 1);
                   setShowSave(false);
+                  setSaveProducts('');
                 }, 1500);
               }}
             >
