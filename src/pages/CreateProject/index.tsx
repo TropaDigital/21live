@@ -57,7 +57,7 @@ interface StateProps {
 }
 
 export default function CreateProject() {
-  const [createStep, setCreateStep] = useState<number>(4);
+  const [createStep, setCreateStep] = useState<number>(1);
   const { addToast } = useToast();
 
   const { formData, setFormValue, setData, handleOnChange } = useForm({
@@ -88,8 +88,15 @@ export default function CreateProject() {
   const [saveProducts, setSaveProducts] = useState<any>('');
 
   const handleOnAddProducts = (items: any) => {
-    console.log('log do add products', items);
     setFormValue('products', [...formData.products, items]);
+  };
+
+  const handleOnAddDescription = (value: any) => {
+    const description: any = {
+      name: 'description',
+      value: value
+    };
+    handleOnChange(description);
   };
 
   const handleOnDeleteProduct = (id: number) => {
@@ -586,9 +593,9 @@ export default function CreateProject() {
   //   }
   // }
 
-  useEffect(() => {
-    console.log('log do formdata', formData);
-  }, [formData]);
+  // useEffect(() => {
+  //   console.log('log do formdata', formData);
+  // }, [formData]);
 
   return (
     <Container>
@@ -612,7 +619,8 @@ export default function CreateProject() {
               <p>Observações</p>
               <InfoDescription
                 value={formData.description}
-                handleOnDescription={(value) => setFormValue('description', value)}
+                // handleOnDescription={(value) => setFormValue('description', value)}
+                handleOnDescription={(value) => console.log('description', value)}
                 mentions={[]}
               />
             </div>
