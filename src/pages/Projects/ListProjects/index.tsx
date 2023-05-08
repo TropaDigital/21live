@@ -183,6 +183,8 @@ export default function ListProjects() {
           handleOnPeriod={(e, id) => handleOnPeriod(e, id)}
           handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
           handleInputProduct={(value, id) => handleInputProduct(value, id)}
+          okToSave={''}
+          setSave={''}
         />
       )
     },
