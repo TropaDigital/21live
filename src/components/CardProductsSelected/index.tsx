@@ -41,7 +41,7 @@ export default function CardProductsSelected({
 }: ProductsProps) {
   const [openCard, setOpenCard] = useState<boolean>(false);
   const [timeCounter, setTimeCounter] = useState<number>(0);
-  const [contractType, setContractType] = useState<any>('');
+  const [contractType, setContractType] = useState<any>('mensal');
   const verifyPeriod = contractType === 'mensal' ? false : true;
 
   const handleOptions = (status: boolean) => {
