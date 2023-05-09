@@ -163,27 +163,27 @@ export default function InfoProducts({
 
     const newArray = selectedProductsWithTime;
 
-    if (selectedProductsWithTime.length > 0) {
-      const indexInArray: any = newArray.findIndex(
-        (obj: IProduct) => obj.project_id === product.rowQuantity.service_id
-      );
-      if (indexInArray === -1) {
-        // console.log('não existe no array', newArray, product);
-        setSelectedProductsWithTime((obj: any) => [...obj, productSelected]);
-      } else {
-        if (selectedProductsWithTime.length === 1) {
-          // console.log('só existe 1 no array', newArray, product);
-          setSelectedProductsWithTime([]);
+    if (value.timeCounter > 0) {
+      if (selectedProductsWithTime.length > 0) {
+        const indexInArray: any = newArray.findIndex(
+          (obj: IProduct) => obj.project_id === product.rowQuantity.service_id
+        );
+        if (indexInArray === -1) {
+          // console.log('não existe no array', newArray, product);
           setSelectedProductsWithTime((obj: any) => [...obj, productSelected]);
         } else {
-          console.log('mais do que 1 no array', newArray, product, indexInArray);
-          newArray[indexInArray] = productSelected;
-          console.log('log da posição a mudar', newArray[indexInArray]);
-          setSelectedProductsWithTime(newArray);
+          if (selectedProductsWithTime.length === 1) {
+            // console.log('só existe 1 no array', newArray, product);
+            setSelectedProductsWithTime([]);
+            setSelectedProductsWithTime((obj: any) => [...obj, productSelected]);
+          } else {
+            console.log('mais do que 1 no array', newArray, product, indexInArray);
+            newArray[indexInArray] = productSelected;
+            console.log('log da posição a mudar', newArray[indexInArray]);
+            setSelectedProductsWithTime(newArray);
+          }
         }
-      }
-    } else {
-      if (value.timeCounter >= 1) {
+      } else {
         console.log('array vazio', newArray, product);
         setSelectedProductsWithTime((obj: any) => [...obj, productSelected]);
       }
@@ -204,9 +204,14 @@ export default function InfoProducts({
     if (setSave === 'Go') {
       selectedProductsWithTime.forEach((row: any) => {
         handleOnAddProducts(row);
+        console.log('log dos produtos no array', row);
       });
     }
   }, [setSave]);
+
+  useEffect(() => {
+    console.log('log do dataFilter', dataFilter);
+  }, [dataFilter]);
 
   return (
     <ProductsWrapper>
@@ -251,40 +256,76 @@ export default function InfoProducts({
               <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
             </tr>
           </thead>
-
-          <tbody>
-            {data?.map((row) => (
-              <tr key={row.service_id}>
-                <td>{row.service_id}</td>
-                <td>{row.service}</td>
-                <td>{row.category}</td>
-                <td>
-                  <QuantityCounter
-                    handleQuantity={setQuantity}
-                    rowQuantity={row}
-                    clearQuantity={handleDeleteProducts}
-                  />
-                </td>
-
-                {quantity && Object.values(quantity.rowQuantity).includes(row.service_id) ? (
-                  <td
-                    style={{ cursor: 'pointer', textAlign: 'center' }}
-                    onClick={handleAddProducts}
-                  >
-                    <div style={{ fontSize: '14px', fontWeight: '600', color: '#0045B5' }}>
-                      Adicionar
-                    </div>
+          {dataFilter.length > 0 ? (
+            <tbody>
+              {dataFilter?.map((row: IProduct) => (
+                <tr key={row.project_id}>
+                  <td>{row.project_id}</td>
+                  <td>{row.service}</td>
+                  <td>{row.description}</td>
+                  <td>
+                    <QuantityCounter
+                      handleQuantity={setQuantity}
+                      rowQuantity={row}
+                      clearQuantity={handleDeleteProducts}
+                      receiveQuantity={row.quantity}
+                    />
                   </td>
-                ) : (
-                  <td style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '14px', fontWeight: '600', color: '#D0D5DD' }}>
-                      Adicionar
-                    </div>
+
+                  {quantity && Object.values(quantity.rowQuantity).includes(row.project_id) ? (
+                    <td
+                      style={{ cursor: 'pointer', textAlign: 'center' }}
+                      onClick={handleAddProducts}
+                    >
+                      <div style={{ fontSize: '14px', fontWeight: '600', color: '#0045B5' }}>
+                        Adicionar
+                      </div>
+                    </td>
+                  ) : (
+                    <td style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: '14px', fontWeight: '600', color: '#D0D5DD' }}>
+                        Adicionar
+                      </div>
+                    </td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          ) : (
+            <tbody>
+              {data?.map((row) => (
+                <tr key={row.service_id}>
+                  <td>{row.service_id}</td>
+                  <td>{row.service}</td>
+                  <td>{row.category}</td>
+                  <td>
+                    <QuantityCounter
+                      handleQuantity={setQuantity}
+                      rowQuantity={row}
+                      clearQuantity={handleDeleteProducts}
+                    />
                   </td>
-                )}
-              </tr>
-            ))}
-          </tbody>
+
+                  {quantity && Object.values(quantity.rowQuantity).includes(row.service_id) ? (
+                    <td
+                      style={{ cursor: 'pointer', textAlign: 'center' }}
+                      onClick={handleAddProducts}
+                    >
+                      <div style={{ fontSize: '14px', fontWeight: '600', color: '#0045B5' }}>
+                        Adicionar
+                      </div>
+                    </td>
+                  ) : (
+                    <td style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: '14px', fontWeight: '600', color: '#D0D5DD' }}>
+                        Adicionar
+                      </div>
+                    </td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          )}
 
           <tfoot>
             <tr>
