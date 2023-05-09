@@ -11,14 +11,22 @@ interface QuantityProps {
   handleQuantity?: any;
   rowQuantity?: any;
   clearQuantity?: any;
+  receiveQuantity?: any;
 }
 
 export default function QuantityCounter({
   handleQuantity,
   rowQuantity,
-  clearQuantity
+  clearQuantity,
+  receiveQuantity
 }: QuantityProps) {
   const [counter, setCounter] = useState<number>(0);
+
+  useEffect(() => {
+    if (receiveQuantity > 0) {
+      setCounter(receiveQuantity);
+    }
+  }, [receiveQuantity]);
 
   useEffect(() => {
     if (counter === 0) {
