@@ -1,7 +1,15 @@
 import { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 
-import { IconClipboard, IconDash, IconFolder, IconMeeting, IconTeam } from '../../assets/icons';
+import {
+  IconClipboard,
+  IconDash,
+  IconProjects,
+  IconMeeting,
+  IconTeam,
+  IconProducts,
+  IconFlux
+} from '../../assets/icons';
 
 import ScrollAreas from '../Ui/ScrollAreas';
 import Header from './Header';
@@ -25,6 +33,16 @@ export default function Layout() {
               name: 'Dashboard',
               icon: IconDash
             },
+            {
+              to: '/projetos',
+              name: 'Projetos',
+              icon: IconProjects
+            },
+            {
+              to: '/tarefas',
+              name: 'Tarefas',
+              icon: IconClipboard
+            },
             // {
             //   to: '/clientes',
             //   name: 'Clientes',
@@ -38,27 +56,17 @@ export default function Layout() {
             {
               to: '/servicos',
               name: 'Produtos',
-              icon: IconClipboard
+              icon: IconProducts
+            },
+            {
+              to: '/fluxo',
+              name: 'Fluxos',
+              icon: IconFlux
             },
             {
               to: '/equipe',
               name: 'Equipe',
               icon: IconTeam
-            },
-            {
-              to: '/tarefas',
-              name: 'Tarefas',
-              icon: IconClipboard
-            },
-            {
-              to: '/fluxo',
-              name: 'Fluxo',
-              icon: IconTeam
-            },
-            {
-              to: '/projetos',
-              name: 'Projeto',
-              icon: IconFolder
             },
             {
               to: '/reuniao',
