@@ -91,14 +91,6 @@ export default function CreateProject() {
     setFormValue('products', [...formData.products, items]);
   };
 
-  const handleOnAddDescription = (value: any) => {
-    const description: any = {
-      name: 'description',
-      value: value
-    };
-    handleOnChange(description);
-  };
-
   const handleOnDeleteProduct = (id: number) => {
     console.log('ID', id);
     setFormValue(
@@ -280,10 +272,14 @@ export default function CreateProject() {
         setErrorInput('date_end', undefined);
       }
 
-      if (description === '') {
-        throw setErrorInput('description', 'Observações são obrigatórias!');
-      } else {
-        setErrorInput('description', undefined);
+      // if (description === '') {
+      //   throw setErrorInput('description', 'Observações são obrigatórias!');
+      // } else {
+      //   setErrorInput('description', undefined);
+      // }
+
+      if (createStep === 2 && formData.products === '') {
+        throw new Error('Escolha pelo menos um produto antes de avançar');
       }
 
       changeStep(currentStep + 1);
@@ -572,7 +568,6 @@ export default function CreateProject() {
         changeStep(0);
         fetchProject();
       } catch (e: any) {
-        // Exibir erro
         addToast({
           type: 'danger',
           title: 'ATENÇÃO',
@@ -615,6 +610,7 @@ export default function CreateProject() {
               clients={dataClient}
               error={error}
             />
+
             <div className="label-observation">
               <p>Observações</p>
               <InfoDescription
@@ -689,7 +685,11 @@ export default function CreateProject() {
                 <Summary className="small">
                   <div className="title small">Resumo do contrato</div>
                   <SummaryContractCard>
-                    <div className="products">{formData.products.length} Produto(s)</div>
+                    <div className="products">
+                      {formData.products.length >= 2
+                        ? `${formData.products.length} Produtos`
+                        : `${formData.products.length} Produto`}
+                    </div>
                   </SummaryContractCard>
                   <SummaryContractCard>
                     <div className="hours">
@@ -757,10 +757,10 @@ export default function CreateProject() {
                   </ButtonDefault>
                 )}
 
-                {!isLastStep ? (
-                  <ButtonDefault type="button" typeButton="primary" onClick={handleOnNextStep}>
-                    Continuar
-                  </ButtonDefault>
+                <ButtonDefault type="button" typeButton="primary" onClick={handleOnNextStep}>
+                  Continuar
+                </ButtonDefault>
+                {/* {createStep < 4 ? (
                 ) : (
                   <ButtonDefault
                     typeButton="primary"
@@ -770,7 +770,7 @@ export default function CreateProject() {
                   >
                     Salvar
                   </ButtonDefault>
-                )}
+                )} */}
               </div>
             </>
           )}
