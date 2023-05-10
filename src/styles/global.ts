@@ -58,6 +58,7 @@ export const GlobalStyles = createGlobalStyle`
   --Orange: #FFA981;
   --Red: #F92B60;
   --Yellow: #FFD66E;
+  --input-error: #e62965;
 
   //Degrade
   --degrade-green: linear-gradient(250.88deg, #93E088 0%, #73B969 97.63%);
