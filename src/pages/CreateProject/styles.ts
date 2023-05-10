@@ -6,11 +6,30 @@ export const FormWrapper = styled.div`
   padding: 40px 30px;
 
   .label-observation {
-    p {
-      color: var(--gray-700);
-      font-size: var(--text-small-sm);
-      font-weight: var(--weight-medium);
-      margin-bottom: 6px;
+    .label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      p {
+        color: var(--gray-700);
+        font-size: var(--text-small-sm);
+        font-weight: var(--weight-medium);
+        margin-bottom: 6px;
+      }
+
+      span {
+        color: var(--input-error);
+        font-size: var(--text-small-sm);
+        font-weight: var(--weight-medium);
+        margin-bottom: 6px;
+      }
+    }
+
+    &.error {
+      border: 1px solid var(--input-error);
+      border-radius: 4px;
+      padding: 4px 8px;
     }
   }
 

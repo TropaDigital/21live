@@ -86,8 +86,11 @@ export default function CreateProject() {
   const [finishModal, setFinishModal] = useState<boolean>(false);
   const [showSave, setShowSave] = useState<any>(false);
   const [saveProducts, setSaveProducts] = useState<any>('');
+  const [obs, setOBS] = useState<string>('');
+  const [editSelectedProducts, setEditSelectedProducts] = useState<boolean>(false);
 
-  const handleOnAddProducts = (items: any) => {
+  const handleOnAddProducts = (items: IProduct) => {
+    console.log('log do add products no form', items);
     setFormValue('products', [...formData.products, items]);
   };
 
@@ -188,6 +191,7 @@ export default function CreateProject() {
           handleInputProduct={(value, id) => handleInputProduct(value, id)}
           okToSave
           setSave={saveProducts}
+          editProducts={editSelectedProducts}
         />
       )
     },
@@ -239,7 +243,7 @@ export default function CreateProject() {
   }
 
   const handleOnNextStep = () => {
-    const { title, tenant_id, contract_type, date_start, date_end, description } = formData;
+    const { title, tenant_id, contract_type, date_start, date_end } = formData;
 
     try {
       if (title === '') {
@@ -272,11 +276,11 @@ export default function CreateProject() {
         setErrorInput('date_end', undefined);
       }
 
-      // if (description === '') {
-      //   throw setErrorInput('description', 'Observações são obrigatórias!');
-      // } else {
-      //   setErrorInput('description', undefined);
-      // }
+      if (obs === '') {
+        throw setErrorInput('description', 'Observações são obrigatórias!');
+      } else {
+        setErrorInput('description', undefined);
+      }
 
       if (createStep === 2 && formData.products === '') {
         throw new Error('Escolha pelo menos um produto antes de avançar');
@@ -493,14 +497,16 @@ export default function CreateProject() {
         event.preventDefault();
 
         // Inserir lógica
-        const files = uploadedFiles.map((row) => ({
-          bucket: row.bucket,
-          file_name: row.file_name,
-          // file_id: row.file_id,
-          key: row.key,
-          size: row.size,
-          url: row.url
-        }));
+        const files = uploadedFiles.map(
+          (row: { bucket: any; file_name: any; key: any; size: any; url: any }) => ({
+            bucket: row.bucket,
+            file_name: row.file_name,
+            // file_id: row.file_id,
+            key: row.key,
+            size: row.size,
+            url: row.url
+          })
+        );
 
         const newArrayProducts = formData.products.map(({ tenant_id, ...rest }: any) => rest);
         // const updateProducts = formData.products.map(({ service_id, ...rest }: any) => ({ product_id: service_id, ...rest }))
@@ -520,7 +526,7 @@ export default function CreateProject() {
           title,
           tenant_id,
           products: newArrayProducts,
-          description,
+          description: obs,
           category,
           date_start,
           date_end,
@@ -533,7 +539,7 @@ export default function CreateProject() {
           project_id,
           tenant_id,
           products: newArrayProducts,
-          description,
+          description: obs,
           date_start,
           date_end,
           contract_type,
@@ -588,10 +594,6 @@ export default function CreateProject() {
   //   }
   // }
 
-  useEffect(() => {
-    console.log('log do formdata', formData);
-  }, [formData]);
-
   return (
     <Container>
       <HeaderStepsPage
@@ -611,12 +613,14 @@ export default function CreateProject() {
               error={error}
             />
 
-            <div className="label-observation">
-              <p>Observações</p>
+            <div className={error.description ? 'label-observation error' : 'label-observation'}>
+              <div className="label">
+                <p>Observações</p>
+                {error.description && <span>Observações são obrigatórias</span>}
+              </div>
               <InfoDescription
-                value={formData.description}
-                handleOnDescription={(value) => setFormValue('description', value)}
-                // handleOnDescription={(value) => console.log('description', value)}
+                value={obs}
+                handleOnDescription={(value) => setOBS(value)}
                 mentions={[]}
               />
             </div>
@@ -636,6 +640,7 @@ export default function CreateProject() {
               handleInputProduct={(value, id) => handleInputProduct(value, id)}
               okToSave={setShowSave}
               setSave={saveProducts}
+              editProducts={editSelectedProducts}
             />
           </>
         )}
@@ -710,7 +715,14 @@ export default function CreateProject() {
 
                 <FinishButtons>
                   <ButtonDefault onClick={handleOnSubmit}>Salvar Projeto/Contrato</ButtonDefault>
-                  <ButtonDefault typeButton="primary" isOutline onClick={() => setCreateStep(2)}>
+                  <ButtonDefault
+                    typeButton="primary"
+                    isOutline
+                    onClick={() => {
+                      setCreateStep(2);
+                      setEditSelectedProducts(true);
+                    }}
+                  >
                     Editar produtos
                   </ButtonDefault>
                 </FinishButtons>
@@ -727,9 +739,9 @@ export default function CreateProject() {
               onClick={() => {
                 setSaveProducts('Go');
                 setTimeout(() => {
-                  setCreateStep(createStep + 1);
                   setShowSave(false);
                   setSaveProducts('');
+                  // setCreateStep(createStep + 1);
                 }, 1500);
               }}
             >
