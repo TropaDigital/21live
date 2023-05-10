@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const ContainerMentions = styled.div`
   display: flex;
@@ -7,7 +7,7 @@ export const ContainerMentions = styled.div`
 
   width: 100%;
 
-  >div {
+  > div {
     width: 100%;
   }
 `;
@@ -18,8 +18,8 @@ export const ContainerButtonsMentions = styled.div`
   width: 100%;
 
   padding: 10px 8px;
-  background-color: #F2F4F7;
-  border: 1px solid #EAECF0;
+  background-color: #f2f4f7;
+  border: 1px solid #eaecf0;
   border-radius: 8px 8px 0px 0px;
 
   .butonBarColor {
@@ -30,7 +30,7 @@ export const ContainerButtonsMentions = styled.div`
 
     position: relative;
 
-    input[type=color] {
+    input[type='color'] {
       -webkit-appearance: none;
       position: absolute;
 
@@ -39,7 +39,6 @@ export const ContainerButtonsMentions = styled.div`
       opacity: 0;
     }
   }
-
 `;
 
 export const ButtonBar = styled.button`
@@ -53,7 +52,7 @@ export const ButtonBar = styled.button`
   border: none;
   transition: all 0.35s ease;
   &.is-active {
-  transition: all 0.35s ease;
+    transition: all 0.35s ease;
     svg {
       transform: scale(1.1);
       path {
@@ -67,12 +66,11 @@ export const MentionsItems = styled.div`
   padding: 0.2rem;
   position: relative;
   border-radius: 0.5rem;
-  background: #FFF;
+  background: #fff;
   color: rgba(0, 0, 0, 0.8);
   overflow: hidden;
   font-size: 0.9rem;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05),
-    0px 10px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0px 10px 20px rgba(0, 0, 0, 0.1);
 
   .item {
     display: block;
@@ -84,7 +82,6 @@ export const MentionsItems = styled.div`
     border: 1px solid transparent;
     padding: 0.2rem 0.4rem;
     color: #000;
-
 
     &.is-selected {
       border-color: #000;
