@@ -1,6 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 
+// Types
+import { IProduct } from '../../types';
+
 // Icons
 import { IconMinus, IconPlus, IconTrash } from '../../assets/icons';
 
@@ -33,11 +36,17 @@ export default function QuantityCounter({
       clearQuantity(rowQuantity);
     }
     if (counter > 0) {
-      const selectedRow = {
-        quantitySelected: counter,
-        rowQuantity
+      const productSelected: IProduct = {
+        project_id: rowQuantity.service_id,
+        service: rowQuantity.service,
+        description: rowQuantity.description,
+        type: rowQuantity.type,
+        size: rowQuantity.size,
+        quantity: counter,
+        minutes: '',
+        period: ''
       };
-      handleQuantity(selectedRow);
+      handleQuantity(productSelected);
     }
   }, [counter]);
 
@@ -48,7 +57,12 @@ export default function QuantityCounter({
           <IconTrash />
         </CounterFieldsBtn>
       )}
-      {counter !== 1 && (
+      {counter === 0 && (
+        <CounterFieldsBtn>
+          <IconMinus />
+        </CounterFieldsBtn>
+      )}
+      {counter > 1 && (
         <CounterFieldsBtn style={{ cursor: 'pointer' }} onClick={() => setCounter(counter - 1)}>
           <IconMinus />
         </CounterFieldsBtn>
