@@ -39,7 +39,7 @@ export default function CardProductsSelected({
   hours_total,
   data
 }: ProductsProps) {
-  const [openCard, setOpenCard] = useState<boolean>(false);
+  const [openCard, setOpenCard] = useState<boolean>(true);
   const [timeCounter, setTimeCounter] = useState<number>(0);
   const [contractType, setContractType] = useState<any>('mensal');
   const verifyPeriod = contractType === 'mensal' ? false : true;
@@ -53,13 +53,7 @@ export default function CardProductsSelected({
   };
 
   const handleCounter = (counter: any) => {
-    setTimeCounter(counter.quantitySelected);
-
-    if (counter.quantitySelected < timeCounter) {
-      console.log('log do numero diminuindo');
-    } else if (counter.quantitySelected > timeCounter) {
-      console.log('log do numero aumentando');
-    }
+    setTimeCounter(counter.quantity);
   };
 
   const handleSwitch = (value: any) => {
@@ -100,6 +94,7 @@ export default function CardProductsSelected({
               clearQuantity={() => setTimeCounter(0)}
               handleQuantity={handleCounter}
               rowQuantity={data}
+              receiveQuantity={data.minutes}
             />
           </EstimatedHours>
         </CardBottom>
