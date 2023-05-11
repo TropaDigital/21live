@@ -51,6 +51,7 @@ import {
 
 // Services
 import api from '../../services/api';
+import { averageTime } from '../../utils/mediaTime';
 
 interface StateProps {
   [key: string]: any;
@@ -60,7 +61,7 @@ export default function CreateProject() {
   const [createStep, setCreateStep] = useState<number>(1);
   const { addToast } = useToast();
 
-  const { formData, setFormValue, setData, handleOnChange } = useForm({
+  const { formData, setFormData, setFormValue, setData, handleOnChange } = useForm({
     tenant_id: '',
     title: '',
     contract_type: '',
@@ -88,6 +89,7 @@ export default function CreateProject() {
   const [saveProducts, setSaveProducts] = useState<any>('');
   const [obs, setOBS] = useState<string>('');
   const [editSelectedProducts, setEditSelectedProducts] = useState<boolean>(false);
+  const averageHours = Number(averageTime(formData.products, formData.products.length));
 
   const handleOnAddProducts = (items: IProduct) => {
     console.log('log do add products no form', items);
@@ -163,6 +165,17 @@ export default function CreateProject() {
     [setFormValue, formData]
   );
 
+  const editProductQuantity = (product: IProduct) => {
+    setFormData((current: any) =>
+      current.map((obj: any) => {
+        if (obj.project_id === product.project_id) {
+          return { ...obj, quantity: product.quantity };
+        }
+        return obj;
+      })
+    );
+  };
+
   const formComponents = [
     {
       label: 'Geral',
@@ -189,6 +202,7 @@ export default function CreateProject() {
           handleOnPeriod={(e, id) => handleOnPeriod(e, id)}
           handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
           handleInputProduct={(value, id) => handleInputProduct(value, id)}
+          handleEditProductQuantity={(value) => editProductQuantity(value)}
           okToSave
           setSave={saveProducts}
           editProducts={editSelectedProducts}
@@ -594,6 +608,10 @@ export default function CreateProject() {
   //   }
   // }
 
+  useEffect(() => {
+    console.log('log do formdata', formData);
+  }, [formData]);
+
   return (
     <Container>
       <HeaderStepsPage
@@ -638,6 +656,7 @@ export default function CreateProject() {
               handleOnPeriod={(e, id) => handleOnPeriod(e, id)}
               handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
               handleInputProduct={(value, id) => handleInputProduct(value, id)}
+              handleEditProductQuantity={(value) => editProductQuantity(value)}
               okToSave={setShowSave}
               setSave={saveProducts}
               editProducts={editSelectedProducts}
@@ -676,7 +695,10 @@ export default function CreateProject() {
                       #{index + 1} - {row.service}
                     </SummaryCardTitle>
                     <SummaryCardSubtitle>
-                      <div>Horas estimadas: {row.minutes}:00</div>
+                      <div>
+                        Horas estimadas: {Number(row.minutes) > 9 ? row.minutes : `0${row.minutes}`}
+                        :00
+                      </div>
                       <div>Categoria: {row.type}</div>
                       <div>Quantidade: {row.quantity}</div>
                     </SummaryCardSubtitle>
@@ -698,12 +720,13 @@ export default function CreateProject() {
                   </SummaryContractCard>
                   <SummaryContractCard>
                     <div className="hours">
-                      Horas por produto <strong>02:00:00</strong>
+                      Horas por produto
+                      <strong>{averageHours > 9 ? averageHours : `0${averageHours}`}:00:00</strong>
                     </div>
                   </SummaryContractCard>
                   <SummaryContractCard>
                     <div className="hours">
-                      Horas de criação <strong>02:00:00</strong>
+                      Horas de criação <strong>00:00:00</strong>
                     </div>
                   </SummaryContractCard>
                   <SummaryContractCard>
