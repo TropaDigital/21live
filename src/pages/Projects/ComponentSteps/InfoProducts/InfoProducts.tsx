@@ -51,6 +51,7 @@ interface PropsProducts {
   handleOnPeriod: (e: any, id: any) => void;
   handleOnDeleteProduct: (id: any) => void;
   handleInputProduct: (value: any, id: any) => void;
+  handleEditProductQuantity: (value: any) => void;
   okToSave: any;
   setSave: any;
   editProducts: boolean;
@@ -63,6 +64,7 @@ export default function InfoProducts({
   handleOnAddProducts,
   handleOnDeleteProduct,
   handleInputProduct,
+  handleEditProductQuantity,
   okToSave,
   setSave,
   editProducts
@@ -150,6 +152,10 @@ export default function InfoProducts({
   };
 
   useEffect(() => {
+    console.log('log do edit select', editSelectedProducts);
+  }, [editSelectedProducts]);
+
+  useEffect(() => {
     if (selectedProducts.length > 0) {
       okToSave(true);
     }
@@ -164,7 +170,6 @@ export default function InfoProducts({
       setTimeout(() => {
         selectedProducts.map((row: any) => {
           handleOnAddProducts(row);
-          console.log('log dos produtos no array', row);
         });
       }, 500);
     }
@@ -176,7 +181,6 @@ export default function InfoProducts({
   }, [setSave]);
 
   useEffect(() => {
-    console.log('log do dataFilter edited', editSelectedProducts);
     if (dataFilter) {
       setEditSelectedProducts(dataFilter);
     }
