@@ -25,6 +25,7 @@ interface FormHook {
   resetForm: ResetForm;
   setFormValue: SetFormValue;
   setData: SetItem;
+  setFormData: any;
 }
 
 const useForm = (initialValues: FormProps): FormHook => {
@@ -52,7 +53,15 @@ const useForm = (initialValues: FormProps): FormHook => {
     setFormData(item);
   };
 
-  return { formData, handleOnChange, handleOnChangeCheckbox, resetForm, setFormValue, setData };
+  return {
+    formData,
+    setFormData,
+    handleOnChange,
+    handleOnChangeCheckbox,
+    resetForm,
+    setFormValue,
+    setData
+  };
 };
 
 export default useForm;
