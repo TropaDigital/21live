@@ -157,67 +157,64 @@ export default function ListProjects() {
     [setFormValue, formData]
   );
 
-  const formComponents = [
-    {
-      label: 'Geral',
-      success: false,
-      component: (
-        <InfoGeral
-          data={formData}
-          handleInputChange={handleOnChange}
-          clients={dataClient}
-          error={error}
-        />
-      )
-    },
-    {
-      label: 'Produtos',
-      success: false,
-      component: (
-        <InfoProducts
-          handleOnAddProducts={handleOnAddProducts}
-          dataOffice={dataOffice}
-          dataFilter={formData.products}
-          handleOnDecrementQtd={(e) => handleOnDecrementQtd(e)}
-          handleOnIncrememtQtd={(e) => handleOnIncrememtQtd(e)}
-          handleOnPeriod={(e, id) => handleOnPeriod(e, id)}
-          handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
-          handleInputProduct={(value, id) => handleInputProduct(value, id)}
-          okToSave={''}
-          setSave={''}
-        />
-      )
-    },
-    {
-      label: 'Descrição',
-      success: false,
-      component: (
-        <InfoDescription
-          value={formData?.description}
-          handleOnDescription={(value) => setFormValue('description', value)}
-          mentions={[]}
-        />
-      )
-    },
-    {
-      label: 'Anexos',
-      success: false,
-      component: (
-        <InfoFiles
-          uploadedFiles={uploadedFiles}
-          setUploadedFiles={setUploadedFiles}
-          tenant={formData?.tenant_id}
-          isDisabed={!formData?.tenant_id}
-          loading={loading}
-          setLoading={setLoading}
-        />
-      )
-    }
-  ];
+  // const formComponents = [
+  //   {
+  //     label: 'Geral',
+  //     success: false,
+  //     component: (
+  //       <InfoGeral
+  //         data={formData}
+  //         handleInputChange={handleOnChange}
+  //         clients={dataClient}
+  //         error={error}
+  //       />
+  //     )
+  //   },
+  //   {
+  //     label: 'Produtos',
+  //     success: false,
+  //     component: (
+  //       <InfoProducts
+  //         handleOnAddProducts={handleOnAddProducts}
+  //         dataOffice={dataOffice}
+  //         dataFilter={formData.products}
+  //         handleOnPeriod={(e, id) => handleOnPeriod(e, id)}
+  //         handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
+  //         okToSave={''}
+  //         setSave={''}
+  //       />
+  //     )
+  //   },
+  //   {
+  //     label: 'Descrição',
+  //     success: false,
+  //     component: (
+  //       <InfoDescription
+  //         value={formData?.description}
+  //         handleOnDescription={(value) => setFormValue('description', value)}
+  //         mentions={[]}
+  //       />
+  //     )
+  //   },
+  //   {
+  //     label: 'Anexos',
+  //     success: false,
+  //     component: (
+  //       <InfoFiles
+  //         uploadedFiles={uploadedFiles}
+  //         setUploadedFiles={setUploadedFiles}
+  //         tenant={formData?.tenant_id}
+  //         isDisabed={!formData?.tenant_id}
+  //         loading={loading}
+  //         setLoading={setLoading}
+  //       />
+  //     )
+  //   }
+  // ];
 
-  const fillComponents = formComponents.map((row: any) => row.component);
-  const { changeStep, currentComponent, currentStep, isFirstStep, isLastStep } =
-    useSteps(fillComponents);
+  // const fillComponents = formComponents.map((row: any) => row.component);
+  // const { changeStep, currentComponent, currentStep, isFirstStep, isLastStep } =
+  //   useSteps(fillComponents);
 
   const handleOnEdit = (item: IProjectCreate) => {
     setData(item);
