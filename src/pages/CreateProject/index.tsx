@@ -57,11 +57,18 @@ interface StateProps {
   [key: string]: any;
 }
 
+type HandleOnChange = (
+  event:
+    | React.ChangeEvent<HTMLInputElement>
+    | React.ChangeEvent<HTMLSelectElement>
+    | React.ChangeEvent<HTMLTextAreaElement>
+) => void;
+
 export default function CreateProject() {
   const [createStep, setCreateStep] = useState<number>(1);
   const { addToast } = useToast();
 
-  const { formData, setFormData, setFormValue, setData, handleOnChange } = useForm({
+  const { formData, setFormValue, setData, handleOnChange } = useForm({
     tenant_id: '',
     title: '',
     contract_type: '',
@@ -89,67 +96,62 @@ export default function CreateProject() {
   const [saveProducts, setSaveProducts] = useState<any>('');
   const [obs, setOBS] = useState<string>('');
   const [editSelectedProducts, setEditSelectedProducts] = useState<boolean>(false);
-  const averageHours = Number(averageTime(formData.products, formData.products.length));
+  const [DTOForm, setDTOForm] = useState<any>({
+    tenant_id: '',
+    title: '',
+    contract_type: '',
+    project_id: '',
+    date_start: '',
+    date_end: '',
+    description: obs,
+    category: '',
+    products: [],
+    files: []
+  });
+  const averageHours = Number(averageTime(DTOForm.products, DTOForm.products?.length));
 
   const handleOnAddProducts = (items: IProduct) => {
-    console.log('log do add products no form', items);
-    setFormValue('products', [...formData.products, items]);
+    setDTOForm((prevState: IProjectCreate) => ({
+      ...prevState,
+      products: [...prevState.products, items]
+    }));
   };
 
-  const handleOnDeleteProduct = (id: number) => {
-    console.log('ID', id);
-    setFormValue(
-      'products',
-      formData.products.filter((product: any) => product.service_id !== id)
-    );
+  const handleChangeInput: HandleOnChange = (event) => {
+    const { name, value } = event.target;
+    setDTOForm({ ...DTOForm, [name]: value });
   };
 
-  const handleOnIncrememtQtd = useCallback(
-    (value: any) => {
-      const updatedProducts = [...formData.products];
-      const productIndex = updatedProducts.findIndex(
-        (product) => product.service_id === value.service_id
-      );
-      const updatedProductCopy = { ...updatedProducts[productIndex] };
-      updatedProductCopy.quantity = Number(updatedProductCopy.quantity) + 1;
-      updatedProducts[productIndex] = updatedProductCopy;
-      setFormValue('products', updatedProducts);
-    },
-    [setFormValue, formData]
-  );
+  useEffect(() => {
+    console.log('log do DTO', DTOForm);
+  }, [DTOForm]);
 
-  const handleOnDecrementQtd = useCallback(
-    (value: any) => {
-      const updatedProducts = [...formData.products];
-      const productIndex = updatedProducts.findIndex(
-        (product) => product.service_id === value.service_id
-      );
-      const updatedProductCopy = { ...updatedProducts[productIndex] };
-      updatedProductCopy.quantity = Number(updatedProductCopy.quantity) - 1;
-      updatedProducts[productIndex] = updatedProductCopy;
-      setFormValue('products', updatedProducts);
-    },
-    [setFormValue, formData]
-  );
+  // const handleOnDeleteProduct = (id: number) => {
+  //   console.log('ID', id);
+  //   setFormValue(
+  //     'products',
+  //     formData.products.filter((product: any) => product.service_id !== id)
+  //   );
+  // };
 
   function isNumber(value: string) {
     return /^[0-9]*$/.test(value);
   }
 
-  const handleInputProduct = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>, id: any) => {
-      const newValue = event.target.value;
-      if (isNumber(newValue)) {
-        const updatedProducts = [...formData.products];
-        const productIndex = updatedProducts.findIndex((product) => product.service_id === id);
-        const updatedProductCopy = { ...updatedProducts[productIndex] };
-        updatedProductCopy.quantity = newValue;
-        updatedProducts[productIndex] = updatedProductCopy;
-        setFormValue('products', updatedProducts);
-      }
-    },
-    [setFormValue, formData]
-  );
+  // const handleInputProduct = useCallback(
+  //   (event: React.ChangeEvent<HTMLInputElement>, id: any) => {
+  //     const newValue = event.target.value;
+  //     if (isNumber(newValue)) {
+  //       const updatedProducts = [...formData.products];
+  //       const productIndex = updatedProducts.findIndex((product) => product.service_id === id);
+  //       const updatedProductCopy = { ...updatedProducts[productIndex] };
+  //       updatedProductCopy.quantity = newValue;
+  //       updatedProducts[productIndex] = updatedProductCopy;
+  //       setFormValue('products', updatedProducts);
+  //     }
+  //   },
+  //   [setFormValue, formData]
+  // );
 
   const handleOnPeriod = useCallback(
     (value: any, id: any) => {
@@ -166,86 +168,18 @@ export default function CreateProject() {
   );
 
   const editProductQuantity = (product: IProduct) => {
-    setFormData((current: any) =>
-      current.map((obj: any) => {
-        if (obj.project_id === product.project_id) {
-          return { ...obj, quantity: product.quantity };
-        }
-        return obj;
-      })
-    );
-  };
-
-  const formComponents = [
-    {
-      label: 'Geral',
-      success: false,
-      component: (
-        <InfoGeral
-          data={formData}
-          handleInputChange={handleOnChange}
-          clients={dataClient}
-          error={error}
-        />
-      )
-    },
-    {
-      label: 'Produtos',
-      success: false,
-      component: (
-        <InfoProducts
-          handleOnAddProducts={handleOnAddProducts}
-          dataOffice={dataOffice}
-          dataFilter={formData.products}
-          handleOnDecrementQtd={(e) => handleOnDecrementQtd(e)}
-          handleOnIncrememtQtd={(e) => handleOnIncrememtQtd(e)}
-          handleOnPeriod={(e, id) => handleOnPeriod(e, id)}
-          handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
-          handleInputProduct={(value, id) => handleInputProduct(value, id)}
-          handleEditProductQuantity={(value) => editProductQuantity(value)}
-          okToSave
-          setSave={saveProducts}
-          editProducts={editSelectedProducts}
-        />
-      )
-    },
-    {
-      label: 'Descrição',
-      success: false,
-      component: (
-        <InfoDescription
-          value={formData?.description}
-          handleOnDescription={(value) => setFormValue('description', value)}
-          mentions={[]}
-        />
-      )
-    },
-    {
-      label: 'Anexos',
-      success: false,
-      component: (
-        <InfoFiles
-          uploadedFiles={uploadedFiles}
-          setUploadedFiles={setUploadedFiles}
-          tenant={formData?.tenant_id}
-          isDisabed={!formData?.tenant_id}
-          loading={loading}
-          setLoading={setLoading}
-        />
-      )
+    if (editSelectedProducts) {
+      console.log('log await to change function', product);
+      // formData((current: IProjectCreate) =>
+      //   current.products?.map((obj: any) => {
+      //     if (obj.project_id === product.project_id) {
+      //       return { ...obj, quantity: product.quantity };
+      //     }
+      //     return obj;
+      //   })
+      // );
     }
-  ];
-
-  const [steps, setSteps] = useState(() =>
-    formComponents.map((row) => ({
-      label: row.label,
-      success: false
-    }))
-  );
-
-  const fillComponents = formComponents.map((row: any) => row.component);
-  const { changeStep, currentComponent, currentStep, isFirstStep, isLastStep } =
-    useSteps(fillComponents);
+  };
 
   function setErrorInput(value: any, message: any) {
     if (!message) {
@@ -257,7 +191,7 @@ export default function CreateProject() {
   }
 
   const handleOnNextStep = () => {
-    const { title, tenant_id, contract_type, date_start, date_end } = formData;
+    const { title, tenant_id, contract_type, date_start, date_end } = DTOForm;
 
     try {
       if (title === '') {
@@ -300,15 +234,7 @@ export default function CreateProject() {
         throw new Error('Escolha pelo menos um produto antes de avançar');
       }
 
-      changeStep(currentStep + 1);
       setCreateStep(createStep + 1);
-
-      setSteps((prevComponents) =>
-        prevComponents.map((component, i) => ({
-          ...component,
-          success: i <= currentStep
-        }))
-      );
     } catch (error: any) {
       addToast({
         title: 'Atenção',
@@ -319,19 +245,7 @@ export default function CreateProject() {
   };
 
   const handleOnPrevStep = () => {
-    changeStep(currentStep - 1);
     setCreateStep(createStep - 1);
-    setSteps((prevComponents) => {
-      return prevComponents.map((component, i) => {
-        if (i === currentStep - 1) {
-          return {
-            ...component,
-            success: false
-          };
-        }
-        return component;
-      });
-    });
   };
 
   const handleOnCancel = () => {
@@ -348,162 +262,7 @@ export default function CreateProject() {
     } as IProjectCreate);
     setUploadedFiles([]);
     setError({});
-    changeStep(0);
   };
-
-  // const handleOnEdit = (item: IProjectCreate) => {
-  //   setData(item);
-  //   setUploadedFiles(item.files);
-
-  //   setModal({
-  //     isOpen: true,
-  //     type: `Editar Projeto/Contrato: ${item.title}`
-  //   });
-  // };
-
-  // const handleOnDelete = async (id: any) => {
-  //   try {
-  //     await api.delete(`project/${id}`);
-  //     addToast({
-  //       type: 'success',
-  //       title: 'Sucesso',
-  //       description: 'Projeto foi deletado!'
-  //     });
-
-  //     fetchProject();
-  //   } catch (error: any) {
-  //     addToast({
-  //       type: 'danger',
-  //       title: 'ATENÇÃO',
-  //       description: error.response.data.message
-  //     });
-  //   }
-  // };
-
-  // const handleOnSubmit = useCallback(
-  //   async (event: any) => {
-  //     try {
-  //       event.preventDefault();
-
-  //       // Inserir lógica
-  //       const files = uploadedFiles.map((row) => ({
-  //         bucket: row.bucket,
-  //         file_name: row.file_name,
-  //         // file_id: row.file_id,
-  //         key: row.key,
-  //         size: row.size,
-  //         url: row.url
-  //       }));
-
-  //       const newArrayProducts = formData.products.map(({ tenant_id, ...rest }: any) => rest);
-  //       // const updateProducts = formData.products.map(({ service_id, ...rest }: any) => ({ product_id: service_id, ...rest }))
-
-  //       const { title, tenant_id, description, date_start, date_end, contract_type, project_id } =
-  //         formData;
-
-  //       const createNewData = {
-  //         title,
-  //         tenant_id,
-  //         products: newArrayProducts,
-  //         description,
-  //         date_start,
-  //         date_end,
-  //         contract_type,
-  //         files
-  //       };
-
-  //       const updateData = {
-  //         title,
-  //         project_id,
-  //         tenant_id,
-  //         products: newArrayProducts,
-  //         description,
-  //         date_start,
-  //         date_end,
-  //         contract_type,
-  //         files
-  //       };
-
-  //       if (modal.type === 'Criar novo Projeto/Contrato') {
-  //         await api.post(`project`, createNewData);
-  //       } else {
-  //         await api.put(`project/${formData.project_id}`, updateData);
-  //       }
-
-  //       addToast({
-  //         type: 'success',
-  //         title: 'Sucesso',
-  //         description: 'Serviço cadastrado com sucesso!'
-  //       });
-
-  //       setData({
-  //         tenant_id: '',
-  //         project_id: '',
-  //         title: '',
-  //         contract_type: '',
-  //         date_start: '',
-  //         date_end: '',
-  //         description: '',
-  //         products: [],
-  //         files: []
-  //       } as IProjectCreate);
-  //       setUploadedFiles([]);
-  //       setModal({
-  //         isOpen: false,
-  //         type: 'Criar novo Projeto/Contrato'
-  //       });
-  //       changeStep(0);
-  //       fetchProject();
-  //     } catch (e: any) {
-  //       // Exibir erro
-  //       addToast({
-  //         type: 'danger',
-  //         title: 'ATENÇÃO',
-  //         description: e.response.data.message
-  //       });
-
-  //       // setErros(getValidationErrors(e.response.data.result))
-  //     }
-  //   },
-  //   [formData, setFormValue, uploadedFiles, setUploadedFiles, modal, setData]
-  // );
-
-  // function handleList(value: any) {
-  //   if (listSelected.includes(value)) {
-  //     setListSelected(listSelected.filter((obj) => obj !== value));
-  //   } else {
-  //     setListSelected((obj) => [...obj, value]);
-  //   }
-  // }
-
-  // const handleOnEdit = (item: IProjectCreate) => {
-  //   setData(item);
-  //   setUploadedFiles(item.files);
-
-  //   // setModal({
-  //   //   isOpen: true,
-  //   //   type: `Editar Projeto/Contrato: ${item.title}`
-  //   // });
-  // };
-
-  // const handleOnDelete = async (id: any) => {
-  //   try {
-  //     await api.delete(`project/${id}`);
-  //     addToast({
-  //       type: 'success',
-  //       title: 'Sucesso',
-  //       description: 'Projeto foi deletado!'
-  //     });
-
-  //     fetchProject();
-  //   } catch (error: any) {
-  //     addToast({
-  //       type: 'danger',
-  //       title: 'ATENÇÃO',
-  //       description: error.response.data.message
-  //     });
-  //   }
-  // };
 
   const handleOnSubmit = useCallback(
     async (event: any) => {
@@ -523,7 +282,6 @@ export default function CreateProject() {
         );
 
         const newArrayProducts = formData.products.map(({ tenant_id, ...rest }: any) => rest);
-        // const updateProducts = formData.products.map(({ service_id, ...rest }: any) => ({ product_id: service_id, ...rest }))
 
         const {
           title,
@@ -585,7 +343,6 @@ export default function CreateProject() {
           files: []
         } as IProjectCreate);
         setUploadedFiles([]);
-        changeStep(0);
         fetchProject();
       } catch (e: any) {
         addToast({
@@ -600,18 +357,6 @@ export default function CreateProject() {
     [formData, setFormValue, uploadedFiles, setUploadedFiles, setData]
   );
 
-  // function handleList(value: any) {
-  //   if (listSelected.includes(value)) {
-  //     setListSelected(listSelected.filter((obj) => obj !== value));
-  //   } else {
-  //     setListSelected((obj) => [...obj, value]);
-  //   }
-  // }
-
-  useEffect(() => {
-    console.log('log do formdata', formData);
-  }, [formData]);
-
   return (
     <Container>
       <HeaderStepsPage
@@ -625,8 +370,8 @@ export default function CreateProject() {
           <>
             <FormTitle>Geral</FormTitle>
             <InfoGeral
-              data={formData}
-              handleInputChange={handleOnChange}
+              data={DTOForm}
+              handleInputChange={handleChangeInput}
               clients={dataClient}
               error={error}
             />
@@ -650,12 +395,10 @@ export default function CreateProject() {
             <InfoProducts
               handleOnAddProducts={handleOnAddProducts}
               dataOffice={dataOffice}
-              dataFilter={formData.products}
-              handleOnDecrementQtd={(e) => handleOnDecrementQtd(e)}
-              handleOnIncrememtQtd={(e) => handleOnIncrememtQtd(e)}
+              dataFilter={DTOForm.products}
               handleOnPeriod={(e, id) => handleOnPeriod(e, id)}
-              handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
-              handleInputProduct={(value, id) => handleInputProduct(value, id)}
+              // handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
+              handleOnDeleteProduct={(id) => ''}
               handleEditProductQuantity={(value) => editProductQuantity(value)}
               okToSave={setShowSave}
               setSave={saveProducts}
@@ -669,7 +412,7 @@ export default function CreateProject() {
             <InfoFiles
               uploadedFiles={uploadedFiles}
               setUploadedFiles={setUploadedFiles}
-              tenant={formData?.tenant_id}
+              tenant={DTOForm?.tenant_id}
               // isDisabed={!formData?.tenant_id}
               isDisabed={false}
               loading={loading}
@@ -689,7 +432,7 @@ export default function CreateProject() {
             <SummaryWrapper>
               <Summary className="big">
                 <div className="title">Produtos contratados</div>
-                {formData.products.map((row: IProduct, index: number) => (
+                {DTOForm.products.map((row: IProduct, index: number) => (
                   <SummaryCard key={index}>
                     <SummaryCardTitle>
                       #{index + 1} - {row.service}
