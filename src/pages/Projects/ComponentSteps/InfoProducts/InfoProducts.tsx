@@ -46,11 +46,8 @@ interface PropsProducts {
   dataOffice: any;
   dataFilter: any;
   handleOnAddProducts: (items: any) => void;
-  handleOnDecrementQtd: (e: any) => void;
-  handleOnIncrememtQtd: (e: any) => void;
   handleOnPeriod: (e: any, id: any) => void;
   handleOnDeleteProduct: (id: any) => void;
-  handleInputProduct: (value: any, id: any) => void;
   handleEditProductQuantity: (value: any) => void;
   okToSave: any;
   setSave: any;
@@ -63,7 +60,6 @@ export default function InfoProducts({
   handleOnPeriod,
   handleOnAddProducts,
   handleOnDeleteProduct,
-  handleInputProduct,
   handleEditProductQuantity,
   okToSave,
   setSave,
@@ -149,11 +145,8 @@ export default function InfoProducts({
         return obj;
       })
     );
+    handleEditProductQuantity(editSelectedProducts);
   };
-
-  useEffect(() => {
-    console.log('log do edit select', editSelectedProducts);
-  }, [editSelectedProducts]);
 
   useEffect(() => {
     if (selectedProducts.length > 0) {
@@ -181,10 +174,10 @@ export default function InfoProducts({
   }, [setSave]);
 
   useEffect(() => {
-    if (dataFilter) {
+    if (dataFilter && editProducts) {
       setEditSelectedProducts(dataFilter);
     }
-  }, [editSelectedProducts, dataFilter]);
+  }, [dataFilter]);
 
   return (
     <ProductsWrapper>
