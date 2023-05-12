@@ -37,7 +37,7 @@ export default function QuantityCounter({
     }
     if (counter > 0) {
       const productSelected: IProduct = {
-        project_id: rowQuantity.service_id,
+        project_id: rowQuantity.service_id || rowQuantity.product_id,
         service: rowQuantity.service,
         description: rowQuantity.description,
         type: rowQuantity.type,
