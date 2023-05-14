@@ -110,11 +110,15 @@ export default function CreateProject() {
   });
   const averageHours = Number(averageTime(DTOForm.products, DTOForm.products?.length));
 
-  const handleOnAddProducts = (items: IProduct) => {
-    setDTOForm((prevState: IProjectCreate) => ({
-      ...prevState,
-      products: [...prevState.products, items]
-    }));
+  const handleOnAddProducts = (items: any) => {
+    // setDTOForm((prevState: IProjectCreate) => ({
+    //   ...prevState,
+    //   products: [...prevState.products, items]
+    // }));
+  };
+
+  const handleDescription = (value: any) => {
+    setDTOForm((prevState: any) => ({ ...prevState, ['description']: value }));
   };
 
   const handleChangeInput: HandleOnChange = (event) => {
@@ -383,7 +387,7 @@ export default function CreateProject() {
               </div>
               <InfoDescription
                 value={obs}
-                handleOnDescription={(value) => setOBS(value)}
+                handleOnDescription={(value) => handleDescription(value)}
                 mentions={[]}
               />
             </div>
