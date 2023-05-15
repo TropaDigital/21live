@@ -49,6 +49,7 @@ interface PropsProducts {
   handleOnPeriod: (e: any, id: any) => void;
   handleOnDeleteProduct: (id: any) => void;
   handleEditProductQuantity: (value: any) => void;
+  handleEditProducthours: (values: any, product: IProduct) => void;
   okToSave: any;
   setSave: any;
   editProducts: boolean;
@@ -61,18 +62,11 @@ export default function InfoProducts({
   handleOnAddProducts,
   handleOnDeleteProduct,
   handleEditProductQuantity,
+  handleEditProducthours,
   okToSave,
   setSave,
   editProducts
 }: PropsProducts) {
-  // const minutesAll = dataFilter.map((obj: any) => multiplyTime(obj.minutes, obj.quantity));
-
-  // function handleOnAddItems(items: any) {
-  //   handleOnAddProducts([{ ...items, quantity: 1, period: 'mensal' }]);
-  //   setIsOpen(!isOpen);
-  //   setSearch([]);
-  //   setSearchTerm('');
-  // }
   const [search, setSearch] = useState<IServices[]>([]);
   const { data, pages, fetchData } = useFetch<ServicesProps[]>(`services?search=${search}`);
   const [searchTerm, setSearchTerm] = useState('');
@@ -83,8 +77,6 @@ export default function InfoProducts({
   const [selected, setSelected] = useState(1);
   const [quantityProducts, setQuantityProducts] = useState<any>();
   const [selectedProducts, setSelectedProducts] = useState<IProduct[]>([]);
-  const [editSelectedProducts, setEditSelectedProducts] = useState<IProduct[]>([]);
-  const [count, setCount] = useState<number>(0);
 
   useEffect(() => {
     if (debouncedSearchTerm) {
@@ -136,17 +128,13 @@ export default function InfoProducts({
     );
   }
 
-  const editProductQuantity = (product: IProduct) => {
-    setEditSelectedProducts((current) =>
-      current.map((obj) => {
-        if (obj.project_id === product.project_id) {
-          return { ...obj, quantity: product.quantity };
-        }
-        return obj;
-      })
-    );
-    handleEditProductQuantity(editSelectedProducts);
-  };
+  function editProductQuantity(product: any) {
+    handleEditProductQuantity(product);
+  }
+
+  function editProductHours(value: any, product: IProduct) {
+    handleEditProducthours(value, product);
+  }
 
   useEffect(() => {
     if (selectedProducts.length > 0) {
@@ -166,18 +154,7 @@ export default function InfoProducts({
         });
       }, 500);
     }
-
-    if (setSave === 'Go' && editProducts) {
-      handleOnAddProducts([]);
-      handleOnAddProducts(editSelectedProducts);
-    }
   }, [setSave]);
-
-  useEffect(() => {
-    if (dataFilter && editProducts) {
-      setEditSelectedProducts(dataFilter);
-    }
-  }, [dataFilter]);
 
   return (
     <ProductsWrapper>
@@ -222,7 +199,7 @@ export default function InfoProducts({
               <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
             </tr>
           </thead>
-          {dataFilter.length > 0 && editProducts ? (
+          {dataFilter && editProducts ? (
             <tbody>
               {dataFilter?.map((row: IProduct) => (
                 <tr key={row.project_id}>
@@ -326,7 +303,7 @@ export default function InfoProducts({
         </WrapperCard>
       )}
 
-      {dataFilter.length > 0 && editProducts && (
+      {dataFilter && editProducts && (
         <WrapperCard>
           {dataFilter.map((row: IProduct, index: number) => (
             <CardProductsSelected
@@ -334,7 +311,7 @@ export default function InfoProducts({
               id={index + 1}
               title={row.service}
               contract_type={''}
-              hours_total={(e: any) => handleAddHours(e, row)}
+              hours_total={(e: any) => editProductHours(e, row)}
               key={index}
               data={row}
             />

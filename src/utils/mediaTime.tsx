@@ -1,5 +1,5 @@
 function averageTime(hours: any, totalItems: any) {
-  const totalHours = hours.reduce(
+  const totalHours = hours?.reduce(
     (total: any, currentValue: any) => (total = total + currentValue.minutes),
     0
   );
