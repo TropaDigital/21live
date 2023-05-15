@@ -32,28 +32,66 @@ export default function QuantityCounter({
   }, [receiveQuantity]);
 
   useEffect(() => {
-    if (counter === 0) {
+    // if (counter === 0) {
+    //   clearQuantity(rowQuantity);
+    // }
+    // if (counter > 0) {
+    //   const productSelected: IProduct = {
+    //     project_id: rowQuantity.service_id || rowQuantity.project_id,
+    //     service: rowQuantity.service,
+    //     description: rowQuantity.description,
+    //     type: rowQuantity.type,
+    //     size: rowQuantity.size,
+    //     quantity: counter,
+    //     minutes: '' || rowQuantity.minutes,
+    //     period: '' || rowQuantity.period
+    //   };
+    //   handleQuantity(productSelected);
+    // }
+  }, [counter]);
+
+  function clearCounter(value: number) {
+    if (value === 0) {
+      setCounter(0);
       clearQuantity(rowQuantity);
     }
-    if (counter > 0) {
-      const productSelected: IProduct = {
-        project_id: rowQuantity.service_id || rowQuantity.product_id,
-        service: rowQuantity.service,
-        description: rowQuantity.description,
-        type: rowQuantity.type,
-        size: rowQuantity.size,
-        quantity: counter,
-        minutes: '',
-        period: ''
-      };
-      handleQuantity(productSelected);
-    }
-  }, [counter]);
+  }
+
+  function incrementCounter() {
+    setCounter(counter + 1);
+
+    const productSelected: IProduct = {
+      project_id: rowQuantity.service_id || rowQuantity.project_id,
+      service: rowQuantity.service,
+      description: rowQuantity.description,
+      type: rowQuantity.type,
+      size: rowQuantity.size,
+      quantity: counter + 1,
+      minutes: '' || rowQuantity.minutes,
+      period: '' || rowQuantity.period
+    };
+    handleQuantity(productSelected);
+  }
+
+  function decrementCount() {
+    setCounter(counter - 1);
+    const productSelected: IProduct = {
+      project_id: rowQuantity.service_id || rowQuantity.project_id,
+      service: rowQuantity.service,
+      description: rowQuantity.description,
+      type: rowQuantity.type,
+      size: rowQuantity.size,
+      quantity: counter - 1,
+      minutes: '' || rowQuantity.minutes,
+      period: '' || rowQuantity.period
+    };
+    handleQuantity(productSelected);
+  }
 
   return (
     <Container>
       {counter === 1 && (
-        <CounterFieldsBtn style={{ cursor: 'pointer' }} onClick={() => setCounter(0)}>
+        <CounterFieldsBtn style={{ cursor: 'pointer' }} onClick={() => clearCounter(0)}>
           <IconTrash />
         </CounterFieldsBtn>
       )}
@@ -63,12 +101,12 @@ export default function QuantityCounter({
         </CounterFieldsBtn>
       )}
       {counter > 1 && (
-        <CounterFieldsBtn style={{ cursor: 'pointer' }} onClick={() => setCounter(counter - 1)}>
+        <CounterFieldsBtn style={{ cursor: 'pointer' }} onClick={() => decrementCount()}>
           <IconMinus />
         </CounterFieldsBtn>
       )}
       <CounterFields>{counter}</CounterFields>
-      <CounterFieldsBtn style={{ cursor: 'pointer' }} onClick={() => setCounter(counter + 1)}>
+      <CounterFieldsBtn style={{ cursor: 'pointer' }} onClick={() => incrementCounter()}>
         <IconPlus />
       </CounterFieldsBtn>
     </Container>
