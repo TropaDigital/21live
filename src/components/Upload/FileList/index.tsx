@@ -64,13 +64,17 @@ const FileList = ({ files, onDelete }: FileListProps) => (
             />
           )}
 
-          {uploadedFile.url && (
+          {/* {uploadedFile.url && (
             <a href={uploadedFile.url} target="_blank" rel="noopener noreferrer">
               <MdLink style={{ marginRight: 8 }} size={24} color="#222" />
             </a>
-          )}
+          )} */}
 
-          {uploadedFile.uploaded && <MdCheckCircle size={24} color="#78e5d5" />}
+          {uploadedFile.uploaded && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <MdCheckCircle size={24} color="#0046B5" />
+            </div>
+          )}
           {uploadedFile.error && (
             <div style={{ cursor: 'pointer' }} onClick={() => onDelete(uploadedFile.file_id)}>
               <IconTrash width="24px" height="24px" />
