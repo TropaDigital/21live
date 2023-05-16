@@ -147,4 +147,8 @@ export const FilterGroup = styled.div`
   width: 100%;
   padding: 0 1.5rem;
   margin-bottom: 16px;
+
+  .search-field {
+    max-width: 300px;
+  }
 `;
