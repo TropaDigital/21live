@@ -25,8 +25,9 @@ import ComponentsForms from '../pages/components/ComponentsForms';
 import ComponentsPage from '../pages/components/ComponentsPage';
 import ComponentTable from '../pages/components/ComponentTable';
 import ListMeeting from '../pages/Meeting/ListMeeting';
-import ListStaks from '../pages/Staks/ListStaks';
+import TaskList from '../pages/Staks/TaskList';
 import CreateProject from '../pages/CreateProject';
+import CreateTasks from '../pages/Staks/CreateTasks';
 
 function RoutesAll() {
   return (
@@ -154,7 +155,16 @@ function RoutesAll() {
           path="/tarefas"
           element={
             <PrivateRoutes>
-              <ListStaks />
+              <TaskList />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/criar-tarefa"
+          element={
+            <PrivateRoutes>
+              <CreateTasks />
             </PrivateRoutes>
           }
         />
