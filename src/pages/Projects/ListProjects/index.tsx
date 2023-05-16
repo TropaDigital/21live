@@ -282,6 +282,7 @@ export default function ListProjects() {
             value={searchTerm}
             icon={BiSearchAlt}
             isLoading={isLoading}
+            className="search-field"
           />
 
           <ButtonDefault typeButton="light">
