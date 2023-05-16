@@ -1,11 +1,14 @@
+/* eslint-disable import-helpers/order-imports */
+// React
 import React from 'react';
-import { BiCalendar } from 'react-icons/bi';
 
+// Utils
 import { TenantProps } from '../../../utils/models';
 
+// Components
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { SelectDefault } from '../../../components/Inputs/SelectDefault';
-import { FieldDefault, FieldGroupFormDefault } from '../../../components/UiElements/styles';
+import { FlexLine } from '../../Projects/ComponentSteps/styles';
 
 interface FormProps {
   [key: string]: any;
@@ -23,18 +26,16 @@ interface Props {
 export default function InfoGeral({ data, handleInputChange, clients, error }: Props) {
   return (
     <div>
-      <FieldDefault style={{ marginBottom: '14px' }}>
+      <FlexLine>
         <InputDefault
-          label="Titulo do Projeto/Contrato"
+          label="Titulo da tarefa"
           placeholder="Nome do projeto"
           name="title"
           value={data.title}
           onChange={handleInputChange}
           error={error?.title}
         />
-      </FieldDefault>
 
-      <FieldDefault style={{ marginBottom: '14px' }}>
         <SelectDefault
           label="Cliente"
           name="tenant_id"
@@ -48,70 +49,31 @@ export default function InfoGeral({ data, handleInputChange, clients, error }: P
             </option>
           ))}
         </SelectDefault>
-      </FieldDefault>
+      </FlexLine>
 
-      <FieldDefault style={{ marginBottom: '14px' }}>
+      <FlexLine>
         <SelectDefault
-          label="Fee ou Spot"
-          name="contract_type"
-          value={data.contract_type}
+          label="Projeto/Contrato"
+          name="contract"
+          value={data.contract}
           onChange={handleInputChange}
-          error={error?.contract_type}
+          error={error?.contract}
         >
-          <option value="fee">Fee</option>
-          <option value="spot">Spot</option>
+          <option value="projeto">Projeto</option>
+          <option value="contrato">Contrato</option>
         </SelectDefault>
-      </FieldDefault>
 
-      <FieldGroupFormDefault>
-        <FieldDefault style={{ marginBottom: '14px' }}>
-          <InputDefault
-            label="Data inicial"
-            name="date_start"
-            type="date"
-            icon={BiCalendar}
-            value={data.date_start}
-            onChange={handleInputChange}
-            error={error?.date_start}
-          />
-        </FieldDefault>
-
-        <FieldDefault style={{ marginBottom: '14px' }}>
-          <InputDefault
-            label="Data final"
-            name="date_end"
-            type="date"
-            icon={BiCalendar}
-            value={data.date_end}
-            onChange={handleInputChange}
-            error={error?.date_end}
-          />
-        </FieldDefault>
-      </FieldGroupFormDefault>
-
-      {/* <fieldset>
-        <legend>Ações</legend>
-
-        <FieldGroup style={{ marginTop: '10px' }}>
-          <FieldDefault>
-            <CheckboxDefault
-              label="Por Produtos"
-              name="forProducts"
-              checked={data.forProducts}
-              onChange={handleOnChangeCheckbox}
-            />
-          </FieldDefault>
-
-          <FieldDefault>
-            <CheckboxDefault
-              label="Por Descrição"
-              name="forDescriptions"
-              checked={data.forDescriptions}
-              onChange={handleOnChangeCheckbox}
-            />
-          </FieldDefault>
-        </FieldGroup>
-      </fieldset> */}
+        <SelectDefault
+          label="Fluxo"
+          name="flow"
+          value={data.flow}
+          onChange={handleInputChange}
+          error={error?.flow}
+        >
+          <option value="projeto">Sei lá</option>
+          {/* <option value="contrato">Contrato</option> */}
+        </SelectDefault>
+      </FlexLine>
     </div>
   );
 }
