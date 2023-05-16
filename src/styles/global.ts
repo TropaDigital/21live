@@ -205,6 +205,7 @@ legend {
     position: fixed;
     inset: 0;
     animation: overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 1;
   }
 
   .DialogContent {
@@ -222,6 +223,7 @@ legend {
     overflow-y: auto;
     padding: 20px;
     animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 2;
 
     ::-webkit-scrollbar {
       width: 0.4rem;
