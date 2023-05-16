@@ -2,19 +2,21 @@ import { useState, FormEvent, ChangeEvent } from 'react';
 import { BiPlus } from 'react-icons/bi';
 import { FiPaperclip } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
+
 import { useToast } from '../../../hooks/toast';
+import useColumn from '../../../hooks/useColumn';
+import useLocalStorage from '../../../hooks/useLocalStorage';
+import useTask from '../../../hooks/useTask';
+
+import { ColumnModel } from '../../../utils/models';
+
 import ButtonDefault from '../../Buttons/ButtonDefault';
 import { InputDefault } from '../../Inputs/InputDefault';
 import { SelectDefault } from '../../Inputs/SelectDefault';
 import { TextAreaDefault } from '../../Inputs/TextAreaDefault';
 import ModalDefault from '../../Ui/ModalDefault';
 import { FieldDefault, FooterModal } from '../../UiElements/styles';
-
 import { Container, Ul, Li } from './styles';
-import useColumn from '../../../hooks/useColumn';
-import useTask from '../../../hooks/useTask';
-import useLocalStorage from '../../../hooks/useLocalStorage';
-import { ColumnModel } from '../../../utils/models';
 
 interface IMenu {
   to: string;
@@ -44,46 +46,45 @@ interface FormDataProps {
 
 export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
   const { addToast } = useToast();
-  const [ state ] = useLocalStorage('COLUMN');
+  const [state] = useLocalStorage('COLUMN');
   const { column } = useColumn();
   const { addTask } = useTask();
   const [modal, setModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
-
   const [formData, setFormData] = useState<FormDataProps>({
-    nome: "",
-    cliente: "",
-    projeto: "",
-    alocados: "",
-    quadro: "",
-    tipo: "",
-    ordem: "",
-    dataFinal: "",
-    descricao: "",
-    anexo: ""
-  })
+    nome: '',
+    cliente: '',
+    projeto: '',
+    alocados: '',
+    quadro: '',
+    tipo: '',
+    ordem: '',
+    dataFinal: '',
+    descricao: '',
+    anexo: ''
+  });
 
   const modaOpen = () => {
     setModal(true);
-  }
+  };
 
   const modalClose = () => {
-    setModal(false)
-  }
+    setModal(false);
+  };
 
   function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
-    const { name, value } = event.target
+    const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   }
 
   function handleSelectChange(event: ChangeEvent<HTMLSelectElement>) {
-    const { name, value } = event.target
+    const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   }
 
   function handleTextareaChange(event: ChangeEvent<HTMLTextAreaElement>) {
-    const { name, value } = event.target
+    const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   }
 
@@ -93,33 +94,31 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
     try {
       setLoading(true);
 
-      
-      const columnSelected = column.filter((obj: any) => obj.card_id === Number(formData.quadro))
-      
+      const columnSelected = column.filter((obj: any) => obj.card_id === Number(formData.quadro));
+
       const newData = {
         ...formData,
         task_id: columnSelected.length + 1
-      }
+      };
 
-      addTask(columnSelected[0], newData)
-      
+      addTask(columnSelected[0], newData);
+
       addToast({
-        type: "success",
-        title: "Otimo",
-        description: "Os dados estao de acordo!",
+        type: 'success',
+        title: 'Otimo',
+        description: 'Os dados estao de acordo!'
       });
 
       setTimeout(() => {
         setLoading(false);
-      }, 1000)
-
-    }catch(error) {
-      console.log('ERROR', error)
+      }, 1000);
+    } catch (error) {
+      console.log('ERROR', error);
       setLoading(false);
       addToast({
-        type: "danger",
-        title: "Atenção",
-        description: "Dados invalidos!",
+        type: 'danger',
+        title: 'Atenção',
+        description: 'Dados invalidos!'
       });
     }
     // await api.post('points', data);
@@ -127,136 +126,79 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
 
   return (
     <Container modalActive={modalActive}>
-        <ButtonDefault 
-          onClick={modaOpen}
-          style={{ marginTop: '20px' }}
-        >
-          <BiPlus />
-          {!modalActive && 'Nova tarefa'}
-        </ButtonDefault>
+      <ButtonDefault onClick={modaOpen} style={{ marginTop: '20px' }}>
+        <BiPlus />
+        {!modalActive && 'Nova tarefa'}
+      </ButtonDefault>
 
-        <Ul>
-          
-          {menus.map((row, key) => (
-            <Li
-              key={key}
-              active={path === row.to ? true : false}
-              modalActive={modalActive}
-            >
-              <Link to={row.to} onClick={row.onClick ? row.onClick : () => {}}>
-                <row.icon />
-                <span>{row.name}</span>
-              </Link>
-              <span className="tooltip">{row.name}</span>
-            </Li>
-          ))}
-        </Ul>
+      <Ul>
+        {menus.map((row, key) => (
+          <Li key={key} active={path === row.to ? true : false} modalActive={modalActive}>
+            <Link to={row.to} onClick={row.onClick ? row.onClick : () => ''}>
+              <row.icon />
+              <span>{row.name}</span>
+            </Link>
+            <span className="tooltip">{row.name}</span>
+          </Li>
+        ))}
+      </Ul>
 
-      <ModalDefault 
-        isOpen={modal}
-        title='Hello World'
-        onOpenChange={setModal}
-      >
+      <ModalDefault isOpen={modal} title="Hello World" onOpenChange={setModal}>
         <form onSubmit={handleOnSubmit}>
-          <FieldDefault style={{marginBottom: '14px'}}>
-            <InputDefault 
-              label='Nome'
-              name='nome'
-              onChange={handleInputChange}
-            />
+          <FieldDefault style={{ marginBottom: '14px' }}>
+            <InputDefault label="Nome" name="nome" onChange={handleInputChange} />
           </FieldDefault>
 
-          <FieldDefault style={{marginBottom: '14px'}}>
-            <InputDefault 
-              label='Cliente'
-              name='cliente'
-              onChange={handleInputChange}
-              required
-            />
+          <FieldDefault style={{ marginBottom: '14px' }}>
+            <InputDefault label="Cliente" name="cliente" onChange={handleInputChange} required />
           </FieldDefault>
 
-          <FieldDefault style={{marginBottom: '14px'}}>
-            <InputDefault 
-              label='Projeto'
-              name='projeto'
-              onChange={handleInputChange}
-              required
-            />
+          <FieldDefault style={{ marginBottom: '14px' }}>
+            <InputDefault label="Projeto" name="projeto" onChange={handleInputChange} required />
           </FieldDefault>
 
-          <FieldDefault style={{marginBottom: '14px'}}>
-            <InputDefault 
-              label='Alocados'
-              name='alocados'
-              onChange={handleInputChange}
-            />
+          <FieldDefault style={{ marginBottom: '14px' }}>
+            <InputDefault label="Alocados" name="alocados" onChange={handleInputChange} />
           </FieldDefault>
 
-          <FieldDefault style={{marginBottom: '14px'}}>
-            <SelectDefault
-              label='Quadro'
-              name='quadro'
-              onChange={handleSelectChange}
-            >
+          <FieldDefault style={{ marginBottom: '14px' }}>
+            <SelectDefault label="Quadro" name="quadro" onChange={handleSelectChange}>
               {column.map((row: any) => (
-                <option key={row.card_id} value={row.card_id}>{row.name}</option>
+                <option key={row.card_id} value={row.card_id}>
+                  {row.name}
+                </option>
               ))}
             </SelectDefault>
           </FieldDefault>
 
-          <FieldDefault style={{marginBottom: '14px'}}>
-            <InputDefault 
-              label='Tipo'
-              name='tipo'
-              onChange={handleInputChange}
-            />
+          <FieldDefault style={{ marginBottom: '14px' }}>
+            <InputDefault label="Tipo" name="tipo" onChange={handleInputChange} />
           </FieldDefault>
 
-          <FieldDefault style={{marginBottom: '14px'}}>
-            <InputDefault 
-              label='Ordem'
-              name='ordem'
-              onChange={handleInputChange}
-            />
+          <FieldDefault style={{ marginBottom: '14px' }}>
+            <InputDefault label="Ordem" name="ordem" onChange={handleInputChange} />
           </FieldDefault>
 
-          <FieldDefault style={{marginBottom: '14px'}}>
-            <InputDefault 
-              label='Data Final'
-              name='dataFinal'
-              onChange={handleInputChange}
-            />
+          <FieldDefault style={{ marginBottom: '14px' }}>
+            <InputDefault label="Data Final" name="dataFinal" onChange={handleInputChange} />
           </FieldDefault>
 
-          <FieldDefault style={{marginBottom: '14px'}}>
-            <TextAreaDefault 
-              label='Descrição' 
-              name='descricao'
-              onChange={handleTextareaChange}
-            />
+          <FieldDefault style={{ marginBottom: '14px' }}>
+            <TextAreaDefault label="Descrição" name="descricao" onChange={handleTextareaChange} />
           </FieldDefault>
 
           <FooterModal>
-            <ButtonDefault
-              typeButton="light"
-            >
+            <ButtonDefault typeButton="light">
               <FiPaperclip />
               Anexar
             </ButtonDefault>
 
             <div className="fieldGroup">
-              <ButtonDefault
-                typeButton="danger"
-                isOutline
-                onClick={modalClose}
-              >
+              <ButtonDefault typeButton="danger" isOutline onClick={modalClose}>
                 DESCARTAR
               </ButtonDefault>
 
-              <ButtonDefault
-                type='submit'
-                loading={loading}
-              >
+              <ButtonDefault type="submit" loading={loading}>
                 SALVAR
               </ButtonDefault>
             </div>
