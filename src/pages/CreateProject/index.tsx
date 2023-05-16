@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 // React
 import { useState, useCallback, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 // Hooks
 import { useToast } from '../../hooks/toast';
@@ -66,21 +66,10 @@ type HandleOnChange = (
 ) => void;
 
 export default function CreateProject() {
+  const navigate = useNavigate();
   const [createStep, setCreateStep] = useState<number>(1);
   const { addToast } = useToast();
 
-  const { formData, setFormValue, setData } = useForm({
-    tenant_id: '',
-    title: '',
-    contract_type: '',
-    project_id: '',
-    date_start: '',
-    date_end: '',
-    description: '',
-    category: '',
-    products: [],
-    files: []
-  } as IProjectCreate);
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const [search, setSearch] = useState('');
   const {
@@ -109,7 +98,16 @@ export default function CreateProject() {
     files: []
   });
   const [productsArray, setProductsArray] = useState<IProduct[]>([]);
+  // Hours of products
   const totalHoursProducts = Number(sumHours(productsArray));
+  const creatorHoursArray = productsArray?.filter(
+    (obj) => obj.service.toLowerCase() === 'hora de criação'
+  );
+  const totalCreateHours = creatorHoursArray.reduce(
+    (accumulator: any, currentValue: any) => accumulator + currentValue.minutes,
+    0
+  );
+  const productsHoursWithoutCreateHours = totalHoursProducts - totalCreateHours;
 
   const handleOnAddProducts = (items: IProduct) => {
     setProductsArray((prevState: any) => [...prevState, items]);
@@ -124,13 +122,13 @@ export default function CreateProject() {
     setDTOForm({ ...DTOForm, [name]: value });
   };
 
-  useEffect(() => {
-    console.log('log do DTO', DTOForm);
-  }, [DTOForm]);
+  // useEffect(() => {
+  //   console.log('log do DTO', DTOForm);
+  // }, [DTOForm]);
 
-  useEffect(() => {
-    console.log('log do productsArray', productsArray);
-  }, [productsArray]);
+  // useEffect(() => {
+  //   console.log('log do productsArray', productsArray);
+  // }, [productsArray]);
 
   // const handleOnDeleteProduct = (id: number) => {
   //   console.log('ID', id);
@@ -144,34 +142,19 @@ export default function CreateProject() {
     return /^[0-9]*$/.test(value);
   }
 
-  // const handleInputProduct = useCallback(
-  //   (event: React.ChangeEvent<HTMLInputElement>, id: any) => {
-  //     const newValue = event.target.value;
-  //     if (isNumber(newValue)) {
-  //       const updatedProducts = [...formData.products];
-  //       const productIndex = updatedProducts.findIndex((product) => product.service_id === id);
-  //       const updatedProductCopy = { ...updatedProducts[productIndex] };
-  //       updatedProductCopy.quantity = newValue;
-  //       updatedProducts[productIndex] = updatedProductCopy;
-  //       setFormValue('products', updatedProducts);
-  //     }
+  // const handleOnPeriod = useCallback(
+  //   (value: any, id: any) => {
+  //     const verifyPeriod = value ? 'anual' : 'mensal';
+  //     const updatedProducts = [...formData.products];
+  //     const productIndex = updatedProducts.findIndex((product) => product.service_id === id);
+  //     const updatedProductCopy = { ...updatedProducts[productIndex] };
+  //     updatedProductCopy.period = verifyPeriod;
+  //     updatedProducts[productIndex] = updatedProductCopy;
+
+  //     setFormValue('products', updatedProducts);
   //   },
   //   [setFormValue, formData]
   // );
-
-  const handleOnPeriod = useCallback(
-    (value: any, id: any) => {
-      const verifyPeriod = value ? 'anual' : 'mensal';
-      const updatedProducts = [...formData.products];
-      const productIndex = updatedProducts.findIndex((product) => product.service_id === id);
-      const updatedProductCopy = { ...updatedProducts[productIndex] };
-      updatedProductCopy.period = verifyPeriod;
-      updatedProducts[productIndex] = updatedProductCopy;
-
-      setFormValue('products', updatedProducts);
-    },
-    [setFormValue, formData]
-  );
 
   const editProductQuantity = (product: IProduct) => {
     console.log('log do product to edit', product);
@@ -249,7 +232,7 @@ export default function CreateProject() {
         setErrorInput('description', undefined);
       }
 
-      if (createStep === 2 && formData.products === '') {
+      if (createStep === 2 && productsArray.length <= 0) {
         throw new Error('Escolha pelo menos um produto antes de avançar');
       }
 
@@ -268,7 +251,7 @@ export default function CreateProject() {
   };
 
   const handleOnCancel = () => {
-    setData({
+    setDTOForm({
       tenant_id: '',
       project_id: '',
       title: '',
@@ -280,6 +263,7 @@ export default function CreateProject() {
       files: []
     } as IProjectCreate);
     setUploadedFiles([]);
+    setProductsArray([]);
     setError({});
   };
 
@@ -349,7 +333,7 @@ export default function CreateProject() {
           description: 'Serviço cadastrado com sucesso!'
         });
 
-        setData({
+        setDTOForm({
           tenant_id: '',
           project_id: '',
           title: '',
@@ -373,8 +357,13 @@ export default function CreateProject() {
         // setErros(getValidationErrors(e.response.data.result))
       }
     },
-    [formData, setFormValue, uploadedFiles, setUploadedFiles, setData]
+    [uploadedFiles, setUploadedFiles]
   );
+
+  const finishCreate = () => {
+    setFinishModal(false);
+    navigate('/projetos');
+  };
 
   return (
     <Container>
@@ -382,6 +371,7 @@ export default function CreateProject() {
         title="Criar novo projeto/contrato"
         backButton={createStep <= 1}
         stepSelected={createStep}
+        backPage="/projetos"
       />
 
       <FormWrapper>
@@ -415,7 +405,7 @@ export default function CreateProject() {
               handleOnAddProducts={handleOnAddProducts}
               dataOffice={dataOffice}
               dataFilter={productsArray}
-              handleOnPeriod={(e, id) => handleOnPeriod(e, id)}
+              handleOnPeriod={(e, id) => ''}
               // handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
               handleOnDeleteProduct={(id) => ''}
               handleEditProductQuantity={(value) => editProductQuantity(value)}
@@ -485,21 +475,31 @@ export default function CreateProject() {
                     <div className="hours">
                       Horas por produto
                       <strong>
-                        {totalHoursProducts > 9 ? totalHoursProducts : `0${totalHoursProducts}`}
+                        {productsHoursWithoutCreateHours > 9
+                          ? productsHoursWithoutCreateHours
+                          : `0${productsHoursWithoutCreateHours}`}
                         :00:00
                       </strong>
                     </div>
                   </SummaryContractCard>
-                  {false && (
+                  {productsArray.some((obj) => obj.service.toLowerCase() === 'hora de criação') && (
                     <SummaryContractCard>
                       <div className="hours">
-                        Horas de criação <strong>00:00:00</strong>
+                        Horas de criação
+                        <strong>
+                          {totalCreateHours > 9 ? totalCreateHours : `0${totalCreateHours}`}
+                          :00:00
+                        </strong>
                       </div>
                     </SummaryContractCard>
                   )}
                   <SummaryContractCard>
                     <div className="total">
-                      Total <div>04:00:00</div>
+                      Total{' '}
+                      <div>
+                        {totalHoursProducts > 9 ? totalHoursProducts : `0${totalHoursProducts}`}
+                        :00:00
+                      </div>
                     </div>
                   </SummaryContractCard>
                 </Summary>
@@ -597,10 +597,12 @@ export default function CreateProject() {
           </FinishModalMessage>
 
           <FinishModalButtons>
-            <ButtonDefault typeButton="dark" isOutline onClick={() => setFinishModal(false)}>
+            {/* <ButtonDefault typeButton="dark" isOutline onClick={() => setFinishModal(false)}>
               Cancelar
+            </ButtonDefault> */}
+            <ButtonDefault typeButton="primary" onClick={finishCreate}>
+              Concluir
             </ButtonDefault>
-            <ButtonDefault typeButton="primary">Confirmar</ButtonDefault>
           </FinishModalButtons>
         </FinishModal>
       </ModalDefault>
