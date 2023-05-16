@@ -8,15 +8,21 @@ interface HeaderProps {
   title: string;
   backButton?: boolean;
   stepSelected: number;
+  backPage?: string;
   // children?: JSX.Element;
 }
 
-export default function HeaderStepsPage({ title, backButton, stepSelected }: HeaderProps) {
+export default function HeaderStepsPage({
+  title,
+  backButton,
+  stepSelected,
+  backPage
+}: HeaderProps) {
   return (
     <>
       <Container>
         {backButton && (
-          <Link to={'/projetos'}>
+          <Link to={backPage ? backPage : '/'}>
             <BackButton>
               <IconArrowLeft />
               Voltar
