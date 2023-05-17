@@ -111,3 +111,16 @@ export interface ICommentTask {
   task_id: number;
   comment: string;
 }
+
+export interface ServicesProps {
+  service_id: number;
+  service: string;
+  description: string;
+  type: string;
+  size: string;
+  minutes: string;
+  created: string;
+  updated: string;
+  category: string;
+  flag: string;
+}
