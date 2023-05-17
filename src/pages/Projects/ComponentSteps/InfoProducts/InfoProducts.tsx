@@ -14,7 +14,7 @@ import { multiplyTime } from '../../../../utils/convertTimes';
 import { useDebounce } from '../../../../utils/useDebounce';
 
 // Types
-import { IProduct, IServices } from '../../../../types';
+import { IProduct, IServices, ServicesProps } from '../../../../types';
 
 // COMPONENTS
 import ButtonDefault from '../../../../components/Buttons/ButtonDefault';
@@ -28,19 +28,6 @@ import { FieldTogleButton, TableHead } from '../../../../components/Table/styles
 import { FieldGroup } from '../../../../components/UiElements/styles';
 import { ProductsWrapper, WrapperCard } from './styles';
 import CardProductsSelected from '../../../../components/CardProductsSelected';
-
-interface ServicesProps {
-  service_id: number;
-  service: string;
-  description: string;
-  type: string;
-  size: string;
-  minutes: string;
-  created: string;
-  updated: string;
-  category: string;
-  flag: string;
-}
 
 interface PropsProducts {
   dataOffice: any;
