@@ -16,6 +16,7 @@ interface FormProps {
 
 interface Props {
   data: any;
+  dataProducts: any;
   handleInputChange: (
     e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>
   ) => void;
@@ -23,7 +24,13 @@ interface Props {
   error: FormProps;
 }
 
-export default function InfoGeral({ data, handleInputChange, clients, error }: Props) {
+export default function InfoGeral({
+  data,
+  dataProducts,
+  handleInputChange,
+  clients,
+  error
+}: Props) {
   return (
     <div>
       <FlexLine>
@@ -59,8 +66,11 @@ export default function InfoGeral({ data, handleInputChange, clients, error }: P
           onChange={handleInputChange}
           error={error?.contract}
         >
-          <option value="projeto">Projeto</option>
-          <option value="contrato">Contrato</option>
+          {dataProducts?.map((row: any) => (
+            <option key={row.service_id} value={row.service_id}>
+              {row.service}
+            </option>
+          ))}
         </SelectDefault>
 
         <SelectDefault
@@ -70,8 +80,8 @@ export default function InfoGeral({ data, handleInputChange, clients, error }: P
           onChange={handleInputChange}
           error={error?.flow}
         >
-          <option value="projeto">Sei lá</option>
-          {/* <option value="contrato">Contrato</option> */}
+          <option value="projeto">Sei Lá</option>
+          <option value="projeto">Não Sei</option>
         </SelectDefault>
       </FlexLine>
     </div>
