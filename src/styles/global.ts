@@ -19,6 +19,7 @@ export const GlobalStyles = createGlobalStyle`
   //Color-Primary
   --primary: #0046B5;
   --primary-50: #E2F2FF;
+  --primary-100: #BADFFF;
   --primary-700: #0077E6;
   --primary-dark: #101E36;
   --primary-light: #3A6EC1;
@@ -51,7 +52,7 @@ export const GlobalStyles = createGlobalStyle`
   --light: #ffffff;
   --background-primary: #ffffff;
 
-  //Others-Colors
+  //Complementary-Colors
   --Purple: #8269B2;
   --Blue: #37C3FF;
   --Green: #93E088;
@@ -59,6 +60,7 @@ export const GlobalStyles = createGlobalStyle`
   --Red: #F92B60;
   --Yellow: #FFD66E;
   --input-error: #e62965;
+  --success-600: #039855;
 
   //Degrade
   --degrade-green: linear-gradient(250.88deg, #93E088 0%, #73B969 97.63%);
