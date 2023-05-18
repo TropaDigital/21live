@@ -129,7 +129,7 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
       <Link to={'/criar-tarefa'}>
         <ButtonDefault style={{ marginTop: '20px', width: '100%' }}>
           <BiPlus />
-          Nova tarefa
+          {!modalActive && <div>Nova tarefa</div>}
         </ButtonDefault>
       </Link>
 
