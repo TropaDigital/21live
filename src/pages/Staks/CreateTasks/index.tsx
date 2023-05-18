@@ -30,7 +30,6 @@ import {
   ProductModalTitle,
   ProductsModalTop,
   ProductsModalWrapper,
-  ProductsTable,
   SearchProductsModal,
   SplitDeliveries
 } from './styles';
@@ -47,10 +46,11 @@ import { IProduct, ServicesProps } from '../../../types';
 import { TenantProps } from '../../../utils/models';
 
 // Icons
-import { IconClose } from '../../../assets/icons';
-import { BiCalendar, BiPencil, BiSearchAlt } from 'react-icons/bi';
-import { FiMenu } from 'react-icons/fi';
-import { SelectDefault } from '../../../components/Inputs/SelectDefault';
+import { IconClose, IconPlus } from '../../../assets/icons';
+import { BiCalendar, BiSearchAlt } from 'react-icons/bi';
+import InfoDeliveries from '../ComponentSteps/InfoDeliverables';
+import AddTextButton from '../../../components/Buttons/AddTextButton';
+import TaskInputs from '../ComponentSteps/InfoInputs';
 
 interface StateProps {
   [key: string]: any;
@@ -81,11 +81,9 @@ export default function CreateTasks() {
   const [searchTerm, setSearchTerm] = useState('');
   const [productsModal, setProductsModal] = useState<boolean>(false);
   const [deliveriesSplit, setDeliveriesSplit] = useState<string>('no-split');
-  const {
-    data: dataProducts,
-    pages,
-    fetchData
-  } = useFetch<ServicesProps[]>(`services?search=${search}`);
+  const { data: dataProducts } = useFetch<ServicesProps[]>(`services?search=${search}`);
+  const { data: dataFlow, pages, fetchData } = useFetch<any[]>(`/flow?search=`);
+  const { data: dataTypes } = useFetch<any[]>(`/task-type`);
   const { isLoading, debouncedCallback } = useDebouncedCallback(
     (search: string) => setSearch(search),
     700
@@ -94,9 +92,7 @@ export default function CreateTasks() {
     dateStart: '',
     creationDate: ''
   });
-  const splitDeliveries = deliveriesSplit === 'mensal' ? false : true;
-  const [formatType, setFormatType] = useState<string>('');
-  const [descriptionText, setDescriptionText] = useState<string>('');
+  const splitDeliveries = deliveriesSplit === 'no-split' ? false : true;
   const handleSwitch = (value: any) => {
     setDeliveriesSplit(value === true ? 'split' : 'no-split');
   };
@@ -160,8 +156,11 @@ export default function CreateTasks() {
         setErrorInput('description', undefined);
       }
 
-      setProductsModal(true);
-      // setCreateStep(createStep + 1);
+      if (createStep === 1) {
+        setProductsModal(true);
+      } else {
+        setCreateStep(createStep + 1);
+      }
     } catch (error: any) {
       addToast({
         title: 'Atenção',
@@ -192,6 +191,10 @@ export default function CreateTasks() {
     setError({});
   };
 
+  const handleProductsDeliveries = () => {
+    console.log('log dos produtos entregaveis');
+  };
+
   return (
     <>
       <ContainerWrapper>
@@ -209,6 +212,7 @@ export default function CreateTasks() {
               <InfoGeral
                 data={DTOForm}
                 dataProducts={dataProducts}
+                dataFlow={dataFlow}
                 handleInputChange={handleChangeInput}
                 clients={dataClient}
                 error={error}
@@ -266,103 +270,31 @@ export default function CreateTasks() {
                   />
                 </Deliveries>
               </SplitDeliveries>
-              <ProductsTable>
-                <FormTitle>Produtos</FormTitle>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Produto</th>
-                      <th>Descrição</th>
-                      <th>Formato</th>
-                      <th>Tipo</th>
-                      <th>I/D</th>
-                      <th style={{ display: 'grid', placeItems: 'center' }}></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[0, 1, 2].map((row: any, index) => (
-                      <tr key={index}>
-                        <td>#{index + 1}</td>
-                        <td style={{ minWidth: '150px' }}>Produto {index + 1}</td>
-                        <td>
-                          <InputDefault
-                            label=""
-                            name="description"
-                            placeholder="Lorem ipsum dolor sit malesuada"
-                            value={descriptionText}
-                            maxLength={40}
-                            type={'text'}
-                            onChange={(e: any) => setDescriptionText(e.target.value.slice(0, 40))}
-                            error={error?.date_start}
-                          />
-                        </td>
-                        <td
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '18px',
-                            height: '82px'
-                          }}
-                        >
-                          <InputDefault
-                            label=""
-                            name="format"
-                            placeholder="128x190"
-                            value={formatType}
-                            onChange={(e: any) => setFormatType(e.target.value)}
-                            error={error?.date_start}
-                          />
-                          <div style={{ cursor: 'pointer' }}>
-                            <BiPencil />
-                          </div>
-                        </td>
-                        <td style={{ minWidth: '220px' }}>
-                          <SelectDefault
-                            label=""
-                            name="type"
-                            value={''}
-                            onChange={(e: any) => console.log('log do select type', e)}
-                            placeHolder="Selecione..."
-                          >
-                            <option value="external_change">Alteração Externa</option>
-                            <option value="creation">Criação</option>
-                          </SelectDefault>
-                        </td>
-                        <td style={{ minWidth: '220px' }}>
-                          <SelectDefault
-                            label=""
-                            name="I/D"
-                            value={''}
-                            onChange={(e: any) => console.log('log do select I/D', e)}
-                            placeHolder="Selecione..."
-                          >
-                            <option value="impressao">Impressão</option>
-                            <option value="digital">Digital</option>
-                          </SelectDefault>
-                        </td>
-                        <td style={{ cursor: 'pointer' }}>
-                          <FiMenu />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-
-                  {/* <tfoot>
-                    <tr>
-                      <td colSpan={100}>
-                        <Pagination
-                          total={pages.total}
-                          perPage={pages.perPage}
-                          currentPage={selected}
-                          lastPage={pages.lastPage}
-                          onClickPage={(e) => setSelected(e)}
-                        />
-                      </td>
-                    </tr>
-                  </tfoot> */}
-                </table>
-              </ProductsTable>
+              <InfoDeliveries
+                data={[]}
+                dataTypes={dataTypes}
+                handleProducts={handleProductsDeliveries}
+                error={error}
+                deliveriesSplited={splitDeliveries}
+              />
+              {!splitDeliveries && (
+                <AddTextButton
+                  title="Adicionar produto"
+                  click={() => console.log('log do add products dos entregaveis')}
+                />
+              )}
+            </>
+          )}
+          {createStep === 3 && (
+            <>
+              <FormTitle>Inputs</FormTitle>
+              <TaskInputs
+                valueFirst={'nada'}
+                valueSecond={'Nadax2'}
+                handleOnDescription={() => ''}
+                handleOnInput={() => ''}
+                mentions={[]}
+              />
             </>
           )}
         </FormWrapper>
