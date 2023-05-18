@@ -17,6 +17,7 @@ interface FormProps {
 interface Props {
   data: any;
   dataProducts: any;
+  dataFlow: any;
   handleInputChange: (
     e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>
   ) => void;
@@ -24,9 +25,18 @@ interface Props {
   error: FormProps;
 }
 
+interface FlowProps {
+  flow_id: string;
+  tenant_id: string;
+  name: string;
+  steps: string;
+  user_id: string;
+}
+
 export default function InfoGeral({
   data,
   dataProducts,
+  dataFlow,
   handleInputChange,
   clients,
   error
@@ -80,8 +90,11 @@ export default function InfoGeral({
           onChange={handleInputChange}
           error={error?.flow}
         >
-          <option value="projeto">Sei Lá</option>
-          <option value="projeto">Não Sei</option>
+          {dataFlow?.map((row: FlowProps) => (
+            <option key={row.flow_id} value={row.flow_id}>
+              {row.name}
+            </option>
+          ))}
         </SelectDefault>
       </FlexLine>
     </div>
