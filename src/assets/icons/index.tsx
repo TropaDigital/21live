@@ -599,4 +599,60 @@ export const IconClose: React.FC = () => (
   </svg>
 );
 
+export const IconCalendar: React.FC = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M10.6668 1.33301V3.99967"
+      stroke="#039855"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M5.33333 1.33301V3.99967"
+      stroke="#039855"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path d="M2 6.00033H14" stroke="#039855" strokeLinecap="round" strokeLinejoin="round" />
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M12.6667 2.66699H3.33333C2.59667 2.66699 2 3.26366 2 4.00033V12.667C2 13.4037 2.59667 14.0003 3.33333 14.0003H12.6667C13.4033 14.0003 14 13.4037 14 12.667V4.00033C14 3.26366 13.4033 2.66699 12.6667 2.66699Z"
+      stroke="#039855"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M4.67544 8.486C4.58344 8.486 4.50878 8.56067 4.50944 8.65267C4.50944 8.74467 4.58411 8.81934 4.67611 8.81934C4.76811 8.81934 4.84278 8.74467 4.84278 8.65267C4.84278 8.56067 4.76811 8.486 4.67544 8.486"
+      stroke="#039855"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M8.00845 8.486C7.91645 8.486 7.84178 8.56067 7.84245 8.65267C7.84245 8.74467 7.91712 8.81934 8.00912 8.81934C8.10112 8.81934 8.17578 8.74467 8.17578 8.65267C8.17578 8.56067 8.10112 8.486 8.00845 8.486"
+      stroke="#039855"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M11.3419 8.486C11.2499 8.486 11.1753 8.56067 11.1759 8.65267C11.1759 8.74467 11.2506 8.81934 11.3426 8.81934C11.4346 8.81934 11.5093 8.74467 11.5093 8.65267C11.5093 8.56067 11.4346 8.486 11.3419 8.486"
+      stroke="#039855"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M4.67544 11.153C4.58344 11.153 4.50878 11.2277 4.50944 11.3197C4.50944 11.4117 4.58411 11.4863 4.67611 11.4863C4.76811 11.4863 4.84278 11.4117 4.84278 11.3197C4.84278 11.2277 4.76811 11.153 4.67544 11.153"
+      stroke="#039855"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M8.00845 11.153C7.91645 11.153 7.84178 11.2277 7.84245 11.3197C7.84245 11.4117 7.91712 11.4863 8.00912 11.4863C8.10112 11.4863 8.17578 11.4117 8.17578 11.3197C8.17578 11.2277 8.10112 11.153 8.00845 11.153"
+      stroke="#039855"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 export const IconDefault: React.FC = () => <svg />;
