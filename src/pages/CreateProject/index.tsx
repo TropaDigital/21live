@@ -98,7 +98,7 @@ export default function CreateProject() {
     files: []
   });
   const [productsArray, setProductsArray] = useState<IProduct[]>([]);
-  // Hours of products
+  // Hours calculations
   const totalHoursProducts = Number(sumHours(productsArray));
   const creatorHoursArray = productsArray?.filter(
     (obj) => obj.service.toLowerCase() === 'hora de criação'
