@@ -52,98 +52,98 @@ export default function TaskList() {
     700
   );
 
-  const { formData, handleOnChange } = useForm({
-    tenant_id: '',
-    title: '',
-    contract_type: '',
-    date_start: '',
-    date_end: ''
-  } as any);
+  // const { formData, handleOnChange } = useForm({
+  //   tenant_id: '',
+  //   title: '',
+  //   contract_type: '',
+  //   date_start: '',
+  //   date_end: ''
+  // } as any);
 
-  const components = [
-    {
-      label: 'Geral',
-      success: false,
-      component: (
-        <InfoGeral data={formData} handleInputChange={handleOnChange} clients={[]} error={[]} />
-      )
-    },
-    {
-      label: 'Produto',
-      success: false,
-      component: (
-        <InfoGeral data={formData} handleInputChange={handleOnChange} clients={[]} error={[]} />
-      )
-    },
-    {
-      label: 'Anexo',
-      success: false,
-      component: (
-        <InfoGeral data={formData} handleInputChange={handleOnChange} clients={[]} error={[]} />
-      )
-    },
-    {
-      label: 'Conclusão',
-      success: false,
-      component: (
-        <InfoGeral data={formData} handleInputChange={handleOnChange} clients={[]} error={[]} />
-      )
-    }
-  ];
+  // const components = [
+  //   {
+  //     label: 'Geral',
+  //     success: false,
+  //     component: (
+  //       <InfoGeral data={formData} handleInputChange={handleOnChange} clients={[]} error={[]} />
+  //     )
+  //   },
+  //   {
+  //     label: 'Produto',
+  //     success: false,
+  //     component: (
+  //       <InfoGeral data={formData} handleInputChange={handleOnChange} clients={[]} error={[]} />
+  //     )
+  //   },
+  //   {
+  //     label: 'Anexo',
+  //     success: false,
+  //     component: (
+  //       <InfoGeral data={formData} handleInputChange={handleOnChange} clients={[]} error={[]} />
+  //     )
+  //   },
+  //   {
+  //     label: 'Conclusão',
+  //     success: false,
+  //     component: (
+  //       <InfoGeral data={formData} handleInputChange={handleOnChange} clients={[]} error={[]} />
+  //     )
+  //   }
+  // ];
 
-  const [steps, setSteps] = useState(() =>
-    components.map((row) => ({
-      label: row.label,
-      success: false
-    }))
-  );
+  // const [steps, setSteps] = useState(() =>
+  //   components.map((row) => ({
+  //     label: row.label,
+  //     success: false
+  //   }))
+  // );
 
-  const fillComponents = components.map((row: any) => row.component);
-  const { changeStep, currentComponent, currentStep, isFirstStep, isLastStep } =
-    useSteps(fillComponents);
+  // const fillComponents = components.map((row: any) => row.component);
+  // const { changeStep, currentComponent, currentStep, isFirstStep, isLastStep } =
+  //   useSteps(fillComponents);
 
-  const handleOnCancel = () => {
-    setModal({
-      isOpen: false,
-      type: 'Criar nova Tarefa'
-    });
-  };
+  // const handleOnCancel = () => {
+  //   setModal({
+  //     isOpen: false,
+  //     type: 'Criar nova Tarefa'
+  //   });
+  // };
 
-  const handleOnNextStep = () => {
-    changeStep(currentStep + 1);
+  // const handleOnNextStep = () => {
+  //   changeStep(currentStep + 1);
 
-    setSteps((prevComponents) =>
-      prevComponents.map((component, i) => ({
-        ...component,
-        success: i <= currentStep
-      }))
-    );
-  };
+  //   setSteps((prevComponents) =>
+  //     prevComponents.map((component, i) => ({
+  //       ...component,
+  //       success: i <= currentStep
+  //     }))
+  //   );
+  // };
 
-  const handleOnPrevStep = () => {
-    changeStep(currentStep - 1);
-    setSteps((prevComponents) => {
-      return prevComponents.map((component, i) => {
-        if (i === currentStep - 1) {
-          return {
-            ...component,
-            success: false
-          };
-        }
-        return component;
-      });
-    });
-  };
+  // const handleOnPrevStep = () => {
+  //   changeStep(currentStep - 1);
+  //   setSteps((prevComponents) => {
+  //     return prevComponents.map((component, i) => {
+  //       if (i === currentStep - 1) {
+  //         return {
+  //           ...component,
+  //           success: false
+  //         };
+  //       }
+  //       return component;
+  //     });
+  //   });
+  // };
 
-  const handleOnSubmit = useCallback(async (event: any) => {
-    try {
-      event.preventDefault();
+  // const handleOnSubmit = useCallback(async (event: any) => {
+  //   try {
+  //     event.preventDefault();
 
-      console.log('SUBMIT');
-    } catch (error: any) {
-      console.log('ERROR', error);
-    }
-  }, []);
+  //     console.log('SUBMIT');
+  //   } catch (error: any) {
+  //     console.log('ERROR', error);
+  //   }
+  // }, []);
 
   return (
     <ContainerDefault>
@@ -266,7 +266,7 @@ export default function TaskList() {
         </ContainerGroupTable>
       </SectionDefault>
 
-      <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
+      {/* <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
         <form onSubmit={handleOnSubmit}>
           <Steps currentStep={currentStep} steps={steps} />
 
@@ -296,7 +296,7 @@ export default function TaskList() {
             </div>
           </FooterModal>
         </form>
-      </ModalDefault>
+      </ModalDefault> */}
     </ContainerDefault>
   );
 }
