@@ -1,6 +1,6 @@
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 // components
@@ -14,6 +14,10 @@ import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
 import { SwitchSelector } from '../../../components/CardProductsSelected/styles';
 import InputSwitchDefault from '../../../components/Inputs/InputSwitchDefault';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
+import InfoDeliveries from '../ComponentSteps/InfoDeliverables';
+import AddTextButton from '../../../components/Buttons/AddTextButton';
+import TaskInputs from '../ComponentSteps/InfoInputs';
+import SummaryTasks from '../ComponentSteps/SummaryTasks';
 
 // Styles
 import {
@@ -46,11 +50,8 @@ import { IProduct, ServicesProps } from '../../../types';
 import { TenantProps } from '../../../utils/models';
 
 // Icons
-import { IconClose, IconPlus } from '../../../assets/icons';
+import { IconClose } from '../../../assets/icons';
 import { BiCalendar, BiSearchAlt } from 'react-icons/bi';
-import InfoDeliveries from '../ComponentSteps/InfoDeliverables';
-import AddTextButton from '../../../components/Buttons/AddTextButton';
-import TaskInputs from '../ComponentSteps/InfoInputs';
 
 interface StateProps {
   [key: string]: any;
@@ -64,7 +65,7 @@ type HandleOnChange = (
 ) => void;
 
 export default function CreateTasks() {
-  const [createStep, setCreateStep] = useState<number>(2);
+  const [createStep, setCreateStep] = useState<number>(1);
   const { addToast } = useToast();
 
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
@@ -73,17 +74,25 @@ export default function CreateTasks() {
     title: '',
     tenant_id: '',
     product_id: '',
-    contract: '',
-    flow: '',
-    description: ''
+    type: '',
+    flow_id: '',
+    description: '',
+    creation: '',
+    copywriting: '',
+    products_task: [],
+    archives: [],
+    deadlines: [],
+    step: ''
   });
   const [search, setSearch] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [productsModal, setProductsModal] = useState<boolean>(false);
   const [deliveriesSplit, setDeliveriesSplit] = useState<string>('no-split');
   const { data: dataProducts } = useFetch<ServicesProps[]>(`services?search=${search}`);
+  const { data: dataProjects } = useFetch<ServicesProps[]>(`project`);
   const { data: dataFlow, pages, fetchData } = useFetch<any[]>(`/flow?search=`);
   const { data: dataTypes } = useFetch<any[]>(`/task-type`);
+  const [productsArray, setProductsArray] = useState<ServicesProps[]>([]);
   const { isLoading, debouncedCallback } = useDebouncedCallback(
     (search: string) => setSearch(search),
     700
@@ -103,9 +112,14 @@ export default function CreateTasks() {
     setDTOForm((prevState: any) => ({ ...prevState, ['description']: value }));
   };
 
-  const handleOnChangeCheckbox = (value: any, product: IProduct) => {
-    console.log('log do value checkbox', value);
-    console.log('log do product checkbox', product);
+  const handleOnChangeCheckbox = (product: ServicesProps) => {
+    if (productsArray.filter((obj) => obj.service_id === product.service_id).length > 0) {
+      const newArray = productsArray.filter((obj) => obj.service_id !== product.service_id);
+      setProductsArray([]);
+      setProductsArray(newArray);
+    } else {
+      setProductsArray((prevState: any) => [...prevState, product]);
+    }
   };
 
   function setErrorInput(value: any, message: any) {
@@ -195,6 +209,14 @@ export default function CreateTasks() {
     console.log('log dos produtos entregaveis');
   };
 
+  useEffect(() => {
+    console.log('log do DTOForm', DTOForm);
+  }, [DTOForm]);
+
+  useEffect(() => {
+    console.log('log do products selected', productsArray);
+  }, [productsArray]);
+
   return (
     <>
       <ContainerWrapper>
@@ -211,7 +233,7 @@ export default function CreateTasks() {
               <FormTitle>Geral</FormTitle>
               <InfoGeral
                 data={DTOForm}
-                dataProducts={dataProducts}
+                dataProjects={dataProjects}
                 dataFlow={dataFlow}
                 handleInputChange={handleChangeInput}
                 clients={dataClient}
@@ -276,12 +298,10 @@ export default function CreateTasks() {
                 handleProducts={handleProductsDeliveries}
                 error={error}
                 deliveriesSplited={splitDeliveries}
+                addProducts={() => setProductsModal(true)}
               />
               {!splitDeliveries && (
-                <AddTextButton
-                  title="Adicionar produto"
-                  click={() => console.log('log do add products dos entregaveis')}
-                />
+                <AddTextButton title="Adicionar produto" click={() => setProductsModal(true)} />
               )}
             </>
           )}
@@ -294,6 +314,16 @@ export default function CreateTasks() {
                 handleOnDescription={() => ''}
                 handleOnInput={() => ''}
                 mentions={[]}
+              />
+            </>
+          )}
+          {createStep === 4 && (
+            <>
+              <FormTitle>Resumo</FormTitle>
+              <SummaryTasks
+                selectedProducts={[]}
+                createTasks={() => console.log('log do criar tarefa')}
+                editTasks={() => setCreateStep(2)}
               />
             </>
           )}
@@ -369,9 +399,13 @@ export default function CreateTasks() {
                     <CheckboxDefault
                       label=""
                       name={row.service_id}
-                      onChange={(e: any) => handleOnChangeCheckbox(e, row)}
+                      onChange={() => handleOnChangeCheckbox(row)}
                       // checked={data.email_alert === 'true' ? true : false}
-                      checked={false}
+                      checked={
+                        productsArray.filter((obj) => obj.service_id === row.service_id).length > 0
+                          ? false
+                          : true
+                      }
                     />
                     {row.service}
                   </div>
