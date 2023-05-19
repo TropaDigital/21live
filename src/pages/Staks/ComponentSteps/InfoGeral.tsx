@@ -16,7 +16,7 @@ interface FormProps {
 
 interface Props {
   data: any;
-  dataProducts: any;
+  dataProjects: any;
   dataFlow: any;
   handleInputChange: (
     e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>
@@ -35,7 +35,7 @@ interface FlowProps {
 
 export default function InfoGeral({
   data,
-  dataProducts,
+  dataProjects,
   dataFlow,
   handleInputChange,
   clients,
@@ -71,24 +71,24 @@ export default function InfoGeral({
       <FlexLine>
         <SelectDefault
           label="Projeto/Contrato"
-          name="contract"
-          value={data.contract}
+          name="product_id"
+          value={data.product_id}
           onChange={handleInputChange}
-          error={error?.contract}
+          error={error?.product_id}
         >
-          {dataProducts?.map((row: any) => (
-            <option key={row.service_id} value={row.service_id}>
-              {row.service}
+          {dataProjects?.map((row: any) => (
+            <option key={row.project_id} value={row.project_id}>
+              {row.title}
             </option>
           ))}
         </SelectDefault>
 
         <SelectDefault
           label="Fluxo"
-          name="flow"
-          value={data.flow}
+          name="flow_id"
+          value={data.flow_id}
           onChange={handleInputChange}
-          error={error?.flow}
+          error={error?.flow_id}
         >
           {dataFlow?.map((row: FlowProps) => (
             <option key={row.flow_id} value={row.flow_id}>
