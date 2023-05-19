@@ -40,6 +40,7 @@ interface Props {
   handleProducts: () => void;
   error: FormProps;
   deliveriesSplited: boolean;
+  addProducts: () => void;
 }
 
 interface OpenMenuProps {
@@ -52,7 +53,8 @@ export default function InfoDeliveries({
   dataTypes,
   handleProducts,
   error,
-  deliveriesSplited
+  deliveriesSplited,
+  addProducts
 }: Props) {
   const [descriptionText, setDescriptionText] = useState<any>({
     inputId: '',
@@ -347,10 +349,7 @@ export default function InfoDeliveries({
                   </tbody>
                 </table>
               </TableDelivery>
-              <AddTextButton
-                title="Adicionar produto"
-                click={() => console.log('log do add products')}
-              />
+              <AddTextButton title="Adicionar produto" click={addProducts} />
             </div>
           </Deliveries>
           <NewDelivery>
