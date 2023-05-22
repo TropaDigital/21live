@@ -123,4 +123,5 @@ export interface ServicesProps {
   updated: string;
   category: string;
   flag: string;
+  quantity?: any;
 }
