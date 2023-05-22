@@ -67,8 +67,13 @@ export const SummaryCardSubtitle = styled.div`
 
   color: var(--gray-500);
   font-size: var(--text-small-md);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-medium);
   line-height: 24px;
+  text-transform: capitalize;
+
+  span {
+    font-weight: var(--weight-semibold);
+  }
 `;
 
 export const SummaryTasksInfo = styled.div`

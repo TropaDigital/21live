@@ -21,12 +21,16 @@ export default function SummaryTasks({ selectedProducts, editTasks, createTasks 
     <SummaryWrapper>
       <Summary className="big">
         <div className="title">Produtos selecionados</div>
-        {[0, 1].map((row: any, index: number) => (
+        {selectedProducts.map((row: any, index: number) => (
           <SummaryCard key={index}>
-            <SummaryCardTitle>ESTRATÉGIA DE CONTEÚDO</SummaryCardTitle>
+            <SummaryCardTitle>{row.service}</SummaryCardTitle>
             <SummaryCardSubtitle>
-              <div>Tipo: Criação</div>
-              <div>Formato: 128x190</div>
+              <div>
+                Tipo: <span>{row.type}</span>
+              </div>
+              <div>
+                Formato: <span>{row.size}</span>
+              </div>
             </SummaryCardSubtitle>
           </SummaryCard>
         ))}
@@ -35,7 +39,7 @@ export default function SummaryTasks({ selectedProducts, editTasks, createTasks 
       <SummaryTasksInfo>
         <div className="title">RESUMO DA TAREFA</div>
         <div className="item-hours">
-          Total de itens: <span>2</span>
+          Total de itens: <span>{selectedProducts.length}</span>
         </div>
         <div className="item-hours">
           Horas estimadas <span>04:00:00</span>
