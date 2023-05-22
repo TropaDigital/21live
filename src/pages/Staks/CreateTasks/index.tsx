@@ -50,8 +50,9 @@ import { IProduct, ServicesProps } from '../../../types';
 import { TenantProps } from '../../../utils/models';
 
 // Icons
-import { IconClose } from '../../../assets/icons';
+import { IconChecked, IconClose } from '../../../assets/icons';
 import { BiCalendar, BiSearchAlt } from 'react-icons/bi';
+import { FinishModal, FinishModalButtons, FinishModalMessage } from '../../CreateProject/styles';
 
 interface StateProps {
   [key: string]: any;
@@ -87,12 +88,14 @@ export default function CreateTasks() {
   const [search, setSearch] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [productsModal, setProductsModal] = useState<boolean>(false);
+  const [finishModal, setFinishModal] = useState<boolean>(false);
   const [deliveriesSplit, setDeliveriesSplit] = useState<string>('no-split');
   const { data: dataProducts } = useFetch<ServicesProps[]>(`services?search=${search}`);
   const { data: dataProjects } = useFetch<ServicesProps[]>(`project`);
   const { data: dataFlow, pages, fetchData } = useFetch<any[]>(`/flow?search=`);
   const { data: dataTypes } = useFetch<any[]>(`/task-type`);
   const [productsArray, setProductsArray] = useState<ServicesProps[]>([]);
+  const [quantityProductsArray, setQuantityProductsArray] = useState<any[]>([]);
   const { isLoading, debouncedCallback } = useDebouncedCallback(
     (search: string) => setSearch(search),
     700
@@ -137,7 +140,7 @@ export default function CreateTasks() {
   };
 
   const handleOnNextStep = () => {
-    const { title, tenant_id, contract, flow, description } = DTOForm;
+    const { title, tenant_id, product_id, flow_id, description } = DTOForm;
 
     try {
       if (title === '') {
@@ -152,16 +155,16 @@ export default function CreateTasks() {
         setErrorInput('tenant_id', undefined);
       }
 
-      if (contract === '') {
-        throw setErrorInput('contract', 'Contrato é obrigatório!');
+      if (product_id === '') {
+        throw setErrorInput('product_id', 'Projeto / Contrato é obrigatório!');
       } else {
-        setErrorInput('contract', undefined);
+        setErrorInput('product_id', undefined);
       }
 
-      if (flow === '') {
-        throw setErrorInput('flow', 'Fluxo é obrigatório!');
+      if (flow_id === '') {
+        throw setErrorInput('flow_id', 'Fluxo é obrigatório!');
       } else {
-        setErrorInput('flow', undefined);
+        setErrorInput('flow_id', undefined);
       }
 
       if (description === '') {
@@ -205,8 +208,86 @@ export default function CreateTasks() {
     setError({});
   };
 
-  const handleProductsDeliveries = () => {
-    console.log('log dos produtos entregaveis');
+  const handleProductsDeliveries = (field: string, value: string, product: any) => {
+    console.log('log dos produtos entregaveis', field, value, product);
+
+    if (field === 'description') {
+      setProductsArray((current) =>
+        current.map((obj) => {
+          if (obj.service_id === product) {
+            return { ...obj, description: value };
+          }
+          return obj;
+        })
+      );
+    }
+
+    if (field === 'size') {
+      setProductsArray((current) =>
+        current.map((obj) => {
+          if (obj.service_id === product) {
+            return { ...obj, size: value };
+          }
+          return obj;
+        })
+      );
+    }
+
+    if (field === 'category') {
+      setProductsArray((current) =>
+        current.map((obj) => {
+          if (obj.service_id === product) {
+            return { ...obj, category: value };
+          }
+          return obj;
+        })
+      );
+    }
+
+    if (field === 'type') {
+      setProductsArray((current) =>
+        current.map((obj) => {
+          if (obj.service_id === product) {
+            return { ...obj, type: value };
+          }
+          return obj;
+        })
+      );
+    }
+  };
+
+  const handleProductQuantity = (value: any) => {
+    if (productsArray.filter((obj) => obj.service_id === value.project_id).length > 0) {
+      if (quantityProductsArray.length > 0) {
+        setQuantityProductsArray((current) =>
+          current.map((obj) => {
+            if (obj.project_id === value.project_id) {
+              return { ...obj, quantity: value.quantity };
+            }
+            return obj;
+          })
+        );
+      } else {
+        setQuantityProductsArray((prevState: any) => [...prevState, value]);
+      }
+    } else {
+      addToast({
+        type: 'warning',
+        title: 'ATENÇÃO',
+        description: 'Selecione o produto primeiro, depois a quantidade.'
+      });
+    }
+  };
+
+  const handleClearQuantity = (value: any) => {
+    setQuantityProductsArray((current) =>
+      current.map((obj) => {
+        if (obj.project_id === value.service_id) {
+          return { ...obj, quantity: 0 };
+        }
+        return obj;
+      })
+    );
   };
 
   useEffect(() => {
@@ -214,8 +295,8 @@ export default function CreateTasks() {
   }, [DTOForm]);
 
   useEffect(() => {
-    console.log('log do products selected', productsArray);
-  }, [productsArray]);
+    console.log('log do quantity products selected', quantityProductsArray);
+  }, [quantityProductsArray]);
 
   return (
     <>
@@ -293,7 +374,7 @@ export default function CreateTasks() {
                 </Deliveries>
               </SplitDeliveries>
               <InfoDeliveries
-                data={[]}
+                data={productsArray}
                 dataTypes={dataTypes}
                 handleProducts={handleProductsDeliveries}
                 error={error}
@@ -309,8 +390,8 @@ export default function CreateTasks() {
             <>
               <FormTitle>Inputs</FormTitle>
               <TaskInputs
-                valueFirst={'nada'}
-                valueSecond={'Nadax2'}
+                valueFirst={'Nada'}
+                valueSecond={'Nada X 2'}
                 handleOnDescription={() => ''}
                 handleOnInput={() => ''}
                 mentions={[]}
@@ -321,7 +402,7 @@ export default function CreateTasks() {
             <>
               <FormTitle>Resumo</FormTitle>
               <SummaryTasks
-                selectedProducts={[]}
+                selectedProducts={productsArray}
                 createTasks={() => console.log('log do criar tarefa')}
                 editTasks={() => setCreateStep(2)}
               />
@@ -403,15 +484,20 @@ export default function CreateTasks() {
                       // checked={data.email_alert === 'true' ? true : false}
                       checked={
                         productsArray.filter((obj) => obj.service_id === row.service_id).length > 0
-                          ? false
-                          : true
+                          ? true
+                          : false
                       }
                     />
                     {row.service}
                   </div>
                   <div className="category">{row.category}</div>
                   <div className="quantity">
-                    <QuantityCounter />
+                    <QuantityCounter
+                      handleQuantity={handleProductQuantity}
+                      rowQuantity={row}
+                      clearQuantity={handleClearQuantity}
+                      receiveQuantity={row.quantity}
+                    />
                   </div>
                 </Product>
               ))}
@@ -430,6 +516,33 @@ export default function CreateTasks() {
               </ButtonDefault>
             </AddProductButton>
           </ProductsModalWrapper>
+        </ModalDefault>
+
+        <ModalDefault
+          isOpen={finishModal}
+          onOpenChange={() => setFinishModal(false)}
+          maxWidth="400px"
+        >
+          <FinishModal>
+            <div>
+              <IconChecked />
+            </div>
+            <FinishModalMessage>
+              <div className="modal-title">Tarefa criada com sucesso!</div>
+              <div className="modal-subtitle">
+                A tarefa foi criada com êxito, visualize os detalhes na página de tarefas.
+              </div>
+            </FinishModalMessage>
+
+            <FinishModalButtons>
+              <ButtonDefault typeButton="dark" isOutline onClick={() => setFinishModal(false)}>
+                Cancelar
+              </ButtonDefault>
+              <ButtonDefault typeButton="primary" onClick={() => ''}>
+                Confirmar
+              </ButtonDefault>
+            </FinishModalButtons>
+          </FinishModal>
         </ModalDefault>
       </ContainerWrapper>
     </>
