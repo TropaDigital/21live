@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // Icons
 import { BiPencil } from 'react-icons/bi';
@@ -37,7 +38,7 @@ interface TypeProps {
 interface Props {
   data: any;
   dataTypes: any;
-  handleProducts: () => void;
+  handleProducts: (field: string, value: any, product: any) => void;
   error: FormProps;
   deliveriesSplited: boolean;
   addProducts: () => void;
@@ -69,6 +70,31 @@ export default function InfoDeliveries({
     deliveryId: '',
     openInfo: false
   });
+  const [productType, setProductType] = useState<any>({
+    productIndex: '',
+    productTypeValue: ''
+  });
+
+  const [productImpDig, setProductImpDig] = useState<any>({
+    productIndex: '',
+    productTypeSelected: ''
+  });
+
+  useEffect(() => {
+    handleProducts('description', descriptionText.text, descriptionText.inputId);
+  }, [descriptionText]);
+
+  useEffect(() => {
+    handleProducts('size', formatType, editFormat.productIndex);
+  }, [formatType]);
+
+  useEffect(() => {
+    handleProducts('category', productType.productTypeValue, productType.productIndex);
+  }, [productType.productTypeValue]);
+
+  useEffect(() => {
+    handleProducts('type', productImpDig.productTypeSelected, productImpDig.productIndex);
+  }, [productImpDig.productTypeSelected]);
 
   return (
     <>
@@ -88,10 +114,10 @@ export default function InfoDeliveries({
               </tr>
             </thead>
             <tbody>
-              {[0, 1, 2].map((row: any, index) => (
+              {data?.map((row: any, index: any) => (
                 <tr key={index}>
                   <td>#{index + 1}</td>
-                  <td style={{ minWidth: '150px' }}>Produto {index + 1} com texto gigante </td>
+                  <td style={{ minWidth: '150px' }}>{row.service}</td>
                   <td>
                     <div
                       style={{
@@ -105,19 +131,22 @@ export default function InfoDeliveries({
                         label=""
                         name="description"
                         placeholder="Lorem ipsum dolor sit malesuada"
-                        value={descriptionText.inputId === index ? descriptionText.text : ''}
+                        value={row.description}
                         maxLength={40}
                         type={'text'}
-                        disabled={descriptionText.inputId !== index}
+                        disabled={descriptionText.inputId !== row.service_id}
                         onChange={(e: any) =>
-                          setDescriptionText({ inputId: index, text: e.target.value.slice(0, 40) })
+                          setDescriptionText({
+                            inputId: row.service_id,
+                            text: e.target.value.slice(0, 40)
+                          })
                         }
                         //   error={error?.date_start}
                       />
                       <EditableFormat
-                        className={descriptionText.inputId === index ? 'edit' : ''}
+                        className={descriptionText.inputId === row.service_id ? 'edit' : ''}
                         onClick={() => {
-                          setDescriptionText({ inputId: index, text: '' });
+                          setDescriptionText({ inputId: row.service_id, text: '' });
                         }}
                       >
                         <BiPencil />
@@ -137,18 +166,20 @@ export default function InfoDeliveries({
                         label=""
                         name="format"
                         placeholder="128x190"
-                        value={editFormat.productIndex === index ? formatType : ''}
+                        value={row.size}
                         disabled={
-                          editFormat.productIndex === index && editFormat.editable ? false : true
+                          editFormat.productIndex === row.service_id && editFormat.editable
+                            ? false
+                            : true
                         }
                         onChange={(e: any) => setFormatType(e.target.value)}
                         //   error={error?.date_start}
                       />
                       <EditableFormat
-                        className={editFormat.productIndex === index ? 'edit' : ''}
+                        className={editFormat.productIndex === row.service_id ? 'edit' : ''}
                         onClick={() => {
                           setEditFormat({
-                            productIndex: index,
+                            productIndex: row.service_id,
                             editable: true
                           });
                           setFormatType('');
@@ -162,8 +193,13 @@ export default function InfoDeliveries({
                     <SelectDefault
                       label=""
                       name="type"
-                      value={''}
-                      onChange={(e: any) => console.log('log do select type', e)}
+                      value={row.category}
+                      onChange={(e: any) =>
+                        setProductType({
+                          productIndex: row.service_id,
+                          productTypeValue: e.target.value
+                        })
+                      }
                       placeHolder="Selecione..."
                     >
                       {dataTypes?.map((row: TypeProps) => (
@@ -177,8 +213,13 @@ export default function InfoDeliveries({
                     <SelectDefault
                       label=""
                       name="I/D"
-                      value={''}
-                      onChange={(e: any) => console.log('log do select I/D', e)}
+                      value={row.type}
+                      onChange={(e: any) =>
+                        setProductImpDig({
+                          productIndex: row.service_id,
+                          productTypeSelected: e.target.value
+                        })
+                      }
                       placeHolder="Selecione..."
                     >
                       <option value="impressao">Impressão</option>
