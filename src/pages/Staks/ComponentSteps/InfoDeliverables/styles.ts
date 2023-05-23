@@ -186,6 +186,16 @@ export const DeliveryTitle = styled.div`
       color: var(--success-600);
       font-size: var(--text-small-sm);
       font-weight: var(--weight-medium);
+
+      &.add {
+        color: var(--primary);
+        cursor: pointer;
+        svg {
+          path {
+            stroke: var(--primary);
+          }
+        }
+      }
     }
   }
 
@@ -233,3 +243,25 @@ export const TableDelivery = styled.div`
   border: 1px solid var(--gray-200);
   border-radius: 8px;
 `;
+
+export const DateModal = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  height: fit-content;
+`;
+
+export const DateModalTitle = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  background: var(--gray-200);
+  border-radius: 6px;
+  color: var(--gray-800);
+  font-size: var(--text-small-md);
+  font-weight: var(--weight-medium);
+`;
+
+export const DateInput = styled.div``;
