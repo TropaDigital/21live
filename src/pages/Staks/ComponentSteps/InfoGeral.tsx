@@ -46,7 +46,7 @@ export default function InfoGeral({
       <FlexLine>
         <InputDefault
           label="Titulo da tarefa"
-          placeholder="Nome do projeto"
+          placeholder="Nome da tarefa"
           name="title"
           value={data.title}
           onChange={handleInputChange}
