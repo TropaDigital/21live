@@ -187,5 +187,17 @@ export const Deliveries = styled.div`
   align-items: center;
   gap: 16px;
   height: 82px;
-  max-width: 656px;
+  max-width: 910px;
+`;
+
+export const DeliverySplitRadio = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 56px;
+  padding-top: 20px;
+
+  color: var(--gray-600);
+  font-size: var(--text-small-sm);
+  font-weight: var(--weight-medium);
 `;

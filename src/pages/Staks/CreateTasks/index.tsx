@@ -25,6 +25,7 @@ import {
   CloseModalButton,
   ContainerWrapper,
   Deliveries,
+  DeliverySplitRadio,
   Footer,
   FormTitle,
   FormWrapper,
@@ -37,6 +38,7 @@ import {
   SearchProductsModal,
   SplitDeliveries
 } from './styles';
+import { FinishModal, FinishModalButtons, FinishModalMessage } from '../../CreateProject/styles';
 
 // Hooks
 import { useToast } from '../../../hooks/toast';
@@ -44,7 +46,7 @@ import { useFetch } from '../../../hooks/useFetch';
 import useDebouncedCallback from '../../../hooks/useDebounced';
 
 // Types
-import { IProduct, ServicesProps } from '../../../types';
+import { ServicesProps } from '../../../types';
 
 // Utils
 import { TenantProps } from '../../../utils/models';
@@ -52,7 +54,7 @@ import { TenantProps } from '../../../utils/models';
 // Icons
 import { IconChecked, IconClose } from '../../../assets/icons';
 import { BiCalendar, BiSearchAlt } from 'react-icons/bi';
-import { FinishModal, FinishModalButtons, FinishModalMessage } from '../../CreateProject/styles';
+import Radio from '../../../components/Inputs/InputRadioDefault';
 
 interface StateProps {
   [key: string]: any;
@@ -92,7 +94,7 @@ export default function CreateTasks() {
   const [deliveriesSplit, setDeliveriesSplit] = useState<string>('no-split');
   const { data: dataProducts } = useFetch<ServicesProps[]>(`services?search=${search}`);
   const { data: dataProjects } = useFetch<ServicesProps[]>(`project`);
-  const { data: dataFlow, pages, fetchData } = useFetch<any[]>(`/flow?search=`);
+  const { data: dataFlow } = useFetch<any[]>(`/flow?search=`);
   const { data: dataTypes } = useFetch<any[]>(`/task-type`);
   const [productsArray, setProductsArray] = useState<ServicesProps[]>([]);
   const [quantityProductsArray, setQuantityProductsArray] = useState<any[]>([]);
@@ -209,8 +211,6 @@ export default function CreateTasks() {
   };
 
   const handleProductsDeliveries = (field: string, value: string, product: any) => {
-    console.log('log dos produtos entregaveis', field, value, product);
-
     if (field === 'description') {
       setProductsArray((current) =>
         current.map((obj) => {
@@ -349,7 +349,7 @@ export default function CreateTasks() {
                 </SwitchSelector>
                 <Deliveries>
                   <InputDefault
-                    label="Entrega {Nome do input intermediário}"
+                    label="Entrega - Pré Requisitos"
                     placeholder="00/00/0000"
                     name="dateStart"
                     type="date"
@@ -371,6 +371,31 @@ export default function CreateTasks() {
                     }
                     value={deliveryDates.creationDate}
                   />
+                  <DeliverySplitRadio>
+                    Dividir entregas?
+                    <Radio
+                      name={'Sim'}
+                      value="sim"
+                      options={[
+                        {
+                          label: 'Sim',
+                          value: 'sim'
+                        }
+                      ]}
+                      onChange={() => console.log('log do radio')}
+                    />
+                    <Radio
+                      name={'Não'}
+                      value="não"
+                      options={[
+                        {
+                          label: 'Não',
+                          value: 'nao'
+                        }
+                      ]}
+                      onChange={() => console.log('log do radio')}
+                    />
+                  </DeliverySplitRadio>
                 </Deliveries>
               </SplitDeliveries>
               <InfoDeliveries
