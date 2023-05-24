@@ -22,6 +22,7 @@ interface FormHook {
   formData: FormProps;
   handleOnChange: HandleOnChange;
   handleOnChangeCheckbox: HandleOnChangeCheckbox;
+  handleOnChangeSwitch: any;
   resetForm: ResetForm;
   setFormValue: SetFormValue;
   setData: SetItem;
@@ -33,6 +34,12 @@ const useForm = (initialValues: FormProps): FormHook => {
   const handleOnChange: HandleOnChange = (event) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleOnChangeSwitch = (event: any) => {
+    const { name, value } = event;
+    const newValue: string = value.toString();
+    setFormData({ ...formData, [name]: newValue });
   };
 
   const handleOnChangeCheckbox: HandleOnChangeCheckbox = (event) => {
@@ -56,6 +63,7 @@ const useForm = (initialValues: FormProps): FormHook => {
     formData,
     handleOnChange,
     handleOnChangeCheckbox,
+    handleOnChangeSwitch,
     resetForm,
     setFormValue,
     setData
