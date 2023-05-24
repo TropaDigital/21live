@@ -48,6 +48,7 @@ interface Props {
   error: FormProps;
   deliveriesSplited: boolean;
   addProducts: () => void;
+  deliveryType: string;
 }
 
 interface OpenMenuProps {
@@ -68,7 +69,8 @@ export default function InfoDeliveries({
   handleProducts,
   error,
   deliveriesSplited,
-  addProducts
+  addProducts,
+  deliveryType
 }: Props) {
   const [descriptionText, setDescriptionText] = useState<any>({
     inputId: '',
