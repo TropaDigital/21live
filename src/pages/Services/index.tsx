@@ -14,6 +14,7 @@ import ButtonDefault from '../../components/Buttons/ButtonDefault';
 import ButtonTable from '../../components/Buttons/ButtonTable';
 import HeaderPage from '../../components/HeaderPage';
 import { InputDefault } from '../../components/Inputs/InputDefault';
+import InputSwitchDefault from '../../components/Inputs/InputSwitchDefault';
 import { SelectDefault } from '../../components/Inputs/SelectDefault';
 import { TextAreaDefault } from '../../components/Inputs/TextAreaDefault';
 import Pagination from '../../components/Pagination';
@@ -31,7 +32,7 @@ import {
 import moment from 'moment';
 
 interface ServicesProps {
-  service_id: number;
+  service_id?: number | string;
   service: string;
   description: string;
   type: string;
@@ -49,23 +50,27 @@ interface FormDataProps {
   type: string;
   size: string;
   minutes: string;
-  service_id: number;
+  category: string;
+  flag: string;
+  service_id?: number | string;
 }
 
 export default function Services() {
   const { addToast } = useToast();
-  const { formData, setData, handleOnChange } = useForm({
+  const { formData, setData, handleOnChange, handleOnChangeSwitch } = useForm({
     service: '',
     description: '',
     type: '',
     size: '',
     minutes: '',
-    service_id: 0
+    category: '',
+    flag: 'false',
+    service_id: ''
   } as FormDataProps);
 
   const [modal, setModal] = useState({
     isOpen: false,
-    type: 'Novo Serviço'
+    type: ''
   });
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -133,18 +138,19 @@ export default function Services() {
       try {
         event.preventDefault();
 
-        // Inserir lógica
-        const { service, description, type, minutes, size, service_id } = formData;
+        const { service, description, type, minutes, category, flag, size, service_id } = formData;
         const newFormData = {
           service,
           description,
+          category,
+          flag,
           type,
           size,
           minutes,
           service_id
         };
 
-        if (modal.type === 'Novo Serviço') {
+        if (modal.type === 'Novo serviço') {
           await api.post('services', newFormData);
         } else {
           await api.put(`services/${formData.service_id}`, newFormData);
@@ -348,6 +354,23 @@ export default function Services() {
               value={formData.size}
               icon={BiCode}
               required
+            />
+          </FieldDefault>
+          <FieldDefault>
+            <InputDefault
+              label="Categoria"
+              placeholder="Teste"
+              name="category"
+              onChange={handleOnChange}
+              value={formData.category}
+              required
+            />
+          </FieldDefault>
+          <FieldDefault>
+            <InputSwitchDefault
+              onChange={(e) => handleOnChangeSwitch({ name: 'flag', value: e.target.checked })}
+              isChecked={formData.flag}
+              label="Listar produto"
             />
           </FieldDefault>
           <FieldDefault>
