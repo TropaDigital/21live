@@ -1,15 +1,21 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useCallback, useState, useEffect } from 'react';
+// React
+import { useCallback, useState } from 'react';
+// Icons
 import { BiCode, BiFilter, BiPlus, BiSearchAlt, BiTime } from 'react-icons/bi';
+// Libraries
 import Switch from 'react-switch';
 
+// Services
 import api from '../../services/api';
 
+// Hooks
 import { useToast } from '../../hooks/toast';
 import useDebouncedCallback from '../../hooks/useDebounced';
 import { useFetch } from '../../hooks/useFetch';
 import useForm from '../../hooks/useForm';
 
+// Components
 import ButtonDefault from '../../components/Buttons/ButtonDefault';
 import ButtonTable from '../../components/Buttons/ButtonTable';
 import HeaderPage from '../../components/HeaderPage';
@@ -28,8 +34,6 @@ import {
   FieldGroup,
   FooterModal
 } from '../../components/UiElements/styles';
-
-import moment from 'moment';
 
 interface ServicesProps {
   service_id?: number | string;
@@ -228,18 +232,20 @@ export default function Services() {
               </ButtonDefault>
             </FieldTogleButton>
 
-            <InputDefault
-              label=""
-              name="search"
-              placeholder="Faça sua busca..."
-              onChange={(event) => {
-                setSearchTerm(event.target.value);
-                debouncedCallback(event.target.value);
-              }}
-              value={searchTerm}
-              icon={BiSearchAlt}
-              isLoading={isLoading}
-            />
+            <div style={{ maxWidth: '280px' }}>
+              <InputDefault
+                label=""
+                name="search"
+                placeholder="Faça sua busca..."
+                onChange={(event) => {
+                  setSearchTerm(event.target.value);
+                  debouncedCallback(event.target.value);
+                }}
+                value={searchTerm}
+                icon={BiSearchAlt}
+                isLoading={isLoading}
+              />
+            </div>
 
             <ButtonDefault typeButton="light">
               <BiFilter />
@@ -267,7 +273,10 @@ export default function Services() {
                 <td>
                   <Switch
                     onChange={() => handleList(row.service_id)}
-                    checked={listSelected.includes(row.service_id) ? true : false}
+                    // checked={
+                    //   listSelected.includes(row.service_id) || row.flag === 'true' ? true : false
+                    // }
+                    checked={row.flag === 'true' ? true : false}
                     uncheckedIcon={false}
                     checkedIcon={false}
                     onColor="#0046B5"
