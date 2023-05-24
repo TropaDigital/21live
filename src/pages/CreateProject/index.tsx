@@ -53,6 +53,7 @@ import {
 import api from '../../services/api';
 import { averageTime } from '../../utils/mediaTime';
 import { sumHours } from '../../utils/sumHours';
+import InputSwitchDefault from '../../components/Inputs/InputSwitchDefault';
 
 interface StateProps {
   [key: string]: any;
@@ -95,7 +96,8 @@ export default function CreateProject() {
     description: '',
     category: '',
     products: [],
-    files: []
+    files: [],
+    email: ''
   });
   const [productsArray, setProductsArray] = useState<IProduct[]>([]);
   // Hours calculations
@@ -360,6 +362,11 @@ export default function CreateProject() {
     [uploadedFiles, setUploadedFiles]
   );
 
+  const handleSwitchEmail = (value: any) => {
+    const emailSwitch: string = value.toString();
+    setDTOForm((prevState: any) => ({ ...prevState, ['email']: emailSwitch }));
+  };
+
   const finishCreate = () => {
     setFinishModal(false);
     navigate('/projetos');
@@ -435,6 +442,12 @@ export default function CreateProject() {
             <div className="flex-title">
               <FormTitle>Resumo</FormTitle>
               <EmailButton>
+                <InputSwitchDefault
+                  onChange={(e) => {
+                    handleSwitchEmail(e.target.checked);
+                  }}
+                  value={DTOForm.email}
+                />
                 <IconMail />
                 Enviar resumo por email
               </EmailButton>

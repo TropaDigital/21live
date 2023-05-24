@@ -67,18 +67,17 @@ export const Footer = styled.div`
   }
 `;
 
-export const EmailButton = styled.button`
+export const EmailButton = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
-  width: 218px;
+  gap: 12px;
+  width: fit-content;
   height: 24px;
   background: transparent;
 
   color: var(--primary);
   font-size: var(--text-small-md);
   font-weight: var(--weight-semibold);
-  text-decoration: underline;
   text-underline-offset: 2px;
 `;
 
