@@ -1,6 +1,6 @@
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 // components
@@ -55,6 +55,7 @@ import { TenantProps } from '../../../utils/models';
 import { IconChecked, IconClose } from '../../../assets/icons';
 import { BiCalendar, BiSearchAlt } from 'react-icons/bi';
 import Radio from '../../../components/Inputs/InputRadioDefault';
+import api from '../../../services/api';
 
 interface StateProps {
   [key: string]: any;
@@ -93,7 +94,7 @@ export default function CreateTasks() {
   const [finishModal, setFinishModal] = useState<boolean>(false);
   const [deliveriesSplit, setDeliveriesSplit] = useState<string>('no-split');
   const { data: dataProducts } = useFetch<ServicesProps[]>(`services?search=${search}`);
-  const { data: dataProjects } = useFetch<ServicesProps[]>(`project`);
+  const { data: dataProjects } = useFetch<ServicesProps[]>(`project-products/${DTOForm.tenant_id}`);
   const { data: dataFlow } = useFetch<any[]>(`/flow?search=`);
   const { data: dataTypes } = useFetch<any[]>(`/task-type`);
   const [productsArray, setProductsArray] = useState<ServicesProps[]>([]);
@@ -106,7 +107,9 @@ export default function CreateTasks() {
     dateStart: '',
     creationDate: ''
   });
+  const [tasksType, setTasksType] = useState<string>('');
   const splitDeliveries = deliveriesSplit === 'no-split' ? false : true;
+
   const handleSwitch = (value: any) => {
     setDeliveriesSplit(value === true ? 'split' : 'no-split');
   };
@@ -175,9 +178,14 @@ export default function CreateTasks() {
         setErrorInput('description', undefined);
       }
 
-      if (createStep === 1) {
+      if (createStep === 1 && tasksType === 'produto') {
+        setCreateStep(createStep + 1);
+      } else if (createStep === 1 && tasksType === 'horas') {
         setProductsModal(true);
+      } else if (createStep === 1 && tasksType === 'livre') {
+        handleOnSubmit();
       } else {
+        // Só para teste, depois remover
         setCreateStep(createStep + 1);
       }
     } catch (error: any) {
@@ -290,8 +298,66 @@ export default function CreateTasks() {
     );
   };
 
+  const handleOnSubmit = useCallback(async () => {
+    try {
+      // event.preventDefault();
+      const {
+        title,
+        tenant_id,
+        product_id,
+        type,
+        flow_id,
+        description,
+        creation,
+        copywriting,
+        products_task,
+        archives,
+        deadlines,
+        step
+      } = DTOForm;
+
+      const createNewData = {
+        title,
+        tenant_id,
+        product_id,
+        type,
+        flow_id,
+        description,
+        creation,
+        copywriting,
+        products_task,
+        archives,
+        deadlines,
+        step
+      };
+
+      await api.post(`task`, createNewData);
+      // if (modal.type === 'Criar novo Projeto/Contrato') {
+      // } else {
+      //   await api.put(`project/${formData.project_id}`, updateData);
+      // }
+      setFinishModal(true);
+      addToast({
+        type: 'success',
+        title: 'Sucesso',
+        description: 'Tarefa cadastrada com sucesso!'
+      });
+    } catch (e: any) {
+      addToast({
+        type: 'danger',
+        title: 'ATENÇÃO',
+        description: e.response.data.message
+      });
+
+      // setErros(getValidationErrors(e.response.data.result))
+    }
+  }, [DTOForm, addToast]);
+
   useEffect(() => {
     console.log('log do DTOForm', DTOForm);
+    if (DTOForm.product_id !== '') {
+      console.log('log do product ID', DTOForm.product_id);
+    }
   }, [DTOForm]);
 
   useEffect(() => {
@@ -338,15 +404,17 @@ export default function CreateTasks() {
             <>
               <FormTitle>Entregáveis</FormTitle>
               <SplitDeliveries>
-                <SwitchSelector>
-                  <InputSwitchDefault
-                    onChange={(e) => {
-                      handleSwitch(e.target.checked);
-                    }}
-                    value={String(splitDeliveries)}
-                  />
-                  <span>Dividir entregas</span>
-                </SwitchSelector>
+                {tasksType === 'horas' && (
+                  <SwitchSelector>
+                    <InputSwitchDefault
+                      onChange={(e) => {
+                        handleSwitch(e.target.checked);
+                      }}
+                      value={String(splitDeliveries)}
+                    />
+                    <span>Dividir entregas</span>
+                  </SwitchSelector>
+                )}
                 <Deliveries>
                   <InputDefault
                     label="Entrega - Pré Requisitos"
@@ -371,31 +439,33 @@ export default function CreateTasks() {
                     }
                     value={deliveryDates.creationDate}
                   />
-                  <DeliverySplitRadio>
-                    Dividir entregas?
-                    <Radio
-                      name={'Sim'}
-                      value="sim"
-                      options={[
-                        {
-                          label: 'Sim',
-                          value: 'sim'
-                        }
-                      ]}
-                      onChange={() => console.log('log do radio')}
-                    />
-                    <Radio
-                      name={'Não'}
-                      value="não"
-                      options={[
-                        {
-                          label: 'Não',
-                          value: 'nao'
-                        }
-                      ]}
-                      onChange={() => console.log('log do radio')}
-                    />
-                  </DeliverySplitRadio>
+                  {tasksType === 'produto' && (
+                    <DeliverySplitRadio>
+                      Dividir entregas?
+                      <Radio
+                        name={'Sim'}
+                        value="sim"
+                        options={[
+                          {
+                            label: 'Sim',
+                            value: 'sim'
+                          }
+                        ]}
+                        onChange={() => console.log('log do radio')}
+                      />
+                      <Radio
+                        name={'Não'}
+                        value="não"
+                        options={[
+                          {
+                            label: 'Não',
+                            value: 'nao'
+                          }
+                        ]}
+                        onChange={() => console.log('log do radio')}
+                      />
+                    </DeliverySplitRadio>
+                  )}
                 </Deliveries>
               </SplitDeliveries>
               <InfoDeliveries
@@ -405,6 +475,7 @@ export default function CreateTasks() {
                 error={error}
                 deliveriesSplited={splitDeliveries}
                 addProducts={() => setProductsModal(true)}
+                deliveryType={tasksType}
               />
               {!splitDeliveries && (
                 <AddTextButton title="Adicionar produto" click={() => setProductsModal(true)} />
