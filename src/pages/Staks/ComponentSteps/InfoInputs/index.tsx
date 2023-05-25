@@ -22,7 +22,7 @@ export default function TaskInputs({
   return (
     <InputTaskWrapper>
       <InputField>
-        <InputFieldTitle>Input &#123;Nome do input intermediário&#125;</InputFieldTitle>
+        <InputFieldTitle>Input Pré-Requisitos;</InputFieldTitle>
         <WrapperEditor
           mentionData={mentions}
           value={valueFirst}
