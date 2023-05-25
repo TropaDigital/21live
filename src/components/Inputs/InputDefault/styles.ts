@@ -76,7 +76,7 @@ export const ContainerInput = styled.div<ContainerProps>`
     border-style: solid;
     border-image: initial;
     border-color: inherit;
-    background: inherit;
+    background: var(--background-primary);
     /* line-height: 40px; */
 
     &::placeholder {
