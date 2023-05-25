@@ -60,8 +60,10 @@ export interface ITaskCreate {
   type?: string; //type_id da tabela task_type
   flow_id?: number;
   description: string; //descricao geral
-  creation?: ICreation; //entrega de criação
-  copywriting?: ICreation; //entrega da redação
+  creation_description?: string; //entrega de criação
+  creation_date_end?: string;
+  copywriting_description?: string;
+  copywriting_date_end?: string; //entrega da redação
   products_task?: Array<IProductTask>; //esse só abre se o produto tiver a flag, irá abrir uma lista de produtos, que entrará nesta array(caso a entrega for única)
   archives?: Array<IDocTask>;
   deadlines?: Array<IDelivery>; //se for dividir a entrega, entra agqui
@@ -98,11 +100,6 @@ export interface IProductTask {
   minutes: number | string;
   quantity: number;
   period: string; // monthly yearly
-}
-
-export interface ICreation {
-  description?: string;
-  date_end?: string;
 }
 
 export interface ICommentTask {
