@@ -18,7 +18,8 @@ export const Summary = styled.div`
   overflow: hidden;
 
   &.big {
-    max-width: 712px;
+    min-width: 712px;
+    max-width: 792px;
   }
 
   .title {
@@ -71,12 +72,20 @@ export const SummaryCardSubtitle = styled.div`
   line-height: 24px;
   text-transform: capitalize;
 
+  .description-wrap {
+    max-width: 270px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   span {
     font-weight: var(--weight-semibold);
+    color: var(--gray-900);
   }
 `;
 
-export const SummaryTasksInfo = styled.div`
+export const SummaryTasksAbout = styled.div`
   display: flex;
   flex-direction: column;
   gap: 40px;
@@ -109,4 +118,55 @@ export const SummaryButtons = styled.div`
   gap: 16px;
   width: 100%;
   height: fit-content;
+`;
+
+export const SummaryInfoWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: var(--background-primary);
+  width: 100%;
+  padding: 24px;
+`;
+
+export const SummaryTaskInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 24px;
+
+  .title-info {
+    color: var(--gray-600);
+    font-size: var(--text-small-sm);
+    font-weight: var(--weight-regular);
+    line-height: 24px;
+  }
+
+  .info {
+    color: var(--gray-900);
+    font-size: var(--text-small-md);
+    font-weight: var(--weight-medium);
+    line-height: 24px;
+    text-transform: uppercase;
+  }
+`;
+
+export const SummaryTaskDescription = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  .description-title {
+    color: var(--gray-600);
+    font-size: var(--text-small-sm);
+    font-weight: var(--weight-regular);
+    line-height: 24px;
+  }
+
+  .description-info {
+    color: var(--gray-900);
+    font-size: var(--text-small-md);
+    font-weight: var(--weight-medium);
+    line-height: 24px;
+  }
 `;
