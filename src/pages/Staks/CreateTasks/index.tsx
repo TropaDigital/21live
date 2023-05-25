@@ -61,6 +61,14 @@ interface StateProps {
   [key: string]: any;
 }
 
+interface ProjectProductProps {
+  listavel: string;
+  product_id: string;
+  produto: string;
+  projeto: string;
+  tipo: string;
+}
+
 type HandleOnChange = (
   event:
     | React.ChangeEvent<HTMLInputElement>
@@ -81,8 +89,10 @@ export default function CreateTasks() {
     type: '',
     flow_id: '',
     description: '',
-    creation: '',
-    copywriting: '',
+    creation_description: '',
+    creation_date_end: '',
+    copywriting_description: '',
+    copywriting_date_end: '',
     products_task: [],
     archives: [],
     deadlines: [],
@@ -103,20 +113,34 @@ export default function CreateTasks() {
     (search: string) => setSearch(search),
     700
   );
-  const [deliveryDates, setDeliveryDates] = useState({
-    dateStart: '',
-    creationDate: ''
-  });
   const [tasksType, setTasksType] = useState<string>('');
   const splitDeliveries = deliveriesSplit === 'no-split' ? false : true;
+
+  const infoProjects: any = dataProjects?.filter(
+    (obj: any) => obj.product_id === DTOForm.product_id
+  );
 
   const handleSwitch = (value: any) => {
     setDeliveriesSplit(value === true ? 'split' : 'no-split');
   };
 
+  const handleTaskDeliveries = (name: string, value: any) => {
+    console.log('Log do description', name, value);
+    if (name === 'dateStart') {
+      setDTOForm((prevState: any) => ({ ...prevState, ['copywriting_date_end']: value }));
+    }
+    if (name === 'creationDate') {
+      setDTOForm((prevState: any) => ({ ...prevState, ['creation_date_end']: value }));
+    }
+    if (name === 'copywriting_description') {
+      setDTOForm((prevState: any) => ({ ...prevState, ['copywriting_description']: value }));
+    }
+    if (name === 'creation_description') {
+      setDTOForm((prevState: any) => ({ ...prevState, ['creation_description']: value }));
+    }
+  };
+
   const handleDescription = (value: any) => {
-    // setDTOForm((prevState: any) => ({ ...prevState, ['description']: value }));
-    console.log('Log do description', value);
     setDTOForm((prevState: any) => ({ ...prevState, ['description']: value }));
   };
 
@@ -178,14 +202,11 @@ export default function CreateTasks() {
         setErrorInput('description', undefined);
       }
 
-      if (createStep === 1 && tasksType === 'produto') {
-        setCreateStep(createStep + 1);
-      } else if (createStep === 1 && tasksType === 'horas') {
+      if (createStep === 1 && tasksType === 'horas') {
         setProductsModal(true);
-      } else if (createStep === 1 && tasksType === 'livre') {
+      } else if (createStep === 3 && tasksType === 'livre') {
         handleOnSubmit();
       } else {
-        // Só para teste, depois remover
         setCreateStep(createStep + 1);
       }
     } catch (error: any) {
@@ -301,6 +322,7 @@ export default function CreateTasks() {
   const handleOnSubmit = useCallback(async () => {
     try {
       // event.preventDefault();
+
       const {
         title,
         tenant_id,
@@ -308,8 +330,10 @@ export default function CreateTasks() {
         type,
         flow_id,
         description,
-        creation,
-        copywriting,
+        creation_description,
+        creation_date_end,
+        copywriting_description,
+        copywriting_date_end,
         products_task,
         archives,
         deadlines,
@@ -323,15 +347,19 @@ export default function CreateTasks() {
         type,
         flow_id,
         description,
-        creation,
-        copywriting,
+        creation_description,
+        creation_date_end,
+        copywriting_date_end,
+        copywriting_description,
         products_task,
         archives,
         deadlines,
         step
       };
 
+      // console.log('log do handleSubmit', createNewData);
       await api.post(`task`, createNewData);
+
       // if (modal.type === 'Criar novo Projeto/Contrato') {
       // } else {
       //   await api.put(`project/${formData.project_id}`, updateData);
@@ -354,11 +382,18 @@ export default function CreateTasks() {
   }, [DTOForm, addToast]);
 
   useEffect(() => {
-    console.log('log do DTOForm', DTOForm);
     if (DTOForm.product_id !== '') {
-      console.log('log do product ID', DTOForm.product_id);
+      // console.log('log do product ID', DTOForm.product_id);
+      console.log('log do product with selected ID', infoProjects[0]);
+      if (infoProjects[0].tipo === 'product' && infoProjects[0].listavel !== 'true') {
+        setTasksType('horas');
+      } else if (infoProjects[0].tipo === 'product' && infoProjects[0].listavel === 'true') {
+        setTasksType('produto');
+      } else if (infoProjects[0].tipo !== 'product') {
+        setTasksType('livre');
+      }
     }
-  }, [DTOForm]);
+  }, [DTOForm, infoProjects]);
 
   useEffect(() => {
     console.log('log do quantity products selected', quantityProductsArray);
@@ -417,15 +452,13 @@ export default function CreateTasks() {
                 )}
                 <Deliveries>
                   <InputDefault
-                    label="Entrega - Pré Requisitos"
+                    label="Entrega - Pré-Requisitos"
                     placeholder="00/00/0000"
                     name="dateStart"
                     type="date"
                     icon={BiCalendar}
-                    onChange={(e) =>
-                      setDeliveryDates({ ...deliveryDates, ['dateStart']: e.target.value })
-                    }
-                    value={deliveryDates.dateStart}
+                    onChange={(e) => handleTaskDeliveries('dateStart', e.target.value)}
+                    value={DTOForm.copywriting_date_end}
                   />
 
                   <InputDefault
@@ -434,10 +467,8 @@ export default function CreateTasks() {
                     name="creationDate"
                     type="date"
                     icon={BiCalendar}
-                    onChange={(e) =>
-                      setDeliveryDates({ ...deliveryDates, ['creationDate']: e.target.value })
-                    }
-                    value={deliveryDates.creationDate}
+                    onChange={(e) => handleTaskDeliveries('creationDate', e.target.value)}
+                    value={DTOForm.creation_date_end}
                   />
                   {tasksType === 'produto' && (
                     <DeliverySplitRadio>
@@ -468,45 +499,112 @@ export default function CreateTasks() {
                   )}
                 </Deliveries>
               </SplitDeliveries>
-              <InfoDeliveries
-                data={productsArray}
-                dataTypes={dataTypes}
-                handleProducts={handleProductsDeliveries}
-                error={error}
-                deliveriesSplited={splitDeliveries}
-                addProducts={() => setProductsModal(true)}
-                deliveryType={tasksType}
-              />
-              {!splitDeliveries && (
-                <AddTextButton title="Adicionar produto" click={() => setProductsModal(true)} />
+              {tasksType !== 'livre' && (
+                <>
+                  <InfoDeliveries
+                    data={productsArray}
+                    dataTypes={dataTypes}
+                    handleProducts={handleProductsDeliveries}
+                    error={error}
+                    deliveriesSplited={splitDeliveries}
+                    addProducts={() => setProductsModal(true)}
+                    deliveryType={tasksType}
+                  />
+                  {!splitDeliveries && (
+                    <AddTextButton title="Adicionar produto" click={() => setProductsModal(true)} />
+                  )}
+                </>
+              )}
+              {tasksType === 'livre' && (
+                <div style={{ marginTop: '40px' }}>
+                  <FormTitle>Inputs</FormTitle>
+                  <TaskInputs
+                    valueFirst={DTOForm.copywriting_description}
+                    valueSecond={DTOForm.creation_description}
+                    handleOnDescription={(value) =>
+                      handleTaskDeliveries('copywriting_description', value)
+                    }
+                    handleOnInput={(value) => handleTaskDeliveries('creation_description', value)}
+                    mentions={[]}
+                  />
+                </div>
               )}
             </>
           )}
           {createStep === 3 && (
             <>
-              <FormTitle>Inputs</FormTitle>
-              <TaskInputs
-                valueFirst={'Nada'}
-                valueSecond={'Nada X 2'}
-                handleOnDescription={() => ''}
-                handleOnInput={() => ''}
-                mentions={[]}
-              />
+              {tasksType !== 'livre' && (
+                <>
+                  <FormTitle>Inputs</FormTitle>
+                  <TaskInputs
+                    valueFirst={DTOForm.copywriting_description}
+                    valueSecond={DTOForm.creation_description}
+                    handleOnDescription={(value) =>
+                      handleTaskDeliveries('copywriting_description', value)
+                    }
+                    handleOnInput={(value) => handleTaskDeliveries('creation_description', value)}
+                    mentions={[]}
+                  />
+                </>
+              )}
+              {tasksType === 'livre' && (
+                <>
+                  <FormTitle>Resumo da tarefa</FormTitle>
+                  <SummaryTasks
+                    selectedProducts={productsArray}
+                    createTasks={handleOnSubmit}
+                    editTasks={() => setCreateStep(2)}
+                    taskSummary={DTOForm}
+                    taskType={tasksType}
+                  />
+                </>
+              )}
             </>
           )}
           {createStep === 4 && (
             <>
-              <FormTitle>Resumo</FormTitle>
+              <FormTitle>Resumo da tarefa</FormTitle>
               <SummaryTasks
                 selectedProducts={productsArray}
-                createTasks={() => console.log('log do criar tarefa')}
+                createTasks={handleOnSubmit}
                 editTasks={() => setCreateStep(2)}
+                taskSummary={DTOForm}
+                taskType={tasksType}
               />
             </>
           )}
         </FormWrapper>
 
-        {createStep !== 4 && (
+        {createStep !== 4 && tasksType !== 'livre' && (
+          <Footer>
+            <>
+              <Link to={'/tarefas'}>
+                <ButtonDefault
+                  typeButton="primary"
+                  isOutline
+                  type="button"
+                  onClick={handleOnCancel}
+                >
+                  Descartar
+                </ButtonDefault>
+              </Link>
+
+              <div className="fieldGroup">
+                {createStep !== 1 && (
+                  <ButtonDefault typeButton="primary" isOutline onClick={handleOnPrevStep}>
+                    Voltar
+                  </ButtonDefault>
+                )}
+
+                <ButtonDefault type="button" typeButton="primary" onClick={handleOnNextStep}>
+                  Continuar
+                </ButtonDefault>
+              </div>
+            </>
+          </Footer>
+        )}
+
+        {createStep !== 3 && tasksType === 'livre' && (
           <Footer>
             <>
               <Link to={'/tarefas'}>
@@ -600,16 +698,29 @@ export default function CreateTasks() {
             </ProductListWrapper>
 
             <AddProductButton>
-              <ButtonDefault
-                typeButton="primary"
-                onClick={() => {
-                  console.log('add product');
-                  setProductsModal(false);
-                  setCreateStep(createStep + 1);
-                }}
-              >
-                Adicionar Produto
-              </ButtonDefault>
+              {createStep === 1 && tasksType === 'horas' && (
+                <ButtonDefault
+                  typeButton="primary"
+                  onClick={() => {
+                    console.log('add product');
+                    setProductsModal(false);
+                    setCreateStep(createStep + 1);
+                  }}
+                >
+                  Adicionar Produto
+                </ButtonDefault>
+              )}
+              {createStep > 1 && (
+                <ButtonDefault
+                  typeButton="primary"
+                  onClick={() => {
+                    console.log('add product');
+                    setProductsModal(false);
+                  }}
+                >
+                  Adicionar Produto
+                </ButtonDefault>
+              )}
             </AddProductButton>
           </ProductsModalWrapper>
         </ModalDefault>
