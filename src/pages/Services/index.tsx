@@ -87,6 +87,7 @@ export default function Services() {
   const [typeList, setTypeList] = useState('produtos');
 
   const { data, pages, fetchData } = useFetch<ServicesProps[]>(`services?search=${search}`);
+  const { data: dataCategory } = useFetch<ServicesProps[]>(`category?search=${search}`);
   const [selected, setSelected] = useState(1);
   const [listSelected, setListSelected] = useState<any[]>([]);
 
@@ -366,6 +367,18 @@ export default function Services() {
             />
           </FieldDefault>
           <FieldDefault>
+            {/* <SelectDefault
+              label="Categoria"
+              placeholder="Selecione aqui..."
+              name="category"
+              onChange={handleOnChange}
+              value={formData.category}
+              required
+            >
+              <option key={'impresso'} value={'impresso'}>
+                Impresso
+              </option>
+            </SelectDefault> */}
             <InputDefault
               label="Categoria"
               placeholder="Teste"
