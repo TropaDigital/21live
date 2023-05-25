@@ -98,7 +98,7 @@ export default function InfoDeliveries({
   const DeliveryDefault: DeliveryProps = {
     deliveryId: 1,
     deliveryTitle: '',
-    deliveryDate: '13/03/2023',
+    deliveryDate: '',
     showInfo: false
   };
 
@@ -264,7 +264,7 @@ export default function InfoDeliveries({
                     <SelectDefault
                       label=""
                       name="I/D"
-                      value={row.type}
+                      value={row.type === 'impresso' ? 'impressao' : 'digital'}
                       onChange={(e: any) =>
                         setProductImpDig({
                           productIndex: row.service_id,
