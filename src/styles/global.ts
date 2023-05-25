@@ -965,6 +965,7 @@ legend {
 
 .ProseMirror {
   min-height: 90px;
+  background-color: white;
   > * + * {
     /* margin-top: 0.75em; */
   }
