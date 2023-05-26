@@ -1,3 +1,4 @@
+/* eslint-disable import-helpers/order-imports */
 /* eslint-disable react-hooks/exhaustive-deps */
 // React
 import { useEffect, useState } from 'react';
@@ -8,6 +9,7 @@ import { IconArrowDown } from '../../assets/icons';
 // Components
 import InputSwitchDefault from '../Inputs/InputSwitchDefault';
 import QuantityCounter from '../QuantityCounter';
+
 // Styles
 import {
   ArrowButton,
@@ -20,6 +22,9 @@ import {
   ContainerCard
 } from './styles';
 
+// Utils
+import { multiplyTime } from '../../utils/convertTimes';
+
 interface ProductsProps {
   // handleOnDecrementQtd: (e: any) => void;
   // handleOnIncrememtQtd: (e: any) => void;
@@ -30,6 +35,7 @@ interface ProductsProps {
   contract_type: any;
   hours_total: any;
   data: any;
+  editing: any;
 }
 
 export default function CardProductsSelected({
@@ -37,7 +43,8 @@ export default function CardProductsSelected({
   id,
   title,
   hours_total,
-  data
+  data,
+  editing
 }: ProductsProps) {
   const [openCard, setOpenCard] = useState<boolean>(true);
   const [timeCounter, setTimeCounter] = useState<number>(0);
@@ -64,6 +71,10 @@ export default function CardProductsSelected({
     hours_total({ timeCounter, contractType });
   }, [timeCounter]);
 
+  useEffect(() => {
+    setTimeCounter(data.quantity);
+  }, []);
+
   return (
     <ContainerCard>
       <CardProduct openOptions={openCard}>
@@ -88,13 +99,13 @@ export default function CardProductsSelected({
           </SwitchSelector>
           <EstimatedHours>
             <div className="hours">
-              Horas estimadas: <strong>{timeCounter}:00</strong>
+              Horas estimadas: <strong>{multiplyTime(data?.minutes, data?.quantity)}</strong>
             </div>
             <QuantityCounter
               clearQuantity={() => setTimeCounter(0)}
               handleQuantity={handleCounter}
               rowQuantity={data}
-              receiveQuantity={data.minutes}
+              receiveQuantity={data.quantity}
             />
           </EstimatedHours>
         </CardBottom>

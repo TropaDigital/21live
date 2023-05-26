@@ -11,7 +11,7 @@ export const CardProduct = styled.div<CardProps>`
   flex-direction: column;
   align-items: flex-start;
   gap: 16px;
-  width: 320px;
+  width: 340px;
   height: ${({ openOptions }) => (openOptions ? '160px' : '56px')};
   /* background: var(--background-primary); */
   border-bottom: 1px solid var(--gray-200);
