@@ -93,7 +93,6 @@ export default function CreateTasks() {
     creation_date_end: '',
     copywriting_description: '',
     copywriting_date_end: '',
-    products_task: [],
     archives: [],
     deadlines: [],
     step: ''
@@ -322,6 +321,12 @@ export default function CreateTasks() {
   const handleOnSubmit = useCallback(async () => {
     try {
       // event.preventDefault();
+      const deadLines = {
+        task_id: '',
+        date_end: DTOForm.creation_date_end,
+        description: DTOForm.creation_description,
+        products: productsArray
+      };
 
       const {
         title,
@@ -334,7 +339,6 @@ export default function CreateTasks() {
         creation_date_end,
         copywriting_description,
         copywriting_date_end,
-        products_task,
         archives,
         deadlines,
         step
@@ -351,14 +355,14 @@ export default function CreateTasks() {
         creation_date_end,
         copywriting_date_end,
         copywriting_description,
-        products_task,
         archives,
-        deadlines,
+        deadlines: deadLines,
         step
       };
+      // Adicionar o IDelivery Type dentro do Deadlines
+      await api.post(`task`, createNewData);
 
       // console.log('log do handleSubmit', createNewData);
-      await api.post(`task`, createNewData);
 
       // if (modal.type === 'Criar novo Projeto/Contrato') {
       // } else {
@@ -384,7 +388,7 @@ export default function CreateTasks() {
   useEffect(() => {
     if (DTOForm.product_id !== '') {
       // console.log('log do product ID', DTOForm.product_id);
-      console.log('log do product with selected ID', infoProjects[0]);
+      // console.log('log do product with selected ID', infoProjects[0]);
       if (infoProjects[0].tipo === 'product' && infoProjects[0].listavel !== 'true') {
         setTasksType('horas');
       } else if (infoProjects[0].tipo === 'product' && infoProjects[0].listavel === 'true') {
