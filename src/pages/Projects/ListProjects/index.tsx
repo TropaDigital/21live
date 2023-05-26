@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { BiFilter, BiPlus, BiSearchAlt } from 'react-icons/bi';
 import { Link } from 'react-router-dom';
 import Switch from 'react-switch';
@@ -253,6 +253,10 @@ export default function ListProjects() {
     }
   }
 
+  useEffect(() => {
+    console.log('log dataProject', dataProject);
+  }, [dataProject]);
+
   return (
     <ContainerDefault>
       <HeaderPage title="Projetos">
@@ -316,9 +320,11 @@ export default function ListProjects() {
                     textAlign: 'left'
                   }}
                 >
-                  <span style={{ marginBottom: '4px', display: 'block' }}>05:50:24</span>
+                  <span style={{ marginBottom: '4px', display: 'block' }}>
+                    {row.time?.replace('0', '')}
+                  </span>
                   <ProgressBar
-                    totalHours={convertToMilliseconds('05:50:24')}
+                    totalHours={convertToMilliseconds(row.time)}
                     restHours={convertToMilliseconds('02:20:36')}
                   />
                 </td>
