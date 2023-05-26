@@ -1,11 +1,11 @@
 // Types for Product
 export interface IProduct {
-  project_id?: number;
+  service_id?: number;
   service: string;
   description: string;
   type: string;
   size: string;
-  minutes: number | string;
+  minutes: string;
   quantity: number;
   period: string;
 }
@@ -29,7 +29,7 @@ export interface IDocProject {
 
 export interface IProjectCreate {
   tenant_id: number | string; //tenant_id
-  project_id: string;
+  project_id?: string;
   title: string;
   contract_type: string; //fee | spot
   date_start: string;
@@ -64,7 +64,6 @@ export interface ITaskCreate {
   creation_date_end?: string;
   copywriting_description?: string;
   copywriting_date_end?: string; //entrega da redação
-  products_task?: Array<IProductTask>; //esse só abre se o produto tiver a flag, irá abrir uma lista de produtos, que entrará nesta array(caso a entrega for única)
   archives?: Array<IDocTask>;
   deadlines?: Array<IDelivery>; //se for dividir a entrega, entra agqui
   step?: number;
@@ -88,12 +87,12 @@ export interface IDocTask {
 }
 
 export interface IProductTask {
-  product_task_id?: number;
+  products_delivey_id?: number;
   task_id: number;
   product_id: number;
   service: string;
   description: string;
-  reason_change: string; //CRIAÇÃO, DESMEMBRAMENTO, ALTERAÇÃO: INTERNA, EXTERNA.
+  reason_change: string; //CRIAÇÃO, DESMEMBRAMENTO, ALTERAÇÃO: INTERNA, EXTERNA - Alterar pelo ID.
   type: string; //impresso ou digital
   size: string;
   flag?: string;
