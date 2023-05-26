@@ -28,6 +28,8 @@ import { FieldTogleButton, TableHead } from '../../../../components/Table/styles
 import { FieldGroup } from '../../../../components/UiElements/styles';
 import { ProductsWrapper, WrapperCard } from './styles';
 import CardProductsSelected from '../../../../components/CardProductsSelected';
+import { useToast } from '../../../../hooks/toast';
+import { set } from 'date-fns';
 
 interface PropsProducts {
   dataOffice: any;
@@ -54,6 +56,7 @@ export default function InfoProducts({
   setSave,
   editProducts
 }: PropsProducts) {
+  const { addToast } = useToast();
   const [search, setSearch] = useState<IServices[]>([]);
   const { data, pages, fetchData } = useFetch<ServicesProps[]>(`services?search=${search}`);
   const [searchTerm, setSearchTerm] = useState('');
@@ -62,7 +65,7 @@ export default function InfoProducts({
   const [isOpen, setIsOpen] = useState(false);
   const [typeList, setTypeList] = useState('produtos');
   const [selected, setSelected] = useState(1);
-  const [quantityProducts, setQuantityProducts] = useState<any>();
+  const [quantityProducts, setQuantityProducts] = useState<any>('');
   const [selectedProducts, setSelectedProducts] = useState<IProduct[]>([]);
 
   useEffect(() => {
@@ -93,22 +96,47 @@ export default function InfoProducts({
     setTypeList(type);
   };
 
-  function handleAddProducts() {
-    if (quantityProducts.quantity !== 0) {
-      setSelectedProducts((obj) => [...obj, quantityProducts]);
+  function handleAddProducts(product: any) {
+    if (
+      quantityProducts === '' &&
+      selectedProducts.filter((obj) => obj.service_id === product.service_id).length > 0
+    ) {
+      addToast({
+        title: 'Atenção',
+        description: 'Produto já adicionado, altere a quantidade ao lado',
+        type: 'warning'
+      });
+    } else if (quantityProducts === '') {
+      addToast({
+        title: 'Atenção',
+        description: 'Adicione a quantidade primeiro',
+        type: 'warning'
+      });
+    } else {
+      if (selectedProducts.filter((obj) => obj.service_id === product.service_id).length > 0) {
+        addToast({
+          title: 'Atenção',
+          description: 'Produto já adicionado',
+          type: 'warning'
+        });
+        setQuantityProducts('');
+      } else {
+        setSelectedProducts((obj) => [...obj, quantityProducts]);
+        setQuantityProducts('');
+      }
     }
   }
 
   function handleDeleteProducts(id: any) {
-    setSelectedProducts(selectedProducts.filter((obj) => obj.project_id !== id.service_id));
+    setSelectedProducts(selectedProducts.filter((obj) => obj.service_id !== id.service_id));
     setQuantityProducts('');
   }
 
   function handleAddHours(value: any, product: IProduct) {
     setSelectedProducts((current) =>
       current.map((obj) => {
-        if (obj.project_id === product.project_id) {
-          return { ...obj, minutes: value.timeCounter, period: value.contractType };
+        if (obj.service_id === product.service_id) {
+          return { ...obj, quantity: value.timeCounter, period: value.contractType };
         }
         return obj;
       })
@@ -120,7 +148,17 @@ export default function InfoProducts({
   }
 
   function editProductHours(value: any, product: IProduct) {
-    handleEditProducthours(value, product);
+    const updatedProduct = {
+      description: product.description,
+      minutes: product.minutes,
+      period: product.period,
+      project_id: product.service_id,
+      quantity: value.timeCounter,
+      service: product.service,
+      size: product.size,
+      type: product.type
+    };
+    handleEditProductQuantity(updatedProduct);
   }
 
   useEffect(() => {
@@ -139,9 +177,14 @@ export default function InfoProducts({
         selectedProducts.map((row: any) => {
           handleOnAddProducts(row);
         });
-      }, 500);
+      }, 300);
     }
   }, [setSave]);
+
+  // useEffect(() => {
+  //   console.log('log do dataFilter', dataFilter);
+  //   console.log('log do data', data);
+  // }, [dataFilter, data]);
 
   return (
     <ProductsWrapper>
@@ -189,8 +232,8 @@ export default function InfoProducts({
           {dataFilter && editProducts ? (
             <tbody>
               {dataFilter?.map((row: IProduct) => (
-                <tr key={row.project_id}>
-                  <td>{row.project_id}</td>
+                <tr key={row.service_id}>
+                  <td>{row.service_id}</td>
                   <td>{row.service}</td>
                   <td>{row.description}</td>
                   <td>
@@ -201,9 +244,17 @@ export default function InfoProducts({
                       receiveQuantity={row.quantity}
                     />
                   </td>
+                  <td
+                    style={{ cursor: 'pointer', textAlign: 'center' }}
+                    onClick={() => handleAddProducts(row)}
+                  >
+                    <div style={{ fontSize: '14px', fontWeight: '600', color: '#0045B5' }}>
+                      Adicionar
+                    </div>
+                  </td>
 
-                  {quantityProducts &&
-                  Object.values(quantityProducts.quantity).includes(row.project_id) ? (
+                  {/* {quantityProducts &&
+                  Object.values(quantityProducts.quantity).includes(row.service_id) ? (
                     <td
                       style={{ cursor: 'pointer', textAlign: 'center' }}
                       onClick={handleAddProducts}
@@ -218,7 +269,7 @@ export default function InfoProducts({
                         Adicionar
                       </div>
                     </td>
-                  )}
+                  )} */}
                 </tr>
               ))}
             </tbody>
@@ -234,10 +285,19 @@ export default function InfoProducts({
                       handleQuantity={setQuantityProducts}
                       rowQuantity={row}
                       clearQuantity={handleDeleteProducts}
+                      receiveQuantity={row.quantity}
                     />
                   </td>
+                  <td
+                    style={{ cursor: 'pointer', textAlign: 'center' }}
+                    onClick={() => handleAddProducts(row)}
+                  >
+                    <div style={{ fontSize: '14px', fontWeight: '600', color: '#0045B5' }}>
+                      Adicionar
+                    </div>
+                  </td>
 
-                  {quantityProducts && Object.values(quantityProducts).includes(row.service_id) ? (
+                  {/* {quantityProducts && Object.values(quantityProducts).includes(row.service_id) ? (
                     <td
                       style={{ cursor: 'pointer', textAlign: 'center' }}
                       onClick={handleAddProducts}
@@ -252,7 +312,7 @@ export default function InfoProducts({
                         Adicionar
                       </div>
                     </td>
-                  )}
+                  )} */}
                 </tr>
               ))}
             </tbody>
@@ -285,6 +345,7 @@ export default function InfoProducts({
               hours_total={(e: any) => handleAddHours(e, row)}
               key={index}
               data={row}
+              editing={editProducts}
             />
           ))}
         </WrapperCard>
@@ -301,6 +362,7 @@ export default function InfoProducts({
               hours_total={(e: any) => editProductHours(e, row)}
               key={index}
               data={row}
+              editing={editProducts}
             />
           ))}
         </WrapperCard>
