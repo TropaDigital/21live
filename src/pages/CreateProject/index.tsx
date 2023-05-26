@@ -51,9 +51,8 @@ import {
 
 // Services
 import api from '../../services/api';
-import { averageTime } from '../../utils/mediaTime';
-import { sumHours } from '../../utils/sumHours';
 import InputSwitchDefault from '../../components/Inputs/InputSwitchDefault';
+import { multiplyTime, sumTimes } from '../../utils/convertTimes';
 
 interface StateProps {
   [key: string]: any;
@@ -97,19 +96,26 @@ export default function CreateProject() {
     category: '',
     products: [],
     files: [],
-    email: ''
+    time: ''
   });
   const [productsArray, setProductsArray] = useState<IProduct[]>([]);
+
   // Hours calculations
-  const totalHoursProducts = Number(sumHours(productsArray));
   const creatorHoursArray = productsArray?.filter(
     (obj) => obj.service.toLowerCase() === 'hora de criação'
   );
-  const totalCreateHours = creatorHoursArray.reduce(
-    (accumulator: any, currentValue: any) => accumulator + currentValue.minutes,
-    0
-  );
-  const productsHoursWithoutCreateHours = totalHoursProducts - totalCreateHours;
+  // const totalCreateHours = creatorHoursArray.reduce(
+  //   (accumulator: any, currentValue: any) => accumulator + currentValue.minutes,
+  //   0
+  // );
+
+  const productsHours = productsArray?.map((row) => {
+    return multiplyTime(row?.minutes, row?.quantity);
+  });
+
+  // const totalHoursProducts = sumTimes(productsHours) + totalCreateHours;
+  // const productsHoursWithoutCreateHours = totalHoursProducts - totalCreateHours;
+  // End Hours calculations
 
   const handleOnAddProducts = (items: IProduct) => {
     setProductsArray((prevState: any) => [...prevState, items]);
@@ -163,7 +169,7 @@ export default function CreateProject() {
     if (editSelectedProducts) {
       setProductsArray((current) =>
         current.map((obj) => {
-          if (obj.project_id === product.project_id) {
+          if (obj.service_id === product.service_id) {
             return { ...obj, quantity: product.quantity };
           }
           return obj;
@@ -175,14 +181,14 @@ export default function CreateProject() {
   const editProductHours = (values: any, product: IProduct) => {
     console.log('log do produto a ser editado as horas', values, product);
 
-    setProductsArray((current) =>
-      current.map((obj) => {
-        if (obj.project_id === product.project_id) {
-          return { ...obj, minutes: values.timeCounter, period: values.contractType };
-        }
-        return obj;
-      })
-    );
+    // setProductsArray((current) =>
+    //   current.map((obj) => {
+    //     if (obj.service_id === product.service_id) {
+    //       return { ...obj, minutes: values.timeCounter, period: values.contractType };
+    //     }
+    //     return obj;
+    //   })
+    // );
   };
 
   function setErrorInput(value: any, message: any) {
@@ -287,17 +293,10 @@ export default function CreateProject() {
         );
 
         const newArrayProducts = productsArray.map(({ tenant_id, ...rest }: any) => rest);
+        const totalTime = sumTimes(productsHours);
 
-        const {
-          title,
-          tenant_id,
-          description,
-          date_start,
-          date_end,
-          contract_type,
-          category,
-          project_id
-        } = DTOForm;
+        const { title, tenant_id, description, date_start, date_end, contract_type, category } =
+          DTOForm;
 
         const createNewData = {
           title,
@@ -308,20 +307,24 @@ export default function CreateProject() {
           date_start,
           date_end,
           contract_type,
-          files
+          files,
+          time: totalTime
         };
 
-        const updateData = {
-          title,
-          project_id,
-          tenant_id,
-          products: newArrayProducts,
-          description,
-          date_start,
-          date_end,
-          contract_type,
-          files
-        };
+        // const updateData = {
+        //   title,
+        //   project_id,
+        //   tenant_id,
+        //   products: newArrayProducts,
+        //   description,
+        //   date_start,
+        //   date_end,
+        //   contract_type,
+        //   files,
+        //   time
+        // };
+
+        console.log('log do post project', DTOForm, createNewData);
 
         await api.post(`project`, createNewData);
         // if (modal.type === 'Criar novo Projeto/Contrato') {
@@ -413,7 +416,6 @@ export default function CreateProject() {
               dataOffice={dataOffice}
               dataFilter={productsArray}
               handleOnPeriod={(e, id) => ''}
-              // handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
               handleOnDeleteProduct={(id) => ''}
               handleEditProductQuantity={(value) => editProductQuantity(value)}
               handleEditProducthours={editProductHours}
@@ -461,10 +463,7 @@ export default function CreateProject() {
                       #{index + 1} - {row.service}
                     </SummaryCardTitle>
                     <SummaryCardSubtitle>
-                      <div>
-                        Horas estimadas: {Number(row.minutes) > 9 ? row.minutes : `0${row.minutes}`}
-                        :00
-                      </div>
+                      <div>Horas estimadas: {multiplyTime(row?.minutes, row?.quantity)}</div>
                       <div>Categoria: {row.type}</div>
                       <div>Quantidade: {row.quantity}</div>
                     </SummaryCardSubtitle>
@@ -487,15 +486,10 @@ export default function CreateProject() {
                   <SummaryContractCard>
                     <div className="hours">
                       Horas por produto
-                      <strong>
-                        {productsHoursWithoutCreateHours > 9
-                          ? productsHoursWithoutCreateHours
-                          : `0${productsHoursWithoutCreateHours}`}
-                        :00:00
-                      </strong>
+                      <strong>{sumTimes(productsHours)}</strong>
                     </div>
                   </SummaryContractCard>
-                  {productsArray.some((obj) => obj.service.toLowerCase() === 'hora de criação') && (
+                  {/* {productsArray.some((obj) => obj.service.toLowerCase() === 'hora de criação') && (
                     <SummaryContractCard>
                       <div className="hours">
                         Horas de criação
@@ -505,14 +499,10 @@ export default function CreateProject() {
                         </strong>
                       </div>
                     </SummaryContractCard>
-                  )}
+                  )} */}
                   <SummaryContractCard>
                     <div className="total">
-                      Total{' '}
-                      <div>
-                        {totalHoursProducts > 9 ? totalHoursProducts : `0${totalHoursProducts}`}
-                        :00:00
-                      </div>
+                      Total <div>{sumTimes(productsHours)}</div>
                     </div>
                   </SummaryContractCard>
                 </Summary>
