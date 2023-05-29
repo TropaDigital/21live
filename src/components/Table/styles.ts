@@ -94,7 +94,7 @@ export const TableHead = styled.div`
     gap: 4px;
 
     h2 {
-      font-weight: var(--weight-medium);
+      font-weight: var(--weight-semibold);
       font-size: var(--text-small-lg);
       color: var(--gray-900);
 
