@@ -52,10 +52,10 @@ export default function InfoGeral({ data, handleInputChange, clients, error }: P
       <FlexLine>
         <SelectDefault
           label="Fee ou Spot"
-          name="contract_type"
-          value={data.contract_type}
+          name="category"
+          value={data.category}
           onChange={handleInputChange}
-          error={error?.contract_type}
+          error={error?.category}
         >
           <option value="fee">Fee</option>
           <option value="spot">Spot</option>
@@ -63,10 +63,10 @@ export default function InfoGeral({ data, handleInputChange, clients, error }: P
 
         <SelectDefault
           label="Tipo de contrato"
-          name="category"
-          value={data.category}
+          name="contract_type"
+          value={data.contract_type}
           onChange={handleInputChange}
-          error={error?.category}
+          error={error?.contract_type}
         >
           <option value="free">Livre</option>
           <option value="product">Por Produto</option>
