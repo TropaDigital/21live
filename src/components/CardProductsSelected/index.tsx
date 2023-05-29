@@ -24,6 +24,7 @@ import {
 
 // Utils
 import { multiplyTime } from '../../utils/convertTimes';
+import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 
 interface ProductsProps {
   // handleOnDecrementQtd: (e: any) => void;
@@ -36,6 +37,7 @@ interface ProductsProps {
   hours_total: any;
   data: any;
   editing: any;
+  showSwitch: any;
 }
 
 export default function CardProductsSelected({
@@ -44,7 +46,8 @@ export default function CardProductsSelected({
   title,
   hours_total,
   data,
-  editing
+  editing,
+  showSwitch
 }: ProductsProps) {
   const [openCard, setOpenCard] = useState<boolean>(true);
   const [timeCounter, setTimeCounter] = useState<number>(0);
@@ -75,6 +78,10 @@ export default function CardProductsSelected({
     setTimeCounter(data.quantity);
   }, []);
 
+  useEffect(() => {
+    console.log('log do switch no product select', showSwitch);
+  }, [showSwitch]);
+
   return (
     <ContainerCard>
       <CardProduct openOptions={openCard}>
@@ -83,20 +90,22 @@ export default function CardProductsSelected({
             #{id} - {title}
           </CardProductTitle>
           <ArrowButton onClick={() => handleOptions(openCard)}>
-            <IconArrowDown />
+            {!openCard ? <FiChevronDown /> : <FiChevronUp />}
           </ArrowButton>
         </CardTop>
         <CardBottom>
-          <SwitchSelector>
-            <span>Mensal</span>
-            <InputSwitchDefault
-              onChange={(e) => {
-                handleSwitch(e.target.checked);
-              }}
-              value={String(verifyPeriod)}
-            />
-            <span>Anual</span>
-          </SwitchSelector>
+          {showSwitch !== 'spot' && (
+            <SwitchSelector>
+              <span>Mensal</span>
+              <InputSwitchDefault
+                onChange={(e) => {
+                  handleSwitch(e.target.checked);
+                }}
+                value={String(verifyPeriod)}
+              />
+              <span>Anual</span>
+            </SwitchSelector>
+          )}
           <EstimatedHours>
             <div className="hours">
               Horas estimadas: <strong>{multiplyTime(data?.minutes, data?.quantity)}</strong>

@@ -10,12 +10,10 @@ export const CardProduct = styled.div<CardProps>`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 16px;
   width: 340px;
-  height: ${({ openOptions }) => (openOptions ? '160px' : '56px')};
+  height: ${({ openOptions }) => (openOptions ? 'fit-content' : '56px')};
   /* background: var(--background-primary); */
   border-bottom: 1px solid var(--gray-200);
-  padding: 16px 24px;
   overflow: hidden;
 `;
 
@@ -25,13 +23,16 @@ export const CardTop = styled.div`
   justify-content: space-between;
   width: 100%;
   height: 56px;
+  padding: 16px 24px;
 `;
 
 export const CardBottom = styled.div`
   display: flex;
   flex-direction: column;
-  height: 200px;
+  /* height: 200px; */
+  max-height: 200px;
   gap: 24px;
+  padding: 16px 24px;
 `;
 
 export const CardProductTitle = styled.h2`
