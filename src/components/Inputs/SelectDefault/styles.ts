@@ -49,6 +49,7 @@ export const ContainerInput = styled.div<ContainerProps>`
     transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow,
       transform;
     transition-duration: 200ms;
+    text-transform: capitalize;
     background: var(--background-primary);
     padding-bottom: 1px;
     font-size: var(--text-small-md);
