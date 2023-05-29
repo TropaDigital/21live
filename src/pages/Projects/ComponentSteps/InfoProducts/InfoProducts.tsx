@@ -8,28 +8,24 @@ import { BiSearchAlt } from 'react-icons/bi';
 
 // Hooks
 import { useFetch } from '../../../../hooks/useFetch';
-
-// Utils
-import { multiplyTime } from '../../../../utils/convertTimes';
-import { useDebounce } from '../../../../utils/useDebounce';
+import { useToast } from '../../../../hooks/toast';
+import useDebouncedCallback from '../../../../hooks/useDebounced';
 
 // Types
 import { IProduct, IServices, ServicesProps } from '../../../../types';
 
 // COMPONENTS
 import ButtonDefault from '../../../../components/Buttons/ButtonDefault';
-import { InputDefault } from '../../../../components/Inputs/InputDefault';
 import Pagination from '../../../../components/Pagination';
 import QuantityCounter from '../../../../components/QuantityCounter';
+import CardProductsSelected from '../../../../components/CardProductsSelected';
+import { InputDefault } from '../../../../components/Inputs/InputDefault';
 import { Table } from '../../../../components/Table';
 
 // STYLES
 import { FieldTogleButton, TableHead } from '../../../../components/Table/styles';
 import { FieldGroup } from '../../../../components/UiElements/styles';
 import { ProductsWrapper, WrapperCard } from './styles';
-import CardProductsSelected from '../../../../components/CardProductsSelected';
-import { useToast } from '../../../../hooks/toast';
-import { set } from 'date-fns';
 
 interface PropsProducts {
   dataOffice: any;
@@ -42,6 +38,7 @@ interface PropsProducts {
   okToSave: any;
   setSave: any;
   editProducts: boolean;
+  hideSwitch: any;
 }
 
 export default function InfoProducts({
@@ -54,43 +51,22 @@ export default function InfoProducts({
   handleEditProducthours,
   okToSave,
   setSave,
-  editProducts
+  editProducts,
+  hideSwitch
 }: PropsProducts) {
   const { addToast } = useToast();
   const [search, setSearch] = useState<IServices[]>([]);
-  const { data, pages, fetchData } = useFetch<ServicesProps[]>(`services?search=${search}`);
+  const { data, pages } = useFetch<ServicesProps[]>(`services?search=${search}`);
   const [searchTerm, setSearchTerm] = useState('');
-  const debouncedSearchTerm = useDebounce(searchTerm, 700);
   const [isSearching, setSearching] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
   const [typeList, setTypeList] = useState('produtos');
   const [selected, setSelected] = useState(1);
   const [quantityProducts, setQuantityProducts] = useState<any>('');
   const [selectedProducts, setSelectedProducts] = useState<IProduct[]>([]);
-
-  useEffect(() => {
-    if (debouncedSearchTerm) {
-      setSearching(true);
-      setSearch(
-        dataOffice
-          .filter((obj: any) => obj.service.toLowerCase().includes(searchTerm.toLowerCase()))
-          .filter(
-            (object: any) => !dataFilter.find((obj: any) => obj.service_id === object.service_id)
-          )
-      );
-      const handler = setTimeout(() => {
-        setSearching(false);
-        setIsOpen(true);
-      }, 700);
-      return () => {
-        clearTimeout(handler);
-      };
-    } else {
-      setSearch([]);
-      setSearching(false);
-      setIsOpen(true);
-    }
-  }, [debouncedSearchTerm]);
+  const { isLoading, debouncedCallback } = useDebouncedCallback(
+    (search: any) => setSearch(search),
+    700
+  );
 
   const handleOnTypeList = (type: string) => {
     setTypeList(type);
@@ -161,6 +137,10 @@ export default function InfoProducts({
     handleEditProductQuantity(updatedProduct);
   }
 
+  const deleteProducts = (value: any) => {
+    handleOnDeleteProduct(value.service_id);
+  };
+
   useEffect(() => {
     if (selectedProducts.length > 0) {
       okToSave(true);
@@ -180,11 +160,6 @@ export default function InfoProducts({
       }, 300);
     }
   }, [setSave]);
-
-  // useEffect(() => {
-  //   console.log('log do dataFilter', dataFilter);
-  //   console.log('log do data', data);
-  // }, [dataFilter, data]);
 
   return (
     <ProductsWrapper>
@@ -212,7 +187,10 @@ export default function InfoProducts({
               label=""
               name="search"
               placeholder="Buscar produtos"
-              onChange={(event) => setSearchTerm(event.target.value)}
+              onChange={(event) => {
+                setSearchTerm(event.target.value);
+                debouncedCallback(event.target.value);
+              }}
               icon={BiSearchAlt}
               isLoading={isSearching}
               value={searchTerm}
@@ -240,7 +218,7 @@ export default function InfoProducts({
                     <QuantityCounter
                       handleQuantity={editProductQuantity}
                       rowQuantity={row}
-                      clearQuantity={handleDeleteProducts}
+                      clearQuantity={deleteProducts}
                       receiveQuantity={row.quantity}
                     />
                   </td>
@@ -346,6 +324,7 @@ export default function InfoProducts({
               key={index}
               data={row}
               editing={editProducts}
+              showSwitch={hideSwitch}
             />
           ))}
         </WrapperCard>
@@ -363,6 +342,7 @@ export default function InfoProducts({
               key={index}
               data={row}
               editing={editProducts}
+              showSwitch={hideSwitch}
             />
           ))}
         </WrapperCard>
