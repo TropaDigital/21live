@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // React
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 // Icons
 import { BiCode, BiFilter, BiPlus, BiSearchAlt, BiTime } from 'react-icons/bi';
 // Libraries
@@ -35,6 +35,8 @@ import {
   FooterModal
 } from '../../components/UiElements/styles';
 
+import { EstimatedTime, EstimatedTimeInputs } from './styles';
+
 interface ServicesProps {
   service_id?: number | string;
   service: string;
@@ -59,18 +61,24 @@ interface FormDataProps {
   service_id?: number | string;
 }
 
+interface estimatedHoursPros {
+  hours: string;
+  minutes: string;
+}
+
 export default function Services() {
   const { addToast } = useToast();
-  const { formData, setData, handleOnChange, handleOnChangeSwitch } = useForm({
-    service: '',
-    description: '',
-    type: '',
-    size: '',
-    minutes: '',
-    category: '',
-    flag: 'false',
-    service_id: ''
-  } as FormDataProps);
+  const { formData, setData, handleOnChange, handleOnChangeSwitch, handleOnChangeMinutes } =
+    useForm({
+      service: '',
+      description: '',
+      type: '',
+      size: '',
+      minutes: '',
+      category: '',
+      flag: 'false',
+      service_id: ''
+    } as FormDataProps);
 
   const [modal, setModal] = useState({
     isOpen: false,
@@ -87,14 +95,18 @@ export default function Services() {
   const [typeList, setTypeList] = useState('produtos');
 
   const { data, pages, fetchData } = useFetch<ServicesProps[]>(`services?search=${search}`);
-  const { data: dataCategory } = useFetch<ServicesProps[]>(`category?search=${search}`);
+  const { data: dataCategory } = useFetch<any[]>(`category?search=${search}`);
   const [selected, setSelected] = useState(1);
   const [listSelected, setListSelected] = useState<any[]>([]);
+  const [estimatedTime, setEstimatedTime] = useState<estimatedHoursPros>({
+    hours: '',
+    minutes: ''
+  });
 
   const handleOnCancel = useCallback(() => {
     setModal({
       isOpen: false,
-      type: 'Novo serviço'
+      type: 'Novo produto'
     });
     setData({
       service: '',
@@ -155,7 +167,7 @@ export default function Services() {
           service_id
         };
 
-        if (modal.type === 'Novo serviço') {
+        if (modal.type === 'Novo produto') {
           await api.post('services', newFormData);
         } else {
           await api.put(`services/${formData.service_id}`, newFormData);
@@ -189,6 +201,25 @@ export default function Services() {
     }
   }
 
+  const handleAddHours = (event: any) => {
+    const { name, value } = event.target;
+    if (name === 'hours') {
+      setEstimatedTime({ hours: value, minutes: estimatedTime.minutes });
+    }
+    if (name === 'minutes') {
+      setEstimatedTime({ hours: estimatedTime.hours, minutes: value });
+    }
+
+    handleOnChangeMinutes({
+      name: 'minutes',
+      value: `${estimatedTime.hours}:${estimatedTime.minutes}`
+    });
+  };
+
+  useEffect(() => {
+    console.log('log do formData', formData);
+  }, [formData]);
+
   return (
     <ContainerDefault>
       <HeaderPage title="Produtos">
@@ -197,7 +228,7 @@ export default function Services() {
           onClick={() =>
             setModal({
               isOpen: !modal.isOpen,
-              type: 'Novo serviço'
+              type: 'Novo produto'
             })
           }
         >
@@ -209,10 +240,17 @@ export default function Services() {
       <Table>
         <TableHead>
           <div className="groupTable">
-            <h2>
-              Todos os produtos <strong>240 produtos</strong>
-            </h2>
-            <span>Acompanhe seus produtos e serviços pré-cadastrados</span>
+            {typeList === 'produtos' && (
+              <h2>
+                Lista de produtos <strong>240 produtos</strong>
+              </h2>
+            )}
+            {typeList === 'kits' && (
+              <h2>
+                Lista de kits <strong>02 kits</strong>
+              </h2>
+            )}
+            {/* <span>Acompanhe seus produtos e serviços pré-cadastrados</span> */}
           </div>
 
           <FieldGroup style={{ justifyContent: 'flex-end' }}>
@@ -222,14 +260,14 @@ export default function Services() {
                 typeButton={typeList === 'produtos' ? 'lightWhite' : 'light'}
                 style={{ height: '100%', fontSize: '12px' }}
               >
-                Ver Produtos
+                Produtos
               </ButtonDefault>
               <ButtonDefault
                 onClick={() => handleOnTypeList('kits')}
                 typeButton={typeList === 'kits' ? 'lightWhite' : 'light'}
                 style={{ height: '100%', fontSize: '12px' }}
               >
-                Ver Kits
+                Kits
               </ButtonDefault>
             </FieldTogleButton>
 
@@ -320,7 +358,7 @@ export default function Services() {
         <form onSubmit={handleOnSubmit}>
           <FieldDefault>
             <InputDefault
-              label="Serviço"
+              label="Produto"
               placeholder="Digite aqui..."
               name="service"
               onChange={handleOnChange}
@@ -367,7 +405,7 @@ export default function Services() {
             />
           </FieldDefault>
           <FieldDefault>
-            {/* <SelectDefault
+            <SelectDefault
               label="Categoria"
               placeholder="Selecione aqui..."
               name="category"
@@ -375,18 +413,20 @@ export default function Services() {
               value={formData.category}
               required
             >
-              <option key={'impresso'} value={'impresso'}>
-                Impresso
-              </option>
-            </SelectDefault> */}
-            <InputDefault
+              {dataCategory?.map((row) => (
+                <option key={row.category_id} value={row.category_id}>
+                  {row.category}
+                </option>
+              ))}
+            </SelectDefault>
+            {/* <InputDefault
               label="Categoria"
               placeholder="Teste"
               name="category"
               onChange={handleOnChange}
               value={formData.category}
               required
-            />
+            /> */}
           </FieldDefault>
           <FieldDefault>
             <InputSwitchDefault
@@ -396,15 +436,35 @@ export default function Services() {
             />
           </FieldDefault>
           <FieldDefault>
-            <InputDefault
-              label="Hora / Minutos"
-              name="minutes"
-              onChange={handleOnChange}
-              value={formData.minutes}
-              type="time"
-              icon={BiTime}
-              required
-            />
+            <EstimatedTime>
+              <span>Tempo estimado em Horas : Minutos</span>
+              <EstimatedTimeInputs>
+                <InputDefault
+                  label=""
+                  name="hours"
+                  onChange={handleAddHours}
+                  value={estimatedTime.hours}
+                  type="number"
+                  min="0"
+                  step="1"
+                  icon={BiTime}
+                  required
+                />
+                :
+                <InputDefault
+                  label=""
+                  name="minutes"
+                  onChange={handleAddHours}
+                  value={estimatedTime.minutes}
+                  type="number"
+                  min="0"
+                  max="59"
+                  step="1"
+                  icon={BiTime}
+                  required
+                />
+              </EstimatedTimeInputs>
+            </EstimatedTime>
           </FieldDefault>
           <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
             <ButtonDefault typeButton="dark" isOutline onClick={handleOnCancel}>
