@@ -253,9 +253,9 @@ export default function ListProjects() {
     }
   }
 
-  useEffect(() => {
-    console.log('log dataProject', dataProject);
-  }, [dataProject]);
+  // useEffect(() => {
+  //   console.log('log dataProject', dataProject);
+  // }, [dataProject]);
 
   return (
     <ContainerDefault>
