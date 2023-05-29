@@ -7,11 +7,10 @@ import { Link, useNavigate } from 'react-router-dom';
 // Hooks
 import { useToast } from '../../hooks/toast';
 import { useFetch } from '../../hooks/useFetch';
-import useForm from '../../hooks/useForm';
-import { useSteps } from '../../hooks/useSteps';
 
 // Utils
 import { TenantProps } from '../../utils/models';
+import { multiplyTime, sumTimes } from '../../utils/convertTimes';
 
 // Types
 import { IProduct, IProjectCreate } from '../../types';
@@ -29,6 +28,7 @@ import InfoGeral from '../Projects/ComponentSteps/InfoGeral';
 import InfoProducts from '../Projects/ComponentSteps/InfoProducts/InfoProducts';
 import ModalDefault from '../../components/Ui/ModalDefault';
 import { SaveButton } from '../Projects/ComponentSteps/InfoProducts/styles';
+import InputSwitchDefault from '../../components/Inputs/InputSwitchDefault';
 
 // Styles
 import {
@@ -51,8 +51,6 @@ import {
 
 // Services
 import api from '../../services/api';
-import InputSwitchDefault from '../../components/Inputs/InputSwitchDefault';
-import { multiplyTime, sumTimes } from '../../utils/convertTimes';
 
 interface StateProps {
   [key: string]: any;
@@ -130,21 +128,9 @@ export default function CreateProject() {
     setDTOForm({ ...DTOForm, [name]: value });
   };
 
-  // useEffect(() => {
-  //   console.log('log do DTO', DTOForm);
-  // }, [DTOForm]);
-
-  // useEffect(() => {
-  //   console.log('log do productsArray', productsArray);
-  // }, [productsArray]);
-
-  // const handleOnDeleteProduct = (id: number) => {
-  //   console.log('ID', id);
-  //   setFormValue(
-  //     'products',
-  //     formData.products.filter((product: any) => product.service_id !== id)
-  //   );
-  // };
+  useEffect(() => {
+    console.log('log do DTO', DTOForm);
+  }, [DTOForm]);
 
   function isNumber(value: string) {
     return /^[0-9]*$/.test(value);
@@ -163,6 +149,13 @@ export default function CreateProject() {
   //   },
   //   [setFormValue, formData]
   // );
+
+  const handleDeleteProducts = (id: any) => {
+    setProductsArray(productsArray.filter((obj) => obj.service_id !== id));
+    if (productsArray.length <= 1) {
+      setEditSelectedProducts(false);
+    }
+  };
 
   const editProductQuantity = (product: IProduct) => {
     console.log('log do product to edit', product);
@@ -201,7 +194,8 @@ export default function CreateProject() {
   }
 
   const handleOnNextStep = () => {
-    const { title, tenant_id, contract_type, date_start, date_end, description } = DTOForm;
+    const { title, tenant_id, category, contract_type, date_start, date_end, description } =
+      DTOForm;
 
     try {
       if (title === '') {
@@ -216,6 +210,11 @@ export default function CreateProject() {
         setErrorInput('tenant_id', undefined);
       }
 
+      if (category === '') {
+        throw setErrorInput('category', 'Categoria é obrigatória!');
+      } else {
+        setErrorInput('category', undefined);
+      }
       if (contract_type === '') {
         throw setErrorInput('contract_type', 'Contrato é obrigatório!');
       } else {
@@ -295,18 +294,15 @@ export default function CreateProject() {
         const newArrayProducts = productsArray.map(({ tenant_id, ...rest }: any) => rest);
         const totalTime = sumTimes(productsHours);
 
-        const { title, tenant_id, description, date_start, date_end, contract_type, category } =
-          DTOForm;
-
         const createNewData = {
-          title,
-          tenant_id,
+          title: DTOForm.title,
+          tenant_id: DTOForm.tenant_id,
           products: newArrayProducts,
-          description,
-          category,
-          date_start,
-          date_end,
-          contract_type,
+          description: DTOForm.description,
+          category: DTOForm.category,
+          date_start: DTOForm.date_start,
+          date_end: DTOForm.date_end,
+          contract_type: DTOForm.contract_type,
           files,
           time: totalTime
         };
@@ -324,7 +320,8 @@ export default function CreateProject() {
         //   time
         // };
 
-        console.log('log do post project', DTOForm, createNewData);
+        console.log('log do post project', DTOForm);
+        console.log('log do post new data', createNewData);
 
         await api.post(`project`, createNewData);
         // if (modal.type === 'Criar novo Projeto/Contrato') {
@@ -416,12 +413,13 @@ export default function CreateProject() {
               dataOffice={dataOffice}
               dataFilter={productsArray}
               handleOnPeriod={(e, id) => ''}
-              handleOnDeleteProduct={(id) => ''}
+              handleOnDeleteProduct={(id) => handleDeleteProducts(id)}
               handleEditProductQuantity={(value) => editProductQuantity(value)}
               handleEditProducthours={editProductHours}
               okToSave={setShowSave}
               setSave={saveProducts}
               editProducts={editSelectedProducts}
+              hideSwitch={DTOForm.category}
             />
           </>
         )}
@@ -535,7 +533,8 @@ export default function CreateProject() {
                 setTimeout(() => {
                   setShowSave(false);
                   setSaveProducts('');
-                  // setCreateStep(createStep + 1);
+                  setCreateStep(createStep + 1);
+                  setEditSelectedProducts(true);
                 }, 1500);
               }}
             >
