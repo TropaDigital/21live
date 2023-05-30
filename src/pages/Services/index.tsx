@@ -35,7 +35,7 @@ import {
   FooterModal
 } from '../../components/UiElements/styles';
 
-import { EstimatedTime, EstimatedTimeInputs } from './styles';
+import { EstimatedTime, EstimatedTimeInputs, ModalProductWrapper } from './styles';
 
 interface ServicesProps {
   service_id?: number | string;
@@ -84,6 +84,24 @@ export default function Services() {
     isOpen: false,
     type: ''
   });
+  const [modalShowProduct, setModalShowProduct] = useState({
+    isOpen: false,
+    type: '',
+    product: {
+      service: '',
+      description: '',
+      type: '',
+      size: '',
+      minutes: '',
+      category: '',
+      flag: ''
+    }
+  });
+
+  const [modalKit, setModalKit] = useState({
+    isOpen: false,
+    type: ''
+  });
 
   const [searchTerm, setSearchTerm] = useState('');
   const [search, setSearch] = useState('');
@@ -96,7 +114,9 @@ export default function Services() {
 
   const { data, pages, fetchData } = useFetch<ServicesProps[]>(`services?search=${search}`);
   const { data: dataCategory } = useFetch<any[]>(`category?search=${search}`);
+  const { data: dataKits, pages: pageKits } = useFetch<any[]>(`pack-services?search=${search}`);
   const [selected, setSelected] = useState(1);
+  const [selectedKitPage, setSelectedKitPage] = useState(1);
   const [listSelected, setListSelected] = useState<any[]>([]);
   const [estimatedTime, setEstimatedTime] = useState<estimatedHoursPros>({
     hours: '',
@@ -124,6 +144,33 @@ export default function Services() {
     setModal({
       isOpen: true,
       type: `Editar serviço: ${item.service}`
+    });
+  };
+
+  const handleOnShowProduct = (item: FormDataProps) => {
+    console.log('log do row to show', item);
+
+    setModalShowProduct({
+      isOpen: true,
+      type: `Produto: ${item.service_id}`,
+      product: {
+        category: item.category,
+        description: item.description,
+        flag: item.flag,
+        minutes: item.minutes,
+        service: item.service,
+        size: item.size,
+        type: item.type
+      }
+    });
+  };
+
+  const handleOnEditKit = (item: FormDataProps) => {
+    // setData(item);
+
+    setModalKit({
+      isOpen: true,
+      type: `Editar Kit: ${item.service}`
     });
   };
 
@@ -292,66 +339,138 @@ export default function Services() {
             </ButtonDefault>
           </FieldGroup>
         </TableHead>
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Produto</th>
-              <th>Categoria</th>
-              <th>Listar produtos</th>
-              <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
-            </tr>
-          </thead>
+        {typeList === 'produtos' && (
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Produto</th>
+                <th>Categoria</th>
+                <th>Listar produtos</th>
+                <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            {data?.map((row) => (
-              <tr key={row.service_id}>
-                <td>#{row.service_id}</td>
-                <td>{row.service}</td>
-                <td>{row.category}</td>
-                <td>
-                  <Switch
-                    onChange={() => handleList(row.service_id)}
-                    // checked={
-                    //   listSelected.includes(row.service_id) || row.flag === 'true' ? true : false
-                    // }
-                    checked={row.flag === 'true' ? true : false}
-                    uncheckedIcon={false}
-                    checkedIcon={false}
-                    onColor="#0046B5"
+            <tbody>
+              {data?.map((row) => (
+                <tr key={row.service_id}>
+                  <td>#{row.service_id}</td>
+                  <td>{row.service}</td>
+                  <td>{row.category}</td>
+                  <td>
+                    <Switch
+                      onChange={() => handleList(row.service_id)}
+                      // checked={
+                      //   listSelected.includes(row.service_id) || row.flag === 'true' ? true : false
+                      // }
+                      checked={row.flag === 'true' ? true : false}
+                      uncheckedIcon={false}
+                      checkedIcon={false}
+                      onColor="#0046B5"
+                    />
+                  </td>
+                  <td>
+                    <div className="fieldTableClients">
+                      <ButtonTable typeButton="view" onClick={() => handleOnShowProduct(row)} />
+                      <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
+                      <Alert
+                        title="Atenção"
+                        subtitle="Certeza que gostaria de deletar este Serviço? Ao excluir a acão não poderá ser desfeita."
+                        confirmButton={() => handleOnDelete(row.service_id)}
+                      >
+                        <ButtonTable typeButton="delete" />
+                      </Alert>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+
+            <tfoot>
+              <tr>
+                <td colSpan={100}>
+                  <Pagination
+                    total={pages.total}
+                    perPage={pages.perPage}
+                    currentPage={selected}
+                    lastPage={pages.lastPage}
+                    onClickPage={(e) => setSelected(e)}
                   />
                 </td>
-                <td>
-                  <div className="fieldTableClients">
-                    <ButtonTable typeButton="view" onClick={() => console.log('row view', row)} />
-                    <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
-                    <Alert
-                      title="Atenção"
-                      subtitle="Certeza que gostaria de deletar este Serviço? Ao excluir a acão não poderá ser desfeita."
-                      confirmButton={() => handleOnDelete(row.service_id)}
-                    >
-                      <ButtonTable typeButton="delete" />
-                    </Alert>
-                  </div>
+              </tr>
+            </tfoot>
+          </table>
+        )}
+        {typeList === 'kits' && (
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Produto</th>
+                <th>Produtos</th>
+                <th>Status</th>
+                <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {dataKits?.map((row) => (
+                <tr key={row.pack_id}>
+                  <td>{row.pack_id}</td>
+                  <td>{row.title}</td>
+                  <td>{row.services.map((item: any, index: any) => (index ? ', ' : '') + item)}</td>
+                  <td>
+                    <Switch
+                      onChange={() => handleList(row.service_id)}
+                      // checked={
+                      //   listSelected.includes(row.service_id) || row.flag === 'true' ? true : false
+                      // }
+                      checked={row.flag === 'true' ? true : false}
+                      uncheckedIcon={false}
+                      checkedIcon={false}
+                      onColor="#0046B5"
+                    />
+                  </td>
+                  <td>
+                    <div className="fieldTableClients">
+                      <ButtonTable
+                        typeButton="view"
+                        onClick={() =>
+                          setModalKit({
+                            isOpen: true,
+                            type: ''
+                          })
+                        }
+                      />
+                      <ButtonTable typeButton="edit" onClick={() => console.log('row edit', row)} />
+                      <Alert
+                        title="Atenção"
+                        subtitle="Certeza que gostaria de deletar este Serviço? Ao excluir a acão não poderá ser desfeita."
+                        confirmButton={() => console.log('row delete', row)}
+                      >
+                        <ButtonTable typeButton="delete" />
+                      </Alert>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+
+            <tfoot>
+              <tr>
+                <td colSpan={100}>
+                  <Pagination
+                    total={pageKits.total}
+                    perPage={pageKits.perPage}
+                    currentPage={selectedKitPage}
+                    lastPage={pageKits.lastPage}
+                    onClickPage={(e) => setSelectedKitPage(e)}
+                  />
                 </td>
               </tr>
-            ))}
-          </tbody>
-
-          <tfoot>
-            <tr>
-              <td colSpan={100}>
-                <Pagination
-                  total={pages.total}
-                  perPage={pages.perPage}
-                  currentPage={selected}
-                  lastPage={pages.lastPage}
-                  onClickPage={(e) => setSelected(e)}
-                />
-              </td>
-            </tr>
-          </tfoot>
-        </table>
+            </tfoot>
+          </table>
+        )}
       </Table>
 
       <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
@@ -475,6 +594,60 @@ export default function Services() {
             </ButtonDefault>
           </FooterModal>
         </form>
+      </ModalDefault>
+
+      <ModalDefault
+        isOpen={modalShowProduct.isOpen}
+        title={modalShowProduct.type}
+        onOpenChange={() =>
+          setModalShowProduct({
+            isOpen: false,
+            type: '',
+            product: {
+              service: '',
+              description: '',
+              type: '',
+              size: '',
+              minutes: '',
+              category: '',
+              flag: ''
+            }
+          })
+        }
+      >
+        <ModalProductWrapper>
+          <div className="info">
+            Nome do produto: <span>{modalShowProduct.product.service}</span>
+          </div>
+          <div className="info">
+            Descrição: <span>{modalShowProduct.product.description}</span>
+          </div>
+          <div className="info">
+            Horas: <span>{modalShowProduct.product.minutes}</span>
+          </div>
+          <div className="info">
+            Categoria: <span>{modalShowProduct.product.category}</span>
+          </div>
+          <div className="info">
+            Tamanho: <span>{modalShowProduct.product.size}</span>
+          </div>
+          <div className="info">
+            Tipo: <span>{modalShowProduct.product.type}</span>
+          </div>
+        </ModalProductWrapper>
+      </ModalDefault>
+
+      <ModalDefault
+        isOpen={modalKit.isOpen}
+        title={'Mostrar o kit'}
+        onOpenChange={() =>
+          setModalKit({
+            isOpen: false,
+            type: ''
+          })
+        }
+      >
+        <div>Vai mostrar kit</div>
       </ModalDefault>
     </ContainerDefault>
   );
