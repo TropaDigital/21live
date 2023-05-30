@@ -78,10 +78,6 @@ export default function CardProductsSelected({
     setTimeCounter(data.quantity);
   }, []);
 
-  useEffect(() => {
-    console.log('log do switch no product select', showSwitch);
-  }, [showSwitch]);
-
   return (
     <ContainerCard>
       <CardProduct openOptions={openCard}>
