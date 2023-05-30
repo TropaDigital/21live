@@ -1,19 +1,26 @@
 import { useCallback, useState } from 'react';
-import { BiCalendar, BiFlag, BiPlus, BiSearchAlt } from 'react-icons/bi';
+import { BiCalendar, BiFilter, BiFlag, BiPlus, BiSearchAlt } from 'react-icons/bi';
+import { Link } from 'react-router-dom';
 
 import useDebouncedCallback from '../../../hooks/useDebounced';
+import { useFetch } from '../../../hooks/useFetch';
 import useForm from '../../../hooks/useForm';
 import { useSteps } from '../../../hooks/useSteps';
 
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 import { avatarAll } from '../../../utils/dataDefault';
 
+import { ITaskCreate } from '../../../types';
+
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import ButtonTable from '../../../components/Buttons/ButtonTable';
 import HeaderPage from '../../../components/HeaderPage';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { SelectDefault } from '../../../components/Inputs/SelectDefault';
+import Pagination from '../../../components/Pagination';
 import Steps from '../../../components/Steps';
+import { Table } from '../../../components/Table';
+import { FilterGroup, TableHead } from '../../../components/Table/styles';
 import { TableDefault } from '../../../components/TableDefault';
 import Alert from '../../../components/Ui/Alert';
 import Avatar from '../../../components/Ui/Avatar';
@@ -29,9 +36,6 @@ import {
   SectionDefault
 } from '../../../components/UiElements/styles';
 
-import InfoGeral from '../ComponentSteps/InfoGeral';
-import { Link } from 'react-router-dom';
-
 export default function TaskList() {
   const [modal, setModal] = useState({
     isOpen: false,
@@ -44,9 +48,9 @@ export default function TaskList() {
     order: '',
     search: ''
   });
-
-  const [searchTerm, setSearchTerm] = useState('');
   const [search, setSearch] = useState('');
+  const { data, pages, fetchData } = useFetch<ITaskCreate[]>(`tasks?search=${search}`);
+  const [searchTerm, setSearchTerm] = useState('');
   const { isLoading, debouncedCallback } = useDebouncedCallback(
     (search: string) => setSearch(search),
     700
@@ -156,115 +160,122 @@ export default function TaskList() {
         </Link>
       </HeaderPage>
 
-      <SectionDefault>
-        <ContentDefault>
-          <FieldGroupFormDefault>
-            <FieldGroupFormDefault>
-              <InputDefault
-                label="Data inicial"
-                placeholder="00/00/0000"
-                name="dateStart"
-                type="date"
-                icon={BiCalendar}
-                onChange={(e) => setFilter({ ...filter, ['dateStart']: e.target.value })}
-                value={filter.dateStart}
-              />
+      <Table>
+        <TableHead>
+          <div className="groupTable">
+            <h2>
+              Lista de projetos <strong>40 tarefas</strong>
+            </h2>
+          </div>
+        </TableHead>
+        <FilterGroup>
+          <InputDefault
+            label=""
+            name="search"
+            placeholder="Search"
+            onChange={(event) => {
+              setSearchTerm(event.target.value);
+              debouncedCallback(event.target.value);
+            }}
+            value={searchTerm}
+            icon={BiSearchAlt}
+            isLoading={isLoading}
+            className="search-field"
+          />
 
-              <InputDefault
-                label="Data final"
-                placeholder="00/00/0000"
-                name="dateEnd"
-                type="date"
-                icon={BiCalendar}
-                onChange={(e) => setFilter({ ...filter, ['dateEnd']: e.target.value })}
-                value={filter.dateEnd}
-              />
-            </FieldGroupFormDefault>
-            <SelectDefault
-              label="Ordenar por"
-              name="order"
-              placeHolder="Ordenação"
-              onChange={(e) => setFilter({ ...filter, ['order']: e.target.value })}
-              value={filter.order}
-            >
-              <option value="asc">Mais recente</option>
-              <option value="desc">Mais antigo</option>
-            </SelectDefault>
-
-            <InputDefault
-              label="Busca"
-              name="search"
-              placeholder="Busque pelo titulo..."
-              onChange={(event) => {
-                setSearchTerm(event.target.value);
-                debouncedCallback(event.target.value);
-              }}
-              icon={BiSearchAlt}
-              isLoading={isLoading}
-              value={searchTerm}
-            />
-          </FieldGroupFormDefault>
-        </ContentDefault>
-
-        <ContainerGroupTable style={{ marginTop: '1rem' }}>
-          <ScrollAreas>
-            <TableDefault title="Lista de tarefas">
-              <thead>
-                <tr style={{ whiteSpace: 'nowrap' }}>
-                  <th>ID</th>
-                  <th>Titulo</th>
-                  <th>Urgente</th>
-                  <th>Cliente</th>
-                  <th>Progresso</th>
-                  <th>usuários</th>
-                  <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                <tr>
-                  <td>#336</td>
-                  <td>Job 1</td>
-                  <td>
-                    <BiFlag size={22} />
-                  </td>
-                  <td>MO GROUP</td>
-                  <td
-                    style={{
-                      padding: '14px',
-                      width: '220px',
-                      textAlign: 'left'
-                    }}
-                  >
-                    <span style={{ marginBottom: '4px', display: 'block' }}>05:50:24</span>
-                    <ProgressBar
-                      totalHours={convertToMilliseconds('05:50:24')}
-                      restHours={convertToMilliseconds('02:20:36')}
+          <ButtonDefault typeButton="light">
+            <BiFilter />
+            Filtros
+          </ButtonDefault>
+        </FilterGroup>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Título</th>
+              <th>Cliente</th>
+              <th>Tempo</th>
+              <th>Status</th>
+              <th>Equipe</th>
+              <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data?.map((row) => (
+              <tr key={row.task_id}>
+                <td>#{row.task_id}</td>
+                <td>{row.title}</td>
+                <td>
+                  Cliente???
+                  {/* {row.client_name} */}
+                </td>
+                <td>Tempo???</td>
+                {/* <td
+                  style={{
+                    padding: '14px',
+                    width: '220px',
+                    textAlign: 'left'
+                  }}
+                >
+                  <span style={{ marginBottom: '4px', display: 'block' }}>
+                    {row.time?.replace('0', '')}
+                  </span>
+                  <ProgressBar
+                    totalHours={convertToMilliseconds(row.time)}
+                    restHours={convertToMilliseconds('02:20:36')}
+                  />
+                </td> */}
+                <td>Status???</td>
+                {/* <td>
+                  <Switch
+                    onChange={() => handleList(row.project_id)}
+                    checked={listSelected.includes(row.project_id) ? true : false}
+                    uncheckedIcon={false}
+                    checkedIcon={false}
+                    onColor="#0046B5"
+                  />
+                </td> */}
+                <td>
+                  <Avatar data={avatarAll} />
+                </td>
+                <td>
+                  <div className="fieldTableClients">
+                    <ButtonTable
+                      typeButton="view"
+                      onClick={() => console.log('abrir modal', row)}
                     />
-                  </td>
-                  <td>
-                    <Avatar data={avatarAll} />
-                  </td>
-                  <td>
-                    <div className="fieldTableClients">
-                      <ButtonTable typeButton="view" onClick={() => console.log('row')} />
-                      <ButtonTable typeButton="edit" onClick={() => console.log('row')} />
+                    <ButtonTable
+                      typeButton="edit"
+                      onClick={() => console.log('log da tarefa a editar', row)}
+                    />
+                    <Alert
+                      title="Atenção"
+                      subtitle="Certeza que gostaria de deletar esta Tarefa? Ao excluir esta ação não poderá ser desfeita."
+                      confirmButton={() => console.log('log da task a deletar', row)}
+                    >
+                      <ButtonTable typeButton="delete" />
+                    </Alert>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
 
-                      <Alert
-                        title="Atenção"
-                        subtitle="Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita."
-                        confirmButton={() => console.log('row.project_id')}
-                      >
-                        <ButtonTable typeButton="delete" onClick={() => console.log('row')} />
-                      </Alert>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </TableDefault>
-          </ScrollAreas>
-        </ContainerGroupTable>
-      </SectionDefault>
+          {/* <tfoot>
+            <tr>
+              <td colSpan={100}>
+                <Pagination
+                  total={pages.total}
+                  perPage={pages.perPage}
+                  currentPage={selected}
+                  lastPage={pages.lastPage}
+                  onClickPage={(e) => setSelected(e)}
+                />
+              </td>
+            </tr>
+          </tfoot> */}
+        </table>
+      </Table>
 
       {/* <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
         <form onSubmit={handleOnSubmit}>
