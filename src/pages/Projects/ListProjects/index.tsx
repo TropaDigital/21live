@@ -11,7 +11,6 @@ import { useToast } from '../../../hooks/toast';
 import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useFetch } from '../../../hooks/useFetch';
 import useForm from '../../../hooks/useForm';
-import { useSteps } from '../../../hooks/useSteps';
 
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 import { TenantProps } from '../../../utils/models';
@@ -34,10 +33,7 @@ import { UploadedFilesProps } from '../../../components/Upload/UploadFiles';
 
 import moment from 'moment';
 
-import InfoDescription from '../ComponentSteps/InfoDescription';
-import InfoFiles from '../ComponentSteps/InfoFiles';
-import InfoGeral from '../ComponentSteps/InfoGeral';
-import InfoProducts from '../ComponentSteps/InfoProducts/InfoProducts';
+import { ModalShowProjectField, ModalShowProjectWrapper } from './styles';
 
 interface StateProps {
   [key: string]: any;
@@ -45,9 +41,21 @@ interface StateProps {
 
 export default function ListProjects() {
   const { addToast } = useToast();
-  const [modal, setModal] = useState({
+  const [modalShowProject, setModalShowProject] = useState({
     isOpen: false,
-    type: 'Criar nova Ata de Reunião'
+    type: 'Criar nova Ata de Reunião',
+    project: {
+      title: '',
+      contract_type: '',
+      client_name: '',
+      project_id: '',
+      date_start: '',
+      date_end: '',
+      description: '',
+      time: '',
+      products: [],
+      files: []
+    }
   });
 
   const { formData, setFormValue, setData, handleOnChange } = useForm({
@@ -157,74 +165,18 @@ export default function ListProjects() {
     [setFormValue, formData]
   );
 
-  // const formComponents = [
-  //   {
-  //     label: 'Geral',
-  //     success: false,
-  //     component: (
-  //       <InfoGeral
-  //         data={formData}
-  //         handleInputChange={handleOnChange}
-  //         clients={dataClient}
-  //         error={error}
-  //       />
-  //     )
-  //   },
-  //   {
-  //     label: 'Produtos',
-  //     success: false,
-  //     component: (
-  //       <InfoProducts
-  //         handleOnAddProducts={handleOnAddProducts}
-  //         dataOffice={dataOffice}
-  //         dataFilter={formData.products}
-  //         handleOnPeriod={(e, id) => handleOnPeriod(e, id)}
-  //         handleOnDeleteProduct={(id) => handleOnDeleteProduct(id)}
-  //         okToSave={''}
-  //         setSave={''}
-  //       />
-  //     )
-  //   },
-  //   {
-  //     label: 'Descrição',
-  //     success: false,
-  //     component: (
-  //       <InfoDescription
-  //         value={formData?.description}
-  //         handleOnDescription={(value) => setFormValue('description', value)}
-  //         mentions={[]}
-  //       />
-  //     )
-  //   },
-  //   {
-  //     label: 'Anexos',
-  //     success: false,
-  //     component: (
-  //       <InfoFiles
-  //         uploadedFiles={uploadedFiles}
-  //         setUploadedFiles={setUploadedFiles}
-  //         tenant={formData?.tenant_id}
-  //         isDisabed={!formData?.tenant_id}
-  //         loading={loading}
-  //         setLoading={setLoading}
-  //       />
-  //     )
-  //   }
-  // ];
+  // const handleOnEdit = (item: IProjectCreate) => {
+  //   setData(item);
+  //   setUploadedFiles(item.files);
 
-  // const fillComponents = formComponents.map((row: any) => row.component);
-  // const { changeStep, currentComponent, currentStep, isFirstStep, isLastStep } =
-  //   useSteps(fillComponents);
+  //   setModalShowProject({
+  //     isOpen: true,
+  //     type: `Editar Projeto/Contrato: ${item.title}`,
+  //     project: {
 
-  const handleOnEdit = (item: IProjectCreate) => {
-    setData(item);
-    setUploadedFiles(item.files);
-
-    setModal({
-      isOpen: true,
-      type: `Editar Projeto/Contrato: ${item.title}`
-    });
-  };
+  //     }
+  //   });
+  // };
 
   const handleOnDelete = async (id: any) => {
     try {
@@ -253,9 +205,43 @@ export default function ListProjects() {
     }
   }
 
-  // useEffect(() => {
-  //   console.log('log dataProject', dataProject);
-  // }, [dataProject]);
+  const handleOpenModal = (project: IProjectCreate) => {
+    setModalShowProject({
+      isOpen: true,
+      type: `Projeto: #${project.project_id}`,
+      project: {
+        title: project.title,
+        client_name: project.client_name,
+        contract_type: project.contract_type,
+        project_id: project.project_id,
+        date_start: project.date_start,
+        date_end: project.date_end,
+        description: project.description,
+        products: project.products,
+        files: project.files,
+        time: project.time
+      }
+    });
+  };
+
+  const handleCloseModal = () => {
+    setModalShowProject({
+      isOpen: false,
+      type: ``,
+      project: {
+        title: '',
+        contract_type: '',
+        client_name: '',
+        project_id: '',
+        date_start: '',
+        date_end: '',
+        description: '',
+        products: [],
+        files: [],
+        time: ''
+      }
+    });
+  };
 
   return (
     <ContainerDefault>
@@ -341,11 +327,14 @@ export default function ListProjects() {
                 <td>{moment(row.date_end).format('DD/MM/YYYY')}</td>
                 <td>
                   <div className="fieldTableClients">
-                    <ButtonTable typeButton="view" onClick={() => console.log(row)} />
-                    <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
+                    <ButtonTable typeButton="view" onClick={() => handleOpenModal(row)} />
+                    <ButtonTable
+                      typeButton="edit"
+                      onClick={() => console.log('log do projeto a editar', row)}
+                    />
                     <Alert
                       title="Atenção"
-                      subtitle="Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita."
+                      subtitle="Certeza que gostaria de deletar este Projeto? Ao excluir a ação não poderá ser desfeita."
                       confirmButton={() => handleOnDelete(row.project_id)}
                     >
                       <ButtonTable typeButton="delete" />
@@ -372,42 +361,47 @@ export default function ListProjects() {
         </table>
       </Table>
 
-      {/* <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
-        <form onSubmit={handleOnSubmit}>
-          <Steps currentStep={currentStep} steps={steps} />
+      <ModalDefault
+        isOpen={modalShowProject.isOpen}
+        title={modalShowProject.type}
+        onOpenChange={handleCloseModal}
+      >
+        <ModalShowProjectWrapper>
+          <ModalShowProjectField>
+            <div className="title-label">Título:</div>
+            <div className="info-field">{modalShowProject.project.title}</div>
+          </ModalShowProjectField>
 
-          <div>{currentComponent}</div>
+          <ModalShowProjectField>
+            <div className="title-label">Cliente:</div>
+            <div className="info-field">{modalShowProject.project.client_name}</div>
+          </ModalShowProjectField>
 
-          <FooterModal>
-            <ButtonDefault typeButton="dark" isOutline type="button" onClick={handleOnCancel}>
-              Descartar
-            </ButtonDefault>
+          <ModalShowProjectField>
+            <div className="title-label">Tempo:</div>
+            <div className="info-field">{modalShowProject.project.time}</div>
+          </ModalShowProjectField>
 
-            <div className="fieldGroup">
-              {!isFirstStep && (
-                <ButtonDefault typeButton="primary" isOutline onClick={handleOnPrevStep}>
-                  Voltar
-                </ButtonDefault>
-              )}
-
-              {!isLastStep ? (
-                <ButtonDefault type="button" typeButton="primary" onClick={handleOnNextStep}>
-                  Próxima etapa
-                </ButtonDefault>
-              ) : (
-                <ButtonDefault
-                  typeButton="primary"
-                  type="button"
-                  onClick={handleOnSubmit}
-                  loading={loading}
-                >
-                  Salvar
-                </ButtonDefault>
-              )}
+          <ModalShowProjectField>
+            <div className="title-label">Data De Criação:</div>
+            <div className="info-field">
+              {moment(modalShowProject.project.date_start).format('DD/MM/YYYY')}
             </div>
-          </FooterModal>
-        </form>
-      </ModalDefault> */}
+          </ModalShowProjectField>
+
+          <ModalShowProjectField>
+            <div className="title-label">Entrega Estimada:</div>
+            <div className="info-field">
+              {moment(modalShowProject.project.date_end).format('DD/MM/YYYY')}
+            </div>
+          </ModalShowProjectField>
+
+          <ModalShowProjectField>
+            <div className="title-label">????:</div>
+            <div className="info-field">Aguardando definir mais campos</div>
+          </ModalShowProjectField>
+        </ModalShowProjectWrapper>
+      </ModalDefault>
     </ContainerDefault>
   );
 }
