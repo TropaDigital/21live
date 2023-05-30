@@ -94,7 +94,8 @@ export default function CreateProject() {
     category: '',
     products: [],
     files: [],
-    time: ''
+    time: '',
+    email: ''
   });
   const [productsArray, setProductsArray] = useState<IProduct[]>([]);
 
@@ -130,7 +131,8 @@ export default function CreateProject() {
 
   useEffect(() => {
     console.log('log do DTO', DTOForm);
-  }, [DTOForm]);
+    console.log('log dos Produtos', productsArray);
+  }, [DTOForm, productsArray]);
 
   function isNumber(value: string) {
     return /^[0-9]*$/.test(value);
@@ -158,7 +160,6 @@ export default function CreateProject() {
   };
 
   const editProductQuantity = (product: IProduct) => {
-    console.log('log do product to edit', product);
     if (editSelectedProducts) {
       setProductsArray((current) =>
         current.map((obj) => {
@@ -211,7 +212,7 @@ export default function CreateProject() {
       }
 
       if (category === '') {
-        throw setErrorInput('category', 'Categoria é obrigatória!');
+        throw setErrorInput('category', 'Campo é obrigatório!');
       } else {
         setErrorInput('category', undefined);
       }
@@ -239,12 +240,13 @@ export default function CreateProject() {
         setErrorInput('description', undefined);
       }
 
-      if (createStep === 2 && productsArray.length <= 0) {
-        throw new Error('Escolha pelo menos um produto antes de avançar');
+      if (createStep === 2 && productsArray.length < 1) {
+        throw 'Escolha pelo menos um produto antes de avançar';
       }
 
       setCreateStep(createStep + 1);
     } catch (error: any) {
+      console.log('error', error);
       addToast({
         title: 'Atenção',
         description: error,
@@ -291,21 +293,27 @@ export default function CreateProject() {
           })
         );
 
-        const newArrayProducts = productsArray.map(({ tenant_id, ...rest }: any) => rest);
+        // const newArrayProducts = productsArray.map(({ tenant_id, ...rest }: any) => rest);
         const totalTime = sumTimes(productsHours);
 
         const createNewData = {
           title: DTOForm.title,
           tenant_id: DTOForm.tenant_id,
-          products: newArrayProducts,
+          products: productsArray,
           description: DTOForm.description,
           category: DTOForm.category,
           date_start: DTOForm.date_start,
           date_end: DTOForm.date_end,
           contract_type: DTOForm.contract_type,
           files,
-          time: totalTime
+          time: totalTime,
+          email: DTOForm.email
         };
+
+        console.log('log do post project', DTOForm);
+        console.log('log do post new data', createNewData);
+
+        await api.post(`project`, createNewData);
 
         // const updateData = {
         //   title,
@@ -319,13 +327,6 @@ export default function CreateProject() {
         //   files,
         //   time
         // };
-
-        console.log('log do post project', DTOForm);
-        console.log('log do post new data', createNewData);
-
-        await api.post(`project`, createNewData);
-        // if (modal.type === 'Criar novo Projeto/Contrato') {
-        // } else {
         //   await api.put(`project/${formData.project_id}`, updateData);
         // }
         setFinishModal(true);
@@ -334,21 +335,6 @@ export default function CreateProject() {
           title: 'Sucesso',
           description: 'Serviço cadastrado com sucesso!'
         });
-
-        setDTOForm({
-          tenant_id: '',
-          project_id: '',
-          title: '',
-          contract_type: '',
-          date_start: '',
-          date_end: '',
-          description: '',
-          category: '',
-          products: [],
-          files: []
-        } as IProjectCreate);
-        setUploadedFiles([]);
-        fetchProject();
       } catch (e: any) {
         addToast({
           type: 'danger',
@@ -359,7 +345,7 @@ export default function CreateProject() {
         // setErros(getValidationErrors(e.response.data.result))
       }
     },
-    [uploadedFiles, setUploadedFiles]
+    [uploadedFiles, DTOForm, productsArray, productsHours]
   );
 
   const handleSwitchEmail = (value: any) => {
@@ -446,7 +432,7 @@ export default function CreateProject() {
                   onChange={(e) => {
                     handleSwitchEmail(e.target.checked);
                   }}
-                  value={DTOForm.email}
+                  isChecked={DTOForm.email === 'true' ? true : false}
                 />
                 <IconMail />
                 Enviar resumo por email
@@ -599,11 +585,11 @@ export default function CreateProject() {
           </FinishModalMessage>
 
           <FinishModalButtons>
-            {/* <ButtonDefault typeButton="dark" isOutline onClick={() => setFinishModal(false)}>
+            <ButtonDefault typeButton="dark" isOutline onClick={() => setFinishModal(false)}>
               Cancelar
-            </ButtonDefault> */}
+            </ButtonDefault>
             <ButtonDefault typeButton="primary" onClick={finishCreate}>
-              Concluir
+              Confirmar
             </ButtonDefault>
           </FinishModalButtons>
         </FinishModal>
