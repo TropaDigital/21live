@@ -58,7 +58,6 @@ export default function InfoProducts({
   const [search, setSearch] = useState<IServices[]>([]);
   const { data, pages } = useFetch<ServicesProps[]>(`services?search=${search}`);
   const [searchTerm, setSearchTerm] = useState('');
-  const [isSearching, setSearching] = useState(false);
   const [typeList, setTypeList] = useState('produtos');
   const [selected, setSelected] = useState(1);
   const [quantityProducts, setQuantityProducts] = useState<any>('');
@@ -192,7 +191,7 @@ export default function InfoProducts({
                 debouncedCallback(event.target.value);
               }}
               icon={BiSearchAlt}
-              isLoading={isSearching}
+              isLoading={isLoading}
               value={searchTerm}
             />
           </FieldGroup>
@@ -222,16 +221,16 @@ export default function InfoProducts({
                       receiveQuantity={row.quantity}
                     />
                   </td>
-                  <td
+                  {/* <td
                     style={{ cursor: 'pointer', textAlign: 'center' }}
                     onClick={() => handleAddProducts(row)}
                   >
                     <div style={{ fontSize: '14px', fontWeight: '600', color: '#0045B5' }}>
                       Adicionar
                     </div>
-                  </td>
+                  </td> */}
 
-                  {/* {quantityProducts &&
+                  {quantityProducts &&
                   Object.values(quantityProducts.quantity).includes(row.service_id) ? (
                     <td
                       style={{ cursor: 'pointer', textAlign: 'center' }}
@@ -247,7 +246,7 @@ export default function InfoProducts({
                         Adicionar
                       </div>
                     </td>
-                  )} */}
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -266,16 +265,16 @@ export default function InfoProducts({
                       receiveQuantity={row.quantity}
                     />
                   </td>
-                  <td
+                  {/* <td
                     style={{ cursor: 'pointer', textAlign: 'center' }}
                     onClick={() => handleAddProducts(row)}
                   >
                     <div style={{ fontSize: '14px', fontWeight: '600', color: '#0045B5' }}>
                       Adicionar
                     </div>
-                  </td>
+                  </td> */}
 
-                  {/* {quantityProducts && Object.values(quantityProducts).includes(row.service_id) ? (
+                  {quantityProducts && Object.values(quantityProducts).includes(row.service_id) ? (
                     <td
                       style={{ cursor: 'pointer', textAlign: 'center' }}
                       onClick={handleAddProducts}
@@ -290,7 +289,7 @@ export default function InfoProducts({
                         Adicionar
                       </div>
                     </td>
-                  )} */}
+                  )}
                 </tr>
               ))}
             </tbody>
