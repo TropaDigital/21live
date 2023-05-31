@@ -550,7 +550,7 @@ export default function Services() {
                 </option>
               )}
               {dataCategory?.map((row) => (
-                <option key={row.category_id} value={row.category_id}>
+                <option key={row.category_id} value={row.category}>
                   {row.category}
                 </option>
               ))}
