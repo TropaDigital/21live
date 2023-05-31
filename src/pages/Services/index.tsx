@@ -136,6 +136,10 @@ export default function Services() {
       minutes: '',
       service_id: 0
     } as FormDataProps);
+    setEstimatedTime({
+      hours: '',
+      minutes: ''
+    });
   }, [setData]);
 
   const handleOnEdit = (item: FormDataProps) => {
@@ -202,7 +206,7 @@ export default function Services() {
       try {
         event.preventDefault();
 
-        const { service, description, type, minutes, category, flag, size, service_id } = formData;
+        const { service, description, type, minutes, category, flag, size } = formData;
         const newFormData = {
           service,
           description,
@@ -210,8 +214,7 @@ export default function Services() {
           flag,
           type,
           size,
-          minutes,
-          service_id
+          minutes
         };
 
         if (modal.type === 'Novo produto') {
