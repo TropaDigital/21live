@@ -145,6 +145,11 @@ export default function Services() {
   const handleOnEdit = (item: FormDataProps) => {
     setData(item);
 
+    setEstimatedTime({
+      hours: item.minutes.split(':')[0],
+      minutes: item.minutes.split(':')[1]
+    });
+
     setModal({
       isOpen: true,
       type: `Editar serviço: ${item.service}`
@@ -219,15 +224,19 @@ export default function Services() {
 
         if (modal.type === 'Novo produto') {
           await api.post('services', newFormData);
+          addToast({
+            type: 'success',
+            title: 'Sucesso',
+            description: 'Serviço criado com sucesso!'
+          });
         } else {
           await api.put(`services/${formData.service_id}`, newFormData);
+          addToast({
+            type: 'success',
+            title: 'Sucesso',
+            description: 'Serviço salvo com sucesso!'
+          });
         }
-
-        addToast({
-          type: 'success',
-          title: 'Sucesso',
-          description: 'Serviço cadastrado com sucesso!'
-        });
 
         handleOnCancel();
         fetchData();
@@ -266,9 +275,9 @@ export default function Services() {
     });
   };
 
-  useEffect(() => {
-    console.log('log do formData', formData);
-  }, [formData]);
+  // useEffect(() => {
+  //   console.log('log do formData', formData);
+  // }, [formData]);
 
   return (
     <ContainerDefault>
@@ -292,7 +301,7 @@ export default function Services() {
           <div className="groupTable">
             {typeList === 'produtos' && (
               <h2>
-                Lista de produtos <strong>240 produtos</strong>
+                Lista de produtos <strong>{data?.length} produtos</strong>
               </h2>
             )}
             {typeList === 'kits' && (
@@ -336,10 +345,10 @@ export default function Services() {
               />
             </div>
 
-            <ButtonDefault typeButton="light">
+            {/* <ButtonDefault typeButton="light">
               <BiFilter />
               Filtros
-            </ButtonDefault>
+            </ButtonDefault> */}
           </FieldGroup>
         </TableHead>
         {typeList === 'produtos' && (
@@ -535,6 +544,11 @@ export default function Services() {
               value={formData.category}
               required
             >
+              {modal.type.includes('Editar servico') && (
+                <option selected={true} value={formData.category}>
+                  {formData.category}
+                </option>
+              )}
               {dataCategory?.map((row) => (
                 <option key={row.category_id} value={row.category_id}>
                   {row.category}
