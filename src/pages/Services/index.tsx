@@ -35,6 +35,11 @@ import {
   FooterModal
 } from '../../components/UiElements/styles';
 
+import {
+  Summary,
+  SummaryInfoWrapper,
+  SummaryTaskInfo
+} from '../Staks/ComponentSteps/SummaryTasks/styles';
 import { EstimatedTime, EstimatedTimeInputs, ModalProductWrapper } from './styles';
 
 interface ServicesProps {
@@ -161,7 +166,7 @@ export default function Services() {
 
     setModalShowProduct({
       isOpen: true,
-      type: `Produto: ${item.service_id}`,
+      type: `Produto: ${item.service}`,
       product: {
         category: item.category,
         description: item.description,
@@ -486,7 +491,7 @@ export default function Services() {
       </Table>
 
       <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
-        <form onSubmit={handleOnSubmit}>
+        <form onSubmit={handleOnSubmit} style={{ minWidth: '500px' }}>
           <FieldDefault>
             <InputDefault
               label="Produto"
@@ -633,24 +638,34 @@ export default function Services() {
         }
       >
         <ModalProductWrapper>
-          <div className="info">
-            Nome do produto: <span>{modalShowProduct.product.service}</span>
-          </div>
-          <div className="info">
-            Descrição: <span>{modalShowProduct.product.description}</span>
-          </div>
-          <div className="info">
-            Horas: <span>{modalShowProduct.product.minutes}</span>
-          </div>
-          <div className="info">
-            Categoria: <span>{modalShowProduct.product.category}</span>
-          </div>
-          <div className="info">
-            Tamanho: <span>{modalShowProduct.product.size}</span>
-          </div>
-          <div className="info">
-            Tipo: <span>{modalShowProduct.product.type}</span>
-          </div>
+          <Summary>
+            <SummaryInfoWrapper>
+              <SummaryTaskInfo>
+                <div className="title-info">Descrição:</div>
+                <div className="info">{modalShowProduct.product.description}</div>
+              </SummaryTaskInfo>
+
+              <SummaryTaskInfo>
+                <div className="title-info">Horas:</div>
+                <div className="info">{modalShowProduct.product.minutes}</div>
+              </SummaryTaskInfo>
+
+              <SummaryTaskInfo>
+                <div className="title-info">Categoria:</div>
+                <div className="info">{modalShowProduct.product.category}</div>
+              </SummaryTaskInfo>
+
+              <SummaryTaskInfo>
+                <div className="title-info">Tamanho:</div>
+                <div className="info">{modalShowProduct.product.size}</div>
+              </SummaryTaskInfo>
+
+              <SummaryTaskInfo>
+                <div className="title-info">Tipo:</div>
+                <div className="info">{modalShowProduct.product.type}</div>
+              </SummaryTaskInfo>
+            </SummaryInfoWrapper>
+          </Summary>
         </ModalProductWrapper>
       </ModalDefault>
 
