@@ -218,8 +218,8 @@ legend {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 90vw;
-    max-width: 600px;
+    width: fit-content;
+    max-width: 90vw;
     /* height: 80vh; */
     max-height: 95vh;
     overflow-y: auto;

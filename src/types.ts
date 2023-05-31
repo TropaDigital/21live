@@ -32,6 +32,7 @@ export interface IProjectCreate {
   project_id?: string | any;
   title: string;
   contract_type: string; //fee | spot
+  category: string;
   date_start: string;
   date_end: string;
   client_name?: string | any;
