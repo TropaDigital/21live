@@ -400,7 +400,7 @@ export default function CreateProject() {
               // handleOnAddProducts={handleOnAddProducts}
               handleOnAddProducts={() => ''}
               dataOffice={dataOffice}
-              dataProducts={productsArray}
+              dataFilter={productsArray}
               handleOnPeriod={(e, id) => ''}
               handleOnDeleteProduct={(id) => handleDeleteProducts(id)}
               handleEditProductQuantity={(value) => editProductQuantity(value)}
