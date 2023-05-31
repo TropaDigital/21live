@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback, useEffect, useState } from 'react';
 import { BiFilter, BiPlus, BiSearchAlt } from 'react-icons/bi';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Switch from 'react-switch';
 
 import api from '../../../services/api';
@@ -28,12 +28,19 @@ import { FilterGroup, TableHead } from '../../../components/Table/styles';
 import Alert from '../../../components/Ui/Alert';
 import ModalDefault from '../../../components/Ui/ModalDefault';
 import ProgressBar from '../../../components/Ui/ProgressBar';
-import { ContainerDefault, FooterModal } from '../../../components/UiElements/styles';
+import { ContainerDefault } from '../../../components/UiElements/styles';
 import { UploadedFilesProps } from '../../../components/Upload/UploadFiles';
 
 import moment from 'moment';
 
-import { ModalShowProjectField, ModalShowProjectWrapper } from './styles';
+import { Summary } from '../../Staks/ComponentSteps/SummaryTasks/styles';
+import { SummaryTaskInfo } from '../../Staks/ComponentSteps/SummaryTasks/styles';
+import { SummaryInfoWrapper } from '../../Staks/ComponentSteps/SummaryTasks/styles';
+import { SummaryTaskDescription } from '../../Staks/ComponentSteps/SummaryTasks/styles';
+import { SummaryCard } from '../../Staks/ComponentSteps/SummaryTasks/styles';
+import { SummaryCardTitle } from '../../Staks/ComponentSteps/SummaryTasks/styles';
+import { SummaryCardSubtitle } from '../../Staks/ComponentSteps/SummaryTasks/styles';
+import { ModalShowProjectWrapper } from './styles';
 
 interface StateProps {
   [key: string]: any;
@@ -47,6 +54,7 @@ export default function ListProjects() {
     project: {
       title: '',
       contract_type: '',
+      category: '',
       client_name: '',
       project_id: '',
       date_start: '',
@@ -62,6 +70,7 @@ export default function ListProjects() {
     tenant_id: '',
     title: '',
     contract_type: '',
+    category: '',
     project_id: '',
     date_start: '',
     date_end: '',
@@ -91,6 +100,7 @@ export default function ListProjects() {
   } = useFetch<IProjectCreate[]>(`project?search=${search}`);
   const [selected, setSelected] = useState(1);
   const [listSelected, setListSelected] = useState<any[]>([]);
+  const navigate = useNavigate();
 
   const handleOnAddProducts = (items: any) => {
     setFormValue('products', [...formData.products, ...items]);
@@ -208,11 +218,12 @@ export default function ListProjects() {
   const handleOpenModal = (project: IProjectCreate) => {
     setModalShowProject({
       isOpen: true,
-      type: `Projeto: #${project.project_id}`,
+      type: `Resumo do Projeto: #${project.project_id}`,
       project: {
         title: project.title,
         client_name: project.client_name,
         contract_type: project.contract_type,
+        category: project.category,
         project_id: project.project_id,
         date_start: project.date_start,
         date_end: project.date_end,
@@ -231,6 +242,7 @@ export default function ListProjects() {
       project: {
         title: '',
         contract_type: '',
+        category: '',
         client_name: '',
         project_id: '',
         date_start: '',
@@ -241,6 +253,28 @@ export default function ListProjects() {
         time: ''
       }
     });
+  };
+
+  const handleEditProject = (project: any) => {
+    // const product: any = {
+    //   category: '',
+    //   client_name: '',
+    //   contract_type: '',
+    //   date_end: '',
+    //   date_start: '',
+    //   deleted: '',
+    //   description: '',
+    //   files: [],
+    //   products: [],
+    //   project_id: '',
+    //   status: '',
+    //   tenant_id: '',
+    //   time: '',
+    //   time_consumed: '',
+    //   title: ''
+    // };
+    console.log('log do projeto a editar', project);
+    navigate('/criar-projeto', { state: project });
   };
 
   return (
@@ -275,10 +309,10 @@ export default function ListProjects() {
             className="search-field"
           />
 
-          <ButtonDefault typeButton="light">
+          {/* <ButtonDefault typeButton="light">
             <BiFilter />
             Filtros
-          </ButtonDefault>
+          </ButtonDefault> */}
         </FilterGroup>
         <table>
           <thead>
@@ -328,10 +362,7 @@ export default function ListProjects() {
                 <td>
                   <div className="fieldTableClients">
                     <ButtonTable typeButton="view" onClick={() => handleOpenModal(row)} />
-                    <ButtonTable
-                      typeButton="edit"
-                      onClick={() => console.log('log do projeto a editar', row)}
-                    />
+                    <ButtonTable typeButton="edit" onClick={() => handleEditProject(row)} />
                     <Alert
                       title="Atenção"
                       subtitle="Certeza que gostaria de deletar este Projeto? Ao excluir a ação não poderá ser desfeita."
@@ -367,39 +398,111 @@ export default function ListProjects() {
         onOpenChange={handleCloseModal}
       >
         <ModalShowProjectWrapper>
-          <ModalShowProjectField>
-            <div className="title-label">Título:</div>
-            <div className="info-field">{modalShowProject.project.title}</div>
-          </ModalShowProjectField>
+          <Summary>
+            <div className="title">Informações do projeto</div>
+            <SummaryInfoWrapper>
+              <SummaryTaskInfo>
+                <div className="title-info">Título do projeto:</div>
+                <div className="info">{modalShowProject.project.title}</div>
+              </SummaryTaskInfo>
 
-          <ModalShowProjectField>
-            <div className="title-label">Cliente:</div>
-            <div className="info-field">{modalShowProject.project.client_name}</div>
-          </ModalShowProjectField>
+              <SummaryTaskInfo>
+                <div className="title-info">Cliente:</div>
+                <div className="info">{modalShowProject.project.client_name}</div>
+              </SummaryTaskInfo>
 
-          <ModalShowProjectField>
-            <div className="title-label">Tempo:</div>
-            <div className="info-field">{modalShowProject.project.time}</div>
-          </ModalShowProjectField>
+              <SummaryTaskInfo>
+                <div className="title-info">FEE/ SPOT:</div>
+                <div className="info">{modalShowProject.project.contract_type}</div>
+              </SummaryTaskInfo>
 
-          <ModalShowProjectField>
-            <div className="title-label">Data De Criação:</div>
-            <div className="info-field">
-              {moment(modalShowProject.project.date_start).format('DD/MM/YYYY')}
-            </div>
-          </ModalShowProjectField>
+              <SummaryTaskInfo>
+                <div className="title-info">Tipo do contrato:</div>
+                <div className="info">{modalShowProject.project.category}</div>
+              </SummaryTaskInfo>
 
-          <ModalShowProjectField>
-            <div className="title-label">Entrega Estimada:</div>
-            <div className="info-field">
-              {moment(modalShowProject.project.date_end).format('DD/MM/YYYY')}
-            </div>
-          </ModalShowProjectField>
+              <SummaryTaskInfo>
+                <div className="title-info">Tempo:</div>
+                <div className="info">{modalShowProject.project.time}</div>
+              </SummaryTaskInfo>
 
-          <ModalShowProjectField>
-            <div className="title-label">????:</div>
-            <div className="info-field">Aguardando definir mais campos</div>
-          </ModalShowProjectField>
+              <SummaryTaskInfo>
+                <div className="title-info">Data De Criação:</div>
+                <div className="info">
+                  {moment(modalShowProject.project.date_start).format('DD/MM/YYYY')}
+                </div>
+              </SummaryTaskInfo>
+
+              <SummaryTaskInfo>
+                <div className="title-info">Entrega Estimada:</div>
+                <div className="info">
+                  {moment(modalShowProject.project.date_end).format('DD/MM/YYYY')}
+                </div>
+              </SummaryTaskInfo>
+
+              <SummaryTaskDescription>
+                <div className="description-title">Contexto geral</div>
+                <div className="description-info">
+                  {modalShowProject.project.description.replace('<p>', '').replace('</p>', '')}
+                </div>
+              </SummaryTaskDescription>
+            </SummaryInfoWrapper>
+          </Summary>
+
+          <Summary style={{ width: '700px' }}>
+            <div className="title">Produtos selecionados</div>
+            {modalShowProject.project.products.map((row: any, index: number) => (
+              <SummaryCard key={index} style={{ height: 'fit-content' }}>
+                <SummaryCardTitle>
+                  #{index + 1} - {row.service}
+                </SummaryCardTitle>
+                <SummaryCardSubtitle
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: 'fit-content'
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-around',
+                      width: '100%'
+                    }}
+                  >
+                    <div className="description-wrap">
+                      Descrição: <span>{row.description}</span>
+                    </div>
+                    <div>
+                      Periodo: <span>{row.period}</span>
+                    </div>
+                    <div>
+                      I/D: <span>{row.type}</span>
+                    </div>
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-around',
+                      width: '100%'
+                    }}
+                  >
+                    <div>
+                      Formato: <span>{row.size}</span>
+                    </div>
+                    <div>
+                      Quantidade: <span>{row.quantity}</span>
+                    </div>
+                    <div>
+                      Tempo estimado <span>{row.minutes}</span>
+                    </div>
+                  </div>
+                </SummaryCardSubtitle>
+              </SummaryCard>
+            ))}
+          </Summary>
         </ModalShowProjectWrapper>
       </ModalDefault>
     </ContainerDefault>
