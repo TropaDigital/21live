@@ -164,7 +164,7 @@ export default function TaskList() {
         <TableHead>
           <div className="groupTable">
             <h2>
-              Lista de projetos <strong>40 tarefas</strong>
+              Lista de projetos <strong>{data?.length} tarefas</strong>
             </h2>
           </div>
         </TableHead>
@@ -183,10 +183,10 @@ export default function TaskList() {
             className="search-field"
           />
 
-          <ButtonDefault typeButton="light">
+          {/* <ButtonDefault typeButton="light">
             <BiFilter />
             Filtros
-          </ButtonDefault>
+          </ButtonDefault> */}
         </FilterGroup>
         <table>
           <thead>
