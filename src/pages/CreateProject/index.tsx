@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 // React
 import { useState, useCallback, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 // Hooks
 import { useToast } from '../../hooks/toast';
@@ -98,27 +98,36 @@ export default function CreateProject() {
     email: ''
   });
   const [productsArray, setProductsArray] = useState<IProduct[]>([]);
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state !== null) {
+      setDTOForm(location.state);
+      setProductsArray(location.state.products);
+      setEditSelectedProducts(true);
+    }
+  }, [location]);
 
   // Hours calculations
-  const creatorHoursArray = productsArray?.filter(
-    (obj) => obj.service.toLowerCase() === 'hora de criação'
-  );
+  // const creatorHoursArray = productsArray?.filter(
+  //   (obj) => obj.service.toLowerCase() === 'hora de criação'
+  // );
   // const totalCreateHours = creatorHoursArray.reduce(
   //   (accumulator: any, currentValue: any) => accumulator + currentValue.minutes,
   //   0
   // );
 
-  const productsHours = productsArray?.map((row) => {
-    return multiplyTime(row?.minutes, row?.quantity);
-  });
+  // const productsHours = productsArray?.map((row) => {
+  //   return multiplyTime(row?.minutes, row?.quantity);
+  // });
 
   // const totalHoursProducts = sumTimes(productsHours) + totalCreateHours;
   // const productsHoursWithoutCreateHours = totalHoursProducts - totalCreateHours;
   // End Hours calculations
 
-  const handleOnAddProducts = (items: IProduct) => {
-    setProductsArray((prevState: any) => [...prevState, items]);
-  };
+  // const handleOnAddProducts = (items: IProduct) => {
+  //   setProductsArray((prevState: any) => [...prevState, items]);
+  // };
 
   const handleDescription = (value: any) => {
     setDTOForm((prevState: any) => ({ ...prevState, ['description']: value }));
@@ -133,10 +142,6 @@ export default function CreateProject() {
     console.log('log do DTO', DTOForm);
     console.log('log dos Produtos', productsArray);
   }, [DTOForm, productsArray]);
-
-  function isNumber(value: string) {
-    return /^[0-9]*$/.test(value);
-  }
 
   // const handleOnPeriod = useCallback(
   //   (value: any, id: any) => {
@@ -294,7 +299,7 @@ export default function CreateProject() {
         );
 
         // const newArrayProducts = productsArray.map(({ tenant_id, ...rest }: any) => rest);
-        const totalTime = sumTimes(productsHours);
+        // const totalTime = sumTimes(productsHours);
 
         const createNewData = {
           title: DTOForm.title,
@@ -306,35 +311,31 @@ export default function CreateProject() {
           date_end: DTOForm.date_end,
           contract_type: DTOForm.contract_type,
           files,
-          time: totalTime,
+          // time: totalTime,
+          time: '',
           email: DTOForm.email
         };
 
-        console.log('log do post project', DTOForm);
-        console.log('log do post new data', createNewData);
+        if (location.state !== null) {
+          await api.put(`project/${DTOForm.project_id}`, DTOForm);
+          console.log('log do update project', DTOForm);
+          addToast({
+            type: 'success',
+            title: 'Sucesso',
+            description: 'Projeto editado com sucesso!'
+          });
+        } else {
+          await api.post(`project`, createNewData);
+          setFinishModal(true);
+          addToast({
+            type: 'success',
+            title: 'Sucesso',
+            description: 'Projeto cadastrado com sucesso!'
+          });
+        }
 
-        await api.post(`project`, createNewData);
-
-        // const updateData = {
-        //   title,
-        //   project_id,
-        //   tenant_id,
-        //   products: newArrayProducts,
-        //   description,
-        //   date_start,
-        //   date_end,
-        //   contract_type,
-        //   files,
-        //   time
-        // };
-        //   await api.put(`project/${formData.project_id}`, updateData);
-        // }
-        setFinishModal(true);
-        addToast({
-          type: 'success',
-          title: 'Sucesso',
-          description: 'Serviço cadastrado com sucesso!'
-        });
+        // console.log('log do post project', DTOForm);
+        // console.log('log do post new data', createNewData);
       } catch (e: any) {
         addToast({
           type: 'danger',
@@ -345,7 +346,8 @@ export default function CreateProject() {
         // setErros(getValidationErrors(e.response.data.result))
       }
     },
-    [uploadedFiles, DTOForm, productsArray, productsHours]
+    // [uploadedFiles, DTOForm, productsArray, productsHours]
+    [uploadedFiles, DTOForm, productsArray]
   );
 
   const handleSwitchEmail = (value: any) => {
@@ -395,9 +397,10 @@ export default function CreateProject() {
           <>
             <FormTitle>Produtos</FormTitle>
             <InfoProducts
-              handleOnAddProducts={handleOnAddProducts}
+              // handleOnAddProducts={handleOnAddProducts}
+              handleOnAddProducts={() => ''}
               dataOffice={dataOffice}
-              dataFilter={productsArray}
+              dataProducts={productsArray}
               handleOnPeriod={(e, id) => ''}
               handleOnDeleteProduct={(id) => handleDeleteProducts(id)}
               handleEditProductQuantity={(value) => editProductQuantity(value)}
@@ -470,7 +473,7 @@ export default function CreateProject() {
                   <SummaryContractCard>
                     <div className="hours">
                       Horas por produto
-                      <strong>{sumTimes(productsHours)}</strong>
+                      {/* <strong>{sumTimes(productsHours)}</strong> */}
                     </div>
                   </SummaryContractCard>
                   {/* {productsArray.some((obj) => obj.service.toLowerCase() === 'hora de criação') && (
@@ -485,9 +488,7 @@ export default function CreateProject() {
                     </SummaryContractCard>
                   )} */}
                   <SummaryContractCard>
-                    <div className="total">
-                      Total <div>{sumTimes(productsHours)}</div>
-                    </div>
+                    <div className="total">{/* Total <div>{sumTimes(productsHours)}</div> */}</div>
                   </SummaryContractCard>
                 </Summary>
 
