@@ -345,7 +345,7 @@ export default function ListProjects() {
                   </span>
                   <ProgressBar
                     totalHours={convertToMilliseconds(row.time)}
-                    restHours={convertToMilliseconds('02:20:36')}
+                    restHours={convertToMilliseconds(row.time_consumed)}
                   />
                 </td>
                 <td>
