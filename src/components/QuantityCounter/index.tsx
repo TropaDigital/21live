@@ -61,7 +61,7 @@ export default function QuantityCounter({
     setCounter(counter + 1);
 
     const productSelected: IProduct = {
-      service_id: rowQuantity.service_id || rowQuantity.project_id,
+      service_id: rowQuantity.service_id || rowQuantity.project_id || rowQuantity.product_id,
       service: rowQuantity.service,
       description: rowQuantity.description,
       type: rowQuantity.type,
@@ -76,7 +76,7 @@ export default function QuantityCounter({
   function decrementCount() {
     setCounter(counter - 1);
     const productSelected: IProduct = {
-      service_id: rowQuantity.service_id || rowQuantity.project_id,
+      service_id: rowQuantity.service_id || rowQuantity.project_id || rowQuantity.product_id,
       service: rowQuantity.service,
       description: rowQuantity.description,
       type: rowQuantity.type,
