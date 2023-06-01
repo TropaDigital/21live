@@ -78,7 +78,7 @@ export default function InfoGeral({
         >
           {dataProjects?.map((row: any) => (
             <option key={row.product_id} value={row.product_id}>
-              {row.projeto}
+              {row.select}
             </option>
           ))}
         </SelectDefault>
