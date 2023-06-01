@@ -38,6 +38,7 @@ export interface IProjectCreate {
   client_name?: string | any;
   description?: string | any;
   time?: string | any;
+  time_consumed?: string | any;
   products?: Array<IProduct> | any;
   files?: Array<IDocProject> | any;
 }
@@ -54,20 +55,20 @@ export interface IServices {
 
 // Types for Tasks
 export interface ITaskCreate {
-  task_id?: number;
+  task_id?: number | any;
   title: string;
-  tenant_id: number | string;
-  product_id: number | string; // produto principal, o produto pode ter uma flag que significa que ele lista outros produtos na criação da task
-  type?: string; //type_id da tabela task_type
-  flow_id?: number;
-  description: string; //descricao geral
-  creation_description?: string; //entrega de criação
-  creation_date_end?: string;
-  copywriting_description?: string;
-  copywriting_date_end?: string; //entrega da redação
-  archives?: Array<IDocTask>;
-  deadlines?: Array<IDelivery>; //se for dividir a entrega, entra agqui
-  step?: number;
+  tenant_id: number | string | any;
+  product_id: number | string | any; // produto principal, o produto pode ter uma flag que significa que ele lista outros produtos na criação da task
+  type?: string | any; //type_id da tabela task_type
+  flow_id?: number | any;
+  description: string | any; //descricao geral
+  creation_description?: string | any; //entrega de criação
+  creation_date_end?: string | any;
+  copywriting_description?: string | any;
+  copywriting_date_end?: string | any; //entrega da redação
+  archives?: Array<IDocTask> | any;
+  deadlines?: Array<IDelivery> | any; //se for dividir a entrega, entra agqui
+  step?: number | any;
 }
 
 export interface IDelivery {
