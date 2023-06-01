@@ -14,7 +14,7 @@ import useDebouncedCallback from '../../../../hooks/useDebounced';
 // Types
 import { IProduct, IServices, ServicesProps } from '../../../../types';
 
-// COMPONENTS
+// Components
 import ButtonDefault from '../../../../components/Buttons/ButtonDefault';
 import Pagination from '../../../../components/Pagination';
 import QuantityCounter from '../../../../components/QuantityCounter';
@@ -22,10 +22,13 @@ import CardProductsSelected from '../../../../components/CardProductsSelected';
 import { InputDefault } from '../../../../components/Inputs/InputDefault';
 import { Table } from '../../../../components/Table';
 
-// STYLES
+// Styles
 import { FieldTogleButton, TableHead } from '../../../../components/Table/styles';
 import { FieldGroup } from '../../../../components/UiElements/styles';
 import { ProductsWrapper, WrapperCard } from './styles';
+
+// Libraries
+import Switch from 'react-switch';
 
 interface PropsProducts {
   dataOffice: any;
@@ -34,7 +37,6 @@ interface PropsProducts {
   handleOnPeriod: (e: any, id: any) => void;
   handleOnDeleteProduct: (id: any) => void;
   handleEditProductQuantity: (value: any) => void;
-  handleEditProducthours: (values: any, product: IProduct) => void;
   okToSave: any;
   setSave: any;
   editProducts: boolean;
@@ -48,7 +50,6 @@ export default function InfoProducts({
   handleOnAddProducts,
   handleOnDeleteProduct,
   handleEditProductQuantity,
-  handleEditProducthours,
   okToSave,
   setSave,
   editProducts,
@@ -61,7 +62,7 @@ export default function InfoProducts({
   const [typeList, setTypeList] = useState('produtos');
   const [selected, setSelected] = useState(1);
   const [quantityProducts, setQuantityProducts] = useState<any>('');
-  const [selectedProducts, setSelectedProducts] = useState<IProduct[]>([]);
+  // const [selectedProducts, setSelectedProducts] = useState<IProduct[]>([]);
   const { isLoading, debouncedCallback } = useDebouncedCallback(
     (search: any) => setSearch(search),
     700
@@ -72,93 +73,66 @@ export default function InfoProducts({
   };
 
   function handleAddProducts(product: any) {
-    if (
-      quantityProducts === '' &&
-      selectedProducts.filter((obj) => obj.service_id === product.service_id).length > 0
-    ) {
-      addToast({
-        title: 'Atenção',
-        description: 'Produto já adicionado, altere a quantidade ao lado',
-        type: 'warning'
-      });
-    } else if (quantityProducts === '') {
-      addToast({
-        title: 'Atenção',
-        description: 'Adicione a quantidade primeiro',
-        type: 'warning'
-      });
+    if (dataFilter.filter((obj: any) => obj.service_id === product.service_id).length > 0) {
+      handleEditProductQuantity(quantityProducts);
+      setQuantityProducts('');
     } else {
-      if (selectedProducts.filter((obj) => obj.service_id === product.service_id).length > 0) {
-        addToast({
-          title: 'Atenção',
-          description: 'Produto já adicionado',
-          type: 'warning'
-        });
-        setQuantityProducts('');
-      } else {
-        setSelectedProducts((obj) => [...obj, quantityProducts]);
-        setQuantityProducts('');
-      }
+      handleOnAddProducts(quantityProducts);
+      setQuantityProducts('');
+    }
+  }
+
+  function editAddedProducts(product: any) {
+    if (dataFilter.filter((obj: any) => obj.product_id === product.product_id).length > 0) {
+      handleEditProductQuantity(quantityProducts);
+      setQuantityProducts('');
+    } else {
+      // handleOnAddProducts(quantityProducts);
+      setQuantityProducts('');
     }
   }
 
   function handleDeleteProducts(id: any) {
-    setSelectedProducts(selectedProducts.filter((obj) => obj.service_id !== id.service_id));
-    setQuantityProducts('');
+    if (editProducts) {
+      handleOnDeleteProduct(id.product_id);
+      setQuantityProducts('');
+    } else {
+      handleOnDeleteProduct(id.service_id);
+      setQuantityProducts('');
+    }
   }
 
-  function handleAddHours(value: any, product: IProduct) {
-    setSelectedProducts((current) =>
-      current.map((obj) => {
-        if (obj.service_id === product.service_id) {
-          return { ...obj, quantity: value.timeCounter, period: value.contractType };
-        }
-        return obj;
-      })
-    );
-  }
+  // function editProductQuantity(product: any) {
+  //   handleEditProductQuantity(product);
+  // }
 
-  function editProductQuantity(product: any) {
-    handleEditProductQuantity(product);
-  }
+  // function editProductHours(value: any, product: IProduct) {
+  //   const updatedProduct = {
+  //     description: product.description,
+  //     minutes: product.minutes,
+  //     period: product.period,
+  //     project_id: product.service_id,
+  //     quantity: value.timeCounter,
+  //     service: product.service,
+  //     size: product.size,
+  //     type: product.type
+  //   };
+  //   handleEditProductQuantity(updatedProduct);
+  // }
 
-  function editProductHours(value: any, product: IProduct) {
-    const updatedProduct = {
-      description: product.description,
-      minutes: product.minutes,
-      period: product.period,
-      project_id: product.service_id,
-      quantity: value.timeCounter,
-      service: product.service,
-      size: product.size,
-      type: product.type
-    };
-    handleEditProductQuantity(updatedProduct);
-  }
-
-  const deleteProducts = (value: any) => {
-    handleOnDeleteProduct(value.service_id);
-  };
+  // const deleteProducts = (value: any) => {
+  //   handleOnDeleteProduct(value.service_id);
+  // };
 
   useEffect(() => {
-    if (selectedProducts.length > 0) {
+    if (dataFilter.length > 0) {
       okToSave(true);
     }
 
-    if (selectedProducts.length <= 0) {
-      okToSave(false);
-    }
-  }, [selectedProducts]);
-
-  useEffect(() => {
-    if (setSave === 'Go') {
-      setTimeout(() => {
-        selectedProducts.map((row: any) => {
-          handleOnAddProducts(row);
-        });
-      }, 300);
-    }
-  }, [setSave]);
+    // if (selectedProducts.length <= 0) {
+    //   okToSave(false);
+    // }
+  }, [dataFilter]);
 
   return (
     <ProductsWrapper>
@@ -202,23 +176,33 @@ export default function InfoProducts({
               <th>ID</th>
               <th>Produto</th>
               <th>Categoria</th>
+              <th>Listar produtos</th>
               <th>Quantidade</th>
               <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
             </tr>
           </thead>
           {dataFilter && editProducts ? (
             <tbody>
-              {dataFilter?.map((row: IProduct) => (
-                <tr key={row.service_id}>
-                  <td>{row.service_id}</td>
+              {dataFilter?.map((row: any) => (
+                <tr key={row.product_id}>
+                  <td>{row.product_id}</td>
                   <td>{row.service}</td>
                   <td>{row.description}</td>
                   <td>
+                    <Switch
+                      onChange={() => console.log('log switch', row.service_id)}
+                      checked={row.flag === 'true' ? true : false}
+                      uncheckedIcon={false}
+                      checkedIcon={false}
+                      onColor="#0046B5"
+                    />
+                  </td>
+                  <td>
                     <QuantityCounter
-                      handleQuantity={editProductQuantity}
+                      handleQuantity={setQuantityProducts}
                       rowQuantity={row}
-                      clearQuantity={deleteProducts}
-                      receiveQuantity={row.quantity}
+                      clearQuantity={handleDeleteProducts}
+                      receiveQuantity={Number(row.quantity)}
                     />
                   </td>
                   {/* <td
@@ -230,11 +214,10 @@ export default function InfoProducts({
                     </div>
                   </td> */}
 
-                  {quantityProducts &&
-                  Object.values(quantityProducts.quantity).includes(row.service_id) ? (
+                  {quantityProducts && Object.values(quantityProducts).includes(row.product_id) ? (
                     <td
                       style={{ cursor: 'pointer', textAlign: 'center' }}
-                      onClick={handleAddProducts}
+                      onClick={() => editAddedProducts(row)}
                     >
                       <div style={{ fontSize: '14px', fontWeight: '600', color: '#0045B5' }}>
                         Adicionar
@@ -258,11 +241,20 @@ export default function InfoProducts({
                   <td>{row.service}</td>
                   <td>{row.category}</td>
                   <td>
+                    <Switch
+                      onChange={() => console.log('log switch', row.service_id)}
+                      checked={row.flag === 'true' ? true : false}
+                      uncheckedIcon={false}
+                      checkedIcon={false}
+                      onColor="#0046B5"
+                    />
+                  </td>
+                  <td>
                     <QuantityCounter
                       handleQuantity={setQuantityProducts}
                       rowQuantity={row}
                       clearQuantity={handleDeleteProducts}
-                      receiveQuantity={row.quantity}
+                      receiveQuantity={row?.quantity}
                     />
                   </td>
                   {/* <td
@@ -277,7 +269,7 @@ export default function InfoProducts({
                   {quantityProducts && Object.values(quantityProducts).includes(row.service_id) ? (
                     <td
                       style={{ cursor: 'pointer', textAlign: 'center' }}
-                      onClick={handleAddProducts}
+                      onClick={() => handleAddProducts(row)}
                     >
                       <div style={{ fontSize: '14px', fontWeight: '600', color: '#0045B5' }}>
                         Adicionar
@@ -311,41 +303,37 @@ export default function InfoProducts({
         </table>
       </Table>
 
-      {selectedProducts.length > 0 && (
-        <WrapperCard>
-          {selectedProducts.map((row: IProduct, index: number) => (
-            <CardProductsSelected
-              handleOnPeriod={handleOnPeriod}
-              id={index + 1}
-              title={row.service}
-              contract_type={''}
-              hours_total={(e: any) => handleAddHours(e, row)}
-              key={index}
-              data={row}
-              editing={editProducts}
-              showSwitch={hideSwitch}
-            />
-          ))}
-        </WrapperCard>
-      )}
-
-      {dataFilter && editProducts && (
+      {dataFilter.length > 0 && (
         <WrapperCard>
           {dataFilter.map((row: IProduct, index: number) => (
             <CardProductsSelected
               handleOnPeriod={handleOnPeriod}
               id={index + 1}
               title={row.service}
-              contract_type={''}
-              hours_total={(e: any) => editProductHours(e, row)}
+              contract_type={(e: any) => handleOnPeriod(e, row)}
               key={index}
               data={row}
-              editing={editProducts}
               showSwitch={hideSwitch}
             />
           ))}
         </WrapperCard>
       )}
+
+      {/* {dataFilter && editProducts && (
+        <WrapperCard>
+          {dataFilter.map((row: IProduct, index: number) => (
+            <CardProductsSelected
+              handleOnPeriod={handleOnPeriod}
+              id={index + 1}
+              title={row.service}
+              contract_type={(e: any) => editProductHours(e, row)}
+              key={index}
+              data={row}
+              showSwitch={hideSwitch}
+            />
+          ))}
+        </WrapperCard>
+      )} */}
     </ProductsWrapper>
   );
 }
