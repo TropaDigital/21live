@@ -88,6 +88,24 @@ export const ProductModalTitle = styled.h5`
   line-height: 30px;
 `;
 
+export const EstimatedHoursOfProducst = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .info-title {
+    color: var(--gray-700);
+    font-size: var(--text-small-md);
+    font-weight: var(--weight-medium);
+  }
+
+  .info-hours {
+    color: var(--success);
+    font-size: var(--text-small-md);
+    font-weight: var(--weight-semibold);
+  }
+`;
+
 export const CloseModalButton = styled.button`
   display: flex;
   align-items: center;

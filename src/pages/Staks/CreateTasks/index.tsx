@@ -1,7 +1,7 @@
 /* eslint-disable import-helpers/order-imports */
 // React
 import { useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 // components
 import HeaderStepsPage from '../../../components/HeaderStepsPage';
@@ -26,6 +26,7 @@ import {
   ContainerWrapper,
   Deliveries,
   DeliverySplitRadio,
+  EstimatedHoursOfProducst,
   Footer,
   FormTitle,
   FormWrapper,
@@ -62,10 +63,14 @@ interface StateProps {
 }
 
 interface ProjectProductProps {
+  categoria: string;
   listavel: string;
   product_id: string;
   produto: string;
   projeto: string;
+  quantidade: string;
+  select: string;
+  tempo: string;
   tipo: string;
 }
 
@@ -77,6 +82,7 @@ type HandleOnChange = (
 ) => void;
 
 export default function CreateTasks() {
+  const navigate = useNavigate();
   const [createStep, setCreateStep] = useState<number>(1);
   const { addToast } = useToast();
 
@@ -86,14 +92,12 @@ export default function CreateTasks() {
     title: '',
     tenant_id: '',
     product_id: '',
-    type: '',
     flow_id: '',
     description: '',
     creation_description: '',
     creation_date_end: '',
     copywriting_description: '',
     copywriting_date_end: '',
-    archives: [],
     deadlines: [],
     step: ''
   });
@@ -108,6 +112,7 @@ export default function CreateTasks() {
   const { data: dataTypes } = useFetch<any[]>(`/task-type`);
   const [productsArray, setProductsArray] = useState<ServicesProps[]>([]);
   const [quantityProductsArray, setQuantityProductsArray] = useState<any[]>([]);
+  const [selectedProject, setSelectedProject] = useState<ProjectProductProps>();
   const { isLoading, debouncedCallback } = useDebouncedCallback(
     (search: string) => setSearch(search),
     700
@@ -285,7 +290,19 @@ export default function CreateTasks() {
   };
 
   const handleProductQuantity = (value: any) => {
-    if (productsArray.filter((obj) => obj.service_id === value.project_id).length > 0) {
+    console.log('log do product adicionado', value);
+    // if (
+    //   selectedProject?.tempo !== undefined &&
+    //   Number(selectedProject.tempo.split(':')[0]) < Number(value.minutes.split(':')[0])
+    // ) {
+    //   console.log('log não permitir add produto');
+    //   addToast({
+    //     type: 'warning',
+    //     title: 'ATENÇÃO',
+    //     description: 'O produto excede as horas do Projeto/Contrato selecionado'
+    //   });
+    // }
+    if (productsArray.filter((obj) => obj.service_id === value.service_id).length > 0) {
       if (quantityProductsArray.length > 0) {
         setQuantityProductsArray((current) =>
           current.map((obj) => {
@@ -320,27 +337,24 @@ export default function CreateTasks() {
 
   const handleOnSubmit = useCallback(async () => {
     try {
-      // event.preventDefault();
-      const deadLines = {
-        task_id: '',
-        date_end: DTOForm.creation_date_end,
-        description: DTOForm.creation_description,
-        products: productsArray
-      };
+      const deadLines = [
+        {
+          date_end: DTOForm.creation_date_end,
+          description: DTOForm.creation_description,
+          products: productsArray
+        }
+      ];
 
       const {
         title,
         tenant_id,
         product_id,
-        type,
         flow_id,
         description,
         creation_description,
         creation_date_end,
         copywriting_description,
         copywriting_date_end,
-        archives,
-        deadlines,
         step
       } = DTOForm;
 
@@ -348,21 +362,17 @@ export default function CreateTasks() {
         title,
         tenant_id,
         product_id,
-        type,
         flow_id,
         description,
         creation_description,
         creation_date_end,
         copywriting_date_end,
         copywriting_description,
-        archives,
         deadlines: deadLines,
         step
       };
-      // Adicionar o IDelivery Type dentro do Deadlines
-      await api.post(`task`, createNewData);
 
-      // console.log('log do handleSubmit', createNewData);
+      await api.post(`tasks`, createNewData);
 
       // if (modal.type === 'Criar novo Projeto/Contrato') {
       // } else {
@@ -383,7 +393,18 @@ export default function CreateTasks() {
 
       // setErros(getValidationErrors(e.response.data.result))
     }
-  }, [DTOForm, addToast]);
+  }, [DTOForm, addToast, productsArray]);
+
+  const selectedProjectInfos = (e: any) => {
+    if (e.target.name === 'product_id') {
+      const id = e.target.value;
+      const selectedInfos: any = dataProjects?.filter((obj: any) => obj.product_id === id);
+      setSelectedProject(selectedInfos[0]);
+      handleChangeInput(e);
+    } else {
+      handleChangeInput(e);
+    }
+  };
 
   useEffect(() => {
     if (DTOForm.product_id !== '') {
@@ -403,6 +424,11 @@ export default function CreateTasks() {
     console.log('log do quantity products selected', quantityProductsArray);
   }, [quantityProductsArray]);
 
+  const finishCreate = () => {
+    setFinishModal(false);
+    navigate('/tarefas');
+  };
+
   return (
     <>
       <ContainerWrapper>
@@ -421,7 +447,7 @@ export default function CreateTasks() {
                 data={DTOForm}
                 dataProjects={dataProjects}
                 dataFlow={dataFlow}
-                handleInputChange={handleChangeInput}
+                handleInputChange={selectedProjectInfos}
                 clients={dataClient}
                 error={error}
               />
@@ -559,6 +585,7 @@ export default function CreateTasks() {
                     createTasks={handleOnSubmit}
                     editTasks={() => setCreateStep(2)}
                     taskSummary={DTOForm}
+                    projectInfos={selectedProject}
                     taskType={tasksType}
                   />
                 </>
@@ -571,8 +598,9 @@ export default function CreateTasks() {
               <SummaryTasks
                 selectedProducts={productsArray}
                 createTasks={handleOnSubmit}
-                editTasks={() => setCreateStep(2)}
+                editTasks={() => setCreateStep(1)}
                 taskSummary={DTOForm}
+                projectInfos={selectedProject}
                 taskType={tasksType}
               />
             </>
@@ -644,7 +672,13 @@ export default function CreateTasks() {
         >
           <ProductsModalWrapper>
             <ProductsModalTop>
-              <ProductModalTitle>Lista de produtos</ProductModalTitle>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <ProductModalTitle>Lista de produtos</ProductModalTitle>
+                <EstimatedHoursOfProducst>
+                  <div className="info-title">Horas disponíveis no contrato:</div>
+                  <div className="info-hours">{selectedProject?.tempo}</div>
+                </EstimatedHoursOfProducst>
+              </div>
               <CloseModalButton onClick={() => setProductsModal(false)}>
                 <IconClose />
               </CloseModalButton>
@@ -749,7 +783,7 @@ export default function CreateTasks() {
               <ButtonDefault typeButton="dark" isOutline onClick={() => setFinishModal(false)}>
                 Cancelar
               </ButtonDefault>
-              <ButtonDefault typeButton="primary" onClick={() => ''}>
+              <ButtonDefault typeButton="primary" onClick={finishCreate}>
                 Confirmar
               </ButtonDefault>
             </FinishModalButtons>
