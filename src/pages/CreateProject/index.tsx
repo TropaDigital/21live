@@ -29,6 +29,11 @@ import InfoProducts from '../Projects/ComponentSteps/InfoProducts/InfoProducts';
 import ModalDefault from '../../components/Ui/ModalDefault';
 import { SaveButton } from '../Projects/ComponentSteps/InfoProducts/styles';
 import InputSwitchDefault from '../../components/Inputs/InputSwitchDefault';
+import {
+  SummaryInfoWrapper,
+  SummaryTaskDescription,
+  SummaryTaskInfo
+} from '../Staks/ComponentSteps/SummaryTasks/styles';
 
 // Styles
 import {
@@ -52,8 +57,26 @@ import {
 // Services
 import api from '../../services/api';
 
+// Libraries
+import moment from 'moment';
+
 interface StateProps {
   [key: string]: any;
+}
+
+interface DTOProps {
+  tenant_id: string;
+  title: string;
+  contract_type: string;
+  project_id: string;
+  date_start: string;
+  date_end: string;
+  description: string;
+  category: string;
+  products: [];
+  files: [];
+  time: string;
+  email: string;
 }
 
 type HandleOnChange = (
@@ -83,7 +106,7 @@ export default function CreateProject() {
   const [showSave, setShowSave] = useState<any>(false);
   const [saveProducts, setSaveProducts] = useState<any>('');
   const [editSelectedProducts, setEditSelectedProducts] = useState<boolean>(false);
-  const [DTOForm, setDTOForm] = useState<any>({
+  const [DTOForm, setDTOForm] = useState<DTOProps>({
     tenant_id: '',
     title: '',
     contract_type: '',
@@ -105,6 +128,7 @@ export default function CreateProject() {
       setDTOForm(location.state);
       setProductsArray(location.state.products);
       setEditSelectedProducts(true);
+      console.log('log do products location', location.state);
     }
   }, [location]);
 
@@ -117,17 +141,17 @@ export default function CreateProject() {
   //   0
   // );
 
-  // const productsHours = productsArray?.map((row) => {
-  //   return multiplyTime(row?.minutes, row?.quantity);
-  // });
+  const productsHours = productsArray?.map((row) => {
+    return multiplyTime(row?.minutes, row?.quantity);
+  });
 
   // const totalHoursProducts = sumTimes(productsHours) + totalCreateHours;
   // const productsHoursWithoutCreateHours = totalHoursProducts - totalCreateHours;
   // End Hours calculations
 
-  // const handleOnAddProducts = (items: IProduct) => {
-  //   setProductsArray((prevState: any) => [...prevState, items]);
-  // };
+  const handleOnAddProducts = (items: IProduct) => {
+    setProductsArray((prevState: any) => [...prevState, items]);
+  };
 
   const handleDescription = (value: any) => {
     setDTOForm((prevState: any) => ({ ...prevState, ['description']: value }));
@@ -139,33 +163,57 @@ export default function CreateProject() {
   };
 
   useEffect(() => {
-    console.log('log do DTO', DTOForm);
-    console.log('log dos Produtos', productsArray);
+    // console.log('log do DTO', DTOForm);
+    // console.log('log dos Produtos', productsArray);
   }, [DTOForm, productsArray]);
 
-  // const handleOnPeriod = useCallback(
-  //   (value: any, id: any) => {
-  //     const verifyPeriod = value ? 'anual' : 'mensal';
-  //     const updatedProducts = [...formData.products];
-  //     const productIndex = updatedProducts.findIndex((product) => product.service_id === id);
-  //     const updatedProductCopy = { ...updatedProducts[productIndex] };
-  //     updatedProductCopy.period = verifyPeriod;
-  //     updatedProducts[productIndex] = updatedProductCopy;
-
-  //     setFormValue('products', updatedProducts);
-  //   },
-  //   [setFormValue, formData]
-  // );
-
-  const handleDeleteProducts = (id: any) => {
-    setProductsArray(productsArray.filter((obj) => obj.service_id !== id));
-    if (productsArray.length <= 1) {
-      setEditSelectedProducts(false);
+  const handleOnPeriod = (value: any, product: any) => {
+    if (editSelectedProducts) {
+      setProductsArray((current) =>
+        current.map((obj) => {
+          if (obj.service_id === product.product_id) {
+            return { ...obj, period: value.contractType };
+          }
+          return obj;
+        })
+      );
+    } else {
+      setProductsArray((current) =>
+        current.map((obj) => {
+          if (obj.service_id === product.service_id) {
+            return { ...obj, period: value.contractType };
+          }
+          return obj;
+        })
+      );
     }
   };
 
-  const editProductQuantity = (product: IProduct) => {
+  const handleDeleteProducts = (id: any) => {
     if (editSelectedProducts) {
+      setProductsArray(productsArray.filter((obj: any) => obj.product_id !== id));
+      if (productsArray.length <= 1) {
+        setEditSelectedProducts(false);
+      }
+    } else {
+      setProductsArray(productsArray.filter((obj) => obj.service_id !== id));
+      if (productsArray.length <= 1) {
+        setEditSelectedProducts(false);
+      }
+    }
+  };
+
+  const editProductQuantity = (product: any) => {
+    if (editSelectedProducts) {
+      setProductsArray((current) =>
+        current.map((obj: any) => {
+          if (obj.product_id === product.service_id) {
+            return { ...obj, quantity: product.quantity };
+          }
+          return obj;
+        })
+      );
+    } else {
       setProductsArray((current) =>
         current.map((obj) => {
           if (obj.service_id === product.service_id) {
@@ -177,18 +225,18 @@ export default function CreateProject() {
     }
   };
 
-  const editProductHours = (values: any, product: IProduct) => {
-    console.log('log do produto a ser editado as horas', values, product);
+  // const editProductHours = (values: any, product: IProduct) => {
+  //   console.log('log do produto a ser editado as horas', values, product);
 
-    // setProductsArray((current) =>
-    //   current.map((obj) => {
-    //     if (obj.service_id === product.service_id) {
-    //       return { ...obj, minutes: values.timeCounter, period: values.contractType };
-    //     }
-    //     return obj;
-    //   })
-    // );
-  };
+  //   // setProductsArray((current) =>
+  //   //   current.map((obj) => {
+  //   //     if (obj.service_id === product.service_id) {
+  //   //       return { ...obj, minutes: values.timeCounter, period: values.contractType };
+  //   //     }
+  //   //     return obj;
+  //   //   })
+  //   // );
+  // };
 
   function setErrorInput(value: any, message: any) {
     if (!message) {
@@ -275,7 +323,7 @@ export default function CreateProject() {
       description: '',
       products: [],
       files: []
-    } as IProjectCreate);
+    } as DTOProps);
     setUploadedFiles([]);
     setProductsArray([]);
     setError({});
@@ -299,7 +347,7 @@ export default function CreateProject() {
         );
 
         // const newArrayProducts = productsArray.map(({ tenant_id, ...rest }: any) => rest);
-        // const totalTime = sumTimes(productsHours);
+        const totalTime = sumTimes(productsHours);
 
         const createNewData = {
           title: DTOForm.title,
@@ -311,14 +359,27 @@ export default function CreateProject() {
           date_end: DTOForm.date_end,
           contract_type: DTOForm.contract_type,
           files,
-          // time: totalTime,
-          time: '',
+          time: totalTime,
           email: DTOForm.email
         };
 
-        if (location.state !== null) {
-          await api.put(`project/${DTOForm.project_id}`, DTOForm);
-          console.log('log do update project', DTOForm);
+        const updateData = {
+          project_id: DTOForm.project_id,
+          title: DTOForm.title,
+          tenant_id: DTOForm.tenant_id,
+          products: productsArray,
+          description: DTOForm.description,
+          category: DTOForm.category,
+          date_start: DTOForm.date_start,
+          date_end: DTOForm.date_end,
+          contract_type: DTOForm.contract_type,
+          files,
+          time: totalTime,
+          email: DTOForm.email
+        };
+
+        if (location.state !== null && editSelectedProducts) {
+          await api.put(`project/${DTOForm.project_id}`, updateData);
           addToast({
             type: 'success',
             title: 'Sucesso',
@@ -346,8 +407,7 @@ export default function CreateProject() {
         // setErros(getValidationErrors(e.response.data.result))
       }
     },
-    // [uploadedFiles, DTOForm, productsArray, productsHours]
-    [uploadedFiles, DTOForm, productsArray]
+    [uploadedFiles, DTOForm, productsArray, productsHours]
   );
 
   const handleSwitchEmail = (value: any) => {
@@ -386,7 +446,7 @@ export default function CreateProject() {
                 {error.description && <span>Observações são obrigatórias</span>}
               </div>
               <InfoDescription
-                value={DTOForm.description}
+                value={DTOForm?.description}
                 handleOnDescription={(value) => handleDescription(value)}
                 mentions={[]}
               />
@@ -397,14 +457,12 @@ export default function CreateProject() {
           <>
             <FormTitle>Produtos</FormTitle>
             <InfoProducts
-              // handleOnAddProducts={handleOnAddProducts}
-              handleOnAddProducts={() => ''}
+              handleOnAddProducts={handleOnAddProducts}
               dataOffice={dataOffice}
               dataFilter={productsArray}
-              handleOnPeriod={(e, id) => ''}
+              handleOnPeriod={(value, id) => handleOnPeriod(value, id)}
               handleOnDeleteProduct={(id) => handleDeleteProducts(id)}
               handleEditProductQuantity={(value) => editProductQuantity(value)}
-              handleEditProducthours={editProductHours}
               okToSave={setShowSave}
               setSave={saveProducts}
               editProducts={editSelectedProducts}
@@ -429,7 +487,7 @@ export default function CreateProject() {
         {createStep === 4 && (
           <>
             <div className="flex-title">
-              <FormTitle>Resumo</FormTitle>
+              <FormTitle>Resumo do projeto</FormTitle>
               <EmailButton>
                 <InputSwitchDefault
                   onChange={(e) => {
@@ -442,26 +500,72 @@ export default function CreateProject() {
               </EmailButton>
             </div>
             <SummaryWrapper>
-              <Summary className="big">
-                <div className="title">Produtos contratados</div>
-                {productsArray.map((row: IProduct, index: number) => (
-                  <SummaryCard key={index}>
-                    <SummaryCardTitle>
-                      #{index + 1} - {row.service}
-                    </SummaryCardTitle>
-                    <SummaryCardSubtitle>
-                      <div>Horas estimadas: {multiplyTime(row?.minutes, row?.quantity)}</div>
-                      <div>Categoria: {row.type}</div>
-                      <div>Quantidade: {row.quantity}</div>
-                    </SummaryCardSubtitle>
-                  </SummaryCard>
-                ))}
-              </Summary>
+              <div
+                style={{ display: 'flex', flexDirection: 'column', gap: '32px', width: '792px' }}
+              >
+                <Summary>
+                  <div className="title">Informações do projeto</div>
+                  <SummaryInfoWrapper>
+                    <SummaryTaskInfo>
+                      <div className="title-info">Título da tarefa:</div>
+                      <div className="info">{DTOForm?.title}</div>
+                    </SummaryTaskInfo>
+
+                    <SummaryTaskInfo>
+                      <div className="title-info">Cliente:</div>
+                      <div className="info">{DTOForm?.tenant_id}</div>
+                    </SummaryTaskInfo>
+
+                    <SummaryTaskInfo>
+                      <div className="title-info">Fee ou Spot:</div>
+                      <div className="info">{DTOForm?.category}</div>
+                    </SummaryTaskInfo>
+
+                    <SummaryTaskInfo>
+                      <div className="title-info">Tipo do contrato:</div>
+                      <div className="info">{DTOForm?.contract_type}</div>
+                    </SummaryTaskInfo>
+
+                    <SummaryTaskInfo>
+                      <div className="title-info">Data inicial:</div>
+                      <div className="info">{moment(DTOForm?.date_start).format('DD/MM/YYYY')}</div>
+                    </SummaryTaskInfo>
+
+                    <SummaryTaskInfo>
+                      <div className="title-info">Data final:</div>
+                      <div className="info">{moment(DTOForm?.date_end).format('DD/MM/YYYY')}</div>
+                    </SummaryTaskInfo>
+
+                    <SummaryTaskDescription>
+                      <div className="description-title">Contexto geral</div>
+                      <div className="description-info">
+                        {DTOForm?.description.replace('<p>', '').replace('</p>', '')}
+                      </div>
+                    </SummaryTaskDescription>
+                  </SummaryInfoWrapper>
+                </Summary>
+
+                <Summary>
+                  <div className="title">Produtos contratados</div>
+                  {productsArray.map((row: IProduct, index: number) => (
+                    <SummaryCard key={index} style={{ background: 'var(--background-primary)' }}>
+                      <SummaryCardTitle>
+                        #{index + 1} - {row.service}
+                      </SummaryCardTitle>
+                      <SummaryCardSubtitle>
+                        <div>Horas estimadas: {multiplyTime(row?.minutes, row?.quantity)}</div>
+                        <div>Categoria: {row.type}</div>
+                        <div>Quantidade: {row.quantity}</div>
+                      </SummaryCardSubtitle>
+                    </SummaryCard>
+                  ))}
+                </Summary>
+              </div>
 
               <div
                 style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '446px' }}
               >
-                <Summary className="small">
+                <Summary className="small" style={{ background: 'var(--background-primary)' }}>
                   <div className="title small">Resumo do contrato</div>
                   <SummaryContractCard>
                     <div className="products">
@@ -473,7 +577,7 @@ export default function CreateProject() {
                   <SummaryContractCard>
                     <div className="hours">
                       Horas por produto
-                      {/* <strong>{sumTimes(productsHours)}</strong> */}
+                      <strong>{sumTimes(productsHours)}</strong>
                     </div>
                   </SummaryContractCard>
                   {/* {productsArray.some((obj) => obj.service.toLowerCase() === 'hora de criação') && (
@@ -488,7 +592,9 @@ export default function CreateProject() {
                     </SummaryContractCard>
                   )} */}
                   <SummaryContractCard>
-                    <div className="total">{/* Total <div>{sumTimes(productsHours)}</div> */}</div>
+                    <div className="total">
+                      Total <div>{sumTimes(productsHours)}</div>
+                    </div>
                   </SummaryContractCard>
                 </Summary>
 
@@ -498,7 +604,7 @@ export default function CreateProject() {
                     typeButton="primary"
                     isOutline
                     onClick={() => {
-                      setCreateStep(2);
+                      setCreateStep(1);
                       setEditSelectedProducts(true);
                     }}
                   >
