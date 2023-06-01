@@ -20,6 +20,7 @@ interface TasksProps {
   editTasks: () => void;
   selectedProducts: any;
   taskSummary: any;
+  projectInfos: any;
   taskType: any;
 }
 
@@ -28,6 +29,7 @@ export default function SummaryTasks({
   editTasks,
   createTasks,
   taskSummary,
+  projectInfos,
   taskType
 }: TasksProps) {
   useEffect(() => {
@@ -53,7 +55,9 @@ export default function SummaryTasks({
 
             <SummaryTaskInfo>
               <div className="title-info">Projeto/Contrato:</div>
-              <div className="info">Dado genérico</div>
+              <div className="info">
+                {projectInfos.produto} - {projectInfos.projeto} - {projectInfos.quantidade}
+              </div>
             </SummaryTaskInfo>
 
             <SummaryTaskInfo>
