@@ -34,9 +34,7 @@ interface ProductsProps {
   id: number;
   title: string;
   contract_type: any;
-  hours_total: any;
   data: any;
-  editing: any;
   showSwitch: any;
 }
 
@@ -44,13 +42,12 @@ export default function CardProductsSelected({
   handleOnPeriod,
   id,
   title,
-  hours_total,
+  contract_type,
   data,
-  editing,
   showSwitch
 }: ProductsProps) {
   const [openCard, setOpenCard] = useState<boolean>(true);
-  const [timeCounter, setTimeCounter] = useState<number>(0);
+  // const [timeCounter, setTimeCounter] = useState<number>(0);
   const [contractType, setContractType] = useState<any>('mensal');
   const verifyPeriod = contractType === 'mensal' ? false : true;
 
@@ -62,21 +59,29 @@ export default function CardProductsSelected({
     }
   };
 
-  const handleCounter = (counter: any) => {
-    setTimeCounter(counter.quantity);
-  };
+  // const handleCounter = (counter: any) => {
+  //   setTimeCounter(counter.quantity);
+  // };
 
   const handleSwitch = (value: any) => {
     setContractType(value === true ? 'anual' : 'mensal');
   };
 
-  useEffect(() => {
-    hours_total({ timeCounter, contractType });
-  }, [timeCounter]);
+  // useEffect(() => {
+  //   hours_total({ timeCounter, contractType });
+  // }, [timeCounter]);
 
   useEffect(() => {
-    setTimeCounter(data.quantity);
-  }, []);
+    contract_type({ contractType });
+  }, [contractType]);
+
+  // useEffect(() => {
+  //   setTimeCounter(data.quantity);
+  // }, []);
+
+  useEffect(() => {
+    console.log('log do data no card product', data);
+  }, [data]);
 
   return (
     <ContainerCard>
@@ -106,12 +111,12 @@ export default function CardProductsSelected({
             <div className="hours">
               Horas estimadas: <strong>{multiplyTime(data?.minutes, data?.quantity)}</strong>
             </div>
-            <QuantityCounter
+            {/* <QuantityCounter
               clearQuantity={() => setTimeCounter(0)}
               handleQuantity={handleCounter}
               rowQuantity={data}
               receiveQuantity={data.quantity}
-            />
+            /> */}
           </EstimatedHours>
         </CardBottom>
       </CardProduct>
