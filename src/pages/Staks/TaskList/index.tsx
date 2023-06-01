@@ -1,45 +1,54 @@
-import { useCallback, useState } from 'react';
-import { BiCalendar, BiFilter, BiFlag, BiPlus, BiSearchAlt } from 'react-icons/bi';
+/* eslint-disable import-helpers/order-imports */
+//  React
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+// Icons
+import { BiPlus, BiSearchAlt } from 'react-icons/bi';
+
+// Hooks
 import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useFetch } from '../../../hooks/useFetch';
-import useForm from '../../../hooks/useForm';
-import { useSteps } from '../../../hooks/useSteps';
+import { useToast } from '../../../hooks/toast';
 
-import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
-import { avatarAll } from '../../../utils/dataDefault';
-
+// Types
 import { ITaskCreate } from '../../../types';
 
+// Components
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import ButtonTable from '../../../components/Buttons/ButtonTable';
 import HeaderPage from '../../../components/HeaderPage';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
-import { SelectDefault } from '../../../components/Inputs/SelectDefault';
-import Pagination from '../../../components/Pagination';
-import Steps from '../../../components/Steps';
 import { Table } from '../../../components/Table';
 import { FilterGroup, TableHead } from '../../../components/Table/styles';
-import { TableDefault } from '../../../components/TableDefault';
 import Alert from '../../../components/Ui/Alert';
-import Avatar from '../../../components/Ui/Avatar';
+import { ContainerDefault } from '../../../components/UiElements/styles';
+
+// Api
+import api from '../../../services/api';
+import Pagination from '../../../components/Pagination';
 import ModalDefault from '../../../components/Ui/ModalDefault';
-import ProgressBar from '../../../components/Ui/ProgressBar';
-import ScrollAreas from '../../../components/Ui/ScrollAreas';
-import {
-  ContainerDefault,
-  ContainerGroupTable,
-  ContentDefault,
-  FieldGroupFormDefault,
-  FooterModal,
-  SectionDefault
-} from '../../../components/UiElements/styles';
 
 export default function TaskList() {
-  const [modal, setModal] = useState({
+  const { addToast } = useToast();
+  const [modalViewTask, setModalViewTask] = useState({
     isOpen: false,
-    type: 'Criar nova Tarefa'
+    type: '',
+    task: {
+      task_id: '',
+      title: '',
+      tenant_id: '',
+      product_id: '',
+      type: '',
+      flow_id: '',
+      description: '',
+      creation_description: '',
+      creation_date_end: '',
+      copywriting_description: '',
+      copywriting_date_end: '',
+      deadlines: '',
+      step: ''
+    }
   });
 
   const [filter, setFilter] = useState({
@@ -51,10 +60,73 @@ export default function TaskList() {
   const [search, setSearch] = useState('');
   const { data, pages, fetchData } = useFetch<ITaskCreate[]>(`tasks?search=${search}`);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selected, setSelected] = useState(1);
   const { isLoading, debouncedCallback } = useDebouncedCallback(
     (search: string) => setSearch(search),
     700
   );
+
+  const handleOnDelete = async (id: any) => {
+    try {
+      await api.delete(`tasks/${id}`);
+      addToast({
+        type: 'success',
+        title: 'Sucesso',
+        description: 'Tarefa foi deletada!'
+      });
+      fetchData();
+    } catch (error: any) {
+      addToast({
+        type: 'danger',
+        title: 'ATENÇÃO',
+        description: error.response.data.message
+      });
+    }
+  };
+
+  const handleOpenModalView = (task: ITaskCreate) => {
+    setModalViewTask({
+      isOpen: true,
+      type: `Resumo da tarefa: ${task.title}`,
+      task: {
+        task_id: task.task_id,
+        title: task.title,
+        tenant_id: task.tenant_id,
+        product_id: task.product_id,
+        type: task.type,
+        flow_id: task.flow_id,
+        description: task.description,
+        creation_description: task.creation_description,
+        creation_date_end: task.creation_date_end,
+        copywriting_description: task.copywriting_description,
+        copywriting_date_end: task.copywriting_date_end,
+        deadlines: task.deadlines,
+        step: task.step
+      }
+    });
+  };
+
+  const handleCloseModal = () => {
+    setModalViewTask({
+      isOpen: false,
+      type: '',
+      task: {
+        task_id: '',
+        title: '',
+        tenant_id: '',
+        product_id: '',
+        type: '',
+        flow_id: '',
+        description: '',
+        creation_description: '',
+        creation_date_end: '',
+        copywriting_description: '',
+        copywriting_date_end: '',
+        deadlines: '',
+        step: ''
+      }
+    });
+  };
 
   // const { formData, handleOnChange } = useForm({
   //   tenant_id: '',
@@ -194,9 +266,9 @@ export default function TaskList() {
               <th>ID</th>
               <th>Título</th>
               <th>Cliente</th>
-              <th>Tempo</th>
+              {/* <th>Tempo</th>
               <th>Status</th>
-              <th>Equipe</th>
+              <th>Equipe</th> */}
               <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
             </tr>
           </thead>
@@ -205,11 +277,8 @@ export default function TaskList() {
               <tr key={row.task_id}>
                 <td>#{row.task_id}</td>
                 <td>{row.title}</td>
-                <td>
-                  Cliente???
-                  {/* {row.client_name} */}
-                </td>
-                <td>Tempo???</td>
+                <td>{row.tenant_id}</td>
+                {/* <td>Tempo???</td> */}
                 {/* <td
                   style={{
                     padding: '14px',
@@ -225,7 +294,7 @@ export default function TaskList() {
                     restHours={convertToMilliseconds('02:20:36')}
                   />
                 </td> */}
-                <td>Status???</td>
+                {/* <td>Status???</td> */}
                 {/* <td>
                   <Switch
                     onChange={() => handleList(row.project_id)}
@@ -235,23 +304,20 @@ export default function TaskList() {
                     onColor="#0046B5"
                   />
                 </td> */}
-                <td>
+                {/* <td>
                   <Avatar data={avatarAll} />
-                </td>
+                </td> */}
                 <td>
                   <div className="fieldTableClients">
                     <ButtonTable
                       typeButton="view"
                       onClick={() => console.log('abrir modal', row)}
                     />
-                    <ButtonTable
-                      typeButton="edit"
-                      onClick={() => console.log('log da tarefa a editar', row)}
-                    />
+                    <ButtonTable typeButton="edit" onClick={() => handleOpenModalView(row)} />
                     <Alert
                       title="Atenção"
                       subtitle="Certeza que gostaria de deletar esta Tarefa? Ao excluir esta ação não poderá ser desfeita."
-                      confirmButton={() => console.log('log da task a deletar', row)}
+                      confirmButton={() => handleOnDelete(row.task_id)}
                     >
                       <ButtonTable typeButton="delete" />
                     </Alert>
@@ -261,7 +327,7 @@ export default function TaskList() {
             ))}
           </tbody>
 
-          {/* <tfoot>
+          <tfoot>
             <tr>
               <td colSpan={100}>
                 <Pagination
@@ -273,41 +339,17 @@ export default function TaskList() {
                 />
               </td>
             </tr>
-          </tfoot> */}
+          </tfoot>
         </table>
       </Table>
 
-      {/* <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
-        <form onSubmit={handleOnSubmit}>
-          <Steps currentStep={currentStep} steps={steps} />
-
-          <div>{currentComponent}</div>
-
-          <FooterModal>
-            <ButtonDefault typeButton="dark" isOutline type="button" onClick={handleOnCancel}>
-              Descartar
-            </ButtonDefault>
-
-            <div className="fieldGroup">
-              {!isFirstStep && (
-                <ButtonDefault typeButton="primary" isOutline onClick={handleOnPrevStep}>
-                  Voltar
-                </ButtonDefault>
-              )}
-
-              {!isLastStep ? (
-                <ButtonDefault type="button" typeButton="primary" onClick={handleOnNextStep}>
-                  Próxima etapa
-                </ButtonDefault>
-              ) : (
-                <ButtonDefault typeButton="primary" type="button" onClick={handleOnSubmit}>
-                  Salvar
-                </ButtonDefault>
-              )}
-            </div>
-          </FooterModal>
-        </form>
-      </ModalDefault> */}
+      <ModalDefault
+        isOpen={modalViewTask.isOpen}
+        title={modalViewTask.type}
+        onOpenChange={handleCloseModal}
+      >
+        <div>teste de children</div>
+      </ModalDefault>
     </ContainerDefault>
   );
 }
