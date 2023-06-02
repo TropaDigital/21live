@@ -1,4 +1,3 @@
-
 export interface TaskModel {
   task_id: string;
   card_id: string;
@@ -17,13 +16,13 @@ export interface ColumnModel {
   email_alert: string;
   flow_id: string;
   idCreator: string;
-  name: string
+  name: string;
   nameCreator: string;
   necessary_upload: string;
   next_step: string;
   previous_step: string;
   step: string;
-  tasks: TaskModel[]
+  tasks: TaskModel[];
 }
 
 export interface MeetingProps {
@@ -34,7 +33,7 @@ export interface MeetingProps {
   title: string;
   description: string;
   files: any[];
-  members: any
+  members: any;
 
   tenant_id: any;
   email_alert: boolean;

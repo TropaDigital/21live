@@ -3,6 +3,7 @@ export interface IProduct {
   service_id?: number;
   service: string;
   description: string;
+  flag: string;
   type: string;
   size: string;
   minutes: string;
@@ -122,4 +123,5 @@ export interface ServicesProps {
   category: string;
   flag: string;
   quantity?: any;
+  tenant_id?: string;
 }
