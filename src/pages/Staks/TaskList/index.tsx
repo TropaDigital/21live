@@ -236,7 +236,7 @@ export default function TaskList() {
         <TableHead>
           <div className="groupTable">
             <h2>
-              Lista de projetos <strong>{data?.length} tarefas</strong>
+              Lista de tarefas <strong>{data?.length} tarefas</strong>
             </h2>
           </div>
         </TableHead>
