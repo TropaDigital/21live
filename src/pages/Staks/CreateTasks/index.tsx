@@ -18,6 +18,7 @@ import InfoDeliveries from '../ComponentSteps/InfoDeliverables';
 import AddTextButton from '../../../components/Buttons/AddTextButton';
 import TaskInputs from '../ComponentSteps/InfoInputs';
 import SummaryTasks from '../ComponentSteps/SummaryTasks';
+import Radio from '../../../components/Inputs/InputRadioDefault';
 
 // Styles
 import {
@@ -55,8 +56,13 @@ import { TenantProps } from '../../../utils/models';
 // Icons
 import { IconChecked, IconClose } from '../../../assets/icons';
 import { BiCalendar, BiSearchAlt } from 'react-icons/bi';
-import Radio from '../../../components/Inputs/InputRadioDefault';
+
+// Services
 import api from '../../../services/api';
+
+// Libraries
+import moment from 'moment';
+import QuantityInput from '../../../components/Inputs/QuantityInput';
 
 interface StateProps {
   [key: string]: any;
@@ -88,6 +94,7 @@ export default function CreateTasks() {
 
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const [error, setError] = useState<StateProps>({});
+  const newDate = new Date();
   const [DTOForm, setDTOForm] = useState<any>({
     title: '',
     tenant_id: '',
@@ -106,13 +113,38 @@ export default function CreateTasks() {
   const [productsModal, setProductsModal] = useState<boolean>(false);
   const [finishModal, setFinishModal] = useState<boolean>(false);
   const [deliveriesSplit, setDeliveriesSplit] = useState<string>('no-split');
-  const { data: dataProducts } = useFetch<ServicesProps[]>(`services?search=${search}`);
-  const { data: dataProjects } = useFetch<ServicesProps[]>(`project-products/${DTOForm.tenant_id}`);
+  // Ajustar quando for produtos passar a flag false
+  const { data: dataProducts, fetchData: fetchProducts } = useFetch<any[]>(
+    `services?search=${search}`
+  );
+  const { data: dataProjects, fetchData: fetchProjects } = useFetch<ServicesProps[]>(
+    `project-products/${DTOForm.tenant_id}`
+  );
   const { data: dataFlow } = useFetch<any[]>(`/flow?search=`);
   const { data: dataTypes } = useFetch<any[]>(`/task-type`);
   const [productsArray, setProductsArray] = useState<ServicesProps[]>([]);
   const [quantityProductsArray, setQuantityProductsArray] = useState<any[]>([]);
   const [selectedProject, setSelectedProject] = useState<ProjectProductProps>();
+  const [selectedSummaryInfos, setSelectedSummaryInfos] = useState<any>({
+    client: {
+      bucket: '',
+      contact_name: '',
+      email: '',
+      meetings: '',
+      name: '',
+      reports: '',
+      slug: '',
+      tenant_id: '',
+      utils_information: ''
+    },
+    flow: {
+      flow_id: '',
+      name: '',
+      steps: '',
+      tenant_id: '',
+      user_id: ''
+    }
+  });
   const { isLoading, debouncedCallback } = useDebouncedCallback(
     (search: string) => setSearch(search),
     700
@@ -149,12 +181,24 @@ export default function CreateTasks() {
   };
 
   const handleOnChangeCheckbox = (product: ServicesProps) => {
+    const newProduct = {
+      category: product.category,
+      description: product.description,
+      flag: product.flag,
+      minutes: product.minutes,
+      service: product.service,
+      service_id: product.service_id,
+      size: product.size,
+      tenant_id: product.tenant_id,
+      type: product.type,
+      quantity: 1
+    };
     if (productsArray.filter((obj) => obj.service_id === product.service_id).length > 0) {
       const newArray = productsArray.filter((obj) => obj.service_id !== product.service_id);
       setProductsArray([]);
       setProductsArray(newArray);
     } else {
-      setProductsArray((prevState: any) => [...prevState, product]);
+      setProductsArray((prevState: any) => [...prevState, newProduct]);
     }
   };
 
@@ -204,6 +248,35 @@ export default function CreateTasks() {
         throw setErrorInput('description', 'Contexto geral é obrigatório!');
       } else {
         setErrorInput('description', undefined);
+      }
+
+      if (tasksType === 'livre' && createStep === 2) {
+        if (DTOForm.copywriting_date_end === '') {
+          throw setErrorInput('copywriting_date_end', 'Data de entrega inicial não informada!');
+        } else {
+          setErrorInput('copywriting_date_end', undefined);
+        }
+
+        if (moment(DTOForm.copywriting_date_end).isSameOrBefore(newDate)) {
+          throw setErrorInput('copywriting_date_end', 'Data de entrega inicial menor que a atual!');
+        } else {
+          setErrorInput('copywriting_date_end', undefined);
+        }
+
+        if (DTOForm.creation_date_end === '') {
+          throw setErrorInput('creation_date_end', 'Data de entrega de criação não informada!');
+        } else {
+          setErrorInput('creation_date_end', undefined);
+        }
+
+        if (moment(DTOForm.creation_date_end).isSameOrBefore(DTOForm.copywriting_date_end)) {
+          throw setErrorInput(
+            'creation_date_end',
+            'Data de entrega de criação menor que a data de entrega inicial!'
+          );
+        } else {
+          setErrorInput('creation_date_end', undefined);
+        }
       }
 
       if (createStep === 1 && tasksType === 'horas') {
@@ -418,6 +491,22 @@ export default function CreateTasks() {
       const selectedInfos: any = dataProjects?.filter((obj: any) => obj.product_id === id);
       setSelectedProject(selectedInfos[0]);
       handleChangeInput(e);
+    } else if (e.target.name === 'tenant_id') {
+      const id = e.target.value;
+      const selectedClient: any = dataClient?.filter((obj: any) => obj.tenant_id === id);
+      setSelectedSummaryInfos((prevState: any) => ({
+        ...prevState,
+        ['client']: selectedClient[0]
+      }));
+      handleChangeInput(e);
+    } else if (e.target.name === 'flow_id') {
+      const id = e.target.value;
+      const selectedFlow: any = dataFlow?.filter((obj: any) => obj.flow_id === id);
+      setSelectedSummaryInfos((prevState: any) => ({
+        ...prevState,
+        ['flow']: selectedFlow[0]
+      }));
+      handleChangeInput(e);
     } else {
       handleChangeInput(e);
     }
@@ -427,24 +516,24 @@ export default function CreateTasks() {
     if (DTOForm.product_id !== '') {
       // console.log('log do product ID', DTOForm.product_id);
       // console.log('log do product with selected ID', infoProjects[0]);
-      if (infoProjects[0].tipo === 'product' && infoProjects[0].listavel !== 'true') {
+      if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel !== 'true') {
         setTasksType('horas');
-      } else if (infoProjects[0].tipo === 'product' && infoProjects[0].listavel === 'true') {
+      } else if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel === 'true') {
         setTasksType('produto');
-      } else if (infoProjects[0].tipo !== 'product') {
+      } else if (infoProjects[0]?.tipo !== 'product') {
         setTasksType('livre');
       }
     }
   }, [DTOForm, infoProjects]);
 
-  useEffect(() => {
-    console.log('log do quantity products selected', quantityProductsArray);
-  }, [quantityProductsArray]);
-
   const finishCreate = () => {
     setFinishModal(false);
     navigate('/tarefas');
   };
+
+  useEffect(() => {
+    console.log('log do tipo de task', tasksType);
+  }, [tasksType]);
 
   return (
     <>
@@ -506,6 +595,7 @@ export default function CreateTasks() {
                     icon={BiCalendar}
                     onChange={(e) => handleTaskDeliveries('dateStart', e.target.value)}
                     value={DTOForm.copywriting_date_end}
+                    error={error?.copywriting_date_end}
                   />
 
                   <InputDefault
@@ -516,34 +606,8 @@ export default function CreateTasks() {
                     icon={BiCalendar}
                     onChange={(e) => handleTaskDeliveries('creationDate', e.target.value)}
                     value={DTOForm.creation_date_end}
+                    error={error?.creation_date_end}
                   />
-                  {tasksType === 'produto' && (
-                    <DeliverySplitRadio>
-                      Dividir entregas?
-                      <Radio
-                        name={'Sim'}
-                        value="sim"
-                        options={[
-                          {
-                            label: 'Sim',
-                            value: 'sim'
-                          }
-                        ]}
-                        onChange={() => console.log('log do radio')}
-                      />
-                      <Radio
-                        name={'Não'}
-                        value="não"
-                        options={[
-                          {
-                            label: 'Não',
-                            value: 'nao'
-                          }
-                        ]}
-                        onChange={() => console.log('log do radio')}
-                      />
-                    </DeliverySplitRadio>
-                  )}
                 </Deliveries>
               </SplitDeliveries>
               {tasksType !== 'livre' && (
@@ -603,6 +667,7 @@ export default function CreateTasks() {
                     editTasks={() => setCreateStep(2)}
                     taskSummary={DTOForm}
                     projectInfos={selectedProject}
+                    summaryExtrainfos={selectedSummaryInfos}
                     taskType={tasksType}
                   />
                 </>
@@ -618,6 +683,7 @@ export default function CreateTasks() {
                 editTasks={() => setCreateStep(1)}
                 taskSummary={DTOForm}
                 projectInfos={selectedProject}
+                summaryExtrainfos={selectedSummaryInfos}
                 taskType={tasksType}
               />
             </>
@@ -682,6 +748,7 @@ export default function CreateTasks() {
           </Footer>
         )}
 
+        {/* Modal product list */}
         <ModalDefault
           isOpen={productsModal}
           onOpenChange={() => setProductsModal(false)}
@@ -720,6 +787,7 @@ export default function CreateTasks() {
               <ProductListHeader>
                 <div className="list-title">Produto</div>
                 <div className="list-title">Categoria</div>
+                <div className="list-title">Horas estimadas</div>
                 <div className="list-title center">Quantidade</div>
               </ProductListHeader>
 
@@ -730,7 +798,6 @@ export default function CreateTasks() {
                       label=""
                       name={row.service_id}
                       onChange={() => handleOnChangeCheckbox(row)}
-                      // checked={data.email_alert === 'true' ? true : false}
                       checked={
                         productsArray.filter((obj) => obj.service_id === row.service_id).length > 0
                           ? true
@@ -740,13 +807,32 @@ export default function CreateTasks() {
                     {row.service}
                   </div>
                   <div className="category">{row.category}</div>
+                  <div className="category">{row.minutes}</div>
                   <div className="quantity">
-                    <QuantityCounter
+                    <QuantityInput
+                      receiveQuantity={
+                        productsArray?.filter((obj) => obj.service_id === row.service_id).length > 0
+                          ? 1
+                          : 0
+                      }
+                      infosReceived={row}
+                      handleQuantity={(value: any) => console.log('log do Quantity Input', value)}
+                      disabledInput={
+                        productsArray?.filter((obj) => obj.service_id === row.service_id).length > 0
+                          ? false
+                          : true
+                      }
+                    />
+                    {/* <QuantityCounter
                       handleQuantity={handleProductQuantity}
                       rowQuantity={row}
                       clearQuantity={handleClearQuantity}
-                      receiveQuantity={row.quantity}
-                    />
+                      receiveQuantity={
+                        productsArray?.filter((obj) => obj.service_id === row.service_id).length > 0
+                          ? 1
+                          : 0
+                      }
+                    /> */}
                   </div>
                 </Product>
               ))}
