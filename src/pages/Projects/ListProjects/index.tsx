@@ -341,7 +341,7 @@ export default function ListProjects() {
                   }}
                 >
                   <span style={{ marginBottom: '4px', display: 'block' }}>
-                    {row.time?.replace('0', '')}
+                    {row.time.startsWith('0') ? row.time?.replace('0', '') : row.time}
                   </span>
                   <ProgressBar
                     totalHours={convertToMilliseconds(row.time)}
