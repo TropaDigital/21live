@@ -21,6 +21,7 @@ interface TasksProps {
   selectedProducts: any;
   taskSummary: any;
   projectInfos: any;
+  summaryExtrainfos: any;
   taskType: any;
 }
 
@@ -30,11 +31,14 @@ export default function SummaryTasks({
   createTasks,
   taskSummary,
   projectInfos,
+  summaryExtrainfos,
   taskType
 }: TasksProps) {
   useEffect(() => {
     console.log('log tasks infos on summary', taskSummary);
-  }, [taskSummary]);
+    console.log('log tasks infos on project', projectInfos);
+    console.log('log extra infos for summary tasks', summaryExtrainfos);
+  }, [taskSummary, projectInfos, summaryExtrainfos]);
 
   return (
     <SummaryWrapper>
@@ -50,19 +54,19 @@ export default function SummaryTasks({
 
             <SummaryTaskInfo>
               <div className="title-info">Cliente:</div>
-              <div className="info">Dado genérico</div>
+              <div className="info">{summaryExtrainfos?.client.name}</div>
             </SummaryTaskInfo>
 
             <SummaryTaskInfo>
               <div className="title-info">Projeto/Contrato:</div>
               <div className="info">
-                {projectInfos.produto} - {projectInfos.projeto} - {projectInfos.quantidade}
+                {projectInfos.projeto} - {projectInfos.quantidade}
               </div>
             </SummaryTaskInfo>
 
             <SummaryTaskInfo>
               <div className="title-info">Fluxo:</div>
-              <div className="info">Dado genérico</div>
+              <div className="info">{summaryExtrainfos?.flow.name}</div>
             </SummaryTaskInfo>
 
             <SummaryTaskDescription>
