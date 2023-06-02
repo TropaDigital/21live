@@ -358,21 +358,38 @@ export default function CreateTasks() {
         step
       } = DTOForm;
 
-      const createNewData = {
-        title,
-        tenant_id,
-        product_id,
-        flow_id,
-        description,
-        creation_description,
-        creation_date_end,
-        copywriting_date_end,
-        copywriting_description,
-        deadlines: deadLines,
-        step
-      };
+      if (tasksType === 'livre') {
+        const createNewData = {
+          title,
+          tenant_id,
+          product_id,
+          flow_id,
+          description,
+          creation_description,
+          creation_date_end,
+          copywriting_date_end,
+          copywriting_description,
+          step
+        };
 
-      await api.post(`tasks`, createNewData);
+        await api.post(`tasks`, createNewData);
+      } else {
+        const createNewData = {
+          title,
+          tenant_id,
+          product_id,
+          flow_id,
+          description,
+          creation_description,
+          creation_date_end,
+          copywriting_date_end,
+          copywriting_description,
+          deadlines: deadLines,
+          step
+        };
+
+        await api.post(`tasks`, createNewData);
+      }
 
       // if (modal.type === 'Criar novo Projeto/Contrato') {
       // } else {
@@ -393,7 +410,7 @@ export default function CreateTasks() {
 
       // setErros(getValidationErrors(e.response.data.result))
     }
-  }, [DTOForm, addToast, productsArray]);
+  }, [DTOForm, addToast, productsArray, tasksType]);
 
   const selectedProjectInfos = (e: any) => {
     if (e.target.name === 'product_id') {
