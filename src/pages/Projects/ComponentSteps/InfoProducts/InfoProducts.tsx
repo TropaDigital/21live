@@ -73,6 +73,7 @@ export default function InfoProducts({
   };
 
   function handleAddProducts(product: any) {
+    // console.log('log do add product', product);
     if (dataFilter.filter((obj: any) => obj.service_id === product.service_id).length > 0) {
       handleEditProductQuantity(quantityProducts);
       setQuantityProducts('');
@@ -83,7 +84,8 @@ export default function InfoProducts({
   }
 
   function editAddedProducts(product: any) {
-    if (dataFilter.filter((obj: any) => obj.product_id === product.product_id).length > 0) {
+    console.log('log do produto a ser editado', product);
+    if (dataFilter.filter((obj: any) => obj.service_id === product.service_id).length > 0) {
       handleEditProductQuantity(quantityProducts);
       setQuantityProducts('');
     } else {
@@ -128,7 +130,7 @@ export default function InfoProducts({
     if (dataFilter.length > 0) {
       okToSave(true);
     }
-
+    // console.log('log do dataFilter', dataFilter);
     // if (selectedProducts.length <= 0) {
     //   okToSave(false);
     // }
@@ -184,8 +186,8 @@ export default function InfoProducts({
           {dataFilter && editProducts ? (
             <tbody>
               {dataFilter?.map((row: any) => (
-                <tr key={row.product_id}>
-                  <td>{row.product_id}</td>
+                <tr key={row.service_id}>
+                  <td>{row.service_id}</td>
                   <td>{row.service}</td>
                   <td>{row.description}</td>
                   <td>
@@ -214,7 +216,7 @@ export default function InfoProducts({
                     </div>
                   </td> */}
 
-                  {quantityProducts && Object.values(quantityProducts).includes(row.product_id) ? (
+                  {quantityProducts && Object.values(quantityProducts).includes(row.service_id) ? (
                     <td
                       style={{ cursor: 'pointer', textAlign: 'center' }}
                       onClick={() => editAddedProducts(row)}
