@@ -271,7 +271,11 @@ export default function Services() {
       setEstimatedTime({ hours: value, minutes: estimatedTime.minutes });
     }
     if (name === 'minutes') {
-      setEstimatedTime({ hours: estimatedTime.hours, minutes: value });
+      if (value > 59) {
+        setEstimatedTime({ hours: estimatedTime.hours, minutes: '59' });
+      } else {
+        setEstimatedTime({ hours: estimatedTime.hours, minutes: value });
+      }
     }
 
     handleOnChangeMinutes({
