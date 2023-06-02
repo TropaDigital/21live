@@ -121,6 +121,7 @@ export default function CreateProject() {
     email: ''
   });
   const [productsArray, setProductsArray] = useState<IProduct[]>([]);
+  const [selectedClient, setSelectedClient] = useState<any>('');
   const location = useLocation();
 
   useEffect(() => {
@@ -140,7 +141,7 @@ export default function CreateProject() {
   //   (accumulator: any, currentValue: any) => accumulator + currentValue.minutes,
   //   0
   // );
-
+  const newDate = new Date();
   const productsHours = productsArray?.map((row) => {
     return multiplyTime(row?.minutes, row?.quantity);
   });
@@ -207,7 +208,7 @@ export default function CreateProject() {
     if (editSelectedProducts) {
       setProductsArray((current) =>
         current.map((obj: any) => {
-          if (obj.product_id === product.service_id) {
+          if (obj.service_id === product.service_id) {
             return { ...obj, quantity: product.quantity };
           }
           return obj;
@@ -281,8 +282,20 @@ export default function CreateProject() {
         setErrorInput('date_start', undefined);
       }
 
+      if (moment(date_start).isSameOrBefore(newDate)) {
+        throw setErrorInput('date_start', 'Data inicial menor que a atual');
+      } else {
+        setErrorInput('date_start', undefined);
+      }
+
       if (date_end === '') {
         throw setErrorInput('date_end', 'Data final é obrigatório!');
+      } else {
+        setErrorInput('date_end', undefined);
+      }
+
+      if (moment(date_end).isSameOrBefore(date_start)) {
+        throw setErrorInput('date_end', 'Data final precisa ser maior que a data inicial');
       } else {
         setErrorInput('date_end', undefined);
       }
@@ -420,6 +433,21 @@ export default function CreateProject() {
     navigate('/projetos');
   };
 
+  const ifIsSelectedClient = (e: any) => {
+    if (e.target.name === 'tenant_id') {
+      const id = e.target.value;
+      const selectedClientInfos: any = dataClient?.filter((obj: any) => obj.tenant_id === id);
+      setSelectedClient(selectedClientInfos[0]);
+      handleChangeInput(e);
+    } else {
+      handleChangeInput(e);
+    }
+  };
+
+  useEffect(() => {
+    console.log('log do DTO', DTOForm);
+  }, [DTOForm]);
+
   return (
     <Container>
       <HeaderStepsPage
@@ -435,7 +463,7 @@ export default function CreateProject() {
             <FormTitle>Geral</FormTitle>
             <InfoGeral
               data={DTOForm}
-              handleInputChange={handleChangeInput}
+              handleInputChange={ifIsSelectedClient}
               clients={dataClient}
               error={error}
             />
@@ -513,7 +541,7 @@ export default function CreateProject() {
 
                     <SummaryTaskInfo>
                       <div className="title-info">Cliente:</div>
-                      <div className="info">{DTOForm?.tenant_id}</div>
+                      <div className="info">{selectedClient.name}</div>
                     </SummaryTaskInfo>
 
                     <SummaryTaskInfo>
@@ -548,14 +576,46 @@ export default function CreateProject() {
                 <Summary>
                   <div className="title">Produtos contratados</div>
                   {productsArray.map((row: IProduct, index: number) => (
-                    <SummaryCard key={index} style={{ background: 'var(--background-primary)' }}>
+                    <SummaryCard
+                      key={index}
+                      style={{ background: 'var(--background-primary)', height: 'fit-content' }}
+                    >
                       <SummaryCardTitle>
                         #{index + 1} - {row.service}
                       </SummaryCardTitle>
-                      <SummaryCardSubtitle>
-                        <div>Horas estimadas: {multiplyTime(row?.minutes, row?.quantity)}</div>
-                        <div>Categoria: {row.type}</div>
-                        <div>Quantidade: {row.quantity}</div>
+                      <SummaryCardSubtitle
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          height: 'fit-content'
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            width: '100%'
+                          }}
+                        >
+                          <div>Horas estimadas: {multiplyTime(row?.minutes, row?.quantity)}</div>
+                          <div style={{ textTransform: 'capitalize' }}>Categoria: {row.type}</div>
+                          <div>Quantidade: {row.quantity}</div>
+                        </div>
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            width: '100%'
+                          }}
+                        >
+                          <div style={{ textTransform: 'capitalize' }}>Tempo: {row.period}</div>
+                          <div style={{ textTransform: 'capitalize' }}>Tamanho: {row.size}</div>
+                          <div style={{ textTransform: 'capitalize' }}>
+                            Descrição: {row.description}
+                          </div>
+                        </div>
                       </SummaryCardSubtitle>
                     </SummaryCard>
                   ))}
@@ -620,19 +680,34 @@ export default function CreateProject() {
       {createStep !== 4 && (
         <Footer>
           {showSave && (
-            <SaveButton
-              onClick={() => {
-                setSaveProducts('Go');
-                setTimeout(() => {
-                  setShowSave(false);
-                  setSaveProducts('');
-                  setCreateStep(createStep + 1);
-                  setEditSelectedProducts(true);
-                }, 1500);
-              }}
-            >
-              <ButtonDefault>Salvar</ButtonDefault>
-            </SaveButton>
+            <>
+              {createStep === 2 && (
+                <ButtonDefault
+                  typeButton="primary"
+                  isOutline
+                  onClick={() => {
+                    handleOnPrevStep();
+                    setShowSave(false);
+                  }}
+                  style={{ marginLeft: '88%' }}
+                >
+                  Voltar
+                </ButtonDefault>
+              )}
+              <SaveButton
+                onClick={() => {
+                  setSaveProducts('Go');
+                  setTimeout(() => {
+                    setShowSave(false);
+                    setSaveProducts('');
+                    setCreateStep(createStep + 1);
+                    setEditSelectedProducts(true);
+                  }, 500);
+                }}
+              >
+                <ButtonDefault>Salvar</ButtonDefault>
+              </SaveButton>
+            </>
           )}
 
           {!showSave && (
