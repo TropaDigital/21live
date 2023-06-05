@@ -32,9 +32,9 @@ export default function QuantityInput({
     setCounter(receiveQuantity);
   }, [receiveQuantity]);
 
-  useEffect(() => {
-    console.log('log do receive quantity', infosReceived);
-  }, [infosReceived]);
+  // useEffect(() => {
+  //   console.log('log do receive quantity', infosReceived);
+  // }, [infosReceived]);
 
   const handleChangeCounter = (name: string) => {
     if (disabledInput) {
