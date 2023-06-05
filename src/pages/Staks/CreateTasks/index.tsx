@@ -48,7 +48,7 @@ import { useFetch } from '../../../hooks/useFetch';
 import useDebouncedCallback from '../../../hooks/useDebounced';
 
 // Types
-import { ServicesProps } from '../../../types';
+import { IProduct, ServicesProps } from '../../../types';
 
 // Utils
 import { TenantProps } from '../../../utils/models';
@@ -63,6 +63,7 @@ import api from '../../../services/api';
 // Libraries
 import moment from 'moment';
 import QuantityInput from '../../../components/Inputs/QuantityInput';
+import { multiplyTime } from '../../../utils/convertTimes';
 
 interface StateProps {
   [key: string]: any;
@@ -197,6 +198,17 @@ export default function CreateTasks() {
       const newArray = productsArray.filter((obj) => obj.service_id !== product.service_id);
       setProductsArray([]);
       setProductsArray(newArray);
+    } else if (
+      selectedProject?.tempo &&
+      product.minutes.slice(0, -3) > selectedProject?.tempo.slice(0, -3)
+    ) {
+      console.log('log do tempo do projeto selecionado', selectedProject?.tempo.slice(0, -3));
+      console.log('log do tempo quando adiciono produto', product.minutes.slice(0, -3));
+      addToast({
+        type: 'warning',
+        title: 'Aviso',
+        description: 'Total de horas ultrapassado, revise os horários e quantidades!'
+      });
     } else {
       setProductsArray((prevState: any) => [...prevState, newProduct]);
     }
@@ -362,25 +374,30 @@ export default function CreateTasks() {
     }
   };
 
-  const handleProductQuantity = (value: any) => {
-    console.log('log do product adicionado', value);
-    // if (
-    //   selectedProject?.tempo !== undefined &&
-    //   Number(selectedProject.tempo.split(':')[0]) < Number(value.minutes.split(':')[0])
-    // ) {
-    //   console.log('log não permitir add produto');
-    //   addToast({
-    //     type: 'warning',
-    //     title: 'ATENÇÃO',
-    //     description: 'O produto excede as horas do Projeto/Contrato selecionado'
-    //   });
-    // }
-    if (productsArray.filter((obj) => obj.service_id === value.service_id).length > 0) {
+  const handleCheckQuantity = (quantity: any, product: IProduct) => {
+    console.log('log do product check quantity', quantity, product);
+    const totalProductTime = multiplyTime(product.minutes, quantity);
+
+    if (selectedProject?.tempo && totalProductTime > selectedProject?.tempo) {
+      addToast({
+        type: 'warning',
+        title: 'Aviso',
+        description: 'Total de horas ultrapassado, revise os produtos e quantidades!'
+      });
+      // handleProductQuantity(quantity - 1, product);
+    } else {
+      handleProductQuantity(quantity, product);
+    }
+  };
+
+  const handleProductQuantity = (value: any, product: any) => {
+    console.log('log do product adicionado', value, product);
+    if (productsArray.filter((obj) => obj.service_id === product.service_id).length > 0) {
       if (quantityProductsArray.length > 0) {
         setQuantityProductsArray((current) =>
           current.map((obj) => {
             if (obj.project_id === value.project_id) {
-              return { ...obj, quantity: value.quantity };
+              return { ...obj, quantity: value };
             }
             return obj;
           })
@@ -816,7 +833,7 @@ export default function CreateTasks() {
                           : 0
                       }
                       infosReceived={row}
-                      handleQuantity={(value: any) => console.log('log do Quantity Input', value)}
+                      handleQuantity={(value: any) => handleCheckQuantity(value, row)}
                       disabledInput={
                         productsArray?.filter((obj) => obj.service_id === row.service_id).length > 0
                           ? false
