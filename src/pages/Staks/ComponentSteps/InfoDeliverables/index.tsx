@@ -63,6 +63,12 @@ interface DeliveryProps {
   showInfo: boolean;
 }
 
+interface ModalDeliveryProps {
+  isOpen: boolean;
+  title: string;
+  indexDelivery: string;
+}
+
 export default function InfoDeliveries({
   data,
   dataTypes,
@@ -89,11 +95,15 @@ export default function InfoDeliveries({
     productIndex: '',
     productTypeValue: ''
   });
-  const [productImpDig, setProductImpDig] = useState<any>({
+  const [productDigitalPrinted, setProductDigitalPrinted] = useState<any>({
     productIndex: '',
     productTypeSelected: ''
   });
-  const [dateModal, setDateModal] = useState<boolean>(false);
+  const [dateModal, setDateModal] = useState<ModalDeliveryProps>({
+    isOpen: false,
+    title: '',
+    indexDelivery: ''
+  });
 
   const DeliveryDefault: DeliveryProps = {
     deliveryId: 1,
@@ -140,12 +150,16 @@ export default function InfoDeliveries({
   }, [productType.productTypeValue]);
 
   useEffect(() => {
-    handleProducts('type', productImpDig.productTypeSelected, productImpDig.productIndex);
-  }, [productImpDig.productTypeSelected]);
+    handleProducts(
+      'type',
+      productDigitalPrinted.productTypeSelected,
+      productDigitalPrinted.productIndex
+    );
+  }, [productDigitalPrinted.productTypeSelected]);
 
   useEffect(() => {
-    console.log('log do DTO', DTODelivery);
-  }, [DTODelivery]);
+    console.log('log do modal', dateModal);
+  }, [dateModal]);
 
   return (
     <>
@@ -266,7 +280,7 @@ export default function InfoDeliveries({
                       name="I/D"
                       value={row.type === 'impresso' ? 'impressao' : 'digital'}
                       onChange={(e: any) =>
-                        setProductImpDig({
+                        setProductDigitalPrinted({
                           productIndex: row.service_id,
                           productTypeSelected: e.target.value
                         })
@@ -307,7 +321,16 @@ export default function InfoDeliveries({
                       <IconCalendar /> {row.deliveryDate}
                     </div>
                   ) : (
-                    <div className="date add" onClick={() => setDateModal(true)}>
+                    <div
+                      className="date add"
+                      onClick={() =>
+                        setDateModal({
+                          isOpen: true,
+                          title: 'Adicionar data',
+                          indexDelivery: index
+                        })
+                      }
+                    >
                       <IconCalendar /> Adicionar vencimento
                     </div>
                   )}
@@ -342,125 +365,132 @@ export default function InfoDeliveries({
                         <th style={{ display: 'grid', placeItems: 'center', height: '45px' }}></th>
                       </tr>
                     </thead>
-                    <tbody>
-                      {data?.map((row: any, index: any) => (
-                        <tr key={index}>
-                          <td>#{index + 1}</td>
-                          <td style={{ minWidth: '150px' }}>{row.service}</td>
-                          <td>
-                            <div
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px',
-                                minWidth: '100%'
-                              }}
-                            >
-                              <InputDefault
+                    {index === 0 && (
+                      <tbody>
+                        {data?.map((row: any, index: any) => (
+                          <tr key={index}>
+                            <td>#{index + 1}</td>
+                            <td style={{ minWidth: '150px' }}>{row.service}</td>
+                            <td>
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '12px',
+                                  minWidth: '100%'
+                                }}
+                              >
+                                <InputDefault
+                                  label=""
+                                  name="description"
+                                  placeholder="Lorem ipsum dolor sit malesuada"
+                                  value={row.description}
+                                  maxLength={40}
+                                  type={'text'}
+                                  disabled={descriptionText.inputId !== row.service_id}
+                                  onChange={(e: any) =>
+                                    setDescriptionText({
+                                      inputId: row.service_id,
+                                      text: e.target.value.slice(0, 40)
+                                    })
+                                  }
+                                  //   error={error?.date_start}
+                                />
+                                <EditableFormat
+                                  className={
+                                    descriptionText.inputId === row.service_id ? 'edit' : ''
+                                  }
+                                  onClick={() => {
+                                    setDescriptionText({ inputId: row.service_id, text: '' });
+                                  }}
+                                >
+                                  <BiPencil />
+                                </EditableFormat>
+                              </div>
+                            </td>
+                            <td>
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '18px',
+                                  height: '82px'
+                                }}
+                              >
+                                <InputDefault
+                                  label=""
+                                  name="format"
+                                  placeholder="128x190"
+                                  value={row.size}
+                                  disabled={
+                                    editFormat.productIndex === row.service_id &&
+                                    editFormat.editable
+                                      ? false
+                                      : true
+                                  }
+                                  onChange={(e: any) => setFormatType(e.target.value)}
+                                  //   error={error?.date_start}
+                                />
+                                <EditableFormat
+                                  className={
+                                    editFormat.productIndex === row.service_id ? 'edit' : ''
+                                  }
+                                  onClick={() => {
+                                    setEditFormat({
+                                      productIndex: row.service_id,
+                                      editable: true
+                                    });
+                                    setFormatType('');
+                                  }}
+                                >
+                                  <BiPencil />
+                                </EditableFormat>
+                              </div>
+                            </td>
+                            <td style={{ minWidth: '220px' }}>
+                              <SelectDefault
                                 label=""
-                                name="description"
-                                placeholder="Lorem ipsum dolor sit malesuada"
-                                value={row.description}
-                                maxLength={40}
-                                type={'text'}
-                                disabled={descriptionText.inputId !== row.service_id}
+                                name="type"
+                                value={row.category}
                                 onChange={(e: any) =>
-                                  setDescriptionText({
-                                    inputId: row.service_id,
-                                    text: e.target.value.slice(0, 40)
+                                  setProductType({
+                                    productIndex: row.service_id,
+                                    productTypeValue: e.target.value
                                   })
                                 }
-                                //   error={error?.date_start}
-                              />
-                              <EditableFormat
-                                className={descriptionText.inputId === row.service_id ? 'edit' : ''}
-                                onClick={() => {
-                                  setDescriptionText({ inputId: row.service_id, text: '' });
-                                }}
+                                placeHolder="Selecione..."
                               >
-                                <BiPencil />
-                              </EditableFormat>
-                            </div>
-                          </td>
-                          <td>
-                            <div
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '18px',
-                                height: '82px'
-                              }}
-                            >
-                              <InputDefault
+                                {dataTypes?.map((row: TypeProps) => (
+                                  <option key={row.type_id} value={row.type_id}>
+                                    {row.name}
+                                  </option>
+                                ))}
+                              </SelectDefault>
+                            </td>
+                            <td style={{ minWidth: '220px' }}>
+                              <SelectDefault
                                 label=""
-                                name="format"
-                                placeholder="128x190"
-                                value={row.size}
-                                disabled={
-                                  editFormat.productIndex === row.service_id && editFormat.editable
-                                    ? false
-                                    : true
-                                }
-                                onChange={(e: any) => setFormatType(e.target.value)}
-                                //   error={error?.date_start}
-                              />
-                              <EditableFormat
-                                className={editFormat.productIndex === row.service_id ? 'edit' : ''}
-                                onClick={() => {
-                                  setEditFormat({
+                                name="I/D"
+                                value={row.type}
+                                onChange={(e: any) =>
+                                  setProductDigitalPrinted({
                                     productIndex: row.service_id,
-                                    editable: true
-                                  });
-                                  setFormatType('');
-                                }}
+                                    productTypeSelected: e.target.value
+                                  })
+                                }
+                                placeHolder="Selecione..."
                               >
-                                <BiPencil />
-                              </EditableFormat>
-                            </div>
-                          </td>
-                          <td style={{ minWidth: '220px' }}>
-                            <SelectDefault
-                              label=""
-                              name="type"
-                              value={row.category}
-                              onChange={(e: any) =>
-                                setProductType({
-                                  productIndex: row.service_id,
-                                  productTypeValue: e.target.value
-                                })
-                              }
-                              placeHolder="Selecione..."
-                            >
-                              {dataTypes?.map((row: TypeProps) => (
-                                <option key={row.type_id} value={row.type_id}>
-                                  {row.name}
-                                </option>
-                              ))}
-                            </SelectDefault>
-                          </td>
-                          <td style={{ minWidth: '220px' }}>
-                            <SelectDefault
-                              label=""
-                              name="I/D"
-                              value={row.type}
-                              onChange={(e: any) =>
-                                setProductImpDig({
-                                  productIndex: row.service_id,
-                                  productTypeSelected: e.target.value
-                                })
-                              }
-                              placeHolder="Selecione..."
-                            >
-                              <option value="impressao">Impressão</option>
-                              <option value="digital">Digital</option>
-                            </SelectDefault>
-                          </td>
-                          <td style={{ cursor: 'pointer' }}>
-                            <FiMenu />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
+                                <option value="impressao">Impressão</option>
+                                <option value="digital">Digital</option>
+                              </SelectDefault>
+                            </td>
+                            <td style={{ cursor: 'pointer' }}>
+                              <FiMenu />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    )}
                   </table>
                 </TableDelivery>
                 <AddTextButton title="Adicionar produto" click={addProducts} />
@@ -479,7 +509,17 @@ export default function InfoDeliveries({
         </>
       )}
 
-      <ModalDefault isOpen={dateModal} onOpenChange={() => setDateModal(false)} maxWidth="400px">
+      <ModalDefault
+        isOpen={dateModal.isOpen}
+        onOpenChange={() =>
+          setDateModal({
+            isOpen: false,
+            title: '',
+            indexDelivery: ''
+          })
+        }
+        maxWidth="400px"
+      >
         <DateModal>
           <DateModalTitle>Adicionar data</DateModalTitle>
           <DateInput>
@@ -493,7 +533,17 @@ export default function InfoDeliveries({
               value={DTODelivery[1]?.deliveryDate}
             />
           </DateInput>
-          <ButtonDefault onClick={() => setDateModal(false)}>Confirmar</ButtonDefault>
+          <ButtonDefault
+            onClick={() =>
+              setDateModal({
+                isOpen: false,
+                title: '',
+                indexDelivery: ''
+              })
+            }
+          >
+            Confirmar
+          </ButtonDefault>
         </DateModal>
       </ModalDefault>
     </>
