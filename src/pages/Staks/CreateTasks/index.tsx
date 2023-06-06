@@ -635,8 +635,8 @@ export default function CreateTasks() {
                     handleProducts={handleProductsDeliveries}
                     error={error}
                     deliveriesSplited={splitDeliveries}
-                    addProducts={() => setProductsModal(true)}
                     deliveryType={tasksType}
+                    totalProjectTime={selectedProject?.tempo}
                   />
                   {!splitDeliveries && (
                     <AddTextButton title="Adicionar produto" click={() => setProductsModal(true)} />
