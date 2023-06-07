@@ -73,6 +73,9 @@ interface Props {
   deliveriesSplited: boolean;
   totalProjectTime: any;
   deliveryType: string;
+  errorCategory: any;
+  addDeliveries: boolean;
+  passDeliveries: any;
 }
 
 interface OpenMenuProps {
@@ -101,7 +104,10 @@ export default function InfoDeliveries({
   error,
   deliveriesSplited,
   deliveryType,
-  totalProjectTime
+  totalProjectTime,
+  errorCategory,
+  addDeliveries,
+  passDeliveries
 }: Props) {
   const { addToast } = useToast();
   const [descriptionText, setDescriptionText] = useState<any>({
@@ -115,7 +121,7 @@ export default function InfoDeliveries({
   });
   const [showDeliveryInfos, setShowDeliveryInfos] = useState<OpenMenuProps>({
     deliveryId: 1,
-    openInfo: false
+    openInfo: true
   });
   const [productType, setProductType] = useState<any>({
     productIndex: '',
@@ -187,7 +193,6 @@ export default function InfoDeliveries({
       service: product.service,
       service_id: product.service_id,
       size: product.size,
-      tenant_id: product.tenant_id,
       type: product.type,
       quantity: 1
     };
@@ -228,11 +233,11 @@ export default function InfoDeliveries({
           return obj;
         })
       );
-      addToast({
-        type: 'warning',
-        title: 'Aviso',
-        description: 'Total de horas ultrapassado, revise os horários e quantidades!'
-      });
+      // addToast({
+      //   type: 'warning',
+      //   title: 'Aviso',
+      //   description: 'Total de horas ultrapassado, revise os horários e quantidades!'
+      // });
     }
     // else {
     //   // console.log('log do product with the id finded', newProduct);
@@ -271,6 +276,13 @@ export default function InfoDeliveries({
     console.log('log do modal', dateModal);
     console.log('log do DTODelivery', DTODelivery);
   }, [dateModal, DTODelivery]);
+
+  useEffect(() => {
+    console.log('log pra enviar as entregas', addDeliveries);
+    if (addDeliveries && deliveriesSplited) {
+      passDeliveries(DTODelivery);
+    }
+  }, [addDeliveries]);
 
   return (
     <>
@@ -369,7 +381,7 @@ export default function InfoDeliveries({
                     <SelectDefault
                       label=""
                       name="type"
-                      value={row.category}
+                      value={row.reason_change}
                       onChange={(e: any) =>
                         setProductType({
                           productIndex: row.service_id,
@@ -377,6 +389,7 @@ export default function InfoDeliveries({
                         })
                       }
                       placeHolder="Selecione..."
+                      error={errorCategory.product_id === row.service_id ? 'Campo vazio' : ''}
                     >
                       {dataTypes?.map((row: TypeProps) => (
                         <option key={row.type_id} value={row.type_id}>
@@ -416,11 +429,7 @@ export default function InfoDeliveries({
         <>
           {DTODelivery?.map((row: DeliveryProps, index: any) => (
             <Deliveries
-              openInfos={
-                showDeliveryInfos.openInfo && showDeliveryInfos.deliveryId === row.deliveryId
-                  ? true
-                  : false
-              }
+              openInfos={showDeliveryInfos.deliveryId === row.deliveryId ? true : false}
               key={index}
             >
               <DeliveryTitle>
@@ -455,7 +464,7 @@ export default function InfoDeliveries({
                     })
                   }
                 >
-                  {showDeliveryInfos.deliveryId === row.deliveryId && showDeliveryInfos.openInfo ? (
+                  {showDeliveryInfos.deliveryId === row.deliveryId ? (
                     <FiChevronUp />
                   ) : (
                     <FiChevronDown />
@@ -562,7 +571,7 @@ export default function InfoDeliveries({
                               <SelectDefault
                                 label=""
                                 name="type"
-                                value={row.category}
+                                value={row.reason_change}
                                 onChange={(e: any) =>
                                   setProductType({
                                     productIndex: row.service_id,
@@ -570,6 +579,9 @@ export default function InfoDeliveries({
                                   })
                                 }
                                 placeHolder="Selecione..."
+                                error={
+                                  errorCategory?.product_id === row.service_id ? 'Campo vazio' : ''
+                                }
                               >
                                 {dataTypes?.map((row: TypeProps) => (
                                   <option key={row.type_id} value={row.type_id}>
@@ -688,7 +700,7 @@ export default function InfoDeliveries({
                               <SelectDefault
                                 label=""
                                 name="type"
-                                value={row.category}
+                                value={row.reason_change}
                                 onChange={(e: any) =>
                                   setProductType({
                                     productIndex: row.service_id,
@@ -696,6 +708,9 @@ export default function InfoDeliveries({
                                   })
                                 }
                                 placeHolder="Selecione..."
+                                error={
+                                  errorCategory.product_id === row.service_id ? 'Campo vazio' : ''
+                                }
                               >
                                 {dataTypes?.map((row: TypeProps) => (
                                   <option key={row.type_id} value={row.type_id}>
