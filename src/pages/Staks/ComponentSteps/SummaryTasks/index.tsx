@@ -81,22 +81,46 @@ export default function SummaryTasks({
           <Summary className="big">
             <div className="title">Produtos selecionados</div>
             {selectedProducts.map((row: any, index: number) => (
-              <SummaryCard key={index}>
+              <SummaryCard key={index} style={{ height: 'fit-content' }}>
                 <SummaryCardTitle>
                   #{index + 1} - {row.service}
                 </SummaryCardTitle>
-                <SummaryCardSubtitle>
-                  <div className="description-wrap">
-                    Descrição: <span>{row.description}</span>
+                <SummaryCardSubtitle
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: 'fit-content'
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      width: '100%'
+                    }}
+                  >
+                    <div className="description-wrap">
+                      Descrição: <span>{row.description}</span>
+                    </div>
+                    <div>
+                      Tipo: <span>{row.category}</span>
+                    </div>
                   </div>
-                  <div>
-                    Tipo: <span>{row.category}</span>
-                  </div>
-                  <div>
-                    I/D: <span>{row.type}</span>
-                  </div>
-                  <div>
-                    Formato: <span>{row.size}</span>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      width: '100%'
+                    }}
+                  >
+                    <div>
+                      I/D: <span>{row.type}</span>
+                    </div>
+                    <div>
+                      Formato: <span>{row.size}</span>
+                    </div>
                   </div>
                 </SummaryCardSubtitle>
               </SummaryCard>
@@ -111,7 +135,7 @@ export default function SummaryTasks({
           Total de itens: <span>{selectedProducts.length}</span>
         </div>
         <div className="item-hours">
-          Horas estimadas <span>04:00:00</span>
+          Horas estimadas <span>{projectInfos.tempo}</span>
         </div>
         <SummaryButtons>
           <ButtonDefault typeButton="primary" isOutline onClick={() => editTasks()}>
