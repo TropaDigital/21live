@@ -120,7 +120,7 @@ export interface ServicesProps {
   minutes: string;
   created: string;
   updated: string;
-  category: string;
+  category?: string;
   flag: string;
   quantity?: any;
   tenant_id?: string;

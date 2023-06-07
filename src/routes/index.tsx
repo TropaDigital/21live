@@ -116,7 +116,7 @@ function RoutesAll() {
         />
 
         <Route
-          path="/servicos"
+          path="/produtos"
           element={
             <PrivateRoutes>
               <Services />

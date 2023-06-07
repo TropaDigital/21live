@@ -236,7 +236,10 @@ export default function TaskList() {
         <TableHead>
           <div className="groupTable">
             <h2>
-              Lista de tarefas <strong>{data?.length} tarefas</strong>
+              Lista de tarefas{' '}
+              <strong>
+                {data && data?.length < 1 ? `${data?.length} tarefa` : `${data?.length} tarefas`}{' '}
+              </strong>
             </h2>
           </div>
         </TableHead>
