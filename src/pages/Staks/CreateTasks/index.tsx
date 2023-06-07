@@ -48,7 +48,7 @@ import { useFetch } from '../../../hooks/useFetch';
 import useDebouncedCallback from '../../../hooks/useDebounced';
 
 // Types
-import { IProduct, ServicesProps } from '../../../types';
+import { IProduct, ITaskCreate, ServicesProps } from '../../../types';
 
 // Utils
 import { TenantProps } from '../../../utils/models';
@@ -95,8 +95,10 @@ export default function CreateTasks() {
 
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const [error, setError] = useState<StateProps>({});
+  const [errorCategory, setErrorCategory] = useState<any>({});
+  const [addDeliveries, setAddDeliveries] = useState<boolean>(false);
   const newDate = new Date();
-  const [DTOForm, setDTOForm] = useState<any>({
+  const [DTOForm, setDTOForm] = useState<ITaskCreate>({
     title: '',
     tenant_id: '',
     product_id: '',
@@ -162,7 +164,6 @@ export default function CreateTasks() {
   };
 
   const handleTaskDeliveries = (name: string, value: any) => {
-    console.log('Log do description', name, value);
     if (name === 'dateStart') {
       setDTOForm((prevState: any) => ({ ...prevState, ['copywriting_date_end']: value }));
     }
@@ -190,7 +191,6 @@ export default function CreateTasks() {
       service: product.service,
       service_id: product.service_id,
       size: product.size,
-      tenant_id: product.tenant_id,
       type: product.type,
       quantity: 1
     };
@@ -229,7 +229,17 @@ export default function CreateTasks() {
   };
 
   const handleOnNextStep = () => {
-    const { title, tenant_id, product_id, flow_id, description } = DTOForm;
+    const {
+      title,
+      tenant_id,
+      product_id,
+      flow_id,
+      description,
+      copywriting_date_end,
+      creation_date_end,
+      creation_description,
+      copywriting_description
+    } = DTOForm;
 
     try {
       if (title === '') {
@@ -293,6 +303,62 @@ export default function CreateTasks() {
 
       if (createStep === 1 && tasksType === 'horas') {
         setProductsModal(true);
+      } else if (createStep === 2 && tasksType === 'horas') {
+        if (copywriting_date_end === '') {
+          throw setErrorInput(
+            'copywriting_date_end',
+            'Data de Entrega - Pré-requisitos é obrigatória!'
+          );
+        } else {
+          setErrorInput('copywriting_date_end', undefined);
+        }
+
+        if (creation_date_end === '') {
+          throw setErrorInput('creation_date_end', 'Data de Entrega Criação é obrigatória!');
+        } else {
+          setErrorInput('creation_date_end', undefined);
+        }
+        console.log('log do products', productsArray);
+
+        productsArray.map((obj: any) => {
+          if (obj.reason_change === '' || obj.reason_change === undefined) {
+            setErrorCategory({
+              ...errorCategory,
+              Tipo: 'Tipo não selecionado',
+              product_id: obj.service_id
+            });
+            return addToast({
+              type: 'warning',
+              title: 'Atenção',
+              description: 'Existem produtos sem o "Tipo" selecionado!'
+            });
+          } else {
+            setErrorCategory({});
+            setAddDeliveries(true);
+            setTimeout(() => {
+              setCreateStep(createStep + 1);
+            }, 500);
+          }
+        });
+      } else if (createStep === 3 && tasksType === 'horas') {
+        if (copywriting_description === '') {
+          throw setErrorInput(
+            'copywriting_description',
+            'Descrição do Input de Pré-requisitos é obrigatória!'
+          );
+        } else {
+          setErrorInput('copywriting_description', undefined);
+        }
+
+        if (creation_description === '') {
+          throw setErrorInput(
+            'creation_description',
+            'Descrição do Input de criação é obrigatória!'
+          );
+        } else {
+          setErrorInput('creation_description', undefined);
+        }
+        setCreateStep(createStep + 1);
       } else if (createStep === 3 && tasksType === 'livre') {
         handleOnSubmit();
       } else {
@@ -328,11 +394,11 @@ export default function CreateTasks() {
     setError({});
   };
 
-  const handleProductsDeliveries = (field: string, value: string, product: any) => {
+  const handleProductsDeliveries = (field: string, value: string, productId: any) => {
     if (field === 'description') {
       setProductsArray((current) =>
         current.map((obj) => {
-          if (obj.service_id === product) {
+          if (obj.service_id === productId) {
             return { ...obj, description: value };
           }
           return obj;
@@ -343,7 +409,7 @@ export default function CreateTasks() {
     if (field === 'size') {
       setProductsArray((current) =>
         current.map((obj) => {
-          if (obj.service_id === product) {
+          if (obj.service_id === productId) {
             return { ...obj, size: value };
           }
           return obj;
@@ -352,10 +418,11 @@ export default function CreateTasks() {
     }
 
     if (field === 'category') {
+      setErrorCategory({});
       setProductsArray((current) =>
         current.map((obj) => {
-          if (obj.service_id === product) {
-            return { ...obj, category: value };
+          if (obj.service_id === productId) {
+            return { ...obj, reason_change: value };
           }
           return obj;
         })
@@ -365,7 +432,7 @@ export default function CreateTasks() {
     if (field === 'type') {
       setProductsArray((current) =>
         current.map((obj) => {
-          if (obj.service_id === product) {
+          if (obj.service_id === productId) {
             return { ...obj, type: value };
           }
           return obj;
@@ -427,13 +494,34 @@ export default function CreateTasks() {
 
   const handleOnSubmit = useCallback(async () => {
     try {
-      const deadLines = [
+      let deadLines = [
         {
-          date_end: DTOForm.creation_date_end,
-          description: DTOForm.creation_description,
-          products: productsArray
+          date_end: '',
+          description: '',
+          products: [{}]
         }
       ];
+
+      if (DTOForm.deadlines.length <= 0) {
+        deadLines = [
+          {
+            date_end: DTOForm?.creation_date_end,
+            description: DTOForm?.creation_description,
+            products: productsArray
+          }
+        ];
+      }
+
+      if (DTOForm.deadlines.length > 0) {
+        setDTOForm((prevState: any) => ({
+          ...prevState,
+          ['deadlines[0]']: {
+            date_end: DTOForm?.creation_date_end,
+            description: DTOForm?.creation_description,
+            products: productsArray
+          }
+        }));
+      }
 
       const {
         title,
@@ -448,49 +536,51 @@ export default function CreateTasks() {
         step
       } = DTOForm;
 
-      if (tasksType === 'livre') {
-        const createNewData = {
-          title,
-          tenant_id,
-          product_id,
-          flow_id,
-          description,
-          creation_description,
-          creation_date_end,
-          copywriting_date_end,
-          copywriting_description,
-          step
-        };
+      // if (tasksType === 'livre') {
+      //   const createNewData = {
+      //     title,
+      //     tenant_id,
+      //     product_id,
+      //     flow_id,
+      //     description,
+      //     creation_description,
+      //     creation_date_end,
+      //     copywriting_date_end,
+      //     copywriting_description,
+      //     step
+      //   };
 
-        await api.post(`tasks`, createNewData);
-      } else {
-        const createNewData = {
-          title,
-          tenant_id,
-          product_id,
-          flow_id,
-          description,
-          creation_description,
-          creation_date_end,
-          copywriting_date_end,
-          copywriting_description,
-          deadlines: deadLines,
-          step
-        };
+      //   await api.post(`tasks`, createNewData);
+      // } else {
+      // }
+      const createNewData = {
+        title,
+        tenant_id,
+        product_id,
+        flow_id,
+        description,
+        creation_description,
+        creation_date_end,
+        copywriting_date_end,
+        copywriting_description,
+        deadlines: deadLines,
+        step
+      };
 
-        await api.post(`tasks`, createNewData);
-      }
+      console.log('Log do productsarray', productsArray);
+      console.log('Log do submit', createNewData);
+      await api.post(`tasks`, createNewData);
 
       // if (modal.type === 'Criar novo Projeto/Contrato') {
       // } else {
       //   await api.put(`project/${formData.project_id}`, updateData);
       // }
       setFinishModal(true);
-      addToast({
-        type: 'success',
-        title: 'Sucesso',
-        description: 'Tarefa cadastrada com sucesso!'
-      });
+      // addToast({
+      //   type: 'success',
+      //   title: 'Sucesso',
+      //   description: 'Tarefa cadastrada com sucesso!'
+      // });
     } catch (e: any) {
       addToast({
         type: 'danger',
@@ -500,7 +590,7 @@ export default function CreateTasks() {
 
       // setErros(getValidationErrors(e.response.data.result))
     }
-  }, [DTOForm, addToast, productsArray, tasksType]);
+  }, [DTOForm, addToast, productsArray]);
 
   const selectedProjectInfos = (e: any) => {
     if (e.target.name === 'product_id') {
@@ -551,6 +641,17 @@ export default function CreateTasks() {
   useEffect(() => {
     console.log('log do tipo de task', tasksType);
   }, [tasksType]);
+
+  useEffect(() => {
+    console.log('log do deadlines products', DTOForm.deadlines);
+    // DTOForm.deadlines.map((products: any) => {
+    //   products.
+    // })
+  }, [DTOForm.deadlines]);
+
+  useEffect(() => {
+    console.log('Log do DTO', DTOForm);
+  }, [DTOForm]);
 
   return (
     <>
@@ -637,6 +738,11 @@ export default function CreateTasks() {
                     deliveriesSplited={splitDeliveries}
                     deliveryType={tasksType}
                     totalProjectTime={selectedProject?.tempo}
+                    errorCategory={errorCategory}
+                    addDeliveries={addDeliveries}
+                    passDeliveries={(value: any) =>
+                      setDTOForm((prevState: any) => ({ ...prevState, ['deadlines']: value }))
+                    }
                   />
                   {!splitDeliveries && (
                     <AddTextButton title="Adicionar produto" click={() => setProductsModal(true)} />
@@ -654,6 +760,7 @@ export default function CreateTasks() {
                     }
                     handleOnInput={(value) => handleTaskDeliveries('creation_description', value)}
                     mentions={[]}
+                    inputsError={error}
                   />
                 </div>
               )}
@@ -672,6 +779,7 @@ export default function CreateTasks() {
                     }
                     handleOnInput={(value) => handleTaskDeliveries('creation_description', value)}
                     mentions={[]}
+                    inputsError={error}
                   />
                 </>
               )}
@@ -883,6 +991,7 @@ export default function CreateTasks() {
           </ProductsModalWrapper>
         </ModalDefault>
 
+        {/* Modal Finish Create Task */}
         <ModalDefault
           isOpen={finishModal}
           onOpenChange={() => setFinishModal(false)}
