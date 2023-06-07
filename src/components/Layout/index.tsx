@@ -54,7 +54,7 @@ export default function Layout() {
             //   icon: IconTeam,
             // },
             {
-              to: '/servicos',
+              to: '/produtos',
               name: 'Produtos',
               icon: IconProducts
             },
