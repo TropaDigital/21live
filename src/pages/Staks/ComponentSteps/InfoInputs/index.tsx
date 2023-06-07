@@ -1,3 +1,6 @@
+// React
+import { useEffect } from 'react';
+
 // Components
 import WrapperEditor from '../../../../components/WrapperEditor';
 
@@ -10,6 +13,7 @@ interface InputsProps {
   handleOnDescription: (value: any) => void;
   handleOnInput: (value: any) => void;
   mentions: any;
+  inputsError: any;
 }
 
 export default function TaskInputs({
@@ -17,12 +21,16 @@ export default function TaskInputs({
   valueSecond,
   handleOnDescription,
   handleOnInput,
-  mentions
+  mentions,
+  inputsError
 }: InputsProps) {
+  useEffect(() => {
+    console.log('Log dos erros', inputsError);
+  }, [inputsError]);
   return (
     <InputTaskWrapper>
       {/* <InputField style={{ border: '2px solid red', padding: '4px' }}> */}
-      <InputField>
+      <InputField className={inputsError?.copywriting_description ? 'error' : ''}>
         <InputFieldTitle>Input Pré-Requisitos;</InputFieldTitle>
         <WrapperEditor
           mentionData={mentions}
@@ -31,7 +39,7 @@ export default function TaskInputs({
         />
       </InputField>
 
-      <InputField>
+      <InputField className={inputsError?.creation_description ? 'error' : ''}>
         <InputFieldTitle>Input criação</InputFieldTitle>
         <WrapperEditor
           mentionData={mentions}
