@@ -55,6 +55,10 @@ import { CheckboxDefault } from '../../../../components/Inputs/CheckboxDefault';
 import { useFetch } from '../../../../hooks/useFetch';
 import { useToast } from '../../../../hooks/toast';
 
+// Utils
+import { multiplyTime, sumTimes } from '../../../../utils/convertTimes';
+import { IProduct } from '../../../../types';
+
 interface FormProps {
   [key: string]: any;
 }
@@ -147,7 +151,7 @@ export default function InfoDeliveries({
     700
   );
   const { data: dataProducts, fetchData: fetchProducts } = useFetch<any[]>(
-    `services?search=${searchTerm}`
+    `services?search=${searchTerm}&flag=false`
   );
 
   const DeliveryDefault: DeliveryProps = {
@@ -158,6 +162,17 @@ export default function InfoDeliveries({
     showInfo: false
   };
   const [DTODelivery, setDTODelivery] = useState<DeliveryProps[]>([DeliveryDefault]);
+
+  const productsHoursArray = DTODelivery.map((row: DeliveryProps) => {
+    row?.deliveryProducts?.map((obj: any) => {
+      console.log('log do map dos products', obj);
+      return multiplyTime(obj?.minutes, obj?.quantity);
+    });
+  });
+
+  const totalProductsHours = productsHoursArray;
+
+  // console.log('log do totalProductHours', totalProductsHours);
 
   const addDelivery = () => {
     const newDelivery: DeliveryProps = {
@@ -197,7 +212,7 @@ export default function InfoDeliveries({
       quantity: 1
     };
     if (
-      DTODelivery[idDelivery]?.deliveryProducts.filter(
+      DTODelivery[idDelivery - 1]?.deliveryProducts.filter(
         (obj: any) => obj.service_id === product.service_id
       ).length > 0
     ) {
@@ -220,6 +235,19 @@ export default function InfoDeliveries({
           return obj;
         })
       );
+      console.log('log filter product', product, newArray);
+    } else if (totalProjectTime && totalProjectTime < product.minutes) {
+      addToast({
+        type: 'warning',
+        title: 'Aviso',
+        description: 'Total de horas ultrapassado, revise os horários e quantidades!'
+      });
+    } else if (totalProjectTime < totalProductsHours) {
+      addToast({
+        type: 'warning',
+        title: 'Aviso',
+        description: 'Total de horas ultrapassado, revise os horários e quantidades!'
+      });
     } else {
       console.log('log do product with the id finded', newProduct);
       setDTODelivery((current: any) =>
@@ -233,23 +261,57 @@ export default function InfoDeliveries({
           return obj;
         })
       );
-      // addToast({
-      //   type: 'warning',
-      //   title: 'Aviso',
-      //   description: 'Total de horas ultrapassado, revise os horários e quantidades!'
-      // });
     }
-    // else {
-    //   // console.log('log do product with the id finded', newProduct);
-    //   // setDTODelivery((current: any) =>
-    //   //   current.map((obj: any) => {
-    //   //     if (obj.deliveryId === idDelivery) {
-    //   //       return { ...obj, deliveryProducts: [...DTODelivery, newProduct] };
-    //   //     }
-    //   //     return obj;
-    //   //   })
-    //   // );
-    // }
+  };
+
+  const handleCheckQuantity = (quantity: any, product: IProduct) => {
+    console.log('log do product check quantity', quantity, product);
+    const totalProductTime = multiplyTime(product.minutes, quantity);
+
+    if (totalProjectTime && totalProductTime > totalProjectTime) {
+      addToast({
+        type: 'warning',
+        title: 'Aviso',
+        description: 'Total de horas ultrapassado, revise os produtos e quantidades!'
+      });
+    } else {
+      handleProductQuantity(quantity, product);
+    }
+  };
+
+  const handleProductQuantity = (value: any, product: any) => {
+    console.log('log do product para alterar quantidade', value, product);
+    if (
+      DTODelivery[productsModal.indexDelivery]?.deliveryProducts.filter(
+        (obj: any) => obj.service_id === product.service_id
+      ).length > 0
+    ) {
+      setDTODelivery((current: any) =>
+        current.map((obj: any) => {
+          if (obj.deliveryProducts.service_id === product.service_id) {
+            return {
+              ...obj,
+              quantity: value
+            };
+          }
+          return obj;
+        })
+      );
+    }
+  };
+
+  const handleDigitalPrinted = (id: any, value: any) => {
+    console.log('log do que vou editar o tipo', id, value);
+    setDTODelivery((current: any) =>
+      current.map((obj: any) => {
+        obj.map((product: IProduct) => {
+          if (product.service_id === id) {
+            return { ...obj, type: value };
+          }
+          return obj;
+        });
+      })
+    );
   };
 
   useEffect(() => {
@@ -273,9 +335,10 @@ export default function InfoDeliveries({
   }, [productDigitalPrinted.productTypeSelected]);
 
   useEffect(() => {
-    console.log('log do modal', dateModal);
+    // console.log('log do modal', dateModal);
+    console.log('log do modal', productsModal);
     console.log('log do DTODelivery', DTODelivery);
-  }, [dateModal, DTODelivery]);
+  }, [productsModal, DTODelivery]);
 
   useEffect(() => {
     console.log('log pra enviar as entregas', addDeliveries);
@@ -725,10 +788,7 @@ export default function InfoDeliveries({
                                 name="I/D"
                                 value={row.type}
                                 onChange={(e: any) =>
-                                  setProductDigitalPrinted({
-                                    productIndex: row.service_id,
-                                    productTypeSelected: e.target.value
-                                  })
+                                  handleDigitalPrinted(row.service_id, e.target.value)
                                 }
                                 placeHolder="Selecione..."
                               >
@@ -787,7 +847,6 @@ export default function InfoDeliveries({
           <DateInput>
             <InputDefault
               label=""
-              placeholder="00/00/0000"
               name="dateStart"
               type="date"
               icon={BiCalendar}
@@ -874,7 +933,7 @@ export default function InfoDeliveries({
                     name={row.service_id}
                     onChange={() => handleOnChangeCheckbox(row, productsModal.indexDelivery)}
                     checked={
-                      DTODelivery[productsModal.indexDelivery]?.deliveryProducts.filter(
+                      DTODelivery[productsModal?.indexDelivery]?.deliveryProducts.filter(
                         (obj: any) => obj.service_id === row.service_id
                       ).length > 0
                         ? true
@@ -889,7 +948,7 @@ export default function InfoDeliveries({
                   <QuantityInput
                     receiveQuantity={0}
                     infosReceived={row}
-                    handleQuantity={(value: any) => console.log('log do quantity', value, row)}
+                    handleQuantity={(value: any) => handleCheckQuantity(value, row)}
                     disabledInput={false}
                   />
                 </div>
