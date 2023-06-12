@@ -52,6 +52,7 @@ import { IProduct, ITaskCreate, ServicesProps } from '../../../types';
 
 // Utils
 import { TenantProps } from '../../../utils/models';
+import { multiplyTime, sumTimes } from '../../../utils/convertTimes';
 
 // Icons
 import { IconChecked, IconClose } from '../../../assets/icons';
@@ -63,7 +64,6 @@ import api from '../../../services/api';
 // Libraries
 import moment from 'moment';
 import QuantityInput from '../../../components/Inputs/QuantityInput';
-import { multiplyTime } from '../../../utils/convertTimes';
 
 interface StateProps {
   [key: string]: any;
@@ -118,7 +118,7 @@ export default function CreateTasks() {
   const [deliveriesSplit, setDeliveriesSplit] = useState<string>('no-split');
   // Ajustar quando for produtos passar a flag false
   const { data: dataProducts, fetchData: fetchProducts } = useFetch<any[]>(
-    `services?search=${search}`
+    `services?search=${search}&flag=false`
   );
   const { data: dataProjects, fetchData: fetchProjects } = useFetch<ServicesProps[]>(
     `project-products/${DTOForm.tenant_id}`
@@ -154,6 +154,12 @@ export default function CreateTasks() {
   );
   const [tasksType, setTasksType] = useState<string>('');
   const splitDeliveries = deliveriesSplit === 'no-split' ? false : true;
+
+  const productsHoursArray = productsArray?.map((row) => {
+    return multiplyTime(row?.minutes, row?.quantity);
+  });
+
+  const totalProductsHours = sumTimes(productsHoursArray);
 
   const infoProjects: any = dataProjects?.filter(
     (obj: any) => obj.product_id === DTOForm.product_id
@@ -204,6 +210,15 @@ export default function CreateTasks() {
     ) {
       console.log('log do tempo do projeto selecionado', selectedProject?.tempo.slice(0, -3));
       console.log('log do tempo quando adiciono produto', product.minutes.slice(0, -3));
+      addToast({
+        type: 'warning',
+        title: 'Aviso',
+        description: 'Total de horas ultrapassado, revise os horários e quantidades!'
+      });
+    } else if (
+      selectedProject?.tempo &&
+      selectedProject?.tempo.slice(0, -3) < totalProductsHours.slice(0, -3)
+    ) {
       addToast({
         type: 'warning',
         title: 'Aviso',
@@ -623,9 +638,9 @@ export default function CreateTasks() {
     if (DTOForm.product_id !== '') {
       // console.log('log do product ID', DTOForm.product_id);
       // console.log('log do product with selected ID', infoProjects[0]);
-      if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel !== 'true') {
+      if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel === 'true') {
         setTasksType('horas');
-      } else if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel === 'true') {
+      } else if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel !== 'true') {
         setTasksType('produto');
       } else if (infoProjects[0]?.tipo !== 'product') {
         setTasksType('livre');
@@ -699,7 +714,7 @@ export default function CreateTasks() {
                       onChange={(e) => {
                         handleSwitch(e.target.checked);
                       }}
-                      value={String(splitDeliveries)}
+                      isChecked={splitDeliveries}
                     />
                     <span>Dividir entregas</span>
                   </SwitchSelector>
