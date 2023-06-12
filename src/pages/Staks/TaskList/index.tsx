@@ -280,7 +280,7 @@ export default function TaskList() {
               <tr key={row.task_id}>
                 <td>#{row.task_id}</td>
                 <td>{row.title}</td>
-                <td>{row.tenant_id}</td>
+                <td>{row.name}</td>
                 {/* <td>Tempo???</td> */}
                 {/* <td
                   style={{
