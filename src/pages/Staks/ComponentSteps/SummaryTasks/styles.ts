@@ -90,6 +90,7 @@ export const SummaryTasksAbout = styled.div`
   flex-direction: column;
   gap: 40px;
   width: 526px;
+  height: fit-content;
   background: var(--background-primary);
   border: 1px solid var(--gray-200);
   border-radius: 13px;

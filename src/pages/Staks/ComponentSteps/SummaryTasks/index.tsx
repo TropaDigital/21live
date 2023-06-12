@@ -40,6 +40,12 @@ export default function SummaryTasks({
     console.log('log extra infos for summary tasks', summaryExtrainfos);
   }, [taskSummary, projectInfos, summaryExtrainfos]);
 
+  const deadlineLength = taskSummary.deadlines.map((row: any) => {
+    return row.deliveryProducts.length;
+  });
+
+  const deadlineTotal = deadlineLength.reduce((partialSum: any, acc: any) => partialSum + acc, 0);
+
   return (
     <SummaryWrapper>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
@@ -60,7 +66,7 @@ export default function SummaryTasks({
             <SummaryTaskInfo>
               <div className="title-info">Projeto/Contrato:</div>
               <div className="info">
-                {projectInfos.projeto} - {projectInfos.quantidade}
+                {projectInfos.categoria} - {projectInfos.quantidade}
               </div>
             </SummaryTaskInfo>
 
@@ -125,6 +131,53 @@ export default function SummaryTasks({
                 </SummaryCardSubtitle>
               </SummaryCard>
             ))}
+            {taskSummary?.deadlines.map((row: any, index: number) =>
+              row.deliveryProducts.map((product: any) => (
+                <SummaryCard key={index} style={{ height: 'fit-content' }}>
+                  <SummaryCardTitle>
+                    #{index + 1} - {product.service}
+                  </SummaryCardTitle>
+                  <SummaryCardSubtitle
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      height: 'fit-content'
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        width: '100%'
+                      }}
+                    >
+                      <div className="description-wrap">
+                        Descrição: <span>{product.description}</span>
+                      </div>
+                      <div>
+                        Tipo: <span>{product.category}</span>
+                      </div>
+                    </div>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        width: '100%'
+                      }}
+                    >
+                      <div>
+                        I/D: <span>{product.type}</span>
+                      </div>
+                      <div>
+                        Formato: <span>{product.size}</span>
+                      </div>
+                    </div>
+                  </SummaryCardSubtitle>
+                </SummaryCard>
+              ))
+            )}
           </Summary>
         )}
       </div>
@@ -132,7 +185,7 @@ export default function SummaryTasks({
       <SummaryTasksAbout>
         <div className="title">Sobre a tarefa</div>
         <div className="item-hours">
-          Total de itens: <span>{selectedProducts.length}</span>
+          Total de itens: <span>{selectedProducts.length + deadlineTotal}</span>
         </div>
         <div className="item-hours">
           Horas estimadas <span>{projectInfos.tempo}</span>
