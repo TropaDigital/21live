@@ -126,6 +126,7 @@ export default function CreateTasks() {
   const { data: dataFlow } = useFetch<any[]>(`/flow?search=`);
   const { data: dataTypes } = useFetch<any[]>(`/task-type`);
   const [productsArray, setProductsArray] = useState<ServicesProps[]>([]);
+  const [deadlinesArray, setDeadlinesArray] = useState<any[]>([]);
   const [quantityProductsArray, setQuantityProductsArray] = useState<any[]>([]);
   const [selectedProject, setSelectedProject] = useState<ProjectProductProps>();
   const [selectedSummaryInfos, setSelectedSummaryInfos] = useState<any>({
@@ -333,7 +334,6 @@ export default function CreateTasks() {
         } else {
           setErrorInput('creation_date_end', undefined);
         }
-        console.log('log do products', productsArray);
 
         productsArray.map((obj: any) => {
           if (obj.reason_change === '' || obj.reason_change === undefined) {
@@ -509,34 +509,33 @@ export default function CreateTasks() {
 
   const handleOnSubmit = useCallback(async () => {
     try {
-      let deadLines = [
-        {
-          date_end: '',
-          description: '',
-          products: [{}]
+      // let deadLines = [
+      //   {
+      //     date_end: '',
+      //     description: '',
+      //     products: [{}]
+      //   }
+      // ];
+
+      setDTOForm((prevState: any) => ({
+        ...prevState,
+        ['deadlines']: {
+          date_end: DTOForm?.creation_date_end,
+          description: DTOForm?.creation_description,
+          products: productsArray
         }
-      ];
+      }));
 
-      if (DTOForm.deadlines.length <= 0) {
-        deadLines = [
-          {
-            date_end: DTOForm?.creation_date_end,
-            description: DTOForm?.creation_description,
-            products: productsArray
-          }
-        ];
-      }
-
-      if (DTOForm.deadlines.length > 0) {
+      deadlinesArray.map((row: any) => {
         setDTOForm((prevState: any) => ({
           ...prevState,
-          ['deadlines[0]']: {
+          ['deadlines']: {
             date_end: DTOForm?.creation_date_end,
             description: DTOForm?.creation_description,
-            products: productsArray
+            products: row.deliveryProducts
           }
         }));
-      }
+      });
 
       const {
         title,
@@ -548,6 +547,7 @@ export default function CreateTasks() {
         creation_date_end,
         copywriting_description,
         copywriting_date_end,
+        deadlines,
         step
       } = DTOForm;
 
@@ -578,7 +578,7 @@ export default function CreateTasks() {
         creation_date_end,
         copywriting_date_end,
         copywriting_description,
-        deadlines: deadLines,
+        deadlines,
         step
       };
 
@@ -605,7 +605,7 @@ export default function CreateTasks() {
 
       // setErros(getValidationErrors(e.response.data.result))
     }
-  }, [DTOForm, addToast, productsArray]);
+  }, [DTOForm, addToast, productsArray, deadlinesArray]);
 
   const selectedProjectInfos = (e: any) => {
     if (e.target.name === 'product_id') {
@@ -756,7 +756,7 @@ export default function CreateTasks() {
                     errorCategory={errorCategory}
                     addDeliveries={addDeliveries}
                     passDeliveries={(value: any) =>
-                      setDTOForm((prevState: any) => ({ ...prevState, ['deadlines']: value }))
+                      setDeadlinesArray((prevState: any) => [...prevState, value])
                     }
                   />
                   {!splitDeliveries && (
