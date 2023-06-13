@@ -66,7 +66,8 @@ export default function SummaryTasks({
             <SummaryTaskInfo>
               <div className="title-info">Projeto/Contrato:</div>
               <div className="info">
-                {projectInfos.categoria} - {projectInfos.quantidade}
+                {projectInfos.categoria} | {projectInfos.tempo.split(':')[0]}H/
+                {projectInfos.categoria === 'fee' ? 'ANO' : 'MENSAL'}
               </div>
             </SummaryTaskInfo>
 
