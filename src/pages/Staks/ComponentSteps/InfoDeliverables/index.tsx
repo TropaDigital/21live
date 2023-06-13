@@ -89,7 +89,7 @@ interface OpenMenuProps {
 
 interface DeliveryProps {
   deliveryId: number | string;
-  deliveryTitle: string;
+  deliveryDescription: string;
   deliveryDate: string;
   deliveryProducts: [];
   showInfo: boolean;
@@ -156,16 +156,16 @@ export default function InfoDeliveries({
 
   const DeliveryDefault: DeliveryProps = {
     deliveryId: 1,
-    deliveryTitle: '',
+    deliveryDescription: '',
     deliveryDate: '',
     deliveryProducts: [],
     showInfo: false
   };
-  const [DTODelivery, setDTODelivery] = useState<DeliveryProps[]>([DeliveryDefault]);
+  const [DTODelivery, setDTODelivery] = useState<any[]>([DeliveryDefault]);
 
   const productsHoursArray = DTODelivery.map((row: DeliveryProps) => {
     row?.deliveryProducts?.map((obj: any) => {
-      console.log('log do map dos products', obj);
+      // console.log('log do map dos products', obj);
       return multiplyTime(obj?.minutes, obj?.quantity);
     });
   });
@@ -177,7 +177,7 @@ export default function InfoDeliveries({
   const addDelivery = () => {
     const newDelivery: DeliveryProps = {
       deliveryId: DTODelivery.length + 1,
-      deliveryTitle: '',
+      deliveryDescription: '',
       deliveryDate: '',
       deliveryProducts: [],
       showInfo: false
@@ -314,6 +314,49 @@ export default function InfoDeliveries({
     );
   };
 
+  const handleType = (indexId: any, id: any, value: any) => {
+    console.log('log do produto para mudar o tipo', indexId, id, value);
+    // Retrieve the current delivery products array
+    const currentProducts = [...DTODelivery[indexId].deliveryProducts];
+    console.log('log dos produtos', currentProducts);
+
+    // Retrieve the product at the specified index
+    const productToUpdate = currentProducts[id];
+    console.log('log do produto que selecionei para alterar', productToUpdate);
+
+    // Update the product with the new value
+    const updatedProduct = {
+      ...productToUpdate,
+      reason_change: value
+    };
+
+    // Update the delivery products array with the updated product
+    currentProducts[id] = updatedProduct;
+
+    // Update the state with the modified delivery products array
+    setDTODelivery([{ ...DTODelivery[indexId], deliveryProducts: currentProducts }]);
+    // const addValueToProducts = (objectIndex: number, arrayIndex: number) => {
+    // };
+
+    // setDTODelivery((current: any) =>
+    //   current.map((obj: DeliveryProps) => {
+    //     if (obj.deliveryId === indexId) {
+    //       if (obj.deliveryProducts.filter((product: IProduct) => product.service_id === id)) {
+    //         const productFiltered = obj.deliveryProducts.filter(
+    //           (obj: IProduct) => obj.service_id === id
+    //         );
+    //         console.log('log do produto com o id certo', productFiltered);
+    //         return {
+    //           ...obj,
+    //           reason_change: value
+    //         };
+    //       }
+    //     }
+    //     return obj;
+    //   })
+    // );
+  };
+
   useEffect(() => {
     handleProducts('description', descriptionText.text, descriptionText.inputId);
   }, [descriptionText]);
@@ -342,7 +385,7 @@ export default function InfoDeliveries({
 
   useEffect(() => {
     console.log('log pra enviar as entregas', addDeliveries);
-    if (addDeliveries && deliveriesSplited) {
+    if (deliveriesSplited) {
       passDeliveries(DTODelivery);
     }
   }, [addDeliveries]);
@@ -492,16 +535,16 @@ export default function InfoDeliveries({
         <>
           {DTODelivery?.map((row: DeliveryProps, index: any) => (
             <Deliveries
-              openInfos={showDeliveryInfos.deliveryId === row.deliveryId ? true : false}
+              openInfos={showDeliveryInfos?.deliveryId === row?.deliveryId ? true : false}
               key={index}
             >
               <DeliveryTitle>
                 <div className="title-delivery">
                   {index + 1}ª Entrega
                   <span>-</span>
-                  {row.deliveryDate !== '' ? (
+                  {row?.deliveryDate !== '' ? (
                     <div className="date">
-                      <IconCalendar /> {row.deliveryDate}
+                      <IconCalendar /> {row?.deliveryDate}
                     </div>
                   ) : (
                     <div
@@ -522,12 +565,12 @@ export default function InfoDeliveries({
                   className="icon-arrow"
                   onClick={() =>
                     setShowDeliveryInfos({
-                      deliveryId: row.deliveryId,
-                      openInfo: showDeliveryInfos.openInfo ? false : true
+                      deliveryId: row?.deliveryId,
+                      openInfo: showDeliveryInfos?.openInfo ? false : true
                     })
                   }
                 >
-                  {showDeliveryInfos.deliveryId === row.deliveryId ? (
+                  {showDeliveryInfos?.deliveryId === row?.deliveryId ? (
                     <FiChevronUp />
                   ) : (
                     <FiChevronDown />
@@ -679,128 +722,127 @@ export default function InfoDeliveries({
                     )}
                     {index > 0 && DTODelivery.length > 1 && (
                       <tbody>
-                        {DTODelivery[index].deliveryProducts.map((row: any, index: any) => (
-                          <tr key={index}>
-                            <td>#{index + 1}</td>
-                            <td style={{ minWidth: '150px' }}>{row.service}</td>
-                            <td>
-                              <div
-                                style={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '12px',
-                                  minWidth: '100%'
-                                }}
-                              >
-                                <InputDefault
+                        {DTODelivery[index]?.deliveryProducts?.map(
+                          (row: any, indexDelivery: any) => (
+                            <tr key={indexDelivery}>
+                              <td>#{indexDelivery + 1}</td>
+                              <td style={{ minWidth: '150px' }}>{row.service}</td>
+                              <td>
+                                <div
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '12px',
+                                    minWidth: '100%'
+                                  }}
+                                >
+                                  <InputDefault
+                                    label=""
+                                    name="description"
+                                    placeholder="Lorem ipsum dolor sit malesuada"
+                                    value={row.description}
+                                    maxLength={40}
+                                    type={'text'}
+                                    disabled={descriptionText.inputId !== row.service_id}
+                                    onChange={(e: any) =>
+                                      setDescriptionText({
+                                        inputId: row.service_id,
+                                        text: e.target.value.slice(0, 40)
+                                      })
+                                    }
+                                    //   error={error?.date_start}
+                                  />
+                                  <EditableFormat
+                                    className={
+                                      descriptionText.inputId === row.service_id ? 'edit' : ''
+                                    }
+                                    onClick={() => {
+                                      setDescriptionText({ inputId: row.service_id, text: '' });
+                                    }}
+                                  >
+                                    <BiPencil />
+                                  </EditableFormat>
+                                </div>
+                              </td>
+                              <td>
+                                <div
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '18px',
+                                    height: '82px'
+                                  }}
+                                >
+                                  <InputDefault
+                                    label=""
+                                    name="format"
+                                    placeholder="128x190"
+                                    value={row.size}
+                                    disabled={
+                                      editFormat.productIndex === row.service_id &&
+                                      editFormat.editable
+                                        ? false
+                                        : true
+                                    }
+                                    onChange={(e: any) => setFormatType(e.target.value)}
+                                    //   error={error?.date_start}
+                                  />
+                                  <EditableFormat
+                                    className={
+                                      editFormat.productIndex === row.service_id ? 'edit' : ''
+                                    }
+                                    onClick={() => {
+                                      setEditFormat({
+                                        productIndex: row.service_id,
+                                        editable: true
+                                      });
+                                      setFormatType('');
+                                    }}
+                                  >
+                                    <BiPencil />
+                                  </EditableFormat>
+                                </div>
+                              </td>
+                              <td style={{ minWidth: '220px' }}>
+                                <SelectDefault
                                   label=""
-                                  name="description"
-                                  placeholder="Lorem ipsum dolor sit malesuada"
-                                  value={row.description}
-                                  maxLength={40}
-                                  type={'text'}
-                                  disabled={descriptionText.inputId !== row.service_id}
+                                  name="type"
+                                  value={row.reason_change}
                                   onChange={(e: any) =>
-                                    setDescriptionText({
-                                      inputId: row.service_id,
-                                      text: e.target.value.slice(0, 40)
-                                    })
+                                    handleType(index, indexDelivery, e.target.value)
                                   }
-                                  //   error={error?.date_start}
-                                />
-                                <EditableFormat
-                                  className={
-                                    descriptionText.inputId === row.service_id ? 'edit' : ''
+                                  placeHolder="Selecione..."
+                                  error={
+                                    errorCategory.product_id === row.service_id ? 'Campo vazio' : ''
                                   }
-                                  onClick={() => {
-                                    setDescriptionText({ inputId: row.service_id, text: '' });
-                                  }}
                                 >
-                                  <BiPencil />
-                                </EditableFormat>
-                              </div>
-                            </td>
-                            <td>
-                              <div
-                                style={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '18px',
-                                  height: '82px'
-                                }}
-                              >
-                                <InputDefault
+                                  {dataTypes?.map((row: TypeProps) => (
+                                    <option key={row.type_id} value={row.type_id}>
+                                      {row.name}
+                                    </option>
+                                  ))}
+                                </SelectDefault>
+                              </td>
+                              <td style={{ minWidth: '220px' }}>
+                                <SelectDefault
                                   label=""
-                                  name="format"
-                                  placeholder="128x190"
-                                  value={row.size}
-                                  disabled={
-                                    editFormat.productIndex === row.service_id &&
-                                    editFormat.editable
-                                      ? false
-                                      : true
+                                  name="I/D"
+                                  value={row.type}
+                                  onChange={(e: any) =>
+                                    handleDigitalPrinted(row.service_id, e.target.value)
                                   }
-                                  onChange={(e: any) => setFormatType(e.target.value)}
-                                  //   error={error?.date_start}
-                                />
-                                <EditableFormat
-                                  className={
-                                    editFormat.productIndex === row.service_id ? 'edit' : ''
-                                  }
-                                  onClick={() => {
-                                    setEditFormat({
-                                      productIndex: row.service_id,
-                                      editable: true
-                                    });
-                                    setFormatType('');
-                                  }}
+                                  placeHolder="Selecione..."
                                 >
-                                  <BiPencil />
-                                </EditableFormat>
-                              </div>
-                            </td>
-                            <td style={{ minWidth: '220px' }}>
-                              <SelectDefault
-                                label=""
-                                name="type"
-                                value={row.reason_change}
-                                onChange={(e: any) =>
-                                  setProductType({
-                                    productIndex: row.service_id,
-                                    productTypeValue: e.target.value
-                                  })
-                                }
-                                placeHolder="Selecione..."
-                                error={
-                                  errorCategory.product_id === row.service_id ? 'Campo vazio' : ''
-                                }
-                              >
-                                {dataTypes?.map((row: TypeProps) => (
-                                  <option key={row.type_id} value={row.type_id}>
-                                    {row.name}
-                                  </option>
-                                ))}
-                              </SelectDefault>
-                            </td>
-                            <td style={{ minWidth: '220px' }}>
-                              <SelectDefault
-                                label=""
-                                name="I/D"
-                                value={row.type}
-                                onChange={(e: any) =>
-                                  handleDigitalPrinted(row.service_id, e.target.value)
-                                }
-                                placeHolder="Selecione..."
-                              >
-                                <option value="impressao">Impressão</option>
-                                <option value="digital">Digital</option>
-                              </SelectDefault>
-                            </td>
-                            <td style={{ cursor: 'pointer' }}>
-                              <FiMenu />
-                            </td>
-                          </tr>
-                        ))}
+                                  <option value="impressao">Impressão</option>
+                                  <option value="digital">Digital</option>
+                                </SelectDefault>
+                              </td>
+                              <td style={{ cursor: 'pointer' }}>
+                                <FiMenu />
+                              </td>
+                            </tr>
+                          )
+                        )}
                       </tbody>
                     )}
                   </table>
@@ -933,7 +975,7 @@ export default function InfoDeliveries({
                     name={row.service_id}
                     onChange={() => handleOnChangeCheckbox(row, productsModal.indexDelivery)}
                     checked={
-                      DTODelivery[productsModal?.indexDelivery]?.deliveryProducts.filter(
+                      DTODelivery[productsModal.indexDelivery - 1]?.deliveryProducts?.filter(
                         (obj: any) => obj.service_id === row.service_id
                       ).length > 0
                         ? true
@@ -946,7 +988,13 @@ export default function InfoDeliveries({
                 <div className="category">{row.minutes}</div>
                 <div className="quantity">
                   <QuantityInput
-                    receiveQuantity={0}
+                    receiveQuantity={
+                      DTODelivery[productsModal.indexDelivery - 1]?.deliveryProducts?.filter(
+                        (obj: any) => obj.service_id === row.service_id
+                      ).length > 0
+                        ? 1
+                        : 0
+                    }
                     infosReceived={row}
                     handleQuantity={(value: any) => handleCheckQuantity(value, row)}
                     disabledInput={false}
