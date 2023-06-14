@@ -9,7 +9,6 @@ import InfoGeral from '../ComponentSteps/InfoGeral';
 import InfoDescription from '../ComponentSteps/InfoDescription';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import ModalDefault from '../../../components/Ui/ModalDefault';
-import QuantityCounter from '../../../components/QuantityCounter';
 import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
 import { SwitchSelector } from '../../../components/CardProductsSelected/styles';
 import InputSwitchDefault from '../../../components/Inputs/InputSwitchDefault';
@@ -18,7 +17,7 @@ import InfoDeliveries from '../ComponentSteps/InfoDeliverables';
 import AddTextButton from '../../../components/Buttons/AddTextButton';
 import TaskInputs from '../ComponentSteps/InfoInputs';
 import SummaryTasks from '../ComponentSteps/SummaryTasks';
-import Radio from '../../../components/Inputs/InputRadioDefault';
+import QuantityInput from '../../../components/Inputs/QuantityInput';
 
 // Styles
 import {
@@ -26,7 +25,6 @@ import {
   CloseModalButton,
   ContainerWrapper,
   Deliveries,
-  DeliverySplitRadio,
   EstimatedHoursOfProducst,
   Footer,
   FormTitle,
@@ -63,7 +61,6 @@ import api from '../../../services/api';
 
 // Libraries
 import moment from 'moment';
-import QuantityInput from '../../../components/Inputs/QuantityInput';
 
 interface StateProps {
   [key: string]: any;
@@ -126,7 +123,6 @@ export default function CreateTasks() {
   const { data: dataFlow } = useFetch<any[]>(`/flow?search=`);
   const { data: dataTypes } = useFetch<any[]>(`/task-type`);
   const [productsArray, setProductsArray] = useState<ServicesProps[]>([]);
-  const [deadlinesArray, setDeadlinesArray] = useState<any[]>([]);
   const [quantityProductsArray, setQuantityProductsArray] = useState<any[]>([]);
   const [selectedProject, setSelectedProject] = useState<ProjectProductProps>();
   const [selectedSummaryInfos, setSelectedSummaryInfos] = useState<any>({
@@ -335,26 +331,32 @@ export default function CreateTasks() {
           setErrorInput('creation_date_end', undefined);
         }
 
-        productsArray.map((obj: any) => {
-          if (obj.reason_change === '' || obj.reason_change === undefined) {
-            setErrorCategory({
-              ...errorCategory,
-              Tipo: 'Tipo não selecionado',
-              product_id: obj.service_id
-            });
-            return addToast({
-              type: 'warning',
-              title: 'Atenção',
-              description: 'Existem produtos sem o "Tipo" selecionado!'
-            });
-          } else {
-            setErrorCategory({});
-            setAddDeliveries(true);
-            setTimeout(() => {
-              setCreateStep(createStep + 1);
-            }, 500);
-          }
-        });
+        setErrorCategory({});
+        setAddDeliveries(true);
+        setTimeout(() => {
+          setCreateStep(createStep + 1);
+        }, 500);
+
+        // productsArray.map((obj: any) => {
+        //   if (obj.reason_change === '' || obj.reason_change === undefined) {
+        //     setErrorCategory({
+        //       ...errorCategory,
+        //       Tipo: 'Tipo não selecionado',
+        //       product_id: obj.service_id
+        //     });
+        //     return addToast({
+        //       type: 'warning',
+        //       title: 'Atenção',
+        //       description: 'Existem produtos sem o "Tipo" selecionado!'
+        //     });
+        //   } else {
+        //     setErrorCategory({});
+        //     setAddDeliveries(true);
+        //     setTimeout(() => {
+        //       setCreateStep(createStep + 1);
+        //     }, 500);
+        //   }
+        // });
       } else if (createStep === 3 && tasksType === 'horas') {
         if (copywriting_description === '') {
           throw setErrorInput(
@@ -507,36 +509,36 @@ export default function CreateTasks() {
     );
   };
 
+  const handleDeadlines = (newDeadlines: any) => {
+    console.log('log do deadlines', newDeadlines);
+    // setProductsArray((prevState: any) => [...prevState, newDeadlines[0].deliveryProducts[0]]);
+
+    let deadline = {
+      date_end: DTOForm?.creation_date_end,
+      description: DTOForm?.creation_description,
+      products: newDeadlines.deliveryProducts
+    };
+
+    const deadlineArray = newDeadlines.map((row: any) => {
+      console.log('log do map das deadlines', row.deliveryProducts);
+      return (deadline = {
+        date_end: DTOForm?.creation_date_end,
+        description: DTOForm?.creation_description,
+        products: row.deliveryProducts
+      });
+    });
+
+    console.log('log do deadline Array', deadlineArray);
+    setDTOForm({ ...DTOForm, ['deadlines']: deadlineArray });
+    // setDTOForm((prevDTOForm) => {
+    //   const updatedDTOForm = { ...prevDTOForm }; // Create a copy of the original object
+    //   updatedDTOForm.deadlines.push(deadline); // Push the new value(s) into the deadlines array
+    //   return updatedDTOForm; // Set the updated object as the new state
+    // });
+  };
+
   const handleOnSubmit = useCallback(async () => {
     try {
-      // let deadLines = [
-      //   {
-      //     date_end: '',
-      //     description: '',
-      //     products: [{}]
-      //   }
-      // ];
-
-      setDTOForm((prevState: any) => ({
-        ...prevState,
-        ['deadlines']: {
-          date_end: DTOForm?.creation_date_end,
-          description: DTOForm?.creation_description,
-          products: productsArray
-        }
-      }));
-
-      deadlinesArray.map((row: any) => {
-        setDTOForm((prevState: any) => ({
-          ...prevState,
-          ['deadlines']: {
-            date_end: DTOForm?.creation_date_end,
-            description: DTOForm?.creation_description,
-            products: row.deliveryProducts
-          }
-        }));
-      });
-
       const {
         title,
         tenant_id,
@@ -551,40 +553,58 @@ export default function CreateTasks() {
         step
       } = DTOForm;
 
-      // if (tasksType === 'livre') {
-      //   const createNewData = {
-      //     title,
-      //     tenant_id,
-      //     product_id,
-      //     flow_id,
-      //     description,
-      //     creation_description,
-      //     creation_date_end,
-      //     copywriting_date_end,
-      //     copywriting_description,
-      //     step
-      //   };
+      if (tasksType === 'livre') {
+        const createNewData = {
+          title,
+          tenant_id,
+          product_id,
+          flow_id,
+          description,
+          creation_description,
+          creation_date_end,
+          copywriting_date_end,
+          copywriting_description,
+          step,
+          deadlines: {
+            date_end: DTOForm?.creation_date_end,
+            description: DTOForm?.creation_description,
+            products: [
+              {
+                service_id: '1',
+                service: '',
+                description: '',
+                reason_change: '1',
+                flag: '',
+                type: '',
+                size: '',
+                minutes: '',
+                quantity: '',
+                period: ''
+              }
+            ]
+          }
+        };
 
-      //   await api.post(`tasks`, createNewData);
-      // } else {
-      // }
-      const createNewData = {
-        title,
-        tenant_id,
-        product_id,
-        flow_id,
-        description,
-        creation_description,
-        creation_date_end,
-        copywriting_date_end,
-        copywriting_description,
-        deadlines,
-        step
-      };
+        await api.post(`tasks`, createNewData);
+      } else {
+        const createNewData = {
+          title,
+          tenant_id,
+          product_id,
+          flow_id,
+          description,
+          creation_description,
+          creation_date_end,
+          copywriting_date_end,
+          copywriting_description,
+          deadlines,
+          step
+        };
 
-      console.log('Log do productsarray', productsArray);
-      console.log('Log do submit', createNewData);
-      await api.post(`tasks`, createNewData);
+        console.log('Log do productsarray', productsArray);
+        console.log('Log do submit', createNewData);
+        await api.post(`tasks`, createNewData);
+      }
 
       // if (modal.type === 'Criar novo Projeto/Contrato') {
       // } else {
@@ -605,7 +625,7 @@ export default function CreateTasks() {
 
       // setErros(getValidationErrors(e.response.data.result))
     }
-  }, [DTOForm, addToast, productsArray, deadlinesArray]);
+  }, [DTOForm, addToast, productsArray]);
 
   const selectedProjectInfos = (e: any) => {
     if (e.target.name === 'product_id') {
@@ -656,13 +676,6 @@ export default function CreateTasks() {
   useEffect(() => {
     console.log('log do tipo de task', tasksType);
   }, [tasksType]);
-
-  useEffect(() => {
-    console.log('log do deadlines products', DTOForm.deadlines);
-    // DTOForm.deadlines.map((products: any) => {
-    //   products.
-    // })
-  }, [DTOForm.deadlines]);
 
   useEffect(() => {
     console.log('Log do DTO', DTOForm);
@@ -755,11 +768,9 @@ export default function CreateTasks() {
                     totalProjectTime={selectedProject?.tempo}
                     errorCategory={errorCategory}
                     addDeliveries={addDeliveries}
-                    passDeliveries={(value: any) =>
-                      setDeadlinesArray((prevState: any) => [...prevState, value])
-                    }
+                    passDeliveries={(value: any) => handleDeadlines(value)}
                   />
-                  {!splitDeliveries && (
+                  {!splitDeliveries && tasksType === 'horas' && (
                     <AddTextButton title="Adicionar produto" click={() => setProductsModal(true)} />
                   )}
                 </>
@@ -818,7 +829,7 @@ export default function CreateTasks() {
             <>
               <FormTitle>Resumo da tarefa</FormTitle>
               <SummaryTasks
-                selectedProducts={productsArray}
+                selectedProducts={DTOForm.deadlines}
                 createTasks={handleOnSubmit}
                 editTasks={() => setCreateStep(1)}
                 taskSummary={DTOForm}

@@ -172,6 +172,8 @@ export const Product = styled.div`
   }
 
   .category {
+    display: flex;
+    align-items: center;
     color: var(--gray-700);
     font-size: var(--text-small-sm);
     font-weight: var(--weight-medium);
