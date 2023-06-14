@@ -158,7 +158,7 @@ export default function InfoDeliveries({
     deliveryId: 1,
     deliveryDescription: '',
     deliveryDate: '',
-    deliveryProducts: [],
+    deliveryProducts: data,
     showInfo: false
   };
   const [DTODelivery, setDTODelivery] = useState<any[]>([DeliveryDefault]);
@@ -315,46 +315,25 @@ export default function InfoDeliveries({
   };
 
   const handleType = (indexId: any, id: any, value: any) => {
-    console.log('log do produto para mudar o tipo', indexId, id, value);
-    // Retrieve the current delivery products array
-    const currentProducts = [...DTODelivery[indexId].deliveryProducts];
-    console.log('log dos produtos', currentProducts);
+    const currentProducts = DTODelivery[indexId].deliveryProducts;
 
-    // Retrieve the product at the specified index
     const productToUpdate = currentProducts[id];
-    console.log('log do produto que selecionei para alterar', productToUpdate);
 
-    // Update the product with the new value
     const updatedProduct = {
       ...productToUpdate,
       reason_change: value
     };
 
-    // Update the delivery products array with the updated product
     currentProducts[id] = updatedProduct;
 
-    // Update the state with the modified delivery products array
-    setDTODelivery([{ ...DTODelivery[indexId], deliveryProducts: currentProducts }]);
-    // const addValueToProducts = (objectIndex: number, arrayIndex: number) => {
-    // };
-
-    // setDTODelivery((current: any) =>
-    //   current.map((obj: DeliveryProps) => {
-    //     if (obj.deliveryId === indexId) {
-    //       if (obj.deliveryProducts.filter((product: IProduct) => product.service_id === id)) {
-    //         const productFiltered = obj.deliveryProducts.filter(
-    //           (obj: IProduct) => obj.service_id === id
-    //         );
-    //         console.log('log do produto com o id certo', productFiltered);
-    //         return {
-    //           ...obj,
-    //           reason_change: value
-    //         };
-    //       }
-    //     }
-    //     return obj;
-    //   })
-    // );
+    setDTODelivery((current: any) =>
+      current.map((obj: DeliveryProps) => {
+        if (obj.deliveryProducts[id] === id) {
+          return { deliveryProducts: currentProducts };
+        }
+        return obj;
+      })
+    );
   };
 
   useEffect(() => {
@@ -388,7 +367,7 @@ export default function InfoDeliveries({
     if (deliveriesSplited) {
       passDeliveries(DTODelivery);
     }
-  }, [addDeliveries]);
+  }, [addDeliveries, DTODelivery]);
 
   return (
     <>
@@ -678,12 +657,7 @@ export default function InfoDeliveries({
                                 label=""
                                 name="type"
                                 value={row.reason_change}
-                                onChange={(e: any) =>
-                                  setProductType({
-                                    productIndex: row.service_id,
-                                    productTypeValue: e.target.value
-                                  })
-                                }
+                                onChange={(e: any) => handleType(0, 0, e.target.value)}
                                 placeHolder="Selecione..."
                                 error={
                                   errorCategory?.product_id === row.service_id ? 'Campo vazio' : ''
@@ -888,7 +862,8 @@ export default function InfoDeliveries({
           <DateModalTitle>Adicionar data</DateModalTitle>
           <DateInput>
             <InputDefault
-              label=""
+              label="Data da entrega"
+              placeholder="00/00/0000"
               name="dateStart"
               type="date"
               icon={BiCalendar}
