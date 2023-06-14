@@ -34,17 +34,18 @@ export default function SummaryTasks({
   summaryExtrainfos,
   taskType
 }: TasksProps) {
-  useEffect(() => {
-    console.log('log tasks infos on summary', taskSummary);
-    console.log('log tasks infos on project', projectInfos);
-    console.log('log extra infos for summary tasks', summaryExtrainfos);
-  }, [taskSummary, projectInfos, summaryExtrainfos]);
+  // useEffect(() => {
+  //   console.log('log selected products on summary', selectedProducts);
+  //   console.log('log tasks infos on summary', taskSummary);
+  //   console.log('log tasks infos on project', projectInfos);
+  //   console.log('log extra infos for summary tasks', summaryExtrainfos);
+  // }, [taskSummary, projectInfos, summaryExtrainfos, selectedProducts]);
 
-  const deadlineLength = taskSummary.deadlines.map((row: any) => {
-    return row.deliveryProducts.length;
-  });
+  // const deadlineLength = taskSummary?.deadlines.products.map((row: any) => {
+  //   return row.length;
+  // });
 
-  const deadlineTotal = deadlineLength.reduce((partialSum: any, acc: any) => partialSum + acc, 0);
+  // const deadlineTotal = deadlineLength.reduce((partialSum: any, acc: any) => partialSum + acc, 0);
 
   return (
     <SummaryWrapper>
@@ -87,56 +88,11 @@ export default function SummaryTasks({
         {taskType !== 'livre' && (
           <Summary className="big">
             <div className="title">Produtos selecionados</div>
-            {selectedProducts.map((row: any, index: number) => (
-              <SummaryCard key={index} style={{ height: 'fit-content' }}>
-                <SummaryCardTitle>
-                  #{index + 1} - {row.service}
-                </SummaryCardTitle>
-                <SummaryCardSubtitle
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: 'fit-content'
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      width: '100%'
-                    }}
-                  >
-                    <div className="description-wrap">
-                      Descrição: <span>{row.description}</span>
-                    </div>
-                    <div>
-                      Tipo: <span>{row.category}</span>
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      width: '100%'
-                    }}
-                  >
-                    <div>
-                      I/D: <span>{row.type}</span>
-                    </div>
-                    <div>
-                      Formato: <span>{row.size}</span>
-                    </div>
-                  </div>
-                </SummaryCardSubtitle>
-              </SummaryCard>
-            ))}
-            {taskSummary?.deadlines.map((row: any, index: number) =>
-              row.deliveryProducts.map((product: any) => (
+            {selectedProducts.map((row: any) =>
+              row.products.map((products: any, index: number) => (
                 <SummaryCard key={index} style={{ height: 'fit-content' }}>
                   <SummaryCardTitle>
-                    #{index + 1} - {product.service}
+                    #{index + 1} - {products.service}
                   </SummaryCardTitle>
                   <SummaryCardSubtitle
                     style={{
@@ -154,10 +110,10 @@ export default function SummaryTasks({
                       }}
                     >
                       <div className="description-wrap">
-                        Descrição: <span>{product.description}</span>
+                        Descrição: <span>{products.description}</span>
                       </div>
                       <div>
-                        Tipo: <span>{product.category}</span>
+                        Tipo: <span>{products.category}</span>
                       </div>
                     </div>
                     <div
@@ -169,10 +125,10 @@ export default function SummaryTasks({
                       }}
                     >
                       <div>
-                        I/D: <span>{product.type}</span>
+                        I/D: <span>{products.type}</span>
                       </div>
                       <div>
-                        Formato: <span>{product.size}</span>
+                        Formato: <span>{products.size}</span>
                       </div>
                     </div>
                   </SummaryCardSubtitle>
@@ -186,7 +142,8 @@ export default function SummaryTasks({
       <SummaryTasksAbout>
         <div className="title">Sobre a tarefa</div>
         <div className="item-hours">
-          Total de itens: <span>{selectedProducts.length + deadlineTotal}</span>
+          {/* Total de itens: <span>{selectedProducts.length + deadlineTotal}</span> */}
+          Total de itens: <span>{selectedProducts.length}</span>
         </div>
         <div className="item-hours">
           Horas estimadas <span>{projectInfos.tempo}</span>
