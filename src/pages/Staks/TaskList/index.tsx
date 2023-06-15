@@ -23,11 +23,23 @@ import { Table } from '../../../components/Table';
 import { FilterGroup, TableHead } from '../../../components/Table/styles';
 import Alert from '../../../components/Ui/Alert';
 import { ContainerDefault } from '../../../components/UiElements/styles';
+import Pagination from '../../../components/Pagination';
+import ModalDefault from '../../../components/Ui/ModalDefault';
+import {
+  Summary,
+  SummaryInfoWrapper,
+  SummaryTaskDescription,
+  SummaryTaskInfo
+} from '../ComponentSteps/SummaryTasks/styles';
 
 // Api
 import api from '../../../services/api';
-import Pagination from '../../../components/Pagination';
-import ModalDefault from '../../../components/Ui/ModalDefault';
+
+// Libraries
+import moment from 'moment';
+
+// Styles
+import { ModalShowTaskWrapper } from './styles';
 
 export default function TaskList() {
   const { addToast } = useToast();
@@ -47,7 +59,8 @@ export default function TaskList() {
       copywriting_description: '',
       copywriting_date_end: '',
       deadlines: '',
-      step: ''
+      step: '',
+      name: ''
     }
   });
 
@@ -101,7 +114,8 @@ export default function TaskList() {
         copywriting_description: task.copywriting_description,
         copywriting_date_end: task.copywriting_date_end,
         deadlines: task.deadlines,
-        step: task.step
+        step: task.step,
+        name: task.name
       }
     });
   };
@@ -123,7 +137,8 @@ export default function TaskList() {
         copywriting_description: '',
         copywriting_date_end: '',
         deadlines: '',
-        step: ''
+        step: '',
+        name: ''
       }
     });
   };
@@ -280,7 +295,7 @@ export default function TaskList() {
               <tr key={row.task_id}>
                 <td>#{row.task_id}</td>
                 <td>{row.title}</td>
-                <td>{row.name}</td>
+                <td style={{ textTransform: 'uppercase' }}>{row.name}</td>
                 {/* <td>Tempo???</td> */}
                 {/* <td
                   style={{
@@ -312,11 +327,11 @@ export default function TaskList() {
                 </td> */}
                 <td>
                   <div className="fieldTableClients">
+                    <ButtonTable typeButton="view" onClick={() => handleOpenModalView(row)} />
                     <ButtonTable
-                      typeButton="view"
-                      onClick={() => console.log('abrir modal', row)}
+                      typeButton="edit"
+                      onClick={() => console.log('abrir modal de editar', row)}
                     />
-                    <ButtonTable typeButton="edit" onClick={() => handleOpenModalView(row)} />
                     <Alert
                       title="Atenção"
                       subtitle="Certeza que gostaria de deletar esta Tarefa? Ao excluir esta ação não poderá ser desfeita."
@@ -346,12 +361,59 @@ export default function TaskList() {
         </table>
       </Table>
 
+      {/* Modal view task */}
       <ModalDefault
         isOpen={modalViewTask.isOpen}
         title={modalViewTask.type}
         onOpenChange={handleCloseModal}
       >
-        <div>teste de children</div>
+        <ModalShowTaskWrapper>
+          <Summary>
+            <div className="title">Informações da tarefa</div>
+            <SummaryInfoWrapper>
+              <SummaryTaskInfo>
+                <div className="title-info">Título da tarefa:</div>
+                <div className="info">{modalViewTask.task.title}</div>
+              </SummaryTaskInfo>
+
+              <SummaryTaskInfo>
+                <div className="title-info">Cliente:</div>
+                <div className="info">{modalViewTask.task.name}</div>
+              </SummaryTaskInfo>
+
+              <SummaryTaskInfo>
+                <div className="title-info">Projeto/Contrato:</div>
+                <div className="info">{modalViewTask.task.step} - ???</div>
+              </SummaryTaskInfo>
+
+              <SummaryTaskInfo>
+                <div className="title-info">Fluxo:</div>
+                <div className="info">{modalViewTask.task.flow_id} - ???</div>
+              </SummaryTaskInfo>
+
+              <SummaryTaskInfo>
+                <div className="title-info">Data De Input Pré-requisitos:</div>
+                <div className="info">
+                  {moment(modalViewTask.task.copywriting_date_end).format('DD/MM/YYYY')}
+                </div>
+              </SummaryTaskInfo>
+
+              <SummaryTaskInfo>
+                <div className="title-info">Data De Input de Criação:</div>
+                <div className="info">
+                  {moment(modalViewTask.task.creation_date_end).format('DD/MM/YYYY')}
+                </div>
+              </SummaryTaskInfo>
+
+              <SummaryTaskDescription>
+                <div className="description-title">Contexto geral</div>
+                <div className="description-info">
+                  {modalViewTask.task.description.replace('<p>', '').replace('</p>', '')}
+                </div>
+              </SummaryTaskDescription>
+            </SummaryInfoWrapper>
+          </Summary>
+        </ModalShowTaskWrapper>
       </ModalDefault>
     </ContainerDefault>
   );
