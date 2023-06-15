@@ -141,10 +141,18 @@ export default function SummaryTasks({
 
       <SummaryTasksAbout>
         <div className="title">Sobre a tarefa</div>
-        <div className="item-hours">
-          {/* Total de itens: <span>{selectedProducts.length + deadlineTotal}</span> */}
-          Total de itens: <span>{selectedProducts.length}</span>
-        </div>
+        {taskType === 'livre' && (
+          <div className="item-hours">
+            {/* Total de itens: <span>{selectedProducts.length + deadlineTotal}</span> */}
+            Total de itens: <span>1</span>
+          </div>
+        )}
+        {taskType !== 'livre' && (
+          <div className="item-hours">
+            {/* Total de itens: <span>{selectedProducts.length + deadlineTotal}</span> */}
+            Total de itens: <span>{selectedProducts.length}</span>
+          </div>
+        )}
         <div className="item-hours">
           Horas estimadas <span>{projectInfos.tempo}</span>
         </div>
