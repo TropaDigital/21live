@@ -63,7 +63,7 @@ export interface ITaskCreate {
   type?: string | any; //type_id da tabela task_type
   flow_id?: number | any;
   description: string | any; //descricao geral
-  name?: string;
+  name?: string | any;
   creation_description?: string | any; //entrega de criação
   creation_date_end?: string | any;
   copywriting_description?: string | any;
