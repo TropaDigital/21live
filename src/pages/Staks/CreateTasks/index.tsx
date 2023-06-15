@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable import-helpers/order-imports */
 // React
 import { useCallback, useEffect, useState } from 'react';
@@ -61,6 +62,7 @@ import api from '../../../services/api';
 
 // Libraries
 import moment from 'moment';
+import { useAuth } from '../../../hooks/AuthContext';
 
 interface StateProps {
   [key: string]: any;
@@ -89,6 +91,7 @@ export default function CreateTasks() {
   const navigate = useNavigate();
   const [createStep, setCreateStep] = useState<number>(1);
   const { addToast } = useToast();
+  const { user } = useAuth();
 
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const [error, setError] = useState<StateProps>({});
@@ -205,8 +208,8 @@ export default function CreateTasks() {
       selectedProject?.tempo &&
       product.minutes.slice(0, -3) > selectedProject?.tempo.slice(0, -3)
     ) {
-      console.log('log do tempo do projeto selecionado', selectedProject?.tempo.slice(0, -3));
-      console.log('log do tempo quando adiciono produto', product.minutes.slice(0, -3));
+      // console.log('log do tempo do projeto selecionado', selectedProject?.tempo.slice(0, -3));
+      // console.log('log do tempo quando adiciono produto', product.minutes.slice(0, -3));
       addToast({
         type: 'warning',
         title: 'Aviso',
@@ -459,7 +462,7 @@ export default function CreateTasks() {
   };
 
   const handleCheckQuantity = (quantity: any, product: IProduct) => {
-    console.log('log do product check quantity', quantity, product);
+    // console.log('log do product check quantity', quantity, product);
     const totalProductTime = multiplyTime(product.minutes, quantity);
 
     if (selectedProject?.tempo && totalProductTime > selectedProject?.tempo) {
@@ -475,7 +478,7 @@ export default function CreateTasks() {
   };
 
   const handleProductQuantity = (value: any, product: any) => {
-    console.log('log do product adicionado', value, product);
+    // console.log('log do product adicionado', value, product);
     if (productsArray.filter((obj) => obj.service_id === product.service_id).length > 0) {
       if (quantityProductsArray.length > 0) {
         setQuantityProductsArray((current) =>
@@ -510,7 +513,6 @@ export default function CreateTasks() {
   };
 
   const handleDeadlines = (newDeadlines: any) => {
-    console.log('log do deadlines', newDeadlines);
     // setProductsArray((prevState: any) => [...prevState, newDeadlines[0].deliveryProducts[0]]);
 
     let deadline = {
@@ -520,7 +522,6 @@ export default function CreateTasks() {
     };
 
     const deadlineArray = newDeadlines.map((row: any) => {
-      console.log('log do map das deadlines', row.deliveryProducts);
       return (deadline = {
         date_end: DTOForm?.creation_date_end,
         description: DTOForm?.creation_description,
@@ -528,7 +529,7 @@ export default function CreateTasks() {
       });
     });
 
-    console.log('log do deadline Array', deadlineArray);
+    // console.log('log do deadline Array', deadlineArray);
     setDTOForm({ ...DTOForm, ['deadlines']: deadlineArray });
     // setDTOForm((prevDTOForm) => {
     //   const updatedDTOForm = { ...prevDTOForm }; // Create a copy of the original object
@@ -565,24 +566,26 @@ export default function CreateTasks() {
           copywriting_date_end,
           copywriting_description,
           step,
-          deadlines: {
-            date_end: DTOForm?.creation_date_end,
-            description: DTOForm?.creation_description,
-            products: [
-              {
-                service_id: '1',
-                service: '',
-                description: '',
-                reason_change: '1',
-                flag: '',
-                type: '',
-                size: '',
-                minutes: '',
-                quantity: '',
-                period: ''
-              }
-            ]
-          }
+          deadlines: [
+            {
+              date_end: DTOForm?.creation_date_end,
+              description: DTOForm?.creation_description,
+              products: [
+                {
+                  service_id: '1',
+                  service: 'LIVRE',
+                  description: 'DESCRICAO',
+                  reason_change: '1',
+                  type: 'livre',
+                  tenant_id: user.principalTenant,
+                  size: '000x000',
+                  minutes: '00:00:00',
+                  quantity: '1',
+                  flag: 'false'
+                }
+              ]
+            }
+          ]
         };
 
         await api.post(`tasks`, createNewData);
@@ -611,11 +614,6 @@ export default function CreateTasks() {
       //   await api.put(`project/${formData.project_id}`, updateData);
       // }
       setFinishModal(true);
-      // addToast({
-      //   type: 'success',
-      //   title: 'Sucesso',
-      //   description: 'Tarefa cadastrada com sucesso!'
-      // });
     } catch (e: any) {
       addToast({
         type: 'danger',
@@ -625,7 +623,7 @@ export default function CreateTasks() {
 
       // setErros(getValidationErrors(e.response.data.result))
     }
-  }, [DTOForm, addToast, productsArray]);
+  }, [DTOForm, addToast, productsArray, tasksType, user]);
 
   const selectedProjectInfos = (e: any) => {
     if (e.target.name === 'product_id') {
@@ -656,8 +654,6 @@ export default function CreateTasks() {
 
   useEffect(() => {
     if (DTOForm.product_id !== '') {
-      // console.log('log do product ID', DTOForm.product_id);
-      // console.log('log do product with selected ID', infoProjects[0]);
       if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel === 'true') {
         setTasksType('horas');
       } else if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel !== 'true') {
@@ -677,9 +673,9 @@ export default function CreateTasks() {
     console.log('log do tipo de task', tasksType);
   }, [tasksType]);
 
-  useEffect(() => {
-    console.log('Log do DTO', DTOForm);
-  }, [DTOForm]);
+  // useEffect(() => {
+  //   console.log('Log do DTO', DTOForm);
+  // }, [DTOForm]);
 
   return (
     <>
@@ -766,6 +762,7 @@ export default function CreateTasks() {
                     deliveriesSplited={splitDeliveries}
                     deliveryType={tasksType}
                     totalProjectTime={selectedProject?.tempo}
+                    projectInfo={selectedProject}
                     errorCategory={errorCategory}
                     addDeliveries={addDeliveries}
                     passDeliveries={(value: any) => handleDeadlines(value)}
