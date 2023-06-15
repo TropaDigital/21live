@@ -44,4 +44,16 @@ export const ModalProductWrapper = styled.div`
       font-weight: var(--weight-semibold);
     }
   }
+
+  .category-input {
+    min-width: 420px;
+  }
 `;
+
+export const ModalCategoryButtons = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-top: 8px;
+`

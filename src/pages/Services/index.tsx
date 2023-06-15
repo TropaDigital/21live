@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // React
 import { useCallback, useState, useEffect } from 'react';
@@ -35,12 +36,18 @@ import {
   FooterModal
 } from '../../components/UiElements/styles';
 
+// Styles
 import {
   Summary,
   SummaryInfoWrapper,
   SummaryTaskInfo
 } from '../Staks/ComponentSteps/SummaryTasks/styles';
-import { EstimatedTime, EstimatedTimeInputs, ModalProductWrapper } from './styles';
+import {
+  EstimatedTime,
+  EstimatedTimeInputs,
+  ModalCategoryButtons,
+  ModalProductWrapper
+} from './styles';
 
 interface ServicesProps {
   service_id?: number | string;
@@ -49,8 +56,6 @@ interface ServicesProps {
   type: string;
   size: string;
   minutes: string;
-  created: string;
-  updated: string;
   category: string;
   flag: string;
 }
@@ -88,6 +93,10 @@ export default function Services() {
   const [modal, setModal] = useState({
     isOpen: false,
     type: ''
+  });
+  const [modalCategory, setModalCategory] = useState({
+    isOpen: false,
+    title: ''
   });
   const [modalShowProduct, setModalShowProduct] = useState({
     isOpen: false,
@@ -127,6 +136,7 @@ export default function Services() {
     hours: '',
     minutes: ''
   });
+  const [category, setCategory] = useState<string>('');
 
   const handleOnCancel = useCallback(() => {
     setModal({
@@ -277,12 +287,46 @@ export default function Services() {
         setEstimatedTime({ hours: estimatedTime.hours, minutes: value });
       }
     }
+  };
 
+  useEffect(() => {
+    // console.log('log do estimated time', estimatedTime);
     handleOnChangeMinutes({
       name: 'minutes',
-      value: `${estimatedTime.hours}:${estimatedTime.minutes}`
+      value: `${estimatedTime.hours}:${estimatedTime.minutes}:00`
     });
-  };
+  }, [estimatedTime]);
+
+  const createCategory = useCallback(
+    async (event: any) => {
+      try {
+        event.preventDefault();
+        const newCategory = {
+          category: category
+        };
+
+        await api.post('category', newCategory);
+
+        addToast({
+          type: 'success',
+          title: 'Sucesso',
+          description: 'Categoria criada com sucesso!'
+        });
+
+        setModalCategory({
+          isOpen: false,
+          title: ''
+        });
+      } catch (e: any) {
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: e.response.data.message
+        });
+      }
+    },
+    [addToast, category]
+  );
 
   // useEffect(() => {
   //   console.log('log do formData', formData);
@@ -291,18 +335,32 @@ export default function Services() {
   return (
     <ContainerDefault>
       <HeaderPage title="Produtos">
-        <ButtonDefault
-          typeButton="success"
-          onClick={() =>
-            setModal({
-              isOpen: !modal.isOpen,
-              type: 'Novo produto'
-            })
-          }
-        >
-          <BiPlus color="#fff" />
-          Adicionar produto
-        </ButtonDefault>
+        <>
+          <ButtonDefault
+            typeButton="primary"
+            onClick={() =>
+              setModalCategory({
+                isOpen: !modal.isOpen,
+                title: 'Cadastrar nova categoria'
+              })
+            }
+          >
+            <BiPlus color="#fff" />
+            Adicionar categoria
+          </ButtonDefault>
+          <ButtonDefault
+            typeButton="success"
+            onClick={() =>
+              setModal({
+                isOpen: !modal.isOpen,
+                type: 'Novo produto'
+              })
+            }
+          >
+            <BiPlus color="#fff" />
+            Adicionar produto
+          </ButtonDefault>
+        </>
       </HeaderPage>
 
       <Table>
@@ -494,6 +552,7 @@ export default function Services() {
         )}
       </Table>
 
+      {/* Modal create product*/}
       <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
         <form onSubmit={handleOnSubmit} style={{ minWidth: '500px' }}>
           <FieldDefault>
@@ -576,7 +635,7 @@ export default function Services() {
           <FieldDefault>
             <InputSwitchDefault
               onChange={(e) => handleOnChangeSwitch({ name: 'flag', value: e.target.checked })}
-              isChecked={formData.flag}
+              isChecked={formData.flag === 'true' ? true : false}
               label="Listar produto"
             />
           </FieldDefault>
@@ -622,6 +681,7 @@ export default function Services() {
         </form>
       </ModalDefault>
 
+      {/* Modal show product */}
       <ModalDefault
         isOpen={modalShowProduct.isOpen}
         title={modalShowProduct.type}
@@ -673,6 +733,7 @@ export default function Services() {
         </ModalProductWrapper>
       </ModalDefault>
 
+      {/* Modal show kit */}
       <ModalDefault
         isOpen={modalKit.isOpen}
         title={'Mostrar o kit'}
@@ -684,6 +745,51 @@ export default function Services() {
         }
       >
         <div>Vai mostrar kit</div>
+      </ModalDefault>
+
+      {/* Modal create category */}
+      <ModalDefault
+        isOpen={modalCategory.isOpen}
+        title={modalCategory.title}
+        onOpenChange={() =>
+          setModalCategory({
+            isOpen: false,
+            title: ''
+          })
+        }
+      >
+        <ModalProductWrapper>
+          <InputDefault
+            label="Categoria"
+            placeholder="Digite aqui..."
+            name="category"
+            onChange={(e: any) => setCategory(e.target.value)}
+            value={category}
+            className="category-input"
+          />
+          <ModalCategoryButtons>
+            <ButtonDefault
+              typeButton="dark"
+              isOutline
+              onClick={() =>
+                setModalCategory({
+                  isOpen: false,
+                  title: ''
+                })
+              }
+            >
+              Descartar
+            </ButtonDefault>
+            <ButtonDefault
+              typeButton="primary"
+              isOutline
+              type="button"
+              onClick={(e: any) => createCategory(e)}
+            >
+              Salvar
+            </ButtonDefault>
+          </ModalCategoryButtons>
+        </ModalProductWrapper>
       </ModalDefault>
     </ContainerDefault>
   );
