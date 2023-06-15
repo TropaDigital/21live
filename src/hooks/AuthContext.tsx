@@ -10,14 +10,17 @@ export interface User {
   email?: string;
   name: string;
   avatar?: string;
+  principalTenant?: string;
+  function?: string;
 
   profiles: any;
   language?: string;
-  birthDate?: string;
+  hiring_date?: string;
+  birthday?: string;
   phone?: string;
   companySince?: string;
   office?: string;
-  costPerhour?: string;
+  cost_per_hour?: string;
 }
 
 interface AuthState {
