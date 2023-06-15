@@ -92,12 +92,6 @@ export default function CreateProject() {
   const { addToast } = useToast();
 
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
-  const [search, setSearch] = useState('');
-  const {
-    data: dataProject,
-    fetchData: fetchProject,
-    pages
-  } = useFetch<IProjectCreate[]>(`project?search=${search}`);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
   const [error, setError] = useState<StateProps>({});
   const [loading, setLoading] = useState(false);
@@ -306,11 +300,18 @@ export default function CreateProject() {
         setErrorInput('description', undefined);
       }
 
-      if (createStep === 2 && productsArray.length < 1) {
+      if (createStep < 3 && DTOForm.contract_type === 'free') {
+        console.log('log de um produto livre');
+        setCreateStep(3);
+      } else if (
+        createStep === 2 &&
+        productsArray.length < 1 &&
+        DTOForm?.contract_type !== 'free'
+      ) {
         throw 'Escolha pelo menos um produto antes de avançar';
+      } else {
+        setCreateStep(createStep + 1);
       }
-
-      setCreateStep(createStep + 1);
     } catch (error: any) {
       console.log('error', error);
       addToast({
@@ -322,7 +323,11 @@ export default function CreateProject() {
   };
 
   const handleOnPrevStep = () => {
-    setCreateStep(createStep - 1);
+    if (createStep > 2 && DTOForm.contract_type === 'free') {
+      setCreateStep(1);
+    } else {
+      setCreateStep(createStep - 1);
+    }
   };
 
   const handleOnCancel = () => {
@@ -359,53 +364,110 @@ export default function CreateProject() {
           })
         );
 
-        // const newArrayProducts = productsArray.map(({ tenant_id, ...rest }: any) => rest);
         const totalTime = sumTimes(productsHours);
+        if (DTOForm.contract_type === 'free') {
+          const createNewData = {
+            title: DTOForm.title,
+            tenant_id: DTOForm.tenant_id,
+            products: [
+              {
+                service_id: '1',
+                service: 'LIVRE',
+                description: 'DESCRICAO',
+                type: 'livre',
+                size: '000x000',
+                minutes: '00:00:00',
+                flag: 'false',
+                quantity: '1'
+              }
+            ],
+            description: DTOForm.description,
+            category: DTOForm.category,
+            date_start: DTOForm.date_start,
+            date_end: DTOForm.date_end,
+            contract_type: DTOForm.contract_type,
+            files,
+            time: totalTime,
+            email: DTOForm.email
+          };
 
-        const createNewData = {
-          title: DTOForm.title,
-          tenant_id: DTOForm.tenant_id,
-          products: productsArray,
-          description: DTOForm.description,
-          category: DTOForm.category,
-          date_start: DTOForm.date_start,
-          date_end: DTOForm.date_end,
-          contract_type: DTOForm.contract_type,
-          files,
-          time: totalTime,
-          email: DTOForm.email
-        };
+          const updateData = {
+            project_id: DTOForm.project_id,
+            title: DTOForm.title,
+            tenant_id: DTOForm.tenant_id,
+            products: productsArray,
+            description: DTOForm.description,
+            category: DTOForm.category,
+            date_start: DTOForm.date_start,
+            date_end: DTOForm.date_end,
+            contract_type: DTOForm.contract_type,
+            files,
+            time: totalTime,
+            email: DTOForm.email
+          };
 
-        const updateData = {
-          project_id: DTOForm.project_id,
-          title: DTOForm.title,
-          tenant_id: DTOForm.tenant_id,
-          products: productsArray,
-          description: DTOForm.description,
-          category: DTOForm.category,
-          date_start: DTOForm.date_start,
-          date_end: DTOForm.date_end,
-          contract_type: DTOForm.contract_type,
-          files,
-          time: totalTime,
-          email: DTOForm.email
-        };
-
-        if (location.state !== null && editSelectedProducts) {
-          await api.put(`project/${DTOForm.project_id}`, updateData);
-          addToast({
-            type: 'success',
-            title: 'Sucesso',
-            description: 'Projeto editado com sucesso!'
-          });
+          if (location.state !== null && editSelectedProducts) {
+            await api.put(`project/${DTOForm.project_id}`, updateData);
+            addToast({
+              type: 'success',
+              title: 'Sucesso',
+              description: 'Projeto editado com sucesso!'
+            });
+          } else {
+            await api.post(`project`, createNewData);
+            setFinishModal(true);
+            // addToast({
+            //   type: 'success',
+            //   title: 'Sucesso',
+            //   description: 'Projeto cadastrado com sucesso!'
+            // });
+          }
         } else {
-          await api.post(`project`, createNewData);
-          setFinishModal(true);
-          addToast({
-            type: 'success',
-            title: 'Sucesso',
-            description: 'Projeto cadastrado com sucesso!'
-          });
+          const createNewData = {
+            title: DTOForm.title,
+            tenant_id: DTOForm.tenant_id,
+            products: productsArray,
+            description: DTOForm.description,
+            category: DTOForm.category,
+            date_start: DTOForm.date_start,
+            date_end: DTOForm.date_end,
+            contract_type: DTOForm.contract_type,
+            files,
+            time: totalTime,
+            email: DTOForm.email
+          };
+
+          const updateData = {
+            project_id: DTOForm.project_id,
+            title: DTOForm.title,
+            tenant_id: DTOForm.tenant_id,
+            products: productsArray,
+            description: DTOForm.description,
+            category: DTOForm.category,
+            date_start: DTOForm.date_start,
+            date_end: DTOForm.date_end,
+            contract_type: DTOForm.contract_type,
+            files,
+            time: totalTime,
+            email: DTOForm.email
+          };
+
+          if (location.state !== null && editSelectedProducts) {
+            await api.put(`project/${DTOForm.project_id}`, updateData);
+            addToast({
+              type: 'success',
+              title: 'Sucesso',
+              description: 'Projeto editado com sucesso!'
+            });
+          } else {
+            await api.post(`project`, createNewData);
+            setFinishModal(true);
+            // addToast({
+            //   type: 'success',
+            //   title: 'Sucesso',
+            //   description: 'Projeto cadastrado com sucesso!'
+            // });
+          }
         }
 
         // console.log('log do post project', DTOForm);
@@ -572,54 +634,55 @@ export default function CreateProject() {
                     </SummaryTaskDescription>
                   </SummaryInfoWrapper>
                 </Summary>
-
-                <Summary>
-                  <div className="title">Produtos contratados</div>
-                  {productsArray.map((row: IProduct, index: number) => (
-                    <SummaryCard
-                      key={index}
-                      style={{ background: 'var(--background-primary)', height: 'fit-content' }}
-                    >
-                      <SummaryCardTitle>
-                        #{index + 1} - {row.service}
-                      </SummaryCardTitle>
-                      <SummaryCardSubtitle
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          height: 'fit-content'
-                        }}
+                {DTOForm.contract_type !== 'free' && (
+                  <Summary>
+                    <div className="title">Produtos contratados</div>
+                    {productsArray.map((row: IProduct, index: number) => (
+                      <SummaryCard
+                        key={index}
+                        style={{ background: 'var(--background-primary)', height: 'fit-content' }}
                       >
-                        <div
+                        <SummaryCardTitle>
+                          #{index + 1} - {row.service}
+                        </SummaryCardTitle>
+                        <SummaryCardSubtitle
                           style={{
                             display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            width: '100%'
+                            flexDirection: 'column',
+                            height: 'fit-content'
                           }}
                         >
-                          <div>Horas estimadas: {multiplyTime(row?.minutes, row?.quantity)}</div>
-                          <div style={{ textTransform: 'capitalize' }}>Categoria: {row.type}</div>
-                          <div>Quantidade: {row.quantity}</div>
-                        </div>
-                        <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            width: '100%'
-                          }}
-                        >
-                          <div style={{ textTransform: 'capitalize' }}>Tempo: {row.period}</div>
-                          <div style={{ textTransform: 'capitalize' }}>Tamanho: {row.size}</div>
-                          <div style={{ textTransform: 'capitalize' }}>
-                            Descrição: {row.description}
+                          <div
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              width: '100%'
+                            }}
+                          >
+                            <div>Horas estimadas: {multiplyTime(row?.minutes, row?.quantity)}</div>
+                            <div style={{ textTransform: 'capitalize' }}>Categoria: {row.type}</div>
+                            <div>Quantidade: {row.quantity}</div>
                           </div>
-                        </div>
-                      </SummaryCardSubtitle>
-                    </SummaryCard>
-                  ))}
-                </Summary>
+                          <div
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              width: '100%'
+                            }}
+                          >
+                            <div style={{ textTransform: 'capitalize' }}>Tempo: {row.period}</div>
+                            <div style={{ textTransform: 'capitalize' }}>Tamanho: {row.size}</div>
+                            <div style={{ textTransform: 'capitalize' }}>
+                              Descrição: {row.description}
+                            </div>
+                          </div>
+                        </SummaryCardSubtitle>
+                      </SummaryCard>
+                    ))}
+                  </Summary>
+                )}
               </div>
 
               <div
