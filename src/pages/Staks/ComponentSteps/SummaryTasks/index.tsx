@@ -85,7 +85,7 @@ export default function SummaryTasks({
             </SummaryTaskDescription>
           </SummaryInfoWrapper>
         </Summary>
-        {taskType !== 'livre' && (
+        {taskType === 'horas' && (
           <Summary className="big">
             <div className="title">Produtos selecionados</div>
             {selectedProducts.map((row: any) =>
@@ -137,17 +137,67 @@ export default function SummaryTasks({
             )}
           </Summary>
         )}
+        {taskType === 'produto' && (
+          <Summary className="big">
+            <div className="title">Produto selecionado</div>
+            {selectedProducts.map((row: any, index: number) => (
+              <SummaryCard key={index} style={{ height: 'fit-content' }}>
+                <SummaryCardTitle>
+                  #{index + 1} - {row.service}
+                </SummaryCardTitle>
+                <SummaryCardSubtitle
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: 'fit-content'
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      width: '100%'
+                    }}
+                  >
+                    <div className="description-wrap">
+                      Descrição: <span>{row.description}</span>
+                    </div>
+                    <div>
+                      Tipo: <span>{row.category}</span>
+                    </div>
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      width: '100%'
+                    }}
+                  >
+                    <div>
+                      I/D: <span>{row.type}</span>
+                    </div>
+                    <div>
+                      Formato: <span>{row.size}</span>
+                    </div>
+                  </div>
+                </SummaryCardSubtitle>
+              </SummaryCard>
+            ))}
+          </Summary>
+        )}
       </div>
 
       <SummaryTasksAbout>
         <div className="title">Sobre a tarefa</div>
-        {taskType === 'livre' && (
+        {taskType !== 'horas' && (
           <div className="item-hours">
             {/* Total de itens: <span>{selectedProducts.length + deadlineTotal}</span> */}
             Total de itens: <span>1</span>
           </div>
         )}
-        {taskType !== 'livre' && (
+        {taskType === 'horas' && (
           <div className="item-hours">
             {/* Total de itens: <span>{selectedProducts.length + deadlineTotal}</span> */}
             Total de itens: <span>{selectedProducts.length}</span>
