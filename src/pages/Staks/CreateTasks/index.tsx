@@ -47,11 +47,16 @@ import { useFetch } from '../../../hooks/useFetch';
 import useDebouncedCallback from '../../../hooks/useDebounced';
 
 // Types
-import { IProduct, ITaskCreate, ServicesProps } from '../../../types';
+import { IProduct, IProductBackend, ITaskCreate, ServicesProps } from '../../../types';
 
 // Utils
 import { TenantProps } from '../../../utils/models';
-import { multiplyTime, sumTimes } from '../../../utils/convertTimes';
+import {
+  isTimeConsumedMoreThanPercent,
+  multiplyTime,
+  subtractTime,
+  sumTimes
+} from '../../../utils/convertTimes';
 
 // Icons
 import { IconChecked, IconClose } from '../../../assets/icons';
@@ -160,6 +165,16 @@ export default function CreateTasks() {
   });
 
   const totalProductsHours = sumTimes(productsHoursArray);
+
+  const timeConsumedRange = isTimeConsumedMoreThanPercent(
+    totalProductsHours,
+    selectedProject ? selectedProject?.tempo : '00:00:00'
+  );
+
+  const checkTimeoutHasBeenReached = subtractTime(
+    selectedProject ? selectedProject?.tempo : '00:00:00',
+    totalProductsHours
+  );
 
   const infoProjects: any = dataProjects?.filter(
     (obj: any) => obj.product_id === DTOForm.product_id
@@ -360,7 +375,43 @@ export default function CreateTasks() {
         //     }, 500);
         //   }
         // });
-      } else if (createStep === 3 && tasksType === 'horas') {
+      } else if (createStep === 2 && tasksType === 'produto') {
+        if (copywriting_date_end === '') {
+          throw setErrorInput(
+            'copywriting_date_end',
+            'Data de Entrega - Pré-requisitos é obrigatória!'
+          );
+        } else {
+          setErrorInput('copywriting_date_end', undefined);
+        }
+
+        if (creation_date_end === '') {
+          throw setErrorInput('creation_date_end', 'Data de Entrega Criação é obrigatória!');
+        } else {
+          setErrorInput('creation_date_end', undefined);
+        }
+
+        productsArray.map((obj: any) => {
+          if (obj.reason_change === '' || obj.reason_change === undefined) {
+            setErrorCategory({
+              ...errorCategory,
+              Tipo: 'Tipo não selecionado',
+              product_id: obj.service_id
+            });
+            return addToast({
+              type: 'warning',
+              title: 'Atenção',
+              description: 'Existem produtos sem o "Tipo" selecionado!'
+            });
+          } else {
+            setErrorCategory({});
+            setAddDeliveries(true);
+            setTimeout(() => {
+              setCreateStep(createStep + 1);
+            }, 500);
+          }
+        });
+      } else if (createStep === 3 && tasksType !== 'livre') {
         if (copywriting_description === '') {
           throw setErrorInput(
             'copywriting_description',
@@ -471,27 +522,23 @@ export default function CreateTasks() {
         title: 'Aviso',
         description: 'Total de horas ultrapassado, revise os produtos e quantidades!'
       });
-      // handleProductQuantity(quantity - 1, product);
+      // handleProductQuantity(1, product);
     } else {
       handleProductQuantity(quantity, product);
     }
   };
 
   const handleProductQuantity = (value: any, product: any) => {
-    // console.log('log do product adicionado', value, product);
+    console.log('log do product adicionado', value, product);
     if (productsArray.filter((obj) => obj.service_id === product.service_id).length > 0) {
-      if (quantityProductsArray.length > 0) {
-        setQuantityProductsArray((current) =>
-          current.map((obj) => {
-            if (obj.project_id === value.project_id) {
-              return { ...obj, quantity: value };
-            }
-            return obj;
-          })
-        );
-      } else {
-        setQuantityProductsArray((prevState: any) => [...prevState, value]);
-      }
+      setProductsArray((current) =>
+        current.map((obj) => {
+          if (obj.service_id === product.service_id) {
+            return { ...obj, quantity: value };
+          }
+          return obj;
+        })
+      );
     } else {
       addToast({
         type: 'warning',
@@ -589,6 +636,28 @@ export default function CreateTasks() {
         };
 
         await api.post(`tasks`, createNewData);
+      } else if (tasksType === 'produto') {
+        const deadline = {
+          date_end: DTOForm?.creation_date_end,
+          description: DTOForm?.creation_description,
+          products: productsArray
+        };
+
+        const createNewData = {
+          title,
+          tenant_id,
+          product_id,
+          flow_id,
+          description,
+          creation_description,
+          creation_date_end,
+          copywriting_date_end,
+          copywriting_description,
+          deadlines: [deadline],
+          step
+        };
+
+        await api.post(`tasks`, createNewData);
       } else {
         const createNewData = {
           title,
@@ -604,8 +673,6 @@ export default function CreateTasks() {
           step
         };
 
-        console.log('Log do productsarray', productsArray);
-        console.log('Log do submit', createNewData);
         await api.post(`tasks`, createNewData);
       }
 
@@ -652,6 +719,13 @@ export default function CreateTasks() {
     }
   };
 
+  const handleAddProductFromDeliveries = (product: IProductBackend) => {
+    if (productsArray.length === 0) {
+      setProductsArray([]);
+      setProductsArray((prevState: any) => [...prevState, product]);
+    }
+  };
+
   useEffect(() => {
     if (DTOForm.product_id !== '') {
       if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel === 'true') {
@@ -672,6 +746,10 @@ export default function CreateTasks() {
   useEffect(() => {
     console.log('log do tipo de task', tasksType);
   }, [tasksType]);
+
+  useEffect(() => {
+    console.log('log do products Array', productsArray);
+  }, [productsArray]);
 
   // useEffect(() => {
   //   console.log('Log do DTO', DTOForm);
@@ -766,6 +844,7 @@ export default function CreateTasks() {
                     errorCategory={errorCategory}
                     addDeliveries={addDeliveries}
                     passDeliveries={(value: any) => handleDeadlines(value)}
+                    passProductProps={handleAddProductFromDeliveries}
                   />
                   {!splitDeliveries && tasksType === 'horas' && (
                     <AddTextButton title="Adicionar produto" click={() => setProductsModal(true)} />
@@ -825,15 +904,28 @@ export default function CreateTasks() {
           {createStep === 4 && (
             <>
               <FormTitle>Resumo da tarefa</FormTitle>
-              <SummaryTasks
-                selectedProducts={DTOForm.deadlines}
-                createTasks={handleOnSubmit}
-                editTasks={() => setCreateStep(1)}
-                taskSummary={DTOForm}
-                projectInfos={selectedProject}
-                summaryExtrainfos={selectedSummaryInfos}
-                taskType={tasksType}
-              />
+              {tasksType === 'horas' && (
+                <SummaryTasks
+                  selectedProducts={DTOForm.deadlines}
+                  createTasks={handleOnSubmit}
+                  editTasks={() => setCreateStep(1)}
+                  taskSummary={DTOForm}
+                  projectInfos={selectedProject}
+                  summaryExtrainfos={selectedSummaryInfos}
+                  taskType={tasksType}
+                />
+              )}
+              {tasksType !== 'horas' && (
+                <SummaryTasks
+                  selectedProducts={productsArray}
+                  createTasks={handleOnSubmit}
+                  editTasks={() => setCreateStep(2)}
+                  taskSummary={DTOForm}
+                  projectInfos={selectedProject}
+                  summaryExtrainfos={selectedSummaryInfos}
+                  taskType={tasksType}
+                />
+              )}
             </>
           )}
         </FormWrapper>
@@ -908,7 +1000,19 @@ export default function CreateTasks() {
                 <ProductModalTitle>Lista de produtos</ProductModalTitle>
                 <EstimatedHoursOfProducst>
                   <div className="info-title">Horas disponíveis no contrato:</div>
-                  <div className="info-hours">{selectedProject?.tempo}</div>
+                  <div
+                    className={
+                      timeConsumedRange === 'more than 30%'
+                        ? 'info-hours more-30'
+                        : timeConsumedRange === 'more than 50%'
+                        ? 'info-hours more-50'
+                        : 'info-hours'
+                    }
+                  >
+                    {checkTimeoutHasBeenReached > '00:00:00'
+                      ? checkTimeoutHasBeenReached
+                      : 'Tempo limite atingido, verifique as quantidades'}
+                  </div>
                 </EstimatedHoursOfProducst>
               </div>
               <CloseModalButton onClick={() => setProductsModal(false)}>
@@ -960,7 +1064,9 @@ export default function CreateTasks() {
                     <QuantityInput
                       receiveQuantity={
                         productsArray?.filter((obj) => obj.service_id === row.service_id).length > 0
-                          ? 1
+                          ? row.quantity
+                            ? row.quantity
+                            : 1
                           : 0
                       }
                       infosReceived={row}

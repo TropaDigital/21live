@@ -103,6 +103,13 @@ export const EstimatedHoursOfProducst = styled.div`
     color: var(--success);
     font-size: var(--text-small-md);
     font-weight: var(--weight-semibold);
+
+    &.more-30 {
+      color: var(--Warning);
+    }
+    &.more-50 {
+      color: var(--Danger);
+    }
   }
 `;
 
