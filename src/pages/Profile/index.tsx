@@ -34,11 +34,11 @@ interface FormDataProfile {
   language: string;
   name: string;
   email: string;
-  birthDate: string;
+  birthday: string;
   phone: string;
   companySince: string;
   office: string;
-  costPerhour: string;
+  cost_per_hour: string;
 }
 
 interface Errors {
@@ -174,11 +174,11 @@ export default function Profile() {
                 />
 
                 <InputDefault
-                  name="birthDate"
+                  name="birthday"
                   label="Data Nascimento"
                   placeholder="00/00/00"
-                  onChange={(event) => handleInputChange('birthDate', event)}
-                  value={formData.birthDate}
+                  onChange={(event) => handleInputChange('birthday', event)}
+                  value={formData.birthday}
                   style={{ marginBottom: '14px' }}
                   icon={BiCalendar}
                 />
@@ -231,11 +231,11 @@ export default function Profile() {
           <FieldGroupFormDefault>
             <SectionCustHours>
               <InputDefault
-                name="costPerhour"
+                name="cost_per_hour"
                 label="Custo por hora"
                 placeholder="100,00"
-                onChange={(event) => handleInputChange('costPerhour', event)}
-                value={formData.costPerhour}
+                onChange={(event) => handleInputChange('cost_per_hour', event)}
+                value={formData.cost_per_hour}
                 icon={BiMoney}
               />
               <span className="custPerHoursInfo">
