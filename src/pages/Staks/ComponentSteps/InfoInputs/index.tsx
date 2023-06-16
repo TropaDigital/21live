@@ -24,9 +24,6 @@ export default function TaskInputs({
   mentions,
   inputsError
 }: InputsProps) {
-  useEffect(() => {
-    console.log('Log dos erros', inputsError);
-  }, [inputsError]);
   return (
     <InputTaskWrapper>
       {/* <InputField style={{ border: '2px solid red', padding: '4px' }}> */}
