@@ -34,4 +34,46 @@ function sumTimes(times: string[]): string {
   return `${hours}:${minutes}:${seconds}`;
 }
 
-export { multiplyTime, sumTimes };
+function subtractTime(timePassed: string, timeToSubtract: string): string {
+  const timePassedArray: number[] = timePassed.split(':').map(Number);
+  const timeToSubtractArray: number[] = timeToSubtract.split(':').map(Number);
+
+  const passedSeconds: number =
+    timePassedArray[0] * 3600 + timePassedArray[1] * 60 + timePassedArray[2];
+  const subtractSeconds: number =
+    timeToSubtractArray[0] * 3600 + timeToSubtractArray[1] * 60 + timeToSubtractArray[2];
+
+  const remainingSeconds: number = passedSeconds - subtractSeconds;
+
+  const hours: number = Math.floor(remainingSeconds / 3600);
+  const minutes: number = Math.floor((remainingSeconds % 3600) / 60);
+  const seconds: number = remainingSeconds % 60;
+
+  const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(
+    2,
+    '0'
+  )}:${String(seconds).padStart(2, '0')}`;
+
+  return formattedTime;
+}
+
+function isTimeConsumedMoreThanPercent(timePassed: string, totalTime: string): string {
+  const timePassedArray: number[] = timePassed.split(':').map(Number);
+  const totalTimeArray: number[] = totalTime.split(':').map(Number);
+
+  const passedSeconds: number =
+    timePassedArray[0] * 3600 + timePassedArray[1] * 60 + timePassedArray[2];
+  const totalSeconds: number =
+    totalTimeArray[0] * 3600 + totalTimeArray[1] * 60 + totalTimeArray[2];
+
+  const consumedPercentage: number = (passedSeconds / totalSeconds) * 100;
+  if (consumedPercentage > 50) {
+    return 'more than 50%';
+  } else if (consumedPercentage > 30) {
+    return 'more than 30%';
+  } else {
+    return 'it OK';
+  }
+}
+
+export { multiplyTime, sumTimes, subtractTime, isTimeConsumedMoreThanPercent };

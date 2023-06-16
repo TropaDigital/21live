@@ -11,6 +11,24 @@ export interface IProduct {
   period: string;
 }
 
+export interface IProductBackend {
+  created: string;
+  deleted: string;
+  description: string;
+  flag: string;
+  minutes: string;
+  period: string;
+  product_id: string;
+  project_id: string;
+  quantity: string;
+  quantity_initial: string;
+  service: string;
+  service_id: string;
+  size: string;
+  type: string;
+  updated: string;
+}
+
 export interface IDocProject {
   project_id?: number;
   file_name: string;
