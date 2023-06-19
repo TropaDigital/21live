@@ -2,7 +2,7 @@
 /* eslint-disable import-helpers/order-imports */
 // React
 import { useCallback, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 // components
 import HeaderStepsPage from '../../../components/HeaderStepsPage';
@@ -85,6 +85,20 @@ interface ProjectProductProps {
   tipo: string;
 }
 
+interface DeliveryProps {
+  deliveryId: number | string;
+  deliveryDescription: string;
+  deliveryDate: string;
+  deliveryProducts: any[];
+  showInfo: boolean;
+}
+
+interface ModalDeliveryProps {
+  isOpen: boolean;
+  title: string;
+  indexDelivery: number | any;
+}
+
 type HandleOnChange = (
   event:
     | React.ChangeEvent<HTMLInputElement>
@@ -97,6 +111,7 @@ export default function CreateTasks() {
   const [createStep, setCreateStep] = useState<number>(1);
   const { addToast } = useToast();
   const { user } = useAuth();
+  const location = useLocation();
 
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const [error, setError] = useState<StateProps>({});
@@ -119,6 +134,11 @@ export default function CreateTasks() {
   const [search, setSearch] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [productsModal, setProductsModal] = useState<boolean>(false);
+  const [productsDeliveriesModal, setProductsDeliveriesModal] = useState<ModalDeliveryProps>({
+    isOpen: false,
+    title: '',
+    indexDelivery: ''
+  });
   const [finishModal, setFinishModal] = useState<boolean>(false);
   const [deliveriesSplit, setDeliveriesSplit] = useState<string>('no-split');
   // Ajustar quando for produtos passar a flag false
@@ -159,6 +179,139 @@ export default function CreateTasks() {
   );
   const [tasksType, setTasksType] = useState<string>('');
   const splitDeliveries = deliveriesSplit === 'no-split' ? false : true;
+
+  const DeliveryDefault: DeliveryProps = {
+    deliveryId: 1,
+    deliveryDescription: '',
+    deliveryDate: '',
+    deliveryProducts: productsArray,
+    showInfo: false
+  };
+  const [DTODelivery, setDTODelivery] = useState<any[]>([DeliveryDefault]);
+
+  const addDelivery = () => {
+    const newDelivery: DeliveryProps = {
+      deliveryId: DTODelivery.length + 1,
+      deliveryDescription: '',
+      deliveryDate: '',
+      deliveryProducts: [],
+      showInfo: false
+    };
+    DTODelivery.push(newDelivery);
+    setDTODelivery([...DTODelivery]);
+  };
+
+  useEffect(() => {
+    if (location.state !== null) {
+      // setDTOForm(location.state);
+      // setProductsArray(location.state.products);
+      console.log('log do products location', location.state);
+    }
+  }, [location]);
+
+  // Criar delete DTODelivery
+  // const deleteDelivery = (deliveryId: number) => {
+  //   console.log('log do id da Delivery a ser deletada', deliveryId);
+  // };
+
+  const handleUpdateDeliveryDate = (value: any, id: any) => {
+    const newDate = moment(value).format('DD/MM/YYYY');
+    setDTODelivery((current: any) =>
+      current.map((obj: { deliveryId: any }) => {
+        if (obj.deliveryId === id) {
+          return { ...obj, deliveryDate: newDate };
+        }
+        return obj;
+      })
+    );
+  };
+
+  const handleDigitalPrinted = (
+    indexDelivery: any,
+    indexProduct: any,
+    idProduct: any,
+    value: any
+  ) => {
+    const currentProducts = DTODelivery[indexDelivery].deliveryProducts;
+    const productToUpdate = currentProducts[indexProduct];
+    const updatedProduct = {
+      ...productToUpdate,
+      type: value
+    };
+    currentProducts[indexProduct] = updatedProduct;
+    setDTODelivery((current: any) =>
+      current.map((obj: DeliveryProps) => {
+        if (obj.deliveryProducts[indexProduct] === indexProduct) {
+          return { deliveryProducts: currentProducts };
+        }
+        return obj;
+      })
+    );
+  };
+
+  const handleTypeProduct = (indexDelivery: any, indexProduct: any, idProduct: any, value: any) => {
+    const currentProducts = DTODelivery[indexDelivery].deliveryProducts;
+    const productToUpdate = currentProducts[indexProduct];
+    const updatedProduct = {
+      ...productToUpdate,
+      reason_change: value
+    };
+    currentProducts[indexProduct] = updatedProduct;
+    setDTODelivery((current: any) =>
+      current.map((obj: DeliveryProps) => {
+        if (obj.deliveryProducts[indexProduct] === indexProduct) {
+          return { deliveryProducts: currentProducts };
+        }
+        return obj;
+      })
+    );
+  };
+
+  const handleDescriptionProduct = (
+    indexDelivery: any,
+    indexProduct: any,
+    idProduct: any,
+    value: any
+  ) => {
+    const currentProducts = DTODelivery[indexDelivery].deliveryProducts;
+    const productToUpdate = currentProducts[indexProduct];
+    const updatedProduct = {
+      ...productToUpdate,
+      description: value
+    };
+    currentProducts[indexProduct] = updatedProduct;
+    setDTODelivery((current: any) =>
+      current.map((obj: DeliveryProps) => {
+        if (obj.deliveryProducts[indexProduct] === indexProduct) {
+          return { deliveryProducts: currentProducts };
+        }
+        return obj;
+      })
+    );
+  };
+
+  const handleFormatProduct = (
+    indexDelivery: any,
+    indexProduct: any,
+    idProduct: any,
+    value: any
+  ) => {
+    const currentProducts = DTODelivery[indexDelivery].deliveryProducts;
+    const productToUpdate = currentProducts[indexProduct];
+    const updatedProduct = {
+      ...productToUpdate,
+      size: value
+    };
+    currentProducts[indexProduct] = updatedProduct;
+    setDTODelivery((current: any) =>
+      current.map((obj: DeliveryProps) => {
+        if (obj.deliveryProducts[indexProduct] === indexProduct) {
+          return { deliveryProducts: currentProducts };
+        }
+        return obj;
+      })
+    );
+  };
 
   const productsHoursArray = productsArray?.map((row) => {
     return multiplyTime(row?.minutes, row?.quantity);
@@ -241,6 +394,72 @@ export default function CreateTasks() {
       });
     } else {
       setProductsArray((prevState: any) => [...prevState, newProduct]);
+    }
+  };
+
+  const handleOnChangeCheckboxDeliveries = (product: any, idDelivery: any) => {
+    console.log('log do product and ID', product, idDelivery, DTODelivery);
+    const newProduct = {
+      category: product.category,
+      description: product.description,
+      flag: product.flag,
+      minutes: product.minutes,
+      service: product.service,
+      service_id: product.service_id,
+      size: product.size,
+      type: product.type,
+      quantity: 1
+    };
+    if (
+      DTODelivery[idDelivery - 1]?.deliveryProducts.filter(
+        (obj: any) => obj.service_id === product.service_id
+      ).length > 0
+    ) {
+      const newArray = DTODelivery[idDelivery]?.deliveryProducts.filter(
+        (obj: any) => obj.service_id !== product.service_id
+      );
+      setDTODelivery((current: any) =>
+        current.map((obj: any) => {
+          if (obj.deliveryId === idDelivery) {
+            return { ...obj, deliveryProducts: [] };
+          }
+          return obj;
+        })
+      );
+      setDTODelivery((current: any) =>
+        current.map((obj: any) => {
+          if (obj.deliveryId === idDelivery) {
+            return { ...obj, deliveryProducts: newArray };
+          }
+          return obj;
+        })
+      );
+      console.log('log filter product', product, newArray);
+    } else if (selectedProject && selectedProject.tempo < product.minutes) {
+      addToast({
+        type: 'warning',
+        title: 'Aviso',
+        description: 'Total de horas ultrapassado, revise os horários e quantidades!'
+      });
+    } else if (selectedProject && selectedProject.tempo < totalProductsHours) {
+      addToast({
+        type: 'warning',
+        title: 'Aviso',
+        description: 'Total de horas ultrapassado, revise os horários e quantidades!'
+      });
+    } else {
+      console.log('log do product with the id finded', newProduct);
+      setDTODelivery((current: any) =>
+        current.map((obj: any) => {
+          if (obj.deliveryId === idDelivery) {
+            return {
+              ...obj,
+              deliveryProducts: [...obj.deliveryProducts, newProduct]
+            };
+          }
+          return obj;
+        })
+      );
     }
   };
 
@@ -334,47 +553,40 @@ export default function CreateTasks() {
       if (createStep === 1 && tasksType === 'horas') {
         setProductsModal(true);
       } else if (createStep === 2 && tasksType === 'horas') {
-        if (copywriting_date_end === '') {
-          throw setErrorInput(
-            'copywriting_date_end',
-            'Data de Entrega - Pré-requisitos é obrigatória!'
-          );
-        } else {
-          setErrorInput('copywriting_date_end', undefined);
-        }
-
         if (creation_date_end === '') {
           throw setErrorInput('creation_date_end', 'Data de Entrega Criação é obrigatória!');
         } else {
           setErrorInput('creation_date_end', undefined);
         }
 
-        setErrorCategory({});
-        setAddDeliveries(true);
-        setTimeout(() => {
-          setCreateStep(createStep + 1);
-        }, 500);
+        // setErrorCategory({});
+        // setAddDeliveries(true);
+        // setTimeout(() => {
+        //   setCreateStep(createStep + 1);
+        // }, 500);
 
-        // productsArray.map((obj: any) => {
-        //   if (obj.reason_change === '' || obj.reason_change === undefined) {
-        //     setErrorCategory({
-        //       ...errorCategory,
-        //       Tipo: 'Tipo não selecionado',
-        //       product_id: obj.service_id
-        //     });
-        //     return addToast({
-        //       type: 'warning',
-        //       title: 'Atenção',
-        //       description: 'Existem produtos sem o "Tipo" selecionado!'
-        //     });
-        //   } else {
-        //     setErrorCategory({});
-        //     setAddDeliveries(true);
-        //     setTimeout(() => {
-        //       setCreateStep(createStep + 1);
-        //     }, 500);
-        //   }
-        // });
+        DTODelivery.map((current: DeliveryProps) => {
+          current.deliveryProducts.map((obj: any) => {
+            if (obj.reason_change === '' || obj.reason_change === undefined) {
+              setErrorCategory({
+                ...errorCategory,
+                Tipo: 'Tipo não selecionado',
+                product_id: obj.service_id
+              });
+              return addToast({
+                type: 'warning',
+                title: 'Atenção',
+                description: 'Existem produtos sem o "Tipo" selecionado!'
+              });
+            } else {
+              setErrorCategory({});
+              setAddDeliveries(true);
+              setTimeout(() => {
+                setCreateStep(createStep + 1);
+              }, 500);
+            }
+          });
+        });
       } else if (createStep === 2 && tasksType === 'produto') {
         if (copywriting_date_end === '') {
           throw setErrorInput(
@@ -524,7 +736,45 @@ export default function CreateTasks() {
       });
       // handleProductQuantity(1, product);
     } else {
-      handleProductQuantity(quantity, product);
+      if (deliveriesSplit) {
+        handleProductQuantityDeliveries(quantity, product);
+      } else {
+        handleProductQuantity(quantity, product);
+      }
+    }
+  };
+
+  const handleProductQuantityDeliveries = (value: any, product: any) => {
+    if (
+      DTODelivery[productsDeliveriesModal.indexDelivery - 1]?.deliveryProducts.filter(
+        (obj: any) => obj.service_id === product.service_id
+      ).length > 0
+    ) {
+      const currentProducts =
+        DTODelivery[productsDeliveriesModal.indexDelivery - 1].deliveryProducts;
+      const productIndex = currentProducts.findIndex(
+        (obj: any) => obj.service_id === product.service_id
+      );
+      const productToUpdate = currentProducts[productIndex];
+      const updatedProduct = {
+        ...productToUpdate,
+        quantity: value
+      };
+      currentProducts[productIndex] = updatedProduct;
+      setDTODelivery((current: any) =>
+        current.map((obj: DeliveryProps) => {
+          if (obj.deliveryProducts[productIndex] === productIndex) {
+            return { deliveryProducts: currentProducts };
+          }
+          return obj;
+        })
+      );
+    } else {
+      addToast({
+        type: 'warning',
+        title: 'ATENÇÃO',
+        description: 'Selecione o produto primeiro, depois a quantidade.'
+      });
     }
   };
 
@@ -659,6 +909,14 @@ export default function CreateTasks() {
 
         await api.post(`tasks`, createNewData);
       } else {
+        const deadlines = DTODelivery.map((row: any) => {
+          return {
+            date_end: DTOForm?.creation_date_end,
+            description: DTOForm?.creation_description,
+            products: row.deliveryProducts
+          };
+        });
+
         const createNewData = {
           title,
           tenant_id,
@@ -669,7 +927,7 @@ export default function CreateTasks() {
           creation_date_end,
           copywriting_date_end,
           copywriting_description,
-          deadlines,
+          deadlines: deadlines,
           step
         };
 
@@ -690,7 +948,7 @@ export default function CreateTasks() {
 
       // setErros(getValidationErrors(e.response.data.result))
     }
-  }, [DTOForm, addToast, productsArray, tasksType, user]);
+  }, [DTOForm, addToast, productsArray, tasksType, user, DTODelivery]);
 
   const selectedProjectInfos = (e: any) => {
     if (e.target.name === 'product_id') {
@@ -747,9 +1005,13 @@ export default function CreateTasks() {
     console.log('log do tipo de task', tasksType);
   }, [tasksType]);
 
-  useEffect(() => {
-    console.log('log do products Array', productsArray);
-  }, [productsArray]);
+  // useEffect(() => {
+  //   console.log('log do products Array', productsArray);
+  // }, [productsArray]);
+
+  // useEffect(() => {
+  //   console.log('log do Delivery DTO', DTODelivery);
+  // }, [DTODelivery]);
 
   // useEffect(() => {
   //   console.log('Log do DTO', DTOForm);
@@ -836,14 +1098,23 @@ export default function CreateTasks() {
                     data={productsArray}
                     dataTypes={dataTypes}
                     handleProducts={handleProductsDeliveries}
-                    error={error}
+                    deliveriesArray={DTODelivery}
                     deliveriesSplited={splitDeliveries}
-                    deliveryType={tasksType}
-                    totalProjectTime={selectedProject?.tempo}
                     projectInfo={selectedProject}
                     errorCategory={errorCategory}
-                    addDeliveries={addDeliveries}
-                    passDeliveries={(value: any) => handleDeadlines(value)}
+                    addDelivery={addDelivery}
+                    addProducts={(value: any, text: any, index: any) =>
+                      setProductsDeliveriesModal({
+                        isOpen: value,
+                        title: text,
+                        indexDelivery: index
+                      })
+                    }
+                    updateDeliveryDate={handleUpdateDeliveryDate}
+                    handleTypeArt={handleDigitalPrinted}
+                    handleTaskType={handleTypeProduct}
+                    handleDescriptionProduct={handleDescriptionProduct}
+                    handleFormatProduct={handleFormatProduct}
                     passProductProps={handleAddProductFromDeliveries}
                   />
                   {!splitDeliveries && tasksType === 'horas' && (
@@ -906,7 +1177,7 @@ export default function CreateTasks() {
               <FormTitle>Resumo da tarefa</FormTitle>
               {tasksType === 'horas' && (
                 <SummaryTasks
-                  selectedProducts={DTOForm.deadlines}
+                  selectedProducts={DTODelivery}
                   createTasks={handleOnSubmit}
                   editTasks={() => setCreateStep(1)}
                   taskSummary={DTOForm}
@@ -1100,6 +1371,7 @@ export default function CreateTasks() {
                     console.log('add product');
                     setProductsModal(false);
                     setCreateStep(createStep + 1);
+                    setDTODelivery([{ ...DTODelivery[0], deliveryProducts: productsArray }]);
                   }}
                 >
                   Adicionar Produto
@@ -1146,6 +1418,122 @@ export default function CreateTasks() {
               </ButtonDefault>
             </FinishModalButtons>
           </FinishModal>
+        </ModalDefault>
+
+        {/* Modal product list of Deliveries */}
+        <ModalDefault
+          isOpen={productsDeliveriesModal.isOpen}
+          onOpenChange={() =>
+            setProductsDeliveriesModal({
+              isOpen: false,
+              title: '',
+              indexDelivery: ''
+            })
+          }
+          maxWidth="848px"
+        >
+          <ProductsModalWrapper>
+            <ProductsModalTop>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <ProductModalTitle>Lista de produtos</ProductModalTitle>
+                <EstimatedHoursOfProducst>
+                  <div className="info-title">Horas disponíveis no contrato:</div>
+                  <div className="info-hours">{selectedProject?.tempo}</div>
+                </EstimatedHoursOfProducst>
+              </div>
+              <CloseModalButton
+                onClick={() =>
+                  setProductsDeliveriesModal({
+                    isOpen: false,
+                    title: '',
+                    indexDelivery: ''
+                  })
+                }
+              >
+                <IconClose />
+              </CloseModalButton>
+            </ProductsModalTop>
+
+            <ProductListWrapper>
+              <SearchProductsModal>
+                <InputDefault
+                  label=""
+                  name="search"
+                  placeholder="Buscar produtos"
+                  onChange={(event) => {
+                    setSearchTerm(event.target.value);
+                    debouncedCallback(event.target.value);
+                  }}
+                  value={searchTerm}
+                  icon={BiSearchAlt}
+                  isLoading={isLoading}
+                  className="search-field"
+                />
+              </SearchProductsModal>
+              <ProductListHeader>
+                <div className="list-title">Produto</div>
+                <div className="list-title">Categoria</div>
+                <div className="list-title">Horas estimadas</div>
+                <div className="list-title center">Quantidade</div>
+              </ProductListHeader>
+
+              {dataProducts?.map((row: any, index) => (
+                <Product key={index}>
+                  <div className="product">
+                    <CheckboxDefault
+                      label=""
+                      name={row.service_id}
+                      onChange={() =>
+                        handleOnChangeCheckboxDeliveries(row, productsDeliveriesModal.indexDelivery)
+                      }
+                      checked={
+                        DTODelivery[
+                          productsDeliveriesModal.indexDelivery - 1
+                        ]?.deliveryProducts?.filter((obj: any) => obj.service_id === row.service_id)
+                          .length > 0
+                          ? true
+                          : false
+                      }
+                    />
+                    {row.service}
+                  </div>
+                  <div className="category">{row.category}</div>
+                  <div className="category">{row.minutes}</div>
+                  <div className="quantity">
+                    <QuantityInput
+                      receiveQuantity={
+                        DTODelivery[
+                          productsDeliveriesModal.indexDelivery - 1
+                        ]?.deliveryProducts?.filter((obj: any) => obj.service_id === row.service_id)
+                          .length > 0
+                          ? 1
+                          : 0
+                      }
+                      infosReceived={row}
+                      handleQuantity={(value: any) => handleCheckQuantity(value, row)}
+                      disabledInput={false}
+                    />
+                  </div>
+                </Product>
+              ))}
+            </ProductListWrapper>
+
+            <AddProductButton>
+              <ButtonDefault
+                typeButton="primary"
+                onClick={() => {
+                  console.log('add product');
+                  setProductsDeliveriesModal({
+                    isOpen: false,
+                    title: '',
+                    indexDelivery: ''
+                  });
+                }}
+              >
+                Adicionar Produto
+              </ButtonDefault>
+            </AddProductButton>
+          </ProductsModalWrapper>
         </ModalDefault>
       </ContainerWrapper>
     </>
