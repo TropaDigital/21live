@@ -1,7 +1,7 @@
 /* eslint-disable import-helpers/order-imports */
 //  React
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 // Icons
 import { BiPlus, BiSearchAlt } from 'react-icons/bi';
@@ -63,7 +63,7 @@ export default function TaskList() {
       name: ''
     }
   });
-
+  const navigate = useNavigate();
   const [filter, setFilter] = useState({
     dateStart: '',
     dateEnd: '',
@@ -141,6 +141,11 @@ export default function TaskList() {
         name: ''
       }
     });
+  };
+
+  const handleEditTask = (task: any) => {
+    console.log('log da task a editar', task);
+    navigate('/criar-tarefa', { state: task });
   };
 
   // const { formData, handleOnChange } = useForm({
@@ -328,10 +333,7 @@ export default function TaskList() {
                 <td>
                   <div className="fieldTableClients">
                     <ButtonTable typeButton="view" onClick={() => handleOpenModalView(row)} />
-                    <ButtonTable
-                      typeButton="edit"
-                      onClick={() => console.log('abrir modal de editar', row)}
-                    />
+                    <ButtonTable typeButton="edit" onClick={() => handleEditTask(row)} />
                     <Alert
                       title="Atenção"
                       subtitle="Certeza que gostaria de deletar esta Tarefa? Ao excluir esta ação não poderá ser desfeita."
