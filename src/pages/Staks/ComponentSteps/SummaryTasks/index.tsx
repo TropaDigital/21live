@@ -89,7 +89,7 @@ export default function SummaryTasks({
           <Summary className="big">
             <div className="title">Produtos selecionados</div>
             {selectedProducts.map((row: any) =>
-              row.products.map((products: any, index: number) => (
+              row.deliveryProducts.map((products: any, index: number) => (
                 <SummaryCard key={index} style={{ height: 'fit-content' }}>
                   <SummaryCardTitle>
                     #{index + 1} - {products.service}
