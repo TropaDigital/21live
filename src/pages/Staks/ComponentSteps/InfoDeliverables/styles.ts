@@ -186,6 +186,7 @@ export const DeliveryTitle = styled.div`
       color: var(--success-600);
       font-size: var(--text-small-sm);
       font-weight: var(--weight-medium);
+      cursor: pointer;
 
       &.add {
         color: var(--primary);
