@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  background-color: #F6F7FB;
 `;
 
 export const HeaderPlayBar = styled.div`
@@ -11,12 +11,26 @@ export const HeaderPlayBar = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  padding: 8px 12px;
 
-  >button {
-    display: grid;
-    place-items: center;
-    background-color: transparent;
+  .sectionPlayHoursBars {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    >button {
+      display: grid;
+      place-items: center;
+      background-color: transparent;
+    }
+
+    .timePlayBar {
+      font-size: 14px;
+      color: #6C757D;
+    }
+
   }
+
 
   .qtdTaskPlayBar {
     display: flex;

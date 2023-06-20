@@ -1,16 +1,19 @@
 import { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
+
 import {
   IconClipboard,
   IconDash,
+  IconProjects,
+  IconMeeting,
   IconTeam,
-  IconUsers,
-} from '../assets/icons';
-import ScrollAreas from '../Ui/ScrollAreas';
+  IconProducts,
+  IconFlux
+} from '../../assets/icons';
 
+import ScrollAreas from '../Ui/ScrollAreas';
 import Header from './Header';
 import Sidebar from './Sidebar';
-
 import { Container, Main } from './styles';
 
 export default function Layout() {
@@ -19,12 +22,8 @@ export default function Layout() {
 
   return (
     <Container>
-      <Header
-        handleOnMenu={() => setModalActive(!modalActive)}
-        modalActive={modalActive}
-      />
+      <Header handleOnMenu={() => setModalActive(!modalActive)} modalActive={modalActive} />
       <Main>
-
         <Sidebar
           modalActive={modalActive}
           path={location.pathname}
@@ -32,7 +31,17 @@ export default function Layout() {
             {
               to: '/dashboard',
               name: 'Dashboard',
-              icon: IconDash,
+              icon: IconDash
+            },
+            {
+              to: '/projetos',
+              name: 'Projetos',
+              icon: IconProjects
+            },
+            {
+              to: '/tarefas',
+              name: 'Tarefas',
+              icon: IconClipboard
             },
             // {
             //   to: '/clientes',
@@ -45,26 +54,25 @@ export default function Layout() {
             //   icon: IconTeam,
             // },
             {
-              to: '/servicos',
-              name: 'Serviços',
-              icon: IconClipboard,
+              to: '/produtos',
+              name: 'Produtos',
+              icon: IconProducts
+            },
+            {
+              to: '/fluxo',
+              name: 'Fluxos',
+              icon: IconFlux
             },
             {
               to: '/equipe',
               name: 'Equipe',
-              icon: IconTeam,
+              icon: IconTeam
             },
-
             {
-              to: '/fluxo',
-              name: 'Fluxo',
-              icon: IconTeam,
-            },
-            // {
-            //   to: '/quadros',
-            //   name: 'Quadros',
-            //   icon: IconFile,
-            // },
+              to: '/reuniao',
+              name: 'Atas de Reunião',
+              icon: IconMeeting
+            }
             // {
             //   to: '/tarefas',
             //   name: 'Tarefas',

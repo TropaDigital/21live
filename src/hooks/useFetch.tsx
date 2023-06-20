@@ -1,7 +1,10 @@
-import { AxiosRequestConfig } from "axios";
-import { useState, useEffect } from "react";
-import api from "../services/api";
-import { useToast } from "./toast";
+import { useEffect, useState } from 'react';
+
+import api from '../services/api';
+
+import { AxiosRequestConfig } from 'axios';
+
+import { useToast } from './toast';
 
 interface PaginationProps {
   currentPage: number;
@@ -27,30 +30,32 @@ export function useFetch<T = unknown>(url: string, options?: AxiosRequestConfig)
   } as PaginationProps);
 
   const fetchData = async () => {
-    api.get(url, options).then(response => {
-      setData(response.data.result);  
+    api
+      .get(url, options)
+      .then((response) => {
+        setData(response.data.result);
 
-      if(response.data.pagination) {
-        setPages(response.data.pagination)
-      }
-    })
-    .catch(err => {
-      setError(err);
+        if (response.data.pagination) {
+          setPages(response.data.pagination);
+        }
+      })
+      .catch((err) => {
+        setError(err);
 
-      addToast({
-        type: 'danger',
-        title: 'ATENÇÃO',
-        description: err.response.data.message,
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: err.response.data.message
+        });
+      })
+      .finally(() => {
+        setIsFetching(false);
       });
-    })
-    .finally(() => {
-      setIsFetching(false);
-    })
   };
 
-    useEffect(() => {
-      fetchData();
-    }, [url]);
-  
-  return { data, pages, error, isFetching, fetchData }
+  useEffect(() => {
+    fetchData();
+  }, [url]);
+
+  return { data, pages, error, isFetching, fetchData };
 }

@@ -1,7 +1,8 @@
 import styled, { css, keyframes } from 'styled-components';
 
 interface Props {
-  isChecked?: any
+  isChecked?: any;
+  isLabel?: boolean;
 }
 
 interface Props {
@@ -28,22 +29,31 @@ const gooeyOutInAnimation = css`
   animation: ${gooeyOut} 0.35s;
 `;
 
-
 export const StyledLabel = styled.label`
   cursor: pointer;
   align-items: center;
-  justify-content: center;
+  /* justify-content: center; */
   display: flex;
-  width: 100%;
+  /* width: 100%; */
+
+  font-size: var(--text-small-sm);
+  font-weight: var(--weight-reular);
+  color: var(--gray-700);
 `;
 
-export const StyledSwitch = styled.span`
+export const StyledSwitch = styled.span<Props>`
   display: block;
   width: 34px;
   padding: 4px;
   border-radius: 50px;
-  background: #E3E5EA;
+  background: #e3e5ea;
   transition: all 0.35s;
+
+  ${({ isLabel }) =>
+    isLabel &&
+    css`
+      margin-right: 12px;
+    `}
 `;
 
 export const StyledKnob = styled.span<Props>`
@@ -51,7 +61,7 @@ export const StyledKnob = styled.span<Props>`
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #039BE5;
+  background: white;
 
   ${({ isChecked }) => !isChecked && gooeyOutInAnimation}
 
@@ -60,20 +70,16 @@ export const StyledKnob = styled.span<Props>`
 
 export const StyledInput = styled.input<Props>`
   position: absolute;
-  transform:  scale(0);
+  transform: scale(0);
 
   &:checked ~ ${StyledSwitch} {
-    background: #039BE5;
+    background: #0046b5;
   }
 
   &:checked ~ ${StyledSwitch} ${StyledKnob} {
     margin-left: 14px;
     background: #fff;
 
-  ${({ isChecked }) => isChecked && gooeyInAnimation}
-
+    ${({ isChecked }) => isChecked && gooeyInAnimation}
   }
 `;
-
-
-

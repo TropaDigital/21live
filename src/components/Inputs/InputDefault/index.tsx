@@ -1,30 +1,28 @@
-import React, {
-  useRef,
-  useState,
-  useCallback,
-  InputHTMLAttributes,
-} from 'react';
+import React, { useRef, useState, useCallback, InputHTMLAttributes } from 'react';
 import { IconBaseProps } from 'react-icons';
 import { IoMdHelpCircle } from 'react-icons/io';
-import { FiAlertCircle } from 'react-icons/fi';
 
-import { Container, ContainerInput, Error, Alert } from './styles';
-import { currency, dateTimeMask } from './masks';
-
-interface ErrorInput {
-  message: string;
-  isError: boolean;
-}
+import { dateTimeMask } from './masks';
+import { Container, ContainerInput, Error, Alert, ErrorInputMessage } from './styles';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  label: string;
-  error?: ErrorInput;
+  label?: string;
+  error?: string;
   icon?: React.ComponentType<IconBaseProps>;
   alert?: string;
   mask?: 'currency' | 'dateTime';
+  isLoading?: boolean;
 }
 
-export function InputDefault({ required, mask, label, alert, error, icon: Icon, ...rest }: InputProps) {
+export function InputDefault({
+  isLoading,
+  mask,
+  label,
+  alert,
+  error,
+  icon: Icon,
+  ...rest
+}: InputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [isFocused, setIsFocused] = useState(false);
@@ -40,33 +38,40 @@ export function InputDefault({ required, mask, label, alert, error, icon: Icon, 
     setIsFilled(!!inputRef.current?.value);
   }, []);
 
-  const handleKeyUp = useCallback((e: React.FormEvent<HTMLInputElement>) => {
-    if (mask === 'dateTime') {
-      dateTimeMask(e)
-    }
-    return;
-  }, [mask])
+  const handleKeyUp = useCallback(
+    (e: React.FormEvent<HTMLInputElement>) => {
+      if (mask === 'dateTime') {
+        dateTimeMask(e);
+      }
+      return;
+    },
+    [mask]
+  );
 
   return (
     <Container>
-      <div className="containerAlert" style={{ display: 'flex', alignItems: 'center' }} >
-        <label htmlFor={label}>{label}</label>
-        {required && (
+      <div className="containerAlert" style={{ display: 'flex', alignItems: 'center' }}>
+        {label && <label htmlFor={label}>{label}</label>}
+        {alert && (
           <Alert title={alert ?? 'Campo obrigatório'}>
-            <IoMdHelpCircle size={18} color='#CED4DA' />
+            <IoMdHelpCircle size={18} color="#CED4DA" />
           </Alert>
         )}
       </div>
 
       <ContainerInput
-        isErrored={!!error?.isError}
+        isErrored={!!error}
         isFocused={isFocused}
         isFilled={isFilled}
         isIcon={!!Icon}
+        isLoad={isLoading}
       >
-
         <div className="leftInputElement">
-          {Icon && <Icon color='rgba(204, 204, 204, 1)' size={22}/>}
+          {isLoading ? (
+            <div className="custom-loader" />
+          ) : (
+            Icon && <Icon color="rgba(204, 204, 204, 1)" size={22} />
+          )}
         </div>
 
         <input
@@ -74,17 +79,28 @@ export function InputDefault({ required, mask, label, alert, error, icon: Icon, 
           onBlur={handleInputBlur}
           ref={inputRef}
           id={label}
-          role="presentation" autoComplete="off"
+          role="presentation"
+          autoComplete="off"
           onKeyUp={handleKeyUp}
+          // required={alert ? true : false}
           {...rest}
         />
-
-        {error?.isError && (
-          <Error title={error.message}>
+        {/* {error && (
+          <Error title={error}>
             <FiAlertCircle size={20} color="#E62965" />
           </Error>
-        )}
+        )} */}
+
+        {/* <div className="errorMessage">
+            <span>{error.message}</span>
+          </div> */}
       </ContainerInput>
+
+      {error && (
+        <ErrorInputMessage title={error}>
+          <span>{error}</span>
+        </ErrorInputMessage>
+      )}
     </Container>
   );
 }

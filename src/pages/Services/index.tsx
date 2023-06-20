@@ -1,41 +1,63 @@
-import { useCallback, useEffect, useState } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// React
+import { useCallback, useState, useEffect } from 'react';
+// Icons
+import { BiCode, BiFilter, BiPlus, BiSearchAlt, BiTime } from 'react-icons/bi';
+// Libraries
+import Switch from 'react-switch';
+
+// Services
 import api from '../../services/api';
-import moment from "moment"
 
-import { BiCode, BiEdit, BiFilter, BiPlus, BiSearchAlt, BiTime, BiTrash, BiX } from 'react-icons/bi';
-import * as Dialog from '@radix-ui/react-dialog';
-
+// Hooks
 import { useToast } from '../../hooks/toast';
-import { useDebounce } from '../../utils/useDebounce';
-
-import { TextAreaDefault } from '../../components/Inputs/TextAreaDefault';
-import HeaderPage from '../../components/HeaderPage';
-import ScrollAreas from '../../components/Ui/ScrollAreas';
-import ButtonDefault from '../../components/Buttons/ButtonDefault';
-import { InputDefault } from '../../components/Inputs/InputDefault';
-import { SelectDefault } from '../../components/Inputs/SelectDefault';
-import { TableDefault } from '../../components/TableDefault';
-
-import {
-  ContainerGroupTable,
-  ContentDefault,
-  FieldDefault,
-  FieldGroupFormDefault,
-  FooterModal,
-} from '../../components/UiElements/styles';
-import { Container } from './styles';
+import useDebouncedCallback from '../../hooks/useDebounced';
 import { useFetch } from '../../hooks/useFetch';
-import Paginate from '../../components/Paginate';
+import useForm from '../../hooks/useForm';
+
+// Components
+import ButtonDefault from '../../components/Buttons/ButtonDefault';
+import ButtonTable from '../../components/Buttons/ButtonTable';
+import HeaderPage from '../../components/HeaderPage';
+import { InputDefault } from '../../components/Inputs/InputDefault';
+import InputSwitchDefault from '../../components/Inputs/InputSwitchDefault';
+import { SelectDefault } from '../../components/Inputs/SelectDefault';
+import { TextAreaDefault } from '../../components/Inputs/TextAreaDefault';
+import Pagination from '../../components/Pagination';
+import { Table } from '../../components/Table';
+import { FieldTogleButton, TableHead } from '../../components/Table/styles';
+import Alert from '../../components/Ui/Alert';
+import ModalDefault from '../../components/Ui/ModalDefault';
+import {
+  ContainerDefault,
+  FieldDefault,
+  FieldGroup,
+  FooterModal
+} from '../../components/UiElements/styles';
+
+// Styles
+import {
+  Summary,
+  SummaryInfoWrapper,
+  SummaryTaskInfo
+} from '../Staks/ComponentSteps/SummaryTasks/styles';
+import {
+  EstimatedTime,
+  EstimatedTimeInputs,
+  ModalCategoryButtons,
+  ModalProductWrapper
+} from './styles';
 
 interface ServicesProps {
-  service_id: number;
+  service_id?: number | string;
   service: string;
   description: string;
   type: string;
   size: string;
   minutes: string;
-  created: string;
-  updated: string;
+  category: string;
+  flag: string;
 }
 
 interface FormDataProps {
@@ -44,223 +66,366 @@ interface FormDataProps {
   type: string;
   size: string;
   minutes: string;
-  service_id: number;
+  category: string;
+  flag: string;
+  service_id?: number | string;
+}
+
+interface estimatedHoursPros {
+  hours: string;
+  minutes: string;
 }
 
 export default function Services() {
   const { addToast } = useToast();
-  const [open, setOpen] = useState(false);
-  const [modalDelete, setModalDelete] = useState(false);
-  const [formData, setFormData] = useState<FormDataProps>({
-    service: "",
-    description: "",
-    type: "",
-    size: "",
-    minutes: '',
-    service_id: 0,
+  const { formData, setData, handleOnChange, handleOnChangeSwitch, handleOnChangeMinutes } =
+    useForm({
+      service: '',
+      description: '',
+      type: '',
+      size: '',
+      minutes: '',
+      category: '',
+      flag: 'false',
+      service_id: ''
+    } as FormDataProps);
+
+  const [modal, setModal] = useState({
+    isOpen: false,
+    type: ''
   });
+  const [modalCategory, setModalCategory] = useState({
+    isOpen: false,
+    title: ''
+  });
+  const [modalShowProduct, setModalShowProduct] = useState({
+    isOpen: false,
+    type: '',
+    product: {
+      service: '',
+      description: '',
+      type: '',
+      size: '',
+      minutes: '',
+      category: '',
+      flag: ''
+    }
+  });
+
+  const [modalKit, setModalKit] = useState({
+    isOpen: false,
+    type: ''
+  });
+
   const [searchTerm, setSearchTerm] = useState('');
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState(0);
-  const [isSearching, setSearching] = useState(false);
-  const [titleModalService, setTitleModalService] = useState('Novo Serviço');
-  const [dataDelete, setDataDelete] = useState({
-    text: 'Deseja excluir serviço:',
-    id: 0,
-  })
-  const debouncedSearchTerm = useDebounce(searchTerm, 700);
-  const [selected, setSelected] = useState(1);
+  const { isLoading, debouncedCallback } = useDebouncedCallback(
+    (search: string) => setSearch(search),
+    700
+  );
+
+  const [typeList, setTypeList] = useState('produtos');
 
   const { data, pages, fetchData } = useFetch<ServicesProps[]>(`services?search=${search}`);
+  const { data: dataCategory } = useFetch<any[]>(`category?search=${search}`);
+  const { data: dataKits, pages: pageKits } = useFetch<any[]>(`pack-services?search=${search}`);
+  const [selected, setSelected] = useState(1);
+  const [selectedKitPage, setSelectedKitPage] = useState(1);
+  const [listSelected, setListSelected] = useState<any[]>([]);
+  const [estimatedTime, setEstimatedTime] = useState<estimatedHoursPros>({
+    hours: '',
+    minutes: ''
+  });
+  const [category, setCategory] = useState<string>('');
+
+  const handleOnCancel = useCallback(() => {
+    setModal({
+      isOpen: false,
+      type: 'Novo produto'
+    });
+    setData({
+      service: '',
+      description: '',
+      type: '',
+      size: '',
+      minutes: '',
+      service_id: 0
+    } as FormDataProps);
+    setEstimatedTime({
+      hours: '',
+      minutes: ''
+    });
+  }, [setData]);
+
+  const handleOnEdit = (item: FormDataProps) => {
+    setData(item);
+
+    setEstimatedTime({
+      hours: item.minutes.split(':')[0],
+      minutes: item.minutes.split(':')[1]
+    });
+
+    setModal({
+      isOpen: true,
+      type: `Editar serviço: ${item.service}`
+    });
+  };
+
+  const handleOnShowProduct = (item: FormDataProps) => {
+    console.log('log do row to show', item);
+
+    setModalShowProduct({
+      isOpen: true,
+      type: `Produto: ${item.service}`,
+      product: {
+        category: item.category,
+        description: item.description,
+        flag: item.flag,
+        minutes: item.minutes,
+        service: item.service,
+        size: item.size,
+        type: item.type
+      }
+    });
+  };
+
+  const handleOnEditKit = (item: FormDataProps) => {
+    // setData(item);
+
+    setModalKit({
+      isOpen: true,
+      type: `Editar Kit: ${item.service}`
+    });
+  };
+
+  const handleOnDelete = async (id: any) => {
+    try {
+      await api.delete(`services/${id}`);
+      addToast({
+        type: 'success',
+        title: 'Sucesso',
+        description: 'Serviço foi deletado!'
+      });
+
+      fetchData();
+    } catch (error: any) {
+      addToast({
+        type: 'danger',
+        title: 'ATENÇÃO',
+        description: error.response.data.message
+      });
+    }
+  };
+
+  const handleOnTypeList = (type: string) => {
+    setTypeList(type);
+  };
+
+  const handleOnSubmit = useCallback(
+    async (event: any) => {
+      try {
+        event.preventDefault();
+
+        const { service, description, type, minutes, category, flag, size } = formData;
+        const newFormData = {
+          service,
+          description,
+          category,
+          flag,
+          type,
+          size,
+          minutes
+        };
+
+        if (modal.type === 'Novo produto') {
+          await api.post('services', newFormData);
+          addToast({
+            type: 'success',
+            title: 'Sucesso',
+            description: 'Serviço criado com sucesso!'
+          });
+        } else {
+          await api.put(`services/${formData.service_id}`, newFormData);
+          addToast({
+            type: 'success',
+            title: 'Sucesso',
+            description: 'Serviço salvo com sucesso!'
+          });
+        }
+
+        handleOnCancel();
+        fetchData();
+      } catch (e: any) {
+        // Exibir erro
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: e.response.data.message
+        });
+      }
+    },
+    [formData, addToast, fetchData, handleOnCancel, modal]
+  );
+
+  function handleList(value: any) {
+    if (listSelected.includes(value)) {
+      setListSelected(listSelected.filter((obj) => obj !== value));
+    } else {
+      setListSelected((obj) => [...obj, value]);
+    }
+  }
+
+  const handleAddHours = (event: any) => {
+    const { name, value } = event.target;
+    if (name === 'hours') {
+      setEstimatedTime({ hours: value, minutes: estimatedTime.minutes });
+    }
+    if (name === 'minutes') {
+      if (value > 59) {
+        setEstimatedTime({ hours: estimatedTime.hours, minutes: '59' });
+      } else {
+        setEstimatedTime({ hours: estimatedTime.hours, minutes: value });
+      }
+    }
+  };
 
   useEffect(() => {
-    if (debouncedSearchTerm) {
-      setSearching(true);
-      setSearch(searchTerm);
-      setSearching(false);
-    } else {
-      setSearch('')
-      setSearching(false);
-    }
-  }, [debouncedSearchTerm]);
+    // console.log('log do estimated time', estimatedTime);
+    handleOnChangeMinutes({
+      name: 'minutes',
+      value: `${estimatedTime.hours}:${estimatedTime.minutes}:00`
+    });
+  }, [estimatedTime]);
 
-  const optionsCoffe = [
-    {
-      id: 1,
-      name: 'Cagfé Melita',
-    },
-    {
-      id: 2,
-      name: 'Café Pelé',
-    },
-    {
-      id: 3,
-      name: 'Café Tres corações',
-    },
-  ];
+  const createCategory = useCallback(
+    async (event: any) => {
+      try {
+        event.preventDefault();
+        const newCategory = {
+          category: category
+        };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
-  }
-  
-  const handleOnCloseModalDelete = () => {
-    setModalDelete(!modalDelete);
-  }
+        await api.post('category', newCategory);
 
-  function handleOnModalDelete(id: number, service: string) {
-    setDataDelete({
-      text: `Deseja excluir serviço: ${service}`,
-      id
-    })
-    setModalDelete(!modalDelete)
-  }
+        addToast({
+          type: 'success',
+          title: 'Sucesso',
+          description: 'Categoria criada com sucesso!'
+        });
 
-  const handleOnCloseModalService = () => {
-    setOpen(!open);
-    setTitleModalService('Novo serviço');
-    setFormData({
-      service: "",
-      description: "",
-      type: "",
-      size: "",
-      minutes: "",
-      service_id: 0,
-    } as FormDataProps);
-  }
-
-  function handleOnEditService(data: any) {
-    setFormData(data);
-    setTitleModalService('Edite serviço');
-    setOpen(true);
-  }
-
-  const handleOnToggleModal = (toggle: boolean) => {
-    setOpen(toggle)
-  }
-
-  const handleOnDeleteService = useCallback(async (event: any, data: any) => {
-    try {
-      event.preventDefault();
-      await api.delete(`services/${data.id}`);
-      addToast({
-        type: 'success',
-        title: 'Sucesso',
-        description: `Serviço: ${data.text} deletado com sucesso!`,
-      });
-
-      setModalDelete(false);
-      fetchData();
-    } catch(e: any) {
-      addToast({
-        type: 'danger',
-        title: 'ATENÇÃO',
-        description: e.response.data.message,
-      });
-    }
-  }, [])
-
-  const handleOnSubmit = useCallback(async (event: any) => {
-    try {
-      event.preventDefault();
-
-      // Inserir lógica
-      const { service, description, type, minutes, size, service_id } = formData
-      const newFormData = {
-        service,
-        description,
-        type,
-        size,
-        minutes,
-        service_id,
+        setModalCategory({
+          isOpen: false,
+          title: ''
+        });
+      } catch (e: any) {
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: e.response.data.message
+        });
       }
+    },
+    [addToast, category]
+  );
 
-      if(titleModalService === 'Edite serviço') {
-        await api.put(`services/${formData.service_id}`, newFormData);
-      } else {
-        await api.post('services', newFormData);
-      }
-  
-      addToast({
-        type: 'success',
-        title: 'Sucesso',
-        description: 'Serviço cadastrado com sucesso!',
-      });
-
-      setOpen(false);
-      setFormData({
-        service: "",
-        description: "",
-        type: "",
-        size: "",
-        minutes: "",
-        service_id: 0,
-      } as FormDataProps);
-      fetchData();
-
-    } catch (e: any) {
-      // Exibir erro
-      addToast({
-        type: 'danger',
-        title: 'ATENÇÃO',
-        description: e.response.data.message,
-      });
-
-    }
-  }, [formData, titleModalService]);
+  // useEffect(() => {
+  //   console.log('log do formData', formData);
+  // }, [formData]);
 
   return (
-    <Container>
-      <HeaderPage title="Serviços">
-        <ButtonDefault typeButton="success" onClick={handleOnCloseModalService}>
-          <BiPlus color="#fff" />
-          Novo Serviço
-        </ButtonDefault>
+    <ContainerDefault>
+      <HeaderPage title="Produtos">
+        <>
+          <ButtonDefault
+            typeButton="primary"
+            onClick={() =>
+              setModalCategory({
+                isOpen: !modal.isOpen,
+                title: 'Cadastrar nova categoria'
+              })
+            }
+          >
+            <BiPlus color="#fff" />
+            Adicionar categoria
+          </ButtonDefault>
+          <ButtonDefault
+            typeButton="success"
+            onClick={() =>
+              setModal({
+                isOpen: !modal.isOpen,
+                type: 'Novo produto'
+              })
+            }
+          >
+            <BiPlus color="#fff" />
+            Adicionar produto
+          </ButtonDefault>
+        </>
       </HeaderPage>
 
-      <ContentDefault style={{ position: 'relative' }}>
-        <FieldGroupFormDefault>
-          {/* <SelectDefault
-            label="FILTRO"
-            name="filter"
-            onChange={(event) => console.log('filter', event)}
-            placeholder="Todos"
-          >
-            {optionsCoffe.map((row) => (
-              <option key={row.id} value={row.id}>
-                {row.name}
-              </option>
-            ))}
-          </SelectDefault> */}
+      <Table>
+        <TableHead>
+          <div className="groupTable">
+            {typeList === 'produtos' && (
+              <h2>
+                Lista de produtos <strong>{data?.length} produtos</strong>
+              </h2>
+            )}
+            {typeList === 'kits' && (
+              <h2>
+                Lista de kits <strong>02 kits</strong>
+              </h2>
+            )}
+            {/* <span>Acompanhe seus produtos e serviços pré-cadastrados</span> */}
+          </div>
 
-          <InputDefault
-            label="BUSCA"
-            name="search"
-            placeholder="Faça sua busca..."
-            onChange={(event) => setSearchTerm(event.target.value)}
-            icon={BiSearchAlt}
-          />
-        </FieldGroupFormDefault>
-        {/* <ButtonDefault
-          style={{ marginTop: '24px', float: 'right' }}
-          typeButton="info"
-        >
-          <BiFilter />
-        </ButtonDefault> */}
-      </ContentDefault>
+          <FieldGroup style={{ justifyContent: 'flex-end' }}>
+            <FieldTogleButton>
+              <ButtonDefault
+                onClick={() => handleOnTypeList('produtos')}
+                typeButton={typeList === 'produtos' ? 'lightWhite' : 'light'}
+                style={{ height: '100%', fontSize: '12px' }}
+              >
+                Produtos
+              </ButtonDefault>
+              <ButtonDefault
+                onClick={() => handleOnTypeList('kits')}
+                typeButton={typeList === 'kits' ? 'lightWhite' : 'light'}
+                style={{ height: '100%', fontSize: '12px' }}
+              >
+                Kits
+              </ButtonDefault>
+            </FieldTogleButton>
 
-      <ContainerGroupTable style={{ marginTop: '1rem' }}>
-        <ScrollAreas>
-          <TableDefault title="Serviços">
+            <div style={{ maxWidth: '280px' }}>
+              <InputDefault
+                label=""
+                name="search"
+                placeholder="Faça sua busca..."
+                onChange={(event) => {
+                  setSearchTerm(event.target.value);
+                  debouncedCallback(event.target.value);
+                }}
+                value={searchTerm}
+                icon={BiSearchAlt}
+                isLoading={isLoading}
+              />
+            </div>
+
+            {/* <ButtonDefault typeButton="light">
+              <BiFilter />
+              Filtros
+            </ButtonDefault> */}
+          </FieldGroup>
+        </TableHead>
+        {typeList === 'produtos' && (
+          <table>
             <thead>
-              <tr style={{ whiteSpace: 'nowrap' }}>
-                <th>Código</th>
-                <th>Serviço</th>
-                <th>Descrição</th>
-                <th>Tipo</th>
-                <th>Tamanho</th>
-                <th>Minutos</th>
-                <th>Data</th>
+              <tr>
+                <th>ID</th>
+                <th>Produto</th>
+                <th>Categoria</th>
+                <th>Listar produtos</th>
                 <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
               </tr>
             </thead>
@@ -268,158 +433,364 @@ export default function Services() {
             <tbody>
               {data?.map((row) => (
                 <tr key={row.service_id}>
-                  <td>{row.service_id}</td>
+                  <td>#{row.service_id}</td>
                   <td>{row.service}</td>
-                  <td>{row.description}</td>
-                  <td>{row.type}</td>
-                  <td>{row.size}</td>
-                  <td>{row.minutes}</td>
+                  <td>{row.category}</td>
                   <td>
-                    {moment(row.created).utc().format('DD:MM:YYYY')}
+                    <Switch
+                      onChange={() => handleList(row.service_id)}
+                      // checked={
+                      //   listSelected.includes(row.service_id) || row.flag === 'true' ? true : false
+                      // }
+                      checked={row.flag === 'true' ? true : false}
+                      uncheckedIcon={false}
+                      checkedIcon={false}
+                      onColor="#0046B5"
+                    />
                   </td>
                   <td>
                     <div className="fieldTableClients">
-                      <ButtonDefault typeButton="danger" onClick={() => handleOnModalDelete(row.service_id, row.service)}>
-                        <BiTrash />
-                      </ButtonDefault>
-                      <ButtonDefault typeButton="info" onClick={() => handleOnEditService(row)}>
-                        <BiEdit />
-                      </ButtonDefault>
+                      <ButtonTable typeButton="view" onClick={() => handleOnShowProduct(row)} />
+                      <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
+                      <Alert
+                        title="Atenção"
+                        subtitle="Certeza que gostaria de deletar este Serviço? Ao excluir a acão não poderá ser desfeita."
+                        confirmButton={() => handleOnDelete(row.service_id)}
+                      >
+                        <ButtonTable typeButton="delete" />
+                      </Alert>
                     </div>
                   </td>
                 </tr>
               ))}
             </tbody>
-          </TableDefault>
-        </ScrollAreas>
-      </ContainerGroupTable>
 
-      <Paginate 
-        total={pages.total}
-        perPage={pages.perPage}
-        currentPage={selected}
-        lastPage={pages.lastPage}
-        onClickPage={(e) => setSelected(e)}
-      />
+            <tfoot>
+              <tr>
+                <td colSpan={100}>
+                  <Pagination
+                    total={pages.total}
+                    perPage={pages.perPage}
+                    currentPage={selected}
+                    lastPage={pages.lastPage}
+                    onClickPage={(e) => setSelected(e)}
+                  />
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        )}
+        {typeList === 'kits' && (
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Produto</th>
+                <th>Produtos</th>
+                <th>Status</th>
+                <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
+              </tr>
+            </thead>
 
-      <Dialog.Root open={open} onOpenChange={(open) => handleOnToggleModal(open)}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="DialogOverlay" />
-          <Dialog.Content className="DialogContent" >
-            <Dialog.Title className="DialogTitle">{titleModalService}</Dialog.Title>
-            <form onSubmit={handleOnSubmit}>
-              <FieldDefault>
+            <tbody>
+              {dataKits?.map((row) => (
+                <tr key={row.pack_id}>
+                  <td>{row.pack_id}</td>
+                  <td>{row.title}</td>
+                  <td>{row.services.map((item: any, index: any) => (index ? ', ' : '') + item)}</td>
+                  <td>
+                    <Switch
+                      onChange={() => handleList(row.service_id)}
+                      // checked={
+                      //   listSelected.includes(row.service_id) || row.flag === 'true' ? true : false
+                      // }
+                      checked={row.flag === 'true' ? true : false}
+                      uncheckedIcon={false}
+                      checkedIcon={false}
+                      onColor="#0046B5"
+                    />
+                  </td>
+                  <td>
+                    <div className="fieldTableClients">
+                      <ButtonTable
+                        typeButton="view"
+                        onClick={() =>
+                          setModalKit({
+                            isOpen: true,
+                            type: ''
+                          })
+                        }
+                      />
+                      <ButtonTable typeButton="edit" onClick={() => console.log('row edit', row)} />
+                      <Alert
+                        title="Atenção"
+                        subtitle="Certeza que gostaria de deletar este Serviço? Ao excluir a acão não poderá ser desfeita."
+                        confirmButton={() => console.log('row delete', row)}
+                      >
+                        <ButtonTable typeButton="delete" />
+                      </Alert>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+
+            <tfoot>
+              <tr>
+                <td colSpan={100}>
+                  <Pagination
+                    total={pageKits.total}
+                    perPage={pageKits.perPage}
+                    currentPage={selectedKitPage}
+                    lastPage={pageKits.lastPage}
+                    onClickPage={(e) => setSelectedKitPage(e)}
+                  />
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        )}
+      </Table>
+
+      {/* Modal create product*/}
+      <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
+        <form onSubmit={handleOnSubmit} style={{ minWidth: '500px' }}>
+          <FieldDefault>
+            <InputDefault
+              label="Produto"
+              placeholder="Digite aqui..."
+              name="service"
+              onChange={handleOnChange}
+              value={formData.service}
+              required
+            />
+          </FieldDefault>
+          <FieldDefault>
+            <TextAreaDefault
+              label="Descrição"
+              placeholder="Digite aqui..."
+              name="description"
+              onChange={handleOnChange}
+              value={formData.description}
+              required
+            />
+          </FieldDefault>
+          <FieldDefault>
+            <SelectDefault
+              label="Tipo"
+              placeholder="Tipo"
+              name="type"
+              onChange={handleOnChange}
+              value={formData.type}
+              required
+            >
+              <option key={'impresso'} value={'impresso'}>
+                Impresso
+              </option>
+              <option key={'digital'} value={'digital'}>
+                Digital
+              </option>
+            </SelectDefault>
+          </FieldDefault>
+          <FieldDefault>
+            <InputDefault
+              label="Tamanho"
+              placeholder="Ex: 170x80"
+              name="size"
+              onChange={handleOnChange}
+              value={formData.size}
+              icon={BiCode}
+              required
+            />
+          </FieldDefault>
+          <FieldDefault>
+            <SelectDefault
+              label="Categoria"
+              placeholder="Selecione aqui..."
+              name="category"
+              onChange={handleOnChange}
+              value={formData.category}
+              required
+            >
+              {modal.type.includes('Editar servico') && (
+                <option selected={true} value={formData.category}>
+                  {formData.category}
+                </option>
+              )}
+              {dataCategory?.map((row) => (
+                <option key={row.category_id} value={row.category}>
+                  {row.category}
+                </option>
+              ))}
+            </SelectDefault>
+            {/* <InputDefault
+              label="Categoria"
+              placeholder="Teste"
+              name="category"
+              onChange={handleOnChange}
+              value={formData.category}
+              required
+            /> */}
+          </FieldDefault>
+          <FieldDefault>
+            <InputSwitchDefault
+              onChange={(e) => handleOnChangeSwitch({ name: 'flag', value: e.target.checked })}
+              isChecked={formData.flag === 'true' ? true : false}
+              label="Listar produto"
+            />
+          </FieldDefault>
+          <FieldDefault>
+            <EstimatedTime>
+              <span>Tempo estimado em Horas : Minutos</span>
+              <EstimatedTimeInputs>
                 <InputDefault
-                  label="Serviço"
-                  placeholder='Digite aqui...'
-                  name="service"
-                  onChange={handleChange}
-                  value={formData.service}
-                  required
-                />
-              </FieldDefault>
-              <FieldDefault>
-                <TextAreaDefault 
-                  label="Descrição"
-                  placeholder='Digite aqui...'
-                  name="description"
-                  onChange={handleChange}
-                  value={formData.description}
-                  required           
-                />
-              </FieldDefault>
-              <FieldDefault>
-                <SelectDefault
-                  label="Tipo"
-                  placeholder="Tipo"
-                  name="type"
-                  onChange={handleChange}
-                  value={formData.type}
-                  required
-                >
-                  <option key={'impresso'} value={'impresso'}>
-                    Impresso
-                  </option>
-                  <option key={'digital'} value={'digital'}>
-                    Digital
-                  </option>
-                </SelectDefault>
-              </FieldDefault>
-              <FieldDefault>
-                <InputDefault
-                  label="Tamanho"
-                  placeholder='Ex: 170x80'
-                  name="size"
-                  onChange={handleChange}
-                  value={formData.size}
-                  icon={BiCode}
-                  required
-                />
-              </FieldDefault>
-              <FieldDefault>
-                <InputDefault
-                  label="Hora / Minutos"
-                  name="minutes"
-                  onChange={handleChange}
-                  value={formData.minutes}
-                  type='time'
+                  label=""
+                  name="hours"
+                  onChange={handleAddHours}
+                  value={estimatedTime.hours}
+                  type="number"
+                  min="0"
+                  step="1"
                   icon={BiTime}
                   required
                 />
-              </FieldDefault>
-              <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
-                <ButtonDefault
-                  typeButton="dark"
-                  isOutline
-                  onClick={handleOnCloseModalService}
-                >
-                  Descartar
-                </ButtonDefault>
-                <ButtonDefault typeButton="primary" isOutline type="submit">
-                  Salvar
-                </ButtonDefault>
-              </FooterModal>
-            </form>
-            <Dialog.Close asChild>
-              <button className="IconButton" aria-label="Close">
-                <BiX size={30} color="#6C757D" />
-              </button>
-            </Dialog.Close>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
+                :
+                <InputDefault
+                  label=""
+                  name="minutes"
+                  onChange={handleAddHours}
+                  value={estimatedTime.minutes}
+                  type="number"
+                  min="0"
+                  max="59"
+                  step="1"
+                  icon={BiTime}
+                  required
+                />
+              </EstimatedTimeInputs>
+            </EstimatedTime>
+          </FieldDefault>
+          <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
+            <ButtonDefault typeButton="dark" isOutline onClick={handleOnCancel}>
+              Descartar
+            </ButtonDefault>
+            <ButtonDefault typeButton="primary" isOutline type="submit">
+              Salvar
+            </ButtonDefault>
+          </FooterModal>
+        </form>
+      </ModalDefault>
 
-      <Dialog.Root open={modalDelete} onOpenChange={() => handleOnCloseModalDelete()}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="DialogOverlay"/>
-          <Dialog.Content className="DialogContent" style={{ width: '480px' }}>
-            <Dialog.Title className="DialogTitle">{dataDelete.text}</Dialog.Title>
-              <form onSubmit={(event) => handleOnDeleteService(event, dataDelete)}>
-                <FieldGroupFormDefault style={{ marginTop: '40px' }}>
-                  <ButtonDefault 
-                    typeButton="dark" 
-                    isOutline
-                    onClick={handleOnCloseModalDelete}
-                  >
-                    Cancelar
-                  </ButtonDefault>
-                  <ButtonDefault
-                    typeButton="danger"
-                    type="submit"
-                    onClick={(event) => handleOnDeleteService(event, dataDelete)}
-                  >
-                    Deletar                    
-                  </ButtonDefault>
-                </FieldGroupFormDefault>
-              </form>
-            <Dialog.Close asChild>
-              <button className="IconButton" aria-label="Close">
-                <BiX size={30} color="#6C757D" />
-              </button>
-            </Dialog.Close>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
-    </Container>
+      {/* Modal show product */}
+      <ModalDefault
+        isOpen={modalShowProduct.isOpen}
+        title={modalShowProduct.type}
+        onOpenChange={() =>
+          setModalShowProduct({
+            isOpen: false,
+            type: '',
+            product: {
+              service: '',
+              description: '',
+              type: '',
+              size: '',
+              minutes: '',
+              category: '',
+              flag: ''
+            }
+          })
+        }
+      >
+        <ModalProductWrapper>
+          <Summary>
+            <SummaryInfoWrapper>
+              <SummaryTaskInfo>
+                <div className="title-info">Descrição:</div>
+                <div className="info">{modalShowProduct.product.description}</div>
+              </SummaryTaskInfo>
+
+              <SummaryTaskInfo>
+                <div className="title-info">Horas:</div>
+                <div className="info">{modalShowProduct.product.minutes}</div>
+              </SummaryTaskInfo>
+
+              <SummaryTaskInfo>
+                <div className="title-info">Categoria:</div>
+                <div className="info">{modalShowProduct.product.category}</div>
+              </SummaryTaskInfo>
+
+              <SummaryTaskInfo>
+                <div className="title-info">Tamanho:</div>
+                <div className="info">{modalShowProduct.product.size}</div>
+              </SummaryTaskInfo>
+
+              <SummaryTaskInfo>
+                <div className="title-info">Tipo:</div>
+                <div className="info">{modalShowProduct.product.type}</div>
+              </SummaryTaskInfo>
+            </SummaryInfoWrapper>
+          </Summary>
+        </ModalProductWrapper>
+      </ModalDefault>
+
+      {/* Modal show kit */}
+      <ModalDefault
+        isOpen={modalKit.isOpen}
+        title={'Mostrar o kit'}
+        onOpenChange={() =>
+          setModalKit({
+            isOpen: false,
+            type: ''
+          })
+        }
+      >
+        <div>Vai mostrar kit</div>
+      </ModalDefault>
+
+      {/* Modal create category */}
+      <ModalDefault
+        isOpen={modalCategory.isOpen}
+        title={modalCategory.title}
+        onOpenChange={() =>
+          setModalCategory({
+            isOpen: false,
+            title: ''
+          })
+        }
+      >
+        <ModalProductWrapper>
+          <InputDefault
+            label="Categoria"
+            placeholder="Digite aqui..."
+            name="category"
+            onChange={(e: any) => setCategory(e.target.value)}
+            value={category}
+            className="category-input"
+          />
+          <ModalCategoryButtons>
+            <ButtonDefault
+              typeButton="dark"
+              isOutline
+              onClick={() =>
+                setModalCategory({
+                  isOpen: false,
+                  title: ''
+                })
+              }
+            >
+              Descartar
+            </ButtonDefault>
+            <ButtonDefault
+              typeButton="primary"
+              isOutline
+              type="button"
+              onClick={(e: any) => createCategory(e)}
+            >
+              Salvar
+            </ButtonDefault>
+          </ModalCategoryButtons>
+        </ModalProductWrapper>
+      </ModalDefault>
+    </ContainerDefault>
   );
 }

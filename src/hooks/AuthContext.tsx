@@ -1,11 +1,5 @@
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-  useState,
-} from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import { createContext, ReactNode, useCallback, useContext, useState } from 'react';
+
 import api from '../services/api';
 
 export interface User {
@@ -16,14 +10,17 @@ export interface User {
   email?: string;
   name: string;
   avatar?: string;
+  principalTenant?: string;
+  function?: string;
 
   profiles: any;
   language?: string;
-  birthDate?: string;
+  hiring_date?: string;
+  birthday?: string;
   phone?: string;
   companySince?: string;
   office?: string;
-  costPerhour?: string;
+  cost_per_hour?: string;
 }
 
 interface AuthState {
@@ -49,7 +46,6 @@ interface TransactionsProviderProps {
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
-let user: User;
 
 function AuthProvider({ children }: TransactionsProviderProps) {
   const [data, setData] = useState<AuthState>(() => {
@@ -67,7 +63,7 @@ function AuthProvider({ children }: TransactionsProviderProps) {
   const signIn = useCallback(async ({ email, password }: any) => {
     const response = await api.post('/login', {
       email,
-      password,
+      password
     });
 
     const { token, user, roles } = response.data.result;
@@ -95,16 +91,14 @@ function AuthProvider({ children }: TransactionsProviderProps) {
       setData({
         token: data.token,
         user,
-        roles: data.roles,
+        roles: data.roles
       });
     },
     [setData, data.token]
   );
 
   return (
-    <AuthContext.Provider
-      value={{ user: data.user, signIn, signOut, updateUser }}
-    >
+    <AuthContext.Provider value={{ user: data.user, signIn, signOut, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

@@ -10,12 +10,10 @@ interface InputProps {
   options: IOptions[];
   onChange(value: string): void;
   direction?: 'column' | null;
+  name: any;
 }
 
-export default function Radio({ direction, value, options, onChange }: InputProps) {
-  function handleOnChange(value: string) {
-    onChange(value);
-  }
+export default function Radio({ direction, name, value, options, onChange }: InputProps) {
   return (
     <Container
         direction={direction}
@@ -24,8 +22,8 @@ export default function Radio({ direction, value, options, onChange }: InputProp
         <Label key={row.label}>
           <input
             type="radio"
-            name="group"
-            onClick={() => handleOnChange(row.value)}
+            name={name}
+            onClick={() => onChange(row.value)}
             defaultChecked={row.value === value ? true : false}
           />
           <span className="radioPulse" />

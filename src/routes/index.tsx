@@ -1,5 +1,9 @@
+/* eslint-disable import-helpers/order-imports */
 import { Routes, Route } from 'react-router-dom';
 import { PrivateRoutes } from './PrivateRoutes';
+
+// LAYOUT
+import Layout from '../components/Layout';
 
 // PAGES
 import Dashboard from '../pages/Dashboard';
@@ -8,17 +12,22 @@ import SignIn from '../pages/Login/SignIn';
 import SignUp from '../pages/Login/SignUp';
 import Clients from '../pages/Clients';
 import Users from '../pages/Users';
-
-// COMPONENTES
-import ComponentsPage from '../pages/components/ComponentsPage';
-import ComponentsForms from '../pages/components/ComponentsForms';
-import ComponentTable from '../pages/components/ComponentTable';
 import Board from '../pages/Board';
 import Services from '../pages/Services';
 import Team from '../pages/Team/ListTeam';
 import ListOffice from '../pages/Team/ListOffice';
-import Layout from '../components/Layout';
 import ListFluxo from '../pages/Fluxos/ListFluxo';
+import EditFluxo from '../pages/Fluxos/EditFluxo';
+import ListProjects from '../pages/Projects/ListProjects';
+
+// COMPONENTES
+import ComponentsForms from '../pages/components/ComponentsForms';
+import ComponentsPage from '../pages/components/ComponentsPage';
+import ComponentTable from '../pages/components/ComponentTable';
+import ListMeeting from '../pages/Meeting/ListMeeting';
+import TaskList from '../pages/Staks/TaskList';
+import CreateProject from '../pages/CreateProject';
+import CreateTasks from '../pages/Staks/CreateTasks';
 
 function RoutesAll() {
   return (
@@ -44,10 +53,10 @@ function RoutesAll() {
         />
 
         <Route
-          path="/fluxo"
+          path="/perfil"
           element={
             <PrivateRoutes>
-              <ListFluxo />
+              <Profile />
             </PrivateRoutes>
           }
         />
@@ -74,7 +83,16 @@ function RoutesAll() {
           path="/fluxo"
           element={
             <PrivateRoutes>
-              <Clients />
+              <ListFluxo />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/fluxo/editar/:id"
+          element={
+            <PrivateRoutes>
+              <EditFluxo />
             </PrivateRoutes>
           }
         />
@@ -98,7 +116,7 @@ function RoutesAll() {
         />
 
         <Route
-          path="/servicos"
+          path="/produtos"
           element={
             <PrivateRoutes>
               <Services />
@@ -107,10 +125,55 @@ function RoutesAll() {
         />
 
         <Route
-          path="/board"
+          path="/projetos"
+          element={
+            <PrivateRoutes>
+              <ListProjects />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/projeto/:id"
           element={
             <PrivateRoutes>
               <Board />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/criar-projeto"
+          element={
+            <PrivateRoutes>
+              <CreateProject />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/tarefas"
+          element={
+            <PrivateRoutes>
+              <TaskList />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/criar-tarefa"
+          element={
+            <PrivateRoutes>
+              <CreateTasks />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/reuniao"
+          element={
+            <PrivateRoutes>
+              <ListMeeting />
             </PrivateRoutes>
           }
         />

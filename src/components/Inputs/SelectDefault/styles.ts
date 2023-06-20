@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+
 import Tooltip from '../../Tooltip';
 
 interface ContainerProps {
@@ -11,11 +12,12 @@ interface ContainerProps {
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
+  flex: 1;
 
   label {
-    font-size: 14px;
-    font-weight: 700;
-    color: #6c757d;
+    font-size: var(--text-small-sm);
+    font-weight: var(--weight-medium);
+    color: var(--gray-700);
     margin-bottom: 5px;
   }
 `;
@@ -27,11 +29,13 @@ export const ContainerInput = styled.div<ContainerProps>`
 
   border-color: #e2e8f0;
   word-wrap: break-word;
+  border-radius: 0.375rem;
 
   ${(props) =>
     props.isErrored &&
     css`
       border-color: #e62965;
+      box-shadow: rgb(229 62 62) 0px 0px 0px 1px;
     `}
 
   select {
@@ -42,14 +46,15 @@ export const ContainerInput = styled.div<ContainerProps>`
     outline-offset: 2px;
     position: relative;
     appearance: none;
-    transition-property: background-color, border-color, color, fill, stroke,
-      opacity, box-shadow, transform;
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow,
+      transform;
     transition-duration: 200ms;
-    background: inherit;
+    text-transform: capitalize;
+    background: var(--background-primary);
     padding-bottom: 1px;
-    line-height: normal;
-    font-size: 14px;
-    color: #6c757d;
+    font-size: var(--text-small-md);
+    font-weight: var(--weight-reular);
+    color: var(--gray-700);
     padding-inline-start: 1rem;
     height: 2.5rem;
     border-radius: 0.375rem;

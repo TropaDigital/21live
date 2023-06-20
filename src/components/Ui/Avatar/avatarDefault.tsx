@@ -1,5 +1,5 @@
-import { memo } from 'react'
-import { BiUser } from 'react-icons/bi';
+import { memo } from 'react';
+
 import { ContainerAvatar } from './styles';
 
 interface Props {
@@ -11,9 +11,13 @@ function AvatarDefault({ url, name }: Props) {
   function nameDisplay(name: string) {
     const str = name.replace(/[^a-zA-Z\s]/g, '');
     const firstName = str.split(' ')[0];
-    const lastName = str.split(' ').filter((elem: any) => elem.trim().length > 0).slice(-1).join('');
-    const concatName = firstName[0] + ' ' + (!!lastName[0] ? lastName[0] : '')
-    return concatName
+    const lastName = str
+      .split(' ')
+      .filter((elem: any) => elem.trim().length > 0)
+      .slice(-1)
+      .join('');
+    const concatName = firstName[0] + ' ' + (lastName[0] ? lastName[0] : '');
+    return concatName;
   }
 
   const generateRandomColor = () => {
@@ -23,23 +27,22 @@ function AvatarDefault({ url, name }: Props) {
       color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
-  }
+  };
 
   return (
     <ContainerAvatar isImage={!url}>
       <div className="avatarDefault">
-        {!!url ? (
+        {url ? (
           <img src={`https://app.21live.com.br/public/files/user/${url}`} alt="profile" />
-          ) : (
-            <div className="avatarBadg" style={{ backgroundColor: generateRandomColor() }}>
-              {nameDisplay(name)}
-              {/* <BiUser size={22} color='#fff'/> */}
-            </div>
+        ) : (
+          <div className="avatarBadg" style={{ backgroundColor: generateRandomColor() }}>
+            {nameDisplay(name)}
+            {/* <BiUser size={22} color='#fff'/> */}
+          </div>
         )}
-
       </div>
     </ContainerAvatar>
-  )
+  );
 }
 
-export default memo(AvatarDefault)
+export default memo(AvatarDefault);
