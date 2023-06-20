@@ -88,7 +88,7 @@ export default function SummaryTasks({
         {taskType === 'horas' && (
           <Summary className="big">
             <div className="title">Produtos selecionados</div>
-            {selectedProducts.map((row: any) =>
+            {selectedProducts?.map((row: any) =>
               row.deliveryProducts.map((products: any, index: number) => (
                 <SummaryCard key={index} style={{ height: 'fit-content' }}>
                   <SummaryCardTitle>
@@ -140,7 +140,7 @@ export default function SummaryTasks({
         {taskType === 'produto' && (
           <Summary className="big">
             <div className="title">Produto selecionado</div>
-            {selectedProducts.map((row: any, index: number) => (
+            {selectedProducts?.map((row: any, index: number) => (
               <SummaryCard key={index} style={{ height: 'fit-content' }}>
                 <SummaryCardTitle>
                   #{index + 1} - {row.service}
