@@ -19,8 +19,8 @@ export default function ActionPopup({
   index,
   length
 }: PropsPopup) {
-  console.log('LENGTH', length);
-  console.log('LENGTH', index);
+  // console.log('LENGTH', length);
+  // console.log('LENGTH', index);
 
   return (
     <ContainerPopupCard>
