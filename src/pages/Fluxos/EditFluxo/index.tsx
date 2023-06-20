@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect } from 'react';
 import { BiSave, BiShow } from 'react-icons/bi';
 import { useLocation, useNavigate } from 'react-router-dom';
