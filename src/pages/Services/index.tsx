@@ -46,7 +46,8 @@ import {
   EstimatedTime,
   EstimatedTimeInputs,
   ModalCategoryButtons,
-  ModalProductWrapper
+  ModalProductWrapper,
+  TableKits
 } from './styles';
 
 interface ServicesProps {
@@ -74,6 +75,14 @@ interface FormDataProps {
 interface estimatedHoursPros {
   hours: string;
   minutes: string;
+}
+
+interface IDataKit {
+  pack_id: string;
+  description: string;
+  title: string;
+  services: string[];
+  serviceslist?: ServicesProps[];
 }
 
 export default function Services() {
@@ -128,7 +137,11 @@ export default function Services() {
 
   const { data, pages, fetchData } = useFetch<ServicesProps[]>(`services?search=${search}`);
   const { data: dataCategory } = useFetch<any[]>(`category?search=${search}`);
-  const { data: dataKits, pages: pageKits } = useFetch<any[]>(`pack-services?search=${search}`);
+  const {
+    data: dataKits,
+    pages: pageKits,
+    fetchData: getKitData
+  } = useFetch<any[]>(`pack-services?search=${search}`);
   const [selected, setSelected] = useState(1);
   const [selectedKitPage, setSelectedKitPage] = useState(1);
   const [listSelected, setListSelected] = useState<any[]>([]);
@@ -219,6 +232,25 @@ export default function Services() {
 
   const handleOnTypeList = (type: string) => {
     setTypeList(type);
+  };
+
+  const handleOnDeleteKit = async (row: IDataKit): Promise<void> => {
+    try {
+      await api.delete(`pack-services/${row.pack_id}`);
+      addToast({
+        type: 'success',
+        title: 'Sucesso',
+        description: 'Kit foi deletado!'
+      });
+
+      getKitData();
+    } catch (error: any) {
+      addToast({
+        type: 'danger',
+        title: 'ATENÇÃO',
+        description: error.response.data.message
+      });
+    }
   };
 
   const handleOnSubmit = useCallback(
@@ -481,13 +513,13 @@ export default function Services() {
           </table>
         )}
         {typeList === 'kits' && (
-          <table>
+          <TableKits>
             <thead>
               <tr>
                 <th>#</th>
-                <th>Produto</th>
-                <th>Produtos</th>
-                <th>Status</th>
+                <th>Título</th>
+                <th>Qtd. Produtos</th>
+                <th>Descrição</th>
                 <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
               </tr>
             </thead>
@@ -497,9 +529,9 @@ export default function Services() {
                 <tr key={row.pack_id}>
                   <td>{row.pack_id}</td>
                   <td>{row.title}</td>
-                  <td>{row.services.map((item: any, index: any) => (index ? ', ' : '') + item)}</td>
-                  <td>
-                    <Switch
+                  <td>{row?.services?.length}</td>
+                  <td className="fieldLongText">
+                    {/* <Switch
                       onChange={() => handleList(row.service_id)}
                       // checked={
                       //   listSelected.includes(row.service_id) || row.flag === 'true' ? true : false
@@ -508,7 +540,8 @@ export default function Services() {
                       uncheckedIcon={false}
                       checkedIcon={false}
                       onColor="#0046B5"
-                    />
+                    /> */}
+                    {row?.description}
                   </td>
                   <td>
                     <div className="fieldTableClients">
@@ -524,8 +557,8 @@ export default function Services() {
                       <ButtonTable typeButton="edit" onClick={() => console.log('row edit', row)} />
                       <Alert
                         title="Atenção"
-                        subtitle="Certeza que gostaria de deletar este Serviço? Ao excluir a acão não poderá ser desfeita."
-                        confirmButton={() => console.log('row delete', row)}
+                        subtitle="Certeza que gostaria de deletar este Kit? Ao excluir a ação não poderá ser desfeita."
+                        confirmButton={() => handleOnDeleteKit(row)}
                       >
                         <ButtonTable typeButton="delete" />
                       </Alert>
@@ -548,7 +581,7 @@ export default function Services() {
                 </td>
               </tr>
             </tfoot>
-          </table>
+          </TableKits>
         )}
       </Table>
 

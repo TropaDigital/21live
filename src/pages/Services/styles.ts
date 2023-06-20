@@ -37,7 +37,7 @@ export const ModalProductWrapper = styled.div`
     color: var(--gray-500);
     font-size: var(--text-small-sm);
     font-weight: var(--weight-regular);
-    
+
     span {
       color: var(--gray-700);
       font-size: var(--text-small-md);
@@ -56,4 +56,13 @@ export const ModalCategoryButtons = styled.div`
   justify-content: space-between;
 
   margin-top: 8px;
-`
+`;
+
+export const TableKits = styled.table`
+  .fieldLongText {
+    max-width: 150px;
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+`;
