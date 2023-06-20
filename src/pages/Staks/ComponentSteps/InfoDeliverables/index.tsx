@@ -5,7 +5,7 @@
 import { useEffect, useState } from 'react';
 
 // Icons
-import { BiCalendar, BiPencil, BiSearchAlt } from 'react-icons/bi';
+import { BiCalendar, BiPencil } from 'react-icons/bi';
 import { FiChevronDown, FiChevronUp, FiMenu } from 'react-icons/fi';
 
 // Components
@@ -31,33 +31,13 @@ import {
 } from './styles';
 
 // Icons
-import { IconCalendar, IconClose, IconPlus } from '../../../../assets/icons';
-
-// Libraries
-import moment from 'moment';
-import {
-  AddProductButton,
-  CloseModalButton,
-  EstimatedHoursOfProducst,
-  Product,
-  ProductListHeader,
-  ProductListWrapper,
-  ProductModalTitle,
-  ProductsModalTop,
-  ProductsModalWrapper,
-  SearchProductsModal
-} from '../../CreateTasks/styles';
-import QuantityInput from '../../../../components/Inputs/QuantityInput';
-import useDebouncedCallback from '../../../../hooks/useDebounced';
-import { CheckboxDefault } from '../../../../components/Inputs/CheckboxDefault';
+import { IconCalendar, IconPlus } from '../../../../assets/icons';
 
 // Hooks
 import { useFetch } from '../../../../hooks/useFetch';
-import { useToast } from '../../../../hooks/toast';
 
 // Utils
-import { multiplyTime } from '../../../../utils/convertTimes';
-import { IProduct, IProductBackend } from '../../../../types';
+import { IProductBackend } from '../../../../types';
 
 interface FormProps {
   [key: string]: any;
@@ -169,7 +149,7 @@ export default function InfoDeliveries({
     title: '',
     indexDelivery: ''
   });
-  const { data: dataSingleProduct } = useFetch<IProductBackend[]>(
+  const { data: dataSingleProduct, fetchData } = useFetch<IProductBackend[]>(
     `project-products-especific/${projectInfo.product_id}`
   );
 
@@ -194,16 +174,17 @@ export default function InfoDeliveries({
   }, [productDigitalPrinted.productTypeSelected]);
 
   useEffect(() => {
+    fetchData();
     if (dataSingleProduct) {
       const productToPass = {
-        description: dataSingleProduct[0].description,
-        flag: dataSingleProduct[0].flag,
-        minutes: dataSingleProduct[0].minutes,
+        description: dataSingleProduct[0]?.description,
+        flag: dataSingleProduct[0]?.flag,
+        minutes: dataSingleProduct[0]?.minutes,
         quantity: '1',
-        service: dataSingleProduct[0].service,
-        service_id: dataSingleProduct[0].service_id,
-        size: dataSingleProduct[0].size,
-        type: dataSingleProduct[0].type
+        service: dataSingleProduct[0]?.service,
+        service_id: dataSingleProduct[0]?.service_id,
+        size: dataSingleProduct[0]?.size,
+        type: dataSingleProduct[0]?.type
       };
       passProductProps(productToPass);
     }
@@ -394,11 +375,12 @@ export default function InfoDeliveries({
                   onClick={() =>
                     setShowDeliveryInfos({
                       deliveryId: row?.deliveryId,
-                      openInfo: showDeliveryInfos?.openInfo ? false : true
+                      openInfo: !showDeliveryInfos?.openInfo
                     })
                   }
                 >
-                  {showDeliveryInfos?.deliveryId === row?.deliveryId ? (
+                  {showDeliveryInfos?.deliveryId === row?.deliveryId &&
+                  showDeliveryInfos.openInfo === true ? (
                     <FiChevronUp />
                   ) : (
                     <FiChevronDown />
@@ -601,12 +583,19 @@ export default function InfoDeliveries({
           <DateInput>
             <InputDefault
               label="Data da entrega"
-              placeholder="00/00/0000"
+              placeholder=""
               name="dateStart"
               type="date"
               icon={BiCalendar}
               onChange={(e) => updateDeliveryDate(e.target.value, dateModal.indexDelivery)}
-              value={'00/00/0000'}
+              value={deliveriesArray.map((row: any) => {
+                if (row.deliveryId === dateModal.indexDelivery) {
+                  const date: any = `${row.deliveryDate.split('/')[2]}/${
+                    row.deliveryDate.split('/')[1]
+                  }/${row.deliveryDate.split('/')[0]}`;
+                  return date;
+                }
+              })}
             />
           </DateInput>
           <ButtonDefault
