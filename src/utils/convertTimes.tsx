@@ -58,8 +58,8 @@ function subtractTime(timePassed: string, timeToSubtract: string): string {
 }
 
 function isTimeConsumedMoreThanPercent(timePassed: string, totalTime: string): string {
-  const timePassedArray: number[] = timePassed.split(':').map(Number);
-  const totalTimeArray: number[] = totalTime.split(':').map(Number);
+  const timePassedArray: number[] = timePassed?.split(':').map(Number);
+  const totalTimeArray: number[] = totalTime?.split(':').map(Number);
 
   const passedSeconds: number =
     timePassedArray[0] * 3600 + timePassedArray[1] * 60 + timePassedArray[2];
