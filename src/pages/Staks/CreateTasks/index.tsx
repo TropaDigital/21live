@@ -45,6 +45,7 @@ import { FinishModal, FinishModalButtons, FinishModalMessage } from '../../Creat
 import { useToast } from '../../../hooks/toast';
 import { useFetch } from '../../../hooks/useFetch';
 import useDebouncedCallback from '../../../hooks/useDebounced';
+import { useAuth } from '../../../hooks/AuthContext';
 
 // Types
 import { IProduct, IProductBackend, ITaskCreate, ServicesProps } from '../../../types';
@@ -67,7 +68,6 @@ import api from '../../../services/api';
 
 // Libraries
 import moment from 'moment';
-import { useAuth } from '../../../hooks/AuthContext';
 
 interface StateProps {
   [key: string]: any;
@@ -203,8 +203,13 @@ export default function CreateTasks() {
 
   useEffect(() => {
     if (location.state !== null) {
-      // setDTOForm(location.state);
-      // setProductsArray(location.state.products);
+      fetchProjects();
+      setProductsArray([]);
+      setDTOForm(location.state);
+      setDTODelivery(location.state.deadlines);
+      setSelectedProject(location.state.product_id);
+      // setProductsArray(location.state.deadlines[0].produtos[0]);
+      console.log('log do array products', productsArray);
       console.log('log do products location', location.state);
     }
   }, [location]);
@@ -321,11 +326,11 @@ export default function CreateTasks() {
 
   const timeConsumedRange = isTimeConsumedMoreThanPercent(
     totalProductsHours,
-    selectedProject ? selectedProject?.tempo : '00:00:00'
+    selectedProject?.tempo ? selectedProject?.tempo : '00:00:00'
   );
 
   const checkTimeoutHasBeenReached = subtractTime(
-    selectedProject ? selectedProject?.tempo : '00:00:00',
+    selectedProject?.tempo ? selectedProject?.tempo : '00:00:00',
     totalProductsHours
   );
 
@@ -736,7 +741,7 @@ export default function CreateTasks() {
       });
       // handleProductQuantity(1, product);
     } else {
-      if (deliveriesSplit) {
+      if (splitDeliveries) {
         handleProductQuantityDeliveries(quantity, product);
       } else {
         handleProductQuantity(quantity, product);
@@ -745,6 +750,7 @@ export default function CreateTasks() {
   };
 
   const handleProductQuantityDeliveries = (value: any, product: any) => {
+    console.log('log do modal number', productsDeliveriesModal.indexDelivery);
     if (
       DTODelivery[productsDeliveriesModal.indexDelivery - 1]?.deliveryProducts.filter(
         (obj: any) => obj.service_id === product.service_id
@@ -985,7 +991,7 @@ export default function CreateTasks() {
   };
 
   useEffect(() => {
-    if (DTOForm.product_id !== '') {
+    if (DTOForm.product_id !== '' && location.state === null) {
       if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel === 'true') {
         setTasksType('horas');
       } else if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel !== 'true') {
@@ -993,8 +999,16 @@ export default function CreateTasks() {
       } else if (infoProjects[0]?.tipo !== 'product') {
         setTasksType('livre');
       }
+    } else {
+      if (location.state.type === 'Produto') {
+        setTasksType('produto');
+      } else if (location.state.type === 'Livre') {
+        setTasksType('livre');
+      } else {
+        setTasksType('horas');
+      }
     }
-  }, [DTOForm, infoProjects]);
+  }, [DTOForm, infoProjects, location]);
 
   const finishCreate = () => {
     setFinishModal(false);
