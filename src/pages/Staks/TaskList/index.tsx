@@ -367,8 +367,8 @@ export default function TaskList() {
                 >
                   <span style={{ marginBottom: '4px', display: 'block' }}>{row.totalTime}</span>
                   <ProgressBar
-                    totalHours={convertToMilliseconds(row.totalTime)}
-                    restHours={convertToMilliseconds('01:20:36')}
+                    totalHours={convertToMilliseconds(row?.totalTime)}
+                    restHours={convertToMilliseconds(row?.timeConsumed)}
                   />
                 </td>
                 {/* <td>Status???</td> */}
