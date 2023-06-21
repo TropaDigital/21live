@@ -215,11 +215,6 @@ export default function CreateTasks() {
     }
   }, [location]);
 
-  // Criar delete DTODelivery
-  // const deleteDelivery = (deliveryId: number) => {
-  //   console.log('log do id da Delivery a ser deletada', deliveryId);
-  // };
-
   const handleUpdateDeliveryDate = (value: any, id: any) => {
     const newDate = moment(value).format('DD/MM/YYYY');
     setDTODelivery((current: any) =>
@@ -998,6 +993,19 @@ export default function CreateTasks() {
     }
   };
 
+  const handleDeleteProduct = (id: any, deliveryId: any) => {
+    console.log('log do delete product', id, deliveryId);
+    // const newArray = productsArray.filter((obj) => obj.service_id !== id);
+    // setProductsArray([]);
+    // setProductsArray(newArray);
+    console.log('log dos produtos array', productsArray);
+    console.log('log dos produtos do delivery', DTODelivery);
+  };
+
+  const handleDeleteDelivery = (id: any) => {
+    console.log('log do delete delivery', id);
+  };
+
   useEffect(() => {
     if (DTOForm.product_id !== '' && location.state === null) {
       if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel === 'true') {
@@ -1027,9 +1035,9 @@ export default function CreateTasks() {
     console.log('log do tipo de task', tasksType);
   }, [tasksType]);
 
-  // useEffect(() => {
-  //   console.log('log do products Array', productsArray);
-  // }, [productsArray]);
+  useEffect(() => {
+    console.log('log do products Array', productsArray);
+  }, [productsArray]);
 
   // useEffect(() => {
   //   console.log('log do Delivery DTO', DTODelivery);
@@ -1139,6 +1147,8 @@ export default function CreateTasks() {
                     handleFormatProduct={handleFormatProduct}
                     passProductProps={handleAddProductFromDeliveries}
                     updateTask={location.state !== null}
+                    deleteDelivery={handleDeleteDelivery}
+                    deleteProduct={handleDeleteProduct}
                   />
                   {!splitDeliveries && tasksType === 'horas' && (
                     <AddTextButton title="Adicionar produto" click={() => setProductsModal(true)} />
