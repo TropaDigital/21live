@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // React
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
 // Icons
 import { BiCode, BiFilter, BiPlus, BiSearchAlt, BiTime } from 'react-icons/bi';
 // Libraries
@@ -167,6 +167,8 @@ export default function Services() {
   const [category, setCategory] = useState<string>('');
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
 
+  const checkboxWrapperRef = useRef<HTMLDivElement>(null);
+
   const handleOnCancel = useCallback(() => {
     setModal({
       isOpen: false,
@@ -218,16 +220,6 @@ export default function Services() {
     });
   };
 
-  const handleOnEditKit = (item: FormDataProps) => {
-    // setData(item);
-
-    setModalKit({
-      isOpen: true,
-      type: `Editar Kit: ${item.service}`,
-      kit: {} as IDataKit
-    });
-  };
-
   const handleOnDelete = async (id: any) => {
     try {
       await api.delete(`services/${id}`);
@@ -260,7 +252,8 @@ export default function Services() {
       return;
     }
 
-    setModalKit({ ...modalKit, type: 'Novo kit', isOpen: true });
+    setSelectedServices([]);
+    setModalKit({ type: 'Novo kit', isOpen: true, kit: {} as IDataKit });
   };
 
   const handleOnDeleteKit = async (row: IDataKit): Promise<void> => {
@@ -280,6 +273,16 @@ export default function Services() {
         description: error.response.data.message
       });
     }
+  };
+
+  const handleOnEditKit = (item: IDataKit): void => {
+    setSelectedServices(item?.services);
+
+    setModalKit({
+      isOpen: true,
+      type: `Editar Kit: ${item.title}`,
+      kit: item
+    });
   };
 
   const handleOnSelectAllServices = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -438,6 +441,15 @@ export default function Services() {
       value: `${estimatedTime.hours}:${estimatedTime.minutes}:00`
     });
   }, [estimatedTime]);
+
+  useEffect(() => {
+    if (data?.length === selectedServices?.length) {
+      const { current } = checkboxWrapperRef;
+
+      const mainCheckbox = current?.querySelector('#main-checkbox') as HTMLInputElement;
+      if (mainCheckbox) mainCheckbox.checked = true;
+    }
+  }, [selectedServices, data, modalKit.isOpen]);
 
   const createCategory = useCallback(
     async (event: any) => {
@@ -651,7 +663,7 @@ export default function Services() {
                   <td>
                     <div className="fieldTableClients">
                       <ButtonTable typeButton="view" onClick={() => handleOnViewKit(row)} />
-                      <ButtonTable typeButton="edit" onClick={() => console.log('row edit', row)} />
+                      <ButtonTable typeButton="edit" onClick={() => handleOnEditKit(row)} />
                       <Alert
                         title="Atenção"
                         subtitle="Certeza que gostaria de deletar este Kit? Ao excluir a ação não poderá ser desfeita."
@@ -871,13 +883,19 @@ export default function Services() {
       >
         <form onSubmit={handleOnCreateKit}>
           <FieldDefault>
-            <InputDefault label="Nome do Kit" placeholder="Digite aqui..." name="title" />
+            <InputDefault
+              label="Nome do Kit"
+              placeholder="Digite aqui..."
+              name="title"
+              defaultValue={modalKit?.kit?.title}
+            />
           </FieldDefault>
           <FieldDefault>
             <TextAreaDefault
               label="Descrição"
               name="description"
               style={{ resize: 'none', width: '100%', height: '80px' }}
+              defaultValue={modalKit?.kit?.description}
             />
           </FieldDefault>
 
@@ -887,7 +905,7 @@ export default function Services() {
                 <p className="service-data header">Serviços</p>
                 <p className="service-data header">Categoria</p>
                 <p className="service-data header">Tipo</p>
-                <div className="service-data center header">
+                <div className="service-data center header" ref={checkboxWrapperRef}>
                   <CheckboxDefault
                     label=""
                     id="main-checkbox"
@@ -927,7 +945,11 @@ export default function Services() {
 
       {/* Modal show kit */}
       <ModalDefault
-        isOpen={modalKit?.type !== 'Novo kit' && modalKit.isOpen}
+        isOpen={
+          modalKit?.type !== 'Novo kit' &&
+          !modalKit?.type?.includes('Editar Kit') &&
+          modalKit.isOpen
+        }
         title={modalKit?.kit?.title}
         onOpenChange={handleOnOpenChangeViewKit}
       >
