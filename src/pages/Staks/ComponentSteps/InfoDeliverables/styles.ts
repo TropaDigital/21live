@@ -243,6 +243,22 @@ export const AddNewDelivery = styled.div`
 export const TableDelivery = styled.div`
   border: 1px solid var(--gray-200);
   border-radius: 8px;
+
+  .delete {
+    cursor: pointer;
+
+    svg {
+      width: 18px;
+      height: 18px;
+      transition: all 0.3s;
+      path {
+        fill: red;
+      }
+      &:hover {
+        transform: scale(1.2) rotate(-90deg);
+      }
+    }
+  }
 `;
 
 export const DateModal = styled.div`

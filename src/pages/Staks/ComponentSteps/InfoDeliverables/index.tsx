@@ -38,6 +38,7 @@ import { useFetch } from '../../../../hooks/useFetch';
 
 // Utils
 import { IProductBackend } from '../../../../types';
+import { IoIosCloseCircleOutline } from 'react-icons/io';
 
 interface FormProps {
   [key: string]: any;
@@ -55,6 +56,8 @@ interface Props {
   handleProducts: (field: string, value: any, product: any) => void;
   deliveriesSplited: boolean;
   deliveriesArray: any[];
+  deleteProduct: (id: number, deliveryId: any) => void;
+  deleteDelivery: (id: number) => void;
   projectInfo: any;
   passProductProps: (product: any) => void;
   updateDeliveryDate: (value: any, id: any) => void;
@@ -112,6 +115,8 @@ export default function InfoDeliveries({
   dataTypes,
   handleProducts,
   deliveriesSplited,
+  deleteDelivery,
+  deleteProduct,
   projectInfo,
   errorCategory,
   addDelivery,
@@ -177,7 +182,7 @@ export default function InfoDeliveries({
 
   useEffect(() => {
     if (!updateTask) {
-      fetchData();
+      // fetchData();
       if (dataSingleProduct) {
         const productToPass = {
           description: dataSingleProduct[0]?.description,
@@ -192,7 +197,7 @@ export default function InfoDeliveries({
         passProductProps(productToPass);
       }
     }
-  }, [dataSingleProduct]);
+  }, []);
 
   return (
     <>
@@ -300,8 +305,9 @@ export default function InfoDeliveries({
                       }
                       placeHolder="Selecione..."
                       error={
-                        errorCategory.length > 0 && errorCategory?.product_id === row.service_id
-                          ? 'Campo com erro'
+                        Object.keys(errorCategory).length > 0 &&
+                        errorCategory?.product_id === row.service_id
+                          ? errorCategory?.Tipo
                           : ''
                       }
                     >
@@ -461,7 +467,7 @@ export default function InfoDeliveries({
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '18px',
-                                height: '82px'
+                                height: '72px'
                               }}
                             >
                               <InputDefault
@@ -547,8 +553,11 @@ export default function InfoDeliveries({
                               <option value="digital">Digital</option>
                             </SelectDefault>
                           </td>
-                          <td style={{ cursor: 'pointer' }}>
-                            <FiMenu />
+                          <td
+                            className="delete"
+                            onClick={() => deleteProduct(product.service_id, row?.deliveryId)}
+                          >
+                            <IoIosCloseCircleOutline />
                           </td>
                         </tr>
                       ))}
