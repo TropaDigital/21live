@@ -57,9 +57,14 @@ export default function TaskList() {
       task_id: '',
       title: '',
       tenant_id: '',
+      tenant: '',
       product_id: '',
+      product_period: '',
+      project: '',
+      project_category: '',
       type: '',
       flow_id: '',
+      flow: '',
       description: '',
       creation_description: '',
       creation_date_end: '',
@@ -104,7 +109,7 @@ export default function TaskList() {
     }
   };
 
-  const handleOpenModalView = (task: ITaskCreate) => {
+  const handleOpenModalView = (task: any) => {
     setModalViewTask({
       isOpen: true,
       type: `Resumo da tarefa: ${task.title}`,
@@ -112,9 +117,14 @@ export default function TaskList() {
         task_id: task.task_id,
         title: task.title,
         tenant_id: task.tenant_id,
+        tenant: task.tenant,
         product_id: task.product_id,
+        product_period: task.product_period,
+        project: task.project,
+        project_category: task.project_category,
         type: task.type,
         flow_id: task.flow_id,
+        flow: task.flow,
         description: task.description,
         creation_description: task.creation_description,
         creation_date_end: task.creation_date_end,
@@ -135,9 +145,14 @@ export default function TaskList() {
         task_id: '',
         title: '',
         tenant_id: '',
+        tenant: '',
         product_id: '',
+        product_period: '',
+        project: '',
+        project_category: '',
         type: '',
         flow_id: '',
+        flow: '',
         description: '',
         creation_description: '',
         creation_date_end: '',
@@ -161,8 +176,14 @@ export default function TaskList() {
       const task = {
         title: response.data.result[0].title,
         tenant_id: response.data.result[0].tenant_id,
+        tenant: response.data.result[0].tenant,
         product_id: response.data.result[0].product_id,
+        product_period: response.data.result[0].product_period,
+        project: response.data.result[0].project,
+        project_category: response.data.result[0].project_category,
+        project_id: id,
         flow_id: response.data.result[0].flow_id,
+        flow: response.data.result[0].flow,
         description: response.data.result[0].description,
         creation_description: response.data.result[0].creation_description,
         creation_date_end: response.data.result[0].creation_date_end,
@@ -423,12 +444,12 @@ export default function TaskList() {
 
               <SummaryTaskInfo>
                 <div className="title-info">Projeto/Contrato:</div>
-                <div className="info">{modalViewTask.task.step} - ???</div>
+                <div className="info">{modalViewTask.task.project}</div>
               </SummaryTaskInfo>
 
               <SummaryTaskInfo>
                 <div className="title-info">Fluxo:</div>
-                <div className="info">{modalViewTask.task.flow_id} - ???</div>
+                <div className="info">{modalViewTask.task.flow}</div>
               </SummaryTaskInfo>
 
               <SummaryTaskInfo>
