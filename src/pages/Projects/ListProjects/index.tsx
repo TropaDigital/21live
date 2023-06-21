@@ -371,7 +371,7 @@ export default function ListProjects() {
                 <td>
                   <div className="fieldTableClients">
                     <ButtonTable typeButton="view" onClick={() => handleOpenModal(row)} />
-                    <ButtonTable typeButton="edit" onClick={() => handleEditProject(row)} />
+                    {/* <ButtonTable typeButton="edit" onClick={() => handleEditProject(row)} /> */}
                     <Alert
                       title="Atenção"
                       subtitle="Certeza que gostaria de deletar este Projeto? Ao excluir a ação não poderá ser desfeita."
