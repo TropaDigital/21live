@@ -368,12 +368,22 @@ export default function Services() {
           <div className="groupTable">
             {typeList === 'produtos' && (
               <h2>
-                Lista de produtos <strong>{data?.length} produtos</strong>
+                Lista de produtos{' '}
+                <strong>
+                  {data?.length && data?.length > 1
+                    ? `${data?.length} produtos`
+                    : `${data?.length} produto`}
+                </strong>
               </h2>
             )}
             {typeList === 'kits' && (
               <h2>
-                Lista de kits <strong>02 kits</strong>
+                Lista de kits{' '}
+                <strong>
+                  {dataKits?.length && dataKits?.length > 1
+                    ? `${dataKits?.length} kits`
+                    : `${dataKits?.length} kit`}{' '}
+                </strong>
               </h2>
             )}
             {/* <span>Acompanhe seus produtos e serviços pré-cadastrados</span> */}
