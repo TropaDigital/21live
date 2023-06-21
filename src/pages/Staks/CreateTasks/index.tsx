@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable import-helpers/order-imports */
 // React
@@ -206,9 +207,9 @@ export default function CreateTasks() {
       fetchProjects();
       setProductsArray([]);
       setDTOForm(location.state);
-      setDTODelivery(location.state.deadlines);
       setSelectedProject(location.state.product_id);
-      // setProductsArray(location.state.deadlines[0].produtos[0]);
+      setProductsArray(location.state.deadlines[0]?.produtos);
+      setDTODelivery(location.state.deadlines);
       console.log('log do array products', productsArray);
       console.log('log do products location', location.state);
     }
@@ -890,8 +891,11 @@ export default function CreateTasks() {
             }
           ]
         };
-
-        await api.post(`tasks`, createNewData);
+        if (location.state !== null) {
+          await api.put(`tasks/${location.state.project_id}`, createNewData);
+        } else {
+          await api.post(`tasks`, createNewData);
+        }
       } else if (tasksType === 'produto') {
         const deadline = {
           date_end: DTOForm?.creation_date_end,
@@ -913,7 +917,11 @@ export default function CreateTasks() {
           step
         };
 
-        await api.post(`tasks`, createNewData);
+        if (location.state !== null) {
+          await api.put(`tasks/${location.state.project_id}`, createNewData);
+        } else {
+          await api.post(`tasks`, createNewData);
+        }
       } else {
         const deadlines = DTODelivery.map((row: any) => {
           return {
@@ -937,13 +945,13 @@ export default function CreateTasks() {
           step
         };
 
-        await api.post(`tasks`, createNewData);
+        if (location.state !== null) {
+          await api.put(`tasks/${location.state.project_id}`, createNewData);
+        } else {
+          await api.post(`tasks`, createNewData);
+        }
       }
 
-      // if (modal.type === 'Criar novo Projeto/Contrato') {
-      // } else {
-      //   await api.put(`project/${formData.project_id}`, updateData);
-      // }
       setFinishModal(true);
     } catch (e: any) {
       addToast({
@@ -1000,9 +1008,9 @@ export default function CreateTasks() {
         setTasksType('livre');
       }
     } else {
-      if (location.state.type === 'Produto') {
+      if (location.state?.type === 'Produto') {
         setTasksType('produto');
-      } else if (location.state.type === 'Livre') {
+      } else if (location.state?.type === 'Livre') {
         setTasksType('livre');
       } else {
         setTasksType('horas');
@@ -1130,6 +1138,7 @@ export default function CreateTasks() {
                     handleDescriptionProduct={handleDescriptionProduct}
                     handleFormatProduct={handleFormatProduct}
                     passProductProps={handleAddProductFromDeliveries}
+                    updateTask={location.state !== null}
                   />
                   {!splitDeliveries && tasksType === 'horas' && (
                     <AddTextButton title="Adicionar produto" click={() => setProductsModal(true)} />
@@ -1181,6 +1190,7 @@ export default function CreateTasks() {
                     projectInfos={selectedProject}
                     summaryExtrainfos={selectedSummaryInfos}
                     taskType={tasksType}
+                    updateTask={location.state !== null}
                   />
                 </>
               )}
@@ -1198,6 +1208,7 @@ export default function CreateTasks() {
                   projectInfos={selectedProject}
                   summaryExtrainfos={selectedSummaryInfos}
                   taskType={tasksType}
+                  updateTask={location.state !== null}
                 />
               )}
               {tasksType !== 'horas' && (
@@ -1209,6 +1220,7 @@ export default function CreateTasks() {
                   projectInfos={selectedProject}
                   summaryExtrainfos={selectedSummaryInfos}
                   taskType={tasksType}
+                  updateTask={location.state !== null}
                 />
               )}
             </>
