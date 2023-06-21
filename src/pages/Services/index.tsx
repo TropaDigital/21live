@@ -54,6 +54,7 @@ import {
 } from './styles';
 import { SummaryCardTitle } from '../CreateProject/styles';
 import { IconArrowDown } from '../../assets/icons';
+import { CheckboxDefault } from '../../components/Inputs/CheckboxDefault';
 
 interface ServicesProps {
   service_id?: number | string;
@@ -164,6 +165,7 @@ export default function Services() {
     minutes: ''
   });
   const [category, setCategory] = useState<string>('');
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
 
   const handleOnCancel = useCallback(() => {
     setModal({
@@ -249,6 +251,18 @@ export default function Services() {
     setTypeList(type);
   };
 
+  const handleOnOpenCreateModal = (): void => {
+    if (typeList === 'produtos') {
+      setModal({
+        isOpen: true,
+        type: 'Novo produto'
+      });
+      return;
+    }
+
+    setModalKit({ ...modalKit, type: 'Novo kit', isOpen: true });
+  };
+
   const handleOnDeleteKit = async (row: IDataKit): Promise<void> => {
     try {
       await api.delete(`pack-services/${row.pack_id}`);
@@ -268,10 +282,55 @@ export default function Services() {
     }
   };
 
+  const handleOnSelectAllServices = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    if (e?.currentTarget?.checked) {
+      const list = data?.map((item) => item.service_id);
+      setSelectedServices(list as string[]);
+      return;
+    }
+
+    setSelectedServices([]);
+  };
+
+  const handleOnSelectService = (e: React.ChangeEvent<HTMLInputElement>, id: string): void => {
+    if (typeof window === 'undefined') return;
+
+    if (e?.currentTarget?.checked) {
+      setSelectedServices([...selectedServices, id]);
+      return;
+    }
+
+    const mainCheckbox: HTMLInputElement | null = document.querySelector('#main-checkbox');
+
+    if (mainCheckbox) mainCheckbox.checked = false;
+
+    const list = selectedServices.filter((item) => item !== id);
+    setSelectedServices(list);
+  };
+
+  const handleOnCreateKit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    e.preventDefault();
+
+    const formData = new FormData(e?.currentTarget);
+    const data = Object.fromEntries(formData);
+
+    const newData: { [key: string]: any } = { ...data };
+    newData.services = selectedServices;
+
+    api?.post(`/pack-services`, newData);
+    setModalKit({ ...modalKit, isOpen: false });
+    addToast({
+      type: 'success',
+      title: 'Sucesso',
+      description: 'Kit foi criado!'
+    });
+    getKitData();
+  };
+
   const handleOnOpenChangeViewKit = (): void => {
     setModalKit({
       isOpen: false,
-      type: 'new',
+      type: '',
       kit: {} as IDataKit
     });
 
@@ -281,7 +340,7 @@ export default function Services() {
   const handleOnViewKit = (row: IDataKit): void => {
     setModalKit({
       isOpen: true,
-      type: 'view',
+      type: '',
       kit: row
     });
   };
@@ -303,10 +362,6 @@ export default function Services() {
 
     setIsOpenRowShowModalKit(cloneOpenRows);
   };
-
-  useEffect(() => {
-    console.log('log do modal kit', isOpenRowShowModalKit);
-  }, [isOpenRowShowModalKit]);
 
   const handleOnSubmit = useCallback(
     async (event: any) => {
@@ -435,17 +490,9 @@ export default function Services() {
             <BiPlus color="#fff" />
             Adicionar categoria
           </ButtonDefault>
-          <ButtonDefault
-            typeButton="success"
-            onClick={() =>
-              setModal({
-                isOpen: !modal.isOpen,
-                type: 'Novo produto'
-              })
-            }
-          >
+          <ButtonDefault typeButton="success" onClick={handleOnOpenCreateModal}>
             <BiPlus color="#fff" />
-            Adicionar produto
+            Adicionar {typeList === 'produtos' ? 'produto' : 'kit'}
           </ButtonDefault>
         </>
       </HeaderPage>
@@ -816,9 +863,71 @@ export default function Services() {
         </ModalProductWrapper>
       </ModalDefault>
 
-      {/* Modal show kit */}
+      {/* Modal create kit */}
       <ModalDefault
         isOpen={modalKit.isOpen}
+        title={modalKit.type}
+        onOpenChange={() => setModalKit({ ...modalKit, isOpen: false })}
+      >
+        <form onSubmit={handleOnCreateKit}>
+          <FieldDefault>
+            <InputDefault label="Nome do Kit" placeholder="Digite aqui..." name="title" />
+          </FieldDefault>
+          <FieldDefault>
+            <TextAreaDefault
+              label="Descrição"
+              name="description"
+              style={{ resize: 'none', width: '100%', height: '80px' }}
+            />
+          </FieldDefault>
+
+          <ShowServicesContainer>
+            <ShowServiceData>
+              <div className="service-show-row">
+                <p className="service-data header">Serviços</p>
+                <p className="service-data header">Categoria</p>
+                <p className="service-data header">Tipo</p>
+                <div className="service-data center header">
+                  <CheckboxDefault
+                    label=""
+                    id="main-checkbox"
+                    onChange={handleOnSelectAllServices}
+                  />
+                </div>
+              </div>
+            </ShowServiceData>
+            <ShowServiceData>
+              {data?.map((row) => (
+                <div className="service-show-row" key={row?.service_id}>
+                  <p className="service-data">{row?.service}</p>
+                  <p className="service-data">{row?.category}</p>
+                  <p className="service-data">{row?.type}</p>
+                  <div className="service-data center">
+                    <CheckboxDefault
+                      label=""
+                      checked={selectedServices?.includes(row?.service_id as string) ? true : false}
+                      onChange={(e) => handleOnSelectService(e, row?.service_id as string)}
+                    />
+                  </div>
+                </div>
+              ))}
+            </ShowServiceData>
+          </ShowServicesContainer>
+
+          <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
+            <ButtonDefault typeButton="dark" isOutline onClick={handleOnCancel}>
+              Descartar
+            </ButtonDefault>
+            <ButtonDefault typeButton="primary" isOutline type="submit">
+              Salvar
+            </ButtonDefault>
+          </FooterModal>
+        </form>
+      </ModalDefault>
+
+      {/* Modal show kit */}
+      <ModalDefault
+        isOpen={modalKit?.type !== 'Novo kit' && modalKit.isOpen}
         title={modalKit?.kit?.title}
         onOpenChange={handleOnOpenChangeViewKit}
       >
@@ -843,10 +952,10 @@ export default function Services() {
             <ShowServicesContainer>
               <ShowServiceData>
                 <div className="service-show-row">
-                  <p className="service-data header">Serviços</p>
-                  <p className="service-data header">Categoria</p>
-                  <p className="service-data header">Tipo</p>
-                  <p className="service-data header">-</p>
+                  <p className="service-data center header">Serviços</p>
+                  <p className="service-data center header">Categoria</p>
+                  <p className="service-data center header">Tipo</p>
+                  <p className="service-data center header">-</p>
                 </div>
               </ShowServiceData>
               {modalKit?.kit?.serviceslist?.map((row) => (
@@ -855,11 +964,11 @@ export default function Services() {
                     className="service-show-row"
                     onClick={() => handleOnShowKitDetails(row?.service)}
                   >
-                    <p className="service-data">{row?.service}</p>
-                    <p className="service-data">{row?.category}</p>
-                    <p className="service-data">{row?.type}</p>
+                    <p className="service-data center">{row?.service}</p>
+                    <p className="service-data center">{row?.category}</p>
+                    <p className="service-data center">{row?.type}</p>
                     <p
-                      className={`service-data chevron ${
+                      className={`service-data center chevron ${
                         isOpenRowShowModalKit?.[row?.service] === true ? 'show' : ''
                       }`}
                     >
