@@ -85,6 +85,7 @@ interface Props {
   errorCategory: any;
   addDelivery: () => void;
   addProducts: (isOpen: boolean, title: string, indexDelivery: string) => void;
+  updateTask: boolean;
 }
 
 interface OpenMenuProps {
@@ -121,7 +122,8 @@ export default function InfoDeliveries({
   handleTaskType,
   handleDescriptionProduct,
   handleFormatProduct,
-  deliveriesArray
+  deliveriesArray,
+  updateTask
 }: Props) {
   const [descriptionText, setDescriptionText] = useState<any>({
     inputId: '',
@@ -150,7 +152,7 @@ export default function InfoDeliveries({
     indexDelivery: ''
   });
   const { data: dataSingleProduct, fetchData } = useFetch<IProductBackend[]>(
-    `project-products-especific/${projectInfo.product_id}`
+    `project-products-especific/${projectInfo?.product_id}`
   );
 
   useEffect(() => {
@@ -174,19 +176,21 @@ export default function InfoDeliveries({
   }, [productDigitalPrinted.productTypeSelected]);
 
   useEffect(() => {
-    fetchData();
-    if (dataSingleProduct) {
-      const productToPass = {
-        description: dataSingleProduct[0]?.description,
-        flag: dataSingleProduct[0]?.flag,
-        minutes: dataSingleProduct[0]?.minutes,
-        quantity: '1',
-        service: dataSingleProduct[0]?.service,
-        service_id: dataSingleProduct[0]?.service_id,
-        size: dataSingleProduct[0]?.size,
-        type: dataSingleProduct[0]?.type
-      };
-      passProductProps(productToPass);
+    if (!updateTask) {
+      fetchData();
+      if (dataSingleProduct) {
+        const productToPass = {
+          description: dataSingleProduct[0]?.description,
+          flag: dataSingleProduct[0]?.flag,
+          minutes: dataSingleProduct[0]?.minutes,
+          quantity: '1',
+          service: dataSingleProduct[0]?.service,
+          service_id: dataSingleProduct[0]?.service_id,
+          size: dataSingleProduct[0]?.size,
+          type: dataSingleProduct[0]?.type
+        };
+        passProductProps(productToPass);
+      }
     }
   }, [dataSingleProduct]);
 
@@ -235,7 +239,7 @@ export default function InfoDeliveries({
                             text: e.target.value.slice(0, 40)
                           })
                         }
-                        //   error={error?.date_start}
+                        error={errorCategory?.description}
                       />
                       <EditableFormat
                         className={descriptionText.inputId === row.service_id ? 'edit' : ''}
@@ -267,7 +271,7 @@ export default function InfoDeliveries({
                             : true
                         }
                         onChange={(e: any) => setFormatType(e.target.value)}
-                        //   error={error?.date_start}
+                        error={errorCategory?.size}
                       />
                       <EditableFormat
                         className={editFormat.productIndex === row.service_id ? 'edit' : ''}
@@ -295,7 +299,11 @@ export default function InfoDeliveries({
                         })
                       }
                       placeHolder="Selecione..."
-                      error={errorCategory.product_id === row.service_id ? 'Campo vazio' : ''}
+                      error={
+                        errorCategory.length > 0 && errorCategory?.product_id === row.service_id
+                          ? 'Campo com erro'
+                          : ''
+                      }
                     >
                       {dataTypes?.map((row: TypeProps) => (
                         <option key={row.type_id} value={row.type_id}>
