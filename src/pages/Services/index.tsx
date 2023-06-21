@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // React
-import { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 // Icons
 import { BiCode, BiFilter, BiPlus, BiSearchAlt, BiTime } from 'react-icons/bi';
 // Libraries
@@ -47,8 +47,13 @@ import {
   EstimatedTimeInputs,
   ModalCategoryButtons,
   ModalProductWrapper,
+  ShowServiceData,
+  ShowServiceDetails,
+  ShowServicesContainer,
   TableKits
 } from './styles';
+import { SummaryCardTitle } from '../CreateProject/styles';
+import { IconArrowDown } from '../../assets/icons';
 
 interface ServicesProps {
   service_id?: number | string;
@@ -83,6 +88,12 @@ interface IDataKit {
   title: string;
   services: string[];
   serviceslist?: ServicesProps[];
+}
+
+interface IModalKit {
+  isOpen: boolean;
+  type: string;
+  kit: IDataKit;
 }
 
 export default function Services() {
@@ -121,10 +132,13 @@ export default function Services() {
     }
   });
 
-  const [modalKit, setModalKit] = useState({
+  const [modalKit, setModalKit] = useState<IModalKit>({
     isOpen: false,
-    type: ''
+    type: '',
+    kit: {} as IDataKit
   });
+
+  const [isOpenRowShowModalKit, setIsOpenRowShowModalKit] = useState<{ [key: string]: boolean }>();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [search, setSearch] = useState('');
@@ -207,7 +221,8 @@ export default function Services() {
 
     setModalKit({
       isOpen: true,
-      type: `Editar Kit: ${item.service}`
+      type: `Editar Kit: ${item.service}`,
+      kit: {} as IDataKit
     });
   };
 
@@ -252,6 +267,46 @@ export default function Services() {
       });
     }
   };
+
+  const handleOnOpenChangeViewKit = (): void => {
+    setModalKit({
+      isOpen: false,
+      type: 'new',
+      kit: {} as IDataKit
+    });
+
+    setIsOpenRowShowModalKit({});
+  };
+
+  const handleOnViewKit = (row: IDataKit): void => {
+    setModalKit({
+      isOpen: true,
+      type: 'view',
+      kit: row
+    });
+  };
+
+  const handleOnShowKitDetails = (currentRow: string): void => {
+    const cloneOpenRows = { ...isOpenRowShowModalKit };
+
+    if (cloneOpenRows[currentRow] === true) {
+      cloneOpenRows[currentRow] = false;
+      setIsOpenRowShowModalKit(cloneOpenRows);
+      return;
+    }
+
+    for (const item in cloneOpenRows) {
+      cloneOpenRows[item] = false;
+    }
+
+    cloneOpenRows[currentRow] = true;
+
+    setIsOpenRowShowModalKit(cloneOpenRows);
+  };
+
+  useEffect(() => {
+    console.log('log do modal kit', isOpenRowShowModalKit);
+  }, [isOpenRowShowModalKit]);
 
   const handleOnSubmit = useCallback(
     async (event: any) => {
@@ -405,7 +460,10 @@ export default function Services() {
             )}
             {typeList === 'kits' && (
               <h2>
-                Lista de kits <strong>02 kits</strong>
+                Lista de kits{' '}
+                <strong>
+                  {dataKits?.length} {dataKits?.length === 1 ? 'kit' : 'kits'}
+                </strong>
               </h2>
             )}
             {/* <span>Acompanhe seus produtos e serviços pré-cadastrados</span> */}
@@ -545,15 +603,7 @@ export default function Services() {
                   </td>
                   <td>
                     <div className="fieldTableClients">
-                      <ButtonTable
-                        typeButton="view"
-                        onClick={() =>
-                          setModalKit({
-                            isOpen: true,
-                            type: ''
-                          })
-                        }
-                      />
+                      <ButtonTable typeButton="view" onClick={() => handleOnViewKit(row)} />
                       <ButtonTable typeButton="edit" onClick={() => console.log('row edit', row)} />
                       <Alert
                         title="Atenção"
@@ -769,15 +819,74 @@ export default function Services() {
       {/* Modal show kit */}
       <ModalDefault
         isOpen={modalKit.isOpen}
-        title={'Mostrar o kit'}
-        onOpenChange={() =>
-          setModalKit({
-            isOpen: false,
-            type: ''
-          })
-        }
+        title={modalKit?.kit?.title}
+        onOpenChange={handleOnOpenChangeViewKit}
       >
-        <div>Vai mostrar kit</div>
+        <ModalProductWrapper>
+          <Summary>
+            <div className="title">Informações do Kit</div>
+            <SummaryInfoWrapper>
+              <SummaryTaskInfo>
+                <div className="title-info">Descrição:</div>
+                <div className="info">{modalKit?.kit?.description}</div>
+              </SummaryTaskInfo>
+
+              <SummaryTaskInfo>
+                <div className="title-info">Qtd. de Serviços:</div>
+                <div className="info">{modalKit?.kit?.services?.length}</div>
+              </SummaryTaskInfo>
+            </SummaryInfoWrapper>
+          </Summary>
+
+          <Summary>
+            <div className="title">Lista de Serviços</div>
+            <ShowServicesContainer>
+              <ShowServiceData>
+                <div className="service-show-row">
+                  <p className="service-data header">Serviços</p>
+                  <p className="service-data header">Categoria</p>
+                  <p className="service-data header">Tipo</p>
+                  <p className="service-data header">-</p>
+                </div>
+              </ShowServiceData>
+              {modalKit?.kit?.serviceslist?.map((row) => (
+                <ShowServiceData key={row?.service_id}>
+                  <div
+                    className="service-show-row"
+                    onClick={() => handleOnShowKitDetails(row?.service)}
+                  >
+                    <p className="service-data">{row?.service}</p>
+                    <p className="service-data">{row?.category}</p>
+                    <p className="service-data">{row?.type}</p>
+                    <p
+                      className={`service-data chevron ${
+                        isOpenRowShowModalKit?.[row?.service] === true ? 'show' : ''
+                      }`}
+                    >
+                      <IconArrowDown />
+                    </p>
+                  </div>
+                  <ShowServiceDetails
+                    className={isOpenRowShowModalKit?.[row?.service] === true ? 'isOpen' : 'hidden'}
+                  >
+                    <div className="detailsContainer">
+                      <p className="detailTitle">Descrição:</p>
+                      <p className="detailValue">{row?.description}</p>
+                    </div>
+                    <div className="detailsContainer">
+                      <p className="detailTitle">Tamanho:</p>
+                      <p className="detailValue">{row?.size}</p>
+                    </div>
+                    <div className="detailsContainer">
+                      <p className="detailTitle">Tempo:</p>
+                      <p className="detailValue">{row?.minutes}</p>
+                    </div>
+                  </ShowServiceDetails>
+                </ShowServiceData>
+              ))}
+            </ShowServicesContainer>
+          </Summary>
+        </ModalProductWrapper>
       </ModalDefault>
 
       {/* Modal create category */}

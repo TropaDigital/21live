@@ -39,6 +39,10 @@ export const Summary = styled.div`
       height: 56px;
     }
   }
+
+  &.hidden {
+    display: none;
+  }
 `;
 
 export const SummaryCard = styled.div`
