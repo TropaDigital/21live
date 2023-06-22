@@ -138,6 +138,13 @@ export const ShowServiceData = styled.div`
       justify-content: center;
     }
 
+    &.service {
+      white-space: nowrap;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     &.chevron {
       transition: all 300ms;
 

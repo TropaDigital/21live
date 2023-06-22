@@ -330,6 +330,31 @@ export default function Services() {
     getKitData();
   };
 
+  const handleOnUpdateKit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    e.preventDefault();
+
+    try {
+      const formData = new FormData(e?.currentTarget);
+      const data = Object.fromEntries(formData);
+
+      const newData: { [key: string]: any } = { ...data };
+      newData.services = selectedServices;
+
+      api?.put(`/pack-services/${modalKit.kit.pack_id}`, newData)?.then(() => {
+        getKitData();
+      });
+
+      setModalKit({ ...modalKit, isOpen: false });
+      addToast({
+        type: 'success',
+        title: 'Sucesso',
+        description: 'Kit foi atualizado!'
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const handleOnOpenChangeViewKit = (): void => {
     setModalKit({
       isOpen: false,
@@ -443,12 +468,16 @@ export default function Services() {
   }, [estimatedTime]);
 
   useEffect(() => {
-    if (data?.length === selectedServices?.length) {
-      const { current } = checkboxWrapperRef;
+    function handleCheckbox(): void {
+      if (data?.length === selectedServices?.length) {
+        const { current } = checkboxWrapperRef;
 
-      const mainCheckbox = current?.querySelector('#main-checkbox') as HTMLInputElement;
-      if (mainCheckbox) mainCheckbox.checked = true;
+        const mainCheckbox = current?.querySelector('#main-checkbox') as HTMLInputElement;
+        if (mainCheckbox) mainCheckbox.checked = true;
+      }
     }
+
+    handleCheckbox();
   }, [selectedServices, data, modalKit.isOpen]);
 
   const createCategory = useCallback(
@@ -881,7 +910,7 @@ export default function Services() {
         title={modalKit.type}
         onOpenChange={() => setModalKit({ ...modalKit, isOpen: false })}
       >
-        <form onSubmit={handleOnCreateKit}>
+        <form onSubmit={modalKit?.type?.includes('Editar') ? handleOnUpdateKit : handleOnCreateKit}>
           <FieldDefault>
             <InputDefault
               label="Nome do Kit"
@@ -899,38 +928,46 @@ export default function Services() {
             />
           </FieldDefault>
 
-          <ShowServicesContainer>
-            <ShowServiceData>
-              <div className="service-show-row">
-                <p className="service-data header">Serviços</p>
-                <p className="service-data header">Categoria</p>
-                <p className="service-data header">Tipo</p>
-                <div className="service-data center header" ref={checkboxWrapperRef}>
-                  <CheckboxDefault
-                    label=""
-                    id="main-checkbox"
-                    onChange={handleOnSelectAllServices}
-                  />
-                </div>
-              </div>
-            </ShowServiceData>
-            <ShowServiceData>
-              {data?.map((row) => (
-                <div className="service-show-row" key={row?.service_id}>
-                  <p className="service-data">{row?.service}</p>
-                  <p className="service-data">{row?.category}</p>
-                  <p className="service-data">{row?.type}</p>
-                  <div className="service-data center">
+          <Summary>
+            <div className="title">Selecione os Serviços</div>
+            <ShowServicesContainer>
+              <ShowServiceData>
+                <div className="service-show-row">
+                  <p className="service-data header">Serviços</p>
+                  <p className="service-data header">Categoria</p>
+                  <p className="service-data header">Tipo</p>
+                  <div className="service-data center header" ref={checkboxWrapperRef}>
                     <CheckboxDefault
                       label=""
-                      checked={selectedServices?.includes(row?.service_id as string) ? true : false}
-                      onChange={(e) => handleOnSelectService(e, row?.service_id as string)}
+                      id="main-checkbox"
+                      checked={data?.length === selectedServices?.length ? true : false}
+                      onChange={handleOnSelectAllServices}
                     />
                   </div>
                 </div>
-              ))}
-            </ShowServiceData>
-          </ShowServicesContainer>
+              </ShowServiceData>
+              <ShowServiceData>
+                {data?.map((row) => (
+                  <div className="service-show-row" key={row?.service_id}>
+                    <p className="service-data service" title={row?.service}>
+                      {row?.service}
+                    </p>
+                    <p className="service-data">{row?.category}</p>
+                    <p className="service-data">{row?.type}</p>
+                    <div className="service-data center">
+                      <CheckboxDefault
+                        label=""
+                        checked={
+                          selectedServices?.includes(row?.service_id as string) ? true : false
+                        }
+                        onChange={(e) => handleOnSelectService(e, row?.service_id as string)}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </ShowServiceData>
+            </ShowServicesContainer>
+          </Summary>
 
           <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
             <ButtonDefault typeButton="dark" isOutline onClick={handleOnCancel}>
