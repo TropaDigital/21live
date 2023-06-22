@@ -49,6 +49,10 @@ export default function SummaryTasks({
 
   // const deadlineTotal = deadlineLength.reduce((partialSum: any, acc: any) => partialSum + acc, 0);
 
+  const totalProducst = selectedProducts.reduce((accumulator: any, current: any) => {
+    return accumulator + current.deliveryProducts.length;
+  }, 0);
+
   return (
     <SummaryWrapper>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
@@ -226,7 +230,7 @@ export default function SummaryTasks({
         {taskType === 'horas' && (
           <div className="item-hours">
             {/* Total de itens: <span>{selectedProducts.length + deadlineTotal}</span> */}
-            Total de itens: <span>{selectedProducts.length}</span>
+            Total de itens: <span>{totalProducst}</span>
           </div>
         )}
         <div className="item-hours">
