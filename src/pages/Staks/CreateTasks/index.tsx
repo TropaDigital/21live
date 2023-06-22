@@ -216,11 +216,10 @@ export default function CreateTasks() {
   }, [location]);
 
   const handleUpdateDeliveryDate = (value: any, id: any) => {
-    const newDate = moment(value).format('DD/MM/YYYY');
     setDTODelivery((current: any) =>
       current.map((obj: { deliveryId: any }) => {
         if (obj.deliveryId === id) {
-          return { ...obj, deliveryDate: newDate };
+          return { ...obj, deliveryDate: value };
         }
         return obj;
       })
@@ -1004,16 +1003,26 @@ export default function CreateTasks() {
 
   const handleDeleteProduct = (id: any, deliveryId: any) => {
     console.log('log do delete product', id, deliveryId);
-    // const newArray = productsArray.filter((obj) => obj.service_id !== id);
-    // setProductsArray([]);
-    // setProductsArray(newArray);
-    console.log('log dos produtos array', productsArray);
-    console.log('log dos produtos do delivery', DTODelivery);
+    const newArray = productsArray.filter((obj) => obj.service_id !== id);
+    setProductsArray([]);
+    setProductsArray(newArray);
+    const updatedDeliveryArray = DTODelivery.map((delivery) => {
+      if (delivery.deliveryId === deliveryId) {
+        return {
+          ...delivery,
+          deliveryProducts: delivery.deliveryProducts.filter(
+            (product: any) => product.service_id !== id
+          )
+        };
+      }
+      return delivery;
+    });
+    setDTODelivery(updatedDeliveryArray);
   };
 
   const handleDeleteDelivery = (id: any) => {
     console.log('log do delete delivery', id);
-    console.log('log dos produtos do delivery', DTODelivery);
+    setDTODelivery(DTODelivery.filter((obj) => obj.deliveryId !== id));
   };
 
   useEffect(() => {
@@ -1053,13 +1062,13 @@ export default function CreateTasks() {
   //   console.log('log do Delivery DTO', DTODelivery);
   // }, [DTODelivery]);
 
-  // useEffect(() => {
-  //   console.log('Log do DTO', DTOForm);
-  // }, [DTOForm]);
-
   useEffect(() => {
-    console.log('log dos erros', errorCategory);
-  }, [errorCategory]);
+    console.log('Log do DTO', DTOForm);
+  }, [DTOForm]);
+
+  // useEffect(() => {
+  //   console.log('log dos erros', errorCategory);
+  // }, [errorCategory]);
 
   return (
     <>
