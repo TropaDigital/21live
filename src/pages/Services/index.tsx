@@ -829,7 +829,7 @@ export default function Services() {
                   onChange={handleAddHours}
                   value={estimatedTime.hours}
                   type="number"
-                  min="0"
+                  min="1"
                   step="1"
                   icon={BiTime}
                   required
