@@ -566,8 +566,34 @@ export default function CreateTasks() {
         //   setCreateStep(createStep + 1);
         // }, 500);
 
-        DTODelivery.map((current: DeliveryProps) => {
-          current.deliveryProducts.map((obj: any) => {
+        if (splitDeliveries) {
+          DTODelivery.map((current: DeliveryProps) => {
+            current.deliveryProducts.map((obj: any) => {
+              console.log('log do obj com erro', obj);
+              if (obj.reason_change === '' || obj.reason_change === undefined) {
+                setErrorCategory({
+                  ...errorCategory,
+                  Tipo: 'Tipo não selecionado',
+                  product_id: obj.service_id
+                });
+                return addToast({
+                  type: 'warning',
+                  title: 'Atenção',
+                  description: 'Existem produtos sem o "Tipo" selecionado!'
+                });
+              } else {
+                setErrorCategory({});
+                setAddDeliveries(true);
+                setTimeout(() => {
+                  setCreateStep(createStep + 1);
+                }, 500);
+              }
+            });
+          });
+        }
+
+        if (!splitDeliveries) {
+          productsArray.map((obj: any) => {
             if (obj.reason_change === '' || obj.reason_change === undefined) {
               setErrorCategory({
                 ...errorCategory,
@@ -587,7 +613,7 @@ export default function CreateTasks() {
               }, 500);
             }
           });
-        });
+        }
       } else if (createStep === 2 && tasksType === 'produto') {
         if (copywriting_date_end === '') {
           throw setErrorInput(
@@ -1046,6 +1072,10 @@ export default function CreateTasks() {
   // useEffect(() => {
   //   console.log('Log do DTO', DTOForm);
   // }, [DTOForm]);
+
+  useEffect(() => {
+    console.log('log dos erros', errorCategory);
+  }, [errorCategory]);
 
   return (
     <>
