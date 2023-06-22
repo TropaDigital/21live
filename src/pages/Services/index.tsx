@@ -368,7 +368,7 @@ export default function Services() {
   const handleOnViewKit = (row: IDataKit): void => {
     setModalKit({
       isOpen: true,
-      type: '',
+      type: 'view kit',
       kit: row
     });
   };
@@ -479,6 +479,10 @@ export default function Services() {
 
     handleCheckbox();
   }, [selectedServices, data, modalKit.isOpen]);
+
+  useEffect(() => {
+    console.log(modalKit);
+  }, [modalKit]);
 
   const createCategory = useCallback(
     async (event: any) => {
@@ -911,9 +915,12 @@ export default function Services() {
 
       {/* Modal create kit */}
       <ModalDefault
-        isOpen={modalKit.isOpen}
+        isOpen={
+          modalKit?.type?.includes('Editar') ||
+          (modalKit?.type?.includes('Novo') && modalKit.isOpen)
+        }
         title={modalKit.type}
-        onOpenChange={() => setModalKit({ ...modalKit, isOpen: false })}
+        onOpenChange={handleOnOpenChangeViewKit}
       >
         <form onSubmit={modalKit?.type?.includes('Editar') ? handleOnUpdateKit : handleOnCreateKit}>
           <FieldDefault>
@@ -934,13 +941,23 @@ export default function Services() {
           </FieldDefault>
 
           <Summary>
-            <div className="title">Selecione os Serviços</div>
+            <div className="title">
+              Selecione os Serviços
+              <div>
+                <InputDefault
+                  label=""
+                  placeholder="Pesquise o serviço..."
+                  onChange={(e) => setSearch(e?.target?.value)}
+                />
+              </div>
+            </div>
             <ShowServicesContainer>
               <ShowServiceData>
                 <div className="service-show-row">
                   <p className="service-data header">Serviços</p>
                   <p className="service-data header">Categoria</p>
-                  <p className="service-data header">Tipo</p>
+                  <p className="service-data header">Listável</p>
+                  <p className="service-data header">Tempo</p>
                   <div className="service-data center header" ref={checkboxWrapperRef}>
                     <CheckboxDefault
                       label=""
@@ -958,7 +975,8 @@ export default function Services() {
                       {row?.service}
                     </p>
                     <p className="service-data">{row?.category}</p>
-                    <p className="service-data">{row?.type}</p>
+                    <p className="service-data">{row?.flag === 'true' ? 'Sim' : 'Não'}</p>
+                    <p className="service-data">{row?.minutes}</p>
                     <div className="service-data center">
                       <CheckboxDefault
                         label=""
@@ -975,7 +993,7 @@ export default function Services() {
           </Summary>
 
           <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
-            <ButtonDefault typeButton="dark" isOutline onClick={handleOnCancel}>
+            <ButtonDefault typeButton="dark" isOutline onClick={handleOnOpenChangeViewKit}>
               Descartar
             </ButtonDefault>
             <ButtonDefault typeButton="primary" isOutline type="submit">
@@ -987,11 +1005,7 @@ export default function Services() {
 
       {/* Modal show kit */}
       <ModalDefault
-        isOpen={
-          modalKit?.type !== 'Novo kit' &&
-          !modalKit?.type?.includes('Editar Kit') &&
-          modalKit.isOpen
-        }
+        isOpen={modalKit?.type === 'view kit' && modalKit.isOpen}
         title={modalKit?.kit?.title}
         onOpenChange={handleOnOpenChangeViewKit}
       >

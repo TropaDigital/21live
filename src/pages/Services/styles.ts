@@ -125,7 +125,7 @@ export const ShowServiceData = styled.div`
     width: 200px;
     text-transform: capitalize;
     padding: 10px 15px;
-    color: var(--gray-500);
+    color: var(--gray-800);
 
     &.header {
       font-weight: var(--weight-semibold);
