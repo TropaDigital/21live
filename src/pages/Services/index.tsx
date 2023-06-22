@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // React
-import { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
 // Icons
 import { BiCode, BiFilter, BiPlus, BiSearchAlt, BiTime } from 'react-icons/bi';
 // Libraries
@@ -46,8 +46,15 @@ import {
   EstimatedTime,
   EstimatedTimeInputs,
   ModalCategoryButtons,
-  ModalProductWrapper
+  ModalProductWrapper,
+  ShowServiceData,
+  ShowServiceDetails,
+  ShowServicesContainer,
+  TableKits
 } from './styles';
+import { SummaryCardTitle } from '../CreateProject/styles';
+import { IconArrowDown } from '../../assets/icons';
+import { CheckboxDefault } from '../../components/Inputs/CheckboxDefault';
 
 interface ServicesProps {
   service_id?: number | string;
@@ -74,6 +81,20 @@ interface FormDataProps {
 interface estimatedHoursPros {
   hours: string;
   minutes: string;
+}
+
+interface IDataKit {
+  pack_id: string;
+  description: string;
+  title: string;
+  services: string[];
+  serviceslist?: ServicesProps[];
+}
+
+interface IModalKit {
+  isOpen: boolean;
+  type: string;
+  kit: IDataKit;
 }
 
 export default function Services() {
@@ -112,10 +133,13 @@ export default function Services() {
     }
   });
 
-  const [modalKit, setModalKit] = useState({
+  const [modalKit, setModalKit] = useState<IModalKit>({
     isOpen: false,
-    type: ''
+    type: '',
+    kit: {} as IDataKit
   });
+
+  const [isOpenRowShowModalKit, setIsOpenRowShowModalKit] = useState<{ [key: string]: boolean }>();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [search, setSearch] = useState('');
@@ -128,7 +152,11 @@ export default function Services() {
 
   const { data, pages, fetchData } = useFetch<ServicesProps[]>(`services?search=${search}`);
   const { data: dataCategory } = useFetch<any[]>(`category?search=${search}`);
-  const { data: dataKits, pages: pageKits } = useFetch<any[]>(`pack-services?search=${search}`);
+  const {
+    data: dataKits,
+    pages: pageKits,
+    fetchData: getKitData
+  } = useFetch<any[]>(`pack-services?search=${search}`);
   const [selected, setSelected] = useState(1);
   const [selectedKitPage, setSelectedKitPage] = useState(1);
   const [listSelected, setListSelected] = useState<any[]>([]);
@@ -137,6 +165,9 @@ export default function Services() {
     minutes: ''
   });
   const [category, setCategory] = useState<string>('');
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
+
+  const checkboxWrapperRef = useRef<HTMLDivElement>(null);
 
   const handleOnCancel = useCallback(() => {
     setModal({
@@ -189,15 +220,6 @@ export default function Services() {
     });
   };
 
-  const handleOnEditKit = (item: FormDataProps) => {
-    // setData(item);
-
-    setModalKit({
-      isOpen: true,
-      type: `Editar Kit: ${item.service}`
-    });
-  };
-
   const handleOnDelete = async (id: any) => {
     try {
       await api.delete(`services/${id}`);
@@ -219,6 +241,154 @@ export default function Services() {
 
   const handleOnTypeList = (type: string) => {
     setTypeList(type);
+  };
+
+  const handleOnOpenCreateModal = (): void => {
+    if (typeList === 'produtos') {
+      setModal({
+        isOpen: true,
+        type: 'Novo produto'
+      });
+      return;
+    }
+
+    setSelectedServices([]);
+    setModalKit({ type: 'Novo kit', isOpen: true, kit: {} as IDataKit });
+  };
+
+  const handleOnDeleteKit = async (row: IDataKit): Promise<void> => {
+    try {
+      await api.delete(`pack-services/${row.pack_id}`);
+      addToast({
+        type: 'success',
+        title: 'Sucesso',
+        description: 'Kit foi deletado!'
+      });
+
+      getKitData();
+    } catch (error: any) {
+      addToast({
+        type: 'danger',
+        title: 'ATENÇÃO',
+        description: error.response.data.message
+      });
+    }
+  };
+
+  const handleOnEditKit = (item: IDataKit): void => {
+    setSelectedServices(item?.services);
+
+    setModalKit({
+      isOpen: true,
+      type: `Editar Kit: ${item.title}`,
+      kit: item
+    });
+  };
+
+  const handleOnSelectAllServices = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    if (e?.currentTarget?.checked) {
+      const list = data?.map((item) => item.service_id);
+      setSelectedServices(list as string[]);
+      return;
+    }
+
+    setSelectedServices([]);
+  };
+
+  const handleOnSelectService = (e: React.ChangeEvent<HTMLInputElement>, id: string): void => {
+    if (typeof window === 'undefined') return;
+
+    if (e?.currentTarget?.checked) {
+      setSelectedServices([...selectedServices, id]);
+      return;
+    }
+
+    const mainCheckbox: HTMLInputElement | null = document.querySelector('#main-checkbox');
+
+    if (mainCheckbox) mainCheckbox.checked = false;
+
+    const list = selectedServices.filter((item) => item !== id);
+    setSelectedServices(list);
+  };
+
+  const handleOnCreateKit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    e.preventDefault();
+
+    const formData = new FormData(e?.currentTarget);
+    const data = Object.fromEntries(formData);
+
+    const newData: { [key: string]: any } = { ...data };
+    newData.services = selectedServices;
+
+    api?.post(`/pack-services`, newData);
+    setModalKit({ ...modalKit, isOpen: false });
+    addToast({
+      type: 'success',
+      title: 'Sucesso',
+      description: 'Kit foi criado!'
+    });
+    getKitData();
+  };
+
+  const handleOnUpdateKit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    e.preventDefault();
+
+    try {
+      const formData = new FormData(e?.currentTarget);
+      const data = Object.fromEntries(formData);
+
+      const newData: { [key: string]: any } = { ...data };
+      newData.services = selectedServices;
+
+      api?.put(`/pack-services/${modalKit.kit.pack_id}`, newData)?.then(() => {
+        getKitData();
+      });
+
+      setModalKit({ ...modalKit, isOpen: false });
+      addToast({
+        type: 'success',
+        title: 'Sucesso',
+        description: 'Kit foi atualizado!'
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleOnOpenChangeViewKit = (): void => {
+    setModalKit({
+      isOpen: false,
+      type: '',
+      kit: {} as IDataKit
+    });
+
+    setIsOpenRowShowModalKit({});
+  };
+
+  const handleOnViewKit = (row: IDataKit): void => {
+    setModalKit({
+      isOpen: true,
+      type: 'view kit',
+      kit: row
+    });
+  };
+
+  const handleOnShowKitDetails = (currentRow: string): void => {
+    const cloneOpenRows = { ...isOpenRowShowModalKit };
+
+    if (cloneOpenRows[currentRow] === true) {
+      cloneOpenRows[currentRow] = false;
+      setIsOpenRowShowModalKit(cloneOpenRows);
+      return;
+    }
+
+    for (const item in cloneOpenRows) {
+      cloneOpenRows[item] = false;
+    }
+
+    cloneOpenRows[currentRow] = true;
+
+    setIsOpenRowShowModalKit(cloneOpenRows);
   };
 
   const handleOnSubmit = useCallback(
@@ -297,6 +467,23 @@ export default function Services() {
     });
   }, [estimatedTime]);
 
+  useEffect(() => {
+    function handleCheckbox(): void {
+      if (data?.length === selectedServices?.length) {
+        const { current } = checkboxWrapperRef;
+
+        const mainCheckbox = current?.querySelector('#main-checkbox') as HTMLInputElement;
+        if (mainCheckbox) mainCheckbox.checked = true;
+      }
+    }
+
+    handleCheckbox();
+  }, [selectedServices, data, modalKit.isOpen]);
+
+  useEffect(() => {
+    console.log(modalKit);
+  }, [modalKit]);
+
   const createCategory = useCallback(
     async (event: any) => {
       try {
@@ -348,17 +535,9 @@ export default function Services() {
             <BiPlus color="#fff" />
             Adicionar categoria
           </ButtonDefault>
-          <ButtonDefault
-            typeButton="success"
-            onClick={() =>
-              setModal({
-                isOpen: !modal.isOpen,
-                type: 'Novo produto'
-              })
-            }
-          >
+          <ButtonDefault typeButton="success" onClick={handleOnOpenCreateModal}>
             <BiPlus color="#fff" />
-            Adicionar produto
+            Adicionar {typeList === 'produtos' ? 'produto' : 'kit'}
           </ButtonDefault>
         </>
       </HeaderPage>
@@ -380,9 +559,7 @@ export default function Services() {
               <h2>
                 Lista de kits{' '}
                 <strong>
-                  {dataKits?.length && dataKits?.length > 1
-                    ? `${dataKits?.length} kits`
-                    : `${dataKits?.length} kit`}{' '}
+                  {dataKits?.length} {dataKits?.length === 1 ? 'kit' : 'kits'}
                 </strong>
               </h2>
             )}
@@ -491,13 +668,13 @@ export default function Services() {
           </table>
         )}
         {typeList === 'kits' && (
-          <table>
+          <TableKits>
             <thead>
               <tr>
                 <th>#</th>
-                <th>Produto</th>
-                <th>Produtos</th>
-                <th>Status</th>
+                <th>Título</th>
+                <th>Qtd. Produtos</th>
+                <th>Descrição</th>
                 <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
               </tr>
             </thead>
@@ -507,9 +684,9 @@ export default function Services() {
                 <tr key={row.pack_id}>
                   <td>{row.pack_id}</td>
                   <td>{row.title}</td>
-                  <td>{row.services.map((item: any, index: any) => (index ? ', ' : '') + item)}</td>
-                  <td>
-                    <Switch
+                  <td>{row?.services?.length}</td>
+                  <td className="fieldLongText">
+                    {/* <Switch
                       onChange={() => handleList(row.service_id)}
                       // checked={
                       //   listSelected.includes(row.service_id) || row.flag === 'true' ? true : false
@@ -518,24 +695,17 @@ export default function Services() {
                       uncheckedIcon={false}
                       checkedIcon={false}
                       onColor="#0046B5"
-                    />
+                    /> */}
+                    {row?.description}
                   </td>
                   <td>
                     <div className="fieldTableClients">
-                      <ButtonTable
-                        typeButton="view"
-                        onClick={() =>
-                          setModalKit({
-                            isOpen: true,
-                            type: ''
-                          })
-                        }
-                      />
-                      <ButtonTable typeButton="edit" onClick={() => console.log('row edit', row)} />
+                      <ButtonTable typeButton="view" onClick={() => handleOnViewKit(row)} />
+                      <ButtonTable typeButton="edit" onClick={() => handleOnEditKit(row)} />
                       <Alert
                         title="Atenção"
-                        subtitle="Certeza que gostaria de deletar este Serviço? Ao excluir a acão não poderá ser desfeita."
-                        confirmButton={() => console.log('row delete', row)}
+                        subtitle="Certeza que gostaria de deletar este Kit? Ao excluir a ação não poderá ser desfeita."
+                        confirmButton={() => handleOnDeleteKit(row)}
                       >
                         <ButtonTable typeButton="delete" />
                       </Alert>
@@ -558,7 +728,7 @@ export default function Services() {
                 </td>
               </tr>
             </tfoot>
-          </table>
+          </TableKits>
         )}
       </Table>
 
@@ -659,7 +829,7 @@ export default function Services() {
                   onChange={handleAddHours}
                   value={estimatedTime.hours}
                   type="number"
-                  min="0"
+                  min="1"
                   step="1"
                   icon={BiTime}
                   required
@@ -743,18 +913,173 @@ export default function Services() {
         </ModalProductWrapper>
       </ModalDefault>
 
+      {/* Modal create kit */}
+      <ModalDefault
+        isOpen={
+          modalKit?.type?.includes('Editar') ||
+          (modalKit?.type?.includes('Novo') && modalKit.isOpen)
+        }
+        title={modalKit.type}
+        onOpenChange={handleOnOpenChangeViewKit}
+      >
+        <form onSubmit={modalKit?.type?.includes('Editar') ? handleOnUpdateKit : handleOnCreateKit}>
+          <FieldDefault>
+            <InputDefault
+              label="Nome do Kit"
+              placeholder="Digite aqui..."
+              name="title"
+              defaultValue={modalKit?.kit?.title}
+            />
+          </FieldDefault>
+          <FieldDefault>
+            <TextAreaDefault
+              label="Descrição"
+              name="description"
+              placeholder="Digite aqui..."
+              style={{ resize: 'none', width: '100%', height: '80px' }}
+              defaultValue={modalKit?.kit?.description}
+            />
+          </FieldDefault>
+
+          <Summary>
+            <div className="title">
+              Selecione os Serviços
+              <div>
+                <InputDefault
+                  label=""
+                  placeholder="Pesquise o serviço..."
+                  onChange={(e) => setSearch(e?.target?.value)}
+                />
+              </div>
+            </div>
+            <ShowServicesContainer>
+              <ShowServiceData>
+                <div className="service-show-row">
+                  <p className="service-data header">Serviços</p>
+                  <p className="service-data header">Categoria</p>
+                  <p className="service-data header">Listável</p>
+                  <p className="service-data header">Tempo</p>
+                  <div className="service-data center header" ref={checkboxWrapperRef}>
+                    <CheckboxDefault
+                      label=""
+                      id="main-checkbox"
+                      checked={
+                        data?.length === selectedServices?.length && data?.length !== 0
+                          ? true
+                          : false
+                      }
+                      onChange={handleOnSelectAllServices}
+                    />
+                  </div>
+                </div>
+              </ShowServiceData>
+              <ShowServiceData>
+                {data?.map((row) => (
+                  <div className="service-show-row" key={row?.service_id}>
+                    <p className="service-data service" title={row?.service}>
+                      {row?.service}
+                    </p>
+                    <p className="service-data">{row?.category}</p>
+                    <p className="service-data">{row?.flag === 'true' ? 'Sim' : 'Não'}</p>
+                    <p className="service-data">{row?.minutes}</p>
+                    <div className="service-data center">
+                      <CheckboxDefault
+                        label=""
+                        checked={
+                          selectedServices?.includes(row?.service_id as string) ? true : false
+                        }
+                        onChange={(e) => handleOnSelectService(e, row?.service_id as string)}
+                      />
+                    </div>
+                  </div>
+                ))}
+                {!data?.length && <p style={{ padding: '15px' }}>Nenhum serviço encontado!</p>}
+              </ShowServiceData>
+            </ShowServicesContainer>
+          </Summary>
+
+          <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
+            <ButtonDefault typeButton="dark" isOutline onClick={handleOnOpenChangeViewKit}>
+              Descartar
+            </ButtonDefault>
+            <ButtonDefault typeButton="primary" isOutline type="submit">
+              Salvar
+            </ButtonDefault>
+          </FooterModal>
+        </form>
+      </ModalDefault>
+
       {/* Modal show kit */}
       <ModalDefault
-        isOpen={modalKit.isOpen}
-        title={'Mostrar o kit'}
-        onOpenChange={() =>
-          setModalKit({
-            isOpen: false,
-            type: ''
-          })
-        }
+        isOpen={modalKit?.type === 'view kit' && modalKit.isOpen}
+        title={modalKit?.kit?.title}
+        onOpenChange={handleOnOpenChangeViewKit}
       >
-        <div>Vai mostrar kit</div>
+        <ModalProductWrapper>
+          <Summary>
+            <div className="title">Informações do Kit</div>
+            <SummaryInfoWrapper>
+              <SummaryTaskInfo>
+                <div className="title-info">Descrição:</div>
+                <div className="info">{modalKit?.kit?.description}</div>
+              </SummaryTaskInfo>
+
+              <SummaryTaskInfo>
+                <div className="title-info">Qtd. de Serviços:</div>
+                <div className="info">{modalKit?.kit?.services?.length}</div>
+              </SummaryTaskInfo>
+            </SummaryInfoWrapper>
+          </Summary>
+
+          <Summary>
+            <div className="title">Lista de Serviços</div>
+            <ShowServicesContainer>
+              <ShowServiceData>
+                <div className="service-show-row">
+                  <p className="service-data center header">Serviços</p>
+                  <p className="service-data center header">Categoria</p>
+                  <p className="service-data center header">Tipo</p>
+                  <p className="service-data center header">-</p>
+                </div>
+              </ShowServiceData>
+              {modalKit?.kit?.serviceslist?.map((row) => (
+                <ShowServiceData key={row?.service_id}>
+                  <div
+                    className="service-show-row"
+                    onClick={() => handleOnShowKitDetails(row?.service)}
+                  >
+                    <p className="service-data center">{row?.service}</p>
+                    <p className="service-data center">{row?.category}</p>
+                    <p className="service-data center">{row?.type}</p>
+                    <p
+                      className={`service-data center chevron ${
+                        isOpenRowShowModalKit?.[row?.service] === true ? 'show' : ''
+                      }`}
+                    >
+                      <IconArrowDown />
+                    </p>
+                  </div>
+                  <ShowServiceDetails
+                    className={isOpenRowShowModalKit?.[row?.service] === true ? 'isOpen' : 'hidden'}
+                  >
+                    <div className="detailsContainer">
+                      <p className="detailTitle">Descrição:</p>
+                      <p className="detailValue">{row?.description}</p>
+                    </div>
+                    <div className="detailsContainer">
+                      <p className="detailTitle">Tamanho:</p>
+                      <p className="detailValue">{row?.size}</p>
+                    </div>
+                    <div className="detailsContainer">
+                      <p className="detailTitle">Tempo:</p>
+                      <p className="detailValue">{row?.minutes}</p>
+                    </div>
+                  </ShowServiceDetails>
+                </ShowServiceData>
+              ))}
+            </ShowServicesContainer>
+          </Summary>
+        </ModalProductWrapper>
       </ModalDefault>
 
       {/* Modal create category */}

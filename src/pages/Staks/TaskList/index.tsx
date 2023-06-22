@@ -468,8 +468,11 @@ export default function TaskList() {
 
               <SummaryTaskDescription>
                 <div className="description-title">Contexto geral</div>
-                <div className="description-info">
-                  {modalViewTask.task.description.replace('<p>', '').replace('</p>', '')}
+                <div
+                  className="description-info"
+                  dangerouslySetInnerHTML={{ __html: modalViewTask?.task?.description }}
+                >
+                  {/* {modalViewTask.task.description.replace('<p>', '').replace('</p>', '')} */}
                 </div>
               </SummaryTaskDescription>
             </SummaryInfoWrapper>

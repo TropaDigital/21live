@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 // React
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 // Icons
@@ -196,6 +196,20 @@ export default function ListProjects() {
   //     }
   //   });
   // };
+
+  useEffect(() => {
+    function handleSelectedProjects(): any {
+      dataProject?.forEach((item) => {
+        const cloneItem: any = item;
+
+        if (cloneItem?.status === '1' || cloneItem?.status === 'true') {
+          setListSelected((obj) => [...obj, cloneItem?.project_id]);
+        }
+      });
+    }
+
+    handleSelectedProjects();
+  }, [dataProject]);
 
   const handleOnDelete = async (id: any) => {
     try {
@@ -451,9 +465,10 @@ export default function ListProjects() {
 
               <SummaryTaskDescription>
                 <div className="description-title">Contexto geral</div>
-                <div className="description-info">
-                  {modalShowProject.project.description.replace('<p>', '').replace('</p>', '')}
-                </div>
+                <div
+                  className="description-info"
+                  dangerouslySetInnerHTML={{ __html: modalShowProject.project.description }}
+                ></div>
               </SummaryTaskDescription>
             </SummaryInfoWrapper>
           </Summary>

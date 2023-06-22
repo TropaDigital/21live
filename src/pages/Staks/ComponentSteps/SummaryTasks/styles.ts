@@ -35,9 +35,17 @@ export const Summary = styled.div`
     padding: 16px 24px;
     text-align: left;
 
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
     &.small {
       height: 56px;
     }
+  }
+
+  &.hidden {
+    display: none;
   }
 `;
 
