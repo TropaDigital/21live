@@ -935,6 +935,7 @@ export default function Services() {
             <TextAreaDefault
               label="Descrição"
               name="description"
+              placeholder="Digite aqui..."
               style={{ resize: 'none', width: '100%', height: '80px' }}
               defaultValue={modalKit?.kit?.description}
             />
@@ -962,7 +963,11 @@ export default function Services() {
                     <CheckboxDefault
                       label=""
                       id="main-checkbox"
-                      checked={data?.length === selectedServices?.length ? true : false}
+                      checked={
+                        data?.length === selectedServices?.length && data?.length !== 0
+                          ? true
+                          : false
+                      }
                       onChange={handleOnSelectAllServices}
                     />
                   </div>
@@ -988,6 +993,7 @@ export default function Services() {
                     </div>
                   </div>
                 ))}
+                {!data?.length && <p style={{ padding: '15px' }}>Nenhum serviço encontado!</p>}
               </ShowServiceData>
             </ShowServicesContainer>
           </Summary>
