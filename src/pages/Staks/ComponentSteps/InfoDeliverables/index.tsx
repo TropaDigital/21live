@@ -38,7 +38,7 @@ import { useFetch } from '../../../../hooks/useFetch';
 
 // Utils
 import { IProductBackend } from '../../../../types';
-import { IoIosCloseCircleOutline } from 'react-icons/io';
+import { BsTrash } from 'react-icons/bs';
 
 interface FormProps {
   [key: string]: any;
@@ -57,7 +57,7 @@ interface Props {
   deliveriesSplited: boolean;
   deliveriesArray: any[];
   deleteProduct: (id: number, deliveryId: any) => void;
-  deleteDelivery: (id: number) => void;
+  deleteDelivery: (id: number | string) => void;
   projectInfo: any;
   passProductProps: (product: any) => void;
   updateDeliveryDate: (value: any, id: any) => void;
@@ -156,8 +156,8 @@ export default function InfoDeliveries({
     title: '',
     indexDelivery: ''
   });
-  const { data: dataSingleProduct, fetchData } = useFetch<IProductBackend[]>(
-    `project-products-especific/${projectInfo?.product_id}`
+  const { data: dataSingleProduct } = useFetch<IProductBackend[]>(
+    `project-products-especific/${projectInfo.product_id}`
   );
 
   useEffect(() => {
@@ -181,23 +181,20 @@ export default function InfoDeliveries({
   }, [productDigitalPrinted.productTypeSelected]);
 
   useEffect(() => {
-    if (!updateTask) {
-      // fetchData();
-      if (dataSingleProduct) {
-        const productToPass = {
-          description: dataSingleProduct[0]?.description,
-          flag: dataSingleProduct[0]?.flag,
-          minutes: dataSingleProduct[0]?.minutes,
-          quantity: '1',
-          service: dataSingleProduct[0]?.service,
-          service_id: dataSingleProduct[0]?.service_id,
-          size: dataSingleProduct[0]?.size,
-          type: dataSingleProduct[0]?.type
-        };
-        passProductProps(productToPass);
-      }
+    if (!updateTask && dataSingleProduct) {
+      const productToPass = {
+        description: dataSingleProduct[0].description,
+        flag: dataSingleProduct[0].flag,
+        minutes: dataSingleProduct[0].minutes,
+        quantity: '1',
+        service: dataSingleProduct[0].service,
+        service_id: dataSingleProduct[0].service_id,
+        size: dataSingleProduct[0].size,
+        type: dataSingleProduct[0].type
+      };
+      passProductProps(productToPass);
     }
-  }, []);
+  }, [dataSingleProduct]);
 
   return (
     <>
@@ -304,12 +301,7 @@ export default function InfoDeliveries({
                         })
                       }
                       placeHolder="Selecione..."
-                      error={
-                        Object.keys(errorCategory).length > 0 &&
-                        errorCategory?.product_id === row.service_id
-                          ? errorCategory?.Tipo
-                          : ''
-                      }
+                      error={errorCategory.includes(row.service_id) ? 'Campo vazio' : ''}
                     >
                       {dataTypes?.map((row: TypeProps) => (
                         <option key={row.type_id} value={row.type_id}>
@@ -335,8 +327,8 @@ export default function InfoDeliveries({
                       <option value="digital">Digital</option>
                     </SelectDefault>
                   </td>
-                  <td style={{ cursor: 'pointer' }}>
-                    <FiMenu />
+                  <td className="delete" onClick={() => deleteProduct(row.service_id, index)}>
+                    <BsTrash />
                   </td>
                 </tr>
               ))}
@@ -522,9 +514,7 @@ export default function InfoDeliveries({
                               }
                               placeHolder="Selecione..."
                               error={
-                                errorCategory?.product_id === product.service_id
-                                  ? 'Campo vazio'
-                                  : ''
+                                errorCategory.includes(product.service_id) ? 'Campo vazio' : ''
                               }
                             >
                               {dataTypes?.map((row: TypeProps) => (
@@ -555,19 +545,33 @@ export default function InfoDeliveries({
                           </td>
                           <td
                             className="delete"
-                            onClick={() => deleteProduct(product.service_id, row?.deliveryId)}
+                            onClick={() => deleteProduct(product.service_id, index)}
                           >
-                            <IoIosCloseCircleOutline />
+                            <BsTrash />
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </TableDelivery>
-                <AddTextButton
-                  title="Adicionar produto"
-                  click={() => addProducts(true, 'Adicionar produto', index + 1)}
-                />
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginTop: '20px'
+                  }}
+                >
+                  <AddTextButton
+                    title="Adicionar produto"
+                    click={() => addProducts(true, 'Adicionar produto', index + 1)}
+                    marginTop="0"
+                  />
+                  <div className="trash" onClick={() => deleteDelivery(index)}>
+                    <BsTrash />
+                    Excluir entrega
+                  </div>
+                </div>
               </div>
             </Deliveries>
           ))}
