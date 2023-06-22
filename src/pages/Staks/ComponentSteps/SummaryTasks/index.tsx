@@ -49,9 +49,18 @@ export default function SummaryTasks({
 
   // const deadlineTotal = deadlineLength.reduce((partialSum: any, acc: any) => partialSum + acc, 0);
 
-  const totalProducst = selectedProducts.reduce((accumulator: any, current: any) => {
-    return accumulator + current.deliveryProducts.length;
-  }, 0);
+  let totalProducts = '';
+
+  const handleProducts = () => {
+    if (taskType === 'horas') {
+      totalProducts = selectedProducts?.reduce((accumulator: any, current: any) => {
+        return accumulator + current.deliveryProducts.length;
+      }, 0);
+    }
+  };
+  useEffect(() => {
+    handleProducts();
+  }, []);
 
   return (
     <SummaryWrapper>
@@ -233,7 +242,7 @@ export default function SummaryTasks({
         {taskType === 'horas' && (
           <div className="item-hours">
             {/* Total de itens: <span>{selectedProducts.length + deadlineTotal}</span> */}
-            Total de itens: <span>{totalProducst}</span>
+            Total de itens: <span>{totalProducts}</span>
           </div>
         )}
         <div className="item-hours">
