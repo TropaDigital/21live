@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable import-helpers/order-imports */
 // React
@@ -45,6 +46,7 @@ import { FinishModal, FinishModalButtons, FinishModalMessage } from '../../Creat
 import { useToast } from '../../../hooks/toast';
 import { useFetch } from '../../../hooks/useFetch';
 import useDebouncedCallback from '../../../hooks/useDebounced';
+import { useAuth } from '../../../hooks/AuthContext';
 
 // Types
 import { IProduct, IProductBackend, ITaskCreate, ServicesProps } from '../../../types';
@@ -67,7 +69,6 @@ import api from '../../../services/api';
 
 // Libraries
 import moment from 'moment';
-import { useAuth } from '../../../hooks/AuthContext';
 
 interface StateProps {
   [key: string]: any;
@@ -203,16 +204,16 @@ export default function CreateTasks() {
 
   useEffect(() => {
     if (location.state !== null) {
-      // setDTOForm(location.state);
-      // setProductsArray(location.state.products);
+      fetchProjects();
+      setProductsArray([]);
+      setDTOForm(location.state);
+      setSelectedProject(location.state.product_id);
+      setProductsArray(location.state.deadlines[0]?.produtos);
+      setDTODelivery(location.state.deadlines);
+      console.log('log do array products', productsArray);
       console.log('log do products location', location.state);
     }
   }, [location]);
-
-  // Criar delete DTODelivery
-  // const deleteDelivery = (deliveryId: number) => {
-  //   console.log('log do id da Delivery a ser deletada', deliveryId);
-  // };
 
   const handleUpdateDeliveryDate = (value: any, id: any) => {
     const newDate = moment(value).format('DD/MM/YYYY');
@@ -321,11 +322,11 @@ export default function CreateTasks() {
 
   const timeConsumedRange = isTimeConsumedMoreThanPercent(
     totalProductsHours,
-    selectedProject ? selectedProject?.tempo : '00:00:00'
+    selectedProject?.tempo ? selectedProject?.tempo : '00:00:00'
   );
 
   const checkTimeoutHasBeenReached = subtractTime(
-    selectedProject ? selectedProject?.tempo : '00:00:00',
+    selectedProject?.tempo ? selectedProject?.tempo : '00:00:00',
     totalProductsHours
   );
 
@@ -736,7 +737,7 @@ export default function CreateTasks() {
       });
       // handleProductQuantity(1, product);
     } else {
-      if (deliveriesSplit) {
+      if (splitDeliveries) {
         handleProductQuantityDeliveries(quantity, product);
       } else {
         handleProductQuantity(quantity, product);
@@ -745,6 +746,7 @@ export default function CreateTasks() {
   };
 
   const handleProductQuantityDeliveries = (value: any, product: any) => {
+    console.log('log do modal number', productsDeliveriesModal.indexDelivery);
     if (
       DTODelivery[productsDeliveriesModal.indexDelivery - 1]?.deliveryProducts.filter(
         (obj: any) => obj.service_id === product.service_id
@@ -884,8 +886,11 @@ export default function CreateTasks() {
             }
           ]
         };
-
-        await api.post(`tasks`, createNewData);
+        if (location.state !== null) {
+          await api.put(`tasks/${location.state.project_id}`, createNewData);
+        } else {
+          await api.post(`tasks`, createNewData);
+        }
       } else if (tasksType === 'produto') {
         const deadline = {
           date_end: DTOForm?.creation_date_end,
@@ -907,7 +912,11 @@ export default function CreateTasks() {
           step
         };
 
-        await api.post(`tasks`, createNewData);
+        if (location.state !== null) {
+          await api.put(`tasks/${location.state.project_id}`, createNewData);
+        } else {
+          await api.post(`tasks`, createNewData);
+        }
       } else {
         const deadlines = DTODelivery.map((row: any) => {
           return {
@@ -931,13 +940,13 @@ export default function CreateTasks() {
           step
         };
 
-        await api.post(`tasks`, createNewData);
+        if (location.state !== null) {
+          await api.put(`tasks/${location.state.project_id}`, createNewData);
+        } else {
+          await api.post(`tasks`, createNewData);
+        }
       }
 
-      // if (modal.type === 'Criar novo Projeto/Contrato') {
-      // } else {
-      //   await api.put(`project/${formData.project_id}`, updateData);
-      // }
       setFinishModal(true);
     } catch (e: any) {
       addToast({
@@ -984,8 +993,21 @@ export default function CreateTasks() {
     }
   };
 
+  const handleDeleteProduct = (id: any, deliveryId: any) => {
+    console.log('log do delete product', id, deliveryId);
+    // const newArray = productsArray.filter((obj) => obj.service_id !== id);
+    // setProductsArray([]);
+    // setProductsArray(newArray);
+    console.log('log dos produtos array', productsArray);
+    console.log('log dos produtos do delivery', DTODelivery);
+  };
+
+  const handleDeleteDelivery = (id: any) => {
+    console.log('log do delete delivery', id);
+  };
+
   useEffect(() => {
-    if (DTOForm.product_id !== '') {
+    if (DTOForm.product_id !== '' && location.state === null) {
       if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel === 'true') {
         setTasksType('horas');
       } else if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel !== 'true') {
@@ -993,8 +1015,16 @@ export default function CreateTasks() {
       } else if (infoProjects[0]?.tipo !== 'product') {
         setTasksType('livre');
       }
+    } else {
+      if (location.state?.type === 'Produto') {
+        setTasksType('produto');
+      } else if (location.state?.type === 'Livre') {
+        setTasksType('livre');
+      } else {
+        setTasksType('horas');
+      }
     }
-  }, [DTOForm, infoProjects]);
+  }, [DTOForm, infoProjects, location]);
 
   const finishCreate = () => {
     setFinishModal(false);
@@ -1005,9 +1035,9 @@ export default function CreateTasks() {
     console.log('log do tipo de task', tasksType);
   }, [tasksType]);
 
-  // useEffect(() => {
-  //   console.log('log do products Array', productsArray);
-  // }, [productsArray]);
+  useEffect(() => {
+    console.log('log do products Array', productsArray);
+  }, [productsArray]);
 
   // useEffect(() => {
   //   console.log('log do Delivery DTO', DTODelivery);
@@ -1116,6 +1146,9 @@ export default function CreateTasks() {
                     handleDescriptionProduct={handleDescriptionProduct}
                     handleFormatProduct={handleFormatProduct}
                     passProductProps={handleAddProductFromDeliveries}
+                    updateTask={location.state !== null}
+                    deleteDelivery={handleDeleteDelivery}
+                    deleteProduct={handleDeleteProduct}
                   />
                   {!splitDeliveries && tasksType === 'horas' && (
                     <AddTextButton title="Adicionar produto" click={() => setProductsModal(true)} />
@@ -1167,6 +1200,7 @@ export default function CreateTasks() {
                     projectInfos={selectedProject}
                     summaryExtrainfos={selectedSummaryInfos}
                     taskType={tasksType}
+                    updateTask={location.state !== null}
                   />
                 </>
               )}
@@ -1184,6 +1218,7 @@ export default function CreateTasks() {
                   projectInfos={selectedProject}
                   summaryExtrainfos={selectedSummaryInfos}
                   taskType={tasksType}
+                  updateTask={location.state !== null}
                 />
               )}
               {tasksType !== 'horas' && (
@@ -1195,6 +1230,7 @@ export default function CreateTasks() {
                   projectInfos={selectedProject}
                   summaryExtrainfos={selectedSummaryInfos}
                   taskType={tasksType}
+                  updateTask={location.state !== null}
                 />
               )}
             </>

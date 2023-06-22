@@ -23,6 +23,7 @@ interface TasksProps {
   projectInfos: any;
   summaryExtrainfos: any;
   taskType: any;
+  updateTask: boolean;
 }
 
 export default function SummaryTasks({
@@ -32,13 +33,14 @@ export default function SummaryTasks({
   taskSummary,
   projectInfos,
   summaryExtrainfos,
-  taskType
+  taskType,
+  updateTask
 }: TasksProps) {
   // useEffect(() => {
-  //   console.log('log selected products on summary', selectedProducts);
-  //   console.log('log tasks infos on summary', taskSummary);
-  //   console.log('log tasks infos on project', projectInfos);
-  //   console.log('log extra infos for summary tasks', summaryExtrainfos);
+  // console.log('log selected products on summary', selectedProducts);
+  // console.log('log tasks infos on summary', taskSummary);
+  // console.log('log tasks infos on project', projectInfos);
+  // console.log('log extra infos for summary tasks', summaryExtrainfos);
   // }, [taskSummary, projectInfos, summaryExtrainfos, selectedProducts]);
 
   // const deadlineLength = taskSummary?.deadlines.products.map((row: any) => {
@@ -61,20 +63,29 @@ export default function SummaryTasks({
 
             <SummaryTaskInfo>
               <div className="title-info">Cliente:</div>
-              <div className="info">{summaryExtrainfos?.client.name}</div>
+              {updateTask && <div className="info">{taskSummary?.tenant}</div>}
+              {!updateTask && <div className="info">{summaryExtrainfos?.client.name}</div>}
             </SummaryTaskInfo>
 
             <SummaryTaskInfo>
               <div className="title-info">Projeto/Contrato:</div>
-              <div className="info">
-                {projectInfos.categoria} | {projectInfos.tempo.split(':')[0]}H/
-                {projectInfos.categoria === 'fee' ? 'ANO' : 'MENSAL'}
-              </div>
+              {updateTask && (
+                <div className="info">
+                  {taskSummary?.project_category} | {taskSummary?.product_period}
+                </div>
+              )}
+              {!updateTask && (
+                <div className="info">
+                  {projectInfos.categoria} | {projectInfos?.tempo?.split(':')[0]}H/
+                  {projectInfos.categoria === 'fee' ? 'ANO' : 'MENSAL'}
+                </div>
+              )}
             </SummaryTaskInfo>
 
             <SummaryTaskInfo>
               <div className="title-info">Fluxo:</div>
-              <div className="info">{summaryExtrainfos?.flow.name}</div>
+              {updateTask && <div className="info">{taskSummary?.flow}</div>}
+              {!updateTask && <div className="info">{summaryExtrainfos?.flow.name}</div>}
             </SummaryTaskInfo>
 
             <SummaryTaskDescription>
@@ -88,7 +99,7 @@ export default function SummaryTasks({
         {taskType === 'horas' && (
           <Summary className="big">
             <div className="title">Produtos selecionados</div>
-            {selectedProducts.map((row: any) =>
+            {selectedProducts?.map((row: any) =>
               row.deliveryProducts.map((products: any, index: number) => (
                 <SummaryCard key={index} style={{ height: 'fit-content' }}>
                   <SummaryCardTitle>
@@ -140,7 +151,7 @@ export default function SummaryTasks({
         {taskType === 'produto' && (
           <Summary className="big">
             <div className="title">Produto selecionado</div>
-            {selectedProducts.map((row: any, index: number) => (
+            {selectedProducts?.map((row: any, index: number) => (
               <SummaryCard key={index} style={{ height: 'fit-content' }}>
                 <SummaryCardTitle>
                   #{index + 1} - {row.service}
@@ -163,9 +174,24 @@ export default function SummaryTasks({
                     <div className="description-wrap">
                       Descrição: <span>{row.description}</span>
                     </div>
-                    <div>
-                      Tipo: <span>{row.category}</span>
-                    </div>
+                    {updateTask ? (
+                      <div>
+                        Tipo:{' '}
+                        <span>
+                          {row.reason_change === '1'
+                            ? 'Criação'
+                            : row.reason_change === '2'
+                            ? 'Desmembramento'
+                            : row.reason_change === '3'
+                            ? 'Alteração Interna'
+                            : 'Alteração externa'}
+                        </span>
+                      </div>
+                    ) : (
+                      <div>
+                        Tipo: <span>{row.category}</span>
+                      </div>
+                    )}
                   </div>
                   <div
                     style={{
@@ -210,7 +236,9 @@ export default function SummaryTasks({
           <ButtonDefault typeButton="primary" isOutline onClick={() => editTasks()}>
             Editar tarefa
           </ButtonDefault>
-          <ButtonDefault onClick={() => createTasks()}>Criar tarefa</ButtonDefault>
+          <ButtonDefault onClick={() => createTasks()}>
+            {updateTask ? 'Atualizar tarefa' : 'Criar tarefa'}
+          </ButtonDefault>
         </SummaryButtons>
       </SummaryTasksAbout>
     </SummaryWrapper>

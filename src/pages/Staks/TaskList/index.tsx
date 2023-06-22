@@ -1,6 +1,6 @@
 /* eslint-disable import-helpers/order-imports */
 //  React
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 // Icons
@@ -31,11 +31,18 @@ import {
   SummaryTaskDescription,
   SummaryTaskInfo
 } from '../ComponentSteps/SummaryTasks/styles';
+import Avatar from '../../../components/Ui/Avatar';
+import ProgressBar from '../../../components/Ui/ProgressBar';
+
+// Utils
+import { avatarAll } from '../../../utils/dataDefault';
+import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 
 // Api
 import api from '../../../services/api';
 
 // Libraries
+import Switch from 'react-switch';
 import moment from 'moment';
 
 // Styles
@@ -50,9 +57,14 @@ export default function TaskList() {
       task_id: '',
       title: '',
       tenant_id: '',
+      tenant: '',
       product_id: '',
+      product_period: '',
+      project: '',
+      project_category: '',
       type: '',
       flow_id: '',
+      flow: '',
       description: '',
       creation_description: '',
       creation_date_end: '',
@@ -71,7 +83,7 @@ export default function TaskList() {
     search: ''
   });
   const [search, setSearch] = useState('');
-  const { data, pages, fetchData } = useFetch<ITaskCreate[]>(`tasks?search=${search}`);
+  const { data, pages, fetchData } = useFetch<any[]>(`tasks?search=${search}`);
   const [searchTerm, setSearchTerm] = useState('');
   const [selected, setSelected] = useState(1);
   const { isLoading, debouncedCallback } = useDebouncedCallback(
@@ -97,7 +109,7 @@ export default function TaskList() {
     }
   };
 
-  const handleOpenModalView = (task: ITaskCreate) => {
+  const handleOpenModalView = (task: any) => {
     setModalViewTask({
       isOpen: true,
       type: `Resumo da tarefa: ${task.title}`,
@@ -105,9 +117,14 @@ export default function TaskList() {
         task_id: task.task_id,
         title: task.title,
         tenant_id: task.tenant_id,
+        tenant: task.tenant,
         product_id: task.product_id,
+        product_period: task.product_period,
+        project: task.project,
+        project_category: task.project_category,
         type: task.type,
         flow_id: task.flow_id,
+        flow: task.flow,
         description: task.description,
         creation_description: task.creation_description,
         creation_date_end: task.creation_date_end,
@@ -128,9 +145,14 @@ export default function TaskList() {
         task_id: '',
         title: '',
         tenant_id: '',
+        tenant: '',
         product_id: '',
+        product_period: '',
+        project: '',
+        project_category: '',
         type: '',
         flow_id: '',
+        flow: '',
         description: '',
         creation_description: '',
         creation_date_end: '',
@@ -142,11 +164,45 @@ export default function TaskList() {
       }
     });
   };
+  // const { data: dataTask, fetchData: fetchTask } = useFetch<any[]>(`tasks/${taskId}`);
 
   const handleEditTask = (task: any) => {
-    console.log('log da task a editar', task);
-    navigate('/criar-tarefa', { state: task });
+    getInfoTask(task.task_id);
   };
+
+  async function getInfoTask(id: number) {
+    try {
+      const response = await api.get(`tasks/${id}`);
+      const task = {
+        title: response.data.result[0].title,
+        tenant_id: response.data.result[0].tenant_id,
+        tenant: response.data.result[0].tenant,
+        product_id: response.data.result[0].product_id,
+        product_period: response.data.result[0].product_period,
+        project: response.data.result[0].project,
+        project_category: response.data.result[0].project_category,
+        project_id: id,
+        flow_id: response.data.result[0].flow_id,
+        flow: response.data.result[0].flow,
+        description: response.data.result[0].description,
+        creation_description: response.data.result[0].creation_description,
+        creation_date_end: response.data.result[0].creation_date_end,
+        copywriting_description: response.data.result[0].copywriting_description,
+        copywriting_date_end: response.data.result[0].copywriting_date_end,
+        deadlines: response.data.result[0].entregas,
+        step: response.data.result[0].step,
+        type: response.data.result[0].type
+      };
+      // console.log('log do response', response.data.result);
+      navigate('/criar-tarefa', { state: task });
+    } catch (error: any) {
+      addToast({
+        type: 'danger',
+        title: 'ATENÇÃO',
+        description: error.response.data.message
+      });
+    }
+  }
 
   // const { formData, handleOnChange } = useForm({
   //   tenant_id: '',
@@ -289,9 +345,9 @@ export default function TaskList() {
               <th>ID</th>
               <th>Título</th>
               <th>Cliente</th>
-              {/* <th>Tempo</th>
+              <th>Tempo</th>
               <th>Status</th>
-              <th>Equipe</th> */}
+              <th>Equipe</th>
               <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
             </tr>
           </thead>
@@ -302,38 +358,41 @@ export default function TaskList() {
                 <td>{row.title}</td>
                 <td style={{ textTransform: 'uppercase' }}>{row.name}</td>
                 {/* <td>Tempo???</td> */}
-                {/* <td
+                <td
                   style={{
                     padding: '14px',
                     width: '220px',
                     textAlign: 'left'
                   }}
                 >
-                  <span style={{ marginBottom: '4px', display: 'block' }}>
-                    {row.time?.replace('0', '')}
-                  </span>
+                  <span style={{ marginBottom: '4px', display: 'block' }}>{row.totalTime}</span>
                   <ProgressBar
-                    totalHours={convertToMilliseconds(row.time)}
-                    restHours={convertToMilliseconds('02:20:36')}
+                    totalHours={convertToMilliseconds(row?.totalTime)}
+                    restHours={convertToMilliseconds(row?.timeConsumed)}
                   />
-                </td> */}
+                </td>
                 {/* <td>Status???</td> */}
-                {/* <td>
+                <td>
                   <Switch
-                    onChange={() => handleList(row.project_id)}
-                    checked={listSelected.includes(row.project_id) ? true : false}
+                    onChange={() => console.log('log do switch', row)}
+                    checked={row.status === 'true' ? true : false}
                     uncheckedIcon={false}
                     checkedIcon={false}
                     onColor="#0046B5"
                   />
-                </td> */}
-                {/* <td>
+                </td>
+                <td>
                   <Avatar data={avatarAll} />
-                </td> */}
+                </td>
                 <td>
                   <div className="fieldTableClients">
                     <ButtonTable typeButton="view" onClick={() => handleOpenModalView(row)} />
-                    <ButtonTable typeButton="edit" onClick={() => handleEditTask(row)} />
+                    <ButtonTable
+                      typeButton="edit"
+                      onClick={() => {
+                        handleEditTask(row);
+                      }}
+                    />
                     <Alert
                       title="Atenção"
                       subtitle="Certeza que gostaria de deletar esta Tarefa? Ao excluir esta ação não poderá ser desfeita."
@@ -385,12 +444,12 @@ export default function TaskList() {
 
               <SummaryTaskInfo>
                 <div className="title-info">Projeto/Contrato:</div>
-                <div className="info">{modalViewTask.task.step} - ???</div>
+                <div className="info">{modalViewTask.task.project}</div>
               </SummaryTaskInfo>
 
               <SummaryTaskInfo>
                 <div className="title-info">Fluxo:</div>
-                <div className="info">{modalViewTask.task.flow_id} - ???</div>
+                <div className="info">{modalViewTask.task.flow}</div>
               </SummaryTaskInfo>
 
               <SummaryTaskInfo>

@@ -543,7 +543,12 @@ export default function Services() {
           <div className="groupTable">
             {typeList === 'produtos' && (
               <h2>
-                Lista de produtos <strong>{data?.length} produtos</strong>
+                Lista de produtos{' '}
+                <strong>
+                  {data?.length && data?.length > 1
+                    ? `${data?.length} produtos`
+                    : `${data?.length} produto`}
+                </strong>
               </h2>
             )}
             {typeList === 'kits' && (

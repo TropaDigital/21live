@@ -1,28 +1,38 @@
+/* eslint-disable import-helpers/order-imports */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useCallback, useEffect, useState } from 'react';
-import { BiFilter, BiPlus, BiSearchAlt } from 'react-icons/bi';
+// React
+import { useCallback, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Switch from 'react-switch';
 
+// Icons
+import { BiPlus, BiSearchAlt } from 'react-icons/bi';
+
+// Libraries
+import Switch from 'react-switch';
+import moment from 'moment';
+
+// Services
 import api from '../../../services/api';
 
+// Hooks
 import { useToast } from '../../../hooks/toast';
 import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useFetch } from '../../../hooks/useFetch';
 import useForm from '../../../hooks/useForm';
 
+// Utils
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 import { TenantProps } from '../../../utils/models';
 
 import { IProjectCreate } from '../../../types';
 
+// Components
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import ButtonTable from '../../../components/Buttons/ButtonTable';
 import HeaderPage from '../../../components/HeaderPage';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import Pagination from '../../../components/Pagination';
-import Steps from '../../../components/Steps';
 import { Table } from '../../../components/Table';
 import { FilterGroup, TableHead } from '../../../components/Table/styles';
 import Alert from '../../../components/Ui/Alert';
@@ -31,8 +41,7 @@ import ProgressBar from '../../../components/Ui/ProgressBar';
 import { ContainerDefault } from '../../../components/UiElements/styles';
 import { UploadedFilesProps } from '../../../components/Upload/UploadFiles';
 
-import moment from 'moment';
-
+// Styles
 import { Summary } from '../../Staks/ComponentSteps/SummaryTasks/styles';
 import { SummaryTaskInfo } from '../../Staks/ComponentSteps/SummaryTasks/styles';
 import { SummaryInfoWrapper } from '../../Staks/ComponentSteps/SummaryTasks/styles';
@@ -362,7 +371,7 @@ export default function ListProjects() {
                 <td>
                   <div className="fieldTableClients">
                     <ButtonTable typeButton="view" onClick={() => handleOpenModal(row)} />
-                    <ButtonTable typeButton="edit" onClick={() => handleEditProject(row)} />
+                    {/* <ButtonTable typeButton="edit" onClick={() => handleEditProject(row)} /> */}
                     <Alert
                       title="Atenção"
                       subtitle="Certeza que gostaria de deletar este Projeto? Ao excluir a ação não poderá ser desfeita."

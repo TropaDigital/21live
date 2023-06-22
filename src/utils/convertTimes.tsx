@@ -1,20 +1,25 @@
 function multiplyTime(time: string, multiplier: number): string {
-  // Converte o valor de tempo para segundos
-  const [hours, minutes, seconds] = time.split(':').map((part) => parseInt(part));
-  const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+  if (time && multiplier) {
+    // Converte o valor de tempo para segundos
+    const [hours, minutes, seconds] = time.split(':').map((part) => parseInt(part));
+    const totalSeconds = hours * 3600 + minutes * 60 + seconds;
 
-  // Realiza a multiplicação
-  const multipliedSeconds = totalSeconds * multiplier;
+    // Realiza a multiplicação
+    const multipliedSeconds = totalSeconds * multiplier;
 
-  // Converte o resultado para o formato de tempo
-  const multipliedHours = Math.floor(multipliedSeconds / 3600);
-  const multipliedMinutes = Math.floor((multipliedSeconds - multipliedHours * 3600) / 60);
-  const multipliedSecondsLeft = multipliedSeconds - multipliedHours * 3600 - multipliedMinutes * 60;
-  const multipliedTime = `${multipliedHours.toString().padStart(2, '0')}:${multipliedMinutes
-    .toString()
-    .padStart(2, '0')}:${multipliedSecondsLeft.toString().padStart(2, '0')}`;
+    // Converte o resultado para o formato de tempo
+    const multipliedHours = Math.floor(multipliedSeconds / 3600);
+    const multipliedMinutes = Math.floor((multipliedSeconds - multipliedHours * 3600) / 60);
+    const multipliedSecondsLeft =
+      multipliedSeconds - multipliedHours * 3600 - multipliedMinutes * 60;
+    const multipliedTime = `${multipliedHours.toString().padStart(2, '0')}:${multipliedMinutes
+      .toString()
+      .padStart(2, '0')}:${multipliedSecondsLeft.toString().padStart(2, '0')}`;
 
-  return multipliedTime;
+    return multipliedTime;
+  } else {
+    return '00:00:00';
+  }
 }
 
 function sumTimes(times: string[]): string {
@@ -58,8 +63,8 @@ function subtractTime(timePassed: string, timeToSubtract: string): string {
 }
 
 function isTimeConsumedMoreThanPercent(timePassed: string, totalTime: string): string {
-  const timePassedArray: number[] = timePassed.split(':').map(Number);
-  const totalTimeArray: number[] = totalTime.split(':').map(Number);
+  const timePassedArray: number[] = timePassed?.split(':').map(Number);
+  const totalTimeArray: number[] = totalTime?.split(':').map(Number);
 
   const passedSeconds: number =
     timePassedArray[0] * 3600 + timePassedArray[1] * 60 + timePassedArray[2];

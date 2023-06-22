@@ -5,7 +5,7 @@
 import { useEffect, useState } from 'react';
 
 // Icons
-import { BiCalendar, BiPencil, BiSearchAlt } from 'react-icons/bi';
+import { BiCalendar, BiPencil } from 'react-icons/bi';
 import { FiChevronDown, FiChevronUp, FiMenu } from 'react-icons/fi';
 
 // Components
@@ -31,33 +31,14 @@ import {
 } from './styles';
 
 // Icons
-import { IconCalendar, IconClose, IconPlus } from '../../../../assets/icons';
-
-// Libraries
-import moment from 'moment';
-import {
-  AddProductButton,
-  CloseModalButton,
-  EstimatedHoursOfProducst,
-  Product,
-  ProductListHeader,
-  ProductListWrapper,
-  ProductModalTitle,
-  ProductsModalTop,
-  ProductsModalWrapper,
-  SearchProductsModal
-} from '../../CreateTasks/styles';
-import QuantityInput from '../../../../components/Inputs/QuantityInput';
-import useDebouncedCallback from '../../../../hooks/useDebounced';
-import { CheckboxDefault } from '../../../../components/Inputs/CheckboxDefault';
+import { IconCalendar, IconPlus } from '../../../../assets/icons';
 
 // Hooks
 import { useFetch } from '../../../../hooks/useFetch';
-import { useToast } from '../../../../hooks/toast';
 
 // Utils
-import { multiplyTime } from '../../../../utils/convertTimes';
-import { IProduct, IProductBackend } from '../../../../types';
+import { IProductBackend } from '../../../../types';
+import { IoIosCloseCircleOutline } from 'react-icons/io';
 
 interface FormProps {
   [key: string]: any;
@@ -75,6 +56,8 @@ interface Props {
   handleProducts: (field: string, value: any, product: any) => void;
   deliveriesSplited: boolean;
   deliveriesArray: any[];
+  deleteProduct: (id: number, deliveryId: any) => void;
+  deleteDelivery: (id: number) => void;
   projectInfo: any;
   passProductProps: (product: any) => void;
   updateDeliveryDate: (value: any, id: any) => void;
@@ -105,6 +88,7 @@ interface Props {
   errorCategory: any;
   addDelivery: () => void;
   addProducts: (isOpen: boolean, title: string, indexDelivery: string) => void;
+  updateTask: boolean;
 }
 
 interface OpenMenuProps {
@@ -131,6 +115,8 @@ export default function InfoDeliveries({
   dataTypes,
   handleProducts,
   deliveriesSplited,
+  deleteDelivery,
+  deleteProduct,
   projectInfo,
   errorCategory,
   addDelivery,
@@ -141,7 +127,8 @@ export default function InfoDeliveries({
   handleTaskType,
   handleDescriptionProduct,
   handleFormatProduct,
-  deliveriesArray
+  deliveriesArray,
+  updateTask
 }: Props) {
   const [descriptionText, setDescriptionText] = useState<any>({
     inputId: '',
@@ -169,8 +156,8 @@ export default function InfoDeliveries({
     title: '',
     indexDelivery: ''
   });
-  const { data: dataSingleProduct } = useFetch<IProductBackend[]>(
-    `project-products-especific/${projectInfo.product_id}`
+  const { data: dataSingleProduct, fetchData } = useFetch<IProductBackend[]>(
+    `project-products-especific/${projectInfo?.product_id}`
   );
 
   useEffect(() => {
@@ -194,20 +181,23 @@ export default function InfoDeliveries({
   }, [productDigitalPrinted.productTypeSelected]);
 
   useEffect(() => {
-    if (dataSingleProduct) {
-      const productToPass = {
-        description: dataSingleProduct[0].description,
-        flag: dataSingleProduct[0].flag,
-        minutes: dataSingleProduct[0].minutes,
-        quantity: '1',
-        service: dataSingleProduct[0].service,
-        service_id: dataSingleProduct[0].service_id,
-        size: dataSingleProduct[0].size,
-        type: dataSingleProduct[0].type
-      };
-      passProductProps(productToPass);
+    if (!updateTask) {
+      // fetchData();
+      if (dataSingleProduct) {
+        const productToPass = {
+          description: dataSingleProduct[0]?.description,
+          flag: dataSingleProduct[0]?.flag,
+          minutes: dataSingleProduct[0]?.minutes,
+          quantity: '1',
+          service: dataSingleProduct[0]?.service,
+          service_id: dataSingleProduct[0]?.service_id,
+          size: dataSingleProduct[0]?.size,
+          type: dataSingleProduct[0]?.type
+        };
+        passProductProps(productToPass);
+      }
     }
-  }, [dataSingleProduct]);
+  }, []);
 
   return (
     <>
@@ -254,7 +244,7 @@ export default function InfoDeliveries({
                             text: e.target.value.slice(0, 40)
                           })
                         }
-                        //   error={error?.date_start}
+                        error={errorCategory?.description}
                       />
                       <EditableFormat
                         className={descriptionText.inputId === row.service_id ? 'edit' : ''}
@@ -286,7 +276,7 @@ export default function InfoDeliveries({
                             : true
                         }
                         onChange={(e: any) => setFormatType(e.target.value)}
-                        //   error={error?.date_start}
+                        error={errorCategory?.size}
                       />
                       <EditableFormat
                         className={editFormat.productIndex === row.service_id ? 'edit' : ''}
@@ -314,7 +304,12 @@ export default function InfoDeliveries({
                         })
                       }
                       placeHolder="Selecione..."
-                      error={errorCategory.product_id === row.service_id ? 'Campo vazio' : ''}
+                      error={
+                        Object.keys(errorCategory).length > 0 &&
+                        errorCategory?.product_id === row.service_id
+                          ? errorCategory?.Tipo
+                          : ''
+                      }
                     >
                       {dataTypes?.map((row: TypeProps) => (
                         <option key={row.type_id} value={row.type_id}>
@@ -394,11 +389,12 @@ export default function InfoDeliveries({
                   onClick={() =>
                     setShowDeliveryInfos({
                       deliveryId: row?.deliveryId,
-                      openInfo: showDeliveryInfos?.openInfo ? false : true
+                      openInfo: !showDeliveryInfos?.openInfo
                     })
                   }
                 >
-                  {showDeliveryInfos?.deliveryId === row?.deliveryId ? (
+                  {showDeliveryInfos?.deliveryId === row?.deliveryId &&
+                  showDeliveryInfos.openInfo === true ? (
                     <FiChevronUp />
                   ) : (
                     <FiChevronDown />
@@ -471,7 +467,7 @@ export default function InfoDeliveries({
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '18px',
-                                height: '82px'
+                                height: '72px'
                               }}
                             >
                               <InputDefault
@@ -557,8 +553,11 @@ export default function InfoDeliveries({
                               <option value="digital">Digital</option>
                             </SelectDefault>
                           </td>
-                          <td style={{ cursor: 'pointer' }}>
-                            <FiMenu />
+                          <td
+                            className="delete"
+                            onClick={() => deleteProduct(product.service_id, row?.deliveryId)}
+                          >
+                            <IoIosCloseCircleOutline />
                           </td>
                         </tr>
                       ))}
@@ -601,12 +600,19 @@ export default function InfoDeliveries({
           <DateInput>
             <InputDefault
               label="Data da entrega"
-              placeholder="00/00/0000"
+              placeholder=""
               name="dateStart"
               type="date"
               icon={BiCalendar}
               onChange={(e) => updateDeliveryDate(e.target.value, dateModal.indexDelivery)}
-              value={'00/00/0000'}
+              value={deliveriesArray.map((row: any) => {
+                if (row.deliveryId === dateModal.indexDelivery) {
+                  const date: any = `${row.deliveryDate.split('/')[2]}/${
+                    row.deliveryDate.split('/')[1]
+                  }/${row.deliveryDate.split('/')[0]}`;
+                  return date;
+                }
+              })}
             />
           </DateInput>
           <ButtonDefault
