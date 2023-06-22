@@ -465,9 +465,10 @@ export default function ListProjects() {
 
               <SummaryTaskDescription>
                 <div className="description-title">Contexto geral</div>
-                <div className="description-info">
-                  {modalShowProject.project.description.replace('<p>', '').replace('</p>', '')}
-                </div>
+                <div
+                  className="description-info"
+                  dangerouslySetInnerHTML={{ __html: modalShowProject.project.description }}
+                ></div>
               </SummaryTaskDescription>
             </SummaryInfoWrapper>
           </Summary>

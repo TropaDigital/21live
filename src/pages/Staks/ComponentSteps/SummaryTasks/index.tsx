@@ -90,8 +90,11 @@ export default function SummaryTasks({
 
             <SummaryTaskDescription>
               <div className="description-title">Contexto geral</div>
-              <div className="description-info">
-                {taskSummary?.description.replace('<p>', '').replace('</p>', '')}
+              <div
+                className="description-info"
+                dangerouslySetInnerHTML={{ __html: taskSummary?.description }}
+              >
+                {/* {taskSummary?.description.replace('<p>', '').replace('</p>', '')} */}
               </div>
             </SummaryTaskDescription>
           </SummaryInfoWrapper>
