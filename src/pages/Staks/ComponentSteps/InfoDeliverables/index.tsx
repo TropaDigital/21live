@@ -40,6 +40,9 @@ import { useFetch } from '../../../../hooks/useFetch';
 import { IProductBackend } from '../../../../types';
 import { BsTrash } from 'react-icons/bs';
 
+// Libraries
+import moment from 'moment';
+
 interface FormProps {
   [key: string]: any;
 }
@@ -355,11 +358,11 @@ export default function InfoDeliveries({
                         setDateModal({
                           isOpen: true,
                           title: 'Adicionar data',
-                          indexDelivery: index + 1
+                          indexDelivery: row?.deliveryId
                         })
                       }
                     >
-                      <IconCalendar /> {row?.deliveryDate}
+                      <IconCalendar /> {moment(row?.deliveryDate).format('DD/MM/YYYY')}
                     </div>
                   ) : (
                     <div
@@ -368,13 +371,24 @@ export default function InfoDeliveries({
                         setDateModal({
                           isOpen: true,
                           title: 'Adicionar data',
-                          indexDelivery: index + 1
+                          indexDelivery: row?.deliveryId
                         })
                       }
                     >
                       <IconCalendar /> Adicionar vencimento
                     </div>
                   )}
+                </div>
+                <div style={{ marginRight: 'auto', marginLeft: '16px' }}>
+                  <InputDefault
+                    label=""
+                    placeholder=""
+                    name="dateStart"
+                    type="date"
+                    icon={BiCalendar}
+                    onChange={(e) => updateDeliveryDate(e.target.value, row.deliveryId)}
+                    value={row?.deliveryDate}
+                  />
                 </div>
                 <div
                   className="icon-arrow"
@@ -545,7 +559,7 @@ export default function InfoDeliveries({
                           </td>
                           <td
                             className="delete"
-                            onClick={() => deleteProduct(product.service_id, index)}
+                            onClick={() => deleteProduct(product.service_id, row.deliveryId)}
                           >
                             <BsTrash />
                           </td>
@@ -567,7 +581,7 @@ export default function InfoDeliveries({
                     click={() => addProducts(true, 'Adicionar produto', index + 1)}
                     marginTop="0"
                   />
-                  <div className="trash" onClick={() => deleteDelivery(index)}>
+                  <div className="trash" onClick={() => deleteDelivery(row.deliveryId)}>
                     <BsTrash />
                     Excluir entrega
                   </div>
@@ -611,10 +625,7 @@ export default function InfoDeliveries({
               onChange={(e) => updateDeliveryDate(e.target.value, dateModal.indexDelivery)}
               value={deliveriesArray.map((row: any) => {
                 if (row.deliveryId === dateModal.indexDelivery) {
-                  const date: any = `${row.deliveryDate.split('/')[2]}/${
-                    row.deliveryDate.split('/')[1]
-                  }/${row.deliveryDate.split('/')[0]}`;
-                  return date;
+                  return row.deliveryDate;
                 }
               })}
             />
