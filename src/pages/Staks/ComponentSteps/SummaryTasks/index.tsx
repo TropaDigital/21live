@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import ButtonDefault from '../../../../components/Buttons/ButtonDefault';
 
 import {
+  DeliveriesTitle,
+  DeliveriesWrapper,
   Summary,
   SummaryButtons,
   SummaryCard,
@@ -117,53 +119,56 @@ export default function SummaryTasks({
         {taskType === 'horas' && (
           <Summary className="big">
             <div className="title">Produtos selecionados</div>
-            {selectedProducts?.map((row: any) =>
-              row.deliveryProducts.map((products: any, index: number) => (
-                <SummaryCard key={index} style={{ height: 'fit-content' }}>
-                  <SummaryCardTitle>
-                    #{index + 1} - {products.service}
-                  </SummaryCardTitle>
-                  <SummaryCardSubtitle
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      height: 'fit-content'
-                    }}
-                  >
-                    <div
+            {selectedProducts?.map((row: any, index: any) => (
+              <DeliveriesWrapper key={index}>
+                <DeliveriesTitle>{index + 1}ª Entrega</DeliveriesTitle>
+                {row.deliveryProducts.map((products: any, index: number) => (
+                  <SummaryCard key={index} style={{ height: 'fit-content' }}>
+                    <SummaryCardTitle>
+                      #{index + 1} - {products.service}
+                    </SummaryCardTitle>
+                    <SummaryCardSubtitle
                       style={{
                         display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        width: '100%'
+                        flexDirection: 'column',
+                        height: 'fit-content'
                       }}
                     >
-                      <div className="description-wrap">
-                        Descrição: <span>{products.description}</span>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          width: '100%'
+                        }}
+                      >
+                        <div className="description-wrap">
+                          Descrição: <span>{products.description}</span>
+                        </div>
+                        <div>
+                          Tipo: <span>{products.category}</span>
+                        </div>
                       </div>
-                      <div>
-                        Tipo: <span>{products.category}</span>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          width: '100%'
+                        }}
+                      >
+                        <div>
+                          I/D: <span>{products.type}</span>
+                        </div>
+                        <div>
+                          Formato: <span>{products.size}</span>
+                        </div>
                       </div>
-                    </div>
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        width: '100%'
-                      }}
-                    >
-                      <div>
-                        I/D: <span>{products.type}</span>
-                      </div>
-                      <div>
-                        Formato: <span>{products.size}</span>
-                      </div>
-                    </div>
-                  </SummaryCardSubtitle>
-                </SummaryCard>
-              ))
-            )}
+                    </SummaryCardSubtitle>
+                  </SummaryCard>
+                ))}
+              </DeliveriesWrapper>
+            ))}
           </Summary>
         )}
         {taskType === 'produto' && (

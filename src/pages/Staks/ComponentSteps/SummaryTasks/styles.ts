@@ -184,3 +184,21 @@ export const SummaryTaskDescription = styled.div`
     line-height: 24px;
   }
 `;
+
+export const DeliveriesWrapper = styled.div`
+  width: 100%;
+  height: fit-content;
+`;
+
+export const DeliveriesTitle = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  background-color: var(--primary-50);
+  border: 1px dashed var(--primary);
+
+  color: var(--gray-500);
+  font-size: var(--text-small-lg);
+  font-weight: var(--weight-medium);
+`;
