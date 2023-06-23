@@ -613,7 +613,7 @@ export default function Services() {
                 <th>Produto</th>
                 <th>Categoria</th>
                 <th>Listar produtos</th>
-                <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
+                <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
               </tr>
             </thead>
 
