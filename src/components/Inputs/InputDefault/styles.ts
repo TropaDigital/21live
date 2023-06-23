@@ -145,6 +145,7 @@ export const ContainerInput = styled.div<ContainerProps>`
     -webkit-box-pack: center;
     justify-content: center;
     position: absolute;
+    /* z-index: 2; */
     top: 0px;
     pointer-events: none;
 

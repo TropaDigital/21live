@@ -312,33 +312,52 @@ export default function Services() {
   };
 
   const handleOnCreateKit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
-    e.preventDefault();
-
-    const formData = new FormData(e?.currentTarget);
-    const data = Object.fromEntries(formData);
-
-    const newData: { [key: string]: any } = { ...data };
-    newData.services = selectedServices;
-
-    api?.post(`/pack-services`, newData);
-    setModalKit({ ...modalKit, isOpen: false });
-    addToast({
-      type: 'success',
-      title: 'Sucesso',
-      description: 'Kit foi criado!'
-    });
-    getKitData();
-  };
-
-  const handleOnUpdateKit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
-    e.preventDefault();
-
     try {
+      e.preventDefault();
+
       const formData = new FormData(e?.currentTarget);
       const data = Object.fromEntries(formData);
 
       const newData: { [key: string]: any } = { ...data };
       newData.services = selectedServices;
+
+      const validateResponse = validateForm(newData);
+
+      if (typeof validateResponse === 'string') throw new Error(validateResponse);
+
+      await api?.post(`/pack-services`, newData);
+
+      setModalKit({ ...modalKit, isOpen: false });
+
+      addToast({
+        type: 'success',
+        title: 'Sucesso',
+        description: 'Kit foi criado!'
+      });
+
+      getKitData();
+    } catch (err: any) {
+      addToast({
+        type: 'danger',
+        title: 'ATENÇÃO',
+        description: err.message
+      });
+    }
+  };
+
+  const handleOnUpdateKit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    try {
+      e.preventDefault();
+
+      const formData = new FormData(e?.currentTarget);
+      const data = Object.fromEntries(formData);
+
+      const newData: { [key: string]: any } = { ...data };
+      newData.services = selectedServices;
+
+      const validateResponse = validateForm(newData);
+
+      if (typeof validateResponse === 'string') throw new Error(validateResponse);
 
       api?.put(`/pack-services/${modalKit.kit.pack_id}`, newData)?.then(() => {
         getKitData();
@@ -350,8 +369,34 @@ export default function Services() {
         title: 'Sucesso',
         description: 'Kit foi atualizado!'
       });
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      addToast({
+        type: 'danger',
+        title: 'ATENÇÃO',
+        description: err.message
+      });
+    }
+  };
+
+  const validateForm = (formData: Partial<IDataKit>): string | void => {
+    try {
+      if (!formData?.title) return 'Título é obrigatório';
+      if (!formData?.description) return 'Descrição é obrigatória';
+      if (!formData?.services) return 'Serviços é obrigatório';
+
+      if (formData?.description?.length < 3) {
+        return 'Descrição deve ter no mínimo 3 caracteres';
+      }
+
+      if (formData?.services?.length <= 1) {
+        return 'Selecione pelo menos dois serviço';
+      }
+    } catch (err: any) {
+      addToast({
+        type: 'danger',
+        title: 'ATENÇÃO',
+        description: err
+      });
     }
   };
 
@@ -445,6 +490,15 @@ export default function Services() {
     }
   }
 
+  function handleViewMoreDescription(description: string): string {
+    const descriptionLength = description.length;
+    let newDescription: string = description;
+
+    if (descriptionLength >= 50) newDescription = description.substring(0, 50) + '...';
+
+    return newDescription;
+  }
+
   const handleAddHours = (event: any) => {
     const { name, value } = event.target;
     if (name === 'hours') {
@@ -479,10 +533,6 @@ export default function Services() {
 
     handleCheckbox();
   }, [selectedServices, data, modalKit.isOpen]);
-
-  useEffect(() => {
-    console.log(modalKit);
-  }, [modalKit]);
 
   const createCategory = useCallback(
     async (event: any) => {
