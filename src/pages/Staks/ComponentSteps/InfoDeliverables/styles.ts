@@ -71,6 +71,22 @@ export const ProductsTable = styled.div`
       width: 500px;
       text-align: center;
     }
+
+    .delete {
+      cursor: pointer;
+
+      svg {
+        width: 18px;
+        height: 18px;
+        transition: all 0.3s;
+        path {
+          fill: red;
+        }
+        &:hover {
+          transform: scale(1.3);
+        }
+      }
+    }
   }
 `;
 
@@ -158,6 +174,29 @@ export const Deliveries = styled.div<DeliveryProps>`
       margin: 100px auto;
       width: 500px;
       text-align: center;
+    }
+  }
+
+  .trash {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+
+    color: var(--Danger);
+    font-size: var(--text-small-sm);
+    font-weight: var(--weight-medium);
+
+    svg {
+      width: 14px;
+      height: 14px;
+      transition: all 0.3s;
+      path {
+        fill: var(--Danger);
+      }
+      &:hover {
+        transform: scale(1.3);
+      }
     }
   }
 `;
@@ -255,7 +294,7 @@ export const TableDelivery = styled.div`
         fill: red;
       }
       &:hover {
-        transform: scale(1.2) rotate(-90deg);
+        transform: scale(1.3);
       }
     }
   }

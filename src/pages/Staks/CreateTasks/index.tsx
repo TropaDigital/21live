@@ -116,7 +116,7 @@ export default function CreateTasks() {
 
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const [error, setError] = useState<StateProps>({});
-  const [errorCategory, setErrorCategory] = useState<any>({});
+  const [errorCategory, setErrorCategory] = useState<any[]>([]);
   const [addDeliveries, setAddDeliveries] = useState<boolean>(false);
   const newDate = new Date();
   const [DTOForm, setDTOForm] = useState<ITaskCreate>({
@@ -216,11 +216,10 @@ export default function CreateTasks() {
   }, [location]);
 
   const handleUpdateDeliveryDate = (value: any, id: any) => {
-    const newDate = moment(value).format('DD/MM/YYYY');
     setDTODelivery((current: any) =>
       current.map((obj: { deliveryId: any }) => {
         if (obj.deliveryId === id) {
-          return { ...obj, deliveryDate: newDate };
+          return { ...obj, deliveryDate: value };
         }
         return obj;
       })
@@ -566,38 +565,51 @@ export default function CreateTasks() {
         //   setCreateStep(createStep + 1);
         // }, 500);
 
-        DTODelivery.map((current: DeliveryProps) => {
-          current.deliveryProducts.map((obj: any) => {
-            if (obj.reason_change === '' || obj.reason_change === undefined) {
-              setErrorCategory({
-                ...errorCategory,
-                Tipo: 'Tipo não selecionado',
-                product_id: obj.service_id
-              });
-              return addToast({
-                type: 'warning',
-                title: 'Atenção',
-                description: 'Existem produtos sem o "Tipo" selecionado!'
-              });
-            } else {
-              setErrorCategory({});
-              setAddDeliveries(true);
-              setTimeout(() => {
-                setCreateStep(createStep + 1);
-              }, 500);
-            }
+        if (splitDeliveries) {
+          DTODelivery.map((current: DeliveryProps) => {
+            current.deliveryProducts.map((obj: any) => {
+              if (obj.reason_change === '' || obj.reason_change === undefined) {
+                setErrorCategory((errorCategory: any) => [...errorCategory, obj.service_id]);
+                throw 'Existem produtos sem o "Tipo" selecionado!';
+              } else if (obj.reason_change !== '' && obj.reason_change !== undefined) {
+                setErrorCategory((prevState) =>
+                  prevState.filter((product) => product !== obj.service_id)
+                );
+                if (errorCategory.length === 0) {
+                  setAddDeliveries(true);
+                  setTimeout(() => {
+                    setCreateStep(createStep + 1);
+                  }, 150);
+                }
+              }
+            });
           });
-        });
-      } else if (createStep === 2 && tasksType === 'produto') {
-        if (copywriting_date_end === '') {
-          throw setErrorInput(
-            'copywriting_date_end',
-            'Data de Entrega - Pré-requisitos é obrigatória!'
-          );
-        } else {
-          setErrorInput('copywriting_date_end', undefined);
         }
 
+        if (!splitDeliveries) {
+          let hasError = false;
+          productsArray.forEach((obj: any) => {
+            if (obj.reason_change === '' || obj.reason_change === undefined) {
+              setErrorCategory((errorCategory) => [...errorCategory, obj.service_id]);
+              hasError = true;
+            } else {
+              setErrorCategory((prevState) =>
+                prevState.filter((product) => product !== obj.service_id)
+              );
+            }
+          });
+
+          if (hasError) {
+            throw 'Existem produtos sem o "Tipo" selecionado!';
+          } else {
+            setErrorCategory([]);
+            setAddDeliveries(true);
+            setTimeout(() => {
+              setCreateStep(createStep + 1);
+            }, 150);
+          }
+        }
+      } else if (createStep === 2 && tasksType === 'produto') {
         if (creation_date_end === '') {
           throw setErrorInput('creation_date_end', 'Data de Entrega Criação é obrigatória!');
         } else {
@@ -606,18 +618,14 @@ export default function CreateTasks() {
 
         productsArray.map((obj: any) => {
           if (obj.reason_change === '' || obj.reason_change === undefined) {
-            setErrorCategory({
-              ...errorCategory,
-              Tipo: 'Tipo não selecionado',
-              product_id: obj.service_id
-            });
+            setErrorCategory((errorCategory: any) => [...errorCategory, obj.service_id]);
             return addToast({
               type: 'warning',
               title: 'Atenção',
               description: 'Existem produtos sem o "Tipo" selecionado!'
             });
           } else {
-            setErrorCategory({});
+            setErrorCategory([]);
             setAddDeliveries(true);
             setTimeout(() => {
               setCreateStep(createStep + 1);
@@ -702,7 +710,7 @@ export default function CreateTasks() {
     }
 
     if (field === 'category') {
-      setErrorCategory({});
+      setErrorCategory([]);
       setProductsArray((current) =>
         current.map((obj) => {
           if (obj.service_id === productId) {
@@ -995,15 +1003,26 @@ export default function CreateTasks() {
 
   const handleDeleteProduct = (id: any, deliveryId: any) => {
     console.log('log do delete product', id, deliveryId);
-    // const newArray = productsArray.filter((obj) => obj.service_id !== id);
-    // setProductsArray([]);
-    // setProductsArray(newArray);
-    console.log('log dos produtos array', productsArray);
-    console.log('log dos produtos do delivery', DTODelivery);
+    const newArray = productsArray.filter((obj) => obj.service_id !== id);
+    setProductsArray([]);
+    setProductsArray(newArray);
+    const updatedDeliveryArray = DTODelivery.map((delivery) => {
+      if (delivery.deliveryId === deliveryId) {
+        return {
+          ...delivery,
+          deliveryProducts: delivery.deliveryProducts.filter(
+            (product: any) => product.service_id !== id
+          )
+        };
+      }
+      return delivery;
+    });
+    setDTODelivery(updatedDeliveryArray);
   };
 
   const handleDeleteDelivery = (id: any) => {
     console.log('log do delete delivery', id);
+    setDTODelivery(DTODelivery.filter((obj) => obj.deliveryId !== id));
   };
 
   useEffect(() => {
@@ -1031,21 +1050,25 @@ export default function CreateTasks() {
     navigate('/tarefas');
   };
 
-  useEffect(() => {
-    console.log('log do tipo de task', tasksType);
-  }, [tasksType]);
+  // useEffect(() => {
+  //   console.log('log do tipo de task', tasksType);
+  // }, [tasksType]);
 
-  useEffect(() => {
-    console.log('log do products Array', productsArray);
-  }, [productsArray]);
+  // useEffect(() => {
+  //   console.log('log do products Array', productsArray);
+  // }, [productsArray]);
 
   // useEffect(() => {
   //   console.log('log do Delivery DTO', DTODelivery);
   // }, [DTODelivery]);
 
+  useEffect(() => {
+    console.log('Log do DTO', DTOForm);
+  }, [DTOForm]);
+
   // useEffect(() => {
-  //   console.log('Log do DTO', DTOForm);
-  // }, [DTOForm]);
+  //   console.log('log dos erros', errorCategory);
+  // }, [errorCategory]);
 
   return (
     <>
