@@ -548,6 +548,7 @@ export default function InfoDeliveries({
                             <SelectDefault
                               label=""
                               name="I/D"
+                              // value={product.type === 'impresso' ? 'impressao' : 'digital'}
                               value={product.type}
                               onChange={(e: any) =>
                                 handleTypeArt(
