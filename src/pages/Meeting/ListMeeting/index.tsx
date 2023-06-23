@@ -359,7 +359,7 @@ export default function ListMeeting() {
                           subtitle="Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita."
                           confirmButton={() => handleOnDelete(row.meeting_id)}
                         >
-                          <ButtonTable typeButton="delete" onClick={() => handleOnEdit(row)} />
+                          <ButtonTable typeButton="delete" />
                         </Alert>
                       </div>
                     </td>
