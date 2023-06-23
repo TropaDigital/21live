@@ -12,22 +12,18 @@ import { FiChevronDown, FiChevronUp, FiMenu } from 'react-icons/fi';
 import { InputDefault } from '../../../../components/Inputs/InputDefault';
 import { SelectDefault } from '../../../../components/Inputs/SelectDefault';
 import AddTextButton from '../../../../components/Buttons/AddTextButton';
-import ModalDefault from '../../../../components/Ui/ModalDefault';
-import ButtonDefault from '../../../../components/Buttons/ButtonDefault';
 
 // Styles
 import { FormTitle } from '../../../CreateProject/styles';
 import {
   AddNewDelivery,
-  DateInput,
-  DateModal,
-  DateModalTitle,
   Deliveries,
   DeliveryTitle,
   EditableFormat,
   NewDelivery,
   ProductsTable,
-  TableDelivery
+  TableDelivery,
+  TotalHours
 } from './styles';
 
 // Icons
@@ -107,9 +103,8 @@ interface DeliveryProps {
   showInfo: boolean;
 }
 
-interface ModalDeliveryProps {
+interface ModalDateDeliveryProps {
   isOpen: boolean;
-  title: string;
   indexDelivery: number | any;
 }
 
@@ -154,9 +149,8 @@ export default function InfoDeliveries({
     productIndex: '',
     productTypeSelected: ''
   });
-  const [dateModal, setDateModal] = useState<ModalDeliveryProps>({
+  const [dateDelivery, setDateDelivery] = useState<ModalDateDeliveryProps>({
     isOpen: false,
-    title: '',
     indexDelivery: ''
   });
   const { data: dataSingleProduct } = useFetch<IProductBackend[]>(
@@ -199,11 +193,22 @@ export default function InfoDeliveries({
     }
   }, [dataSingleProduct]);
 
+  const handleDeliveryDate = (e: any, deliveryId: any) => {
+    updateDeliveryDate(e, deliveryId);
+    setDateDelivery({
+      isOpen: false,
+      indexDelivery: ''
+    });
+  };
+
   return (
     <>
       {!deliveriesSplited && (
         <ProductsTable>
           <FormTitle>Produtos</FormTitle>
+          <TotalHours>
+            Total de horas estimadas: <span>{projectInfo.tempo}</span>
+          </TotalHours>
           <table>
             <thead>
               <tr>
@@ -355,9 +360,8 @@ export default function InfoDeliveries({
                     <div
                       className="date"
                       onClick={() =>
-                        setDateModal({
+                        setDateDelivery({
                           isOpen: true,
-                          title: 'Adicionar data',
                           indexDelivery: row?.deliveryId
                         })
                       }
@@ -368,9 +372,8 @@ export default function InfoDeliveries({
                     <div
                       className="date add"
                       onClick={() =>
-                        setDateModal({
+                        setDateDelivery({
                           isOpen: true,
-                          title: 'Adicionar data',
                           indexDelivery: row?.deliveryId
                         })
                       }
@@ -379,17 +382,19 @@ export default function InfoDeliveries({
                     </div>
                   )}
                 </div>
-                <div style={{ marginRight: 'auto', marginLeft: '16px' }}>
-                  <InputDefault
-                    label=""
-                    placeholder=""
-                    name="dateStart"
-                    type="date"
-                    icon={BiCalendar}
-                    onChange={(e) => updateDeliveryDate(e.target.value, row.deliveryId)}
-                    value={row?.deliveryDate}
-                  />
-                </div>
+                {dateDelivery.indexDelivery === row.deliveryId && dateDelivery.isOpen === true && (
+                  <div style={{ marginRight: 'auto', marginLeft: '16px' }}>
+                    <InputDefault
+                      label=""
+                      placeholder=""
+                      name="dateStart"
+                      type="date"
+                      icon={BiCalendar}
+                      onChange={(e) => handleDeliveryDate(e.target.value, row.deliveryId)}
+                      value={row?.deliveryDate}
+                    />
+                  </div>
+                )}
                 <div
                   className="icon-arrow"
                   onClick={() =>
@@ -600,49 +605,6 @@ export default function InfoDeliveries({
           </NewDelivery>
         </>
       )}
-
-      {/* Modal de adicionar data */}
-      <ModalDefault
-        isOpen={dateModal.isOpen}
-        onOpenChange={() =>
-          setDateModal({
-            isOpen: false,
-            title: '',
-            indexDelivery: ''
-          })
-        }
-        maxWidth="400px"
-      >
-        <DateModal>
-          <DateModalTitle>Adicionar data</DateModalTitle>
-          <DateInput>
-            <InputDefault
-              label="Data da entrega"
-              placeholder=""
-              name="dateStart"
-              type="date"
-              icon={BiCalendar}
-              onChange={(e) => updateDeliveryDate(e.target.value, dateModal.indexDelivery)}
-              value={deliveriesArray.map((row: any) => {
-                if (row.deliveryId === dateModal.indexDelivery) {
-                  return row.deliveryDate;
-                }
-              })}
-            />
-          </DateInput>
-          <ButtonDefault
-            onClick={() =>
-              setDateModal({
-                isOpen: false,
-                title: '',
-                indexDelivery: ''
-              })
-            }
-          >
-            Confirmar
-          </ButtonDefault>
-        </DateModal>
-      </ModalDefault>
     </>
   );
 }
