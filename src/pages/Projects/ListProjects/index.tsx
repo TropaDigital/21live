@@ -347,7 +347,7 @@ export default function ListProjects() {
               <th>Status</th>
               <th>Data de criação</th>
               <th>Entrega estimada</th>
-              <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
+              <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
             </tr>
           </thead>
           <tbody>

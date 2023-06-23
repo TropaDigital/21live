@@ -1002,7 +1002,6 @@ export default function CreateTasks() {
   };
 
   const handleDeleteProduct = (id: any, deliveryId: any) => {
-    console.log('log do delete product', id, deliveryId);
     const newArray = productsArray.filter((obj) => obj.service_id !== id);
     setProductsArray([]);
     setProductsArray(newArray);
@@ -1021,7 +1020,6 @@ export default function CreateTasks() {
   };
 
   const handleDeleteDelivery = (id: any) => {
-    console.log('log do delete delivery', id);
     setDTODelivery(DTODelivery.filter((obj) => obj.deliveryId !== id));
   };
 

@@ -9,6 +9,7 @@ export const ProductsTable = styled.div`
   flex-direction: column;
   gap: 16px;
   margin-top: 38px;
+  position: relative;
 
   table {
     width: 100%;
@@ -107,7 +108,7 @@ export const EditableFormat = styled.div`
 export const Deliveries = styled.div<DeliveryProps>`
   display: flex;
   flex-direction: column;
-  height: ${({ openInfos }) => (openInfos ? 'fit-content' : '60px')};
+  height: ${({ openInfos }) => (openInfos ? 'fit-content' : '72px')};
   background: var(--background-primary);
   border: 1px solid var(--gray-200);
   border-radius: 10px;
@@ -205,7 +206,7 @@ export const DeliveryTitle = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 60px;
+  min-height: 72px;
   padding: 16px 24px;
   border-bottom: 1px solid var(--gray-200);
 
@@ -320,4 +321,17 @@ export const DateModalTitle = styled.div`
   font-weight: var(--weight-medium);
 `;
 
-export const DateInput = styled.div``;
+export const TotalHours = styled.div`
+  position: absolute;
+  top: 2%;
+  right: 0;
+
+  color: var(--gray-500);
+  font-size: var(--text-small-md);
+  font-weight: var(--weight-medium);
+
+  span {
+    color: var(--gray-800);
+    font-weight: var(--weight-semibold);
+  }
+`;

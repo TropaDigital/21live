@@ -1,9 +1,12 @@
+/* eslint-disable import-helpers/order-imports */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // React
 import React, { useCallback, useState, useEffect, useRef } from 'react';
 // Icons
-import { BiCode, BiFilter, BiPlus, BiSearchAlt, BiTime } from 'react-icons/bi';
+import { IconArrowDown } from '../../assets/icons';
+import { BiCode, BiPlus, BiSearchAlt, BiTime } from 'react-icons/bi';
+
 // Libraries
 import Switch from 'react-switch';
 
@@ -35,13 +38,14 @@ import {
   FieldGroup,
   FooterModal
 } from '../../components/UiElements/styles';
-
-// Styles
+import { CheckboxDefault } from '../../components/Inputs/CheckboxDefault';
 import {
   Summary,
   SummaryInfoWrapper,
   SummaryTaskInfo
 } from '../Staks/ComponentSteps/SummaryTasks/styles';
+
+// Styles
 import {
   EstimatedTime,
   EstimatedTimeInputs,
@@ -52,9 +56,6 @@ import {
   ShowServicesContainer,
   TableKits
 } from './styles';
-import { SummaryCardTitle } from '../CreateProject/styles';
-import { IconArrowDown } from '../../assets/icons';
-import { CheckboxDefault } from '../../components/Inputs/CheckboxDefault';
 
 interface ServicesProps {
   service_id?: number | string;
@@ -659,7 +660,7 @@ export default function Services() {
                 <th>Produto</th>
                 <th>Categoria</th>
                 <th>Listar produtos</th>
-                <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
+                <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
               </tr>
             </thead>
 
@@ -721,7 +722,7 @@ export default function Services() {
                 <th>Título</th>
                 <th>Qtd. Produtos</th>
                 <th>Descrição</th>
-                <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
+                <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
               </tr>
             </thead>
 

@@ -28,7 +28,7 @@ export const ModalProductWrapper = styled.div`
   flex-direction: column;
   gap: 16px;
 
-  .info {
+  /* .info {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -43,7 +43,7 @@ export const ModalProductWrapper = styled.div`
       font-size: var(--text-small-md);
       font-weight: var(--weight-semibold);
     }
-  }
+  } */
 
   .category-input {
     min-width: 420px;

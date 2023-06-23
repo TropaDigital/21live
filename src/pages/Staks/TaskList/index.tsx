@@ -5,14 +5,12 @@ import { Link, useNavigate } from 'react-router-dom';
 
 // Icons
 import { BiPlus, BiSearchAlt } from 'react-icons/bi';
+import { IconContext } from 'react-icons';
 
 // Hooks
 import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useFetch } from '../../../hooks/useFetch';
 import { useToast } from '../../../hooks/toast';
-
-// Types
-import { ITaskCreate } from '../../../types';
 
 // Components
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
@@ -42,11 +40,11 @@ import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 import api from '../../../services/api';
 
 // Libraries
-import Switch from 'react-switch';
 import moment from 'moment';
 
 // Styles
-import { ModalShowTaskWrapper } from './styles';
+import { ModalShowTaskWrapper, TableFlag } from './styles';
+import { FiFlag } from 'react-icons/fi';
 
 export default function TaskList() {
   const { addToast } = useToast();
@@ -342,45 +340,51 @@ export default function TaskList() {
         <table>
           <thead>
             <tr>
-              <th>ID</th>
+              {/* <th>ID</th> */}
               <th>Título</th>
-              <th>Cliente</th>
-              <th>Tempo</th>
-              <th>Status</th>
+              <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
+              <th>Tempo utilizado</th>
+              <th>Tempo estimado</th>
               <th>Equipe</th>
-              <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
+              <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
             </tr>
           </thead>
           <tbody>
             {data?.map((row) => (
               <tr key={row.task_id}>
-                <td>#{row.task_id}</td>
+                {/* <td>#{row.task_id}</td> */}
                 <td>{row.title}</td>
-                <td style={{ textTransform: 'uppercase' }}>{row.name}</td>
-                {/* <td>Tempo???</td> */}
+                <TableFlag
+                  style={{ textAlign: 'center' }}
+                  className={row.status === 'true' ? 'flagged' : ''}
+                >
+                  {row.status === 'true' ? (
+                    <IconContext.Provider
+                      value={{ color: '#F04438', className: 'global-class-name' }}
+                    >
+                      <FiFlag />
+                    </IconContext.Provider>
+                  ) : (
+                    <IconContext.Provider
+                      value={{ color: '#667085', className: 'global-class-name' }}
+                    >
+                      <FiFlag />
+                    </IconContext.Provider>
+                  )}
+                </TableFlag>
                 <td
                   style={{
-                    padding: '14px',
                     width: '220px',
                     textAlign: 'left'
                   }}
                 >
-                  <span style={{ marginBottom: '4px', display: 'block' }}>{row.totalTime}</span>
+                  {/* <span style={{ marginBottom: '4px', display: 'block' }}>{row.totalTime}</span> */}
                   <ProgressBar
                     totalHours={convertToMilliseconds(row?.totalTime)}
                     restHours={convertToMilliseconds(row?.timeConsumed)}
                   />
                 </td>
-                {/* <td>Status???</td> */}
-                <td>
-                  <Switch
-                    onChange={() => console.log('log do switch', row)}
-                    checked={row.status === 'true' ? true : false}
-                    uncheckedIcon={false}
-                    checkedIcon={false}
-                    onColor="#0046B5"
-                  />
-                </td>
+                <td>{row.totalTime}</td>
                 <td>
                   <Avatar data={avatarAll} />
                 </td>

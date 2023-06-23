@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from 'react';
 
 import ButtonDefault from '../../../../components/Buttons/ButtonDefault';
 
@@ -49,18 +50,19 @@ export default function SummaryTasks({
 
   // const deadlineTotal = deadlineLength.reduce((partialSum: any, acc: any) => partialSum + acc, 0);
 
-  let totalProducts = '';
+  const [productsTotal, setProductsTotal] = useState<any>();
 
   const handleProducts = () => {
     if (taskType === 'horas') {
-      totalProducts = selectedProducts?.reduce((accumulator: any, current: any) => {
+      const productsAccumulator = selectedProducts?.reduce((accumulator: any, current: any) => {
         return accumulator + current.deliveryProducts.length;
       }, 0);
+      setProductsTotal(productsAccumulator);
     }
   };
   useEffect(() => {
     handleProducts();
-  }, []);
+  }, [selectedProducts]);
 
   return (
     <SummaryWrapper>
@@ -242,9 +244,10 @@ export default function SummaryTasks({
         {taskType === 'horas' && (
           <div className="item-hours">
             {/* Total de itens: <span>{selectedProducts.length + deadlineTotal}</span> */}
-            Total de itens: <span>{totalProducts}</span>
+            Total de itens: <span>{productsTotal}</span>
           </div>
         )}
+        <div className="splitter"></div>
         <div className="item-hours">
           Horas estimadas <span>{projectInfos.tempo}</span>
         </div>
