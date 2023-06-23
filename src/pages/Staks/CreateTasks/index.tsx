@@ -329,6 +329,26 @@ export default function CreateTasks() {
     totalProductsHours
   );
 
+  const deliveryProductsHoursArray = DTODelivery?.map((row: DeliveryProps) => {
+    return sumTimes(
+      row?.deliveryProducts?.map((product: any) => {
+        return multiplyTime(product?.minutes, product?.quantity);
+      })
+    );
+  });
+
+  const totalDeliveryProductsHours = sumTimes(deliveryProductsHoursArray);
+
+  const checkDeliveryTimeHasBeenReached = subtractTime(
+    checkTimeoutHasBeenReached,
+    totalDeliveryProductsHours
+  );
+
+  const timeDeliveryConsumedRange = isTimeConsumedMoreThanPercent(
+    totalDeliveryProductsHours,
+    checkTimeoutHasBeenReached
+  );
+
   const infoProjects: any = dataProjects?.filter(
     (obj: any) => obj.product_id === DTOForm.product_id
   );
@@ -1065,9 +1085,28 @@ export default function CreateTasks() {
     console.log('Log do DTO', DTOForm);
   }, [DTOForm]);
 
+  useEffect(() => {
+    console.log('Log do DTODelivery', DTODelivery);
+  }, [DTODelivery]);
+
   // useEffect(() => {
   //   console.log('log dos erros', errorCategory);
   // }, [errorCategory]);
+
+  useEffect(() => {
+    console.log('log dos tempos - deliveryProductsHoursArray', deliveryProductsHoursArray);
+    console.log('log dos tempos - totalDeliveryProductsHours', totalDeliveryProductsHours);
+    console.log(
+      'log dos tempos - checkDeliveryTimeHasBeenReached',
+      checkDeliveryTimeHasBeenReached
+    );
+    console.log('log dos tempos - timeDeliveryConsumedRange', timeDeliveryConsumedRange);
+  }, [
+    deliveryProductsHoursArray,
+    totalDeliveryProductsHours,
+    checkDeliveryTimeHasBeenReached,
+    timeDeliveryConsumedRange
+  ]);
 
   return (
     <>
@@ -1496,7 +1535,19 @@ export default function CreateTasks() {
                 <ProductModalTitle>Lista de produtos</ProductModalTitle>
                 <EstimatedHoursOfProducst>
                   <div className="info-title">Horas disponíveis no contrato:</div>
-                  <div className="info-hours">{selectedProject?.tempo}</div>
+                  <div
+                    className={
+                      timeDeliveryConsumedRange === 'more than 30%'
+                        ? 'info-hours more-30'
+                        : timeDeliveryConsumedRange === 'more than 50%'
+                        ? 'info-hours more-50'
+                        : 'info-hours'
+                    }
+                  >
+                    {checkDeliveryTimeHasBeenReached > '00:00:00'
+                      ? checkDeliveryTimeHasBeenReached
+                      : 'Tempo limite atingido, verifique as quantidades'}
+                  </div>
                 </EstimatedHoursOfProducst>
               </div>
               <CloseModalButton
