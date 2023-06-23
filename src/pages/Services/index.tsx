@@ -363,7 +363,7 @@ export default function Services() {
         getKitData();
       });
 
-      setModalKit({ ...modalKit, isOpen: false });
+      setModalKit({ type: '', isOpen: false, kit: {} as IDataKit });
       addToast({
         type: 'success',
         title: 'Sucesso',
