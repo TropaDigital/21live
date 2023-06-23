@@ -97,6 +97,10 @@ interface IModalKit {
   kit: IDataKit;
 }
 
+interface Error {
+  message: string;
+}
+
 export default function Services() {
   const { addToast } = useToast();
   const { formData, setData, handleOnChange, handleOnChangeSwitch, handleOnChangeMinutes } =
@@ -352,7 +356,7 @@ export default function Services() {
       const formData = new FormData(e?.currentTarget);
       const data = Object.fromEntries(formData);
 
-      const newData: { [key: string]: any } = { ...data };
+      const newData: { [key: string]: FormDataEntryValue | FormDataEntryValue[] } = { ...data };
       newData.services = selectedServices;
 
       const validateResponse = validateForm(newData);
@@ -379,24 +383,16 @@ export default function Services() {
   };
 
   const validateForm = (formData: Partial<IDataKit>): string | void => {
-    try {
-      if (!formData?.title) return 'Título é obrigatório';
-      if (!formData?.description) return 'Descrição é obrigatória';
-      if (!formData?.services) return 'Serviços é obrigatório';
+    if (!formData?.title) return 'Título é obrigatório';
+    if (!formData?.description?.trim()) return 'Descrição é obrigatória';
+    if (!formData?.services) return 'Serviços é obrigatório';
 
-      if (formData?.description?.length < 3) {
-        return 'Descrição deve ter no mínimo 3 caracteres';
-      }
+    if (formData?.description?.length < 3) {
+      return 'Descrição deve ter no mínimo 3 caracteres';
+    }
 
-      if (formData?.services?.length <= 1) {
-        return 'Selecione pelo menos dois serviço';
-      }
-    } catch (err: any) {
-      addToast({
-        type: 'danger',
-        title: 'ATENÇÃO',
-        description: err
-      });
+    if (formData?.services?.length <= 1) {
+      return 'Selecione pelo menos dois serviço';
     }
   };
 
