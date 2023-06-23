@@ -357,6 +357,7 @@ export default function CreateTasks() {
   };
 
   const handleOnChangeCheckbox = (product: ServicesProps) => {
+    console.log('log do product', product);
     const newProduct = {
       category: product.category,
       description: product.description,

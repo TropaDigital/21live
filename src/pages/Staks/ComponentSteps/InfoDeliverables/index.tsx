@@ -180,6 +180,7 @@ export default function InfoDeliveries({
   useEffect(() => {
     if (!updateTask && dataSingleProduct) {
       const productToPass = {
+        category: dataSingleProduct[0].category,
         description: dataSingleProduct[0].description,
         flag: dataSingleProduct[0].flag,
         minutes: dataSingleProduct[0].minutes,

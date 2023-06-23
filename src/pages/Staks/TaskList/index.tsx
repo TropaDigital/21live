@@ -443,7 +443,7 @@ export default function TaskList() {
 
               <SummaryTaskInfo>
                 <div className="title-info">Cliente:</div>
-                <div className="info">{modalViewTask.task.name}</div>
+                <div className="info">{modalViewTask.task.tenant}</div>
               </SummaryTaskInfo>
 
               <SummaryTaskInfo>
