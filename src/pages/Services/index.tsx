@@ -726,7 +726,7 @@ export default function Services() {
                 <th>Título</th>
                 <th>Qtd. Produtos</th>
                 <th>Descrição</th>
-                <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
+                <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
               </tr>
             </thead>
 
