@@ -119,6 +119,11 @@ export const SummaryTasksAbout = styled.div`
     font-size: var(--text-small-lg);
     font-weight: var(--weight-medium);
   }
+
+  .splitter {
+    height: 1px;
+    background-color: var(--gray-200);
+  }
 `;
 
 export const SummaryButtons = styled.div`
