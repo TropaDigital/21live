@@ -1,8 +1,12 @@
+/* eslint-disable import-helpers/order-imports */
 /* eslint-disable react-hooks/exhaustive-deps */
+// React
 import { useEffect, useState } from 'react';
 
+// Components
 import ButtonDefault from '../../../../components/Buttons/ButtonDefault';
 
+// Styles
 import {
   DeliveriesTitle,
   DeliveriesWrapper,
@@ -17,6 +21,9 @@ import {
   SummaryTasksAbout,
   SummaryWrapper
 } from './styles';
+
+// Utils
+import { multiplyTime, sumTimes } from '../../../../utils/convertTimes';
 
 interface TasksProps {
   createTasks: () => void;
@@ -39,18 +46,36 @@ export default function SummaryTasks({
   taskType,
   updateTask
 }: TasksProps) {
-  // useEffect(() => {
-  // console.log('log selected products on summary', selectedProducts);
-  // console.log('log tasks infos on summary', taskSummary);
-  // console.log('log tasks infos on project', projectInfos);
-  // console.log('log extra infos for summary tasks', summaryExtrainfos);
-  // }, [taskSummary, projectInfos, summaryExtrainfos, selectedProducts]);
+  const [deliveryArrayHours, setDeliveryArrayHours] = useState<any>('');
+  const [totalArrayHours, setTotalArrayHours] = useState<any>('');
 
-  // const deadlineLength = taskSummary?.deadlines.products.map((row: any) => {
-  //   return row.length;
-  // });
+  useEffect(() => {
+    console.log('log selected products on summary', selectedProducts);
+    console.log('log tasks infos on summary', taskSummary);
+    console.log('log tasks infos on project', projectInfos);
+    console.log('log extra infos for summary tasks', summaryExtrainfos);
+  }, [taskSummary, projectInfos, summaryExtrainfos, selectedProducts]);
 
-  // const deadlineTotal = deadlineLength.reduce((partialSum: any, acc: any) => partialSum + acc, 0);
+  function setTotalHours() {
+    setDeliveryArrayHours(
+      selectedProducts?.map((row: any) => {
+        return sumTimes(
+          row?.deliveryProducts?.map((product: any) => {
+            return multiplyTime(product?.minutes, product?.quantity);
+          })
+        );
+      })
+    );
+  }
+
+  useEffect(() => {
+    if (taskType === 'horas') {
+      setTotalHours();
+    }
+    // if (taskType === 'produto') {
+    //   console.log('log do selected products  - produto', selectedProducts);
+    // }
+  }, [selectedProducts, taskType]);
 
   const [productsTotal, setProductsTotal] = useState<any>();
 
@@ -62,9 +87,16 @@ export default function SummaryTasks({
       setProductsTotal(productsAccumulator);
     }
   };
+
   useEffect(() => {
     handleProducts();
   }, [selectedProducts]);
+
+  useEffect(() => {
+    if (deliveryArrayHours.length > 1) {
+      setTotalArrayHours(sumTimes(deliveryArrayHours));
+    }
+  }, [deliveryArrayHours]);
 
   return (
     <SummaryWrapper>
@@ -148,6 +180,9 @@ export default function SummaryTasks({
                         <div>
                           Tipo: <span>{products.category}</span>
                         </div>
+                        <div>
+                          Horas: <span>{products.minutes}</span>
+                        </div>
                       </div>
                       <div
                         style={{
@@ -162,6 +197,9 @@ export default function SummaryTasks({
                         </div>
                         <div>
                           Formato: <span>{products.size}</span>
+                        </div>
+                        <div>
+                          Quantidade: <span>{products.quantity}</span>
                         </div>
                       </div>
                     </SummaryCardSubtitle>
@@ -241,21 +279,29 @@ export default function SummaryTasks({
       <SummaryTasksAbout>
         <div className="title">Sobre a tarefa</div>
         {taskType !== 'horas' && (
-          <div className="item-hours">
-            {/* Total de itens: <span>{selectedProducts.length + deadlineTotal}</span> */}
-            Total de itens: <span>1</span>
-          </div>
+          <>
+            <div className="item-hours">
+              {/* Total de itens: <span>{selectedProducts.length + deadlineTotal}</span> */}
+              Total de itens: <span>1</span>
+            </div>
+            <div className="splitter"></div>
+            <div className="item-hours">
+              Horas estimadas <span>{projectInfos.tempo}</span>
+            </div>
+          </>
         )}
         {taskType === 'horas' && (
-          <div className="item-hours">
-            {/* Total de itens: <span>{selectedProducts.length + deadlineTotal}</span> */}
-            Total de itens: <span>{productsTotal}</span>
-          </div>
+          <>
+            <div className="item-hours">
+              {/* Total de itens: <span>{selectedProducts.length + deadlineTotal}</span> */}
+              Total de itens: <span>{productsTotal}</span>
+            </div>
+            <div className="splitter"></div>
+            <div className="item-hours">
+              Horas estimadas <span>{totalArrayHours}</span>
+            </div>
+          </>
         )}
-        <div className="splitter"></div>
-        <div className="item-hours">
-          Horas estimadas <span>{projectInfos.tempo}</span>
-        </div>
         <SummaryButtons>
           <ButtonDefault typeButton="primary" isOutline onClick={() => editTasks()}>
             Editar tarefa
