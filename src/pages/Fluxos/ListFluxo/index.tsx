@@ -1,31 +1,39 @@
+/* eslint-disable import-helpers/order-imports */
+//  React
 import { useCallback, useState } from 'react';
-import { BiPlus, BiSearchAlt } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 
+// Icons
+import { BiPlus, BiSearchAlt } from 'react-icons/bi';
+
+// Services
 import api from '../../../services/api';
 
+// Hooks
 import { useToast } from '../../../hooks/toast';
 import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useFetch } from '../../../hooks/useFetch';
 import useForm from '../../../hooks/useForm';
 
+// Components
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import ButtonTable from '../../../components/Buttons/ButtonTable';
 import HeaderPage from '../../../components/HeaderPage';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
-import { TableDefault } from '../../../components/TableDefault';
 import Alert from '../../../components/Ui/Alert';
 import ModalDefault from '../../../components/Ui/ModalDefault';
-import ScrollAreas from '../../../components/Ui/ScrollAreas';
+
+// Styles
 import {
   ContainerDefault,
-  ContainerGroupTable,
   ContentDefault,
   FieldDefault,
   FieldGroupFormDefault,
   FooterModal,
   SectionDefault
 } from '../../../components/UiElements/styles';
+import { Table } from '../../../components/Table';
+import { TableHead } from '../../../components/Table/styles';
 
 export default function ListFluxo() {
   const navigate = useNavigate();
@@ -133,10 +141,19 @@ export default function ListFluxo() {
             />
           </FieldGroupFormDefault>
         </ContentDefault>
-
-        <ContainerGroupTable style={{ marginTop: '1rem' }}>
-          <ScrollAreas>
-            <TableDefault title="Cargos">
+        <div style={{ margin: '-24px -30px' }}>
+          <Table>
+            <TableHead>
+              <div className="groupTable">
+                <h2>
+                  Lista de fluxos{' '}
+                  {/* <strong>
+                    {data && data?.length < 1 ? `${data?.length} tarefa` : `${data?.length} tarefas`}{' '}
+                  </strong> */}
+                </h2>
+              </div>
+            </TableHead>
+            <table>
               <thead>
                 <tr style={{ whiteSpace: 'nowrap' }}>
                   <th>#</th>
@@ -176,9 +193,9 @@ export default function ListFluxo() {
                   </tr>
                 ))}
               </tbody>
-            </TableDefault>
-          </ScrollAreas>
-        </ContainerGroupTable>
+            </table>
+          </Table>
+        </div>
       </SectionDefault>
 
       <ModalDefault isOpen={modal} title={'Novo Fluxo'} onOpenChange={handleOnCancel}>
