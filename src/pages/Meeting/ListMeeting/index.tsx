@@ -19,6 +19,8 @@ import InputMultipleSelect from '../../../components/Inputs/InputMultipleSelect'
 import InputSwitchDefault from '../../../components/Inputs/InputSwitchDefault';
 import { SelectDefault } from '../../../components/Inputs/SelectDefault';
 import Paginate from '../../../components/Paginate';
+import { Table } from '../../../components/Table';
+import { FilterGroup, TableHead } from '../../../components/Table/styles';
 import { TableDefault } from '../../../components/TableDefault';
 import Alert from '../../../components/Ui/Alert';
 import ModalDefault from '../../../components/Ui/ModalDefault';
@@ -34,7 +36,7 @@ import {
 import UploadFiles from '../../../components/Upload/UploadFiles';
 import WrapperEditor from '../../../components/WrapperEditor';
 
-import { Container } from './styles';
+import { ButtonsFilter, Container, FilterButton } from './styles';
 
 interface UploadedFilesProps {
   file?: File;
@@ -112,6 +114,7 @@ export default function ListMeeting() {
   const [selected, setSelected] = useState(1);
 
   const [text, setText] = useState('');
+  const [selectedFilter, setSelectedFilter] = useState<any>();
 
   const handleChangeClient = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedIndex = event.target.selectedIndex;
@@ -226,7 +229,7 @@ export default function ListMeeting() {
         setErrors(getValidationErrors(e.response.data.result));
       }
     },
-    [formData, setFormValue, text, uploadedFiles, modal]
+    [uploadedFiles, formData, text, modal.type, addToast, setData, fetchData]
   );
 
   const handleOnDelete = async (id: string) => {
@@ -279,7 +282,7 @@ export default function ListMeeting() {
       </HeaderPage>
 
       <SectionDefault>
-        <ContentDefault>
+        {/* <ContentDefault>
           <FieldGroupFormDefault>
             <FieldGroupFormDefault>
               <InputDefault
@@ -326,47 +329,112 @@ export default function ListMeeting() {
               value={searchTerm}
             />
           </FieldGroupFormDefault>
-        </ContentDefault>
+        </ContentDefault> */}
 
-        <ContainerGroupTable style={{ marginTop: '1rem' }}>
+        <ContainerGroupTable>
           <ScrollAreas>
-            <TableDefault title="Todas">
-              <thead>
-                <tr style={{ whiteSpace: 'nowrap' }}>
-                  <th>ID</th>
-                  <th>Titulo</th>
-                  <th>Cliente</th>
-                  <th>Responsável</th>
-                  <th>Data</th>
-                  <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
-                </tr>
-              </thead>
+            <div style={{ margin: '-24px -30px' }}>
+              <Table>
+                <TableHead>
+                  <div className="groupTable">
+                    <h2>
+                      Registro de atas{' '}
+                      <strong>
+                        {data && data?.length < 1
+                          ? `${data?.length} ata de reunião`
+                          : `${data?.length} atas de reunião`}{' '}
+                      </strong>
+                    </h2>
+                  </div>
+                </TableHead>
+                <FilterGroup
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    width: '100%'
+                  }}
+                >
+                  <ButtonsFilter>
+                    <FilterButton
+                      onClick={() => setSelectedFilter('all')}
+                      className={selectedFilter === 'all' ? 'selected' : ''}
+                    >
+                      Ver todos
+                    </FilterButton>
+                    <FilterButton
+                      onClick={() => setSelectedFilter('recent')}
+                      className={selectedFilter === 'recent' ? 'borders selected' : 'borders'}
+                    >
+                      Mais recente
+                    </FilterButton>
+                    <FilterButton
+                      onClick={() => setSelectedFilter('older')}
+                      className={selectedFilter === 'older' ? 'selected' : ''}
+                    >
+                      Mais antigo
+                    </FilterButton>
+                  </ButtonsFilter>
+                  <div>
+                    <InputDefault
+                      label=""
+                      name="search"
+                      placeholder="Search"
+                      onChange={(event) => {
+                        setSearchTerm(event.target.value);
+                        debouncedCallback(event.target.value);
+                      }}
+                      value={searchTerm}
+                      icon={BiSearchAlt}
+                      isLoading={isLoading}
+                      className="search-field"
+                    />
+                  </div>
 
-              <tbody>
-                {data?.map((row) => (
-                  <tr key={row.meeting_id}>
-                    <td>{row.meeting_id}</td>
-                    <td>{row.title}</td>
-                    <td>{row.cliente}</td>
-                    <td>{row.responsavel}</td>
-                    <td>{row.date}</td>
-                    <td>
-                      <div className="fieldTableClients">
-                        <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
+                  {/* <ButtonDefault typeButton="light">
+                    <BiFilter />
+                    Filtros
+                  </ButtonDefault> */}
+                </FilterGroup>
+                <table>
+                  <thead>
+                    <tr style={{ whiteSpace: 'nowrap' }}>
+                      <th>ID</th>
+                      <th>Titulo</th>
+                      <th>Cliente</th>
+                      <th>Responsável</th>
+                      <th>Data</th>
+                      <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
+                    </tr>
+                  </thead>
 
-                        <Alert
-                          title="Atenção"
-                          subtitle="Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita."
-                          confirmButton={() => handleOnDelete(row.meeting_id)}
-                        >
-                          <ButtonTable typeButton="delete" />
-                        </Alert>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </TableDefault>
+                  <tbody>
+                    {data?.map((row) => (
+                      <tr key={row.meeting_id}>
+                        <td>{row.meeting_id}</td>
+                        <td>{row.title}</td>
+                        <td>{row.cliente}</td>
+                        <td>{row.responsavel}</td>
+                        <td>{row.date}</td>
+                        <td>
+                          <div className="fieldTableClients">
+                            <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
+
+                            <Alert
+                              title="Atenção"
+                              subtitle="Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita."
+                              confirmButton={() => handleOnDelete(row.meeting_id)}
+                            >
+                              <ButtonTable typeButton="delete" />
+                            </Alert>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </Table>
+            </div>
           </ScrollAreas>
         </ContainerGroupTable>
 
