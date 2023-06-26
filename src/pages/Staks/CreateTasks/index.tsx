@@ -420,6 +420,7 @@ export default function CreateTasks() {
 
   const handleOnChangeCheckboxDeliveries = (product: any, idDelivery: any) => {
     console.log('log do product and ID', product, idDelivery, DTODelivery);
+    const deliveryIdCorrected = idDelivery - 1;
     const newProduct = {
       category: product.category,
       description: product.description,
@@ -432,11 +433,11 @@ export default function CreateTasks() {
       quantity: 1
     };
     if (
-      DTODelivery[idDelivery - 1]?.deliveryProducts.filter(
+      DTODelivery[deliveryIdCorrected]?.deliveryProducts.filter(
         (obj: any) => obj.service_id === product.service_id
       ).length > 0
     ) {
-      const newArray = DTODelivery[idDelivery]?.deliveryProducts.filter(
+      const newArray = DTODelivery[deliveryIdCorrected]?.deliveryProducts.filter(
         (obj: any) => obj.service_id !== product.service_id
       );
       setDTODelivery((current: any) =>
@@ -829,42 +830,42 @@ export default function CreateTasks() {
     }
   };
 
-  const handleClearQuantity = (value: any) => {
-    setQuantityProductsArray((current) =>
-      current.map((obj) => {
-        if (obj.project_id === value.service_id) {
-          return { ...obj, quantity: 0 };
-        }
-        return obj;
-      })
-    );
-  };
+  // const handleClearQuantity = (value: any) => {
+  //   setQuantityProductsArray((current) =>
+  //     current.map((obj) => {
+  //       if (obj.project_id === value.service_id) {
+  //         return { ...obj, quantity: 0 };
+  //       }
+  //       return obj;
+  //     })
+  //   );
+  // };
 
-  const handleDeadlines = (newDeadlines: any) => {
-    // setProductsArray((prevState: any) => [...prevState, newDeadlines[0].deliveryProducts[0]]);
+  // const handleDeadlines = (newDeadlines: any) => {
+  //   // setProductsArray((prevState: any) => [...prevState, newDeadlines[0].deliveryProducts[0]]);
 
-    let deadline = {
-      date_end: DTOForm?.creation_date_end,
-      description: DTOForm?.creation_description,
-      products: newDeadlines.deliveryProducts
-    };
+  //   let deadline = {
+  //     date_end: DTOForm?.creation_date_end,
+  //     description: DTOForm?.creation_description,
+  //     products: newDeadlines.deliveryProducts
+  //   };
 
-    const deadlineArray = newDeadlines.map((row: any) => {
-      return (deadline = {
-        date_end: DTOForm?.creation_date_end,
-        description: DTOForm?.creation_description,
-        products: row.deliveryProducts
-      });
-    });
+  //   const deadlineArray = newDeadlines.map((row: any) => {
+  //     return (deadline = {
+  //       date_end: DTOForm?.creation_date_end,
+  //       description: DTOForm?.creation_description,
+  //       products: row.deliveryProducts
+  //     });
+  //   });
 
-    // console.log('log do deadline Array', deadlineArray);
-    setDTOForm({ ...DTOForm, ['deadlines']: deadlineArray });
-    // setDTOForm((prevDTOForm) => {
-    //   const updatedDTOForm = { ...prevDTOForm }; // Create a copy of the original object
-    //   updatedDTOForm.deadlines.push(deadline); // Push the new value(s) into the deadlines array
-    //   return updatedDTOForm; // Set the updated object as the new state
-    // });
-  };
+  //   // console.log('log do deadline Array', deadlineArray);
+  //   setDTOForm({ ...DTOForm, ['deadlines']: deadlineArray });
+  //   // setDTOForm((prevDTOForm) => {
+  //   //   const updatedDTOForm = { ...prevDTOForm }; // Create a copy of the original object
+  //   //   updatedDTOForm.deadlines.push(deadline); // Push the new value(s) into the deadlines array
+  //   //   return updatedDTOForm; // Set the updated object as the new state
+  //   // });
+  // };
 
   const handleOnSubmit = useCallback(async () => {
     try {
@@ -1093,21 +1094,6 @@ export default function CreateTasks() {
   //   console.log('log dos erros', errorCategory);
   // }, [errorCategory]);
 
-  useEffect(() => {
-    console.log('log dos tempos - deliveryProductsHoursArray', deliveryProductsHoursArray);
-    console.log('log dos tempos - totalDeliveryProductsHours', totalDeliveryProductsHours);
-    console.log(
-      'log dos tempos - checkDeliveryTimeHasBeenReached',
-      checkDeliveryTimeHasBeenReached
-    );
-    console.log('log dos tempos - timeDeliveryConsumedRange', timeDeliveryConsumedRange);
-  }, [
-    deliveryProductsHoursArray,
-    totalDeliveryProductsHours,
-    checkDeliveryTimeHasBeenReached,
-    timeDeliveryConsumedRange
-  ]);
-
   return (
     <>
       <ContainerWrapper>
@@ -1274,7 +1260,7 @@ export default function CreateTasks() {
                 <SummaryTasks
                   selectedProducts={DTODelivery}
                   createTasks={handleOnSubmit}
-                  editTasks={() => setCreateStep(1)}
+                  editTasks={() => setCreateStep(2)}
                   taskSummary={DTOForm}
                   projectInfos={selectedProject}
                   summaryExtrainfos={selectedSummaryInfos}
