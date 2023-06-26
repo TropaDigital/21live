@@ -43,6 +43,14 @@ interface PropsProducts {
   hideSwitch: any;
 }
 
+interface IDataKit {
+  title: string;
+  description: string;
+  serviceslist: ServicesProps[];
+  services: string[];
+  pack_id: string;
+}
+
 export default function InfoProducts({
   dataOffice,
   dataFilter,
@@ -58,10 +66,12 @@ export default function InfoProducts({
   const { addToast } = useToast();
   const [search, setSearch] = useState<IServices[]>([]);
   const { data, pages } = useFetch<ServicesProps[]>(`services?search=${search}`);
+  const { data: dataKit, fetchData: fetchKitData } = useFetch(`/pack-services`);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeList, setTypeList] = useState('produtos');
   const [selected, setSelected] = useState(1);
   const [quantityProducts, setQuantityProducts] = useState<any>('');
+  const [currentKitProducts, setCurrentKitProducts] = useState<ServicesProps[]>([]);
   // const [selectedProducts, setSelectedProducts] = useState<IProduct[]>([]);
   const { isLoading, debouncedCallback } = useDebouncedCallback(
     (search: any) => setSearch(search),
@@ -73,7 +83,7 @@ export default function InfoProducts({
   };
 
   function handleAddProducts(product: any) {
-    // console.log('log do add product', product);
+    console.log('log do add product', product);
     if (dataFilter.filter((obj: any) => obj.service_id === product.service_id).length > 0) {
       handleEditProductQuantity(quantityProducts);
       setQuantityProducts('');
@@ -102,6 +112,21 @@ export default function InfoProducts({
       handleOnDeleteProduct(id.service_id);
       setQuantityProducts('');
     }
+  }
+
+  function handleOnAddKit(row: IDataKit): void {
+    const { serviceslist } = row;
+
+    serviceslist?.forEach((service) => {
+      service.quantity >= 1 ? service.quantity++ : (service.quantity = 1);
+      if (service?.quantity === 1) return handleOnAddProducts(service);
+
+      handleEditProductQuantity(service);
+      editAddedProducts(service);
+    });
+
+    setCurrentKitProducts(serviceslist);
+    handleOnTypeList('kits-products');
   }
 
   // function editProductQuantity(product: any) {
@@ -136,6 +161,12 @@ export default function InfoProducts({
     // }
   }, [dataFilter]);
 
+  const tableHeaders: { [key: string]: string[] } = {
+    produtos: ['ID', 'Produto', 'Categoria', 'Preço', 'Quantidade'],
+    ['kits-select']: ['ID', 'Kit', 'Qtd. Produtos', 'Descrição'],
+    ['kits-products']: ['ID', 'Produto', 'Categoria', 'Preço', 'Quantidade']
+  };
+
   return (
     <ProductsWrapper>
       <Table>
@@ -150,8 +181,12 @@ export default function InfoProducts({
                 Ver Produtos
               </ButtonDefault>
               <ButtonDefault
-                onClick={() => handleOnTypeList('kits')}
-                typeButton={typeList === 'kits' ? 'lightWhite' : 'light'}
+                onClick={() => handleOnTypeList('kits-select')}
+                typeButton={
+                  typeList === 'kits-select' || typeList === 'kits-products'
+                    ? 'lightWhite'
+                    : 'light'
+                }
                 style={{ height: '100%', fontSize: '12px' }}
               >
                 Ver Kits
@@ -175,11 +210,9 @@ export default function InfoProducts({
         <table>
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Produto</th>
-              <th>Categoria</th>
-              <th>Listar produtos</th>
-              <th>Quantidade</th>
+              {tableHeaders[typeList]?.map((item) => (
+                <th key={item}>{item}</th>
+              ))}
               <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
             </tr>
           </thead>
@@ -202,7 +235,7 @@ export default function InfoProducts({
                   <td>
                     <QuantityCounter
                       handleQuantity={setQuantityProducts}
-                      rowQuantity={row}
+                      rowQuantity={row.quantity}
                       clearQuantity={handleDeleteProducts}
                       receiveQuantity={Number(row.quantity)}
                     />
@@ -237,29 +270,30 @@ export default function InfoProducts({
             </tbody>
           ) : (
             <tbody>
-              {data?.map((row) => (
-                <tr key={row.service_id}>
-                  <td>{row.service_id}</td>
-                  <td>{row.service}</td>
-                  <td>{row.category}</td>
-                  <td>
-                    <Switch
-                      onChange={() => console.log('log switch', row.service_id)}
-                      checked={row.flag === 'true' ? true : false}
-                      uncheckedIcon={false}
-                      checkedIcon={false}
-                      onColor="#0046B5"
-                    />
-                  </td>
-                  <td>
-                    <QuantityCounter
-                      handleQuantity={setQuantityProducts}
-                      rowQuantity={row}
-                      clearQuantity={handleDeleteProducts}
-                      receiveQuantity={row?.quantity}
-                    />
-                  </td>
-                  {/* <td
+              {typeList === 'produtos' &&
+                data?.map((row) => (
+                  <tr key={row.service_id}>
+                    <td>{row.service_id}</td>
+                    <td>{row.service}</td>
+                    <td>{row.category}</td>
+                    <td>
+                      <Switch
+                        onChange={() => console.log('log switch', row.service_id)}
+                        checked={row.flag === 'true' ? true : false}
+                        uncheckedIcon={false}
+                        checkedIcon={false}
+                        onColor="#0046B5"
+                      />
+                    </td>
+                    <td>
+                      <QuantityCounter
+                        handleQuantity={setQuantityProducts}
+                        rowQuantity={row}
+                        clearQuantity={handleDeleteProducts}
+                        receiveQuantity={row?.quantity}
+                      />
+                    </td>
+                    {/* <td
                     style={{ cursor: 'pointer', textAlign: 'center' }}
                     onClick={() => handleAddProducts(row)}
                   >
@@ -268,24 +302,95 @@ export default function InfoProducts({
                     </div>
                   </td> */}
 
-                  {quantityProducts && Object.values(quantityProducts).includes(row.service_id) ? (
+                    {quantityProducts &&
+                    Object.values(quantityProducts).includes(row.service_id) ? (
+                      <td
+                        style={{ cursor: 'pointer', textAlign: 'center' }}
+                        onClick={() => handleAddProducts(row)}
+                      >
+                        <div style={{ fontSize: '14px', fontWeight: '600', color: '#0045B5' }}>
+                          Adicionar
+                        </div>
+                      </td>
+                    ) : (
+                      <td style={{ textAlign: 'center' }}>
+                        <div style={{ fontSize: '14px', fontWeight: '600', color: '#D0D5DD' }}>
+                          Adicionar
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                ))}
+
+              {typeList === 'kits-select' &&
+                (dataKit as IDataKit[])?.map((row) => (
+                  <tr key={row?.pack_id}>
+                    <td>{row?.pack_id}</td>
+                    <td>{row?.title}</td>
+                    <td>{row?.services?.length}</td>
+                    <td>{row?.description}</td>
                     <td
                       style={{ cursor: 'pointer', textAlign: 'center' }}
-                      onClick={() => handleAddProducts(row)}
+                      onClick={() => handleOnAddKit(row)}
                     >
                       <div style={{ fontSize: '14px', fontWeight: '600', color: '#0045B5' }}>
                         Adicionar
                       </div>
                     </td>
-                  ) : (
-                    <td style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '14px', fontWeight: '600', color: '#D0D5DD' }}>
-                        Adicionar
-                      </div>
+                  </tr>
+                ))}
+
+              {typeList === 'kits-products' &&
+                currentKitProducts?.map((row) => (
+                  <tr key={row.service_id}>
+                    <td>{row.service_id}</td>
+                    <td>{row.service}</td>
+                    <td>{row.category}</td>
+                    <td>
+                      <Switch
+                        onChange={() => console.log('log switch', row.service_id)}
+                        checked={row.flag === 'true' ? true : false}
+                        uncheckedIcon={false}
+                        checkedIcon={false}
+                        onColor="#0046B5"
+                      />
                     </td>
-                  )}
-                </tr>
-              ))}
+                    <td>
+                      <QuantityCounter
+                        handleQuantity={setQuantityProducts}
+                        rowQuantity={row}
+                        clearQuantity={handleDeleteProducts}
+                        receiveQuantity={row?.quantity}
+                      />
+                    </td>
+                    {/* <td
+                    style={{ cursor: 'pointer', textAlign: 'center' }}
+                    onClick={() => handleAddProducts(row)}
+                  >
+                    <div style={{ fontSize: '14px', fontWeight: '600', color: '#0045B5' }}>
+                      Adicionar
+                    </div>
+                  </td> */}
+
+                    {quantityProducts &&
+                    Object.values(quantityProducts).includes(row.service_id) ? (
+                      <td
+                        style={{ cursor: 'pointer', textAlign: 'center' }}
+                        onClick={() => handleAddProducts(row)}
+                      >
+                        <div style={{ fontSize: '14px', fontWeight: '600', color: '#0045B5' }}>
+                          Adicionar
+                        </div>
+                      </td>
+                    ) : (
+                      <td style={{ textAlign: 'center' }}>
+                        <div style={{ fontSize: '14px', fontWeight: '600', color: '#D0D5DD' }}>
+                          Adicionar
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                ))}
             </tbody>
           )}
 
