@@ -180,6 +180,7 @@ export default function InfoDeliveries({
   useEffect(() => {
     if (!updateTask && dataSingleProduct) {
       const productToPass = {
+        category: dataSingleProduct[0].category,
         description: dataSingleProduct[0].description,
         flag: dataSingleProduct[0].flag,
         minutes: dataSingleProduct[0].minutes,
@@ -322,7 +323,8 @@ export default function InfoDeliveries({
                     <SelectDefault
                       label=""
                       name="I/D"
-                      value={row.type === 'impresso' ? 'impressao' : 'digital'}
+                      // value={row.type === 'impresso' ? 'impressao' : 'digital'}
+                      value={row.type}
                       onChange={(e: any) =>
                         setProductDigitalPrinted({
                           productIndex: row.service_id,
@@ -331,7 +333,7 @@ export default function InfoDeliveries({
                       }
                       placeHolder="Selecione..."
                     >
-                      <option value="impressao">Impressão</option>
+                      <option value="impresso">Impressão</option>
                       <option value="digital">Digital</option>
                     </SelectDefault>
                   </td>
@@ -547,6 +549,7 @@ export default function InfoDeliveries({
                             <SelectDefault
                               label=""
                               name="I/D"
+                              // value={product.type === 'impresso' ? 'impressao' : 'digital'}
                               value={product.type}
                               onChange={(e: any) =>
                                 handleTypeArt(
@@ -558,7 +561,7 @@ export default function InfoDeliveries({
                               }
                               placeHolder="Selecione..."
                             >
-                              <option value="impressao">Impressão</option>
+                              <option value="impresso">Impressão</option>
                               <option value="digital">Digital</option>
                             </SelectDefault>
                           </td>

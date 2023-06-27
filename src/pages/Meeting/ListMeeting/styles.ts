@@ -1,8 +1,7 @@
-import styled from "styled-components";
-import { shade } from "polished";
-export const Container = styled.div`
+import styled from 'styled-components';
 
-`;
+import { shade } from 'polished';
+export const Container = styled.div``;
 
 export const Calender = styled.aside`
   width: 780px;
@@ -32,8 +31,10 @@ export const Calender = styled.aside`
     color: #fff;
   }
   .DayPicker:not(.DayPicker--interactionDisabled)
-    .DayPicker-Day:not(.DayPicker-Day--disabled):not(.DayPicker-Day--selected):not(.DayPicker-Day--outside):hover {
-    background: ${shade(0.2, "#3e3b47")};
+    .DayPicker-Day:not(.DayPicker-Day--disabled):not(.DayPicker-Day--selected):not(
+      .DayPicker-Day--outside
+    ):hover {
+    background: ${shade(0.2, '#3e3b47')};
   }
   .DayPicker-Day--today {
     font-weight: normal;
@@ -46,5 +47,41 @@ export const Calender = styled.aside`
     background: #ff9000 !important;
     border-radius: 10px;
     color: #232129 !important;
+  }
+`;
+
+export const ButtonsFilter = styled.div`
+  display: flex;
+  align-items: center;
+  width: 326px;
+  height: 40px;
+  border: 1px solid var(--gray-300);
+  border-radius: 8px;
+  overflow: hidden;
+`;
+
+export const FilterButton = styled.div`
+  height: 100%;
+  padding: 10px 16px;
+
+  color: var(--gray-800);
+  font-size: var(--text-small-sm);
+  font-weight: var(--weight-medium);
+
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &.selected {
+    background-color: var(--gray-100);
+  }
+
+  &.borders {
+    border-left: 1px solid var(--gray-300);
+    border-right: 1px solid var(--gray-300);
+    padding: 10px 15px;
+  }
+
+  &:hover {
+    background-color: var(--gray-300);
   }
 `;

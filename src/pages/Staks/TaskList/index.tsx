@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 // Icons
 import { BiPlus, BiSearchAlt } from 'react-icons/bi';
+import { FiFlag } from 'react-icons/fi';
 import { IconContext } from 'react-icons';
 
 // Hooks
@@ -44,7 +45,6 @@ import moment from 'moment';
 
 // Styles
 import { ModalShowTaskWrapper, TableFlag } from './styles';
-import { FiFlag } from 'react-icons/fi';
 
 export default function TaskList() {
   const { addToast } = useToast();
@@ -443,7 +443,7 @@ export default function TaskList() {
 
               <SummaryTaskInfo>
                 <div className="title-info">Cliente:</div>
-                <div className="info">{modalViewTask.task.name}</div>
+                <div className="info">{modalViewTask.task.tenant}</div>
               </SummaryTaskInfo>
 
               <SummaryTaskInfo>

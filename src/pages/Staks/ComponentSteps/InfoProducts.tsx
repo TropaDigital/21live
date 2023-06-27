@@ -1,15 +1,23 @@
+/* eslint-disable import-helpers/order-imports */
+// React
 import { useEffect, useState } from 'react';
+
+// Icons
 import { BiPlus, BiSearchAlt } from 'react-icons/bi';
 
+// Utils
 import { multiplyTime, sumTimes } from '../../../utils/convertTimes';
 import { useDebounce } from '../../../utils/useDebounce';
 
+// Types
 import { IServices } from '../../../types';
 
+// Components
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import Addproducts from '../../../components/Ui/Addproducts';
 import Collapsi from '../../../components/Ui/Collapsible.tsx';
 
+// Styles
 import { BoxProductProject, ContainerInfoProducts, SectionProductsProject } from './styles';
 
 interface PropsProducts {

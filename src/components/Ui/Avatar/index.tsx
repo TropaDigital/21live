@@ -1,9 +1,18 @@
+/* eslint-disable import-helpers/order-imports */
+// React
 import { useEffect, useState } from 'react';
+
+// Icons
 import { BiPlusCircle, BiUser, BiXCircle } from 'react-icons/bi';
 
+// Any
 import * as Popover from '@radix-ui/react-popover';
 
+// Styles
 import { Container, SectionAllAvatars } from './styles';
+
+// Images
+import AvatarTest from '../../../assets/person.jpg';
 
 interface PropsAvatar {
   name: string;
@@ -17,19 +26,19 @@ interface Props {
 }
 
 export default function Avatar({ data }: Props) {
-  const [avatar, setAvatar] = useState('');
+  // const [avatar, setAvatar] = useState('');
   const latesAvatar = data.slice(0, 4);
   const allAvatar = data.slice(2, data.length);
 
-  useEffect(() => {
-    getUser();
-  }, []);
+  // useEffect(() => {
+  //   getUser();
+  // }, []);
 
-  async function getUser() {
-    const response = await fetch('https://api.github.com/users/Raafa1993');
-    const body = await response.json();
-    setAvatar(body.avatar_url);
-  }
+  // async function getUser() {
+  //   const response = await fetch('https://api.github.com/users/Raafa1993');
+  //   const body = await response.json();
+  //   setAvatar(body.avatar_url);
+  // }
 
   return (
     <Container length={latesAvatar.length}>
@@ -64,7 +73,7 @@ export default function Avatar({ data }: Props) {
                     <ul className="listAllAvatars">
                       {allAvatar.map((row) => (
                         <li key={row.id} className={`avatar-al ${row.isOnline ? 'isOnline' : ''}`}>
-                          <img src={avatar} alt="imagem usuario" />
+                          <img src={AvatarTest} alt="imagem usuario" />
                           <h2>{row.name}</h2>
                         </li>
                       ))}

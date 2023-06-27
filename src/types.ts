@@ -16,6 +16,7 @@ export interface IProductBackend {
   deleted: string;
   description: string;
   flag: string;
+  category: string;
   minutes: string;
   period: string;
   product_id: string;
