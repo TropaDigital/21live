@@ -66,12 +66,13 @@ export default function InfoProducts({
   const { addToast } = useToast();
   const [search, setSearch] = useState<IServices[]>([]);
   const { data, pages } = useFetch<ServicesProps[]>(`services?search=${search}`);
-  const { data: dataKit, fetchData: fetchKitData } = useFetch(`/pack-services`);
+  const { data: dataKit } = useFetch(`/pack-services`);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeList, setTypeList] = useState('produtos');
   const [selected, setSelected] = useState(1);
   const [quantityProducts, setQuantityProducts] = useState<any>('');
   const [currentKitProducts, setCurrentKitProducts] = useState<ServicesProps[]>([]);
+  const [productQuantity, setProductQuantity] = useState<{ [key: string]: number }>({});
   // const [selectedProducts, setSelectedProducts] = useState<IProduct[]>([]);
   const { isLoading, debouncedCallback } = useDebouncedCallback(
     (search: any) => setSearch(search),
@@ -120,6 +121,7 @@ export default function InfoProducts({
     setTypeList('kits-products');
 
     const serviceWithoutTenantId = serviceslist;
+    const productsQuantities: { [key: string]: number } = {};
 
     serviceWithoutTenantId?.forEach((item: ServicesProps) => {
       delete item?.tenant_id;
@@ -133,7 +135,7 @@ export default function InfoProducts({
         (row: ServicesProps) => row?.service_id === item?.service_id
       );
 
-      if (isServiceSelected?.length > 0 && isServiceSelected[0].quantity > 2) {
+      if (isServiceSelected?.length && isServiceSelected[0].quantity > 1) {
         item.quantity = isServiceSelected[0].quantity++;
         return handleEditProductQuantity(isServiceSelected[0]);
       }
@@ -142,7 +144,10 @@ export default function InfoProducts({
       item.quantity++;
 
       item.quantity > 1 ? handleEditProductQuantity(item) : handleOnAddProducts(item);
+      productsQuantities[item.service] = item?.quantity;
     });
+
+    setProductQuantity({ ...productQuantity, ...productsQuantities });
   }
 
   // function editProductQuantity(product: any) {
@@ -306,7 +311,7 @@ export default function InfoProducts({
                         handleQuantity={setQuantityProducts}
                         rowQuantity={row}
                         clearQuantity={handleDeleteProducts}
-                        receiveQuantity={row?.quantity}
+                        receiveQuantity={productQuantity[row.service]}
                       />
                     </td>
                     {/* <td
