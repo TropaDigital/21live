@@ -135,7 +135,7 @@ export default function InfoProducts({
         (row: ServicesProps) => row?.service_id === item?.service_id
       );
 
-      if (isServiceSelected?.length && isServiceSelected[0].quantity > 1) {
+      if (isServiceSelected?.length && isServiceSelected[0].quantity >= 1) {
         item.quantity = isServiceSelected[0].quantity++;
         return handleEditProductQuantity(isServiceSelected[0]);
       }
