@@ -118,16 +118,22 @@ export default function InfoProducts({
     const { serviceslist } = row;
 
     setTypeList('kits-products');
-    setCurrentKitProducts(serviceslist);
 
-    serviceslist.forEach((item: ServicesProps) => {
+    const serviceWithoutTenantId = serviceslist;
+
+    serviceWithoutTenantId?.forEach((item: ServicesProps) => {
+      delete item?.tenant_id;
+      delete item?.category;
+    });
+
+    setCurrentKitProducts(serviceWithoutTenantId);
+
+    serviceWithoutTenantId.forEach((item: ServicesProps) => {
       const isServiceSelected = dataFilter?.filter(
         (row: ServicesProps) => row?.service_id === item?.service_id
       );
 
-      console.log(isServiceSelected);
-
-      if (isServiceSelected?.length > 0) {
+      if (isServiceSelected?.length > 0 && isServiceSelected[0].quantity > 2) {
         item.quantity = isServiceSelected[0].quantity++;
         return handleEditProductQuantity(isServiceSelected[0]);
       }
@@ -172,9 +178,9 @@ export default function InfoProducts({
   }, [dataFilter]);
 
   const tableHeaders: { [key: string]: string[] } = {
-    produtos: ['ID', 'Produto', 'Categoria', 'Preço', 'Quantidade'],
+    produtos: ['ID', 'Produto', 'Categoria', 'Status', 'Quantidade'],
     ['kits-select']: ['ID', 'Kit', 'Qtd. Produtos', 'Descrição'],
-    ['kits-products']: ['ID', 'Produto', 'Categoria', 'Preço', 'Quantidade']
+    ['kits-products']: ['ID', 'Produto', 'Categoria', 'Status', 'Quantidade']
   };
 
   return (
