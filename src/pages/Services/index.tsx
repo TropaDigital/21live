@@ -203,7 +203,7 @@ export default function Services() {
 
     setModal({
       isOpen: true,
-      type: `Editar serviço: ${item.service}`
+      type: `Editar produto: ${item.service}`
     });
   };
 
@@ -231,7 +231,7 @@ export default function Services() {
       addToast({
         type: 'success',
         title: 'Sucesso',
-        description: 'Serviço foi deletado!'
+        description: 'Produto foi deletado!'
       });
 
       fetchData();
@@ -386,14 +386,14 @@ export default function Services() {
   const validateForm = (formData: Partial<IDataKit>): string | void => {
     if (!formData?.title) return 'Título é obrigatório';
     if (!formData?.description?.trim()) return 'Descrição é obrigatória';
-    if (!formData?.services) return 'Serviços é obrigatório';
+    if (!formData?.services) return 'Produtos é obrigatório';
 
     if (formData?.description?.length < 3) {
       return 'Descrição deve ter no mínimo 3 caracteres';
     }
 
     if (formData?.services?.length <= 1) {
-      return 'Selecione pelo menos dois serviço';
+      return 'Selecione pelo menos dois produtos';
     }
   };
 
@@ -454,14 +454,14 @@ export default function Services() {
           addToast({
             type: 'success',
             title: 'Sucesso',
-            description: 'Serviço criado com sucesso!'
+            description: 'Produto criado com sucesso!'
           });
         } else {
           await api.put(`services/${formData.service_id}`, newFormData);
           addToast({
             type: 'success',
             title: 'Sucesso',
-            description: 'Serviço salvo com sucesso!'
+            description: 'Produto salvo com sucesso!'
           });
         }
 
@@ -517,6 +517,10 @@ export default function Services() {
       value: `${estimatedTime.hours}:${estimatedTime.minutes}:00`
     });
   }, [estimatedTime]);
+
+  useEffect(() => {
+    setTypeList('produtos');
+  }, []);
 
   useEffect(() => {
     function handleCheckbox(): void {
@@ -688,7 +692,7 @@ export default function Services() {
                       <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
                       <Alert
                         title="Atenção"
-                        subtitle="Certeza que gostaria de deletar este Serviço? Ao excluir a acão não poderá ser desfeita."
+                        subtitle="Certeza que gostaria de deletar este Produto? Ao excluir a ação não poderá ser desfeita."
                         confirmButton={() => handleOnDelete(row.service_id)}
                       >
                         <ButtonTable typeButton="delete" />
@@ -876,7 +880,7 @@ export default function Services() {
                   onChange={handleAddHours}
                   value={estimatedTime.hours}
                   type="number"
-                  min="1"
+                  min="0"
                   step="1"
                   icon={BiTime}
                   required
@@ -990,11 +994,11 @@ export default function Services() {
 
           <Summary>
             <div className="title">
-              Selecione os Serviços
+              Selecione os Produtos
               <div>
                 <InputDefault
                   label=""
-                  placeholder="Pesquise o serviço..."
+                  placeholder="Pesquise o produto..."
                   onChange={(e) => setSearch(e?.target?.value)}
                 />
               </div>
@@ -1002,7 +1006,7 @@ export default function Services() {
             <ShowServicesContainer>
               <ShowServiceData>
                 <div className="service-show-row">
-                  <p className="service-data header">Serviços</p>
+                  <p className="service-data header">Produtos</p>
                   <p className="service-data header">Categoria</p>
                   <p className="service-data header">Listável</p>
                   <p className="service-data header">Tempo</p>
@@ -1040,7 +1044,7 @@ export default function Services() {
                     </div>
                   </div>
                 ))}
-                {!data?.length && <p style={{ padding: '15px' }}>Nenhum serviço encontado!</p>}
+                {!data?.length && <p style={{ padding: '15px' }}>Nenhum produto encontado!</p>}
               </ShowServiceData>
             </ShowServicesContainer>
           </Summary>
@@ -1072,18 +1076,18 @@ export default function Services() {
               </SummaryTaskInfo>
 
               <SummaryTaskInfo>
-                <div className="title-info">Qtd. de Serviços:</div>
+                <div className="title-info">Qtd. de Produtos:</div>
                 <div className="info">{modalKit?.kit?.services?.length}</div>
               </SummaryTaskInfo>
             </SummaryInfoWrapper>
           </Summary>
 
           <Summary>
-            <div className="title">Lista de Serviços</div>
+            <div className="title">Lista de Produtos</div>
             <ShowServicesContainer>
               <ShowServiceData>
                 <div className="service-show-row">
-                  <p className="service-data center header">Serviços</p>
+                  <p className="service-data center header">Produtos</p>
                   <p className="service-data center header">Categoria</p>
                   <p className="service-data center header">Tipo</p>
                   <p className="service-data center header">-</p>
