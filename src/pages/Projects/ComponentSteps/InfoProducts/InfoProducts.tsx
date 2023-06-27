@@ -83,7 +83,7 @@ export default function InfoProducts({
   };
 
   function handleAddProducts(product: any) {
-    console.log('log do add product', product);
+    // console.log('log do add product', product);
     if (dataFilter.filter((obj: any) => obj.service_id === product.service_id).length > 0) {
       handleEditProductQuantity(quantityProducts);
       setQuantityProducts('');
@@ -94,7 +94,7 @@ export default function InfoProducts({
   }
 
   function editAddedProducts(product: any) {
-    console.log('log do produto a ser editado', product);
+    // console.log('log do produto a ser editado', product);
     if (dataFilter.filter((obj: any) => obj.service_id === product.service_id).length > 0) {
       handleEditProductQuantity(quantityProducts);
       setQuantityProducts('');
@@ -117,16 +117,26 @@ export default function InfoProducts({
   function handleOnAddKit(row: IDataKit): void {
     const { serviceslist } = row;
 
-    serviceslist?.forEach((service) => {
-      service.quantity >= 1 ? service.quantity++ : (service.quantity = 1);
-      if (service?.quantity === 1) return handleOnAddProducts(service);
-
-      handleEditProductQuantity(service);
-      editAddedProducts(service);
-    });
-
+    setTypeList('kits-products');
     setCurrentKitProducts(serviceslist);
-    handleOnTypeList('kits-products');
+
+    serviceslist.forEach((item: ServicesProps) => {
+      const isServiceSelected = dataFilter?.filter(
+        (row: ServicesProps) => row?.service_id === item?.service_id
+      );
+
+      console.log(isServiceSelected);
+
+      if (isServiceSelected?.length > 0) {
+        item.quantity = isServiceSelected[0].quantity++;
+        return handleEditProductQuantity(isServiceSelected[0]);
+      }
+
+      if (typeof item.quantity === 'undefined') item.quantity = 0;
+      item.quantity++;
+
+      item.quantity > 1 ? handleEditProductQuantity(item) : handleOnAddProducts(item);
+    });
   }
 
   // function editProductQuantity(product: any) {
