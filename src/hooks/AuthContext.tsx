@@ -71,7 +71,7 @@ function AuthProvider({ children }: TransactionsProviderProps) {
 
     localStorage.setItem('@live:token', token);
     localStorage.setItem('@live:user', JSON.stringify(user));
-    localStorage.setItem('@live:rules', roles);
+    localStorage.setItem('@live:rules', JSON.stringify(user.permissions));
 
     setData({ token, user, roles });
   }, []);
@@ -94,7 +94,7 @@ function AuthProvider({ children }: TransactionsProviderProps) {
         roles: data.roles
       });
     },
-    [setData, data.token]
+    [setData, data.token, data.roles]
   );
 
   return (
