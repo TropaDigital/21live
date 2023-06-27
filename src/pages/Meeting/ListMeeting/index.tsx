@@ -1,16 +1,22 @@
+/* eslint-disable import-helpers/order-imports */
+// React
 import { useCallback, useState } from 'react';
 import { BiCalendar, BiPlus, BiSearchAlt } from 'react-icons/bi';
 
+// Services
 import api from '../../../services/api';
 
+// Hooks
 import { useToast } from '../../../hooks/toast';
 import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useFetch } from '../../../hooks/useFetch';
 import useForm from '../../../hooks/useForm';
 
+// Utils
 import getValidationErrors from '../../../utils/getValidationErrors';
 import { MeetingProps, TeamProps, TenantProps } from '../../../utils/models';
 
+// Components
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import ButtonTable from '../../../components/Buttons/ButtonTable';
 import HeaderPage from '../../../components/HeaderPage';
@@ -21,22 +27,23 @@ import { SelectDefault } from '../../../components/Inputs/SelectDefault';
 import Paginate from '../../../components/Paginate';
 import { Table } from '../../../components/Table';
 import { FilterGroup, TableHead } from '../../../components/Table/styles';
-import { TableDefault } from '../../../components/TableDefault';
 import Alert from '../../../components/Ui/Alert';
 import ModalDefault from '../../../components/Ui/ModalDefault';
 import ScrollAreas from '../../../components/Ui/ScrollAreas';
 import {
   ContainerGroupTable,
-  ContentDefault,
   FieldDefault,
-  FieldGroupFormDefault,
   FooterModal,
   SectionDefault
 } from '../../../components/UiElements/styles';
 import UploadFiles from '../../../components/Upload/UploadFiles';
 import WrapperEditor from '../../../components/WrapperEditor';
 
+// Styles
 import { ButtonsFilter, Container, FilterButton } from './styles';
+
+// Libraries
+import moment from 'moment';
 
 interface UploadedFilesProps {
   file?: File;
@@ -96,7 +103,7 @@ export default function ListMeeting() {
     dateStart: '',
     dateEnd: ''
   });
-  const [filterOrder, setFilterOredr] = useState('');
+  const [filterOrder, setFilterOrder] = useState('');
 
   const { data, pages, fetchData } = useFetch<MeetingProps[]>(
     `meetings?search=${search}&date_start=${filterDate.dateStart}&date_end=${filterDate.dateEnd}&order=${filterOrder}`
@@ -415,7 +422,7 @@ export default function ListMeeting() {
                         <td>{row.title}</td>
                         <td>{row.cliente}</td>
                         <td>{row.responsavel}</td>
-                        <td>{row.date}</td>
+                        <td>{moment(row.date).format('DD/MM/YYYY')}</td>
                         <td>
                           <div className="fieldTableClients">
                             <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
