@@ -1,6 +1,6 @@
 /* eslint-disable import-helpers/order-imports */
 //  React
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 // Icons
@@ -74,12 +74,12 @@ export default function TaskList() {
     }
   });
   const navigate = useNavigate();
-  const [filter, setFilter] = useState({
-    dateStart: '',
-    dateEnd: '',
-    order: '',
-    search: ''
-  });
+  // const [filter, setFilter] = useState({
+  //   dateStart: '',
+  //   dateEnd: '',
+  //   order: '',
+  //   search: ''
+  // });
   const [search, setSearch] = useState('');
   const { data, pages, fetchData } = useFetch<any[]>(`tasks?search=${search}`);
   const [searchTerm, setSearchTerm] = useState('');
@@ -340,7 +340,7 @@ export default function TaskList() {
         <table>
           <thead>
             <tr>
-              {/* <th>ID</th> */}
+              <th>ID</th>
               <th>Título</th>
               <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
               <th>Tempo utilizado</th>
@@ -352,7 +352,7 @@ export default function TaskList() {
           <tbody>
             {data?.map((row) => (
               <tr key={row.task_id}>
-                {/* <td>#{row.task_id}</td> */}
+                <td>#{row.task_id}</td>
                 <td>{row.title}</td>
                 <TableFlag
                   style={{ textAlign: 'center' }}
@@ -455,13 +455,14 @@ export default function TaskList() {
                 <div className="title-info">Fluxo:</div>
                 <div className="info">{modalViewTask.task.flow}</div>
               </SummaryTaskInfo>
-
-              <SummaryTaskInfo>
-                <div className="title-info">Data De Input Pré-requisitos:</div>
-                <div className="info">
-                  {moment(modalViewTask.task.copywriting_date_end).format('DD/MM/YYYY')}
-                </div>
-              </SummaryTaskInfo>
+              {modalViewTask.task.copywriting_date_end !== '' && (
+                <SummaryTaskInfo>
+                  <div className="title-info">Data De Input Pré-requisitos:</div>
+                  <div className="info">
+                    {moment(modalViewTask.task.copywriting_date_end).format('DD/MM/YYYY')}
+                  </div>
+                </SummaryTaskInfo>
+              )}
 
               <SummaryTaskInfo>
                 <div className="title-info">Data De Input de Criação:</div>
