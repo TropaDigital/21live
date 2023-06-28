@@ -473,12 +473,21 @@ export default function CreateProject() {
         // console.log('log do post project', DTOForm);
         // console.log('log do post new data', createNewData);
       } catch (e: any) {
-        addToast({
-          type: 'danger',
-          title: 'ATENÇÃO',
-          description: e.response.data.message
-        });
-
+        if (e.response.data.result.length !== 0) {
+          e.response.data.result.map((row: any) => {
+            addToast({
+              type: 'danger',
+              title: 'ATENÇÃO',
+              description: row.error
+            });
+          });
+        } else {
+          addToast({
+            type: 'danger',
+            title: 'ATENÇÃO',
+            description: e.response.data.message
+          });
+        }
         // setErros(getValidationErrors(e.response.data.result))
       }
     },
