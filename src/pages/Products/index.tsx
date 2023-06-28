@@ -599,11 +599,15 @@ export default function Services() {
             {typeList === 'produtos' && (
               <h2>
                 Lista de produtos{' '}
-                <strong>
-                  {data?.length && data?.length > 1
-                    ? `${data?.length} produtos`
-                    : `${data?.length} produto`}
-                </strong>
+                {data ? (
+                  <strong>
+                    {data?.length && data?.length > 1
+                      ? `${data?.length} produtos`
+                      : `${data?.length} produto`}
+                  </strong>
+                ) : (
+                  <strong>0 produto</strong>
+                )}
               </h2>
             )}
             {typeList === 'kits' && (

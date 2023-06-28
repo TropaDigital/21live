@@ -13,7 +13,7 @@ import SignUp from '../pages/Login/SignUp';
 import Clients from '../pages/Clients';
 import Users from '../pages/Users';
 import Board from '../pages/Board';
-import Services from '../pages/Services';
+import Products from '../pages/Products';
 import Team from '../pages/Team/ListTeam';
 import ListOffice from '../pages/Team/ListOffice';
 import ListFluxo from '../pages/Fluxos/ListFluxo';
@@ -119,7 +119,7 @@ function RoutesAll() {
           path="/produtos"
           element={
             <PrivateRoutes>
-              <Services />
+              <Products />
             </PrivateRoutes>
           }
         />
