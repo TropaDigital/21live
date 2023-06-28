@@ -146,7 +146,6 @@ export default function CreateTasks() {
   });
   const [finishModal, setFinishModal] = useState<boolean>(false);
   const [deliveriesSplit, setDeliveriesSplit] = useState<string>('no-split');
-  // Ajustar quando for produtos passar a flag false
   const { data: dataProducts, fetchData: fetchProducts } = useFetch<any[]>(
     `services?search=${search}&flag=false`
   );
@@ -214,8 +213,6 @@ export default function CreateTasks() {
       setSelectedProject(location.state.product_id);
       setProductsArray(location.state.deadlines[0]?.produtos);
       setDTODelivery(location.state.deadlines);
-      // console.log('log do array products', productsArray);
-      console.log('log do products location', location.state);
     }
   }, [location]);
 
@@ -452,7 +449,7 @@ export default function CreateTasks() {
           return obj;
         })
       );
-      console.log('log filter product', product, newArray);
+      // console.log('log filter product', product, newArray);
     } else if (selectedProject && selectedProject.tempo < product.minutes) {
       addToast({
         type: 'warning',
@@ -466,7 +463,7 @@ export default function CreateTasks() {
         description: 'Total de horas ultrapassado, revise os horários e quantidades!'
       });
     } else {
-      console.log('log do product with the id finded', newProduct);
+      // console.log('log do product with the id finded', newProduct);
       setDTODelivery((current: any) =>
         current.map((obj: any) => {
           if (obj.deliveryId === idDelivery) {
@@ -1124,9 +1121,9 @@ export default function CreateTasks() {
   //   console.log('Log do DTO', DTOForm);
   // }, [DTOForm]);
 
-  useEffect(() => {
-    console.log('Log do DTODelivery', DTODelivery);
-  }, [DTODelivery]);
+  // useEffect(() => {
+  //   console.log('Log do DTODelivery', DTODelivery);
+  // }, [DTODelivery]);
 
   // useEffect(() => {
   //   console.log('log dos erros', errorCategory);
@@ -1490,7 +1487,6 @@ export default function CreateTasks() {
                 <ButtonDefault
                   typeButton="primary"
                   onClick={() => {
-                    console.log('add product');
                     setProductsModal(false);
                     setCreateStep(createStep + 1);
                     setDTODelivery([{ ...DTODelivery[0], deliveryProducts: productsArray }]);
@@ -1503,7 +1499,6 @@ export default function CreateTasks() {
                 <ButtonDefault
                   typeButton="primary"
                   onClick={() => {
-                    console.log('add product');
                     setProductsModal(false);
                   }}
                 >
@@ -1657,7 +1652,6 @@ export default function CreateTasks() {
               <ButtonDefault
                 typeButton="primary"
                 onClick={() => {
-                  console.log('add product');
                   setProductsDeliveriesModal({
                     isOpen: false,
                     title: '',
