@@ -393,21 +393,13 @@ export default function CreateTasks() {
       const newArray = productsArray.filter((obj) => obj.service_id !== product.service_id);
       setProductsArray([]);
       setProductsArray(newArray);
-    } else if (
-      selectedProject?.tempo &&
-      product.minutes.slice(0, -3) > selectedProject?.tempo.slice(0, -3)
-    ) {
-      // console.log('log do tempo do projeto selecionado', selectedProject?.tempo.slice(0, -3));
-      // console.log('log do tempo quando adiciono produto', product.minutes.slice(0, -3));
+    } else if (selectedProject?.tempo && product.minutes > selectedProject?.tempo) {
       addToast({
         type: 'warning',
         title: 'Aviso',
         description: 'Total de horas ultrapassado, revise os horários e quantidades!'
       });
-    } else if (
-      selectedProject?.tempo &&
-      selectedProject?.tempo.slice(0, -3) < totalProductsHours.slice(0, -3)
-    ) {
+    } else if (selectedProject?.tempo && selectedProject?.tempo < totalProductsHours) {
       addToast({
         type: 'warning',
         title: 'Aviso',
@@ -758,8 +750,10 @@ export default function CreateTasks() {
   const handleCheckQuantity = (quantity: any, product: IProduct) => {
     // console.log('log do product check quantity', quantity, product);
     const totalProductTime = multiplyTime(product.minutes, quantity);
-
-    if (selectedProject?.tempo && totalProductTime > selectedProject?.tempo) {
+    if (
+      selectedProject?.tempo &&
+      Number(selectedProject?.tempo.slice(0, -6)) < Number(totalProductTime.slice(0, -6))
+    ) {
       addToast({
         type: 'warning',
         title: 'Aviso',
@@ -1425,6 +1419,7 @@ export default function CreateTasks() {
                       }
                       infosReceived={row}
                       handleQuantity={(value: any) => handleCheckQuantity(value, row)}
+                      clearQuantity={() => ''}
                       disabledInput={
                         productsArray?.filter((obj) => obj.service_id === row.service_id).length > 0
                           ? false
@@ -1606,6 +1601,7 @@ export default function CreateTasks() {
                       }
                       infosReceived={row}
                       handleQuantity={(value: any) => handleCheckQuantity(value, row)}
+                      clearQuantity={() => ''}
                       disabledInput={false}
                     />
                   </div>
