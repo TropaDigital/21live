@@ -162,7 +162,7 @@ export default function ListFluxo() {
                   <th>Nome</th>
                   <th>Etapas</th>
                   <th>Projetos</th>
-                  <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
+                  <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
                 </tr>
               </thead>
 
