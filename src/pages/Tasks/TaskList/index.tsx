@@ -325,7 +325,7 @@ export default function TaskList() {
           <InputDefault
             label=""
             name="search"
-            placeholder="Search"
+            placeholder="Faça sua busca..."
             onChange={(event) => {
               setSearchTerm(event.target.value);
               debouncedCallback(event.target.value);
