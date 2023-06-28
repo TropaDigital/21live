@@ -321,7 +321,7 @@ export default function ListProjects() {
           <InputDefault
             label=""
             name="search"
-            placeholder="Faça sua busca..."
+            placeholder="Busque pelo título..."
             onChange={(event) => {
               setSearchTerm(event.target.value);
               debouncedCallback(event.target.value);
