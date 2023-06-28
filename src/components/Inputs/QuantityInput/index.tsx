@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 // Icons
 import { IconContext } from 'react-icons';
 import { BiMinus, BiPlus } from 'react-icons/bi';
+import { IconTrash } from '../../../assets/icons';
 
 // Styles
 import { CounterButton, NumberInput, WrapperCounter } from './style';
@@ -14,15 +15,16 @@ import { useToast } from '../../../hooks/toast';
 
 interface InputProps {
   receiveQuantity: number;
-  infosReceived: any;
+  infosReceived?: any;
   handleQuantity: (value: any) => void;
+  clearQuantity: () => void;
   disabledInput: boolean;
 }
 
 export default function QuantityInput({
   receiveQuantity,
-  infosReceived,
   handleQuantity,
+  clearQuantity,
   disabledInput
 }: InputProps) {
   const [counter, setCounter] = useState<number>(0);
@@ -47,17 +49,36 @@ export default function QuantityInput({
       setCounter(counter + 1);
       handleQuantity(counter + 1);
     } else {
-      setCounter(counter - 1);
-      handleQuantity(counter - 1);
+      if (counter > 0) {
+        setCounter(counter - 1);
+        handleQuantity(counter - 1);
+      }
     }
+  };
+
+  const handleClear = () => {
+    clearQuantity();
+    setCounter(0);
   };
 
   return (
     <WrapperCounter>
       <IconContext.Provider value={{ color: 'var(--primary)', className: 'react-icons' }}>
-        <CounterButton onClick={() => handleChangeCounter('down')}>
-          <BiMinus />
-        </CounterButton>
+        {counter === 0 && (
+          <CounterButton>
+            <BiMinus />
+          </CounterButton>
+        )}
+        {counter > 1 && (
+          <CounterButton onClick={() => handleChangeCounter('down')}>
+            <BiMinus />
+          </CounterButton>
+        )}
+        {counter === 1 && (
+          <CounterButton onClick={() => handleClear()}>
+            <IconTrash />
+          </CounterButton>
+        )}
         <NumberInput>
           <input
             type="text"

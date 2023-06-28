@@ -18,7 +18,7 @@ export const CounterButton = styled.button`
     justify-content: center;
     width: 32px;
     height: 32px;
-    background: var(--primary-100);
+    background: var(--gray-200);
 `;
 
 export const NumberInput = styled.div`
