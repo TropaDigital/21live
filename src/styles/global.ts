@@ -83,21 +83,6 @@ export const GlobalStyles = createGlobalStyle`
 
   /*========== Fonts ==========*/
   /*.5rem = 8px | 1rem = 16px ...*/
-  /* --body-font: 'Poppins', sans-serif; */
-
-  --h1-font-size: 2.5rem; // 45px
-  --h2-font-size: 2rem; // 32px
-  --h3-font-size: 1.75rem; // 28px
-  --h4-font-size: 1.5rem; // 24px
-  --h5-font-size: 1.25rem; // 20px
-  --h6-font-size: 1rem; // 16px
-
-  --normal-font-size: .938rem; // 15px
-  --small-font-size: .875rem; // 14px
-  --smaller-font-size: .75rem;  // 12px
-
-  /*========== Fonts ==========*/
-  /*.5rem = 8px | 1rem = 16px ...*/
   --body-font: 'Inter', sans-serif;
 
   --text-small-xs: 0.75rem; // 12px
