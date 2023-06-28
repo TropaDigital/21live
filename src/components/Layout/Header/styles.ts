@@ -54,7 +54,7 @@ export const Profile = styled.button`
   gap: 10px;
   background-color: transparent;
   h2 {
-    font-size: var(--small-font-size);
+    font-size: var(--text-small-sm);
     font-weight: var(--font-bold);
     white-space: nowrap;
     color: var(--background-primary);
