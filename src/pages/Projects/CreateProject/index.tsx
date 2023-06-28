@@ -123,7 +123,6 @@ export default function CreateProject() {
       setDTOForm(location.state);
       setProductsArray(location.state.products);
       setEditSelectedProducts(true);
-      console.log('log do products location', location.state);
     }
   }, [location]);
 
@@ -157,10 +156,10 @@ export default function CreateProject() {
     setDTOForm({ ...DTOForm, [name]: value });
   };
 
-  useEffect(() => {
-    // console.log('log do DTO', DTOForm);
-    // console.log('log dos Produtos', productsArray);
-  }, [DTOForm, productsArray]);
+  // useEffect(() => {
+  //   console.log('log do DTO', DTOForm);
+  //   console.log('log dos Produtos', productsArray);
+  // }, [DTOForm, productsArray]);
 
   const handleOnPeriod = (value: any, product: any) => {
     if (editSelectedProducts) {
@@ -301,7 +300,7 @@ export default function CreateProject() {
       }
 
       if (createStep < 3 && DTOForm.contract_type === 'free') {
-        console.log('log de um produto livre');
+        // console.log('log de um produto livre');
         setCreateStep(3);
       } else if (
         createStep === 2 &&
@@ -313,7 +312,7 @@ export default function CreateProject() {
         setCreateStep(createStep + 1);
       }
     } catch (error: any) {
-      console.log('error', error);
+      // console.log('error', error);
       addToast({
         title: 'Atenção',
         description: error,
@@ -515,9 +514,9 @@ export default function CreateProject() {
     }
   };
 
-  useEffect(() => {
-    console.log('log do DTO', DTOForm);
-  }, [DTOForm]);
+  // useEffect(() => {
+  //   console.log('log do DTO', DTOForm);
+  // }, [DTOForm]);
 
   return (
     <Container>
