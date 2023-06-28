@@ -147,6 +147,11 @@ export default function InfoProducts({
       productsQuantities[item.service] = item?.quantity;
     });
 
+    addToast({
+      type: 'success',
+      title: 'Kit adicionado com sucesso!'
+    });
+
     setProductQuantity({ ...productQuantity, ...productsQuantities });
   }
 
