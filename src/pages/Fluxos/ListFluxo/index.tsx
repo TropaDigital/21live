@@ -169,7 +169,7 @@ export default function ListFluxo() {
               <tbody>
                 {data?.map((row) => (
                   <tr key={row.flow_id}>
-                    <td>#{row.flow_id}</td>
+                    <td>#{String(row.flow_id).padStart(5, '0')}</td>
                     <td>{row.name}</td>
                     <td>{row.steps}</td>
                     <td>5</td>
