@@ -353,7 +353,7 @@ export default function ListProjects() {
           <tbody>
             {dataProject?.map((row) => (
               <tr key={row.project_id}>
-                <td>#{row.project_id}</td>
+                <td>#{String(row.project_id).padStart(5, '0')}</td>
                 <td>{row.title}</td>
                 <td>{row.client_name}</td>
                 <td
