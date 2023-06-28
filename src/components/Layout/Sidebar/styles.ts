@@ -70,7 +70,7 @@ export const Li = styled.li<sidebarProps>`
     }
   }
   span {
-    font-size: var(--h6-font-size);
+    font-size: var(--text-small-md);
     color: var(--primary-light);
     font-weight: ${(props) => (props.active ? 'var(--font-bold)' : 'var(--font-medium)')};
     white-space: nowrap;
