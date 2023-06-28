@@ -80,10 +80,10 @@ export default function TaskList() {
   //   order: '',
   //   search: ''
   // });
-  const [search, setSearch] = useState('');
-  const { data, pages, fetchData } = useFetch<any[]>(`tasks?search=${search}`);
-  const [searchTerm, setSearchTerm] = useState('');
   const [selected, setSelected] = useState(1);
+  const [search, setSearch] = useState('');
+  const { data, pages, fetchData } = useFetch<any[]>(`tasks?search=${search}&page=${selected}`);
+  const [searchTerm, setSearchTerm] = useState('');
   const { isLoading, debouncedCallback } = useDebouncedCallback(
     (search: string) => setSearch(search),
     700
