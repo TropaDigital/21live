@@ -276,7 +276,7 @@ export const Container = styled.button<ButtonProps>`
     props.sizeButton === 'big' &&
     css`
       height: 48px;
-      font-size: var(--h5-font-size);
+      font-size: var(--text-small-xl);
 
       svg {
         width: 22px;
