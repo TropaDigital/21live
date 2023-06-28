@@ -5,35 +5,35 @@ import { useState, useCallback, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 // Hooks
-import { useToast } from '../../hooks/toast';
-import { useFetch } from '../../hooks/useFetch';
+import { useToast } from '../../../hooks/toast';
+import { useFetch } from '../../../hooks/useFetch';
 
 // Utils
-import { TenantProps } from '../../utils/models';
-import { multiplyTime, sumTimes } from '../../utils/convertTimes';
+import { TenantProps } from '../../../utils/models';
+import { multiplyTime, sumTimes } from '../../../utils/convertTimes';
 
 // Types
-import { IProduct, IProjectCreate } from '../../types';
+import { IProduct, IProjectCreate } from '../../../types';
 
 // Icons
-import { IconChecked, IconMail } from '../../assets/icons';
+import { IconChecked, IconMail } from '../../../assets/icons';
 
 // Components
-import ButtonDefault from '../../components/Buttons/ButtonDefault';
-import HeaderStepsPage from '../../components/HeaderStepsPage';
-import { UploadedFilesProps } from '../../components/Upload/UploadFiles';
-import InfoDescription from '../Projects/ComponentSteps/InfoDescription';
-import InfoFiles from '../Projects/ComponentSteps/InfoFiles';
-import InfoGeral from '../Projects/ComponentSteps/InfoGeral';
-import InfoProducts from '../Projects/ComponentSteps/InfoProducts/InfoProducts';
-import ModalDefault from '../../components/Ui/ModalDefault';
-import { SaveButton } from '../Projects/ComponentSteps/InfoProducts/styles';
-import InputSwitchDefault from '../../components/Inputs/InputSwitchDefault';
+import ButtonDefault from '../../../components/Buttons/ButtonDefault';
+import HeaderStepsPage from '../../../components/HeaderStepsPage';
+import { UploadedFilesProps } from '../../../components/Upload/UploadFiles';
+import InfoDescription from '../ComponentSteps/InfoDescription';
+import InfoFiles from '../ComponentSteps/InfoFiles';
+import InfoGeral from '../ComponentSteps/InfoGeral';
+import InfoProducts from '../ComponentSteps/InfoProducts/InfoProducts';
+import ModalDefault from '../../../components/Ui/ModalDefault';
+import { SaveButton } from '../ComponentSteps/InfoProducts/styles';
+import InputSwitchDefault from '../../../components/Inputs/InputSwitchDefault';
 import {
   SummaryInfoWrapper,
   SummaryTaskDescription,
   SummaryTaskInfo
-} from '../Staks/ComponentSteps/SummaryTasks/styles';
+} from '../../Staks/ComponentSteps/SummaryTasks/styles';
 
 // Styles
 import {
@@ -55,7 +55,7 @@ import {
 } from './styles';
 
 // Services
-import api from '../../services/api';
+import api from '../../../services/api';
 
 // Libraries
 import moment from 'moment';

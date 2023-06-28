@@ -26,7 +26,7 @@ import ComponentsPage from '../pages/components/ComponentsPage';
 import ComponentTable from '../pages/components/ComponentTable';
 import ListMeeting from '../pages/Meeting/ListMeeting';
 import TaskList from '../pages/Staks/TaskList';
-import CreateProject from '../pages/CreateProject';
+import CreateProject from '../pages/Projects/CreateProject';
 import CreateTasks from '../pages/Staks/CreateTasks';
 
 function RoutesAll() {
