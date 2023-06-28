@@ -373,7 +373,8 @@ export default function ListProjects() {
                 </td>
                 <td>
                   <Switch
-                    onChange={() => handleList(row.project_id)}
+                    // onChange={() => handleList(row.project_id)}
+                    onChange={() => console.log('log do switch button', row.project_id)}
                     checked={listSelected.includes(row.project_id) ? true : false}
                     uncheckedIcon={false}
                     checkedIcon={false}
