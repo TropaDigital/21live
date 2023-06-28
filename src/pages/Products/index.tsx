@@ -208,7 +208,7 @@ export default function Services() {
   };
 
   const handleOnShowProduct = (item: FormDataProps) => {
-    console.log('log do row to show', item);
+    // console.log('log do row to show', item);
 
     setModalShowProduct({
       isOpen: true,
