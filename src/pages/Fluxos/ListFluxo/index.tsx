@@ -22,6 +22,9 @@ import HeaderPage from '../../../components/HeaderPage';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import Alert from '../../../components/Ui/Alert';
 import ModalDefault from '../../../components/Ui/ModalDefault';
+import { Table } from '../../../components/Table';
+import { TableHead } from '../../../components/Table/styles';
+import Pagination from '../../../components/Pagination';
 
 // Styles
 import {
@@ -32,8 +35,6 @@ import {
   FooterModal,
   SectionDefault
 } from '../../../components/UiElements/styles';
-import { Table } from '../../../components/Table';
-import { TableHead } from '../../../components/Table/styles';
 
 export default function ListFluxo() {
   const navigate = useNavigate();
@@ -43,6 +44,7 @@ export default function ListFluxo() {
   });
 
   const [modal, setModal] = useState(false);
+  const [selected, setSelected] = useState(1);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [search, setSearch] = useState('');
@@ -156,7 +158,7 @@ export default function ListFluxo() {
             <table>
               <thead>
                 <tr style={{ whiteSpace: 'nowrap' }}>
-                  <th>#</th>
+                  <th>ID</th>
                   <th>Nome</th>
                   <th>Etapas</th>
                   <th>Projetos</th>
@@ -167,7 +169,7 @@ export default function ListFluxo() {
               <tbody>
                 {data?.map((row) => (
                   <tr key={row.flow_id}>
-                    <td>{row.flow_id}</td>
+                    <td>#{row.flow_id}</td>
                     <td>{row.name}</td>
                     <td>{row.steps}</td>
                     <td>5</td>
@@ -193,6 +195,20 @@ export default function ListFluxo() {
                   </tr>
                 ))}
               </tbody>
+
+              <tfoot>
+                <tr>
+                  <td colSpan={100}>
+                    <Pagination
+                      total={pages.total}
+                      perPage={pages.perPage}
+                      currentPage={selected}
+                      lastPage={pages.lastPage}
+                      onClickPage={(e) => setSelected(e)}
+                    />
+                  </td>
+                </tr>
+              </tfoot>
             </table>
           </Table>
         </div>

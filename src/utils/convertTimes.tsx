@@ -23,20 +23,24 @@ function multiplyTime(time: string, multiplier: number): string {
 }
 
 function sumTimes(times: string[]): string {
-  const totalSeconds = times.reduce((acc, curr) => {
-    const [hours, minutes, seconds] = curr.split(':').map(Number);
-    return acc + hours * 3600 + minutes * 60 + seconds;
-  }, 0);
+  if (times) {
+    const totalSeconds = times.reduce((acc, curr) => {
+      const [hours, minutes, seconds] = curr.split(':').map(Number);
+      return acc + hours * 3600 + minutes * 60 + seconds;
+    }, 0);
 
-  const hours = Math.floor(totalSeconds / 3600)
-    .toString()
-    .padStart(2, '0');
-  const minutes = Math.floor((totalSeconds % 3600) / 60)
-    .toString()
-    .padStart(2, '0');
-  const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+    const hours = Math.floor(totalSeconds / 3600)
+      .toString()
+      .padStart(2, '0');
+    const minutes = Math.floor((totalSeconds % 3600) / 60)
+      .toString()
+      .padStart(2, '0');
+    const seconds = (totalSeconds % 60).toString().padStart(2, '0');
 
-  return `${hours}:${minutes}:${seconds}`;
+    return `${hours}:${minutes}:${seconds}`;
+  } else {
+    return '00:00:00';
+  }
 }
 
 function subtractTime(timePassed: string, timeToSubtract: string): string {

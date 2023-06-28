@@ -53,16 +53,17 @@ export const Calender = styled.aside`
 export const ButtonsFilter = styled.div`
   display: flex;
   align-items: center;
-  width: 326px;
+  width: fit-content;
   height: 40px;
   border: 1px solid var(--gray-300);
   border-radius: 8px;
   overflow: hidden;
 `;
 
-export const FilterButton = styled.div`
+export const FilterButton = styled.button`
   height: 100%;
   padding: 10px 16px;
+  background: transparent;
 
   color: var(--gray-800);
   font-size: var(--text-small-sm);
@@ -72,13 +73,13 @@ export const FilterButton = styled.div`
   transition: all 0.3s;
 
   &.selected {
-    background-color: var(--gray-100);
+    background-color: var(--gray-200);
   }
 
   &.borders {
     border-left: 1px solid var(--gray-300);
     border-right: 1px solid var(--gray-300);
-    padding: 10px 15px;
+    padding: 10px 16px;
   }
 
   &:hover {

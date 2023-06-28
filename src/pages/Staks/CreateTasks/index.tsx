@@ -152,7 +152,7 @@ export default function CreateTasks() {
   const { data: dataFlow } = useFetch<any[]>(`/flow?search=`);
   const { data: dataTypes } = useFetch<any[]>(`/task-type`);
   const [productsArray, setProductsArray] = useState<ServicesProps[]>([]);
-  const [quantityProductsArray, setQuantityProductsArray] = useState<any[]>([]);
+  // const [quantityProductsArray, setQuantityProductsArray] = useState<any[]>([]);
   const [selectedProject, setSelectedProject] = useState<ProjectProductProps>();
   const [selectedSummaryInfos, setSelectedSummaryInfos] = useState<any>({
     client: {
@@ -210,7 +210,7 @@ export default function CreateTasks() {
       setSelectedProject(location.state.product_id);
       setProductsArray(location.state.deadlines[0]?.produtos);
       setDTODelivery(location.state.deadlines);
-      console.log('log do array products', productsArray);
+      // console.log('log do array products', productsArray);
       console.log('log do products location', location.state);
     }
   }, [location]);
@@ -1082,9 +1082,9 @@ export default function CreateTasks() {
   //   console.log('log do Delivery DTO', DTODelivery);
   // }, [DTODelivery]);
 
-  useEffect(() => {
-    console.log('Log do DTO', DTOForm);
-  }, [DTOForm]);
+  // useEffect(() => {
+  //   console.log('Log do DTO', DTOForm);
+  // }, [DTOForm]);
 
   useEffect(() => {
     console.log('Log do DTODelivery', DTODelivery);
