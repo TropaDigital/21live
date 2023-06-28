@@ -33,7 +33,7 @@ import {
   SummaryInfoWrapper,
   SummaryTaskDescription,
   SummaryTaskInfo
-} from '../../Staks/ComponentSteps/SummaryTasks/styles';
+} from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 
 // Styles
 import {

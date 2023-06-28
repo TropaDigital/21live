@@ -42,13 +42,13 @@ import { ContainerDefault } from '../../../components/UiElements/styles';
 import { UploadedFilesProps } from '../../../components/Upload/UploadFiles';
 
 // Styles
-import { Summary } from '../../Staks/ComponentSteps/SummaryTasks/styles';
-import { SummaryTaskInfo } from '../../Staks/ComponentSteps/SummaryTasks/styles';
-import { SummaryInfoWrapper } from '../../Staks/ComponentSteps/SummaryTasks/styles';
-import { SummaryTaskDescription } from '../../Staks/ComponentSteps/SummaryTasks/styles';
-import { SummaryCard } from '../../Staks/ComponentSteps/SummaryTasks/styles';
-import { SummaryCardTitle } from '../../Staks/ComponentSteps/SummaryTasks/styles';
-import { SummaryCardSubtitle } from '../../Staks/ComponentSteps/SummaryTasks/styles';
+import { Summary } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
+import { SummaryTaskInfo } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
+import { SummaryInfoWrapper } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
+import { SummaryTaskDescription } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
+import { SummaryCard } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
+import { SummaryCardTitle } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
+import { SummaryCardSubtitle } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 import { ModalShowProjectWrapper } from './styles';
 
 interface StateProps {
