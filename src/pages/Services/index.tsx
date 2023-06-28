@@ -671,7 +671,7 @@ export default function Services() {
             <tbody>
               {data?.map((row) => (
                 <tr key={row.service_id}>
-                  <td>#{row.service_id}</td>
+                  <td>#{String(row.service_id).padStart(5, '0')}</td>
                   <td>{row.service}</td>
                   <td>{row.category}</td>
                   <td>
