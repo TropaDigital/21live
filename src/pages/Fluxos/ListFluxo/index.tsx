@@ -53,7 +53,7 @@ export default function ListFluxo() {
     700
   );
 
-  const { data, pages, fetchData } = useFetch<any[]>(`flow?search=${search}`);
+  const { data, pages, fetchData } = useFetch<any[]>(`flow?search=${search}&page=${selected}`);
 
   const handleOnCancel = useCallback(() => {
     setModal(!modal);
