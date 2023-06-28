@@ -117,7 +117,7 @@ export default function CreateTasks() {
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const [error, setError] = useState<StateProps>({});
   const [errorCategory, setErrorCategory] = useState<any[]>([]);
-  const [addDeliveries, setAddDeliveries] = useState<boolean>(false);
+  // const [addDeliveries, setAddDeliveries] = useState<boolean>(false);
   const newDate = new Date();
   const [DTOForm, setDTOForm] = useState<ITaskCreate>({
     title: '',
@@ -590,7 +590,7 @@ export default function CreateTasks() {
                   prevState.filter((product) => product !== obj.service_id)
                 );
                 if (errorCategory.length === 0) {
-                  setAddDeliveries(true);
+                  // setAddDeliveries(true);
                   setTimeout(() => {
                     setCreateStep(createStep + 1);
                   }, 150);
@@ -617,7 +617,7 @@ export default function CreateTasks() {
             throw 'Existem produtos sem o "Tipo" selecionado!';
           } else {
             setErrorCategory([]);
-            setAddDeliveries(true);
+            // setAddDeliveries(true);
             setTimeout(() => {
               setCreateStep(createStep + 1);
             }, 150);
@@ -640,7 +640,7 @@ export default function CreateTasks() {
             });
           } else {
             setErrorCategory([]);
-            setAddDeliveries(true);
+            // setAddDeliveries(true);
             setTimeout(() => {
               setCreateStep(createStep + 1);
             }, 500);
@@ -1003,11 +1003,21 @@ export default function CreateTasks() {
 
       setFinishModal(true);
     } catch (e: any) {
-      addToast({
-        type: 'danger',
-        title: 'ATENÇÃO',
-        description: e.response.data.message
-      });
+      if (e.response.data.result.length !== 0) {
+        e.response.data.result.map((row: any) => {
+          addToast({
+            type: 'danger',
+            title: 'ATENÇÃO',
+            description: row.error
+          });
+        });
+      } else {
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: e.response.data.message
+        });
+      }
 
       // setErros(getValidationErrors(e.response.data.result))
     }
@@ -1098,13 +1108,13 @@ export default function CreateTasks() {
   //   console.log('log do tipo de task', tasksType);
   // }, [tasksType]);
 
-  useEffect(() => {
-    console.log('log do products Array', productsArray);
-  }, [productsArray]);
+  // useEffect(() => {
+  //   console.log('log do products Array', productsArray);
+  // }, [productsArray]);
 
-  useEffect(() => {
-    console.log('log do Delivery DTO', DTODelivery);
-  }, [DTODelivery]);
+  // useEffect(() => {
+  //   console.log('log do Delivery DTO', DTODelivery);
+  // }, [DTODelivery]);
 
   // useEffect(() => {
   //   console.log('Log do DTO', DTOForm);
