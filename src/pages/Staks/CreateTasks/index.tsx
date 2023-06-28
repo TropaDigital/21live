@@ -40,7 +40,11 @@ import {
   SearchProductsModal,
   SplitDeliveries
 } from './styles';
-import { FinishModal, FinishModalButtons, FinishModalMessage } from '../../CreateProject/styles';
+import {
+  FinishModal,
+  FinishModalButtons,
+  FinishModalMessage
+} from '../../Projects/CreateProject/styles';
 
 // Hooks
 import { useToast } from '../../../hooks/toast';
@@ -377,7 +381,7 @@ export default function CreateTasks() {
   };
 
   const handleOnChangeCheckbox = (product: ServicesProps) => {
-    console.log('log do product', product);
+    // console.log('log do product', product);
     const newProduct = {
       category: product.category,
       description: product.description,
@@ -411,7 +415,7 @@ export default function CreateTasks() {
   };
 
   const handleOnChangeCheckboxDeliveries = (product: any, idDelivery: any) => {
-    console.log('log do product and ID', product, idDelivery, DTODelivery);
+    // console.log('log do product and ID', product, idDelivery, DTODelivery);
     const deliveryIdCorrected = idDelivery - 1;
     const newProduct = {
       category: product.category,
@@ -770,7 +774,7 @@ export default function CreateTasks() {
   };
 
   const handleProductQuantityDeliveries = (value: any, product: any) => {
-    console.log('log do modal number', productsDeliveriesModal.indexDelivery);
+    // console.log('log do modal number', productsDeliveriesModal.indexDelivery);
     if (
       DTODelivery[productsDeliveriesModal.indexDelivery - 1]?.deliveryProducts.filter(
         (obj: any) => obj.service_id === product.service_id
@@ -805,7 +809,7 @@ export default function CreateTasks() {
   };
 
   const handleProductQuantity = (value: any, product: any) => {
-    console.log('log do product adicionado', value, product);
+    // console.log('log do product adicionado', value, product);
     if (productsArray.filter((obj) => obj.service_id === product.service_id).length > 0) {
       setProductsArray((current) =>
         current.map((obj) => {
