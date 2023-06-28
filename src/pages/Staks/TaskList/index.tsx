@@ -352,7 +352,7 @@ export default function TaskList() {
           <tbody>
             {data?.map((row) => (
               <tr key={row.task_id}>
-                <td>#{row.task_id}</td>
+                <td>#{String(row.task_id).padStart(5, '0')}</td>
                 <td>{row.title}</td>
                 <TableFlag
                   style={{ textAlign: 'center' }}
