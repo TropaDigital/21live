@@ -942,32 +942,62 @@ export default function CreateTasks() {
           await api.post(`tasks`, createNewData);
         }
       } else {
-        const deadlines = DTODelivery.map((row: any) => {
-          return {
-            date_end: DTOForm?.creation_date_end,
-            description: DTOForm?.creation_description,
-            products: row.deliveryProducts
+        if (!splitDeliveries) {
+          const deadlines = [
+            {
+              date_end: DTOForm?.creation_date_end,
+              description: DTOForm?.creation_description,
+              products: productsArray
+            }
+          ];
+
+          const createNewData = {
+            title,
+            tenant_id,
+            product_id,
+            flow_id,
+            description,
+            creation_description,
+            creation_date_end,
+            copywriting_date_end,
+            copywriting_description,
+            deadlines: deadlines,
+            step
           };
-        });
 
-        const createNewData = {
-          title,
-          tenant_id,
-          product_id,
-          flow_id,
-          description,
-          creation_description,
-          creation_date_end,
-          copywriting_date_end,
-          copywriting_description,
-          deadlines: deadlines,
-          step
-        };
-
-        if (location.state !== null) {
-          await api.put(`tasks/${location.state.project_id}`, createNewData);
+          if (location.state !== null) {
+            await api.put(`tasks/${location.state.project_id}`, createNewData);
+          } else {
+            await api.post(`tasks`, createNewData);
+          }
         } else {
-          await api.post(`tasks`, createNewData);
+          const deadlines = DTODelivery.map((row: any) => {
+            return {
+              date_end: DTOForm?.creation_date_end,
+              description: DTOForm?.creation_description,
+              products: row.deliveryProducts
+            };
+          });
+
+          const createNewData = {
+            title,
+            tenant_id,
+            product_id,
+            flow_id,
+            description,
+            creation_description,
+            creation_date_end,
+            copywriting_date_end,
+            copywriting_description,
+            deadlines: deadlines,
+            step
+          };
+
+          if (location.state !== null) {
+            await api.put(`tasks/${location.state.project_id}`, createNewData);
+          } else {
+            await api.post(`tasks`, createNewData);
+          }
         }
       }
 
@@ -1068,13 +1098,13 @@ export default function CreateTasks() {
   //   console.log('log do tipo de task', tasksType);
   // }, [tasksType]);
 
-  // useEffect(() => {
-  //   console.log('log do products Array', productsArray);
-  // }, [productsArray]);
+  useEffect(() => {
+    console.log('log do products Array', productsArray);
+  }, [productsArray]);
 
-  // useEffect(() => {
-  //   console.log('log do Delivery DTO', DTODelivery);
-  // }, [DTODelivery]);
+  useEffect(() => {
+    console.log('log do Delivery DTO', DTODelivery);
+  }, [DTODelivery]);
 
   // useEffect(() => {
   //   console.log('Log do DTO', DTOForm);
