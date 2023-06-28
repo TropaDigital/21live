@@ -14,7 +14,7 @@ import { SelectDefault } from '../../../../components/Inputs/SelectDefault';
 import AddTextButton from '../../../../components/Buttons/AddTextButton';
 
 // Styles
-import { FormTitle } from '../../../CreateProject/styles';
+import { FormTitle } from '../../../Projects/CreateProject/styles';
 import {
   AddNewDelivery,
   Deliveries,
