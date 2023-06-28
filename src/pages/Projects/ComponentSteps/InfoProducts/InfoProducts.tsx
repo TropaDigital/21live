@@ -29,6 +29,7 @@ import { ProductsWrapper, WrapperCard } from './styles';
 
 // Libraries
 import Switch from 'react-switch';
+import QuantityInput from '../../../../components/Inputs/QuantityInput';
 
 interface PropsProducts {
   dataOffice: any;
@@ -80,6 +81,21 @@ export default function InfoProducts({
 
   const handleOnTypeList = (type: string) => {
     setTypeList(type);
+  };
+
+  const handleOnQuantity = (product: any, counter: any) => {
+    const productSelected: IProduct = {
+      service_id: product.service_id || product.project_id || product.product_id,
+      service: product.service,
+      description: product.description,
+      flag: product.flag,
+      type: product.type,
+      size: product.size,
+      quantity: counter,
+      minutes: '' || product.minutes,
+      period: '' || product.period
+    };
+    setQuantityProducts(productSelected);
   };
 
   function handleAddProducts(product: any) {
@@ -249,6 +265,13 @@ export default function InfoProducts({
                     />
                   </td>
                   <td>
+                    {/* <QuantityInput
+                      receiveQuantity={row.quantity ? 1 : 0}
+                      infosReceived={row}
+                      handleQuantity={(value: any) => handleOnQuantity(row, value)}
+                      clearQuantity={() => setQuantityProducts('')}
+                      disabledInput={false}
+                    /> */}
                     <QuantityCounter
                       handleQuantity={setQuantityProducts}
                       rowQuantity={row.quantity}
@@ -302,12 +325,19 @@ export default function InfoProducts({
                       />
                     </td>
                     <td>
-                      <QuantityCounter
+                      <QuantityInput
+                        receiveQuantity={row.quantity ? 1 : 0}
+                        infosReceived={row}
+                        handleQuantity={(value: any) => handleOnQuantity(row, value)}
+                        clearQuantity={() => setQuantityProducts('')}
+                        disabledInput={false}
+                      />
+                      {/* <QuantityCounter
                         handleQuantity={setQuantityProducts}
                         rowQuantity={row}
                         clearQuantity={handleDeleteProducts}
                         receiveQuantity={row?.quantity}
-                      />
+                      /> */}
                     </td>
                     {/* <td
                     style={{ cursor: 'pointer', textAlign: 'center' }}
