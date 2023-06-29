@@ -65,7 +65,7 @@ export default function CardFluxo({
           name="name"
           className="inputCardFluxo"
           placeholder="Nome do fluxo..."
-          value={data.name}
+          value={data.name.trim()}
           onChange={handleOnChange}
         />
 

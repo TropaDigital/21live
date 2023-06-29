@@ -154,15 +154,17 @@ export default function Services() {
   );
 
   const [typeList, setTypeList] = useState('produtos');
+  const [selected, setSelected] = useState(1);
 
-  const { data, pages, fetchData } = useFetch<ServicesProps[]>(`services?search=${search}`);
+  const { data, pages, fetchData } = useFetch<ServicesProps[]>(
+    `services?search=${search}&perPage=15&page=${selected}`
+  );
   const { data: dataCategory } = useFetch<any[]>(`category?search=${search}`);
   const {
     data: dataKits,
     pages: pageKits,
     fetchData: getKitData
   } = useFetch<any[]>(`pack-services?search=${search}`);
-  const [selected, setSelected] = useState(1);
   const [selectedKitPage, setSelectedKitPage] = useState(1);
   const [listSelected, setListSelected] = useState<any[]>([]);
   const [estimatedTime, setEstimatedTime] = useState<estimatedHoursPros>({
