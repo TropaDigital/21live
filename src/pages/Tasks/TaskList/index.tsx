@@ -56,6 +56,7 @@ export default function TaskList() {
       title: '',
       tenant_id: '',
       tenant: '',
+      totalTime: '',
       product_id: '',
       product_period: '',
       project: '',
@@ -116,6 +117,7 @@ export default function TaskList() {
         title: task.title,
         tenant_id: task.tenant_id,
         tenant: task.tenant,
+        totalTime: task.totalTime,
         product_id: task.product_id,
         product_period: task.product_period,
         project: task.project,
@@ -144,6 +146,7 @@ export default function TaskList() {
         title: '',
         tenant_id: '',
         tenant: '',
+        totalTime: '',
         product_id: '',
         product_period: '',
         project: '',
@@ -175,6 +178,7 @@ export default function TaskList() {
         title: response.data.result[0].title,
         tenant_id: response.data.result[0].tenant_id,
         tenant: response.data.result[0].tenant,
+        totalTime: response.data.result[0].totalTime,
         product_id: response.data.result[0].product_id,
         product_period: response.data.result[0].product_period,
         project: response.data.result[0].project,
@@ -452,7 +456,12 @@ export default function TaskList() {
 
               <SummaryTaskInfo>
                 <div className="title-info">Projeto/Contrato:</div>
-                <div className="info">{modalViewTask.task.project}</div>
+                <div className="info">
+                  {modalViewTask.task.project_category} |{' '}
+                  {modalViewTask.task.totalTime.slice(0, -6)}
+                  <span style={{ textTransform: 'lowercase' }}>h</span>/
+                  {modalViewTask.task.product_period === 'anual' ? 'ANO' : 'MÊS'}
+                </div>
               </SummaryTaskInfo>
 
               <SummaryTaskInfo>
