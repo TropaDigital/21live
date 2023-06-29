@@ -1024,7 +1024,7 @@ export default function Services() {
                   </div>
                 </div>
               </ShowServiceData>
-              <ShowServiceData>
+              <ShowServiceData style={{ overflowY: 'scroll' }}>
                 {data?.map((row) => (
                   <div className="service-show-row" key={row?.service_id}>
                     <p className="service-data service" title={row?.service}>
