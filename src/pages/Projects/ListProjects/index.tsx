@@ -436,13 +436,15 @@ export default function ListProjects() {
               </SummaryTaskInfo>
 
               <SummaryTaskInfo>
-                <div className="title-info">FEE/ SPOT:</div>
-                <div className="info">{modalShowProject.project.contract_type}</div>
+                <div className="title-info">FEE / SPOT:</div>
+                <div className="info">{modalShowProject.project.category}</div>
               </SummaryTaskInfo>
 
               <SummaryTaskInfo>
                 <div className="title-info">Tipo do contrato:</div>
-                <div className="info">{modalShowProject.project.category}</div>
+                <div className="info">
+                  {modalShowProject.project.contract_type === 'product' ? 'Produto' : 'Livre'}
+                </div>
               </SummaryTaskInfo>
 
               <SummaryTaskInfo>

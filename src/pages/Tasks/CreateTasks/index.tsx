@@ -98,6 +98,14 @@ interface DeliveryProps {
   showInfo: boolean;
 }
 
+interface DeliveryUpdate {
+  delivery_id: number | string;
+  description: string;
+  date_end: string;
+  produtos: [];
+  order: string;
+}
+
 interface ModalDeliveryProps {
   isOpen: boolean;
   title: string;
@@ -213,10 +221,24 @@ export default function CreateTasks() {
       setSelectedProject(location.state.product_id);
       setProductsArray(location.state.deadlines[0]?.produtos);
       setDTODelivery(location.state.deadlines);
+      if (location.state.deadlines.length > 1) {
+        setDeliveriesSplit('split');
+      }
+      console.log('log do locations', location.state);
     }
   }, [location]);
 
   const handleUpdateDeliveryDate = (value: any, id: any) => {
+    if (location.state !== null) {
+      setDTODelivery((current: any) =>
+        current.map((obj: { delivery_id: any }) => {
+          if (obj.delivery_id === id) {
+            return { ...obj, date_end: value };
+          }
+          return obj;
+        })
+      );
+    }
     setDTODelivery((current: any) =>
       current.map((obj: { deliveryId: any }) => {
         if (obj.deliveryId === id) {
@@ -233,39 +255,75 @@ export default function CreateTasks() {
     idProduct: any,
     value: any
   ) => {
-    const currentProducts = DTODelivery[indexDelivery].deliveryProducts;
-    const productToUpdate = currentProducts[indexProduct];
-    const updatedProduct = {
-      ...productToUpdate,
-      type: value
-    };
-    currentProducts[indexProduct] = updatedProduct;
-    setDTODelivery((current: any) =>
-      current.map((obj: DeliveryProps) => {
-        if (obj.deliveryProducts[indexProduct] === indexProduct) {
-          return { deliveryProducts: currentProducts };
-        }
-        return obj;
-      })
-    );
+    if (location.state !== null) {
+      const currentProducts = DTODelivery[indexDelivery].produtos;
+      const productToUpdate = currentProducts[indexProduct];
+      const updatedProduct = {
+        ...productToUpdate,
+        type: value
+      };
+      currentProducts[indexProduct] = updatedProduct;
+      setDTODelivery((current: any) =>
+        current.map((obj: DeliveryUpdate) => {
+          if (obj.produtos[indexProduct] === indexProduct) {
+            return { produtos: currentProducts };
+          }
+          return obj;
+        })
+      );
+    } else {
+      const currentProducts = DTODelivery[indexDelivery].deliveryProducts;
+      const productToUpdate = currentProducts[indexProduct];
+      const updatedProduct = {
+        ...productToUpdate,
+        type: value
+      };
+      currentProducts[indexProduct] = updatedProduct;
+      setDTODelivery((current: any) =>
+        current.map((obj: DeliveryProps) => {
+          if (obj.deliveryProducts[indexProduct] === indexProduct) {
+            return { deliveryProducts: currentProducts };
+          }
+          return obj;
+        })
+      );
+    }
   };
 
   const handleTypeProduct = (indexDelivery: any, indexProduct: any, idProduct: any, value: any) => {
-    const currentProducts = DTODelivery[indexDelivery].deliveryProducts;
-    const productToUpdate = currentProducts[indexProduct];
-    const updatedProduct = {
-      ...productToUpdate,
-      reason_change: value
-    };
-    currentProducts[indexProduct] = updatedProduct;
-    setDTODelivery((current: any) =>
-      current.map((obj: DeliveryProps) => {
-        if (obj.deliveryProducts[indexProduct] === indexProduct) {
-          return { deliveryProducts: currentProducts };
-        }
-        return obj;
-      })
-    );
+    if (location.state !== null) {
+      const currentProducts = DTODelivery[indexDelivery].produtos;
+      const productToUpdate = currentProducts[indexProduct];
+      const updatedProduct = {
+        ...productToUpdate,
+        reason_change: value
+      };
+      currentProducts[indexProduct] = updatedProduct;
+      setDTODelivery((current: any) =>
+        current.map((obj: DeliveryUpdate) => {
+          if (obj.produtos[indexProduct] === indexProduct) {
+            return { produtos: currentProducts };
+          }
+          return obj;
+        })
+      );
+    } else {
+      const currentProducts = DTODelivery[indexDelivery].deliveryProducts;
+      const productToUpdate = currentProducts[indexProduct];
+      const updatedProduct = {
+        ...productToUpdate,
+        reason_change: value
+      };
+      currentProducts[indexProduct] = updatedProduct;
+      setDTODelivery((current: any) =>
+        current.map((obj: DeliveryProps) => {
+          if (obj.deliveryProducts[indexProduct] === indexProduct) {
+            return { deliveryProducts: currentProducts };
+          }
+          return obj;
+        })
+      );
+    }
   };
 
   const handleDescriptionProduct = (
@@ -274,21 +332,39 @@ export default function CreateTasks() {
     idProduct: any,
     value: any
   ) => {
-    const currentProducts = DTODelivery[indexDelivery].deliveryProducts;
-    const productToUpdate = currentProducts[indexProduct];
-    const updatedProduct = {
-      ...productToUpdate,
-      description: value
-    };
-    currentProducts[indexProduct] = updatedProduct;
-    setDTODelivery((current: any) =>
-      current.map((obj: DeliveryProps) => {
-        if (obj.deliveryProducts[indexProduct] === indexProduct) {
-          return { deliveryProducts: currentProducts };
-        }
-        return obj;
-      })
-    );
+    if (location.state !== null) {
+      const currentProducts = DTODelivery[indexDelivery].produtos;
+      const productToUpdate = currentProducts[indexProduct];
+      const updatedProduct = {
+        ...productToUpdate,
+        description: value
+      };
+      currentProducts[indexProduct] = updatedProduct;
+      setDTODelivery((current: any) =>
+        current.map((obj: DeliveryUpdate) => {
+          if (obj.produtos[indexProduct] === indexProduct) {
+            return { produtos: currentProducts };
+          }
+          return obj;
+        })
+      );
+    } else {
+      const currentProducts = DTODelivery[indexDelivery].deliveryProducts;
+      const productToUpdate = currentProducts[indexProduct];
+      const updatedProduct = {
+        ...productToUpdate,
+        description: value
+      };
+      currentProducts[indexProduct] = updatedProduct;
+      setDTODelivery((current: any) =>
+        current.map((obj: DeliveryProps) => {
+          if (obj.deliveryProducts[indexProduct] === indexProduct) {
+            return { deliveryProducts: currentProducts };
+          }
+          return obj;
+        })
+      );
+    }
   };
 
   const handleFormatProduct = (
@@ -297,21 +373,39 @@ export default function CreateTasks() {
     idProduct: any,
     value: any
   ) => {
-    const currentProducts = DTODelivery[indexDelivery].deliveryProducts;
-    const productToUpdate = currentProducts[indexProduct];
-    const updatedProduct = {
-      ...productToUpdate,
-      size: value
-    };
-    currentProducts[indexProduct] = updatedProduct;
-    setDTODelivery((current: any) =>
-      current.map((obj: DeliveryProps) => {
-        if (obj.deliveryProducts[indexProduct] === indexProduct) {
-          return { deliveryProducts: currentProducts };
-        }
-        return obj;
-      })
-    );
+    if (location.state !== null) {
+      const currentProducts = DTODelivery[indexDelivery].produtos;
+      const productToUpdate = currentProducts[indexProduct];
+      const updatedProduct = {
+        ...productToUpdate,
+        size: value
+      };
+      currentProducts[indexProduct] = updatedProduct;
+      setDTODelivery((current: any) =>
+        current.map((obj: DeliveryUpdate) => {
+          if (obj.produtos[indexProduct] === indexProduct) {
+            return { produtos: currentProducts };
+          }
+          return obj;
+        })
+      );
+    } else {
+      const currentProducts = DTODelivery[indexDelivery].deliveryProducts;
+      const productToUpdate = currentProducts[indexProduct];
+      const updatedProduct = {
+        ...productToUpdate,
+        size: value
+      };
+      currentProducts[indexProduct] = updatedProduct;
+      setDTODelivery((current: any) =>
+        current.map((obj: DeliveryProps) => {
+          if (obj.deliveryProducts[indexProduct] === indexProduct) {
+            return { deliveryProducts: currentProducts };
+          }
+          return obj;
+        })
+      );
+    }
   };
 
   const productsHoursArray = productsArray?.map((row) => {
@@ -565,7 +659,7 @@ export default function CreateTasks() {
         }
       }
 
-      if (createStep === 1 && tasksType === 'horas') {
+      if (createStep === 1 && tasksType === 'horas' && !location.state) {
         setProductsModal(true);
       } else if (createStep === 2 && tasksType === 'horas') {
         if (creation_date_end === '') {
@@ -574,13 +668,7 @@ export default function CreateTasks() {
           setErrorInput('creation_date_end', undefined);
         }
 
-        // setErrorCategory({});
-        // setAddDeliveries(true);
-        // setTimeout(() => {
-        //   setCreateStep(createStep + 1);
-        // }, 500);
-
-        if (splitDeliveries) {
+        if (splitDeliveries && location.state !== null) {
           DTODelivery.map((current: DeliveryProps) => {
             current.deliveryProducts.map((obj: any) => {
               if (obj.reason_change === '' || obj.reason_change === undefined) {
@@ -601,7 +689,7 @@ export default function CreateTasks() {
           });
         }
 
-        if (!splitDeliveries) {
+        if (!splitDeliveries && location.state !== null) {
           let hasError = false;
           productsArray.forEach((obj: any) => {
             if (obj.reason_change === '' || obj.reason_change === undefined) {
@@ -974,7 +1062,7 @@ export default function CreateTasks() {
         } else {
           const deadlines = DTODelivery.map((row: any) => {
             return {
-              date_end: DTOForm?.creation_date_end,
+              date_end: row.deliveryDate,
               description: DTOForm?.creation_description,
               products: row.deliveryProducts
             };
@@ -1113,17 +1201,13 @@ export default function CreateTasks() {
   //   console.log('log do products Array', productsArray);
   // }, [productsArray]);
 
-  // useEffect(() => {
-  //   console.log('log do Delivery DTO', DTODelivery);
-  // }, [DTODelivery]);
+  useEffect(() => {
+    console.log('log do Delivery DTO', DTODelivery);
+  }, [DTODelivery]);
 
-  // useEffect(() => {
-  //   console.log('Log do DTO', DTOForm);
-  // }, [DTOForm]);
-
-  // useEffect(() => {
-  //   console.log('Log do DTODelivery', DTODelivery);
-  // }, [DTODelivery]);
+  useEffect(() => {
+    console.log('Log do DTO', DTOForm);
+  }, [DTOForm]);
 
   // useEffect(() => {
   //   console.log('log dos erros', errorCategory);
@@ -1158,7 +1242,7 @@ export default function CreateTasks() {
                   {error.description && <span>Contexto geral é obrigatório!</span>}
                 </div>
                 <InfoDescription
-                  value={DTOForm?.description}
+                  value={DTOForm.description}
                   handleOnDescription={(value) => handleDescription(value)}
                   mentions={[]}
                 />
@@ -1260,8 +1344,8 @@ export default function CreateTasks() {
                 <>
                   <FormTitle>Inputs</FormTitle>
                   <TaskInputs
-                    valueFirst={DTOForm.copywriting_description}
-                    valueSecond={DTOForm.creation_description}
+                    valueFirst={DTOForm?.copywriting_description}
+                    valueSecond={DTOForm?.creation_description}
                     handleOnDescription={(value) =>
                       handleTaskDeliveries('copywriting_description', value)
                     }

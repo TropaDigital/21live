@@ -94,7 +94,7 @@ export default function ListFluxo() {
         addToast({
           type: 'success',
           title: 'Sucesso',
-          description: 'Serviço cadastrado com sucesso!'
+          description: 'Fluxo cadastrado com sucesso!'
         });
 
         fetchData();
