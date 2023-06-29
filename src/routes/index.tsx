@@ -13,7 +13,7 @@ import SignUp from '../pages/Login/SignUp';
 import Clients from '../pages/Clients';
 import Users from '../pages/Users';
 import Board from '../pages/Board';
-import Services from '../pages/Services';
+import Products from '../pages/Products';
 import Team from '../pages/Team/ListTeam';
 import ListOffice from '../pages/Team/ListOffice';
 import ListFluxo from '../pages/Fluxos/ListFluxo';
@@ -25,9 +25,9 @@ import ComponentsForms from '../pages/components/ComponentsForms';
 import ComponentsPage from '../pages/components/ComponentsPage';
 import ComponentTable from '../pages/components/ComponentTable';
 import ListMeeting from '../pages/Meeting/ListMeeting';
-import TaskList from '../pages/Staks/TaskList';
-import CreateProject from '../pages/CreateProject';
-import CreateTasks from '../pages/Staks/CreateTasks';
+import TaskList from '../pages/Tasks/TaskList';
+import CreateProject from '../pages/Projects/CreateProject';
+import CreateTasks from '../pages/Tasks/CreateTasks';
 
 function RoutesAll() {
   return (
@@ -119,7 +119,7 @@ function RoutesAll() {
           path="/produtos"
           element={
             <PrivateRoutes>
-              <Services />
+              <Products />
             </PrivateRoutes>
           }
         />

@@ -40,7 +40,11 @@ import {
   SearchProductsModal,
   SplitDeliveries
 } from './styles';
-import { FinishModal, FinishModalButtons, FinishModalMessage } from '../../CreateProject/styles';
+import {
+  FinishModal,
+  FinishModalButtons,
+  FinishModalMessage
+} from '../../Projects/CreateProject/styles';
 
 // Hooks
 import { useToast } from '../../../hooks/toast';
@@ -117,7 +121,7 @@ export default function CreateTasks() {
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const [error, setError] = useState<StateProps>({});
   const [errorCategory, setErrorCategory] = useState<any[]>([]);
-  const [addDeliveries, setAddDeliveries] = useState<boolean>(false);
+  // const [addDeliveries, setAddDeliveries] = useState<boolean>(false);
   const newDate = new Date();
   const [DTOForm, setDTOForm] = useState<ITaskCreate>({
     title: '',
@@ -142,7 +146,6 @@ export default function CreateTasks() {
   });
   const [finishModal, setFinishModal] = useState<boolean>(false);
   const [deliveriesSplit, setDeliveriesSplit] = useState<string>('no-split');
-  // Ajustar quando for produtos passar a flag false
   const { data: dataProducts, fetchData: fetchProducts } = useFetch<any[]>(
     `services?search=${search}&flag=false`
   );
@@ -210,8 +213,6 @@ export default function CreateTasks() {
       setSelectedProject(location.state.product_id);
       setProductsArray(location.state.deadlines[0]?.produtos);
       setDTODelivery(location.state.deadlines);
-      // console.log('log do array products', productsArray);
-      console.log('log do products location', location.state);
     }
   }, [location]);
 
@@ -377,7 +378,7 @@ export default function CreateTasks() {
   };
 
   const handleOnChangeCheckbox = (product: ServicesProps) => {
-    console.log('log do product', product);
+    // console.log('log do product', product);
     const newProduct = {
       category: product.category,
       description: product.description,
@@ -393,21 +394,13 @@ export default function CreateTasks() {
       const newArray = productsArray.filter((obj) => obj.service_id !== product.service_id);
       setProductsArray([]);
       setProductsArray(newArray);
-    } else if (
-      selectedProject?.tempo &&
-      product.minutes.slice(0, -3) > selectedProject?.tempo.slice(0, -3)
-    ) {
-      // console.log('log do tempo do projeto selecionado', selectedProject?.tempo.slice(0, -3));
-      // console.log('log do tempo quando adiciono produto', product.minutes.slice(0, -3));
+    } else if (selectedProject?.tempo && product.minutes > selectedProject?.tempo) {
       addToast({
         type: 'warning',
         title: 'Aviso',
         description: 'Total de horas ultrapassado, revise os horários e quantidades!'
       });
-    } else if (
-      selectedProject?.tempo &&
-      selectedProject?.tempo.slice(0, -3) < totalProductsHours.slice(0, -3)
-    ) {
+    } else if (selectedProject?.tempo && selectedProject?.tempo < totalProductsHours) {
       addToast({
         type: 'warning',
         title: 'Aviso',
@@ -419,7 +412,7 @@ export default function CreateTasks() {
   };
 
   const handleOnChangeCheckboxDeliveries = (product: any, idDelivery: any) => {
-    console.log('log do product and ID', product, idDelivery, DTODelivery);
+    // console.log('log do product and ID', product, idDelivery, DTODelivery);
     const deliveryIdCorrected = idDelivery - 1;
     const newProduct = {
       category: product.category,
@@ -456,7 +449,7 @@ export default function CreateTasks() {
           return obj;
         })
       );
-      console.log('log filter product', product, newArray);
+      // console.log('log filter product', product, newArray);
     } else if (selectedProject && selectedProject.tempo < product.minutes) {
       addToast({
         type: 'warning',
@@ -470,7 +463,7 @@ export default function CreateTasks() {
         description: 'Total de horas ultrapassado, revise os horários e quantidades!'
       });
     } else {
-      console.log('log do product with the id finded', newProduct);
+      // console.log('log do product with the id finded', newProduct);
       setDTODelivery((current: any) =>
         current.map((obj: any) => {
           if (obj.deliveryId === idDelivery) {
@@ -598,7 +591,7 @@ export default function CreateTasks() {
                   prevState.filter((product) => product !== obj.service_id)
                 );
                 if (errorCategory.length === 0) {
-                  setAddDeliveries(true);
+                  // setAddDeliveries(true);
                   setTimeout(() => {
                     setCreateStep(createStep + 1);
                   }, 150);
@@ -625,7 +618,7 @@ export default function CreateTasks() {
             throw 'Existem produtos sem o "Tipo" selecionado!';
           } else {
             setErrorCategory([]);
-            setAddDeliveries(true);
+            // setAddDeliveries(true);
             setTimeout(() => {
               setCreateStep(createStep + 1);
             }, 150);
@@ -648,7 +641,7 @@ export default function CreateTasks() {
             });
           } else {
             setErrorCategory([]);
-            setAddDeliveries(true);
+            // setAddDeliveries(true);
             setTimeout(() => {
               setCreateStep(createStep + 1);
             }, 500);
@@ -758,8 +751,10 @@ export default function CreateTasks() {
   const handleCheckQuantity = (quantity: any, product: IProduct) => {
     // console.log('log do product check quantity', quantity, product);
     const totalProductTime = multiplyTime(product.minutes, quantity);
-
-    if (selectedProject?.tempo && totalProductTime > selectedProject?.tempo) {
+    if (
+      selectedProject?.tempo &&
+      Number(selectedProject?.tempo.slice(0, -6)) < Number(totalProductTime.slice(0, -6))
+    ) {
       addToast({
         type: 'warning',
         title: 'Aviso',
@@ -776,7 +771,7 @@ export default function CreateTasks() {
   };
 
   const handleProductQuantityDeliveries = (value: any, product: any) => {
-    console.log('log do modal number', productsDeliveriesModal.indexDelivery);
+    // console.log('log do modal number', productsDeliveriesModal.indexDelivery);
     if (
       DTODelivery[productsDeliveriesModal.indexDelivery - 1]?.deliveryProducts.filter(
         (obj: any) => obj.service_id === product.service_id
@@ -811,7 +806,7 @@ export default function CreateTasks() {
   };
 
   const handleProductQuantity = (value: any, product: any) => {
-    console.log('log do product adicionado', value, product);
+    // console.log('log do product adicionado', value, product);
     if (productsArray.filter((obj) => obj.service_id === product.service_id).length > 0) {
       setProductsArray((current) =>
         current.map((obj) => {
@@ -948,42 +943,82 @@ export default function CreateTasks() {
           await api.post(`tasks`, createNewData);
         }
       } else {
-        const deadlines = DTODelivery.map((row: any) => {
-          return {
-            date_end: DTOForm?.creation_date_end,
-            description: DTOForm?.creation_description,
-            products: row.deliveryProducts
+        if (!splitDeliveries) {
+          const deadlines = [
+            {
+              date_end: DTOForm?.creation_date_end,
+              description: DTOForm?.creation_description,
+              products: productsArray
+            }
+          ];
+
+          const createNewData = {
+            title,
+            tenant_id,
+            product_id,
+            flow_id,
+            description,
+            creation_description,
+            creation_date_end,
+            copywriting_date_end,
+            copywriting_description,
+            deadlines: deadlines,
+            step
           };
-        });
 
-        const createNewData = {
-          title,
-          tenant_id,
-          product_id,
-          flow_id,
-          description,
-          creation_description,
-          creation_date_end,
-          copywriting_date_end,
-          copywriting_description,
-          deadlines: deadlines,
-          step
-        };
-
-        if (location.state !== null) {
-          await api.put(`tasks/${location.state.project_id}`, createNewData);
+          if (location.state !== null) {
+            await api.put(`tasks/${location.state.project_id}`, createNewData);
+          } else {
+            await api.post(`tasks`, createNewData);
+          }
         } else {
-          await api.post(`tasks`, createNewData);
+          const deadlines = DTODelivery.map((row: any) => {
+            return {
+              date_end: DTOForm?.creation_date_end,
+              description: DTOForm?.creation_description,
+              products: row.deliveryProducts
+            };
+          });
+
+          const createNewData = {
+            title,
+            tenant_id,
+            product_id,
+            flow_id,
+            description,
+            creation_description,
+            creation_date_end,
+            copywriting_date_end,
+            copywriting_description,
+            deadlines: deadlines,
+            step
+          };
+
+          if (location.state !== null) {
+            await api.put(`tasks/${location.state.project_id}`, createNewData);
+          } else {
+            await api.post(`tasks`, createNewData);
+          }
         }
       }
 
       setFinishModal(true);
     } catch (e: any) {
-      addToast({
-        type: 'danger',
-        title: 'ATENÇÃO',
-        description: e.response.data.message
-      });
+      if (e.response.data.result.length !== 0) {
+        e.response.data.result.map((row: any) => {
+          addToast({
+            type: 'danger',
+            title: 'ATENÇÃO',
+            description: row.error
+          });
+        });
+      } else {
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: e.response.data.message
+        });
+      }
 
       // setErros(getValidationErrors(e.response.data.result))
     }
@@ -1086,9 +1121,9 @@ export default function CreateTasks() {
   //   console.log('Log do DTO', DTOForm);
   // }, [DTOForm]);
 
-  useEffect(() => {
-    console.log('Log do DTODelivery', DTODelivery);
-  }, [DTODelivery]);
+  // useEffect(() => {
+  //   console.log('Log do DTODelivery', DTODelivery);
+  // }, [DTODelivery]);
 
   // useEffect(() => {
   //   console.log('log dos erros', errorCategory);
@@ -1425,6 +1460,7 @@ export default function CreateTasks() {
                       }
                       infosReceived={row}
                       handleQuantity={(value: any) => handleCheckQuantity(value, row)}
+                      clearQuantity={() => ''}
                       disabledInput={
                         productsArray?.filter((obj) => obj.service_id === row.service_id).length > 0
                           ? false
@@ -1451,7 +1487,6 @@ export default function CreateTasks() {
                 <ButtonDefault
                   typeButton="primary"
                   onClick={() => {
-                    console.log('add product');
                     setProductsModal(false);
                     setCreateStep(createStep + 1);
                     setDTODelivery([{ ...DTODelivery[0], deliveryProducts: productsArray }]);
@@ -1464,7 +1499,6 @@ export default function CreateTasks() {
                 <ButtonDefault
                   typeButton="primary"
                   onClick={() => {
-                    console.log('add product');
                     setProductsModal(false);
                   }}
                 >
@@ -1606,6 +1640,7 @@ export default function CreateTasks() {
                       }
                       infosReceived={row}
                       handleQuantity={(value: any) => handleCheckQuantity(value, row)}
+                      clearQuantity={() => ''}
                       disabledInput={false}
                     />
                   </div>
@@ -1617,7 +1652,6 @@ export default function CreateTasks() {
               <ButtonDefault
                 typeButton="primary"
                 onClick={() => {
-                  console.log('add product');
                   setProductsDeliveriesModal({
                     isOpen: false,
                     title: '',

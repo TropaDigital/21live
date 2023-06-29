@@ -121,7 +121,7 @@ export default function ListMeeting() {
   const [selected, setSelected] = useState(1);
 
   const [text, setText] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState<any>();
+  const [selectedFilter, setSelectedFilter] = useState<any>('recent');
 
   const handleChangeClient = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedIndex = event.target.selectedIndex;
@@ -411,14 +411,14 @@ export default function ListMeeting() {
                       <th>Cliente</th>
                       <th>Responsável</th>
                       <th>Data</th>
-                      <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
+                      <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
                     </tr>
                   </thead>
 
                   <tbody>
                     {data?.map((row) => (
                       <tr key={row.meeting_id}>
-                        <td>{row.meeting_id}</td>
+                        <td>#{String(row.meeting_id).padStart(5, '0')}</td>
                         <td>{row.title}</td>
                         <td>{row.cliente}</td>
                         <td>{row.responsavel}</td>

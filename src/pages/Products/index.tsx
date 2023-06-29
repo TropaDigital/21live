@@ -43,7 +43,7 @@ import {
   Summary,
   SummaryInfoWrapper,
   SummaryTaskInfo
-} from '../Staks/ComponentSteps/SummaryTasks/styles';
+} from '../Tasks/ComponentSteps/SummaryTasks/styles';
 
 // Styles
 import {
@@ -154,15 +154,17 @@ export default function Services() {
   );
 
   const [typeList, setTypeList] = useState('produtos');
+  const [selected, setSelected] = useState(1);
 
-  const { data, pages, fetchData } = useFetch<ServicesProps[]>(`services?search=${search}`);
+  const { data, pages, fetchData } = useFetch<ServicesProps[]>(
+    `services?search=${search}&perPage=15&page=${selected}`
+  );
   const { data: dataCategory } = useFetch<any[]>(`category?search=${search}`);
   const {
     data: dataKits,
     pages: pageKits,
     fetchData: getKitData
   } = useFetch<any[]>(`pack-services?search=${search}`);
-  const [selected, setSelected] = useState(1);
   const [selectedKitPage, setSelectedKitPage] = useState(1);
   const [listSelected, setListSelected] = useState<any[]>([]);
   const [estimatedTime, setEstimatedTime] = useState<estimatedHoursPros>({
@@ -208,7 +210,7 @@ export default function Services() {
   };
 
   const handleOnShowProduct = (item: FormDataProps) => {
-    console.log('log do row to show', item);
+    // console.log('log do row to show', item);
 
     setModalShowProduct({
       isOpen: true,
@@ -599,11 +601,15 @@ export default function Services() {
             {typeList === 'produtos' && (
               <h2>
                 Lista de produtos{' '}
-                <strong>
-                  {data?.length && data?.length > 1
-                    ? `${data?.length} produtos`
-                    : `${data?.length} produto`}
-                </strong>
+                {data ? (
+                  <strong>
+                    {data?.length && data?.length > 1
+                      ? `${data?.length} produtos`
+                      : `${data?.length} produto`}
+                  </strong>
+                ) : (
+                  <strong>0 produto</strong>
+                )}
               </h2>
             )}
             {typeList === 'kits' && (
@@ -639,7 +645,7 @@ export default function Services() {
               <InputDefault
                 label=""
                 name="search"
-                placeholder="Faça sua busca..."
+                placeholder="Busque pelo produto..."
                 onChange={(event) => {
                   setSearchTerm(event.target.value);
                   debouncedCallback(event.target.value);
@@ -671,7 +677,7 @@ export default function Services() {
             <tbody>
               {data?.map((row) => (
                 <tr key={row.service_id}>
-                  <td>#{row.service_id}</td>
+                  <td>#{String(row.service_id).padStart(5, '0')}</td>
                   <td>{row.service}</td>
                   <td>{row.category}</td>
                   <td>

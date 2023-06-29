@@ -5,35 +5,35 @@ import { useState, useCallback, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 // Hooks
-import { useToast } from '../../hooks/toast';
-import { useFetch } from '../../hooks/useFetch';
+import { useToast } from '../../../hooks/toast';
+import { useFetch } from '../../../hooks/useFetch';
 
 // Utils
-import { TenantProps } from '../../utils/models';
-import { multiplyTime, sumTimes } from '../../utils/convertTimes';
+import { TenantProps } from '../../../utils/models';
+import { multiplyTime, sumTimes } from '../../../utils/convertTimes';
 
 // Types
-import { IProduct, IProjectCreate } from '../../types';
+import { IProduct, IProjectCreate } from '../../../types';
 
 // Icons
-import { IconChecked, IconMail } from '../../assets/icons';
+import { IconChecked, IconMail } from '../../../assets/icons';
 
 // Components
-import ButtonDefault from '../../components/Buttons/ButtonDefault';
-import HeaderStepsPage from '../../components/HeaderStepsPage';
-import { UploadedFilesProps } from '../../components/Upload/UploadFiles';
-import InfoDescription from '../Projects/ComponentSteps/InfoDescription';
-import InfoFiles from '../Projects/ComponentSteps/InfoFiles';
-import InfoGeral from '../Projects/ComponentSteps/InfoGeral';
-import InfoProducts from '../Projects/ComponentSteps/InfoProducts/InfoProducts';
-import ModalDefault from '../../components/Ui/ModalDefault';
-import { SaveButton } from '../Projects/ComponentSteps/InfoProducts/styles';
-import InputSwitchDefault from '../../components/Inputs/InputSwitchDefault';
+import ButtonDefault from '../../../components/Buttons/ButtonDefault';
+import HeaderStepsPage from '../../../components/HeaderStepsPage';
+import { UploadedFilesProps } from '../../../components/Upload/UploadFiles';
+import InfoDescription from '../ComponentSteps/InfoDescription';
+import InfoFiles from '../ComponentSteps/InfoFiles';
+import InfoGeral from '../ComponentSteps/InfoGeral';
+import InfoProducts from '../ComponentSteps/InfoProducts/InfoProducts';
+import ModalDefault from '../../../components/Ui/ModalDefault';
+import { SaveButton } from '../ComponentSteps/InfoProducts/styles';
+import InputSwitchDefault from '../../../components/Inputs/InputSwitchDefault';
 import {
   SummaryInfoWrapper,
   SummaryTaskDescription,
   SummaryTaskInfo
-} from '../Staks/ComponentSteps/SummaryTasks/styles';
+} from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 
 // Styles
 import {
@@ -55,7 +55,7 @@ import {
 } from './styles';
 
 // Services
-import api from '../../services/api';
+import api from '../../../services/api';
 
 // Libraries
 import moment from 'moment';
@@ -123,7 +123,6 @@ export default function CreateProject() {
       setDTOForm(location.state);
       setProductsArray(location.state.products);
       setEditSelectedProducts(true);
-      console.log('log do products location', location.state);
     }
   }, [location]);
 
@@ -157,10 +156,10 @@ export default function CreateProject() {
     setDTOForm({ ...DTOForm, [name]: value });
   };
 
-  useEffect(() => {
-    // console.log('log do DTO', DTOForm);
-    // console.log('log dos Produtos', productsArray);
-  }, [DTOForm, productsArray]);
+  // useEffect(() => {
+  //   console.log('log do DTO', DTOForm);
+  //   console.log('log dos Produtos', productsArray);
+  // }, [DTOForm, productsArray]);
 
   const handleOnPeriod = (value: any, product: any) => {
     if (editSelectedProducts) {
@@ -301,7 +300,7 @@ export default function CreateProject() {
       }
 
       if (createStep < 3 && DTOForm.contract_type === 'free') {
-        console.log('log de um produto livre');
+        // console.log('log de um produto livre');
         setCreateStep(3);
       } else if (
         createStep === 2 &&
@@ -313,7 +312,7 @@ export default function CreateProject() {
         setCreateStep(createStep + 1);
       }
     } catch (error: any) {
-      console.log('error', error);
+      // console.log('error', error);
       addToast({
         title: 'Atenção',
         description: error,
@@ -473,12 +472,21 @@ export default function CreateProject() {
         // console.log('log do post project', DTOForm);
         // console.log('log do post new data', createNewData);
       } catch (e: any) {
-        addToast({
-          type: 'danger',
-          title: 'ATENÇÃO',
-          description: e.response.data.message
-        });
-
+        if (e.response.data.result.length !== 0) {
+          e.response.data.result.map((row: any) => {
+            addToast({
+              type: 'danger',
+              title: 'ATENÇÃO',
+              description: row.error
+            });
+          });
+        } else {
+          addToast({
+            type: 'danger',
+            title: 'ATENÇÃO',
+            description: e.response.data.message
+          });
+        }
         // setErros(getValidationErrors(e.response.data.result))
       }
     },
@@ -506,9 +514,9 @@ export default function CreateProject() {
     }
   };
 
-  useEffect(() => {
-    console.log('log do DTO', DTOForm);
-  }, [DTOForm]);
+  // useEffect(() => {
+  //   console.log('log do DTO', DTOForm);
+  // }, [DTOForm]);
 
   return (
     <Container>

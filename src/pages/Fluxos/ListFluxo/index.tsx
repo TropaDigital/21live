@@ -53,7 +53,7 @@ export default function ListFluxo() {
     700
   );
 
-  const { data, pages, fetchData } = useFetch<any[]>(`flow?search=${search}`);
+  const { data, pages, fetchData } = useFetch<any[]>(`flow?search=${search}&page=${selected}`);
 
   const handleOnCancel = useCallback(() => {
     setModal(!modal);
@@ -162,14 +162,14 @@ export default function ListFluxo() {
                   <th>Nome</th>
                   <th>Etapas</th>
                   <th>Projetos</th>
-                  <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
+                  <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
                 </tr>
               </thead>
 
               <tbody>
                 {data?.map((row) => (
                   <tr key={row.flow_id}>
-                    <td>#{row.flow_id}</td>
+                    <td>#{String(row.flow_id).padStart(5, '0')}</td>
                     <td>{row.name}</td>
                     <td>{row.steps}</td>
                     <td>5</td>

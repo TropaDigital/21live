@@ -44,7 +44,7 @@ export const FormWrapper = styled.div`
 
 export const FormTitle = styled.h2`
   color: var(--title-color);
-  font-size: var(--h4-font-size);
+  font-size: var(--text-headline-sm);
   font-weight: var(--weight-bold);
 
   margin-bottom: 24px;

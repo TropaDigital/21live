@@ -80,10 +80,10 @@ export default function TaskList() {
   //   order: '',
   //   search: ''
   // });
-  const [search, setSearch] = useState('');
-  const { data, pages, fetchData } = useFetch<any[]>(`tasks?search=${search}`);
-  const [searchTerm, setSearchTerm] = useState('');
   const [selected, setSelected] = useState(1);
+  const [search, setSearch] = useState('');
+  const { data, pages, fetchData } = useFetch<any[]>(`tasks?search=${search}&page=${selected}`);
+  const [searchTerm, setSearchTerm] = useState('');
   const { isLoading, debouncedCallback } = useDebouncedCallback(
     (search: string) => setSearch(search),
     700
@@ -311,9 +311,13 @@ export default function TaskList() {
           <div className="groupTable">
             <h2>
               Lista de tarefas{' '}
-              <strong>
-                {data && data?.length < 1 ? `${data?.length} tarefa` : `${data?.length} tarefas`}{' '}
-              </strong>
+              {data ? (
+                <strong>
+                  {data?.length < 1 ? `${data?.length} tarefa` : `${data?.length} tarefas`}{' '}
+                </strong>
+              ) : (
+                <strong>0 tarefa</strong>
+              )}
             </h2>
           </div>
         </TableHead>
@@ -321,7 +325,7 @@ export default function TaskList() {
           <InputDefault
             label=""
             name="search"
-            placeholder="Search"
+            placeholder="Busque pelo título..."
             onChange={(event) => {
               setSearchTerm(event.target.value);
               debouncedCallback(event.target.value);
@@ -352,7 +356,7 @@ export default function TaskList() {
           <tbody>
             {data?.map((row) => (
               <tr key={row.task_id}>
-                <td>#{row.task_id}</td>
+                <td>#{String(row.task_id).padStart(5, '0')}</td>
                 <td>{row.title}</td>
                 <TableFlag
                   style={{ textAlign: 'center' }}

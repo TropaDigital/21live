@@ -42,13 +42,13 @@ import { ContainerDefault } from '../../../components/UiElements/styles';
 import { UploadedFilesProps } from '../../../components/Upload/UploadFiles';
 
 // Styles
-import { Summary } from '../../Staks/ComponentSteps/SummaryTasks/styles';
-import { SummaryTaskInfo } from '../../Staks/ComponentSteps/SummaryTasks/styles';
-import { SummaryInfoWrapper } from '../../Staks/ComponentSteps/SummaryTasks/styles';
-import { SummaryTaskDescription } from '../../Staks/ComponentSteps/SummaryTasks/styles';
-import { SummaryCard } from '../../Staks/ComponentSteps/SummaryTasks/styles';
-import { SummaryCardTitle } from '../../Staks/ComponentSteps/SummaryTasks/styles';
-import { SummaryCardSubtitle } from '../../Staks/ComponentSteps/SummaryTasks/styles';
+import { Summary } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
+import { SummaryTaskInfo } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
+import { SummaryInfoWrapper } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
+import { SummaryTaskDescription } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
+import { SummaryCard } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
+import { SummaryCardTitle } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
+import { SummaryCardSubtitle } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 import { ModalShowProjectWrapper } from './styles';
 
 interface StateProps {
@@ -75,18 +75,18 @@ export default function ListProjects() {
     }
   });
 
-  const { formData, setFormValue, setData, handleOnChange } = useForm({
-    tenant_id: '',
-    title: '',
-    contract_type: '',
-    category: '',
-    project_id: '',
-    date_start: '',
-    date_end: '',
-    description: '',
-    products: [],
-    files: []
-  } as IProjectCreate);
+  // const { formData, setFormValue, setData, handleOnChange } = useForm({
+  //   tenant_id: '',
+  //   title: '',
+  //   contract_type: '',
+  //   category: '',
+  //   project_id: '',
+  //   date_start: '',
+  //   date_end: '',
+  //   description: '',
+  //   products: [],
+  //   files: []
+  // } as IProjectCreate);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [search, setSearch] = useState('');
@@ -95,94 +95,94 @@ export default function ListProjects() {
     700
   );
 
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
-  const [error, setError] = useState<StateProps>({});
-  const [loading, setLoading] = useState(false);
+  // const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
+  // const [error, setError] = useState<StateProps>({});
+  // const [loading, setLoading] = useState(false);
 
   // PRODUTOS
-  const { data: dataOffice } = useFetch<IProjectCreate[]>(`services`);
-  const { data: dataClient } = useFetch<TenantProps[]>('tenant');
+  // const { data: dataOffice } = useFetch<IProjectCreate[]>(`services`);
+  // const { data: dataClient } = useFetch<TenantProps[]>('tenant');
+  const [selected, setSelected] = useState(1);
   const {
     data: dataProject,
     fetchData: fetchProject,
     pages
-  } = useFetch<IProjectCreate[]>(`project?search=${search}`);
-  const [selected, setSelected] = useState(1);
+  } = useFetch<IProjectCreate[]>(`project?search=${search}&page=${selected}`);
   const [listSelected, setListSelected] = useState<any[]>([]);
   const navigate = useNavigate();
 
-  const handleOnAddProducts = (items: any) => {
-    setFormValue('products', [...formData.products, ...items]);
-  };
+  // const handleOnAddProducts = (items: any) => {
+  //   setFormValue('products', [...formData.products, ...items]);
+  // };
 
-  const handleOnDeleteProduct = (id: number) => {
-    console.log('ID', id);
-    setFormValue(
-      'products',
-      formData.products.filter((product: any) => product.service_id !== id)
-    );
-  };
+  // const handleOnDeleteProduct = (id: number) => {
+  //   console.log('ID', id);
+  //   setFormValue(
+  //     'products',
+  //     formData.products.filter((product: any) => product.service_id !== id)
+  //   );
+  // };
 
-  const handleOnIncrememtQtd = useCallback(
-    (value: any) => {
-      const updatedProducts = [...formData.products];
-      const productIndex = updatedProducts.findIndex(
-        (product) => product.service_id === value.service_id
-      );
-      const updatedProductCopy = { ...updatedProducts[productIndex] };
-      updatedProductCopy.quantity = Number(updatedProductCopy.quantity) + 1;
-      updatedProducts[productIndex] = updatedProductCopy;
-      setFormValue('products', updatedProducts);
-    },
-    [setFormValue, formData]
-  );
+  // const handleOnIncrememtQtd = useCallback(
+  //   (value: any) => {
+  //     const updatedProducts = [...formData.products];
+  //     const productIndex = updatedProducts.findIndex(
+  //       (product) => product.service_id === value.service_id
+  //     );
+  //     const updatedProductCopy = { ...updatedProducts[productIndex] };
+  //     updatedProductCopy.quantity = Number(updatedProductCopy.quantity) + 1;
+  //     updatedProducts[productIndex] = updatedProductCopy;
+  //     setFormValue('products', updatedProducts);
+  //   },
+  //   [setFormValue, formData]
+  // );
 
-  const handleOnDecrementQtd = useCallback(
-    (value: any) => {
-      const updatedProducts = [...formData.products];
-      const productIndex = updatedProducts.findIndex(
-        (product) => product.service_id === value.service_id
-      );
-      const updatedProductCopy = { ...updatedProducts[productIndex] };
-      updatedProductCopy.quantity = Number(updatedProductCopy.quantity) - 1;
-      updatedProducts[productIndex] = updatedProductCopy;
-      setFormValue('products', updatedProducts);
-    },
-    [setFormValue, formData]
-  );
+  // const handleOnDecrementQtd = useCallback(
+  //   (value: any) => {
+  //     const updatedProducts = [...formData.products];
+  //     const productIndex = updatedProducts.findIndex(
+  //       (product) => product.service_id === value.service_id
+  //     );
+  //     const updatedProductCopy = { ...updatedProducts[productIndex] };
+  //     updatedProductCopy.quantity = Number(updatedProductCopy.quantity) - 1;
+  //     updatedProducts[productIndex] = updatedProductCopy;
+  //     setFormValue('products', updatedProducts);
+  //   },
+  //   [setFormValue, formData]
+  // );
 
-  function isNumber(value: string) {
-    return /^[0-9]*$/.test(value);
-  }
+  // function isNumber(value: string) {
+  //   return /^[0-9]*$/.test(value);
+  // }
 
-  const handleInputProduct = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>, id: any) => {
-      const newValue = event.target.value;
-      if (isNumber(newValue)) {
-        const updatedProducts = [...formData.products];
-        const productIndex = updatedProducts.findIndex((product) => product.service_id === id);
-        const updatedProductCopy = { ...updatedProducts[productIndex] };
-        updatedProductCopy.quantity = newValue;
-        updatedProducts[productIndex] = updatedProductCopy;
-        setFormValue('products', updatedProducts);
-      }
-    },
-    [setFormValue, formData]
-  );
+  // const handleInputProduct = useCallback(
+  //   (event: React.ChangeEvent<HTMLInputElement>, id: any) => {
+  //     const newValue = event.target.value;
+  //     if (isNumber(newValue)) {
+  //       const updatedProducts = [...formData.products];
+  //       const productIndex = updatedProducts.findIndex((product) => product.service_id === id);
+  //       const updatedProductCopy = { ...updatedProducts[productIndex] };
+  //       updatedProductCopy.quantity = newValue;
+  //       updatedProducts[productIndex] = updatedProductCopy;
+  //       setFormValue('products', updatedProducts);
+  //     }
+  //   },
+  //   [setFormValue, formData]
+  // );
 
-  const handleOnPeriod = useCallback(
-    (value: any, id: any) => {
-      const verifyPeriod = value ? 'anual' : 'mensal';
-      const updatedProducts = [...formData.products];
-      const productIndex = updatedProducts.findIndex((product) => product.service_id === id);
-      const updatedProductCopy = { ...updatedProducts[productIndex] };
-      updatedProductCopy.period = verifyPeriod;
-      updatedProducts[productIndex] = updatedProductCopy;
+  // const handleOnPeriod = useCallback(
+  //   (value: any, id: any) => {
+  //     const verifyPeriod = value ? 'anual' : 'mensal';
+  //     const updatedProducts = [...formData.products];
+  //     const productIndex = updatedProducts.findIndex((product) => product.service_id === id);
+  //     const updatedProductCopy = { ...updatedProducts[productIndex] };
+  //     updatedProductCopy.period = verifyPeriod;
+  //     updatedProducts[productIndex] = updatedProductCopy;
 
-      setFormValue('products', updatedProducts);
-    },
-    [setFormValue, formData]
-  );
+  //     setFormValue('products', updatedProducts);
+  //   },
+  //   [setFormValue, formData]
+  // );
 
   // const handleOnEdit = (item: IProjectCreate) => {
   //   setData(item);
@@ -196,6 +196,14 @@ export default function ListProjects() {
   //     }
   //   });
   // };
+
+  // function handleList(value: any) {
+  //   if (listSelected.includes(value)) {
+  //     setListSelected(listSelected.filter((obj) => obj !== value));
+  //   } else {
+  //     setListSelected((obj) => [...obj, value]);
+  //   }
+  // }
 
   useEffect(() => {
     function handleSelectedProjects(): any {
@@ -229,14 +237,6 @@ export default function ListProjects() {
       });
     }
   };
-
-  function handleList(value: any) {
-    if (listSelected.includes(value)) {
-      setListSelected(listSelected.filter((obj) => obj !== value));
-    } else {
-      setListSelected((obj) => [...obj, value]);
-    }
-  }
 
   const handleOpenModal = (project: IProjectCreate) => {
     setModalShowProject({
@@ -321,7 +321,7 @@ export default function ListProjects() {
           <InputDefault
             label=""
             name="search"
-            placeholder="Search"
+            placeholder="Busque pelo título..."
             onChange={(event) => {
               setSearchTerm(event.target.value);
               debouncedCallback(event.target.value);
@@ -353,7 +353,7 @@ export default function ListProjects() {
           <tbody>
             {dataProject?.map((row) => (
               <tr key={row.project_id}>
-                <td>#{row.project_id}</td>
+                <td>#{String(row.project_id).padStart(5, '0')}</td>
                 <td>{row.title}</td>
                 <td>{row.client_name}</td>
                 <td
@@ -373,7 +373,8 @@ export default function ListProjects() {
                 </td>
                 <td>
                   <Switch
-                    onChange={() => handleList(row.project_id)}
+                    // onChange={() => handleList(row.project_id)}
+                    onChange={() => console.log('log do switch button', row.project_id)}
                     checked={listSelected.includes(row.project_id) ? true : false}
                     uncheckedIcon={false}
                     checkedIcon={false}
