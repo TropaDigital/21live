@@ -86,6 +86,7 @@ export const ShowServiceData = styled.div`
   flex-direction: column;
   max-height: 215px;
   overflow: hidden;
+  overflow-y: auto;
 
   &::-webkit-scrollbar {
     width: 3px;
