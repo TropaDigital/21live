@@ -1201,13 +1201,13 @@ export default function CreateTasks() {
   //   console.log('log do products Array', productsArray);
   // }, [productsArray]);
 
-  useEffect(() => {
-    console.log('log do Delivery DTO', DTODelivery);
-  }, [DTODelivery]);
+  // useEffect(() => {
+  //   console.log('log do Delivery DTO', DTODelivery);
+  // }, [DTODelivery]);
 
-  useEffect(() => {
-    console.log('Log do DTO', DTOForm);
-  }, [DTOForm]);
+  // useEffect(() => {
+  //   console.log('Log do DTO', DTOForm);
+  // }, [DTOForm]);
 
   // useEffect(() => {
   //   console.log('log dos erros', errorCategory);
