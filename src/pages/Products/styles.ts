@@ -120,6 +120,7 @@ export const ShowServiceData = styled.div`
 
   .service-data {
     width: 200px;
+    height: 40px;
     text-transform: capitalize;
     padding: 10px 15px;
     color: var(--gray-800);
@@ -185,5 +186,42 @@ export const ShowServiceDetails = styled.div`
   .detailValue {
     font-size: var(--text-small-md);
     font-weight: var(--weight-medium);
+  }
+`;
+
+export const ModalSummary = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+
+  &.big {
+    min-width: 712px;
+    max-width: 792px;
+  }
+
+  .title {
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-200);
+    width: 100%;
+    height: 60px;
+
+    color: var(--gray-500);
+    font-size: var(--text-small-lg);
+    font-weight: var(--weight-medium);
+
+    padding: 16px 24px;
+    text-align: left;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &.small {
+      height: 56px;
+    }
   }
 `;

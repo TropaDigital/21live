@@ -51,6 +51,7 @@ import {
   EstimatedTimeInputs,
   ModalCategoryButtons,
   ModalProductWrapper,
+  ModalSummary,
   ShowServiceData,
   ShowServiceDetails,
   ShowServicesContainer,
@@ -998,7 +999,7 @@ export default function Services() {
             />
           </FieldDefault>
 
-          <Summary>
+          <ModalSummary>
             <div className="title">
               Selecione os Produtos
               <div>
@@ -1053,7 +1054,7 @@ export default function Services() {
                 {!data?.length && <p style={{ padding: '15px' }}>Nenhum produto encontado!</p>}
               </ShowServiceData>
             </ShowServicesContainer>
-          </Summary>
+          </ModalSummary>
 
           <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
             <ButtonDefault typeButton="dark" isOutline onClick={handleOnOpenChangeViewKit}>
