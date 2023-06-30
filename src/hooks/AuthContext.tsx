@@ -52,10 +52,11 @@ function AuthProvider({ children }: TransactionsProviderProps) {
     const token = localStorage.getItem('@live:token');
     const user = localStorage.getItem('@live:user');
     const roles = localStorage.getItem('@live:rules');
+    const permissions = localStorage.getItem('@live:permissions');
 
     if (token && user) {
       api.defaults.headers.authorization = `Bearer ${token}`;
-      return { token, user: JSON.parse(user), roles };
+      return { token, user: JSON.parse(user), roles, permissions };
     }
     return {} as AuthState;
   });
@@ -71,7 +72,8 @@ function AuthProvider({ children }: TransactionsProviderProps) {
 
     localStorage.setItem('@live:token', token);
     localStorage.setItem('@live:user', JSON.stringify(user));
-    localStorage.setItem('@live:rules', JSON.stringify(user.permissions));
+    localStorage.setItem('@live:rules', roles);
+    localStorage.setItem('@live:permissions', JSON.stringify(user.permissions));
 
     setData({ token, user, roles });
   }, []);
@@ -80,6 +82,7 @@ function AuthProvider({ children }: TransactionsProviderProps) {
     localStorage.removeItem('@live:token');
     localStorage.removeItem('@live:user');
     localStorage.removeItem('@live:rules');
+    localStorage.removeItem('@live:permissions');
 
     setData({} as AuthState);
   }, []);
