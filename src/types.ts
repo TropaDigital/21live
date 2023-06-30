@@ -89,6 +89,7 @@ export interface ITaskCreate {
   copywriting_date_end?: string | any; //entrega da redação
   deadlines?: Array<IDelivery> | any; //se for dividir a entrega, entra agqui
   step?: number | any;
+  project_id?: string;
 }
 
 export interface IDelivery {
