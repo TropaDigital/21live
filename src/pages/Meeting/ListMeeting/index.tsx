@@ -24,12 +24,10 @@ import { InputDefault } from '../../../components/Inputs/InputDefault';
 import InputMultipleSelect from '../../../components/Inputs/InputMultipleSelect';
 import InputSwitchDefault from '../../../components/Inputs/InputSwitchDefault';
 import { SelectDefault } from '../../../components/Inputs/SelectDefault';
-import Paginate from '../../../components/Paginate';
 import { Table } from '../../../components/Table';
 import { FilterGroup, TableHead } from '../../../components/Table/styles';
 import Alert from '../../../components/Ui/Alert';
 import ModalDefault from '../../../components/Ui/ModalDefault';
-import ScrollAreas from '../../../components/Ui/ScrollAreas';
 import {
   ContainerGroupTable,
   FieldDefault,
@@ -38,6 +36,7 @@ import {
 } from '../../../components/UiElements/styles';
 import UploadFiles from '../../../components/Upload/UploadFiles';
 import WrapperEditor from '../../../components/WrapperEditor';
+import Pagination from '../../../components/Pagination';
 
 // Styles
 import { ButtonsFilter, Container, FilterButton } from './styles';
@@ -121,7 +120,7 @@ export default function ListMeeting() {
   const [selected, setSelected] = useState(1);
 
   const [text, setText] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState<any>('recent');
+  const [selectedFilter, setSelectedFilter] = useState<any>('all');
 
   const handleChangeClient = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedIndex = event.target.selectedIndex;
@@ -339,119 +338,131 @@ export default function ListMeeting() {
         </ContentDefault> */}
 
         <ContainerGroupTable>
-          <ScrollAreas>
-            <div style={{ margin: '-24px -30px' }}>
-              <Table>
-                <TableHead>
-                  <div className="groupTable">
-                    <h2>
-                      Registro de atas{' '}
-                      <strong>
-                        {data && data?.length < 1
-                          ? `${data?.length} ata de reunião`
-                          : `${data?.length} atas de reunião`}{' '}
-                      </strong>
-                    </h2>
-                  </div>
-                </TableHead>
-                <FilterGroup
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    width: '100%'
-                  }}
-                >
-                  <ButtonsFilter>
-                    <FilterButton
-                      onClick={() => setSelectedFilter('all')}
-                      className={selectedFilter === 'all' ? 'selected' : ''}
-                    >
-                      Ver todos
-                    </FilterButton>
-                    <FilterButton
-                      onClick={() => setSelectedFilter('recent')}
-                      className={selectedFilter === 'recent' ? 'borders selected' : 'borders'}
-                    >
-                      Mais recente
-                    </FilterButton>
-                    <FilterButton
-                      onClick={() => setSelectedFilter('older')}
-                      className={selectedFilter === 'older' ? 'selected' : ''}
-                    >
-                      Mais antigo
-                    </FilterButton>
-                  </ButtonsFilter>
-                  <div>
-                    <InputDefault
-                      label=""
-                      name="search"
-                      placeholder="Search"
-                      onChange={(event) => {
-                        setSearchTerm(event.target.value);
-                        debouncedCallback(event.target.value);
-                      }}
-                      value={searchTerm}
-                      icon={BiSearchAlt}
-                      isLoading={isLoading}
-                      className="search-field"
-                    />
-                  </div>
+          <div style={{ margin: '-24px -30px' }}>
+            <Table>
+              <TableHead>
+                <div className="groupTable">
+                  <h2>
+                    Registro de atas{' '}
+                    <strong>
+                      {data && data?.length < 1
+                        ? `${data?.length} ata de reunião`
+                        : `${data?.length} atas de reunião`}{' '}
+                    </strong>
+                  </h2>
+                </div>
+              </TableHead>
+              <FilterGroup
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  width: '100%'
+                }}
+              >
+                <ButtonsFilter>
+                  <FilterButton
+                    onClick={() => setSelectedFilter('all')}
+                    className={selectedFilter === 'all' ? 'selected' : ''}
+                  >
+                    Ver todos
+                  </FilterButton>
+                  <FilterButton
+                    onClick={() => setSelectedFilter('recent')}
+                    className={selectedFilter === 'recent' ? 'borders selected' : 'borders'}
+                  >
+                    Mais recente
+                  </FilterButton>
+                  <FilterButton
+                    onClick={() => setSelectedFilter('older')}
+                    className={selectedFilter === 'older' ? 'selected' : ''}
+                  >
+                    Mais antigo
+                  </FilterButton>
+                </ButtonsFilter>
+                <div>
+                  <InputDefault
+                    label=""
+                    name="search"
+                    placeholder="Search"
+                    onChange={(event) => {
+                      setSearchTerm(event.target.value);
+                      debouncedCallback(event.target.value);
+                    }}
+                    value={searchTerm}
+                    icon={BiSearchAlt}
+                    isLoading={isLoading}
+                    className="search-field"
+                  />
+                </div>
 
-                  {/* <ButtonDefault typeButton="light">
-                    <BiFilter />
-                    Filtros
-                  </ButtonDefault> */}
-                </FilterGroup>
-                <table>
-                  <thead>
-                    <tr style={{ whiteSpace: 'nowrap' }}>
-                      <th>ID</th>
-                      <th>Titulo</th>
-                      <th>Cliente</th>
-                      <th>Responsável</th>
-                      <th>Data</th>
-                      <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
+                {/* <ButtonDefault typeButton="light">
+                  <BiFilter />
+                  Filtros
+                </ButtonDefault> */}
+              </FilterGroup>
+              <table>
+                <thead>
+                  <tr style={{ whiteSpace: 'nowrap' }}>
+                    <th>ID</th>
+                    <th>Titulo</th>
+                    <th>Cliente</th>
+                    <th>Responsável</th>
+                    <th>Data</th>
+                    <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {data?.map((row) => (
+                    <tr key={row.meeting_id}>
+                      <td>#{String(row.meeting_id).padStart(5, '0')}</td>
+                      <td>{row.title}</td>
+                      <td>{row.cliente}</td>
+                      <td>{row.responsavel}</td>
+                      <td>{moment(row.date).format('DD/MM/YYYY')}</td>
+                      <td>
+                        <div className="fieldTableClients">
+                          <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
+
+                          <Alert
+                            title="Atenção"
+                            subtitle="Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita."
+                            confirmButton={() => handleOnDelete(row.meeting_id)}
+                          >
+                            <ButtonTable typeButton="delete" />
+                          </Alert>
+                        </div>
+                      </td>
                     </tr>
-                  </thead>
+                  ))}
+                </tbody>
 
-                  <tbody>
-                    {data?.map((row) => (
-                      <tr key={row.meeting_id}>
-                        <td>#{String(row.meeting_id).padStart(5, '0')}</td>
-                        <td>{row.title}</td>
-                        <td>{row.cliente}</td>
-                        <td>{row.responsavel}</td>
-                        <td>{moment(row.date).format('DD/MM/YYYY')}</td>
-                        <td>
-                          <div className="fieldTableClients">
-                            <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
-
-                            <Alert
-                              title="Atenção"
-                              subtitle="Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita."
-                              confirmButton={() => handleOnDelete(row.meeting_id)}
-                            >
-                              <ButtonTable typeButton="delete" />
-                            </Alert>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </Table>
-            </div>
-          </ScrollAreas>
+                <tfoot>
+                  <tr>
+                    <td colSpan={100}>
+                      <Pagination
+                        total={pages.total}
+                        perPage={pages.perPage}
+                        currentPage={selected}
+                        lastPage={pages.lastPage}
+                        onClickPage={(e) => setSelected(e)}
+                      />
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </Table>
+          </div>
         </ContainerGroupTable>
 
-        <Paginate
+        {/* <Paginate
           total={pages.total}
           perPage={pages.perPage}
           currentPage={selected}
           lastPage={pages.lastPage}
           onClickPage={(e) => setSelected(e)}
-        />
+        /> */}
       </SectionDefault>
 
       <ModalDefault isOpen={modal.isOpen} onOpenChange={handleOnCancel} title={modal.type}>
