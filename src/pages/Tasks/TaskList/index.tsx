@@ -44,7 +44,7 @@ import api from '../../../services/api';
 import moment from 'moment';
 
 // Styles
-import { ModalShowTaskWrapper, TableFlag } from './styles';
+import { ModalShowTaskWrapper, Flag } from './styles';
 
 export default function TaskList() {
   const { addToast } = useToast();
@@ -350,7 +350,6 @@ export default function TaskList() {
             <tr>
               <th>ID</th>
               <th>Título</th>
-              <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
               <th>Tempo utilizado</th>
               <th>Tempo estimado</th>
               <th>Equipe</th>
@@ -362,24 +361,6 @@ export default function TaskList() {
               <tr key={row.task_id}>
                 <td>#{String(row.task_id).padStart(5, '0')}</td>
                 <td>{row.title}</td>
-                <TableFlag
-                  style={{ textAlign: 'center' }}
-                  className={row.status === 'true' ? 'flagged' : ''}
-                >
-                  {row.status === 'true' ? (
-                    <IconContext.Provider
-                      value={{ color: '#F04438', className: 'global-class-name' }}
-                    >
-                      <FiFlag />
-                    </IconContext.Provider>
-                  ) : (
-                    <IconContext.Provider
-                      value={{ color: '#667085', className: 'global-class-name' }}
-                    >
-                      <FiFlag />
-                    </IconContext.Provider>
-                  )}
-                </TableFlag>
                 <td
                   style={{
                     width: '220px',
@@ -398,6 +379,24 @@ export default function TaskList() {
                 </td>
                 <td>
                   <div className="fieldTableClients">
+                    <Flag
+                      style={{ textAlign: 'center' }}
+                      className={row.status === 'true' ? 'flagged' : ''}
+                    >
+                      {row.status === 'true' ? (
+                        <IconContext.Provider
+                          value={{ color: '#F04438', className: 'global-class-name' }}
+                        >
+                          <FiFlag />
+                        </IconContext.Provider>
+                      ) : (
+                        <IconContext.Provider
+                          value={{ color: '#667085', className: 'global-class-name' }}
+                        >
+                          <FiFlag />
+                        </IconContext.Provider>
+                      )}
+                    </Flag>
                     <ButtonTable typeButton="view" onClick={() => handleOpenModalView(row)} />
                     <ButtonTable
                       typeButton="edit"

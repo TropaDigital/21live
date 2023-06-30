@@ -7,7 +7,13 @@ export const ModalShowTaskWrapper = styled.div`
   gap: 32px;
 `;
 
-export const TableFlag = styled.td`
+export const Flag = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+
   svg {
     width: 20px;
     height: 20px;
@@ -16,7 +22,7 @@ export const TableFlag = styled.td`
   &.flagged {
     svg {
       path {
-        fill: #F04438;
+        fill: #f04438;
       }
     }
   }
