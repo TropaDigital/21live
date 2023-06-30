@@ -82,7 +82,7 @@ export default function SummaryTasks({
   const handleProducts = () => {
     if (taskType === 'horas') {
       const productsAccumulator = selectedProducts?.reduce((accumulator: any, current: any) => {
-        return accumulator + current.deliveryProducts.length;
+        return accumulator + current.produtos.length;
       }, 0);
       setProductsTotal(productsAccumulator);
     }
@@ -153,8 +153,9 @@ export default function SummaryTasks({
             <div className="title">Produtos selecionados</div>
             {selectedProducts?.map((row: any, index: any) => (
               <DeliveriesWrapper key={index}>
+                <>{console.log('loucura loucura', row)}</>
                 <DeliveriesTitle>{index + 1}ª Entrega</DeliveriesTitle>
-                {row.deliveryProducts.map((products: any, index: number) => (
+                {row.produtos.map((products: any, index: number) => (
                   <SummaryCard key={index} style={{ height: 'fit-content' }}>
                     <SummaryCardTitle>
                       #{index + 1} - {products.service}

@@ -682,8 +682,8 @@ export default function CreateTasks() {
         }
 
         if (splitDeliveries && location.state !== null) {
-          DTODelivery.map((current: DeliveryProps) => {
-            current.deliveryProducts.map((obj: any) => {
+          DTODelivery.map((current: DeliveryUpdate) => {
+            current.produtos.map((obj: any) => {
               if (obj.reason_change === '' || obj.reason_change === undefined) {
                 setErrorCategory((errorCategory: any) => [...errorCategory, obj.service_id]);
                 throw 'Existem produtos sem o "Tipo" selecionado!';
@@ -773,9 +773,11 @@ export default function CreateTasks() {
         setCreateStep(createStep + 1);
       }
     } catch (error: any) {
+      console.log(error);
+
       addToast({
         title: 'Atenção',
-        description: error,
+        description: error?.message,
         type: 'warning'
       });
     }
