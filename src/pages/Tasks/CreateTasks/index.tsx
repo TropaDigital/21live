@@ -112,6 +112,14 @@ interface ModalDeliveryProps {
   indexDelivery: number | any;
 }
 
+interface ILocation {
+  hash: string;
+  key: string;
+  pathname: string;
+  search: string;
+  state: ITaskCreate;
+}
+
 type HandleOnChange = (
   event:
     | React.ChangeEvent<HTMLInputElement>
@@ -124,7 +132,7 @@ export default function CreateTasks() {
   const [createStep, setCreateStep] = useState<number>(1);
   const { addToast } = useToast();
   const { user } = useAuth();
-  const location = useLocation();
+  const location: ILocation = useLocation();
 
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const [error, setError] = useState<StateProps>({});
@@ -226,6 +234,10 @@ export default function CreateTasks() {
       }
       console.log('log do locations', location.state);
     }
+  }, [location]);
+
+  useEffect(() => {
+    console.log(location);
   }, [location]);
 
   const handleUpdateDeliveryDate = (value: any, id: any) => {
@@ -469,6 +481,7 @@ export default function CreateTasks() {
 
   const handleDescription = (value: any) => {
     setDTOForm((prevState: any) => ({ ...prevState, ['description']: value }));
+    console.log('teste');
   };
 
   const handleOnChangeCheckbox = (product: ServicesProps) => {
@@ -669,8 +682,8 @@ export default function CreateTasks() {
         }
 
         if (splitDeliveries && location.state !== null) {
-          DTODelivery.map((current: DeliveryProps) => {
-            current.deliveryProducts.map((obj: any) => {
+          DTODelivery.map((current: DeliveryUpdate) => {
+            current.produtos.map((obj: any) => {
               if (obj.reason_change === '' || obj.reason_change === undefined) {
                 setErrorCategory((errorCategory: any) => [...errorCategory, obj.service_id]);
                 throw 'Existem produtos sem o "Tipo" selecionado!';
@@ -760,9 +773,11 @@ export default function CreateTasks() {
         setCreateStep(createStep + 1);
       }
     } catch (error: any) {
+      console.log(error);
+
       addToast({
         title: 'Atenção',
-        description: error,
+        description: error?.message,
         type: 'warning'
       });
     }
