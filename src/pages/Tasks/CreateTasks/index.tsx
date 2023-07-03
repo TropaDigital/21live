@@ -94,6 +94,7 @@ interface DeliveryProps {
   deliveryId: number | string;
   deliveryDescription: string;
   deliveryDate: string;
+  deliveryTitle?: string;
   deliveryProducts: any[];
   showInfo: boolean;
 }
@@ -204,6 +205,7 @@ export default function CreateTasks() {
     deliveryId: 1,
     deliveryDescription: '',
     deliveryDate: '',
+    deliveryTitle: '',
     deliveryProducts: productsArray,
     showInfo: false
   };
@@ -239,6 +241,27 @@ export default function CreateTasks() {
   useEffect(() => {
     console.log(location);
   }, [location]);
+
+  const handleDeliveryTitle = (value: any, id: any) => {
+    if (location.state !== null) {
+      setDTODelivery((current: any) =>
+        current.map((obj: { delivery_id: any }) => {
+          if (obj.delivery_id === id) {
+            return { ...obj, deliveryTitle: value };
+          }
+          return obj;
+        })
+      );
+    }
+    setDTODelivery((current: any) =>
+      current.map((obj: { deliveryId: any }) => {
+        if (obj.deliveryId === id) {
+          return { ...obj, deliveryTitle: value };
+        }
+        return obj;
+      })
+    );
+  };
 
   const handleUpdateDeliveryDate = (value: any, id: any) => {
     if (location.state !== null) {
@@ -1330,6 +1353,7 @@ export default function CreateTasks() {
                     updateTask={location.state !== null}
                     deleteDelivery={handleDeleteDelivery}
                     deleteProduct={handleDeleteProduct}
+                    handleTitleOfDelivery={handleDeliveryTitle}
                   />
                   {!splitDeliveries && tasksType === 'horas' && (
                     <AddTextButton title="Adicionar produto" click={() => setProductsModal(true)} />
