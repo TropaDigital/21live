@@ -210,14 +210,22 @@ export const DeliveryTitle = styled.div`
   padding: 16px 24px;
   border-bottom: 1px solid var(--gray-200);
 
-  .title-delivery {
+  .title-flex {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 12px;
+
     color: var(--gray-700);
     font-size: var(--text-small-lg);
     font-weight: var(--weight-bold);
+
+    .title-name {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
 
     .date {
       display: flex;

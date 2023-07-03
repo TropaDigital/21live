@@ -60,6 +60,7 @@ interface Props {
   projectInfo: any;
   passProductProps: (product: any) => void;
   updateDeliveryDate: (value: any, id: any) => void;
+  handleTitleOfDelivery: (value: any, id: any) => void;
   handleTypeArt: (
     indexDeliverie: number,
     indexProduct: number,
@@ -99,6 +100,7 @@ interface DeliveryProps {
   deliveryId: number | string;
   deliveryDescription: string;
   deliveryDate: string;
+  deliveryTitle?: string;
   deliveryProducts: [];
   showInfo: boolean;
 }
@@ -106,6 +108,7 @@ interface DeliveryProps {
 interface DeliveryUpdate {
   delivery_id: number | string;
   description: string;
+  title: string;
   date_end: string;
   produtos: [];
   order: string;
@@ -133,6 +136,7 @@ export default function InfoDeliveries({
   handleTaskType,
   handleDescriptionProduct,
   handleFormatProduct,
+  handleTitleOfDelivery,
   deliveriesArray,
   updateTask
 }: Props) {
@@ -141,6 +145,7 @@ export default function InfoDeliveries({
     text: ''
   });
   const [formatType, setFormatType] = useState<any>('');
+  const [createDeliveryTitle, setCreateDeliveryTitle] = useState<any>();
   const [editFormat, setEditFormat] = useState<any>({
     productIndex: '',
     editable: true
@@ -363,8 +368,28 @@ export default function InfoDeliveries({
               key={index}
             >
               <DeliveryTitle>
-                <div className="title-delivery">
-                  {index + 1}ª Entrega
+                <div className="title-flex">
+                  <div
+                    className="title-name"
+                    onClick={() =>
+                      setCreateDeliveryTitle(createDeliveryTitle ? '' : row.deliveryId)
+                    }
+                  >
+                    {row.deliveryTitle ? row.deliveryTitle : `${index + 1}ª Entrega`}
+                  </div>
+                  {createDeliveryTitle === row.deliveryId && (
+                    <div className="input-title">
+                      <InputDefault
+                        label=""
+                        placeholder="Digite o título..."
+                        name="deliveryTitle"
+                        type="text"
+                        onChange={(e) => handleTitleOfDelivery(e.target.value, row.deliveryId)}
+                        value={row.deliveryTitle}
+                        error={''}
+                      />
+                    </div>
+                  )}
                   <span>-</span>
                   {row?.deliveryDate !== '' ? (
                     <div
@@ -626,7 +651,7 @@ export default function InfoDeliveries({
             >
               <DeliveryTitle>
                 <div className="title-delivery">
-                  {index + 1}ª Entrega
+                  {row.title ? row.title : `${index + 1}ª Entrega`}
                   <span>-</span>
                   <div
                     className="date"
