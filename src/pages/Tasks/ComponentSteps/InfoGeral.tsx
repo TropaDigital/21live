@@ -9,6 +9,7 @@ import { TenantProps } from '../../../utils/models';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { SelectDefault } from '../../../components/Inputs/SelectDefault';
 import { FlexLine } from '../../Projects/ComponentSteps/styles';
+import api from '../../../services/api';
 
 interface FormProps {
   [key: string]: any;
@@ -41,6 +42,15 @@ export default function InfoGeral({
   clients,
   error
 }: Props) {
+  const handleGetFlowTask = async (id: any) => {
+    try {
+      const responseFlow = await api.get(`/task-function?flow=${id}`);
+      console.log('log do responseFlow', responseFlow);
+    } catch (error: any) {
+      console.log('log do error', error);
+    }
+  };
+
   return (
     <div>
       <FlexLine>
@@ -87,7 +97,10 @@ export default function InfoGeral({
           label="Fluxo"
           name="flow_id"
           value={data.flow_id}
-          onChange={handleInputChange}
+          onChange={(e) => {
+            handleInputChange(e);
+            handleGetFlowTask(e.target.value);
+          }}
           error={error?.flow_id}
         >
           {dataFlow?.map((row: FlowProps) => (
