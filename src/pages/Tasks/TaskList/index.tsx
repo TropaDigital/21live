@@ -367,7 +367,7 @@ export default function TaskList() {
                     textAlign: 'left'
                   }}
                 >
-                  {/* <span style={{ marginBottom: '4px', display: 'block' }}>{row.totalTime}</span> */}
+                  <span style={{ marginBottom: '4px', display: 'block' }}>{row.timeConsumed}</span>
                   <ProgressBar
                     totalHours={convertToMilliseconds(row?.totalTime)}
                     restHours={convertToMilliseconds(row?.timeConsumed)}
