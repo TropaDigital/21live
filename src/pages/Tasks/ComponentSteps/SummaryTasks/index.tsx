@@ -49,12 +49,12 @@ export default function SummaryTasks({
   const [deliveryArrayHours, setDeliveryArrayHours] = useState<any>('');
   const [totalArrayHours, setTotalArrayHours] = useState<any>('');
 
-  useEffect(() => {
-    console.log('log selected products on summary', selectedProducts);
-    console.log('log tasks infos on summary', taskSummary);
-    console.log('log tasks infos on project', projectInfos);
-    console.log('log extra infos for summary tasks', summaryExtrainfos);
-  }, [taskSummary, projectInfos, summaryExtrainfos, selectedProducts]);
+  // useEffect(() => {
+  //   console.log('log selected products on summary', selectedProducts);
+  //   console.log('log tasks infos on summary', taskSummary);
+  //   console.log('log tasks infos on project', projectInfos);
+  //   console.log('log extra infos for summary tasks', summaryExtrainfos);
+  // }, [taskSummary, projectInfos, summaryExtrainfos, selectedProducts]);
 
   function setTotalHours() {
     setDeliveryArrayHours(
@@ -82,7 +82,7 @@ export default function SummaryTasks({
   const handleProducts = () => {
     if (taskType === 'horas') {
       const productsAccumulator = selectedProducts?.reduce((accumulator: any, current: any) => {
-        return accumulator + current.produtos.length;
+        return accumulator + current.deliveryProducts.length;
       }, 0);
       setProductsTotal(productsAccumulator);
     }
@@ -148,14 +148,78 @@ export default function SummaryTasks({
             </SummaryTaskDescription>
           </SummaryInfoWrapper>
         </Summary>
-        {taskType === 'horas' && (
+        {taskType === 'horas' && updateTask && (
           <Summary className="big">
             <div className="title">Produtos selecionados</div>
             {selectedProducts?.map((row: any, index: any) => (
               <DeliveriesWrapper key={index}>
-                <>{console.log('loucura loucura', row)}</>
-                <DeliveriesTitle>{index + 1}ª Entrega</DeliveriesTitle>
+                <DeliveriesTitle>
+                  {row.deliveryTitle ? row.deliveryTitle : `${index + 1}ª Entrega`}
+                </DeliveriesTitle>
                 {row.produtos.map((products: any, index: number) => (
+                  <SummaryCard key={index} style={{ height: 'fit-content' }}>
+                    <SummaryCardTitle>
+                      #{index + 1} - {products.service}
+                    </SummaryCardTitle>
+                    <SummaryCardSubtitle
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        height: 'fit-content'
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          width: '100%'
+                        }}
+                      >
+                        <div className="description-wrap">
+                          Descrição: <span>{products.description}</span>
+                        </div>
+                        <div>
+                          Tipo: <span>{products.category}</span>
+                        </div>
+                        <div>
+                          Horas: <span>{products.minutes}</span>
+                        </div>
+                      </div>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          width: '100%'
+                        }}
+                      >
+                        <div>
+                          I/D: <span>{products.type}</span>
+                        </div>
+                        <div>
+                          Formato: <span>{products.size}</span>
+                        </div>
+                        <div>
+                          Quantidade: <span>{products.quantity}</span>
+                        </div>
+                      </div>
+                    </SummaryCardSubtitle>
+                  </SummaryCard>
+                ))}
+              </DeliveriesWrapper>
+            ))}
+          </Summary>
+        )}
+        {taskType === 'horas' && !updateTask && (
+          <Summary className="big">
+            <div className="title">Produtos selecionados</div>
+            {selectedProducts?.map((row: any, index: any) => (
+              <DeliveriesWrapper key={index}>
+                <DeliveriesTitle>
+                  {row.deliveryTitle ? row.deliveryTitle : `${index + 1}ª Entrega`}
+                </DeliveriesTitle>
+                {row.deliveryProducts.map((products: any, index: number) => (
                   <SummaryCard key={index} style={{ height: 'fit-content' }}>
                     <SummaryCardTitle>
                       #{index + 1} - {products.service}
