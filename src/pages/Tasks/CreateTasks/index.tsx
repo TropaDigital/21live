@@ -504,7 +504,6 @@ export default function CreateTasks() {
 
   const handleDescription = (value: any) => {
     setDTOForm((prevState: any) => ({ ...prevState, ['description']: value }));
-    console.log('teste');
   };
 
   const handleOnChangeCheckbox = (product: ServicesProps) => {
@@ -709,7 +708,29 @@ export default function CreateTasks() {
             current.produtos.map((obj: any) => {
               if (obj.reason_change === '' || obj.reason_change === undefined) {
                 setErrorCategory((errorCategory: any) => [...errorCategory, obj.service_id]);
-                throw 'Existem produtos sem o "Tipo" selecionado!';
+                throw new Error('Existem produtos sem o "Tipo" selecionado!');
+              } else if (obj.reason_change !== '' && obj.reason_change !== undefined) {
+                setErrorCategory((prevState) =>
+                  prevState.filter((product) => product !== obj.service_id)
+                );
+                if (errorCategory.length === 0) {
+                  // setAddDeliveries(true);
+                  setTimeout(() => {
+                    setCreateStep(createStep + 1);
+                  }, 150);
+                }
+              }
+            });
+          });
+        }
+
+        if (splitDeliveries && location.state === null) {
+          DTODelivery.map((current: DeliveryProps) => {
+            current.deliveryProducts.map((obj: any) => {
+              if (obj.reason_change === '' || obj.reason_change === undefined) {
+                console.log('log se tiver erro', DTODelivery);
+                setErrorCategory((errorCategory: any) => [...errorCategory, obj.service_id]);
+                throw new Error('Existem produtos sem o "Tipo" selecionado!');
               } else if (obj.reason_change !== '' && obj.reason_change !== undefined) {
                 setErrorCategory((prevState) =>
                   prevState.filter((product) => product !== obj.service_id)
@@ -726,6 +747,7 @@ export default function CreateTasks() {
         }
 
         if (!splitDeliveries && location.state !== null) {
+          console.log('log do DTODelivery', DTODelivery);
           let hasError = false;
           productsArray.forEach((obj: any) => {
             if (obj.reason_change === '' || obj.reason_change === undefined) {
@@ -796,8 +818,6 @@ export default function CreateTasks() {
         setCreateStep(createStep + 1);
       }
     } catch (error: any) {
-      console.log(error);
-
       addToast({
         title: 'Atenção',
         description: error?.message,
@@ -1098,10 +1118,11 @@ export default function CreateTasks() {
             await api.post(`tasks`, createNewData);
           }
         } else {
-          const deadlines = DTODelivery.map((row: any) => {
+          const deadlines = DTODelivery.map((row: any, index: any) => {
             return {
               date_end: row.deliveryDate,
               description: DTOForm?.creation_description,
+              title: row.deliveryTitle ? row.deliveryTitle : `${index + 1}ª entrega`,
               products: row.deliveryProducts
             };
           });
