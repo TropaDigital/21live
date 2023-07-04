@@ -28,7 +28,7 @@ export default function TaskInputs({
     <InputTaskWrapper>
       {/* <InputField style={{ border: '2px solid red', padding: '4px' }}> */}
       <InputField className={inputsError?.copywriting_description ? 'error' : ''}>
-        <InputFieldTitle>Input Pré-Requisitos;</InputFieldTitle>
+        <InputFieldTitle>Input Pré-Requisitos</InputFieldTitle>
         <WrapperEditor
           mentionData={mentions}
           value={valueFirst}
