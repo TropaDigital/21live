@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // Icons
 import { BiCalendar, BiPencil } from 'react-icons/bi';
@@ -169,6 +169,8 @@ export default function InfoDeliveries({
   const { data: dataSingleProduct } = useFetch<IProductBackend[]>(
     `project-products-especific/${projectInfo.product_id}`
   );
+  const titleRef = useRef<any>();
+  const dateRef = useRef<any>();
 
   useEffect(() => {
     handleProducts('description', descriptionText.text, descriptionText.inputId);
@@ -214,6 +216,27 @@ export default function InfoDeliveries({
       indexDelivery: ''
     });
   };
+
+  useEffect(() => {
+    const checkIfClickedOutside = (e: any) => {
+      if (createDeliveryTitle && titleRef.current && !titleRef.current.contains(e.target)) {
+        setCreateDeliveryTitle('');
+      }
+
+      if (dateDelivery && dateRef.current && !dateRef.current.contains(e.target)) {
+        setDateDelivery({
+          isOpen: false,
+          indexDelivery: ''
+        });
+      }
+    };
+
+    document.addEventListener('mousedown', checkIfClickedOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', checkIfClickedOutside);
+    };
+  }, [createDeliveryTitle, dateDelivery]);
 
   return (
     <>
@@ -378,7 +401,7 @@ export default function InfoDeliveries({
                     {row.deliveryTitle ? row.deliveryTitle : `${index + 1}ª Entrega`}
                   </div>
                   {createDeliveryTitle === row.deliveryId && (
-                    <div className="input-title">
+                    <div className="input-title" ref={titleRef}>
                       <InputDefault
                         label=""
                         placeholder="Digite o título..."
@@ -418,7 +441,7 @@ export default function InfoDeliveries({
                   )}
                 </div>
                 {dateDelivery.indexDelivery === row.deliveryId && dateDelivery.isOpen === true && (
-                  <div style={{ marginRight: 'auto', marginLeft: '16px' }}>
+                  <div style={{ marginRight: 'auto', marginLeft: '16px' }} ref={dateRef}>
                     <InputDefault
                       label=""
                       placeholder=""
@@ -650,8 +673,28 @@ export default function InfoDeliveries({
               key={index}
             >
               <DeliveryTitle>
-                <div className="title-delivery">
-                  {row.title ? row.title : `${index + 1}ª Entrega`}
+                <div className="title-flex">
+                  <div
+                    className="title-name"
+                    onClick={() =>
+                      setCreateDeliveryTitle(createDeliveryTitle ? '' : row.delivery_id)
+                    }
+                  >
+                    {row.title ? row.title : `${index + 1}ª Entrega`}
+                  </div>
+                  {createDeliveryTitle === row.delivery_id && (
+                    <div className="input-title" ref={titleRef}>
+                      <InputDefault
+                        label=""
+                        placeholder="Digite o título..."
+                        name="deliveryTitle"
+                        type="text"
+                        onChange={(e) => handleTitleOfDelivery(e.target.value, row.delivery_id)}
+                        value={row.title}
+                        error={''}
+                      />
+                    </div>
+                  )}
                   <span>-</span>
                   <div
                     className="date"
@@ -666,7 +709,7 @@ export default function InfoDeliveries({
                   </div>
                 </div>
                 {dateDelivery.indexDelivery === row.delivery_id && dateDelivery.isOpen === true && (
-                  <div style={{ marginRight: 'auto', marginLeft: '16px' }}>
+                  <div style={{ marginRight: 'auto', marginLeft: '16px' }} ref={dateRef}>
                     <InputDefault
                       label=""
                       placeholder=""
