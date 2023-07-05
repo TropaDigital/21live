@@ -77,6 +77,7 @@ export interface IServices {
 export interface ITaskCreate {
   task_id?: number | any;
   title: string;
+  user_id: string;
   tenant_id: number | string | any;
   product_id: number | string | any; // produto principal, o produto pode ter uma flag que significa que ele lista outros produtos na criação da task
   type?: string | any; //type_id da tabela task_type

@@ -151,6 +151,7 @@ export default function CreateTasks() {
     copywriting_description: '',
     copywriting_date_end: '',
     deadlines: [],
+    user_id: '',
     step: ''
   });
   const [search, setSearch] = useState('');
@@ -627,6 +628,7 @@ export default function CreateTasks() {
       tenant_id,
       product_id,
       flow_id,
+      user_id,
       description,
       copywriting_date_end,
       creation_date_end,
@@ -657,6 +659,12 @@ export default function CreateTasks() {
         throw setErrorInput('flow_id', 'Fluxo é obrigatório!');
       } else {
         setErrorInput('flow_id', undefined);
+      }
+
+      if (user_id === '') {
+        throw setErrorInput('user_id', 'Fluxo - Responsável é obrigatório!');
+      } else {
+        setErrorInput('user_id', undefined);
       }
 
       if (description === '') {
@@ -1015,6 +1023,7 @@ export default function CreateTasks() {
         tenant_id,
         product_id,
         flow_id,
+        user_id,
         description,
         creation_description,
         creation_date_end,
@@ -1030,6 +1039,7 @@ export default function CreateTasks() {
           tenant_id,
           product_id,
           flow_id,
+          user_id,
           description,
           creation_description,
           creation_date_end,
@@ -1074,6 +1084,7 @@ export default function CreateTasks() {
           tenant_id,
           product_id,
           flow_id,
+          user_id,
           description,
           creation_description,
           creation_date_end,
@@ -1103,6 +1114,7 @@ export default function CreateTasks() {
             tenant_id,
             product_id,
             flow_id,
+            user_id,
             description,
             creation_description,
             creation_date_end,
