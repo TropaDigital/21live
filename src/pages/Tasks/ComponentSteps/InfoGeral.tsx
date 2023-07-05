@@ -1,6 +1,6 @@
 /* eslint-disable import-helpers/order-imports */
 // React
-import React from 'react';
+import React, { useState } from 'react';
 
 // Utils
 import { TenantProps } from '../../../utils/models';
@@ -9,7 +9,12 @@ import { TenantProps } from '../../../utils/models';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { SelectDefault } from '../../../components/Inputs/SelectDefault';
 import { FlexLine } from '../../Projects/ComponentSteps/styles';
+
+// Services
 import api from '../../../services/api';
+
+// Hooks
+import { useToast } from '../../../hooks/toast';
 
 interface FormProps {
   [key: string]: any;
@@ -34,6 +39,12 @@ interface FlowProps {
   user_id: string;
 }
 
+interface FlowRole {
+  function: string;
+  name: string;
+  user_id: string;
+}
+
 export default function InfoGeral({
   data,
   dataProjects,
@@ -42,10 +53,20 @@ export default function InfoGeral({
   clients,
   error
 }: Props) {
+  const { addToast } = useToast();
+  const [flowsManagers, setFlowManagers] = useState<FlowRole[]>([]);
   const handleGetFlowTask = async (id: any) => {
     try {
       const responseFlow = await api.get(`/task-function?flow=${id}`);
-      console.log('log do responseFlow', responseFlow);
+      setFlowManagers(responseFlow.data.result);
+
+      if (responseFlow.data.result.length === 0) {
+        addToast({
+          title: 'Atenção',
+          description: 'Escolha um fluxo com algum responsável pelo cargo',
+          type: 'warning'
+        });
+      }
     } catch (error: any) {
       console.log('log do error', error);
     }
@@ -110,6 +131,25 @@ export default function InfoGeral({
           ))}
         </SelectDefault>
       </FlexLine>
+
+      {flowsManagers.length > 0 && (
+        <FlexLine>
+          <SelectDefault
+            label="Fluxo - Responsável"
+            name="user_id"
+            value={data.user_id}
+            onChange={(e) => handleInputChange(e)}
+            error={error?.user_id}
+          >
+            {flowsManagers?.map((row: FlowRole) => (
+              <option key={row.user_id} value={row.user_id}>
+                {row.function} - {row.name}
+              </option>
+            ))}
+          </SelectDefault>
+          <div style={{ width: '48.5%' }}></div>
+        </FlexLine>
+      )}
     </div>
   );
 }
