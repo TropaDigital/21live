@@ -18,16 +18,74 @@ export const GlobalStyles = createGlobalStyle`
 
   //Color-Primary
   --primary: #0046B5;
-  --primary-50: #E2F2FF;
-  --primary-100: #BADFFF;
-  --primary-700: #0077E6;
-  --primary-dark: #101E36;
   --primary-light: #3A6EC1;
+  --primary-dark: #101E36;
+  --primary-025: #F5FAFF;
+  --primary-050: #E2F2FF;
+  --primary-100: #BADFFF;
+  --primary-200: #8CCBFF;
+  --primary-300: #59B7FF;
+  --primary-400: #2AA7FF;
+  --primary-500: #0098FF;
+  --primary-600: #0089FA;
+  --primary-700: #0077E6;
+  --primary-800: #0065D4;
+  --primary-900: #0045B5;
 
   //Color-Secundary
   --secundary: #00C899;
   --secundary-dark: #15473C;
   --secundary-light: #3ED0AE;
+  --secundary-025: #F5FFFB;
+  --secundary-050: #DEF6ED;
+  --secundary-100: #AFE7D2;
+  --secundary-200: #75D7B6;
+  --secundary-300: #00C899;
+  --secundary-400: #00BC84;
+  --secundary-500: #00AF6F;
+  --secundary-600: #00A063;
+  --secundary-700: #008D56;
+  --secundary-800: #007C49;
+  --secundary-900: #005C31;
+
+  //Error-Color
+  --error-025: #FFFBFA;
+  --error-050: #FEF3F2;
+  --error-100: #FEE4E2;
+  --error-200: #FECDCA;
+  --error-300: #FDA29B;
+  --error-400: #F97066;
+  --error-500: #F04438;
+  --error-600: #D92D20;
+  --error-700: #B42318;
+  --error-800: #912018;
+  --error-900: #7A271A;
+
+  //Warning-Color
+  --warning-025: #FFFCF5;
+  --warning-050: #FFFAEB;
+  --warning-100: #FEF0C7;
+  --warning-200: #FEDF89;
+  --warning-300: #FEC84B;
+  --warning-400: #FDB022;
+  --warning-500: #F79009;
+  --warning-600: #DC6803;
+  --warning-700: #B54708;
+  --warning-800: #93370D;
+  --warning-900: #7A2E0E;
+
+  //Success-Color
+  --success-025: #F6FEF9;
+  --success-050: #ECFDF3;
+  --success-100: #D1FADF;
+  --success-200: #A6F4C5;
+  --success-300: #6CE9A6;
+  --success-400: #32D583;
+  --success-500: #12B76A;
+  --success-600: #039855;
+  --success-700: #027A48;
+  --success-800: #05603A;
+  --success-900: #054F31;
 
   //Status-Color
   --success: #12B76A;
