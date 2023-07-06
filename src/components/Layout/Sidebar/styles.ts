@@ -55,7 +55,7 @@ export const Li = styled.li<sidebarProps>`
   ${(props) =>
     props.active &&
     css`
-      background: var(--primary-50);
+      background: var(--primary-050);
     `}
   a {
     display: flex;

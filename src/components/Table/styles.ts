@@ -103,7 +103,7 @@ export const TableHead = styled.div`
         font-size: var(--text-small-xs);
         color: var(--primary-700);
 
-        background-color: var(--primary-50);
+        background-color: var(--primary-050);
         padding: 3px 10px;
         border-radius: 16px;
         margin-left: 8px;
