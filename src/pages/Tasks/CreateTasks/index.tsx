@@ -170,7 +170,7 @@ export default function CreateTasks() {
   const { data: dataProjects, fetchData: fetchProjects } = useFetch<ServicesProps[]>(
     `project-products/${DTOForm.tenant_id}`
   );
-  const { data: dataFlow } = useFetch<any[]>(`/flow?search=`);
+  const { data: dataFlow } = useFetch<any[]>(`/flow?search=&perPage=1000`);
   const { data: dataTypes } = useFetch<any[]>(`/task-type`);
   const [productsArray, setProductsArray] = useState<ServicesProps[]>([]);
   // const [quantityProductsArray, setQuantityProductsArray] = useState<any[]>([]);
@@ -235,12 +235,7 @@ export default function CreateTasks() {
       if (location.state.deadlines.length > 1) {
         setDeliveriesSplit('split');
       }
-      console.log('log do locations', location.state);
     }
-  }, [location]);
-
-  useEffect(() => {
-    console.log(location);
   }, [location]);
 
   const handleDeliveryTitle = (value: any, id: any) => {
@@ -736,7 +731,7 @@ export default function CreateTasks() {
           DTODelivery.map((current: DeliveryProps) => {
             current.deliveryProducts.map((obj: any) => {
               if (obj.reason_change === '' || obj.reason_change === undefined) {
-                console.log('log se tiver erro', DTODelivery);
+                // console.log('log se tiver erro', DTODelivery);
                 setErrorCategory((errorCategory: any) => [...errorCategory, obj.service_id]);
                 throw new Error('Existem produtos sem o "Tipo" selecionado!');
               } else if (obj.reason_change !== '' && obj.reason_change !== undefined) {
@@ -755,7 +750,7 @@ export default function CreateTasks() {
         }
 
         if (!splitDeliveries && location.state !== null) {
-          console.log('log do DTODelivery', DTODelivery);
+          // console.log('log do DTODelivery', DTODelivery);
           let hasError = false;
           productsArray.forEach((obj: any) => {
             if (obj.reason_change === '' || obj.reason_change === undefined) {
