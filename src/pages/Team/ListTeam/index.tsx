@@ -1,4 +1,9 @@
+/* eslint-disable import-helpers/order-imports */
+// React
 import { useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+// Icons
 import {
   BiCalendar,
   BiEdit,
@@ -10,36 +15,41 @@ import {
   BiSearchAlt,
   BiUser
 } from 'react-icons/bi';
-import { useNavigate } from 'react-router-dom';
 
+// Services
 import api from '../../../services/api';
 
+// Hooks
 import { useToast } from '../../../hooks/toast';
 import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useFetch } from '../../../hooks/useFetch';
 import useForm from '../../../hooks/useForm';
 
+// Components
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import ButtonTable from '../../../components/Buttons/ButtonTable';
 import HeaderPage from '../../../components/HeaderPage';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { SelectDefault } from '../../../components/Inputs/SelectDefault';
 import Paginate from '../../../components/Paginate';
-import { TableDefault } from '../../../components/TableDefault';
+// import { TableDefault } from '../../../components/TableDefault';
+// import ScrollAreas from '../../../components/Ui/ScrollAreas';
 import Alert from '../../../components/Ui/Alert';
 import AvatarDefault from '../../../components/Ui/Avatar/avatarDefault';
 import ModalDefault from '../../../components/Ui/ModalDefault';
-import ScrollAreas from '../../../components/Ui/ScrollAreas';
 import {
   ContainerDefault,
-  ContainerGroupTable,
+  // ContainerGroupTable,
   ContentDefault,
   FieldDefault,
   FieldGroupFormDefault,
   FooterModal,
   SectionDefault
 } from '../../../components/UiElements/styles';
+import { Table } from '../../../components/Table';
+import { TableHead } from '../../../components/Table/styles';
 
+// Libraries
 import moment from 'moment';
 
 interface UserProps {
@@ -248,7 +258,7 @@ export default function Team() {
           </FieldGroupFormDefault>
         </ContentDefault>
 
-        <ContainerGroupTable style={{ marginTop: '1rem' }}>
+        {/* <ContainerGroupTable style={{ marginTop: '1rem' }}>
           <ScrollAreas>
             <TableDefault title="Equipe">
               <thead>
@@ -289,7 +299,54 @@ export default function Team() {
               </tbody>
             </TableDefault>
           </ScrollAreas>
-        </ContainerGroupTable>
+        </ContainerGroupTable> */}
+        <div style={{ margin: '-24px -30px' }}>
+          <Table>
+            <TableHead>
+              <div className="groupTable">
+                <h2>Equipes</h2>
+              </div>
+            </TableHead>
+            <table>
+              <thead>
+                <tr style={{ whiteSpace: 'nowrap' }}>
+                  <th>Avatar</th>
+                  <th>Nome</th>
+                  <th>E-mail</th>
+                  <th>Cargo</th>
+                  <th>Tarefas na fila</th>
+                  <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {data?.map((row) => (
+                  <tr key={row.user_id}>
+                    <td style={{ padding: '1rem' }}>
+                      <AvatarDefault url={row.avatar} name={row.name} />
+                    </td>
+                    <td>{row.name}</td>
+                    <td>{row.email}</td>
+                    <td>{row.function}</td>
+                    <td>{''}</td>
+                    <td>
+                      <div className="fieldTableClients">
+                        <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
+                        <Alert
+                          title="Atenção"
+                          subtitle="Certeza que gostaria de deletar esta Equipe? Ao excluir a acão não poderá ser desfeita."
+                          confirmButton={() => handleOnDelete(row.function_id)}
+                        >
+                          <ButtonTable typeButton="delete" />
+                        </Alert>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Table>
+        </div>
 
         <Paginate
           total={pages.total}
