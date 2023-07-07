@@ -324,8 +324,23 @@ export default function TaskList() {
               )}
             </h2>
           </div>
+          <div>
+            <InputDefault
+              label=""
+              name="search"
+              placeholder="Busque pelo título..."
+              onChange={(event) => {
+                setSearchTerm(event.target.value);
+                debouncedCallback(event.target.value);
+              }}
+              value={searchTerm}
+              icon={BiSearchAlt}
+              isLoading={isLoading}
+              className="search-field"
+            />
+          </div>
         </TableHead>
-        <FilterGroup>
+        {/* <FilterGroup>
           <InputDefault
             label=""
             name="search"
@@ -340,11 +355,11 @@ export default function TaskList() {
             className="search-field"
           />
 
-          {/* <ButtonDefault typeButton="light">
+          <ButtonDefault typeButton="light">
             <BiFilter />
             Filtros
-          </ButtonDefault> */}
-        </FilterGroup>
+          </ButtonDefault> 
+        </FilterGroup> */}
         <table>
           <thead>
             <tr>
