@@ -28,6 +28,7 @@ import ListMeeting from '../pages/Meeting/ListMeeting';
 import TaskList from '../pages/Tasks/TaskList';
 import CreateProject from '../pages/Projects/CreateProject';
 import CreateTasks from '../pages/Tasks/CreateTasks';
+import ViewTaskList from '../pages/Tasks/ViewTasks';
 
 function RoutesAll() {
   return (
@@ -156,6 +157,15 @@ function RoutesAll() {
           element={
             <PrivateRoutes>
               <TaskList />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/suas-tarefas"
+          element={
+            <PrivateRoutes>
+              <ViewTaskList />
             </PrivateRoutes>
           }
         />
