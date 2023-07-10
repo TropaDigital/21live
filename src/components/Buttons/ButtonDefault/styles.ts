@@ -250,6 +250,7 @@ export const Container = styled.button<ButtonProps>`
 
       ${props.isOutline &&
       css`
+        border: 1px solid var(--gray-300);
         background-color: transparent;
         color: #343a40;
       `}
