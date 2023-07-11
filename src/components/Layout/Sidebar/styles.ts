@@ -18,6 +18,7 @@ export const Container = styled.div<sidebarProps>`
   position: relative;
 
   overflow-y: scroll;
+  z-index: 1;
 
   ::-webkit-scrollbar {
     display: none;
