@@ -1,19 +1,15 @@
 /* eslint-disable import-helpers/order-imports */
 // React
 import { useState } from 'react';
-import { BiFilter, BiSearchAlt } from 'react-icons/bi';
 
 // Components
-import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import HeaderPage from '../../../components/HeaderPage';
-import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { ContainerDefault } from '../../../components/UiElements/styles';
-
-// Styles
-import { TaskContainer, TaskDate, TaskDateWrapper, TaskFilter, TasksTable } from './styles';
 
 // Hooks
 import useDebouncedCallback from '../../../hooks/useDebounced';
+
+import TaskTable from '../../../components/Ui/TaskTable';
 
 export interface TaskProps {
   date: string;
@@ -50,7 +46,7 @@ export default function ViewTaskList() {
 
   const data = [
     {
-      date: '15/07/2023',
+      date: '2023/07/15',
       tasks: [
         {
           id: '001',
@@ -63,12 +59,12 @@ export default function ViewTaskList() {
           },
           consumedTime: '00:30:00',
           estimatedTime: '02:00:00',
-          startDate: '26/06/2023',
-          endDate: '15/07/2023',
+          startDate: '2023/06/26',
+          endDate: '2023/07/15',
           deliveries: '4 entregas',
           stage: 'Criação',
-          flow: 'Campanha',
-          status: 'In progress'
+          flow: 'CAMPANHA',
+          status: 'progress'
         },
         {
           id: '002',
@@ -81,132 +77,77 @@ export default function ViewTaskList() {
           },
           consumedTime: '00:00:00',
           estimatedTime: '02:00:00',
-          startDate: '16/07/2023',
-          endDate: '25/072023',
+          startDate: '2023/07/16',
+          endDate: '2023/07/25',
           deliveries: '4 entregas',
           stage: 'Criação',
-          flow: 'Campanha',
-          status: 'In progress'
+          flow: 'CAMPANHA',
+          status: 'pending'
         }
       ]
     },
     {
-      date: '02/06/2023',
+      date: '2023/06/02',
       tasks: [
         {
-          id: '001',
-          projectInfo: {
-            taskTitle: 'Cronograma',
-            month: 'Julho/2023',
-            client: 'G.WIND',
-            type: 'FEE',
-            quantity: 'PACK 8 POSTS/MÊS'
-          },
-          consumedTime: '00:30:00',
-          estimatedTime: '02:00:00',
-          startDate: '26/06/2023',
-          endDate: '15/07/2023',
-          deliveries: '4 entregas',
-          stage: 'Criação',
-          flow: 'Campanha',
-          status: 'pending'
-        },
-        {
-          id: '002',
+          id: '003',
           projectInfo: {
             taskTitle: 'Cronograma',
             month: 'Agosto/2023',
             client: 'G.WIND',
             type: 'FEE',
-            quantity: 'PACK 8 POSTS/MÊS'
+            quantity: 'PACK 4 POSTS/MÊS'
           },
           consumedTime: '00:00:00',
           estimatedTime: '02:00:00',
-          startDate: '16/07/2023',
-          endDate: '25/072023',
+          startDate: '2023/06/26',
+          endDate: '2023/07/15',
           deliveries: '4 entregas',
           stage: 'Criação',
-          flow: 'Campanha',
+          flow: 'CAMPANHA',
+          status: 'pending'
+        },
+        {
+          id: '004',
+          projectInfo: {
+            taskTitle: 'Cronograma',
+            month: 'Agosto/2023',
+            client: 'G.WIND',
+            type: 'FEE',
+            quantity: 'PACK 4 POSTS/MÊS'
+          },
+          consumedTime: '00:00:00',
+          estimatedTime: '02:00:00',
+          startDate: '2023/07/16',
+          endDate: '2023/07/25',
+          deliveries: '4 entregas',
+          stage: 'Criação',
+          flow: 'CAMPANHA',
           status: 'pending'
         }
       ]
     }
   ];
 
+  const handleFilters = () => {
+    console.log('log do filters on task');
+  };
+
   return (
     <ContainerDefault>
       <HeaderPage title="Suas tarefas" />
 
-      <TaskContainer>
-        <TaskFilter>
-          <InputDefault
-            label=""
-            name="search"
-            placeholder="Buscar..."
-            onChange={(event) => {
-              setSearchTerm(event.target.value);
-              debouncedCallback(event.target.value);
-            }}
-            value={searchTerm}
-            icon={BiSearchAlt}
-            isLoading={isLoading}
-            className="search-field"
-          />
-
-          <ButtonDefault
-            typeButton="lightWhite"
-            isOutline
-            onClick={() => console.log('Log do button filter')}
-          >
-            <BiFilter />
-            Filtros
-          </ButtonDefault>
-        </TaskFilter>
-
-        {data.map((row: TaskProps, index: number) => (
-          <TaskDateWrapper key={index}>
-            <TaskDate>{row.date}</TaskDate>
-            <TasksTable>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Tarefas</th>
-                    <th>Tempo consumido</th>
-                    <th>Tempo estimado</th>
-                    <th>Data inicial</th>
-                    <th>Data final</th>
-                    <th>Entregas</th>
-                    <th>Etapa</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {row.tasks.map((tasks: Task) => (
-                    <tr key={tasks.id}>
-                      <td className="infos">
-                        <div>
-                          {String(index + 1).padStart(5, '0')} - {tasks.projectInfo.taskTitle} -{' '}
-                          {tasks.projectInfo.month}
-                        </div>
-                        <span>
-                          {tasks.projectInfo.client} - {tasks.projectInfo.type}
-                        </span>
-                      </td>
-                      <td>{tasks.consumedTime}</td>
-                      <td>{tasks.estimatedTime}</td>
-                      <td>{tasks.startDate}</td>
-                      <td>{tasks.endDate}</td>
-                      <td>{tasks.deliveries}</td>
-                      <td>{tasks.stage}</td>
-                      <td>{tasks.status}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </TasksTable>
-          </TaskDateWrapper>
-        ))}
-      </TaskContainer>
+      <TaskTable
+        data={data}
+        loading={isLoading}
+        searchInput={(value: any) => {
+          setSearchTerm(value);
+          debouncedCallback(value);
+        }}
+        searchInfo={searchTerm}
+        addFilter={handleFilters}
+        taskSelected={(value: any) => console.log('log da task selected', value)}
+      />
     </ContainerDefault>
   );
 }
