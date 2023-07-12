@@ -655,4 +655,65 @@ export const IconCalendar: React.FC = () => (
   </svg>
 );
 
+export const IconText: React.FC = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <path
+      d="M3.59782 6.66667H6.80823"
+      stroke="black"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M3.33334 11.6667H16.6667"
+      stroke="#101828"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M3.33334 15.8337H16.6667"
+      stroke="#101828"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M10.8333 3.33366H16.6667"
+      stroke="black"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M10.8333 7.49967H16.6667"
+      stroke="black"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M7.08334 7.49967L5.77797 3.47077C5.75541 3.39135 5.68407 3.33564 5.60155 3.33301H4.81512C4.7326 3.33564 4.66126 3.39135 4.6387 3.47077L3.33334 7.49967"
+      stroke="black"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const IconPlay: React.FC = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M15.925 11.121L9.586 7.15898C8.896 6.72798 8 7.22398 8 8.03798V15.961C8 16.775 8.896 17.272 9.586 16.84L15.924 12.878C16.575 12.473 16.575 11.527 15.925 11.121Z"
+      fill="white"
+      stroke="white"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 export const IconDefault: React.FC = () => <svg />;
