@@ -29,6 +29,7 @@ import TaskList from '../pages/Tasks/TaskList';
 import CreateProject from '../pages/Projects/CreateProject';
 import CreateTasks from '../pages/Tasks/CreateTasks';
 import ViewTaskList from '../pages/Tasks/ViewTasks';
+import WorkingProduct from '../pages/Products/WorkingProduct';
 
 function RoutesAll() {
   return (
@@ -121,6 +122,15 @@ function RoutesAll() {
           element={
             <PrivateRoutes>
               <Products />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/produto/:id"
+          element={
+            <PrivateRoutes>
+              <WorkingProduct />
             </PrivateRoutes>
           }
         />
