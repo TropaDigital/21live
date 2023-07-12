@@ -1,58 +1,103 @@
-import { CardInfo, CardInfoField, CardTitle, CardWrapper } from './styles';
+/* eslint-disable import-helpers/order-imports */
+// React
+import { useState } from 'react';
+
+// Icons
+import { IconPlay } from '../../../assets/icons';
+
+// Styles
+import {
+  CardInfo,
+  CardInfoField,
+  CardTitle,
+  CardWrapper,
+  EstimatedTime,
+  PlayPauseButton,
+  PlayTimer,
+  StopWatchTimer,
+  TextCard
+} from './styles';
+import { IoMdPause } from 'react-icons/io';
 
 interface CardTaskInfoProps {
   cardTitle: string;
   cardType: 'text' | 'time' | 'info';
-  dataCard: 'string';
+  dataText?: string;
+  dataTime?: any;
+  dataInfos?: DataInfosProps;
 }
 
-export default function CardTaskInfo({ cardTitle, cardType, dataCard }: CardTaskInfoProps) {
+interface DataInfosProps {
+  estimatedTime: string;
+  responsible: string;
+  stage: string;
+  flow: string;
+  priority: string;
+  startDate: string;
+  endDate: string;
+}
+
+export default function CardTaskInfo({
+  cardTitle,
+  cardType,
+  dataText,
+  dataInfos,
+  dataTime
+}: CardTaskInfoProps) {
+  console.log('log do dataTime', dataTime);
+  const [playPause, setPlayPause] = useState<string>('play');
+
   return (
     <CardWrapper cardSize={cardType}>
       <CardTitle>{cardTitle}</CardTitle>
-      {cardType === 'text' && (
-        <div>
-          Lorem ipsum dolor sit amet consectetur. Lectus mi urna consequat faucibus eget nunc orci.
-          Massa ornare justo erat sagittis aliquam turpis porttitor. Venenatis vestibulum malesuada
-          egestas senectus eu et ultricies dui tortor. Elementum vitae feugiat pulvinar mi sed cras.
-          Feugiat nibh nisl dignissim orci in. Imperdiet sed arcu ac consequat.
-        </div>
-      )}
+      {cardType === 'text' && <TextCard>{dataText}</TextCard>}
       {cardType === 'time' && (
         <>
-          <div>timer</div>
-          <div>Tempo estimado: 00:30:00</div>
+          <PlayTimer>
+            <PlayPauseButton
+              onClick={() => setPlayPause(playPause === 'play' ? 'stop' : 'play')}
+              className={playPause}
+            >
+              {playPause === 'play' ? <IoMdPause /> : <IconPlay />}
+            </PlayPauseButton>
+            <StopWatchTimer className={playPause !== 'play' ? 'stopped' : 'running'}>
+              00:00:00
+            </StopWatchTimer>
+          </PlayTimer>
+          <EstimatedTime>
+            Tempo estimado: <span>00:30:00</span>
+          </EstimatedTime>
         </>
       )}
       {cardType === 'info' && (
         <CardInfo>
           <CardInfoField>
             <div className="info-title">Tempo estimado</div>
-            <div className="info-description">02:00:00</div>
+            <div className="info-description">{dataInfos?.estimatedTime}</div>
           </CardInfoField>
           <CardInfoField>
             <div className="info-title">Responsável:</div>
-            <div className="info-description">Guilherme Augusto</div>
+            <div className="info-description">{dataInfos?.responsible}</div>
           </CardInfoField>
           <CardInfoField>
             <div className="info-title">Etapa:</div>
-            <div className="info-description">Criação</div>
+            <div className="info-description">{dataInfos?.stage}</div>
           </CardInfoField>
           <CardInfoField>
             <div className="info-title">Fluxo:</div>
-            <div className="info-description">Campanha</div>
+            <div className="info-description">{dataInfos?.flow}</div>
           </CardInfoField>
           <CardInfoField>
             <div className="info-title">Prioridade:</div>
-            <div className="info-description">Normal</div>
+            <div className="info-description">{dataInfos?.priority}</div>
           </CardInfoField>
           <CardInfoField>
             <div className="info-title">Data inicial:</div>
-            <div className="info-description">26 de junho</div>
+            <div className="info-description">{dataInfos?.startDate}</div>
           </CardInfoField>
           <CardInfoField>
             <div className="info-title">Data final:</div>
-            <div className="info-description">15 de Julho</div>
+            <div className="info-description">{dataInfos?.endDate}</div>
           </CardInfoField>
         </CardInfo>
       )}
