@@ -3,6 +3,7 @@
 import { BiFilter, BiSearchAlt } from 'react-icons/bi';
 import { FiFlag } from 'react-icons/fi';
 import { IconContext } from 'react-icons';
+import { IconText } from '../../../assets/icons';
 
 // Utils
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
@@ -110,8 +111,8 @@ export default function TaskTable({
                     <td>
                       <div className="column info">
                         <div>
-                          {String(tasks.id).padStart(5, '0')} - {tasks.projectInfo.taskTitle} -{' '}
-                          {tasks.projectInfo.month}
+                          <IconText /> {String(tasks.id).padStart(5, '0')} -{' '}
+                          {tasks.projectInfo.taskTitle} - {tasks.projectInfo.month}
                         </div>
                         <span>
                           {tasks.projectInfo.client} / {tasks.projectInfo.type} |{' '}

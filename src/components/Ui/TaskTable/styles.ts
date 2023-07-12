@@ -25,6 +25,8 @@ export const TaskFilter = styled.div`
 export const TaskDateWrapper = styled.div`
   display: flex;
   flex-direction: column;
+
+  margin-bottom: 40px;
 `;
 
 export const TaskDate = styled.div`
