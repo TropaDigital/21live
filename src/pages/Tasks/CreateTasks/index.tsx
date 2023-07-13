@@ -764,7 +764,32 @@ export default function CreateTasks() {
           });
 
           if (hasError) {
-            throw 'Existem produtos sem o "Tipo" selecionado!';
+            throw new Error('Existem produtos sem o "Tipo" selecionado!');
+          } else {
+            setErrorCategory([]);
+            // setAddDeliveries(true);
+            setTimeout(() => {
+              setCreateStep(createStep + 1);
+            }, 150);
+          }
+        }
+
+        if (!splitDeliveries && location.state === null) {
+          // console.log('log do DTODelivery', DTODelivery);
+          let hasError = false;
+          productsArray.forEach((obj: any) => {
+            if (obj.reason_change === '' || obj.reason_change === undefined) {
+              setErrorCategory((errorCategory) => [...errorCategory, obj.service_id]);
+              hasError = true;
+            } else {
+              setErrorCategory((prevState) =>
+                prevState.filter((product) => product !== obj.service_id)
+              );
+            }
+          });
+
+          if (hasError) {
+            throw new Error('Existem produtos sem o "Tipo" selecionado!');
           } else {
             setErrorCategory([]);
             // setAddDeliveries(true);
@@ -821,11 +846,20 @@ export default function CreateTasks() {
         setCreateStep(createStep + 1);
       }
     } catch (error: any) {
-      addToast({
-        title: 'Atenção',
-        description: error?.message,
-        type: 'warning'
-      });
+      console.log('log do erro', error);
+      if (error.message) {
+        addToast({
+          title: 'Atenção',
+          description: error?.message,
+          type: 'warning'
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error,
+          type: 'warning'
+        });
+      }
     }
   };
 
