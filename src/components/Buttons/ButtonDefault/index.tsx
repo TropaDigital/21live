@@ -16,7 +16,8 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     | 'info'
     | 'light'
     | 'lightWhite'
-    | 'dark';
+    | 'dark'
+    | 'blocked';
   sizeButton?: 'small' | 'big';
 }
 

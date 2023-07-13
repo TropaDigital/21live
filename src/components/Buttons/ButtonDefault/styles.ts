@@ -14,7 +14,8 @@ interface ButtonProps {
     | 'info'
     | 'light'
     | 'lightWhite'
-    | 'dark';
+    | 'dark'
+    | 'blocked';
 }
 
 export const Container = styled.button<ButtonProps>`
@@ -246,6 +247,34 @@ export const Container = styled.button<ButtonProps>`
       &:hover {
         background: ${props.isDashed ? 'transparent' : shade(0.2, '#FFF')};
         color: #fff;
+      }
+
+      ${props.isOutline &&
+      css`
+        border: 1px solid var(--gray-300);
+        background-color: transparent;
+        color: #343a40;
+      `}
+
+      ${props.isDashed &&
+      css`
+        border: 2px dashed #343a40;
+        background-color: transparent;
+      `}
+    `}
+
+  ${(props) =>
+    props.typeButton === 'blocked' &&
+    css`
+      background-color: var(--gray-200);
+      border: none;
+      outline: none;
+      color: var(--gray-400);
+
+      &:hover {
+        /* background: ${props.isDashed ? 'transparent' : shade(0.2, '#FFF')};
+        color: #fff; */
+        cursor: not-allowed;
       }
 
       ${props.isOutline &&
