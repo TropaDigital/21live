@@ -45,7 +45,7 @@ export default function CardTaskInfo({
   dataTime
 }: CardTaskInfoProps) {
   console.log('log do dataTime', dataTime);
-  const [playPause, setPlayPause] = useState<string>('play');
+  const [playPause, setPlayPause] = useState<string>('stop');
 
   return (
     <CardWrapper cardSize={cardType}>
