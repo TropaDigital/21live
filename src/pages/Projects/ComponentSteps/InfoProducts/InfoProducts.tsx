@@ -258,7 +258,7 @@ export default function InfoProducts({
               <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
             </tr>
           </thead>
-          {dataFilter && editProducts ? (
+          {dataFilter.length > 0 && editProducts ? (
             <tbody>
               {dataFilter?.map((row: any) => (
                 <tr key={row.service_id}>
