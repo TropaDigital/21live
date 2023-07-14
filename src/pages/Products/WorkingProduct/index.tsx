@@ -19,21 +19,34 @@ import HeaderOpenTask from '../../../components/HeaderTaskPage';
 import CardTaskInfo from '../../../components/Ui/CardTaskInfo';
 import { ContainerDefault } from '../../../components/UiElements/styles';
 import WrapperEditor from '../../../components/WrapperEditor';
+import { InputDefault } from '../../../components/Inputs/InputDefault';
 
 // Styles
 import {
   CardsTopWrapper,
+  ChatMessage,
   ChatSendButton,
+  ChatUserImg,
   InputChat,
   InputField,
   InputFieldTitle,
+  MessageInfos,
+  MessageList,
   SectionCardWrapper,
   SectionChatComments,
   TabsWrapper,
   TaskTab,
+  UserMessage,
+  UserMessageInfo,
   WorkSection
 } from './styles';
-import { InputDefault } from '../../../components/Inputs/InputDefault';
+
+// Libraries
+import moment from 'moment';
+import 'moment/dist/locale/pt-br';
+
+// Images
+import PersonImg from '../../../assets/person.jpg';
 
 interface WorkingProductProps {
   estimatedTime?: string;
@@ -49,9 +62,19 @@ interface ProjectInfo {
   quantity: string;
 }
 
+interface ChatMessages {
+  id: string;
+  userId: number;
+  userImage: string;
+  userName: string;
+  message: string;
+  messageDate: string;
+  read: string;
+}
+
 export default function WorkingProduct() {
   const location = useLocation();
-  const [selectedTab, setSelectedTab] = useState<string>('');
+  const [selectedTab, setSelectedTab] = useState<string>('Redação');
   const [notifications, setNotifications] = useState<boolean>(false);
   const [chatMessage, setChatMessage] = useState<string>('');
 
@@ -60,6 +83,55 @@ export default function WorkingProduct() {
   const data = {
     estimatedTime: '03:00:00'
   };
+
+  const chatMessages: ChatMessages[] = [
+    {
+      id: '00001',
+      userId: 154,
+      userImage: 'avatar.png',
+      userName: 'Guilherme Augusto',
+      message: 'Corrigir texto email marketing',
+      messageDate: '2023-07-14 10:56:09',
+      read: ''
+    },
+    {
+      id: '00002',
+      userId: 13,
+      userImage: 'avatar.png',
+      userName: 'Danilo Fontes',
+      message: 'Certo, vou resolver',
+      messageDate: '2023-07-14 11:05:27',
+      read: ''
+    },
+    {
+      id: '00003',
+      userId: 11,
+      userImage: 'avatar.png',
+      userName: 'Adolfo Rodolfo',
+      message:
+        'Elementum vitae feugiat pulvinar mi sed cras. Feugiat nibh nisl dignissim orci in. Imperdiet sed arcu ac consequat.',
+      messageDate: '2023-07-15 14:32:18',
+      read: ''
+    },
+    {
+      id: '00004',
+      userId: 13,
+      userImage: 'avatar.png',
+      userName: 'Danilo Fontes',
+      message: 'Resolvido',
+      messageDate: '2023-07-15 16:20:00',
+      read: ''
+    },
+    {
+      id: '00005',
+      userId: 13,
+      userImage: 'avatar.png',
+      userName: 'Danilo Fontes',
+      message: 'Task concluída',
+      messageDate: '2023-07-16 09:09:09',
+      read: ''
+    }
+  ];
 
   const dataText =
     'Lorem ipsum dolor sit amet consectetur. Lectus mi urna consequat faucibus eget nunc orci. Massa ornare justo erat sagittis aliquam turpis porttitor. Venenatis vestibulum malesuada egestas senectus eu et ultricies dui tortor. Elementum vitae feugiat pulvinar mi sed cras. Feugiat nibh nisl dignissim orci in. Imperdiet sed arcu ac consequat.';
@@ -172,6 +244,55 @@ export default function WorkingProduct() {
         )}
         {selectedTab === 'Comentários' && (
           <SectionChatComments>
+            <MessageList>
+              {chatMessages.map((message: ChatMessages) => (
+                <ChatMessage key={message.id}>
+                  {message.userId !== 13 && (
+                    <>
+                      <ChatUserImg>
+                        <div
+                          className="user-img"
+                          style={{ backgroundImage: `url(${PersonImg})` }}
+                        />
+                      </ChatUserImg>
+
+                      <MessageInfos>
+                        <UserMessageInfo>
+                          <div className="user-name">{message.userName}</div>
+                          <div className="date-message">
+                            {moment(message.messageDate).fromNow()}
+                          </div>
+                        </UserMessageInfo>
+
+                        <UserMessage>{message.message}</UserMessage>
+                      </MessageInfos>
+                    </>
+                  )}
+                  {message.userId === 13 && (
+                    <>
+                      <MessageInfos className={message.userId === 13 ? 'left' : ''}>
+                        <UserMessageInfo>
+                          <div className="user-name">{message.userName}</div>
+                          <div className="date-message">
+                            {moment(message.messageDate).fromNow()}
+                          </div>
+                        </UserMessageInfo>
+
+                        <UserMessage>{message.message}</UserMessage>
+                      </MessageInfos>
+
+                      <ChatUserImg>
+                        <div
+                          className="user-img"
+                          style={{ backgroundImage: `url(${PersonImg})` }}
+                        />
+                      </ChatUserImg>
+                    </>
+                  )}
+                </ChatMessage>
+              ))}
+            </MessageList>
+
             <InputChat>
               <InputDefault
                 label=""
@@ -179,7 +300,6 @@ export default function WorkingProduct() {
                 name="chat"
                 value={chatMessage}
                 onChange={handleInputChange}
-                error={''}
               />
               <ChatSendButton>
                 <HiOutlineArrowRight />

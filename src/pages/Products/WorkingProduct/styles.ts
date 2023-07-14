@@ -115,12 +115,102 @@ export const InputFieldTitle = styled.div`
 `;
 
 export const SectionChatComments = styled.div`
-  height: 50vh;
+  height: 55vh;
   position: relative;
-  overflow-y: auto;
 
   @media (max-height: 800px) {
-    height: 40vh;
+    height: 50vh;
+  }
+`;
+
+export const MessageList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  height: 100%;
+  background: var(--background-primary);
+  overflow-y: auto;
+
+  border: 2px solid var(--gray-200);
+  border-radius: 8px;
+  box-shadow: 3px 5px 6px 1px rgba(0, 0, 0, 0.2);
+  padding: 8px 8px 60px 8px;
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) var(--gray-900);
+  &::-webkit-scrollbar {
+    width: 8px;
+    background: #e2e2e2;
+    border-radius: 12px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #86848d;
+    border-radius: 12px;
+  }
+`;
+
+export const ChatMessage = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+`;
+
+export const MessageInfos = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  max-width: 300px;
+  padding: 16px;
+  border-radius: 4px;
+
+  /* background: var(--gray-100); */
+  background: var(--primary-050);
+
+  &.left {
+    margin-left: auto;
+  }
+`;
+
+export const UserMessageInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 6px 0;
+
+  .user-name {
+    color: var(--gray-700);
+    font-size: 10px;
+    font-weight: var(--weight-bold);
+    text-transform: uppercase;
+  }
+
+  .date-message {
+    color: var(--gray-400);
+    font-size: 10px;
+    font-weight: var(--weight-bold);
+    text-transform: uppercase;
+  }
+`;
+
+export const UserMessage = styled.div`
+  color: var(--gray-700);
+  font-size: var(--text-small-sm);
+  font-weight: var(--weight-regular);
+`;
+
+export const ChatUserImg = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 40px;
+
+  .user-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-size: contain;
   }
 `;
 
@@ -133,14 +223,16 @@ export const InputChat = styled.div`
 
   padding: 10px 14px;
   position: absolute;
-  bottom: 0;
-  left: 0;
+  bottom: 6px;
+  left: 12px;
 
   height: 44px;
-  width: 100%;
+  width: 98%;
 
   border-bottom: 2px solid var(--gray-200);
-  background: var(--gray-50);
+  border-radius: 4px;
+  background: var(--gray-100);
+  box-shadow: 1px 1px 6px 1px rgba(0, 0, 0, 0.3);
 
   input {
     background: transparent;
