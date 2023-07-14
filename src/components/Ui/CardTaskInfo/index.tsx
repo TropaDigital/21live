@@ -1,6 +1,6 @@
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // Icons
 import { IconPlay } from '../../../assets/icons';
@@ -44,8 +44,23 @@ export default function CardTaskInfo({
   dataInfos,
   dataTime
 }: CardTaskInfoProps) {
-  console.log('log do dataTime', dataTime);
-  const [playPause, setPlayPause] = useState<string>('stop');
+  // console.log('log do dataTime', dataTime);
+  const [time, setTime] = useState<number>(0);
+  const [timerOn, setTimerOn] = useState<boolean>(false);
+
+  useEffect(() => {
+    let interval: any = null;
+
+    if (timerOn) {
+      interval = setInterval(() => {
+        setTime((prevTime) => prevTime + 10);
+      }, 10);
+    } else {
+      clearInterval(interval);
+    }
+
+    return () => clearInterval(interval);
+  }, [timerOn]);
 
   return (
     <CardWrapper cardSize={cardType}>
@@ -54,14 +69,32 @@ export default function CardTaskInfo({
       {cardType === 'time' && (
         <>
           <PlayTimer>
-            <PlayPauseButton
-              onClick={() => setPlayPause(playPause === 'play' ? 'stop' : 'play')}
-              className={playPause}
-            >
-              {playPause === 'play' ? <IoMdPause /> : <IconPlay />}
-            </PlayPauseButton>
-            <StopWatchTimer className={playPause !== 'play' ? 'stopped' : 'running'}>
-              00:00:00
+            {!timerOn && (
+              <PlayPauseButton
+                onClick={() => {
+                  setTimerOn(true);
+                }}
+                className="stop"
+              >
+                <IconPlay />
+              </PlayPauseButton>
+            )}
+            {timerOn && (
+              <PlayPauseButton
+                onClick={() => {
+                  setTimerOn(false);
+                }}
+                className="play"
+              >
+                <IoMdPause />
+              </PlayPauseButton>
+            )}
+            <StopWatchTimer className={!timerOn ? 'stopped' : 'running'}>
+              {('0' + Math.floor((time / 3600000) % 60)).slice(-2)}:
+              {('0' + Math.floor((time / 60000) % 60)).slice(-2)}:
+              {('0' + Math.floor((time / 1000) % 60)).slice(-2)}
+              {/* Milémisimos de segundos */}
+              {/* {('0' + Math.floor((time / 10) % 100)).slice(-2)} */}
             </StopWatchTimer>
           </PlayTimer>
           <EstimatedTime>
