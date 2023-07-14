@@ -61,7 +61,7 @@ export default function ViewTaskList() {
           estimatedTime: '02:00:00',
           startDate: '2023/06/26',
           endDate: '2023/07/15',
-          deliveries: '4 entregas',
+          deliveries: '4 produtos',
           stage: 'Criação',
           flow: 'CAMPANHA',
           status: 'progress'
@@ -79,7 +79,7 @@ export default function ViewTaskList() {
           estimatedTime: '02:00:00',
           startDate: '2023/07/16',
           endDate: '2023/07/25',
-          deliveries: '4 entregas',
+          deliveries: '4 produtos',
           stage: 'Criação',
           flow: 'CAMPANHA',
           status: 'pending'
@@ -102,7 +102,7 @@ export default function ViewTaskList() {
           estimatedTime: '02:00:00',
           startDate: '2023/06/26',
           endDate: '2023/07/15',
-          deliveries: '4 entregas',
+          deliveries: '4 produtos',
           stage: 'Criação',
           flow: 'CAMPANHA',
           status: 'pending'
@@ -120,7 +120,7 @@ export default function ViewTaskList() {
           estimatedTime: '02:00:00',
           startDate: '2023/07/16',
           endDate: '2023/07/25',
-          deliveries: '4 entregas',
+          deliveries: '4 produtos',
           stage: 'Criação',
           flow: 'CAMPANHA',
           status: 'pending'
