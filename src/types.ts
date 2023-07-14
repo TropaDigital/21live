@@ -146,3 +146,11 @@ export interface ServicesProps {
   quantity?: any;
   tenant_id?: string;
 }
+
+// Type for Task Comment (for send to backend)
+export interface ICommentTask {
+  comment_id?: number; //não precisa passar
+  user_id: number; // id de quem está comentando
+  task_id: number; // id da tarefa
+  comment: string; // se tiver respondendo algum comentário, o id desse comentário
+}
