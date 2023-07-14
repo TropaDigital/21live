@@ -151,6 +151,7 @@ export const GlobalStyles = createGlobalStyle`
   --text-headline-sm: 1.5rem; // 24px
   --text-headline-md: 1.875rem; // 30px
   --text-headline-lg: 2.25rem; // 36px
+  --text-headline-xl: 2.50rem; // 36px
   --text-display-sm: 3rem; // 48px
   --text-display-md: 3.75rem; // 60px
   --text-display-lg: 4.5rem; // 72px
