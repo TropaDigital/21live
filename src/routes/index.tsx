@@ -30,6 +30,7 @@ import CreateProject from '../pages/Projects/CreateProject';
 import CreateTasks from '../pages/Tasks/CreateTasks';
 import ViewTaskList from '../pages/Tasks/ViewTasks';
 import WorkingProduct from '../pages/Products/WorkingProduct';
+import PageNotFound from '../pages/NotFound';
 
 function RoutesAll() {
   return (
@@ -225,6 +226,8 @@ function RoutesAll() {
           }
         />
       </Route>
+
+      <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
 }
