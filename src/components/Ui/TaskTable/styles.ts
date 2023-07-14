@@ -164,4 +164,12 @@ export const TasksTable = styled.div`
       text-align: center;
     }
   }
+
+  @media (max-width: 1600px) {
+    table {
+      td {
+        padding: 0 1rem;
+      }
+    }
+  }
 `;

@@ -30,12 +30,12 @@ interface TableProps {
   taskSelected: any;
 }
 
-export interface TaskProps {
+interface TaskProps {
   date: string;
   tasks: Task[];
 }
 
-export interface Task {
+interface Task {
   id: string;
   projectInfo: ProjectInfo;
   consumedTime: string;
@@ -48,7 +48,7 @@ export interface Task {
   status: string;
 }
 
-export interface ProjectInfo {
+interface ProjectInfo {
   taskTitle: string;
   month: string;
   client: string;
@@ -91,6 +91,7 @@ export default function TaskTable({
             <table>
               <thead>
                 <tr>
+                  <th>ID</th>
                   <th>Tarefas</th>
                   <th>Tempo consumido</th>
                   <th>Tempo estimado</th>
@@ -102,16 +103,17 @@ export default function TaskTable({
                 </tr>
               </thead>
               <tbody>
-                {row.tasks.map((tasks: Task) => (
+                {row.tasks.map((tasks: Task, index: number) => (
                   <tr
                     key={tasks.id}
                     style={{ cursor: 'pointer' }}
                     onClick={() => taskSelected(tasks.id)}
                   >
+                    <td>{String(tasks.id).padStart(5, '0')}</td>
                     <td>
                       <div className="column info">
                         <div>
-                          <IconText /> {String(tasks.id).padStart(5, '0')} -{' '}
+                          <IconText /> {String(index + 1).padStart(3, '0')} -{' '}
                           {tasks.projectInfo.taskTitle} - {tasks.projectInfo.month}
                         </div>
                         <span>
