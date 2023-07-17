@@ -4,7 +4,7 @@
 import { useState } from 'react';
 
 // Components
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 // Hooks
 import { useFetch } from '../../../hooks/useFetch';
@@ -27,6 +27,7 @@ import {
   ChatMessage,
   ChatSendButton,
   ChatUserImg,
+  FooterSection,
   InputChat,
   InputField,
   InputFieldTitle,
@@ -47,6 +48,7 @@ import 'moment/dist/locale/pt-br';
 
 // Images
 import PersonImg from '../../../assets/person.jpg';
+import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 
 interface WorkingProductProps {
   estimatedTime?: string;
@@ -74,6 +76,7 @@ interface ChatMessages {
 
 export default function WorkingProduct() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = useState<string>('Redação');
   const [notifications, setNotifications] = useState<boolean>(false);
   const [chatMessage, setChatMessage] = useState<string>('');
@@ -151,6 +154,14 @@ export default function WorkingProduct() {
     setChatMessage(e.target.value);
   };
 
+  const handleSaveEssay = () => {
+    console.log('log salvando a redação');
+  };
+
+  const handleInputs = (name: string, value: any) => {
+    console.log('log do input', name, value);
+  };
+
   // const dataInfo = {
   //   estimatedTime: '02:00:00',
   //   responsible: 'Guilherme Augusto',
@@ -215,20 +226,30 @@ export default function WorkingProduct() {
 
       <WorkSection>
         {selectedTab === 'Redação' && (
-          <WrapperEditor
-            value={'Texto inicial'}
-            mentionData={[]}
-            handleOnDescription={(value: any) => console.log('log do editor', value)}
-          />
+          <>
+            <WrapperEditor
+              value={'Texto inicial'}
+              mentionData={[]}
+              handleOnDescription={(value: any) => console.log('log do editor', value)}
+            />
+            <FooterSection>
+              <ButtonDefault typeButton="lightWhite" isOutline onClick={() => navigate('/tarefas')}>
+                Descartar
+              </ButtonDefault>
+              <ButtonDefault typeButton="primary" onClick={handleSaveEssay}>
+                Salvar Redação
+              </ButtonDefault>
+            </FooterSection>
+          </>
         )}
         {selectedTab === 'Inputs' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <InputField>
-              <InputFieldTitle>Input Intermediário???</InputFieldTitle>
+              <InputFieldTitle>Input - Pré-requisitos</InputFieldTitle>
               <WrapperEditor
                 value={'Teste 1'}
                 mentionData={[]}
-                handleOnDescription={(value: any) => console.log('log do editor', value)}
+                handleOnDescription={(value: any) => handleInputs('prerequisites', value)}
               />
             </InputField>
 
@@ -237,7 +258,7 @@ export default function WorkingProduct() {
               <WrapperEditor
                 value={'Teste 2'}
                 mentionData={[]}
-                handleOnDescription={(value: any) => console.log('log do editor', value)}
+                handleOnDescription={(value: any) => handleInputs('creation', value)}
               />
             </InputField>
           </div>

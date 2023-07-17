@@ -72,7 +72,7 @@ export const TaskTab = styled.button`
 
 export const WorkSection = styled.div`
   margin: 24px 40px 0 40px;
-  padding-bottom: 100px;
+  padding-bottom: 40px;
 
   .ProseMirror {
     height: 260px;
@@ -266,4 +266,13 @@ export const ChatSendButton = styled.button`
       }
     }
   }
+`;
+
+export const FooterSection = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+
+  padding-top: 16px;
 `;
