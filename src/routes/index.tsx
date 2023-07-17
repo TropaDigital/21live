@@ -19,6 +19,7 @@ import ListOffice from '../pages/Team/ListOffice';
 import ListFluxo from '../pages/Fluxos/ListFluxo';
 import EditFluxo from '../pages/Fluxos/EditFluxo';
 import ListProjects from '../pages/Projects/ListProjects';
+import PageNotFound from '../pages/NotFound';
 
 // COMPONENTES
 import ComponentsForms from '../pages/components/ComponentsForms';
@@ -30,7 +31,6 @@ import CreateProject from '../pages/Projects/CreateProject';
 import CreateTasks from '../pages/Tasks/CreateTasks';
 import ViewTaskList from '../pages/Tasks/ViewTasks';
 import WorkingProduct from '../pages/Products/WorkingProduct';
-import PageNotFound from '../pages/NotFound';
 
 function RoutesAll() {
   return (
