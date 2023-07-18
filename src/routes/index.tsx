@@ -31,6 +31,7 @@ import CreateProject from '../pages/Projects/CreateProject';
 import CreateTasks from '../pages/Tasks/CreateTasks';
 import ViewTaskList from '../pages/Tasks/ViewTasks';
 import WorkingProduct from '../pages/Products/WorkingProduct';
+import ViewDelivery from '../pages/Tasks/ViewDelivery';
 
 function RoutesAll() {
   return (
@@ -168,6 +169,15 @@ function RoutesAll() {
           element={
             <PrivateRoutes>
               <TaskList />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/tarefa/:id"
+          element={
+            <PrivateRoutes>
+              <ViewDelivery />
             </PrivateRoutes>
           }
         />
