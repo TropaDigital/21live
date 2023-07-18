@@ -126,7 +126,62 @@ export const EstimatedTime = styled.div`
 `;
 
 export const TextCard = styled.div`
+  height: 80px;
+  overflow: hidden;
+
   color: var(--gray-500);
   font-size: var(--text-small-md);
   font-weight: var(--weight-regular);
+  line-height: 24px;
+  position: relative;
+
+  .infos {
+    color: var(--primary);
+    font-size: var(--text-small-md);
+    font-weight: var(--weight-semibold);
+    text-decoration: underline;
+
+    cursor: pointer;
+    background: var(--background-primary);
+    padding: 0 4px;
+
+    position: absolute;
+    bottom: -2px;
+    right: 0;
+  }
+`;
+
+export const ModalTextCard = styled.div`
+  color: var(--gray-500);
+  font-size: var(--text-small-md);
+  font-weight: var(--weight-regular);
+  line-height: 24px;
+  text-align: justify;
+  padding: 20px;
+  position: relative;
+
+  .close {
+    height: fit-content;
+    position: absolute;
+    top: -30px;
+    right: 20px;
+    transition: all 0.5s;
+
+    cursor: pointer;
+
+    svg {
+      path {
+        stroke: var(--gray-500);
+      }
+    }
+
+    &:hover {
+      transform: scale(1.3);
+      svg {
+        path {
+          stroke: var(--Danger);
+        }
+      }
+    }
+  }
 `;
