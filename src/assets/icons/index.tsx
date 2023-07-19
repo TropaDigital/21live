@@ -480,6 +480,17 @@ export const IconChecked: React.FC = () => (
   </svg>
 );
 
+export const IconBigCheck: React.FC = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M22.7953 9.85322L13.2487 19.0666L10.7153 16.3599C10.2487 15.9199 9.51534 15.8932 8.982 16.2666C8.462 16.6532 8.31534 17.3332 8.63534 17.8799L11.6353 22.7599C11.9287 23.2132 12.4353 23.4932 13.0087 23.4932C13.5553 23.4932 14.0753 23.2132 14.3687 22.7599C14.8487 22.1332 24.0087 11.2132 24.0087 11.2132C25.2087 9.98655 23.7553 8.90655 22.7953 9.83989V9.85322Z"
+      fill="white"
+    />
+  </svg>
+);
+
 export const IconCheckedBlue: React.FC = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect width="24" height="24" rx="12" fill="#0046B5" />
