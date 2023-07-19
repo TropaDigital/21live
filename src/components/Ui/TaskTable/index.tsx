@@ -80,7 +80,7 @@ export default function TaskTable({
 
         <ButtonDefault typeButton="lightWhite" isOutline onClick={addFilter}>
           <BiFilter />
-          Filtros
+          Ordenar por
         </ButtonDefault>
       </TaskFilter>
 
