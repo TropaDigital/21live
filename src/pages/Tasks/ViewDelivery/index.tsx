@@ -1,6 +1,11 @@
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+// Icons
+import { FaArrowLeft, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { BsChevronDoubleRight } from 'react-icons/bs';
+import { IconBigCheck } from '../../../assets/icons';
 
 // Components
 import HeaderOpenTask from '../../../components/HeaderTaskPage';
@@ -10,6 +15,7 @@ import CardTaskInfo from '../../../components/Ui/CardTaskInfo';
 
 // Styles
 import {
+  ArrowSection,
   CardsWrapper,
   DeliveryWrapper,
   RightInfosCard,
@@ -17,14 +23,30 @@ import {
   ShowInfosButton,
   TaskInfoField,
   TasksInfos,
-  TimeLine
+  TimeLine,
+  TimeLineIcon,
+  TimelineInfo,
+  TimelineStep
 } from './styles';
-import { da } from 'date-fns/locale';
-import { FaArrowLeft } from 'react-icons/fa';
+
+// Services
+import api from '../../../services/api';
+
+interface StepTimeline {
+  step: string;
+  name: string;
+}
+
+interface TimelineProps {
+  steps: StepTimeline[];
+  currentStep: string;
+}
 
 export default function ViewDelivery() {
   const [workForProducts, setWorkForProducts] = useState<boolean>(false);
   const [hideRightCard, setHideRightCard] = useState<string>('show');
+  const [timeLineData, setTimelineData] = useState<TimelineProps>();
+  const [hideTimeLine, setHideTimeLine] = useState<boolean>(false);
 
   const titleInfos = {
     idNumber: '1768',
@@ -70,6 +92,19 @@ export default function ViewDelivery() {
     estimatedTime: '03:00:00'
   };
 
+  useEffect(() => {
+    async function getTimelineData() {
+      try {
+        const response = await api.get(`task/timeline/123`);
+        setTimelineData(response.data.result);
+      } catch (error: any) {
+        console.log('log timeline error', error);
+      }
+    }
+
+    getTimelineData();
+  }, []);
+
   return (
     <ContainerDefault>
       <DeliveryWrapper>
@@ -80,7 +115,6 @@ export default function ViewDelivery() {
           buttonType="send"
         />
 
-        {/* Cards */}
         <CardsWrapper>
           {!workForProducts && (
             <CardTaskInfo
@@ -92,11 +126,33 @@ export default function ViewDelivery() {
           <CardTaskInfo cardTitle="Contexto geral" cardType="text" dataText={dataText.data} />
         </CardsWrapper>
 
-        {/* Product table */}
         <ProductTable data={mockData} workForProduct={setWorkForProducts} />
 
-        <RightInfosCard hideCard={hideRightCard} onClick={() => setHideRightCard('hide')}>
-          <TimeLine></TimeLine>
+        <RightInfosCard hideCard={hideRightCard}>
+          <TimeLine>
+            <div className="hide-menu" onClick={() => setHideTimeLine(!hideTimeLine)}>
+              {hideTimeLine && <FaChevronDown />}
+              {!hideTimeLine && <FaChevronUp />}
+            </div>
+            <RightInfosTitle>Linha do tempo</RightInfosTitle>
+            {!hideTimeLine &&
+              timeLineData &&
+              timeLineData?.steps.map((row: StepTimeline, index: number) => (
+                <TimelineStep key={index}>
+                  <TimeLineIcon className={row.step <= timeLineData.currentStep ? 'checked' : ''}>
+                    {Number(row.step) >= Number(timeLineData.currentStep) && (
+                      <div className="dot"></div>
+                    )}
+
+                    {Number(row.step) < Number(timeLineData.currentStep) && <IconBigCheck />}
+                  </TimeLineIcon>
+                  <TimelineInfo>
+                    <div className="info-title">Etapa anterior:</div>
+                    <div className="timeline-info">{row.name}</div>
+                  </TimelineInfo>
+                </TimelineStep>
+              ))}
+          </TimeLine>
           <TasksInfos>
             <RightInfosTitle>Detalhes da tarefa</RightInfosTitle>
             <TaskInfoField>
@@ -139,6 +195,10 @@ export default function ViewDelivery() {
               <div className="info-description">02:00:00</div>
             </TaskInfoField>
           </TasksInfos>
+          <ArrowSection onClick={() => setHideRightCard('hide')}>
+            <BsChevronDoubleRight />
+            <div className="hide">Fechar</div>
+          </ArrowSection>
         </RightInfosCard>
 
         <ShowInfosButton onClick={() => setHideRightCard('show')}>
