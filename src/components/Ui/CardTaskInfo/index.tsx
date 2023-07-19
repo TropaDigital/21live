@@ -111,7 +111,7 @@ export default function CardTaskInfo({
               </StopWatchTimer>
             </PlayTimer>
             <EstimatedTime>
-              Tempo estimado: <span>00:30:00</span>
+              Tempo estimado: <span>{dataTime}</span>
             </EstimatedTime>
           </>
         )}
