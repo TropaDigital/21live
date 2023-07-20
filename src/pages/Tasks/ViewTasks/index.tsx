@@ -5,11 +5,11 @@ import { useState } from 'react';
 // Components
 import HeaderPage from '../../../components/HeaderPage';
 import { ContainerDefault } from '../../../components/UiElements/styles';
+import TaskTable from '../../../components/Ui/TaskTable';
 
 // Hooks
 import useDebouncedCallback from '../../../hooks/useDebounced';
-
-import TaskTable from '../../../components/Ui/TaskTable';
+import { useNavigate } from 'react-router-dom';
 
 export interface TaskProps {
   date: string;
@@ -38,6 +38,7 @@ export interface ProjectInfo {
 }
 
 export default function ViewTaskList() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const { isLoading, debouncedCallback } = useDebouncedCallback(
     (search: string) => setSearchTerm(search),
@@ -133,6 +134,11 @@ export default function ViewTaskList() {
     console.log('log do filters on task');
   };
 
+  const handleNavigateTask = (id: any) => {
+    console.log('log da task selected', id);
+    navigate(`/tarefa/${id}`);
+  };
+
   return (
     <ContainerDefault>
       <HeaderPage title="Suas tarefas" />
@@ -146,7 +152,7 @@ export default function ViewTaskList() {
         }}
         searchInfo={searchTerm}
         addFilter={handleFilters}
-        taskSelected={(value: any) => console.log('log da task selected', value)}
+        taskSelected={handleNavigateTask}
       />
     </ContainerDefault>
   );
