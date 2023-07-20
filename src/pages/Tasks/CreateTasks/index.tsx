@@ -1079,6 +1079,7 @@ export default function CreateTasks() {
             {
               date_end: DTOForm?.creation_date_end,
               description: DTOForm?.creation_description,
+              title: '1ª entrega',
               products: [
                 {
                   service_id: '1',
@@ -1105,6 +1106,7 @@ export default function CreateTasks() {
         const deadline = {
           date_end: DTOForm?.creation_date_end,
           description: DTOForm?.creation_description,
+          title: '1ª entrega',
           products: productsArray
         };
 
@@ -1134,6 +1136,7 @@ export default function CreateTasks() {
             {
               date_end: DTOForm?.creation_date_end,
               description: DTOForm?.creation_description,
+              title: '1ª entrega',
               products: productsArray
             }
           ];
@@ -1172,6 +1175,7 @@ export default function CreateTasks() {
             title,
             tenant_id,
             product_id,
+            user_id,
             flow_id,
             description,
             creation_description,
