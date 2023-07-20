@@ -1,6 +1,7 @@
 /* eslint-disable import-helpers/order-imports */
 // React
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 // Icons
 import { FaArrowLeft, FaChevronDown, FaChevronUp } from 'react-icons/fa';
@@ -32,6 +33,10 @@ import {
 // Services
 import api from '../../../services/api';
 
+// Libraries
+import moment from 'moment';
+import 'moment/dist/locale/pt-br';
+
 interface StepTimeline {
   step: string;
   name: string;
@@ -43,10 +48,12 @@ interface TimelineProps {
 }
 
 export default function ViewDelivery() {
+  const location = useLocation();
   const [workForProducts, setWorkForProducts] = useState<boolean>(false);
   const [hideRightCard, setHideRightCard] = useState<string>('show');
   const [timeLineData, setTimelineData] = useState<TimelineProps>();
   const [hideTimeLine, setHideTimeLine] = useState<boolean>(false);
+  const [playingForSchedule, setPlayingForSchedule] = useState<boolean>(false);
 
   const titleInfos = {
     idNumber: '1768',
@@ -95,7 +102,7 @@ export default function ViewDelivery() {
   useEffect(() => {
     async function getTimelineData() {
       try {
-        const response = await api.get(`task/timeline/123`);
+        const response = await api.get(`task/timeline/126`);
         setTimelineData(response.data.result);
       } catch (error: any) {
         console.log('log timeline error', error);
@@ -104,6 +111,38 @@ export default function ViewDelivery() {
 
     getTimelineData();
   }, []);
+
+  const handlePlayingType = (value: boolean) => {
+    if (value) {
+      setPlayingForSchedule(true);
+    }
+  };
+
+  // Function to get diff time
+  // useEffect(() => {
+  //   const x = moment(Date.now());
+  //   const y = moment(new Date('July 19, 2023 17:24:00'));
+  //   const duration = moment.duration(x.diff(y));
+  //   const Milliseconds = duration.asMilliseconds();
+
+  //   function padTo2Digits(num: any) {
+  //     return num.toString().padStart(2, '0');
+  //   }
+
+  //   function convertMsToTime(milliseconds: any) {
+  //     let seconds = Math.floor(milliseconds / 1000);
+  //     let minutes = Math.floor(seconds / 60);
+  //     const hours = Math.floor(minutes / 60);
+
+  //     seconds = seconds % 60;
+  //     minutes = minutes % 60;
+
+  //     return `${padTo2Digits(hours)}:${padTo2Digits(minutes)}:${padTo2Digits(seconds)}`;
+  //   }
+
+  //   console.log('log Milliseconds', Milliseconds);
+  //   console.log('log do duration', convertMsToTime(Milliseconds));
+  // }, []);
 
   return (
     <ContainerDefault>
@@ -121,12 +160,22 @@ export default function ViewDelivery() {
               cardTitle="Iniciar atividade"
               cardType="time"
               dataTime={data ? data?.estimatedTime : ''}
+              isPlayingTime={handlePlayingType}
             />
           )}
-          <CardTaskInfo cardTitle="Contexto geral" cardType="text" dataText={dataText.data} />
+          <CardTaskInfo
+            cardTitle="Contexto geral"
+            cardType="text"
+            dataText={dataText.data}
+            isPlayingTime={() => ''}
+          />
         </CardsWrapper>
 
-        <ProductTable data={mockData} workForProduct={setWorkForProducts} />
+        <ProductTable
+          data={mockData}
+          workForProduct={setWorkForProducts}
+          isPlayingForSchedule={playingForSchedule}
+        />
 
         <RightInfosCard hideCard={hideRightCard}>
           <TimeLine>
@@ -147,7 +196,15 @@ export default function ViewDelivery() {
                     {Number(row.step) < Number(timeLineData.currentStep) && <IconBigCheck />}
                   </TimeLineIcon>
                   <TimelineInfo>
-                    <div className="info-title">Etapa anterior:</div>
+                    {row.step < timeLineData.currentStep && (
+                      <div className="info-title">Etapa anterior:</div>
+                    )}
+                    {row.step === timeLineData.currentStep && (
+                      <div className="info-title">Etapa atual:</div>
+                    )}
+                    {row.step > timeLineData.currentStep && (
+                      <div className="info-title">Próxima etapa:</div>
+                    )}
                     <div className="timeline-info">{row.name}</div>
                   </TimelineInfo>
                 </TimelineStep>
