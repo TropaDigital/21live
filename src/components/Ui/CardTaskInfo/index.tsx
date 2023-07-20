@@ -29,6 +29,7 @@ interface CardTaskInfoProps {
   dataText?: string;
   dataTime?: any;
   dataInfos?: DataInfosProps;
+  isPlayingTime: (value: any) => void;
 }
 
 interface DataInfosProps {
@@ -46,9 +47,9 @@ export default function CardTaskInfo({
   cardType,
   dataText,
   dataInfos,
-  dataTime
+  dataTime,
+  isPlayingTime
 }: CardTaskInfoProps) {
-  // console.log('log do dataTime', dataTime);
   const [time, setTime] = useState<number>(0);
   const [timerOn, setTimerOn] = useState<boolean>(false);
   const [modalContext, setModalContext] = useState<boolean>(false);
@@ -57,10 +58,12 @@ export default function CardTaskInfo({
     let interval: any = null;
 
     if (timerOn) {
+      isPlayingTime(true);
       interval = setInterval(() => {
         setTime((prevTime) => prevTime + 10);
       }, 10);
     } else {
+      isPlayingTime(false);
       clearInterval(interval);
     }
 
