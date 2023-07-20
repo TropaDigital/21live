@@ -34,9 +34,14 @@ interface Product {
 interface ProductTableProps {
   data: Product[];
   workForProduct: any;
+  isPlayingForSchedule: boolean;
 }
 
-export default function ProductTable({ data, workForProduct }: ProductTableProps) {
+export default function ProductTable({
+  data,
+  workForProduct,
+  isPlayingForSchedule
+}: ProductTableProps) {
   const [workFor, setWorkFor] = useState<string>('schedule');
 
   useEffect(() => {
@@ -50,19 +55,23 @@ export default function ProductTable({ data, workForProduct }: ProductTableProps
         <ProductTitle>Produtos para entrega</ProductTitle>
         <div>-</div>
         <ProductDate>15/07/2023</ProductDate>
-        <div>-</div>
-        <ProductSelect>
-          <Switch
-            onChange={() => setWorkFor(workFor === 'product' ? 'schedule' : 'product')}
-            checked={workFor === 'product' ? true : false}
-            uncheckedIcon={false}
-            checkedIcon={false}
-            onColor="#0046B5"
-            width={40}
-            height={21}
-          />
-          Trabalhar por produto
-        </ProductSelect>
+        {!isPlayingForSchedule && (
+          <>
+            <div>-</div>
+            <ProductSelect>
+              <Switch
+                onChange={() => setWorkFor(workFor === 'product' ? 'schedule' : 'product')}
+                checked={workFor === 'product' ? true : false}
+                uncheckedIcon={false}
+                checkedIcon={false}
+                onColor="#0046B5"
+                width={40}
+                height={21}
+              />
+              Trabalhar por produto
+            </ProductSelect>
+          </>
+        )}
       </ProductTitleInfos>
 
       <ProductsTable>
