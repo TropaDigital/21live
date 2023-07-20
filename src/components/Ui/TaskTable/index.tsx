@@ -109,7 +109,7 @@ export default function TaskTable({
                     style={{ cursor: 'pointer' }}
                     onClick={() => taskSelected(tasks.id)}
                   >
-                    <td>{String(tasks.id).padStart(5, '0')}</td>
+                    <td>#{String(tasks.id).padStart(5, '0')}</td>
                     <td>
                       <div className="column info">
                         <div>
