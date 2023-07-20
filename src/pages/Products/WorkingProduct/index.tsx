@@ -20,6 +20,7 @@ import CardTaskInfo from '../../../components/Ui/CardTaskInfo';
 import { ContainerDefault } from '../../../components/UiElements/styles';
 import WrapperEditor from '../../../components/WrapperEditor';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
+import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 
 // Styles
 import {
@@ -48,7 +49,6 @@ import 'moment/dist/locale/pt-br';
 
 // Images
 import PersonImg from '../../../assets/person.jpg';
-import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 
 interface WorkingProductProps {
   estimatedTime?: string;
@@ -187,9 +187,15 @@ export default function WorkingProduct() {
             cardTitle="Iniciar atividade"
             cardType="time"
             dataTime={data ? data?.estimatedTime : ''}
+            isPlayingTime={() => ''}
           />
 
-          <CardTaskInfo cardTitle="Contexto geral" cardType="text" dataText={dataText} />
+          <CardTaskInfo
+            cardTitle="Contexto geral"
+            cardType="text"
+            dataText={dataText}
+            isPlayingTime={() => ''}
+          />
         </CardsTopWrapper>
       </SectionCardWrapper>
 
