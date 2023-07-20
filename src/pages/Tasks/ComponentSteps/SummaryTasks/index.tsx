@@ -57,15 +57,29 @@ export default function SummaryTasks({
   // }, [taskSummary, projectInfos, summaryExtrainfos, selectedProducts]);
 
   function setTotalHours() {
-    setDeliveryArrayHours(
-      selectedProducts?.map((row: any) => {
-        return sumTimes(
-          row?.deliveryProducts?.map((product: any) => {
-            return multiplyTime(product?.minutes, product?.quantity);
-          })
-        );
-      })
-    );
+    if (updateTask) {
+      setDeliveryArrayHours(
+        selectedProducts?.map((row: any) => {
+          return sumTimes(
+            row?.produtos?.map((product: any) => {
+              return multiplyTime(product?.minutes, product?.quantity);
+            })
+          );
+        })
+      );
+    }
+
+    if (!updateTask) {
+      setDeliveryArrayHours(
+        selectedProducts?.map((row: any) => {
+          return sumTimes(
+            row?.deliveryProducts?.map((product: any) => {
+              return multiplyTime(product?.minutes, product?.quantity);
+            })
+          );
+        })
+      );
+    }
   }
 
   useEffect(() => {
@@ -80,9 +94,15 @@ export default function SummaryTasks({
   const [productsTotal, setProductsTotal] = useState<any>();
 
   const handleProducts = () => {
-    if (taskType === 'horas') {
+    if (taskType === 'horas' && !updateTask) {
       const productsAccumulator = selectedProducts?.reduce((accumulator: any, current: any) => {
-        return accumulator + current.deliveryProducts.length;
+        return accumulator + current?.deliveryProducts?.length;
+      }, 0);
+      setProductsTotal(productsAccumulator);
+    }
+    if (taskType === 'horas' && updateTask) {
+      const productsAccumulator = selectedProducts?.reduce((accumulator: any, current: any) => {
+        return accumulator + current?.produtos?.length;
       }, 0);
       setProductsTotal(productsAccumulator);
     }
