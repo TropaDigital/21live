@@ -87,7 +87,7 @@ export default function ProductTable({ data, workForProduct }: ProductTableProps
           {data.map((row: Product) => (
             <tbody key={row.id}>
               <tr key={row.id} style={{ cursor: 'pointer' }} onClick={() => ''}>
-                <td>{String(row.id).padStart(5, '0')}</td>
+                <td>#{String(row.id).padStart(5, '0')}</td>
                 <td>
                   <div className="flex info">
                     <IconText /> {row.title}
