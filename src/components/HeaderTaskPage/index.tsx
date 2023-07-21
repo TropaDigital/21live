@@ -24,6 +24,7 @@ interface HeaderTaskProps {
   backPage?: string;
   buttonType?: 'finish' | 'send';
   disableButton?: boolean;
+  sendToNext?: () => void;
 }
 
 interface TitleProps {
@@ -41,7 +42,8 @@ export default function HeaderOpenTask({
   title,
   backPage,
   buttonType,
-  disableButton
+  disableButton,
+  sendToNext
 }: HeaderTaskProps) {
   return (
     <Container>
@@ -72,7 +74,7 @@ export default function HeaderOpenTask({
           </ButtonDefault>
         )}
         {!disableButton && buttonType === 'send' && (
-          <ButtonDefault typeButton="secondary">
+          <ButtonDefault typeButton="secondary" onClick={sendToNext}>
             Enviar tarefa para revisão
             <HiOutlineArrowRight />
           </ButtonDefault>
@@ -84,7 +86,7 @@ export default function HeaderOpenTask({
           </ButtonDefault>
         )}
         {!disableButton && buttonType === 'finish' && (
-          <ButtonDefault typeButton="secondary">
+          <ButtonDefault typeButton="secondary" onClick={sendToNext}>
             Marcar entrega como concluída
             <HiOutlineArrowRight />
           </ButtonDefault>
