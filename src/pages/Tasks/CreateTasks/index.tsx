@@ -1301,9 +1301,9 @@ export default function CreateTasks() {
   //   console.log('log do tipo de task', tasksType);
   // }, [tasksType]);
 
-  // useEffect(() => {
-  //   console.log('log do products Array', productsArray);
-  // }, [productsArray]);
+  useEffect(() => {
+    console.log('log do products Array', productsArray);
+  }, [productsArray]);
 
   // useEffect(() => {
   //   console.log('log do Delivery DTO', DTODelivery);
