@@ -182,7 +182,7 @@ export default function InfoDeliveries({
 
   useEffect(() => {
     handleProducts('category', productType.productTypeValue, productType.productIndex);
-  }, [productType.productTypeValue]);
+  }, [productType]);
 
   useEffect(() => {
     handleProducts(
@@ -190,7 +190,7 @@ export default function InfoDeliveries({
       productDigitalPrinted.productTypeSelected,
       productDigitalPrinted.productIndex
     );
-  }, [productDigitalPrinted.productTypeSelected]);
+  }, [productDigitalPrinted]);
 
   useEffect(() => {
     if (!updateTask && dataSingleProduct) {
