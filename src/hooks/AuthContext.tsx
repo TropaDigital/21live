@@ -21,6 +21,7 @@ export interface User {
   companySince?: string;
   office?: string;
   cost_per_hour?: string;
+  permissions: any;
 }
 
 interface AuthState {
