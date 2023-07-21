@@ -6,7 +6,7 @@ import { useLocation } from 'react-router-dom';
 // Icons
 import { FaArrowLeft, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { BsChevronDoubleRight } from 'react-icons/bs';
-import { IconBigCheck } from '../../../assets/icons';
+import { IconBigCheck, IconClose } from '../../../assets/icons';
 
 // Components
 import HeaderOpenTask from '../../../components/HeaderTaskPage';
@@ -19,6 +19,12 @@ import {
   ArrowSection,
   CardsWrapper,
   DeliveryWrapper,
+  ModalButtons,
+  ModalList,
+  ModalSearch,
+  ModalSubtitle,
+  ModalTable,
+  ModalWrapperList,
   RightInfosCard,
   RightInfosTitle,
   ShowInfosButton,
@@ -36,6 +42,12 @@ import api from '../../../services/api';
 // Libraries
 import moment from 'moment';
 import 'moment/dist/locale/pt-br';
+import ModalDefault from '../../../components/Ui/ModalDefault';
+import useDebouncedCallback from '../../../hooks/useDebounced';
+import { BiSearchAlt } from 'react-icons/bi';
+import { InputDefault } from '../../../components/Inputs/InputDefault';
+import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
+import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 
 interface StepTimeline {
   step: string;
@@ -47,6 +59,14 @@ interface TimelineProps {
   currentStep: string;
 }
 
+interface ModalUsersProps {
+  id: string;
+  user_name: string;
+  role: string;
+  availability: string;
+  tasks_on_file: string;
+}
+
 export default function ViewDelivery() {
   const location = useLocation();
   const [workForProducts, setWorkForProducts] = useState<boolean>(false);
@@ -54,6 +74,13 @@ export default function ViewDelivery() {
   const [timeLineData, setTimelineData] = useState<TimelineProps>();
   const [hideTimeLine, setHideTimeLine] = useState<boolean>(false);
   const [playingForSchedule, setPlayingForSchedule] = useState<boolean>(false);
+  const [modalSendToUser, setModalSendToUser] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [selectedUser, setSelectedUser] = useState<string>('');
+  const { isLoading, debouncedCallback } = useDebouncedCallback(
+    (search: string) => setSearchTerm(search),
+    700
+  );
 
   const titleInfos = {
     idNumber: '1768',
@@ -109,13 +136,26 @@ export default function ViewDelivery() {
       }
     }
 
-    getTimelineData();
+    // getTimelineData();
   }, []);
 
   const handlePlayingType = (value: boolean) => {
     if (value) {
       setPlayingForSchedule(true);
     }
+  };
+
+  const handleCheckBox = (id: string) => {
+    if (selectedUser === id) {
+      setSelectedUser('');
+    } else {
+      setSelectedUser(id);
+    }
+  };
+
+  const handleAssignTask = () => {
+    console.log('log do assign task');
+    setModalSendToUser(false);
   };
 
   // Function to get diff time
@@ -144,6 +184,23 @@ export default function ViewDelivery() {
   //   console.log('log do duration', convertMsToTime(Milliseconds));
   // }, []);
 
+  const mockUsers: ModalUsersProps[] = [
+    {
+      id: '001',
+      user_name: 'Leandro Eusebio',
+      role: 'Redator',
+      availability: '30/06/2023',
+      tasks_on_file: '1'
+    },
+    {
+      id: '002',
+      user_name: 'Guilherme Augusto',
+      role: 'Designer',
+      availability: '01/07/2023',
+      tasks_on_file: '3'
+    }
+  ];
+
   return (
     <ContainerDefault>
       <DeliveryWrapper>
@@ -152,6 +209,7 @@ export default function ViewDelivery() {
           disableButton={false}
           backPage="/suas-tarefas"
           buttonType="send"
+          sendToNext={() => setModalSendToUser(true)}
         />
 
         <CardsWrapper>
@@ -262,6 +320,85 @@ export default function ViewDelivery() {
           <FaArrowLeft />
         </ShowInfosButton>
       </DeliveryWrapper>
+
+      <ModalDefault
+        isOpen={modalSendToUser}
+        title="Lista de pessoas"
+        onOpenChange={() => setModalSendToUser(false)}
+      >
+        <ModalWrapperList>
+          <div className="close-button">
+            <IconClose />
+          </div>
+          <ModalSubtitle>Escolha alguém para atribuir esta tarefa.</ModalSubtitle>
+          <ModalList>
+            <ModalSearch>
+              <InputDefault
+                label=""
+                placeholder="Buscar pelo nome..."
+                name="search"
+                icon={BiSearchAlt}
+                // onChange={(event) => {
+                //   setSearchTerm(event.target.value);
+                //   debouncedCallback(event.target.value);
+                // }}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                value={searchTerm}
+                isLoading={isLoading}
+                error={''}
+              />
+            </ModalSearch>
+
+            <ModalTable>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Cargo</th>
+                    <th>Disponível em</th>
+                    <th>Tarefas na fila</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {mockUsers.map((row: ModalUsersProps, index: number) => (
+                    <tr key={index} className={selectedUser === row.id ? 'selected' : ''}>
+                      <td>
+                        <div className="check-name">
+                          <CheckboxDefault
+                            label=""
+                            name="user_selected"
+                            onChange={() => handleCheckBox(row.id)}
+                            checked={selectedUser === row.id ? true : false}
+                          />
+                          {row.user_name}
+                        </div>
+                      </td>
+                      <td>{row.role}</td>
+                      <td>{row.availability}</td>
+                      <td style={{ textAlign: 'center' }}>{row.tasks_on_file}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </ModalTable>
+          </ModalList>
+
+          <ModalButtons>
+            <ButtonDefault
+              typeButton="lightWhite"
+              isOutline
+              onClick={() => {
+                setSelectedUser('');
+                setModalSendToUser(false);
+                setSearchTerm('');
+              }}
+            >
+              Cancelar
+            </ButtonDefault>
+            <ButtonDefault onClick={() => handleAssignTask()}>Atribuir tarefa</ButtonDefault>
+          </ModalButtons>
+        </ModalWrapperList>
+      </ModalDefault>
     </ContainerDefault>
   );
 }

@@ -238,3 +238,177 @@ export const TaskInfoField = styled.div`
     font-weight: var(--weight-semibold);
   }
 `;
+
+export const ModalWrapperList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  position: relative;
+
+  .close-button {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+`;
+
+export const ModalSubtitle = styled.span`
+  color: var(--gray-900);
+  font-size: var(--text-small-md);
+  font-weight: var(--weight-regular);
+  margin-top: 8px;
+`;
+
+export const ModalList = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 658px;
+  height: fit-content;
+  max-height: 472px;
+  border: 1px solid var(--gray-300);
+  border-radius: 12px;
+
+  overflow: auto;
+`;
+
+export const ModalSearch = styled.div`
+  height: 68px;
+  padding: 12px 16px;
+`;
+
+export const ModalTable = styled.div`
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+
+  table {
+    width: 100%;
+    border-spacing: 0;
+
+    tfoot {
+      td {
+        padding: 0 1rem;
+        border-bottom: none;
+      }
+    }
+
+    th {
+      background-color: var(--gray-50);
+      border-bottom: 1px solid var(--gray-300);
+      /* border-radius: 5px; */
+      text-transform: capitalize;
+      font-size: var(--text-small-xs);
+      font-weight: var(--weight-medium);
+      color: var(--gray-500);
+      padding: 0.75rem 1.5rem;
+      text-align: left;
+      line-height: 20px;
+    }
+
+    td {
+      height: 72px;
+      max-height: 72px;
+      font-size: var(--text-small-sm);
+      font-weight: var(--weight-medium);
+      color: var(--gray-900);
+      padding: 0 1.5rem;
+      background: #ffffff;
+      /* border-radius: 5px; */
+      border-bottom: 1px solid #eaecf0;
+      text-align: left;
+
+      transition: all 0.3s;
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 38ch;
+
+      .check-name {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 8px;
+      }
+    }
+
+    .column {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4px;
+
+      &.info {
+        color: var(--gray-900);
+        font-size: var(--text-small-md);
+        font-weight: var(--weight-medium);
+      }
+
+      span {
+        color: var(--gray-500);
+        font-size: var(--text-small-sm);
+        font-weight: var(--weight-medium);
+      }
+    }
+
+    .status {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      margin: 0 auto;
+      padding: 4px 8px;
+      width: fit-content;
+      border-radius: 35px;
+      background: var(--warning-100);
+
+      color: var(--warning-700);
+      font-size: var(--text-small-sm);
+      font-weight: var(--weight-medium);
+
+      &.progress {
+        color: var(--primary-700);
+        background: var(--primary-050);
+      }
+
+      &.finished {
+        color: var(--secundary-700);
+        background: var(--secundary-100);
+      }
+    }
+
+    tbody > tr {
+      &.selected {
+        td {
+          background: var(--primary-050);
+        }
+      }
+
+      &:hover {
+        td {
+          background-color: var(--primary-025);
+        }
+      }
+    }
+  }
+
+  /* @media (max-width: 1600px) {
+    table {
+      td {
+        padding: 0 1rem;
+      }
+    }
+  } */
+`;
+
+export const ModalButtons = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+`;
