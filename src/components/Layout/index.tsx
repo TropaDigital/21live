@@ -8,7 +8,8 @@ import {
   IconMeeting,
   IconTeam,
   IconProducts,
-  IconFlux
+  IconFlux,
+  IconUsers
 } from '../../assets/icons';
 
 import ScrollAreas from '../Ui/ScrollAreas';
@@ -31,53 +32,51 @@ export default function Layout() {
             {
               to: '/dashboard',
               name: 'Dashboard',
-              icon: IconDash
+              icon: IconDash,
+              identifier: 'dashboard'
             },
             {
               to: '/projetos',
               name: 'Projetos',
-              icon: IconProjects
+              icon: IconProjects,
+              identifier: 'project'
             },
             {
               to: '/tarefas',
               name: 'Tarefas',
-              icon: IconClipboard
+              icon: IconClipboard,
+              identifier: 'task'
             },
-            // {
-            //   to: '/clientes',
-            //   name: 'Clientes',
-            //   icon: IconUsers,
-            // },
-            // {
-            //   to: '/usuarios',
-            //   name: 'Usuarios',
-            //   icon: IconTeam,
-            // },
+            {
+              to: '/clientes',
+              name: 'Clientes',
+              icon: IconUsers,
+              identifier: 'client'
+            },
             {
               to: '/produtos',
               name: 'Produtos',
-              icon: IconProducts
+              icon: IconProducts,
+              identifier: 'products'
             },
             {
               to: '/fluxo',
               name: 'Fluxos',
-              icon: IconFlux
+              icon: IconFlux,
+              identifier: 'flow'
             },
             {
               to: '/equipe',
               name: 'Equipe',
-              icon: IconTeam
+              icon: IconTeam,
+              identifier: 'team'
             },
             {
               to: '/reuniao',
               name: 'Atas de Reunião',
-              icon: IconMeeting
+              icon: IconMeeting,
+              identifier: 'meeting'
             }
-            // {
-            //   to: '/tarefas',
-            //   name: 'Tarefas',
-            //   icon: IconClipboard,
-            // },
             // {
             //   to: '/form',
             //   name: 'Form',
