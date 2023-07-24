@@ -78,10 +78,10 @@ export default function TaskTable({
           className="search-field"
         />
 
-        <ButtonDefault typeButton="lightWhite" isOutline onClick={addFilter}>
+        {/* <ButtonDefault typeButton="lightWhite" isOutline onClick={addFilter}>
           <BiFilter />
           Ordenar por
-        </ButtonDefault>
+        </ButtonDefault> */}
       </TaskFilter>
 
       {data.map((row: TaskProps, index: number) => (
