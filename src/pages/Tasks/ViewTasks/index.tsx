@@ -135,7 +135,6 @@ export default function ViewTaskList() {
   };
 
   const handleNavigateTask = (id: any) => {
-    console.log('log da task selected', id);
     navigate(`/tarefa/${id}`);
   };
 
