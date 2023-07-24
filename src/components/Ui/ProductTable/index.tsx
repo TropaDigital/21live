@@ -35,12 +35,14 @@ interface ProductTableProps {
   data: Product[];
   workForProduct: any;
   isPlayingForSchedule: boolean;
+  productSelected: any;
 }
 
 export default function ProductTable({
   data,
   workForProduct,
-  isPlayingForSchedule
+  isPlayingForSchedule,
+  productSelected
 }: ProductTableProps) {
   const [workFor, setWorkFor] = useState<string>('schedule');
 
@@ -95,7 +97,11 @@ export default function ProductTable({
           </thead>
           {data.map((row: Product) => (
             <tbody key={row.id}>
-              <tr key={row.id} style={{ cursor: 'pointer' }} onClick={() => ''}>
+              <tr
+                key={row.id}
+                style={{ cursor: 'pointer' }}
+                onClick={() => productSelected(row.id)}
+              >
                 <td>#{String(row.id).padStart(5, '0')}</td>
                 <td>
                   <div className="flex info">
