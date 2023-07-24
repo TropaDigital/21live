@@ -1,18 +1,23 @@
 /* eslint-disable import-helpers/order-imports */
 // React
 import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 // Icons
 import { FaArrowLeft, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { BsChevronDoubleRight } from 'react-icons/bs';
 import { IconBigCheck, IconClose } from '../../../assets/icons';
+import { BiSearchAlt } from 'react-icons/bi';
 
 // Components
 import HeaderOpenTask from '../../../components/HeaderTaskPage';
 import ProductTable from '../../../components/Ui/ProductTable';
 import { ContainerDefault } from '../../../components/UiElements/styles';
 import CardTaskInfo from '../../../components/Ui/CardTaskInfo';
+import { InputDefault } from '../../../components/Inputs/InputDefault';
+import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
+import ButtonDefault from '../../../components/Buttons/ButtonDefault';
+import ModalDefault from '../../../components/Ui/ModalDefault';
 
 // Styles
 import {
@@ -42,12 +47,9 @@ import api from '../../../services/api';
 // Libraries
 import moment from 'moment';
 import 'moment/dist/locale/pt-br';
-import ModalDefault from '../../../components/Ui/ModalDefault';
+
+// Hooks
 import useDebouncedCallback from '../../../hooks/useDebounced';
-import { BiSearchAlt } from 'react-icons/bi';
-import { InputDefault } from '../../../components/Inputs/InputDefault';
-import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
-import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 
 interface StepTimeline {
   step: string;
@@ -69,6 +71,7 @@ interface ModalUsersProps {
 
 export default function ViewDelivery() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [workForProducts, setWorkForProducts] = useState<boolean>(false);
   const [hideRightCard, setHideRightCard] = useState<string>('show');
   const [timeLineData, setTimelineData] = useState<TimelineProps>();
@@ -142,6 +145,7 @@ export default function ViewDelivery() {
   const handlePlayingType = (value: boolean) => {
     if (value) {
       setPlayingForSchedule(true);
+      // handleStartPlayingTime();
     }
   };
 
@@ -157,6 +161,21 @@ export default function ViewDelivery() {
     console.log('log do assign task');
     setModalSendToUser(false);
   };
+
+  // const handleStartPlayingTime = async () => {
+  //   const playType = {
+  //     task_id: '126',
+  //     type_play: 'delivery'
+  //   };
+  //   console.log('começou a contar o tempo', playType);
+
+  //   try {
+  //     const response = await api.post(`/task/switch/play`, playType);
+  //     console.log('log do response', response.data.result);
+  //   } catch (error: any) {
+  //     console.log('log do error play', error);
+  //   }
+  // };
 
   // Function to get diff time
   // useEffect(() => {
@@ -183,6 +202,10 @@ export default function ViewDelivery() {
   //   console.log('log Milliseconds', Milliseconds);
   //   console.log('log do duration', convertMsToTime(Milliseconds));
   // }, []);
+
+  const handleNavigateProduct = (id: any) => {
+    navigate(`/produto/${id}`);
+  };
 
   const mockUsers: ModalUsersProps[] = [
     {
@@ -233,6 +256,7 @@ export default function ViewDelivery() {
           data={mockData}
           workForProduct={setWorkForProducts}
           isPlayingForSchedule={playingForSchedule}
+          productSelected={handleNavigateProduct}
         />
 
         <RightInfosCard hideCard={hideRightCard}>
@@ -327,7 +351,7 @@ export default function ViewDelivery() {
         onOpenChange={() => setModalSendToUser(false)}
       >
         <ModalWrapperList>
-          <div className="close-button">
+          <div className="close-button" onClick={() => setModalSendToUser(false)}>
             <IconClose />
           </div>
           <ModalSubtitle>Escolha alguém para atribuir esta tarefa.</ModalSubtitle>

@@ -250,8 +250,29 @@ export const ModalWrapperList = styled.div`
     display: flex;
     align-items: center;
     position: absolute;
-    top: 0;
+    top: -40px;
     right: 0;
+    transition: all 0.3s;
+
+    cursor: pointer;
+
+    svg {
+      width: 32px;
+      height: 32px;
+      path {
+        stroke: var(--gray-600);
+      }
+    }
+
+    &:hover {
+      transform: scale(1.3);
+
+      svg {
+        path {
+          stroke: var(--Danger);
+        }
+      }
+    }
   }
 `;
 
