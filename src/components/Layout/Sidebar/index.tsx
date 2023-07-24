@@ -1,8 +1,9 @@
-import { useState, FormEvent, ChangeEvent } from 'react';
+import { useState, FormEvent, ChangeEvent, useEffect } from 'react';
 import { BiPlus } from 'react-icons/bi';
 import { FiPaperclip } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 
+import { useAuth } from '../../../hooks/AuthContext';
 import { useToast } from '../../../hooks/toast';
 import useColumn from '../../../hooks/useColumn';
 import useLocalStorage from '../../../hooks/useLocalStorage';
@@ -23,6 +24,7 @@ interface IMenu {
   onClick?(): void;
   icon?: any;
   name: string;
+  identifier: string;
 }
 
 interface ISiderbar {
@@ -45,12 +47,14 @@ interface FormDataProps {
 }
 
 export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
+  const { user } = useAuth();
   const { addToast } = useToast();
   const [state] = useLocalStorage('COLUMN');
   const { column } = useColumn();
   const { addTask } = useTask();
   const [modal, setModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [menuSidebar, setMenuSidebar] = useState<any>();
 
   const [formData, setFormData] = useState<FormDataProps>({
     nome: '',
@@ -124,6 +128,15 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
     // await api.post('points', data);
   }
 
+  useEffect(() => {
+    const newMenu = user.permissions.map((row: any) => row.split('_')[0]);
+    const filteredMenu = menus?.filter((obj) => newMenu.includes(obj.identifier));
+    setMenuSidebar(filteredMenu);
+    // console.log('users permissions', newMenu);
+    // console.log('menus original', menus);
+    // console.log('menus filtrados', filteredMenu);
+  }, [user.permissions, menus]);
+
   return (
     <Container modalActive={modalActive}>
       <Link to={'/criar-tarefa'}>
@@ -134,7 +147,7 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
       </Link>
 
       <Ul>
-        {menus.map((row, key) => (
+        {menuSidebar?.map((row: IMenu, key: any) => (
           <Li key={key} active={path === row.to ? true : false} modalActive={modalActive}>
             <Link to={row.to} onClick={row.onClick ? row.onClick : () => ''}>
               <row.icon />
