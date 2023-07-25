@@ -33,49 +33,55 @@ export default function Layout() {
               to: '/dashboard',
               name: 'Dashboard',
               icon: IconDash,
-              identifier: 'dashboard'
+              identifier: 'dashboard_admin'
             },
             {
               to: '/projetos',
               name: 'Projetos',
               icon: IconProjects,
-              identifier: 'project'
+              identifier: 'project_admin'
             },
             {
               to: '/tarefas',
               name: 'Tarefas',
               icon: IconClipboard,
-              identifier: 'task'
+              identifier: 'task_admin'
+            },
+            {
+              to: '/suas-tarefas',
+              name: 'Tarefas',
+              icon: IconClipboard,
+              identifier: 'task_execute'
             },
             {
               to: '/clientes',
               name: 'Clientes',
               icon: IconUsers,
-              identifier: 'client'
+              identifier: 'client_admin'
             },
             {
               to: '/produtos',
               name: 'Produtos',
               icon: IconProducts,
-              identifier: 'products'
+              identifier: 'products_admin'
             },
             {
               to: '/fluxo',
               name: 'Fluxos',
               icon: IconFlux,
-              identifier: 'flow'
+              identifier: 'flow_admin'
             },
             {
               to: '/equipe',
               name: 'Equipe',
               icon: IconTeam,
-              identifier: 'team'
+              identifier: 'team_admin'
             },
             {
               to: '/reuniao',
               name: 'Atas de Reunião',
               icon: IconMeeting,
-              identifier: 'meeting'
+              identifier: 'meeting_admin'
             }
             // {
             //   to: '/form',
