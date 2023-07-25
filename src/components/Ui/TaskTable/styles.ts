@@ -90,6 +90,7 @@ export const TasksTable = styled.div`
       overflow: hidden;
       text-overflow: ellipsis;
       max-width: 38ch;
+      text-transform: capitalize;
 
       .fieldTableClients {
         display: flex;

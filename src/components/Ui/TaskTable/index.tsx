@@ -20,40 +20,15 @@ import { InputDefault } from '../../Inputs/InputDefault';
 import ProgressBar from '../ProgressBar';
 import moment from 'moment';
 import 'moment/dist/locale/pt-br';
+import { useEffect } from 'react';
 
 interface TableProps {
-  data: TaskProps[];
+  data: any;
   loading: boolean;
   searchInput: any;
   searchInfo: string;
   addFilter: any;
   taskSelected: any;
-}
-
-interface TaskProps {
-  date: string;
-  tasks: Task[];
-}
-
-interface Task {
-  id: string;
-  projectInfo: ProjectInfo;
-  consumedTime: string;
-  estimatedTime: string;
-  startDate: string;
-  endDate: string;
-  deliveries: string;
-  stage: string;
-  flow: string;
-  status: string;
-}
-
-interface ProjectInfo {
-  taskTitle: string;
-  month: string;
-  client: string;
-  type: string;
-  quantity: string;
 }
 
 export default function TaskTable({
@@ -64,6 +39,16 @@ export default function TaskTable({
   addFilter,
   taskSelected
 }: TableProps) {
+  const arrayData = Object.entries(data);
+
+  const handleGoToDelivery = (taskInfos: any, taskIndex: any) => {
+    const allTaskInfo = {
+      task_index: taskIndex,
+      task: taskInfos
+    };
+    taskSelected(allTaskInfo);
+  };
+
   return (
     <TaskContainer>
       <TaskFilter>
@@ -84,9 +69,9 @@ export default function TaskTable({
         </ButtonDefault> */}
       </TaskFilter>
 
-      {data.map((row: TaskProps, index: number) => (
+      {arrayData?.map((row: any, index: number) => (
         <TaskDateWrapper key={index}>
-          <TaskDate>{moment(row.date).format('DD/MM/YYYY')}</TaskDate>
+          <TaskDate>{moment(row[0]).format('DD/MM/YYYY')}</TaskDate>
           <TasksTable>
             <table>
               <thead>
@@ -103,41 +88,39 @@ export default function TaskTable({
                 </tr>
               </thead>
               <tbody>
-                {row.tasks.map((tasks: Task, index: number) => (
+                {row[1].map((task: any, index: number) => (
                   <tr
-                    key={tasks.id}
+                    key={task.task_id}
                     style={{ cursor: 'pointer' }}
-                    onClick={() => taskSelected(tasks.id)}
+                    onClick={() => handleGoToDelivery(task, index + 1)}
                   >
-                    <td>#{String(tasks.id).padStart(5, '0')}</td>
+                    <td>#{String(task.task_id).padStart(5, '0')}</td>
                     <td>
                       <div className="column info">
                         <div>
-                          <IconText /> {String(index + 1).padStart(3, '0')} -{' '}
-                          {tasks.projectInfo.taskTitle} - {tasks.projectInfo.month}
+                          <IconText /> {String(index + 1).padStart(3, '0')} - {task.title}
                         </div>
                         <span>
-                          {tasks.projectInfo.client} / {tasks.projectInfo.type} |{' '}
-                          {tasks.projectInfo.quantity}
+                          {task.tenant} / {task.project_category} | {task.product_period}
                         </span>
                       </div>
                     </td>
                     <td>
                       <span style={{ marginBottom: '4px', display: 'block' }}>
-                        {tasks.consumedTime}
+                        {task.timeConsumed}
                       </span>
                       <ProgressBar
-                        totalHours={convertToMilliseconds(tasks.estimatedTime)}
-                        restHours={convertToMilliseconds(tasks.consumedTime)}
+                        totalHours={convertToMilliseconds(task.totalTime)}
+                        restHours={convertToMilliseconds(task.timeConsumed)}
                       />
                     </td>
                     <td>
                       <div className="flag-info">
                         <Flag
                           style={{ textAlign: 'center' }}
-                          className={tasks.status === 'true' ? 'flagged' : ''}
+                          className={task.status === 'true' ? 'flagged' : ''}
                         >
-                          {tasks.status === 'true' ? (
+                          {task.status === 'true' ? (
                             <IconContext.Provider
                               value={{ color: '#F04438', className: 'global-class-name' }}
                             >
@@ -151,35 +134,39 @@ export default function TaskTable({
                             </IconContext.Provider>
                           )}
                         </Flag>
-                        {tasks.estimatedTime}
+                        {task.totalTime}
                       </div>
                     </td>
                     <td style={{ textTransform: 'capitalize' }}>
-                      {moment(tasks.startDate).format('DD/MMM/YYYY')}
+                      {moment(task.copywriting_date_end).format('DD/MMM/YYYY')}
                     </td>
                     <td style={{ textTransform: 'capitalize' }}>
-                      {moment(tasks.endDate).format('DD/MMM/YYYY')}
+                      {moment(task.creation_date_end).format('DD/MMM/YYYY')}
                     </td>
-                    <td>{tasks.deliveries}</td>
+                    <td>
+                      {task.entregas.length <= 1
+                        ? `${task.entregas.length} produto`
+                        : `${task.entregas.length} produtos`}
+                    </td>
                     <td>
                       <div className="column">
-                        {tasks.stage}
-                        <span>Fluxo: {tasks.flow}</span>
+                        {task.step}
+                        <span>Fluxo: {task.flow}</span>
                       </div>
                     </td>
                     <td>
                       <div
                         className={
-                          tasks.status === 'progress'
+                          task.status === 'progress'
                             ? 'status progress'
-                            : tasks.status === 'finished'
+                            : task.status === 'finished'
                             ? 'status finished'
                             : 'status'
                         }
                       >
-                        {tasks.status === 'progress'
+                        {task.status === 'progress'
                           ? 'Em progresso'
-                          : tasks.status === 'finished'
+                          : task.status === 'finished'
                           ? 'Concluída'
                           : 'Pendente'}
                       </div>
