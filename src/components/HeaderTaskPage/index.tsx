@@ -59,11 +59,12 @@ export default function HeaderOpenTask({
           <TitleTopInfos>
             <div className="id">#{String(title.idNumber).padStart(5, '0')}</div>
             <div className="task-name">
-              | {title.numberTask} - {title.titleTask} - {title.monthTask}
+              | {String(title.numberTask).padStart(3, '0')} - {title.titleTask}
+              {/* - {title.monthTask} */}
             </div>
           </TitleTopInfos>
           <TitleBottomInfos>
-            {title.client_task} / {title.typeTask} | {title.quantityTask}/{title.contract_task}
+            {title.client_task} / {title.typeTask} | {title.contract_task}
           </TitleBottomInfos>
         </HeaderTitleInfos>
 

@@ -73,4 +73,6 @@ export const TitleBottomInfos = styled.div`
   color: var(--gray-500);
   font-size: var(--text-small-sm);
   font-weight: var(--weight-medium);
+
+  text-transform: capitalize;
 `;
