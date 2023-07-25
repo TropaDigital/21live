@@ -85,15 +85,19 @@ export default function ViewDelivery() {
     700
   );
 
+  useEffect(() => {
+    console.log('log do location no deliveries', location);
+  }, [location]);
+
   const titleInfos = {
-    idNumber: '1768',
-    numberTask: '01',
-    titleTask: 'Cronograma',
-    monthTask: 'Julho 2023',
-    client_task: 'G.WIND',
-    typeTask: 'FEE',
-    quantityTask: 'PACK 8 POSTS',
-    contract_task: 'MÊS'
+    idNumber: location.state.task.task_id,
+    numberTask: location.state.task_index,
+    titleTask: location.state.task.title,
+    monthTask: '',
+    client_task: location.state.task.tenant,
+    typeTask: location.state.task.project_category,
+    quantityTask: '',
+    contract_task: location.state.task.product_period
   };
 
   const mockData = [
@@ -129,6 +133,7 @@ export default function ViewDelivery() {
     estimatedTime: '03:00:00'
   };
 
+  // Timeline function
   useEffect(() => {
     async function getTimelineData() {
       try {
@@ -253,7 +258,7 @@ export default function ViewDelivery() {
         </CardsWrapper>
 
         <ProductTable
-          data={mockData}
+          data={location.state.task}
           workForProduct={setWorkForProducts}
           isPlayingForSchedule={playingForSchedule}
           productSelected={handleNavigateProduct}
