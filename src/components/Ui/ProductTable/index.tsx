@@ -3,6 +3,9 @@
 // React
 import { useState, useEffect } from 'react';
 
+// Icons
+import { IconText } from '../../../assets/icons';
+
 // Styles
 import {
   ProductContainer,
@@ -15,8 +18,11 @@ import {
 
 // Libraries
 import Switch from 'react-switch';
-import { IconText } from '../../../assets/icons';
+import moment from 'moment';
+import 'moment/dist/locale/pt-br';
 import ProgressBar from '../ProgressBar';
+
+// Utils
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 
 interface Product {
@@ -29,6 +35,7 @@ interface Product {
   formatType: string;
   type: string;
   status: string;
+  copywriting_date_end: string;
 }
 
 interface ProductTableProps {
@@ -51,12 +58,17 @@ export default function ProductTable({
     workForProduct(workStatus);
   }, [workFor, workForProduct]);
 
+  useEffect(() => {
+    console.log('log do data no products table', data);
+  }, []);
+
   return (
     <ProductContainer>
       <ProductTitleInfos>
         <ProductTitle>Produtos para entrega</ProductTitle>
         <div>-</div>
-        <ProductDate>15/07/2023</ProductDate>
+        {/* {moment(task.copywriting_date_end).format('DD/MMM/YYYY')} */}
+        <ProductDate>{moment(data[0]?.copywriting_date_end).format('DD/MMM/YYYY')}</ProductDate>
         {!isPlayingForSchedule && (
           <>
             <div>-</div>
@@ -95,7 +107,7 @@ export default function ProductTable({
               {workFor === 'product' && <th>Status</th>}
             </tr>
           </thead>
-          {data.map((row: Product) => (
+          {/* {data.map((row: Product) => (
             <tbody key={row.id}>
               <tr
                 key={row.id}
@@ -147,7 +159,7 @@ export default function ProductTable({
                 )}
               </tr>
             </tbody>
-          ))}
+          ))} */}
         </table>
       </ProductsTable>
     </ProductContainer>
