@@ -129,10 +129,9 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
   }
 
   useEffect(() => {
-    const newMenu = user.permissions.map((row: any) => row.split('_')[0]);
+    const newMenu = user.permissions;
     const filteredMenu = menus?.filter((obj) => newMenu.includes(obj.identifier));
     setMenuSidebar(filteredMenu);
-    // console.log('users permissions', newMenu);
     // console.log('menus original', menus);
     // console.log('menus filtrados', filteredMenu);
   }, [user.permissions, menus]);
