@@ -78,15 +78,17 @@ export default function ViewDelivery() {
   const [hideTimeLine, setHideTimeLine] = useState<boolean>(false);
   const [playingForSchedule, setPlayingForSchedule] = useState<boolean>(false);
   const [modalSendToUser, setModalSendToUser] = useState<boolean>(false);
+  const [search, setSearch] = useState('');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedUser, setSelectedUser] = useState<string>('');
   const { isLoading, debouncedCallback } = useDebouncedCallback(
-    (search: string) => setSearchTerm(search),
+    (search: string) => setSearch(search),
     700
   );
+  const [dataTask, setDataTask] = useState<any>();
 
   useEffect(() => {
-    console.log('log do location no deliveries', location);
+    setDataTask(location.state.task);
   }, [location]);
 
   const titleInfos = {
@@ -100,52 +102,23 @@ export default function ViewDelivery() {
     contract_task: location.state.task.product_period
   };
 
-  const mockData = [
-    {
-      id: '001',
-      title: 'Plano de comunicação',
-      consumedTime: '00:30:00',
-      estimatedTime: '01:00:00',
-      description: 'Plano de comunicação padrão',
-      format: '.Docx',
-      formatType: 'Digital',
-      type: 'Criação',
-      status: 'progress'
-    },
-    {
-      id: '002',
-      title: 'Plano de descomunicação',
-      consumedTime: '00:27:00',
-      estimatedTime: '04:20:00',
-      description: 'Plano de comunicação padrão',
-      format: '.Docx',
-      formatType: 'Impresso',
-      type: 'Criação',
-      status: 'pending'
-    }
-  ];
-
-  const dataText = {
-    data: 'Mussum Ipsum, cacilds vidis litro abertis.Posuere libero varius.Nullam a nisl ut ante blandit hendrerit.Aenean sit amet nisi.Nullam volutpat risus nec leo commodo, ut interdum diam laoreet.Sed non consequat odio.Não sou faixa preta cumpadi, sou preto inteiris, inteiris.Leite de capivaris, leite de mula manquis sem cabeça. Cevadis im ampola pa arma uma pindureta.Per aumento de cachacis, eu reclamis.Mé faiz elementum girarzis, nisi eros vermeio.Sapien in monti palavris qui num significa nadis i pareci latim. Tá deprimidis, eu conheço uma cachacis que pode alegrar sua vidis.Aenean aliquam molestie leo, vitae iaculis nisl.Viva Forevis aptent taciti sociosqu ad litora torquent.Quem manda na minha terra sou euzis! Admodum accumsan disputationi eu sit.Vide electram sadipscing et per.Nec orci ornare consequat.Praesent lacinia ultrices consectetur.Sed non ipsum felis.Tá deprimidis, eu conheço uma cachacis que pode alegrar sua vidis.Todo mundo vê os porris que eu tomo, mas ninguém vê os tombis que eu levo! Quem num gosta di mim que vai caçá sua turmis!Não sou faixa preta cumpadi, sou preto inteiris, inteiris.Nullam volutpat risus nec leo commodo, ut interdum diam laoreet.Sed non consequat odio.Admodum accumsan disputationi eu sit.Vide electram sadipscing et per.'
-  };
-
   const data = {
-    estimatedTime: '03:00:00'
+    estimatedTime: location.state.task.totalTime
   };
 
   // Timeline function
   useEffect(() => {
     async function getTimelineData() {
       try {
-        const response = await api.get(`task/timeline/126`);
+        const response = await api.get(`task/timeline/${location.state.task.task_id}`);
         setTimelineData(response.data.result);
       } catch (error: any) {
         console.log('log timeline error', error);
       }
     }
 
-    // getTimelineData();
-  }, []);
+    getTimelineData();
+  }, [location.state.task.task_id]);
 
   const handlePlayingType = (value: boolean) => {
     if (value) {
@@ -252,13 +225,13 @@ export default function ViewDelivery() {
           <CardTaskInfo
             cardTitle="Contexto geral"
             cardType="text"
-            dataText={dataText.data}
+            dataText={location.state.task.description}
             isPlayingTime={() => ''}
           />
         </CardsWrapper>
 
         <ProductTable
-          data={location.state.task}
+          data={dataTask}
           workForProduct={setWorkForProducts}
           isPlayingForSchedule={playingForSchedule}
           productSelected={handleNavigateProduct}
@@ -301,22 +274,22 @@ export default function ViewDelivery() {
             <RightInfosTitle>Detalhes da tarefa</RightInfosTitle>
             <TaskInfoField>
               <div className="info-title">Tempo estimado:</div>
-              <div className="info-description">02:00:00</div>
+              <div className="info-description">{location.state.task.totalTime}</div>
             </TaskInfoField>
 
             <TaskInfoField>
               <div className="info-title">Responsável:</div>
-              <div className="info-description">02:00:00</div>
+              <div className="info-description">???</div>
             </TaskInfoField>
 
-            <TaskInfoField>
+            {/* <TaskInfoField>
               <div className="info-title">Etapa:</div>
-              <div className="info-description">02:00:00</div>
-            </TaskInfoField>
+              <div className="info-description">{location.state.task.step}</div>
+            </TaskInfoField> */}
 
             <TaskInfoField>
               <div className="info-title">Formato:</div>
-              <div className="info-description">02:00:00</div>
+              <div className="info-description">{location.state.task.status}???</div>
             </TaskInfoField>
 
             <TaskInfoField>
@@ -326,17 +299,21 @@ export default function ViewDelivery() {
 
             <TaskInfoField>
               <div className="info-title">Prioridade:</div>
-              <div className="info-description">02:00:00</div>
+              <div className="info-description">???</div>
             </TaskInfoField>
 
             <TaskInfoField>
               <div className="info-title">Data inicial:</div>
-              <div className="info-description">02:00:00</div>
+              <div className="info-description">
+                {moment(location.state.task.copywriting_date_end).format('DD/MM/YYYY')}
+              </div>
             </TaskInfoField>
 
             <TaskInfoField>
               <div className="info-title">Data final:</div>
-              <div className="info-description">02:00:00</div>
+              <div className="info-description">
+                {moment(location.state.task.creation_date_end).format('DD/MM/YYYY')}
+              </div>
             </TaskInfoField>
           </TasksInfos>
           <ArrowSection onClick={() => setHideRightCard('hide')}>
@@ -367,11 +344,10 @@ export default function ViewDelivery() {
                 placeholder="Buscar pelo nome..."
                 name="search"
                 icon={BiSearchAlt}
-                // onChange={(event) => {
-                //   setSearchTerm(event.target.value);
-                //   debouncedCallback(event.target.value);
-                // }}
-                onChange={(event) => setSearchTerm(event.target.value)}
+                onChange={(event) => {
+                  setSearchTerm(event.target.value);
+                  debouncedCallback(event.target.value);
+                }}
                 value={searchTerm}
                 isLoading={isLoading}
                 error={''}
