@@ -1,19 +1,27 @@
+/* eslint-disable import-helpers/order-imports */
+// React
 import { useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+// Icons
 import { BiBriefcase, BiCalendar, BiEnvelope, BiMoney, BiPhone, BiUser } from 'react-icons/bi';
 import { FiCamera } from 'react-icons/fi';
 import { HiOutlineKey } from 'react-icons/hi';
-import { useNavigate } from 'react-router-dom';
 
+// Services
 import api from '../../services/api';
 
+// Hooks
 import { useAuth, User } from '../../hooks/AuthContext';
 import { useToast } from '../../hooks/toast';
 
+// Components
 import ButtonDefault from '../../components/Buttons/ButtonDefault';
 import { InputDefault } from '../../components/Inputs/InputDefault';
 import { SelectDefault } from '../../components/Inputs/SelectDefault';
 import { FieldFormDefault, FieldGroupFormDefault } from '../../components/UiElements/styles';
 
+// Styles
 import {
   AvatarInput,
   Container,
