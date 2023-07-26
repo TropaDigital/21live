@@ -26,7 +26,7 @@ import ModalDefault from '../ModalDefault';
 interface CardTaskInfoProps {
   cardTitle: string;
   cardType: 'text' | 'time' | 'info';
-  dataText?: string;
+  dataText?: string | any;
   dataTime?: any;
   dataInfos?: DataInfosProps;
   isPlayingTime: (value: any) => void;
@@ -76,7 +76,7 @@ export default function CardTaskInfo({
         <CardTitle>{cardTitle}</CardTitle>
         {cardType === 'text' && (
           <TextCard>
-            {dataText}
+            <div dangerouslySetInnerHTML={{ __html: dataText }} />
             <div className="infos" onClick={() => setModalContext(!modalContext)}>
               Saiba mais
             </div>
@@ -158,10 +158,10 @@ export default function CardTaskInfo({
         onOpenChange={() => setModalContext(false)}
       >
         <ModalTextCard>
-          {dataText}
           <div className="close" onClick={() => setModalContext(false)}>
             <IconClose />
           </div>
+          <div dangerouslySetInnerHTML={{ __html: dataText }} />
         </ModalTextCard>
       </ModalDefault>
     </>

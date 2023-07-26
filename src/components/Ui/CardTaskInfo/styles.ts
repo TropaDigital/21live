@@ -152,6 +152,7 @@ export const TextCard = styled.div`
 `;
 
 export const ModalTextCard = styled.div`
+  min-width: 220px;
   color: var(--gray-500);
   font-size: var(--text-small-md);
   font-weight: var(--weight-regular);
@@ -161,10 +162,9 @@ export const ModalTextCard = styled.div`
   position: relative;
 
   .close {
-    height: fit-content;
     position: absolute;
-    top: -30px;
-    right: 20px;
+    top: -36px;
+    right: 0;
     transition: all 0.5s;
 
     cursor: pointer;
