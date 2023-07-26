@@ -1,6 +1,6 @@
 /* eslint-disable import-helpers/order-imports */
 // React
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 // Icons
 import { IconArrowLeft } from '../../assets/icons';
@@ -22,6 +22,7 @@ import {
 interface HeaderTaskProps {
   title: TitleProps;
   backPage?: string;
+  goBack?: boolean;
   buttonType?: 'finish' | 'send';
   disableButton?: boolean;
   sendToNext?: () => void;
@@ -41,18 +42,29 @@ interface TitleProps {
 export default function HeaderOpenTask({
   title,
   backPage,
+  goBack,
   buttonType,
   disableButton,
   sendToNext
 }: HeaderTaskProps) {
+  const navigate = useNavigate();
+
   return (
     <Container>
-      <Link to={backPage ? backPage : '/dashboard'}>
-        <BackButton>
+      {!goBack && (
+        <Link to={backPage ? backPage : '/dashboard'}>
+          <BackButton>
+            <IconArrowLeft />
+            Voltar
+          </BackButton>
+        </Link>
+      )}
+      {goBack && (
+        <BackButton onClick={() => navigate(-1)}>
           <IconArrowLeft />
           Voltar
         </BackButton>
-      </Link>
+      )}
 
       <RightSideHeader>
         <HeaderTitleInfos>

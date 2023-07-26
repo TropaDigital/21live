@@ -34,6 +34,8 @@ export const BackButton = styled.div`
   font-weight: var(--weight-semibold);
 
   border-right: 2px solid var(--gray-300);
+
+  cursor: pointer;
 `;
 
 export const RightSideHeader = styled.div`
