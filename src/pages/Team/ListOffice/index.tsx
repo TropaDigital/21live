@@ -38,9 +38,10 @@ import Switch from 'react-switch';
 
 interface OfficeProps {
   function_id: number;
-  tenant_id: number;
+  tenant_id: string;
   function: string;
   description: string;
+  permissions?: string;
 }
 
 interface PermissionProps {
@@ -53,7 +54,7 @@ export default function ListOffice() {
   const { addToast } = useToast();
   const { formData, setData, handleOnChange } = useForm({
     function_id: 0,
-    tenant_id: 0,
+    tenant_id: '',
     function: '',
     description: ''
   } as OfficeProps);
@@ -80,7 +81,7 @@ export default function ListOffice() {
     });
     setData({
       function_id: 0,
-      tenant_id: 0,
+      tenant_id: '',
       function: '',
       description: ''
     } as OfficeProps);
@@ -124,7 +125,8 @@ export default function ListOffice() {
         // Inserir lógica
         const newFormData = {
           function: AsFuncation,
-          description
+          description,
+          permissions: permissionFor
         };
 
         if (modal.type === 'Novo Cargo') {
@@ -149,7 +151,7 @@ export default function ListOffice() {
         });
       }
     },
-    [formData, addToast, fetchData, handleOnCancel, modal]
+    [formData, addToast, fetchData, handleOnCancel, modal, permissionFor]
   );
 
   const handlePermissions = (id: any) => {
