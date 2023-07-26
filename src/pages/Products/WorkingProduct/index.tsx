@@ -174,12 +174,7 @@ export default function WorkingProduct() {
 
   return (
     <ContainerDefault>
-      <HeaderOpenTask
-        title={titleInfos}
-        disableButton={false}
-        backPage="/tarefas"
-        buttonType="finish"
-      />
+      <HeaderOpenTask title={titleInfos} disableButton={false} goBack={true} buttonType="finish" />
 
       <SectionCardWrapper>
         <CardsTopWrapper>
