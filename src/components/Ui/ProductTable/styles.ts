@@ -25,6 +25,8 @@ export const ProductDate = styled.div`
   color: var(--gray-700);
   font-size: var(--text-small-md);
   font-weight: var(--weight-medium);
+
+  text-transform: capitalize;
 `;
 
 export const ProductSelect = styled.div`
