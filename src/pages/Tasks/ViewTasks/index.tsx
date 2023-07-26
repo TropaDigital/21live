@@ -47,7 +47,7 @@ export default function ViewTaskList() {
     (search: string) => setSearch(search),
     700
   );
-  const { data, pages } = useFetch<any[]>(`tasks?search=${search}&page=${selected}`);
+  const { data, pages } = useFetch<any[]>(`tasks?filter=task&search=${search}&page=${selected}`);
 
   // const data = [
   //   {
@@ -138,8 +138,8 @@ export default function ViewTaskList() {
     console.log('log do filters on task');
   };
 
-  const handleNavigateTask = (task: any) => {
-    navigate(`/tarefa/${task.task_id}`, { state: task });
+  const handleNavigateTask = (infos: any) => {
+    navigate(`/tarefa/${infos.task.task_id}`, { state: infos });
   };
 
   return (
