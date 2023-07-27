@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable import-helpers/order-imports */
 // React
 import { useState, useEffect } from 'react';
@@ -22,6 +23,10 @@ import {
 
 // Components
 import ModalDefault from '../ModalDefault';
+
+// Libraries
+import moment from 'moment';
+import 'moment/dist/locale/pt-br';
 
 interface CardTaskInfoProps {
   cardTitle: string;
@@ -70,6 +75,31 @@ export default function CardTaskInfo({
     return () => clearInterval(interval);
   }, [timerOn]);
 
+  // Function to get diff time
+  useEffect(() => {
+    const x = moment(Date.now());
+    const y = moment(localStorage.getItem('playStart'));
+    const duration = moment.duration(x.diff(y));
+    const Milliseconds = duration.asMilliseconds();
+
+    function padTo2Digits(num: any) {
+      return num.toString().padStart(2, '0');
+    }
+
+    function convertMsToTime(milliseconds: any) {
+      let seconds = Math.floor(milliseconds / 1000);
+      let minutes = Math.floor(seconds / 60);
+      const hours = Math.floor(minutes / 60);
+
+      seconds = seconds % 60;
+      minutes = minutes % 60;
+
+      return `${padTo2Digits(hours)}:${padTo2Digits(minutes)}:${padTo2Digits(seconds)}`;
+    }
+
+    console.log('log do duration', convertMsToTime(Milliseconds));
+  }, []);
+
   return (
     <>
       <CardWrapper cardSize={cardType}>
@@ -89,6 +119,7 @@ export default function CardTaskInfo({
                 <PlayPauseButton
                   onClick={() => {
                     setTimerOn(true);
+                    localStorage.setItem('playStart', JSON.stringify(Date.now()));
                   }}
                   className="stop"
                 >
@@ -99,6 +130,7 @@ export default function CardTaskInfo({
                 <PlayPauseButton
                   onClick={() => {
                     setTimerOn(false);
+                    localStorage.setItem('pausePlay', JSON.stringify(Date.now()));
                   }}
                   className="play"
                 >
