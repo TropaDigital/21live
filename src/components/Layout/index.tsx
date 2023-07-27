@@ -54,6 +54,12 @@ export default function Layout() {
               identifier: 'task_execute'
             },
             {
+              to: '/suas-tarefas',
+              name: 'Tarefas',
+              icon: IconClipboard,
+              identifier: 'task_essay'
+            },
+            {
               to: '/clientes',
               name: 'Clientes',
               icon: IconUsers,
