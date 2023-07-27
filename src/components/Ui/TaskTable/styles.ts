@@ -100,6 +100,12 @@ export const TasksTable = styled.div`
       }
     }
 
+    .id-column {
+      color: var(--gray-900);
+      font-size: var(--text-small-md);
+      font-weight: var(--weight-medium);
+    }
+
     .column {
       width: 100%;
       display: flex;
@@ -111,6 +117,12 @@ export const TasksTable = styled.div`
         color: var(--gray-900);
         font-size: var(--text-small-md);
         font-weight: var(--weight-medium);
+
+        div {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
       }
 
       span {

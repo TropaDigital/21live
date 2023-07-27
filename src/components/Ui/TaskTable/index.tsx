@@ -94,11 +94,13 @@ export default function TaskTable({
                     style={{ cursor: 'pointer' }}
                     onClick={() => handleGoToDelivery(task, index + 1)}
                   >
-                    <td>#{String(task.task_id).padStart(5, '0')}</td>
+                    <td>
+                      <div className="id-column">#{String(task.task_id).padStart(5, '0')}</div>
+                    </td>
                     <td>
                       <div className="column info">
                         <div>
-                          <IconText /> {String(index + 1).padStart(3, '0')} - {task.title}
+                          <IconText /> {task.title}
                         </div>
                         <span>
                           {task.tenant} / {task.project_category} | {task.product_period}
@@ -144,9 +146,9 @@ export default function TaskTable({
                       {moment(task.creation_date_end).format('DD/MMM/YYYY')}
                     </td>
                     <td>
-                      {task.entregas.length <= 1
-                        ? `${task.entregas.length} produto`
-                        : `${task.entregas.length} produtos`}
+                      {task?.entregas?.length <= 1
+                        ? `${task?.entregas?.length} produto`
+                        : `${task?.entregas?.length} produtos`}
                     </td>
                     <td>
                       <div className="column">
