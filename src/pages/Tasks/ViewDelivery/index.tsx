@@ -88,44 +88,55 @@ export default function ViewDelivery() {
   const [dataTask, setDataTask] = useState<any>();
 
   useEffect(() => {
-    setDataTask(location.state.task);
+    // setDataTask(location.state.task);
+    console.log('log do id on state', location.state);
   }, [location]);
 
-  const titleInfos = {
-    idNumber: location.state.task.task_id,
-    numberTask: location.state.task_index,
-    titleTask: location.state.task.title,
-    monthTask: '',
-    client_task: location.state.task.tenant,
-    typeTask: location.state.task.project_category,
-    quantityTask: '',
-    contract_task: location.state.task.product_period
-  };
+  // const titleInfos = {
+  //   idNumber: location.state.task.task_id,
+  //   numberTask: location.state.task_index,
+  //   titleTask: location.state.task.title,
+  //   monthTask: '',
+  //   client_task: location.state.task.tenant,
+  //   typeTask: location.state.task.project_category,
+  //   quantityTask: '',
+  //   contract_task: location.state.task.product_period
+  // };
 
-  const data = {
-    estimatedTime: location.state.task.totalTime
-  };
+  // const data = {
+  //   estimatedTime: location.state.task.totalTime
+  // };
 
   // Timeline function
-  useEffect(() => {
-    async function getTimelineData() {
-      try {
-        const response = await api.get(`task/timeline/${location.state.task.task_id}`);
-        setTimelineData(response.data.result);
-      } catch (error: any) {
-        console.log('log timeline error', error);
-      }
-    }
+  // useEffect(() => {
+  //   async function getTimelineData() {
+  //     try {
+  //       const response = await api.get(`task/timeline/${location.state.task.task_id}`);
+  //       setTimelineData(response.data.result);
+  //     } catch (error: any) {
+  //       console.log('log timeline error', error);
+  //     }
+  //   }
 
-    getTimelineData();
-  }, [location.state.task.task_id]);
+  //   getTimelineData();
+  // }, [location.state.task.task_id]);
 
   const handlePlayingType = (value: boolean) => {
     if (value) {
       setPlayingForSchedule(true);
-      // handleStartPlayingTime();
+      handleStartPlayingTime();
+      // localStorage.setItem('playStart', JSON.stringify(Date.now()));
     }
+    // if (!value) {
+    //   console.log('pausou o timer');
+    //   localStorage.setItem('pausePlay', JSON.stringify(Date.now()));
+    // }
   };
+
+  // useEffect(() => {
+  //   console.log('log do playStart =>', localStorage.getItem('playStart'));
+  //   console.log('log do pausePlay ||', localStorage.getItem('pausePlay'));
+  // }, [playingForSchedule]);
 
   const handleCheckBox = (id: string) => {
     if (selectedUser === id) {
@@ -140,49 +151,27 @@ export default function ViewDelivery() {
     setModalSendToUser(false);
   };
 
-  // const handleStartPlayingTime = async () => {
-  //   const playType = {
-  //     task_id: '126',
-  //     type_play: 'delivery'
-  //   };
-  //   console.log('começou a contar o tempo', playType);
+  const handleStartPlayingTime = async () => {
+    const playType = {
+      task_id: location.state.task.task_id,
+      type_play: 'delivery'
+    };
 
-  //   try {
-  //     const response = await api.post(`/task/switch/play`, playType);
-  //     console.log('log do response', response.data.result);
-  //   } catch (error: any) {
-  //     console.log('log do error play', error);
-  //   }
-  // };
-
-  // Function to get diff time
-  // useEffect(() => {
-  //   const x = moment(Date.now());
-  //   const y = moment(new Date('July 19, 2023 17:24:00'));
-  //   const duration = moment.duration(x.diff(y));
-  //   const Milliseconds = duration.asMilliseconds();
-
-  //   function padTo2Digits(num: any) {
-  //     return num.toString().padStart(2, '0');
-  //   }
-
-  //   function convertMsToTime(milliseconds: any) {
-  //     let seconds = Math.floor(milliseconds / 1000);
-  //     let minutes = Math.floor(seconds / 60);
-  //     const hours = Math.floor(minutes / 60);
-
-  //     seconds = seconds % 60;
-  //     minutes = minutes % 60;
-
-  //     return `${padTo2Digits(hours)}:${padTo2Digits(minutes)}:${padTo2Digits(seconds)}`;
-  //   }
-
-  //   console.log('log Milliseconds', Milliseconds);
-  //   console.log('log do duration', convertMsToTime(Milliseconds));
-  // }, []);
+    try {
+      const response = await api.post(`/task/switch/play`, playType);
+      console.log('log do response', response.data.result);
+    } catch (error: any) {
+      console.log('log do error play', error);
+    }
+  };
 
   const handleNavigateProduct = (id: any) => {
-    navigate(`/produto/${id}`);
+    const taskCompleteInfo = {
+      titleInfos: titleInfos,
+      taskInfos: dataTask,
+      playType: playingForSchedule
+    };
+    navigate(`/produto/${id}`, { state: taskCompleteInfo });
   };
 
   const mockUsers: ModalUsersProps[] = [
@@ -204,7 +193,7 @@ export default function ViewDelivery() {
 
   return (
     <ContainerDefault>
-      <DeliveryWrapper>
+      {/* <DeliveryWrapper>
         <HeaderOpenTask
           title={titleInfos}
           disableButton={false}
@@ -282,10 +271,10 @@ export default function ViewDelivery() {
               <div className="info-description">???</div>
             </TaskInfoField>
 
-            {/* <TaskInfoField>
+            <TaskInfoField>
               <div className="info-title">Etapa:</div>
               <div className="info-description">{location.state.task.step}</div>
-            </TaskInfoField> */}
+            </TaskInfoField>
 
             <TaskInfoField>
               <div className="info-title">Formato:</div>
@@ -325,7 +314,7 @@ export default function ViewDelivery() {
         <ShowInfosButton onClick={() => setHideRightCard('show')}>
           <FaArrowLeft />
         </ShowInfosButton>
-      </DeliveryWrapper>
+      </DeliveryWrapper> */}
 
       <ModalDefault
         isOpen={modalSendToUser}
