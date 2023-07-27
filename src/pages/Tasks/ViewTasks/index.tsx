@@ -47,7 +47,7 @@ export default function ViewTaskList() {
     (search: string) => setSearch(search),
     700
   );
-  const { data, pages } = useFetch<any[]>(`tasks?filter=task&search=${search}&page=${selected}`);
+  const { data, pages } = useFetch<any[]>(`tasks?search=${search}&page=${selected}`);
 
   // const data = [
   //   {
@@ -139,7 +139,8 @@ export default function ViewTaskList() {
   };
 
   const handleNavigateTask = (infos: any) => {
-    navigate(`/tarefa/${infos.task.task_id}`, { state: infos });
+    const taskId = infos?.task?.task_id;
+    navigate(`/tarefa/${infos.task.task_id}`, { state: taskId });
   };
 
   return (
