@@ -67,7 +67,7 @@ export default function ProductTable({
       <ProductTitleInfos>
         <ProductTitle>Produtos para entrega</ProductTitle>
         <div>-</div>
-        <ProductDate>{moment(data?.creation_date_end).format('DD/MMM/YYYY')}</ProductDate>
+        <ProductDate>{moment(data?.creation_date_end).format('DD/MM/YYYY')}</ProductDate>
         {!isPlayingForSchedule && (
           <>
             <div>-</div>
@@ -106,7 +106,7 @@ export default function ProductTable({
               {workFor === 'product' && <th>Status</th>}
             </tr>
           </thead>
-          {data?.entregas.map((obj: any, index: any) =>
+          {data?.entregas.map((obj: any) =>
             obj.produtos.map((row: any, subIndex: any) => (
               <tbody key={subIndex}>
                 <tr
