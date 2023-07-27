@@ -1,7 +1,7 @@
 /* eslint-disable import-helpers/order-imports */
 
 // React
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // Components
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -49,6 +49,7 @@ import 'moment/dist/locale/pt-br';
 
 // Images
 import PersonImg from '../../../assets/person.jpg';
+import api from '../../../services/api';
 
 interface WorkingProductProps {
   estimatedTime?: string;
@@ -74,18 +75,34 @@ interface ChatMessages {
   read: string;
 }
 
+interface TitleInfoProps {
+  idNumber: string;
+  numberTask: string;
+  titleTask: string;
+  monthTask: '';
+  client_task: string;
+  typeTask: string;
+  quantityTask: '';
+  contract_task: string;
+}
+
 export default function WorkingProduct() {
   const location = useLocation();
   const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = useState<string>('Redação');
   const [notifications, setNotifications] = useState<boolean>(false);
   const [chatMessage, setChatMessage] = useState<string>('');
+  const [titleInfos, setTitleInfos] = useState<TitleInfoProps>();
+  const [taskInfos, setTaskInfos] = useState<any>();
+  const typeOfPlay = location?.state?.playType;
 
   // const { data } = useFetch<WorkingProductProps>(`/${location.state.id}`);
 
-  const data = {
-    estimatedTime: '03:00:00'
-  };
+  useEffect(() => {
+    console.log('log do location on working product', location.state);
+    setTitleInfos(location.state.titleInfos);
+    setTaskInfos(location.state.taskInfos);
+  }, [location]);
 
   const chatMessages: ChatMessages[] = [
     {
@@ -136,20 +153,6 @@ export default function WorkingProduct() {
     }
   ];
 
-  const dataText =
-    'Lorem ipsum dolor sit amet consectetur. Lectus mi urna consequat faucibus eget nunc orci. Massa ornare justo erat sagittis aliquam turpis porttitor. Venenatis vestibulum malesuada egestas senectus eu et ultricies dui tortor. Elementum vitae feugiat pulvinar mi sed cras. Feugiat nibh nisl dignissim orci in. Imperdiet sed arcu ac consequat.';
-
-  const titleInfos = {
-    idNumber: '1768',
-    numberTask: '01',
-    titleTask: 'Cronograma',
-    monthTask: 'Julho 2023',
-    client_task: 'G.WIND',
-    typeTask: 'FEE',
-    quantityTask: 'PACK 8 POSTS',
-    contract_task: 'MÊS'
-  };
-
   const handleInputChange = (e: any) => {
     setChatMessage(e.target.value);
   };
@@ -162,33 +165,65 @@ export default function WorkingProduct() {
     console.log('log do input', name, value);
   };
 
-  // const dataInfo = {
-  //   estimatedTime: '02:00:00',
-  //   responsible: 'Guilherme Augusto',
-  //   stage: 'Criação',
-  //   flow: 'Campanha',
-  //   priority: 'Normal',
-  //   startDate: '26 de Junho',
-  //   endDate: '15 de Julho'
-  // };
+  const handlePlayingType = (value: boolean) => {
+    if (value) {
+      handleStartPlayingTime();
+      // localStorage.setItem('playStart', JSON.stringify(Date.now()));
+    }
+    // if (!value) {
+    //   localStorage.setItem('pausePlay', JSON.stringify(Date.now()));
+    // }
+  };
+
+  const handleStartPlayingTime = async () => {
+    const playType = {
+      task_id: location.state.taskInfos.task_id,
+      type_play: 'product'
+    };
+
+    try {
+      const response = await api.post(`/task/switch/play`, playType);
+      console.log('log do response', response.data.result);
+    } catch (error: any) {
+      console.log('log do error play', error);
+    }
+  };
 
   return (
     <ContainerDefault>
-      <HeaderOpenTask title={titleInfos} disableButton={false} goBack={true} buttonType="finish" />
+      {titleInfos && (
+        <HeaderOpenTask
+          title={titleInfos}
+          disableButton={false}
+          goBack={true}
+          buttonType="finish"
+        />
+      )}
 
       <SectionCardWrapper>
         <CardsTopWrapper>
-          <CardTaskInfo
-            cardTitle="Iniciar atividade"
-            cardType="time"
-            dataTime={data ? data?.estimatedTime : ''}
-            isPlayingTime={() => ''}
-          />
+          {!typeOfPlay && (
+            <CardTaskInfo
+              cardTitle="Iniciar atividade"
+              cardType="time"
+              dataTime={taskInfos ? taskInfos.totalTime : ''}
+              isPlayingTime={() => handlePlayingType}
+            />
+          )}
+
+          {typeOfPlay && (
+            <CardTaskInfo
+              cardTitle="Atividade iniciada"
+              cardType="time"
+              dataTime={taskInfos ? taskInfos.totalTime : ''}
+              isPlayingTime={() => ''}
+            />
+          )}
 
           <CardTaskInfo
             cardTitle="Contexto geral"
             cardType="text"
-            dataText={dataText}
+            dataText={taskInfos ? taskInfos.description : ''}
             isPlayingTime={() => ''}
           />
         </CardsTopWrapper>
