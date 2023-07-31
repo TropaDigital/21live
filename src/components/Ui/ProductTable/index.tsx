@@ -106,8 +106,8 @@ export default function ProductTable({
               {workFor === 'product' && <th>Status</th>}
             </tr>
           </thead>
-          {data?.entregas.map((obj: any) =>
-            obj.produtos.map((row: any, subIndex: any) => (
+          {data?.deliverys.map((obj: any) =>
+            obj.products.map((row: any, subIndex: any) => (
               <tbody key={subIndex}>
                 <tr
                   style={{ cursor: 'pointer' }}
