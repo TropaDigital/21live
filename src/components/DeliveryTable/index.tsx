@@ -29,6 +29,7 @@ import { InputDefault } from '../Inputs/InputDefault';
 import ProgressBar from '../Ui/ProgressBar';
 import moment from 'moment';
 import 'moment/dist/locale/pt-br';
+import { IProductTask } from '../../types';
 
 interface DeliveryProps {
   data: any;
@@ -39,6 +40,40 @@ interface DeliveryProps {
   taskSelected: any;
 }
 
+interface TaskDelivery {
+  task_id?: number | any;
+  title: string;
+  user_id: string;
+  tenant_id: number | string | any;
+  product_id: number | string | any; // produto principal, o produto pode ter uma flag que significa que ele lista outros produtos na criação da task
+  type?: string | any; //type_id da tabela task_type
+  flow_id?: number | any;
+  flow: string;
+  description: string | any; //descricao geral
+  name?: string | any;
+  creation_description?: string | any; //entrega de criação
+  creation_date_end?: string | any;
+  copywriting_description?: string | any;
+  copywriting_date_end?: string | any; //entrega da redação
+  deliverys?: Array<IDelivery> | any; //se for dividir a entrega, entra agqui
+  step?: number | any;
+  project_id?: string;
+  tenant: string;
+  product_period: string;
+  project_category: string;
+  timeConsumed: string;
+  totalTime: string;
+  status: string;
+}
+
+export interface IDelivery {
+  task_id?: number;
+  date_end: Date;
+  description?: string;
+  order: string;
+  products?: Array<IProductTask>;
+}
+
 export default function DeliveryTable({
   data,
   loading,
@@ -47,8 +82,6 @@ export default function DeliveryTable({
   addFilter,
   taskSelected
 }: DeliveryProps) {
-  const arrayData = Object.entries(data);
-
   const handleGoToProducts = (taskInfos: any, taskIndex: any) => {
     const allTaskInfo = {
       task_index: taskIndex,
@@ -77,114 +110,112 @@ export default function DeliveryTable({
         </ButtonDefault> */}
       </DeliveryFilter>
 
-      {arrayData?.map((row: any, index: number) => (
+      {data?.map((row: TaskDelivery, index: number) => (
         <DeliveryDateWrapper key={index}>
-          <DeliveryDate>{moment(row[0]).format('DD/MM/YYYY')}</DeliveryDate>
+          <DeliveryDate>{moment(row.deliverys[index].date_end).format('DD/MM/YYYY')}</DeliveryDate>
           <DeliveriesTable>
             <table>
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Tarefas</th>
+                  <th>Entregas</th>
                   <th>Tempo consumido</th>
                   <th>Tempo estimado</th>
                   <th>Data inicial</th>
                   <th>Data final</th>
-                  <th>Entregas</th>
+                  <th>Produtos</th>
                   <th>Etapa</th>
                   <th>Status</th>
                 </tr>
               </thead>
               <tbody>
-                {row[1].map((task: any, index: number) => (
-                  <tr
-                    key={task.task_id}
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => handleGoToProducts(task, index + 1)}
-                  >
-                    <td>
-                      <div className="id-column">
-                        #{String(task.task_id).padStart(5, '0')} | {task.id}
+                <tr
+                  key={row.task_id}
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => handleGoToProducts(row, index + 1)}
+                >
+                  <td>
+                    <div className="id-column">
+                      #{String(row.task_id).padStart(5, '0')} | {String(index + 1).padStart(2, '0')}
+                    </div>
+                  </td>
+                  <td>
+                    <div className="column info">
+                      <div>
+                        <IconText /> {row.title}
                       </div>
-                    </td>
-                    <td>
-                      <div className="column info">
-                        <div>
-                          <IconText /> {task.title}
-                        </div>
-                        <span>
-                          {task.tenant} / {task.project_category} | {task.product_period}
-                        </span>
-                      </div>
-                    </td>
-                    <td>
-                      <span style={{ marginBottom: '4px', display: 'block' }}>
-                        {task.timeConsumed}
+                      <span>
+                        {row.tenant} / {row.project_category} | {row.product_period}
                       </span>
-                      <ProgressBar
-                        totalHours={convertToMilliseconds(task.totalTime)}
-                        restHours={convertToMilliseconds(task.timeConsumed)}
-                      />
-                    </td>
-                    <td>
-                      <div className="flag-info">
-                        <Flag
-                          style={{ textAlign: 'center' }}
-                          className={task.status === 'true' ? 'flagged' : ''}
-                        >
-                          {task.status === 'true' ? (
-                            <IconContext.Provider
-                              value={{ color: '#F04438', className: 'global-class-name' }}
-                            >
-                              <FiFlag />
-                            </IconContext.Provider>
-                          ) : (
-                            <IconContext.Provider
-                              value={{ color: '#667085', className: 'global-class-name' }}
-                            >
-                              <FiFlag />
-                            </IconContext.Provider>
-                          )}
-                        </Flag>
-                        {task.totalTime}
-                      </div>
-                    </td>
-                    <td style={{ textTransform: 'capitalize' }}>
-                      {moment(task.copywriting_date_end).format('DD/MMM/YYYY')}
-                    </td>
-                    <td style={{ textTransform: 'capitalize' }}>
-                      {moment(task.creation_date_end).format('DD/MMM/YYYY')}
-                    </td>
-                    <td>
-                      {task?.entregas?.length <= 1
-                        ? `${task?.entregas?.length} produto`
-                        : `${task?.entregas?.length} produtos`}
-                    </td>
-                    <td>
-                      <div className="column">
-                        {task.step}???
-                        <span>Fluxo: {task.flow}</span>
-                      </div>
-                    </td>
-                    <td>
-                      <div
-                        className={
-                          task.status === 'progress'
-                            ? 'status progress'
-                            : task.status === 'finished'
-                            ? 'status finished'
-                            : 'status'
-                        }
+                    </div>
+                  </td>
+                  <td>
+                    <span style={{ marginBottom: '4px', display: 'block' }}>
+                      {row.timeConsumed}
+                    </span>
+                    <ProgressBar
+                      totalHours={convertToMilliseconds(row.totalTime)}
+                      restHours={convertToMilliseconds(row.timeConsumed)}
+                    />
+                  </td>
+                  <td>
+                    <div className="flag-info">
+                      <Flag
+                        style={{ textAlign: 'center' }}
+                        className={row.status === 'true' ? 'flagged' : ''}
                       >
-                        {task.status === 'progress'
-                          ? 'Em progresso'
-                          : task.status === 'finished'
-                          ? 'Concluída'
-                          : 'Pendente'}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                        {row.status === 'true' ? (
+                          <IconContext.Provider
+                            value={{ color: '#F04438', className: 'global-class-name' }}
+                          >
+                            <FiFlag />
+                          </IconContext.Provider>
+                        ) : (
+                          <IconContext.Provider
+                            value={{ color: '#667085', className: 'global-class-name' }}
+                          >
+                            <FiFlag />
+                          </IconContext.Provider>
+                        )}
+                      </Flag>
+                      {row.totalTime}
+                    </div>
+                  </td>
+                  <td style={{ textTransform: 'capitalize' }}>
+                    {moment(row.copywriting_date_end).format('DD/MMM/YYYY')}
+                  </td>
+                  <td style={{ textTransform: 'capitalize' }}>
+                    {moment(row.creation_date_end).format('DD/MMM/YYYY')}
+                  </td>
+                  <td>
+                    {row?.deliverys?.length <= 1
+                      ? `${row?.deliverys?.length} produto`
+                      : `${row?.deliverys?.length} produtos`}
+                  </td>
+                  <td>
+                    <div className="column">
+                      {row.step}???
+                      <span>Fluxo: {row.flow}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div
+                      className={
+                        row.status === 'progress'
+                          ? 'status progress'
+                          : row.status === 'finished'
+                          ? 'status finished'
+                          : 'status'
+                      }
+                    >
+                      {row.status === 'progress'
+                        ? 'Em progresso'
+                        : row.status === 'finished'
+                        ? 'Concluída'
+                        : 'Pendente'}
+                    </div>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </DeliveriesTable>
