@@ -97,7 +97,7 @@ export default function CardTaskInfo({
       return `${padTo2Digits(hours)}:${padTo2Digits(minutes)}:${padTo2Digits(seconds)}`;
     }
 
-    console.log('log do duration', convertMsToTime(Milliseconds));
+    // console.log('log do duration', convertMsToTime(Milliseconds));
   }, []);
 
   return (
