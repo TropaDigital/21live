@@ -13,14 +13,12 @@ import { Flag } from '../../../pages/Tasks/TaskList/styles';
 import { TaskContainer, TaskDate, TaskDateWrapper, TaskFilter, TasksTable } from './styles';
 
 // Components
-import ButtonDefault from '../../Buttons/ButtonDefault';
 import { InputDefault } from '../../Inputs/InputDefault';
 
 // Libraries
 import ProgressBar from '../ProgressBar';
 import moment from 'moment';
 import 'moment/dist/locale/pt-br';
-import { useEffect } from 'react';
 
 interface TableProps {
   data: any;
@@ -146,9 +144,9 @@ export default function TaskTable({
                       {moment(task.creation_date_end).format('DD/MMM/YYYY')}
                     </td>
                     <td>
-                      {task?.entregas?.length <= 1
-                        ? `${task?.entregas?.length} produto`
-                        : `${task?.entregas?.length} produtos`}
+                      {task?.deliverys?.length <= 1
+                        ? `${task?.deliverys?.length} entrega`
+                        : `${task?.deliverys?.length} entregas`}
                     </td>
                     <td>
                       <div className="column">
