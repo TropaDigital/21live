@@ -191,7 +191,7 @@ export default function TaskList() {
         creation_date_end: response.data.result[0].creation_date_end,
         copywriting_description: response.data.result[0].copywriting_description,
         copywriting_date_end: response.data.result[0].copywriting_date_end,
-        deadlines: response.data.result[0].entregas,
+        deadlines: response.data.result[0].deliverys,
         step: response.data.result[0].step,
         type: response.data.result[0].type
       };
