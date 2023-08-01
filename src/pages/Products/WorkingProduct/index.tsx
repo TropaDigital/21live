@@ -99,7 +99,7 @@ export default function WorkingProduct() {
   // const { data } = useFetch<WorkingProductProps>(`/${location.state.id}`);
 
   useEffect(() => {
-    console.log('log do location on working product', location.state);
+    // console.log('log do location on working product', location.state);
     setTitleInfos(location.state.titleInfos);
     setTaskInfos(location.state.taskInfos);
   }, [location]);
