@@ -75,6 +75,8 @@ export default function ViewProductsDeliveries() {
   const [playingForSchedule, setPlayingForSchedule] = useState<boolean>(false);
   const [hideRightCard, setHideRightCard] = useState<string>('show');
   const [dataTask, setDataTask] = useState<any>();
+  const [dataProducts, setDataProducts] = useState<any>();
+  const [timeData, setTimeData] = useState<any>();
   const [timeLineData, setTimelineData] = useState<TimelineProps>();
   const [hideTimeLine, setHideTimeLine] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<string>('');
@@ -126,21 +128,27 @@ export default function ViewProductsDeliveries() {
     // }
   };
 
-  const handleNavigateProduct = (id: any) => {
+  const handleNavigateProduct = (infoProduct: any, idProduct: any) => {
     const taskCompleteInfo = {
+      productInfo: infoProduct.service,
       titleInfos: titleInfos,
+      id_product: idProduct,
       taskInfos: dataTask,
       playType: playingForSchedule
     };
-    navigate(`/produto/${id}`, { state: taskCompleteInfo });
+    navigate(`/produto/${idProduct}`, { state: taskCompleteInfo });
   };
 
   useEffect(() => {
     setDataTask(location.state.task);
-    console.log('log do id on state', location.state);
+    const timeDataInfo = {
+      totalTime: location.state.task.totalTime,
+      timeConsumed: location.state.task.timeConsumed
+    };
+    setTimeData(timeDataInfo);
+    setDataProducts(location.state.delivery);
   }, [location]);
 
-  // Timeline function
   useEffect(() => {
     async function getTimelineData() {
       try {
@@ -218,7 +226,8 @@ export default function ViewProductsDeliveries() {
         </CardsWrapper>
 
         <ProductTable
-          data={dataTask}
+          data={dataProducts}
+          timeData={timeData}
           workForProduct={setWorkForProducts}
           isPlayingForSchedule={playingForSchedule}
           productSelected={handleNavigateProduct}
