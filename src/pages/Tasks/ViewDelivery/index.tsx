@@ -30,6 +30,7 @@ export default function ViewDelivery() {
 
   const handleNavigateDeliveryProducts = (infos: any) => {
     const taskDetails = {
+      delivery: infos.delivery,
       task: infos.task,
       task_index: infos.task_index
     };
