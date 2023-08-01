@@ -82,8 +82,9 @@ export default function DeliveryTable({
   addFilter,
   taskSelected
 }: DeliveryProps) {
-  const handleGoToProducts = (taskInfos: any, taskIndex: any) => {
+  const handleGoToProducts = (deliveryInfos: any, taskIndex: any, taskInfos: any) => {
     const allTaskInfo = {
+      delivery: deliveryInfos,
       task_index: taskIndex,
       task: taskInfos
     };
@@ -110,117 +111,121 @@ export default function DeliveryTable({
         </ButtonDefault> */}
       </DeliveryFilter>
 
-      {data?.map((row: TaskDelivery, index: number) => (
-        <DeliveryDateWrapper key={index}>
-          <DeliveryDate>{moment(row.deliverys[index].date_end).format('DD/MM/YYYY')}</DeliveryDate>
-          <DeliveriesTable>
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Entregas</th>
-                  <th>Tempo consumido</th>
-                  <th>Tempo estimado</th>
-                  <th>Data inicial</th>
-                  <th>Data final</th>
-                  <th>Produtos</th>
-                  <th>Etapa</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  key={row.task_id}
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => handleGoToProducts(row, index + 1)}
-                >
-                  <td>
-                    <div className="id-column">
-                      #{String(row.task_id).padStart(5, '0')} | {String(index + 1).padStart(2, '0')}
-                    </div>
-                  </td>
-                  <td>
-                    <div className="column info">
-                      <div>
-                        <IconText /> {row.title}
+      {data.map((delivery: TaskDelivery) =>
+        delivery.deliverys.map((row: IDelivery, index: number) => (
+          <DeliveryDateWrapper key={index}>
+            <DeliveryDate>{moment(row.date_end).format('DD/MM/YYYY')}</DeliveryDate>
+            <DeliveriesTable>
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Entregas</th>
+                    <th>Tempo consumido</th>
+                    <th>Tempo estimado</th>
+                    <th>Data inicial</th>
+                    <th>Data final</th>
+                    <th>Produtos</th>
+                    <th>Etapa</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    key={index}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => handleGoToProducts(row, index + 1, delivery)}
+                  >
+                    <td>
+                      <div className="id-column">
+                        #{String(delivery.task_id).padStart(5, '0')} |{' '}
+                        {String(index + 1).padStart(2, '0')}
                       </div>
-                      <span>
-                        {row.tenant} / {row.project_category} | {row.product_period}
+                    </td>
+                    <td>
+                      <div className="column info">
+                        <div>
+                          <IconText /> {delivery.title}
+                        </div>
+                        <span>
+                          {delivery.tenant} / {delivery.project_category} |{' '}
+                          {delivery.product_period}
+                        </span>
+                      </div>
+                    </td>
+                    <td>
+                      <span style={{ marginBottom: '4px', display: 'block' }}>
+                        {delivery.timeConsumed}
                       </span>
-                    </div>
-                  </td>
-                  <td>
-                    <span style={{ marginBottom: '4px', display: 'block' }}>
-                      {row.timeConsumed}
-                    </span>
-                    <ProgressBar
-                      totalHours={convertToMilliseconds(row.totalTime)}
-                      restHours={convertToMilliseconds(row.timeConsumed)}
-                    />
-                  </td>
-                  <td>
-                    <div className="flag-info">
-                      <Flag
-                        style={{ textAlign: 'center' }}
-                        className={row.status === 'true' ? 'flagged' : ''}
+                      <ProgressBar
+                        totalHours={convertToMilliseconds(delivery.totalTime)}
+                        restHours={convertToMilliseconds(delivery.timeConsumed)}
+                      />
+                    </td>
+                    <td>
+                      <div className="flag-info">
+                        <Flag
+                          style={{ textAlign: 'center' }}
+                          className={delivery.status === 'true' ? 'flagged' : ''}
+                        >
+                          {delivery.status === 'true' ? (
+                            <IconContext.Provider
+                              value={{ color: '#F04438', className: 'global-class-name' }}
+                            >
+                              <FiFlag />
+                            </IconContext.Provider>
+                          ) : (
+                            <IconContext.Provider
+                              value={{ color: '#667085', className: 'global-class-name' }}
+                            >
+                              <FiFlag />
+                            </IconContext.Provider>
+                          )}
+                        </Flag>
+                        {delivery.totalTime}
+                      </div>
+                    </td>
+                    <td style={{ textTransform: 'capitalize' }}>
+                      {moment(delivery.copywriting_date_end).format('DD/MMM/YYYY')}
+                    </td>
+                    <td style={{ textTransform: 'capitalize' }}>
+                      {moment(delivery.creation_date_end).format('DD/MMM/YYYY')}
+                    </td>
+                    <td>
+                      {delivery?.deliverys?.length <= 1
+                        ? `${delivery?.deliverys?.length} produto`
+                        : `${delivery?.deliverys?.length} produtos`}
+                    </td>
+                    <td>
+                      <div className="column">
+                        {delivery.step}???
+                        <span>Fluxo: {delivery.flow}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div
+                        className={
+                          delivery.status === 'progress'
+                            ? 'status progress'
+                            : delivery.status === 'finished'
+                            ? 'status finished'
+                            : 'status'
+                        }
                       >
-                        {row.status === 'true' ? (
-                          <IconContext.Provider
-                            value={{ color: '#F04438', className: 'global-class-name' }}
-                          >
-                            <FiFlag />
-                          </IconContext.Provider>
-                        ) : (
-                          <IconContext.Provider
-                            value={{ color: '#667085', className: 'global-class-name' }}
-                          >
-                            <FiFlag />
-                          </IconContext.Provider>
-                        )}
-                      </Flag>
-                      {row.totalTime}
-                    </div>
-                  </td>
-                  <td style={{ textTransform: 'capitalize' }}>
-                    {moment(row.copywriting_date_end).format('DD/MMM/YYYY')}
-                  </td>
-                  <td style={{ textTransform: 'capitalize' }}>
-                    {moment(row.creation_date_end).format('DD/MMM/YYYY')}
-                  </td>
-                  <td>
-                    {row?.deliverys?.length <= 1
-                      ? `${row?.deliverys?.length} produto`
-                      : `${row?.deliverys?.length} produtos`}
-                  </td>
-                  <td>
-                    <div className="column">
-                      {row.step}???
-                      <span>Fluxo: {row.flow}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div
-                      className={
-                        row.status === 'progress'
-                          ? 'status progress'
-                          : row.status === 'finished'
-                          ? 'status finished'
-                          : 'status'
-                      }
-                    >
-                      {row.status === 'progress'
-                        ? 'Em progresso'
-                        : row.status === 'finished'
-                        ? 'Concluída'
-                        : 'Pendente'}
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </DeliveriesTable>
-        </DeliveryDateWrapper>
-      ))}
+                        {delivery.status === 'progress'
+                          ? 'Em progresso'
+                          : delivery.status === 'finished'
+                          ? 'Concluída'
+                          : 'Pendente'}
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </DeliveriesTable>
+          </DeliveryDateWrapper>
+        ))
+      )}
     </DeliveryContainer>
   );
 }
