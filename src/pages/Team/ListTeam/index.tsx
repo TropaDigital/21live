@@ -67,6 +67,7 @@ interface UserProps {
   user_id: number;
   password: string;
   confirmPassword: string;
+  tasks: number;
 }
 
 interface OfficeProps {
@@ -328,7 +329,7 @@ export default function Team() {
                     <td>{row.name}</td>
                     <td>{row.email}</td>
                     <td>{row.function}</td>
-                    <td>{''}</td>
+                    <td>{row.tasks}</td>
                     <td>
                       <div className="fieldTableClients">
                         <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
