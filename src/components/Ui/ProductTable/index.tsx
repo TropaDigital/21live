@@ -40,6 +40,7 @@ interface Product {
 
 interface ProductTableProps {
   data: any;
+  timeData: any;
   workForProduct: any;
   isPlayingForSchedule: boolean;
   productSelected: any;
@@ -47,6 +48,7 @@ interface ProductTableProps {
 
 export default function ProductTable({
   data,
+  timeData,
   workForProduct,
   isPlayingForSchedule,
   productSelected
@@ -58,16 +60,12 @@ export default function ProductTable({
     workForProduct(workStatus);
   }, [workFor, workForProduct]);
 
-  // useEffect(() => {
-  //   console.log('log do data no products table', data);
-  // }, [data]);
-
   return (
     <ProductContainer>
       <ProductTitleInfos>
         <ProductTitle>Produtos para entrega</ProductTitle>
         <div>-</div>
-        <ProductDate>{moment(data?.creation_date_end).format('DD/MM/YYYY')}</ProductDate>
+        <ProductDate>{moment(data?.date_end).format('DD/MM/YYYY')}</ProductDate>
         {!isPlayingForSchedule && (
           <>
             <div>-</div>
@@ -106,62 +104,57 @@ export default function ProductTable({
               {workFor === 'product' && <th>Status</th>}
             </tr>
           </thead>
-          {data?.deliverys.map((obj: any) =>
-            obj.products.map((row: any, subIndex: any) => (
-              <tbody key={subIndex}>
-                <tr
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => productSelected(row.products_delivey_id)}
-                >
-                  <td>#{String(subIndex + 1).padStart(3, '0')}</td>
+          {data?.products.map((row: any, index: number) => (
+            <tbody key={index}>
+              <tr style={{ cursor: 'pointer' }} onClick={() => productSelected(row, index + 1)}>
+                <td>#{String(index + 1).padStart(3, '0')}</td>
+                <td>
+                  <div className="flex info">
+                    <IconText /> {row.service}
+                  </div>
+                </td>
+                {workFor === 'product' && (
+                  <>
+                    <td>
+                      <span style={{ marginBottom: '4px', display: 'block' }}>
+                        {timeData?.timeConsumed}
+                      </span>
+                      <ProgressBar
+                        totalHours={convertToMilliseconds(timeData?.totalTime)}
+                        restHours={convertToMilliseconds(timeData?.timeConsumed)}
+                      />
+                    </td>
+                    <td>{timeData?.totalTime}</td>
+                  </>
+                )}
+                <td>
+                  <div dangerouslySetInnerHTML={{ __html: row.description }} />
+                </td>
+                <td>????</td>
+                <td>{row.type}</td>
+                <td>{row.reason_change}</td>
+                {workFor === 'product' && (
                   <td>
-                    <div className="flex info">
-                      <IconText /> {row.service}
+                    <div
+                      className={
+                        row.status === 'progress'
+                          ? 'status progress'
+                          : row.status === 'finished'
+                          ? 'status finished'
+                          : 'status'
+                      }
+                    >
+                      {row.status === 'progress'
+                        ? 'Em progresso'
+                        : row.status === 'finished'
+                        ? 'Concluída'
+                        : 'Pendente'}
                     </div>
                   </td>
-                  {workFor === 'product' && (
-                    <>
-                      <td>
-                        <span style={{ marginBottom: '4px', display: 'block' }}>
-                          {data.timeConsumed}
-                        </span>
-                        <ProgressBar
-                          totalHours={convertToMilliseconds(data.totalTime)}
-                          restHours={convertToMilliseconds(data.timeConsumed)}
-                        />
-                      </td>
-                      <td>{data.totalTime}</td>
-                    </>
-                  )}
-                  <td>
-                    <div dangerouslySetInnerHTML={{ __html: row.description }} />
-                  </td>
-                  <td>????</td>
-                  <td>{row.type}</td>
-                  <td>{row.reason_change}</td>
-                  {workFor === 'product' && (
-                    <td>
-                      <div
-                        className={
-                          row.status === 'progress'
-                            ? 'status progress'
-                            : row.status === 'finished'
-                            ? 'status finished'
-                            : 'status'
-                        }
-                      >
-                        {row.status === 'progress'
-                          ? 'Em progresso'
-                          : row.status === 'finished'
-                          ? 'Concluída'
-                          : 'Pendente'}
-                      </div>
-                    </td>
-                  )}
-                </tr>
-              </tbody>
-            ))
-          )}
+                )}
+              </tr>
+            </tbody>
+          ))}
         </table>
       </ProductsTable>
     </ProductContainer>
