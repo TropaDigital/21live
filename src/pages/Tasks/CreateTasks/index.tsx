@@ -230,7 +230,7 @@ export default function CreateTasks() {
       setProductsArray([]);
       setDTOForm(location.state);
       setSelectedProject(location.state.product_id);
-      setProductsArray(location.state.deadlines[0]?.produtos);
+      setProductsArray(location.state.deadlines[0]?.products);
       setDTODelivery(location.state.deadlines);
       if (location.state.deadlines.length > 1) {
         setDeliveriesSplit('split');
