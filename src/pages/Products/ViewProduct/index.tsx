@@ -120,12 +120,11 @@ export default function ViewProductsDeliveries() {
     if (value) {
       setPlayingForSchedule(true);
       handleStartPlayingTime();
-      // localStorage.setItem('playStart', JSON.stringify(Date.now()));
+      localStorage.setItem('@playStart', JSON.stringify(Date.now()));
     }
-    // if (!value) {
-    //   console.log('pausou o timer');
-    //   localStorage.setItem('pausePlay', JSON.stringify(Date.now()));
-    // }
+    if (!value) {
+      localStorage.setItem('@pausePlay', JSON.stringify(Date.now()));
+    }
   };
 
   const handleNavigateProduct = (infoProduct: any, idProduct: any) => {
@@ -140,6 +139,7 @@ export default function ViewProductsDeliveries() {
   };
 
   useEffect(() => {
+    console.log('log do location on ViewProduct', location.state);
     setDataTask(location.state.task);
     const timeDataInfo = {
       totalTime: location.state.task.totalTime,
@@ -147,9 +147,7 @@ export default function ViewProductsDeliveries() {
     };
     setTimeData(timeDataInfo);
     setDataProducts(location.state.delivery);
-  }, [location]);
 
-  useEffect(() => {
     async function getTimelineData() {
       try {
         const response = await api.get(`task/timeline/${location.state.task.task_id}`);
@@ -220,7 +218,7 @@ export default function ViewProductsDeliveries() {
           <CardTaskInfo
             cardTitle="Contexto geral"
             cardType="text"
-            dataText={location.state.task.description}
+            dataText={dataTask?.description}
             isPlayingTime={() => ''}
           />
         </CardsWrapper>
@@ -270,22 +268,22 @@ export default function ViewProductsDeliveries() {
             <RightInfosTitle>Detalhes da tarefa</RightInfosTitle>
             <TaskInfoField>
               <div className="info-title">Tempo estimado:</div>
-              <div className="info-description">{location.state.task.totalTime}</div>
+              <div className="info-description">{dataTask?.totalTime}</div>
             </TaskInfoField>
 
             <TaskInfoField>
               <div className="info-title">Responsável:</div>
-              <div className="info-description">???</div>
+              <div className="info-description">Qual???</div>
             </TaskInfoField>
 
             <TaskInfoField>
               <div className="info-title">Etapa:</div>
-              <div className="info-description">{location.state.task.step}</div>
+              <div className="info-description">{dataTask?.card_name}</div>
             </TaskInfoField>
 
             <TaskInfoField>
               <div className="info-title">Formato:</div>
-              <div className="info-description">{location.state.task.status}???</div>
+              <div className="info-description">Do que???</div>
             </TaskInfoField>
 
             <TaskInfoField>
@@ -295,20 +293,26 @@ export default function ViewProductsDeliveries() {
 
             <TaskInfoField>
               <div className="info-title">Prioridade:</div>
-              <div className="info-description">???</div>
+              <div
+                className={
+                  dataTask?.urgent === 'false' ? 'info-description' : 'info-description urgent'
+                }
+              >
+                {dataTask?.urgent === 'false' ? 'Normal' : 'Urgente'}
+              </div>
             </TaskInfoField>
 
             <TaskInfoField>
               <div className="info-title">Data inicial:</div>
               <div className="info-description">
-                {moment(location.state.task.copywriting_date_end).format('DD/MM/YYYY')}
+                {moment(dataTask?.copywriting_date_end).format('DD/MM/YYYY')}
               </div>
             </TaskInfoField>
 
             <TaskInfoField>
               <div className="info-title">Data final:</div>
               <div className="info-description">
-                {moment(location.state.task.creation_date_end).format('DD/MM/YYYY')}
+                {moment(dataTask?.creation_date_end).format('DD/MM/YYYY')}
               </div>
             </TaskInfoField>
           </TasksInfos>

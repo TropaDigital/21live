@@ -236,6 +236,11 @@ export const TaskInfoField = styled.div`
   .info-description {
     color: var(--gray-900);
     font-weight: var(--weight-semibold);
+    text-transform: capitalize;
+
+    &.urgent {
+      color: var(--Danger);
+    }
   }
 `;
 

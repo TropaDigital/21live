@@ -64,6 +64,7 @@ interface TaskDelivery {
   timeConsumed: string;
   totalTime: string;
   status: string;
+  card_name: string;
 }
 
 export interface IDelivery {
@@ -198,7 +199,7 @@ export default function DeliveryTable({
                     </td>
                     <td>
                       <div className="column">
-                        {delivery.step}???
+                        {delivery.card_name}
                         <span>Fluxo: {delivery.flow}</span>
                       </div>
                     </td>

@@ -24,6 +24,7 @@ import ProgressBar from '../ProgressBar';
 
 // Utils
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
+import { ro } from 'date-fns/locale';
 
 interface Product {
   id: string;
@@ -130,9 +131,17 @@ export default function ProductTable({
                 <td>
                   <div dangerouslySetInnerHTML={{ __html: row.description }} />
                 </td>
-                <td>????</td>
-                <td>{row.type}</td>
-                <td>{row.reason_change}</td>
+                <td>{row.size}</td>
+                <td style={{ textTransform: 'capitalize' }}>{row.type}</td>
+                <td>
+                  {row.reason_change === '1'
+                    ? 'Criação'
+                    : row.reason_change === '2'
+                    ? 'Desmembramento'
+                    : row.reason_change === '3'
+                    ? 'Alteração Interna'
+                    : 'Alteração externa'}
+                </td>
                 {workFor === 'product' && (
                   <td>
                     <div

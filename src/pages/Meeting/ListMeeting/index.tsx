@@ -368,13 +368,19 @@ export default function ListMeeting() {
                     Ver todos
                   </FilterButton>
                   <FilterButton
-                    onClick={() => setSelectedFilter('recent')}
+                    onClick={() => {
+                      setSelectedFilter('recent');
+                      setFilterOrder('asc');
+                    }}
                     className={selectedFilter === 'recent' ? 'borders selected' : 'borders'}
                   >
                     Mais recente
                   </FilterButton>
                   <FilterButton
-                    onClick={() => setSelectedFilter('older')}
+                    onClick={() => {
+                      setSelectedFilter('older');
+                      setFilterOrder('desc');
+                    }}
                     className={selectedFilter === 'older' ? 'selected' : ''}
                   >
                     Mais antigo
