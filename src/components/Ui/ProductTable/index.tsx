@@ -108,7 +108,7 @@ export default function ProductTable({
           {data?.products.map((row: any, index: number) => (
             <tbody key={index}>
               <tr style={{ cursor: 'pointer' }} onClick={() => productSelected(row, index + 1)}>
-                <td>#{String(index + 1).padStart(3, '0')}</td>
+                <td>#{String(index + 1).padStart(2, '0')}</td>
                 <td>
                   <div className="flex info">
                     <IconText /> {row.service}
@@ -121,11 +121,11 @@ export default function ProductTable({
                         {timeData?.timeConsumed}
                       </span>
                       <ProgressBar
-                        totalHours={convertToMilliseconds(timeData?.totalTime)}
+                        totalHours={convertToMilliseconds(row?.minutes)}
                         restHours={convertToMilliseconds(timeData?.timeConsumed)}
                       />
                     </td>
-                    <td>{timeData?.totalTime}</td>
+                    <td>{row?.minutes}</td>
                   </>
                 )}
                 <td>
