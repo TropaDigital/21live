@@ -14,6 +14,10 @@ import HeaderOpenTask from '../../../components/HeaderTaskPage';
 import CardTaskInfo from '../../../components/Ui/CardTaskInfo';
 import ProductTable from '../../../components/Ui/ProductTable';
 import { ContainerDefault } from '../../../components/UiElements/styles';
+import ModalDefault from '../../../components/Ui/ModalDefault';
+import { InputDefault } from '../../../components/Inputs/InputDefault';
+import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
+import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 
 // Styles
 import {
@@ -43,10 +47,8 @@ import api from '../../../services/api';
 // Libraries
 import moment from 'moment';
 import 'moment/dist/locale/pt-br';
-import ModalDefault from '../../../components/Ui/ModalDefault';
-import { InputDefault } from '../../../components/Inputs/InputDefault';
-import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
-import ButtonDefault from '../../../components/Buttons/ButtonDefault';
+
+// Hooks
 import useDebouncedCallback from '../../../hooks/useDebounced';
 
 interface TimelineProps {
@@ -117,13 +119,10 @@ export default function ViewProductsDeliveries() {
   };
 
   const handlePlayingType = (value: boolean) => {
+    // console.log('log do playing type', value);
     if (value) {
       setPlayingForSchedule(true);
       handleStartPlayingTime();
-      localStorage.setItem('@playStart', JSON.stringify(Date.now()));
-    }
-    if (!value) {
-      localStorage.setItem('@pausePlay', JSON.stringify(Date.now()));
     }
   };
 
@@ -139,7 +138,7 @@ export default function ViewProductsDeliveries() {
   };
 
   useEffect(() => {
-    console.log('log do location on ViewProduct', location.state);
+    // console.log('log do location on ViewProduct', location.state);
     setDataTask(location.state.task);
     const timeDataInfo = {
       totalTime: location.state.task.totalTime,
