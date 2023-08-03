@@ -125,6 +125,19 @@ export interface IProductTask {
   period: string; // monthly yearly
 }
 
+export interface IServicesCreate {
+  tenant_id?: number;
+  service: string;
+  description: string;
+  type: string;
+  size: string;
+  category: string;
+  flag?: string;
+  minutes_creation: any;
+  minutes_essay: any;
+  minutes: any;
+}
+
 export interface ICommentTask {
   comment_id?: number;
   user_id: number;
