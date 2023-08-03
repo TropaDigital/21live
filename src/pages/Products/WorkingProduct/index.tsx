@@ -168,11 +168,7 @@ export default function WorkingProduct() {
   const handlePlayingType = (value: boolean) => {
     if (value) {
       handleStartPlayingTime();
-      // localStorage.setItem('playStart', JSON.stringify(Date.now()));
     }
-    // if (!value) {
-    //   localStorage.setItem('pausePlay', JSON.stringify(Date.now()));
-    // }
   };
 
   const handleStartPlayingTime = async () => {
@@ -181,9 +177,15 @@ export default function WorkingProduct() {
       type_play: 'product'
     };
 
+    const taskClock = {
+      task_id: location.state.taskInfos.task_id
+    };
+
     try {
-      const response = await api.post(`/task/switch/play`, playType);
-      console.log('log do response', response.data.result);
+      const responseTypeOfPlay = await api.post(`/task/switch/play`, playType);
+      const responseClock = await api.post(`/clock`, taskClock);
+
+      console.log('log do responseClock', responseClock);
     } catch (error: any) {
       console.log('log do error play', error);
     }
@@ -207,7 +209,7 @@ export default function WorkingProduct() {
               cardTitle="Iniciar atividade"
               cardType="time"
               dataTime={taskInfos ? taskInfos.totalTime : ''}
-              isPlayingTime={() => handlePlayingType}
+              isPlayingTime={handlePlayingType}
             />
           )}
 
