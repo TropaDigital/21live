@@ -55,50 +55,112 @@ export default function CardTaskInfo({
   dataTime,
   isPlayingTime
 }: CardTaskInfoProps) {
-  const [time, setTime] = useState<number>(0);
-  const [timerOn, setTimerOn] = useState<boolean>(false);
+  // const [time, setTime] = useState<number>(0);
+  // const [timerOn, setTimerOn] = useState<boolean>(false);
   const [modalContext, setModalContext] = useState<boolean>(false);
 
-  useEffect(() => {
-    let interval: any = null;
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [elapsedTime, setElapsedTime] = useState<number>(0);
 
-    if (timerOn) {
+  useEffect(() => {
+    const savedElapsedTime = localStorage.getItem('elapsedTime');
+    if (savedElapsedTime !== '0') {
+      setElapsedTime(Number(savedElapsedTime));
+      // setStartTime(Date.now());
       isPlayingTime(true);
-      interval = setInterval(() => {
-        setTime((prevTime) => prevTime + 10);
-      }, 10);
-    } else {
-      isPlayingTime(false);
-      clearInterval(interval);
+    }
+  }, []);
+
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+
+    if (startTime !== null) {
+      intervalId = setInterval(() => {
+        const now = Date.now();
+        setElapsedTime((prevElapsedTime) => prevElapsedTime + now - startTime);
+        setStartTime(now);
+      }, 1000);
     }
 
-    return () => clearInterval(interval);
-  }, [timerOn]);
+    // Save elapsed time to local storage whenever it changes
+    localStorage.setItem('elapsedTime', String(elapsedTime));
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [startTime, elapsedTime]);
+
+  const handleStartStop = () => {
+    console.log('log do handleStartStop', startTime);
+    if (startTime === null) {
+      setStartTime(Date.now());
+      isPlayingTime(true);
+    } else {
+      setStartTime(null);
+      isPlayingTime(false);
+    }
+  };
+
+  // const handleReset = () => {
+  //   setStartTime(null);
+  //   setElapsedTime(0);
+  //   localStorage.removeItem('elapsedTime');
+  // };
+
+  const formatTime = (time: number): string => {
+    const hours = Math.floor(time / 3600000);
+    const minutes = Math.floor((time % 3600000) / 60000);
+    const seconds = Math.floor((time % 60000) / 1000);
+
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(
+      seconds
+    ).padStart(2, '0')}`;
+  };
+
+  // useEffect(() => {
+  //   let interval: any = null;
+
+  //   if (timerOn) {
+  //     isPlayingTime(true);
+  //     interval = setInterval(() => {
+  //       setTime((prevTime) => prevTime + 10);
+  //     }, 10);
+  //   } else {
+  //     isPlayingTime(false);
+  //     clearInterval(interval);
+  //   }
+
+  //   return () => clearInterval(interval);
+  // }, [timerOn]);
 
   // Function to get diff time
-  useEffect(() => {
-    const x = moment(Date.now());
-    const y = moment(localStorage.getItem('playStart'));
-    const duration = moment.duration(x.diff(y));
-    const Milliseconds = duration.asMilliseconds();
+  // useEffect(() => {
+  //   const x = moment(Date.now());
+  //   const y = moment(Number(localStorage.getItem('playStart')));
+  //   const duration = moment.duration(x.diff(y));
+  //   const Milliseconds = duration.asMilliseconds();
 
-    function padTo2Digits(num: any) {
-      return num.toString().padStart(2, '0');
-    }
+  //   function padTo2Digits(num: any) {
+  //     return num.toString().padStart(2, '0');
+  //   }
 
-    function convertMsToTime(milliseconds: any) {
-      let seconds = Math.floor(milliseconds / 1000);
-      let minutes = Math.floor(seconds / 60);
-      const hours = Math.floor(minutes / 60);
+  //   function convertMsToTime(milliseconds: any) {
+  //     let seconds = Math.floor(milliseconds / 1000);
+  //     let minutes = Math.floor(seconds / 60);
+  //     const hours = Math.floor(minutes / 60);
 
-      seconds = seconds % 60;
-      minutes = minutes % 60;
+  //     seconds = seconds % 60;
+  //     minutes = minutes % 60;
 
-      return `${padTo2Digits(hours)}:${padTo2Digits(minutes)}:${padTo2Digits(seconds)}`;
-    }
+  //     return `${padTo2Digits(hours)}:${padTo2Digits(minutes)}:${padTo2Digits(seconds)}`;
+  //   }
 
-    // console.log('log do duration', convertMsToTime(Milliseconds));
-  }, []);
+  //   console.log('log do duration', convertMsToTime(Milliseconds));
+  // }, [timerOn]);
+
+  // useEffect(() => {
+  //   console.log('log do time', time);
+  // }, [time]);
 
   return (
     <>
@@ -115,32 +177,21 @@ export default function CardTaskInfo({
         {cardType === 'time' && (
           <>
             <PlayTimer>
-              {!timerOn && (
-                <PlayPauseButton
-                  onClick={() => {
-                    setTimerOn(true);
-                    localStorage.setItem('playStart', JSON.stringify(Date.now()));
-                  }}
-                  className="stop"
-                >
+              {startTime === null && (
+                <PlayPauseButton onClick={handleStartStop} className="stop">
                   <IconPlay />
                 </PlayPauseButton>
               )}
-              {timerOn && (
-                <PlayPauseButton
-                  onClick={() => {
-                    setTimerOn(false);
-                    localStorage.setItem('pausePlay', JSON.stringify(Date.now()));
-                  }}
-                  className="play"
-                >
+              {startTime !== null && (
+                <PlayPauseButton onClick={handleStartStop} className="play">
                   <IoMdPause />
                 </PlayPauseButton>
               )}
-              <StopWatchTimer className={!timerOn ? 'stopped' : 'running'}>
-                {('0' + Math.floor((time / 3600000) % 60)).slice(-2)}:
+              <StopWatchTimer className={!startTime ? 'stopped' : 'running'}>
+                {formatTime(elapsedTime)}
+                {/* {('0' + Math.floor((time / 3600000) % 60)).slice(-2)}:
                 {('0' + Math.floor((time / 60000) % 60)).slice(-2)}:
-                {('0' + Math.floor((time / 1000) % 60)).slice(-2)}
+                {('0' + Math.floor((time / 1000) % 60)).slice(-2)} */}
                 {/* Milémisimos de segundos */}
                 {/* {('0' + Math.floor((time / 10) % 100)).slice(-2)} */}
               </StopWatchTimer>
