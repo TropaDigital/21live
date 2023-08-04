@@ -7,6 +7,8 @@ export interface IProduct {
   type: string;
   size: string;
   minutes: string;
+  minutes_creation: any;
+  minutes_essay: any;
   quantity: number;
   period: string;
 }
@@ -18,6 +20,8 @@ export interface IProductBackend {
   flag: string;
   category: string;
   minutes: string;
+  minutes_creation: any;
+  minutes_essay: any;
   period: string;
   product_id: string;
   project_id: string;
@@ -152,6 +156,8 @@ export interface ServicesProps {
   type: string;
   size: string;
   minutes: string;
+  minutes_creation: any;
+  minutes_essay: any;
   created: string;
   updated: string;
   category?: string;

@@ -156,14 +156,14 @@ function RoutesAll() {
           }
         />
 
-        <Route
+        {/* <Route
           path="/projeto/:id"
           element={
             <PrivateRoutes>
               <Board />
             </PrivateRoutes>
           }
-        />
+        /> */}
 
         <Route
           path="/criar-projeto"
