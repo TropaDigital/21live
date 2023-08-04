@@ -39,11 +39,11 @@ interface FlowProps {
   user_id: string;
 }
 
-interface FlowRole {
-  function: string;
-  name: string;
-  user_id: string;
-}
+// interface FlowRole {
+//   function: string;
+//   name: string;
+//   user_id: string;
+// }
 
 export default function InfoGeral({
   data,
@@ -54,12 +54,12 @@ export default function InfoGeral({
   error
 }: Props) {
   const { addToast } = useToast();
-  const [flowsManagers, setFlowManagers] = useState<FlowRole[]>([]);
+  // Responsaveis pelo flow
+  // const [flowsManagers, setFlowManagers] = useState<FlowRole[]>([]);
   const handleGetFlowTask = async (id: any) => {
     try {
       const responseFlow = await api.get(`/task-function?flow=${id}`);
-      setFlowManagers(responseFlow.data.result);
-
+      // setFlowManagers(responseFlow.data.result);
       if (responseFlow.data.result.length === 0) {
         addToast({
           title: 'Atenção',
@@ -132,7 +132,8 @@ export default function InfoGeral({
         </SelectDefault>
       </FlexLine>
 
-      {flowsManagers.length > 0 && (
+      {/* Select responsável flow */}
+      {/* {flowsManagers.length > 0 && (
         <FlexLine>
           <SelectDefault
             label="Fluxo - Responsável"
@@ -149,7 +150,7 @@ export default function InfoGeral({
           </SelectDefault>
           <div style={{ width: '48.5%' }}></div>
         </FlexLine>
-      )}
+      )} */}
     </div>
   );
 }
