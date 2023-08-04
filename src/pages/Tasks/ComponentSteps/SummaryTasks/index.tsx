@@ -25,6 +25,11 @@ import {
 // Utils
 import { multiplyTime, sumTimes } from '../../../../utils/convertTimes';
 
+// Services
+import api from '../../../../services/api';
+import { FlexLine } from '../../../Projects/ComponentSteps/styles';
+import { SelectDefault } from '../../../../components/Inputs/SelectDefault';
+
 interface TasksProps {
   createTasks: () => void;
   editTasks: () => void;
@@ -34,6 +39,20 @@ interface TasksProps {
   summaryExtrainfos: any;
   taskType: any;
   updateTask: boolean;
+  handleInputChange: (
+    e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>
+  ) => void;
+  error: FormProps;
+}
+
+interface FlowRole {
+  function: string;
+  name: string;
+  user_id: string;
+}
+
+interface FormProps {
+  [key: string]: any;
 }
 
 export default function SummaryTasks({
@@ -44,17 +63,31 @@ export default function SummaryTasks({
   projectInfos,
   summaryExtrainfos,
   taskType,
-  updateTask
+  updateTask,
+  handleInputChange,
+  error
 }: TasksProps) {
   const [deliveryArrayHours, setDeliveryArrayHours] = useState<any>('');
   const [totalArrayHours, setTotalArrayHours] = useState<any>('');
+  const [flowsManagers, setFlowManagers] = useState<FlowRole[]>([]);
 
-  // useEffect(() => {
-  //   console.log('log selected products on summary', selectedProducts);
-  //   console.log('log tasks infos on summary', taskSummary);
-  //   console.log('log tasks infos on project', projectInfos);
-  //   console.log('log extra infos for summary tasks', summaryExtrainfos);
-  // }, [taskSummary, projectInfos, summaryExtrainfos, selectedProducts]);
+  useEffect(() => {
+    // console.log('log selected products on summary', selectedProducts);
+    console.log('log tasks infos on summary', taskSummary);
+    // console.log('log tasks infos on project', projectInfos);
+    // console.log('log extra infos for summary tasks', summaryExtrainfos);
+
+    const handleGetFlowTask = async (id: any) => {
+      try {
+        const responseFlow = await api.get(`/task-function?flow=${id}`);
+        setFlowManagers(responseFlow.data.result);
+      } catch (error: any) {
+        console.log('log do error', error);
+      }
+    };
+
+    handleGetFlowTask(taskSummary.flow_id);
+  }, [taskSummary, projectInfos, summaryExtrainfos, selectedProducts]);
 
   function setTotalHours() {
     if (updateTask) {
@@ -361,41 +394,61 @@ export default function SummaryTasks({
         )}
       </div>
 
-      <SummaryTasksAbout>
-        <div className="title">Sobre a tarefa</div>
-        {taskType !== 'horas' && (
-          <>
-            <div className="item-hours">
-              {/* Total de itens: <span>{selectedProducts.length + deadlineTotal}</span> */}
-              Total de itens: <span>1</span>
-            </div>
-            <div className="splitter"></div>
-            <div className="item-hours">
-              Horas estimadas <span>{projectInfos.tempo}</span>
-            </div>
-          </>
+      <div>
+        {/* Select responsável flow */}
+        {flowsManagers.length > 0 && (
+          <FlexLine>
+            <SelectDefault
+              label="Selecione o responsável inicial da tarefa"
+              name="user_id"
+              value={taskSummary.user_id}
+              onChange={(e) => handleInputChange(e)}
+              error={error?.user_id}
+            >
+              {flowsManagers?.map((row: FlowRole) => (
+                <option key={row.user_id} value={row.user_id}>
+                  {row.function} - {row.name}
+                </option>
+              ))}
+            </SelectDefault>
+          </FlexLine>
         )}
-        {taskType === 'horas' && (
-          <>
-            <div className="item-hours">
-              {/* Total de itens: <span>{selectedProducts.length + deadlineTotal}</span> */}
-              Total de itens: <span>{productsTotal}</span>
-            </div>
-            <div className="splitter"></div>
-            <div className="item-hours">
-              Horas estimadas <span>{totalArrayHours}</span>
-            </div>
-          </>
-        )}
-        <SummaryButtons>
-          <ButtonDefault typeButton="primary" isOutline onClick={() => editTasks()}>
-            Editar tarefa
-          </ButtonDefault>
-          <ButtonDefault onClick={() => createTasks()}>
-            {updateTask ? 'Atualizar tarefa' : 'Criar tarefa'}
-          </ButtonDefault>
-        </SummaryButtons>
-      </SummaryTasksAbout>
+        <SummaryTasksAbout>
+          <div className="title">Sobre a tarefa</div>
+          {taskType !== 'horas' && (
+            <>
+              <div className="item-hours">
+                {/* Total de itens: <span>{selectedProducts.length + deadlineTotal}</span> */}
+                Total de itens: <span>1</span>
+              </div>
+              <div className="splitter"></div>
+              <div className="item-hours">
+                Horas estimadas <span>{projectInfos.tempo}</span>
+              </div>
+            </>
+          )}
+          {taskType === 'horas' && (
+            <>
+              <div className="item-hours">
+                {/* Total de itens: <span>{selectedProducts.length + deadlineTotal}</span> */}
+                Total de itens: <span>{productsTotal}</span>
+              </div>
+              <div className="splitter"></div>
+              <div className="item-hours">
+                Horas estimadas <span>{totalArrayHours}</span>
+              </div>
+            </>
+          )}
+          <SummaryButtons>
+            <ButtonDefault typeButton="primary" isOutline onClick={() => editTasks()}>
+              Editar tarefa
+            </ButtonDefault>
+            <ButtonDefault onClick={() => createTasks()}>
+              {updateTask ? 'Atualizar tarefa' : 'Criar tarefa'}
+            </ButtonDefault>
+          </SummaryButtons>
+        </SummaryTasksAbout>
+      </div>
     </SummaryWrapper>
   );
 }
