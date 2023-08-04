@@ -94,6 +94,8 @@ export default function InfoProducts({
       size: product.size,
       quantity: counter,
       minutes: '' || product.minutes,
+      minutes_creation: '' || product.minutes_creation,
+      minutes_essay: '' || product.minutes_essay,
       period: '' || product.period
     };
     setQuantityProducts(productSelected);
