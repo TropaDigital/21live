@@ -62,11 +62,21 @@ export default function EditFluxo() {
       });
     } catch (err: any) {
       console.log('ERR =>', err);
-      addToast({
-        title: 'Atenção',
-        description: err.response.data.message,
-        type: 'danger'
-      });
+      if (err.response.data.result.length !== 0) {
+        err.response.data.result.map((row: any) => {
+          addToast({
+            type: 'danger',
+            title: 'ATENÇÃO',
+            description: row.error
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: err.response.data.message,
+          type: 'danger'
+        });
+      }
     }
   }
 
@@ -106,7 +116,7 @@ export default function EditFluxo() {
             gap: '0.75rem'
           }}
         >
-          <ButtonDefault
+          {/* <ButtonDefault
             typeButton="info"
             onClick={() =>
               navigate(`/projeto/${location.state.name.replaceAll(' ', '_')}`, {
@@ -116,7 +126,7 @@ export default function EditFluxo() {
           >
             <BiShow />
             Visualizar
-          </ButtonDefault>
+          </ButtonDefault> */}
           <ButtonDefault typeButton="success" onClick={saveFluxo}>
             <BiSave />
             Salvar
