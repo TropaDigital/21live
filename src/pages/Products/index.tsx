@@ -932,6 +932,17 @@ export default function Services() {
             />
           </FieldDefault>
 
+          {modal.type.includes('Editar produto') && (
+            <FieldDefault>
+              <EstimatedTime>
+                <span>Tempo total do produto</span>
+                <EstimatedTimeInputs>
+                  <div>{formData?.minutes}</div>
+                </EstimatedTimeInputs>
+              </EstimatedTime>
+            </FieldDefault>
+          )}
+
           <FieldDefault>
             <EstimatedTime>
               <span>Tempo estimado de criação (Horas : Minutos)</span>
