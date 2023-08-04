@@ -88,7 +88,7 @@ export default function CardProductsSelected({
       <CardProduct openOptions={openCard}>
         <CardTop>
           <CardProductTitle>
-            #{id} - {title}
+            #{String(id).padStart(2, '0')} - {title}
           </CardProductTitle>
           <ArrowButton onClick={() => handleOptions(openCard)}>
             {!openCard ? <FiChevronDown /> : <FiChevronUp />}
