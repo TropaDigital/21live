@@ -199,6 +199,8 @@ export default function InfoDeliveries({
         description: dataSingleProduct[0].description,
         flag: dataSingleProduct[0].flag,
         minutes: dataSingleProduct[0].minutes,
+        minutes_creation: dataSingleProduct[0].minutes_creation,
+        minutes_essay: dataSingleProduct[0].minutes_essay,
         quantity: '1',
         service: dataSingleProduct[0].service,
         service_id: dataSingleProduct[0].service_id,
