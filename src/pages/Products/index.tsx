@@ -65,6 +65,8 @@ interface ServicesProps {
   type: string;
   size: string;
   minutes: string;
+  minutes_creation: any;
+  minutes_essay: any;
   category: string;
   flag: string;
 }
@@ -74,9 +76,11 @@ interface FormDataProps {
   description: string;
   type: string;
   size: string;
-  minutes: string;
   category: string;
   flag: string;
+  minutes_creation: any;
+  minutes_essay: any;
+  minutes: any;
   service_id?: number | string;
 }
 
@@ -112,6 +116,8 @@ export default function Services() {
       type: '',
       size: '',
       minutes: '',
+      minutes_creation: '',
+      minutes_essay: '',
       category: '',
       flag: 'false',
       service_id: ''
@@ -134,6 +140,8 @@ export default function Services() {
       type: '',
       size: '',
       minutes: '',
+      minutes_creation: '',
+      minutes_essay: '',
       category: '',
       flag: ''
     }
@@ -168,9 +176,13 @@ export default function Services() {
   } = useFetch<any[]>(`pack-services?search=${search}`);
   const [selectedKitPage, setSelectedKitPage] = useState(1);
   const [listSelected, setListSelected] = useState<any[]>([]);
-  const [estimatedTime, setEstimatedTime] = useState<estimatedHoursPros>({
-    hours: '',
-    minutes: ''
+  const [estimatedTimeCreation, setEstimatedTimeCreation] = useState<estimatedHoursPros>({
+    hours: '00',
+    minutes: '00'
+  });
+  const [estimatedTimeEssay, setEstimatedTimeEssay] = useState<estimatedHoursPros>({
+    hours: '00',
+    minutes: '00'
   });
   const [category, setCategory] = useState<string>('');
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
@@ -190,18 +202,27 @@ export default function Services() {
       minutes: '',
       service_id: 0
     } as FormDataProps);
-    setEstimatedTime({
-      hours: '',
-      minutes: ''
+    setEstimatedTimeCreation({
+      hours: '00',
+      minutes: '00'
+    });
+    setEstimatedTimeEssay({
+      hours: '00',
+      minutes: '00'
     });
   }, [setData]);
 
   const handleOnEdit = (item: FormDataProps) => {
     setData(item);
 
-    setEstimatedTime({
-      hours: item.minutes.split(':')[0],
-      minutes: item.minutes.split(':')[1]
+    setEstimatedTimeCreation({
+      hours: item.minutes_creation.split(':')[0],
+      minutes: item.minutes_creation.split(':')[1]
+    });
+
+    setEstimatedTimeEssay({
+      hours: item.minutes_essay.split(':')[0],
+      minutes: item.minutes_essay.split(':')[1]
     });
 
     setModal({
@@ -221,6 +242,8 @@ export default function Services() {
         description: item.description,
         flag: item.flag,
         minutes: item.minutes,
+        minutes_creation: item.minutes_creation,
+        minutes_essay: item.minutes_essay,
         service: item.service,
         size: item.size,
         type: item.type
@@ -441,7 +464,16 @@ export default function Services() {
       try {
         event.preventDefault();
 
-        const { service, description, type, minutes, category, flag, size } = formData;
+        const {
+          service,
+          description,
+          type,
+          minutes_creation,
+          minutes_essay,
+          category,
+          flag,
+          size
+        } = formData;
         const newFormData = {
           service,
           description,
@@ -449,7 +481,8 @@ export default function Services() {
           flag,
           type,
           size,
-          minutes
+          minutes_creation,
+          minutes_essay
         };
 
         if (modal.type === 'Novo produto') {
@@ -501,25 +534,41 @@ export default function Services() {
 
   const handleAddHours = (event: any) => {
     const { name, value } = event.target;
-    if (name === 'hours') {
-      setEstimatedTime({ hours: value, minutes: estimatedTime.minutes });
+    if (name === 'hours_creation') {
+      setEstimatedTimeCreation({ hours: value, minutes: estimatedTimeCreation.minutes });
     }
-    if (name === 'minutes') {
+    if (name === 'minutes_creation') {
       if (value > 59) {
-        setEstimatedTime({ hours: estimatedTime.hours, minutes: '59' });
+        setEstimatedTimeCreation({ hours: estimatedTimeCreation.hours, minutes: '59' });
       } else {
-        setEstimatedTime({ hours: estimatedTime.hours, minutes: value });
+        setEstimatedTimeCreation({ hours: estimatedTimeCreation.hours, minutes: value });
+      }
+    }
+    if (name === 'hours_essay') {
+      setEstimatedTimeEssay({ hours: value, minutes: estimatedTimeEssay.minutes });
+    }
+    if (name === 'minutes_essay') {
+      if (value > 59) {
+        setEstimatedTimeEssay({ hours: estimatedTimeEssay.hours, minutes: '59' });
+      } else {
+        setEstimatedTimeEssay({ hours: estimatedTimeEssay.hours, minutes: value });
       }
     }
   };
 
   useEffect(() => {
-    // console.log('log do estimated time', estimatedTime);
     handleOnChangeMinutes({
-      name: 'minutes',
-      value: `${estimatedTime.hours}:${estimatedTime.minutes}:00`
+      name: 'minutes_creation',
+      value: `${estimatedTimeCreation.hours}:${estimatedTimeCreation.minutes}:00`
     });
-  }, [estimatedTime]);
+  }, [estimatedTimeCreation]);
+
+  useEffect(() => {
+    handleOnChangeMinutes({
+      name: 'minutes_essay',
+      value: `${estimatedTimeEssay.hours}:${estimatedTimeEssay.minutes}:00`
+    });
+  }, [estimatedTimeEssay]);
 
   useEffect(() => {
     setTypeList('produtos');
@@ -803,6 +852,7 @@ export default function Services() {
               required
             />
           </FieldDefault>
+
           <FieldDefault>
             <TextAreaDefault
               label="Descrição"
@@ -813,6 +863,7 @@ export default function Services() {
               required
             />
           </FieldDefault>
+
           <FieldDefault>
             <SelectDefault
               label="Tipo"
@@ -830,6 +881,7 @@ export default function Services() {
               </option>
             </SelectDefault>
           </FieldDefault>
+
           <FieldDefault>
             <InputDefault
               label="Tamanho"
@@ -841,6 +893,7 @@ export default function Services() {
               required
             />
           </FieldDefault>
+
           <FieldDefault>
             <SelectDefault
               label="Categoria"
@@ -870,6 +923,7 @@ export default function Services() {
               required
             /> */}
           </FieldDefault>
+
           <FieldDefault>
             <InputSwitchDefault
               onChange={(e) => handleOnChangeSwitch({ name: 'flag', value: e.target.checked })}
@@ -877,15 +931,16 @@ export default function Services() {
               label="Listar produto"
             />
           </FieldDefault>
+
           <FieldDefault>
             <EstimatedTime>
-              <span>Tempo estimado em Horas : Minutos</span>
+              <span>Tempo estimado de criação (Horas : Minutos)</span>
               <EstimatedTimeInputs>
                 <InputDefault
                   label=""
-                  name="hours"
+                  name="hours_creation"
                   onChange={handleAddHours}
-                  value={estimatedTime.hours}
+                  value={estimatedTimeCreation.hours}
                   type="number"
                   min="0"
                   step="1"
@@ -895,9 +950,41 @@ export default function Services() {
                 :
                 <InputDefault
                   label=""
-                  name="minutes"
+                  name="minutes_creation"
                   onChange={handleAddHours}
-                  value={estimatedTime.minutes}
+                  value={estimatedTimeCreation.minutes}
+                  type="number"
+                  min="0"
+                  max="59"
+                  step="1"
+                  icon={BiTime}
+                  required
+                />
+              </EstimatedTimeInputs>
+            </EstimatedTime>
+          </FieldDefault>
+
+          <FieldDefault>
+            <EstimatedTime>
+              <span>Tempo estimado de redação (Horas : Minutos)</span>
+              <EstimatedTimeInputs>
+                <InputDefault
+                  label=""
+                  name="hours_essay"
+                  onChange={handleAddHours}
+                  value={estimatedTimeEssay.hours}
+                  type="number"
+                  min="0"
+                  step="1"
+                  icon={BiTime}
+                  required
+                />
+                :
+                <InputDefault
+                  label=""
+                  name="minutes_essay"
+                  onChange={handleAddHours}
+                  value={estimatedTimeEssay.minutes}
                   type="number"
                   min="0"
                   max="59"
@@ -933,6 +1020,8 @@ export default function Services() {
               type: '',
               size: '',
               minutes: '',
+              minutes_creation: '',
+              minutes_essay: '',
               category: '',
               flag: ''
             }
@@ -948,8 +1037,18 @@ export default function Services() {
               </SummaryTaskInfo>
 
               <SummaryTaskInfo>
-                <div className="title-info">Horas:</div>
+                <div className="title-info">Total de horas:</div>
                 <div className="info">{modalShowProduct.product.minutes}</div>
+              </SummaryTaskInfo>
+
+              <SummaryTaskInfo>
+                <div className="title-info">Total de horas de criação:</div>
+                <div className="info">{modalShowProduct.product.minutes_creation}</div>
+              </SummaryTaskInfo>
+
+              <SummaryTaskInfo>
+                <div className="title-info">Total de horas de redação:</div>
+                <div className="info">{modalShowProduct.product.minutes_essay}</div>
               </SummaryTaskInfo>
 
               <SummaryTaskInfo>
