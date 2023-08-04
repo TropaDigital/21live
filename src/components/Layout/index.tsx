@@ -36,6 +36,12 @@ export default function Layout() {
               identifier: 'dashboard_admin'
             },
             {
+              to: '/clientes',
+              name: 'Clientes',
+              icon: IconUsers,
+              identifier: 'client_admin'
+            },
+            {
               to: '/projetos',
               name: 'Projetos',
               icon: IconProjects,
@@ -58,12 +64,6 @@ export default function Layout() {
               name: 'Tarefas',
               icon: IconClipboard,
               identifier: 'task_essay'
-            },
-            {
-              to: '/clientes',
-              name: 'Clientes',
-              icon: IconUsers,
-              identifier: 'client_admin'
             },
             {
               to: '/produtos',
