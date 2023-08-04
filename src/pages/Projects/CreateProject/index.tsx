@@ -144,6 +144,7 @@ export default function CreateProject() {
   // End Hours calculations
 
   const handleOnAddProducts = (items: IProduct) => {
+    console.log('log do items no add products', items);
     setProductsArray((prevState: any) => [...prevState, items]);
   };
 
