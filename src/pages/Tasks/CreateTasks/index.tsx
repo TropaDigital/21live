@@ -170,7 +170,7 @@ export default function CreateTasks() {
   const { data: dataProjects, fetchData: fetchProjects } = useFetch<ServicesProps[]>(
     `project-products/${DTOForm.tenant_id}`
   );
-  const { data: dataFlow } = useFetch<any[]>(`/flow?search=&perPage=1000`);
+  const { data: dataFlow, fetchData: fetchFlow } = useFetch<any[]>(`/flow/${DTOForm?.flow_id}`);
   const { data: dataTypes } = useFetch<any[]>(`/task-type`);
   const [productsArray, setProductsArray] = useState<ServicesProps[]>([]);
   // const [quantityProductsArray, setQuantityProductsArray] = useState<any[]>([]);
@@ -211,6 +211,7 @@ export default function CreateTasks() {
     showInfo: false
   };
   const [DTODelivery, setDTODelivery] = useState<any[]>([DeliveryDefault]);
+  // const [dataFlow, setDataFlow] = useState<any[]>();
 
   const addDelivery = () => {
     const newDelivery: DeliveryProps = {
@@ -237,6 +238,19 @@ export default function CreateTasks() {
       }
     }
   }, [location]);
+
+  // useEffect(() => {
+  //   const getDataFlow = async () => {
+  //     try {
+  //       const response = await api.get(`/flow/${DTOForm.flow_id}`);
+  //       setDataFlow(response.data.result);
+  //     } catch (error) {
+  //       console.log('log Error Flow', error);
+  //     }
+  //   };
+
+  //   getDataFlow();
+  // }, [DTOForm]);
 
   const handleDeliveryTitle = (value: any, id: any) => {
     if (location.state !== null) {
@@ -509,6 +523,8 @@ export default function CreateTasks() {
       description: product.description,
       flag: product.flag,
       minutes: product.minutes,
+      minutes_creation: product.minutes_creation,
+      minutes_essay: product.minutes_essay,
       service: product.service,
       service_id: product.service_id,
       size: product.size,
@@ -544,6 +560,8 @@ export default function CreateTasks() {
       description: product.description,
       flag: product.flag,
       minutes: product.minutes,
+      minutes_creation: product.minutes_creation,
+      minutes_essay: product.minutes_essay,
       service: product.service,
       service_id: product.service_id,
       size: product.size,
@@ -656,11 +674,11 @@ export default function CreateTasks() {
         setErrorInput('flow_id', undefined);
       }
 
-      if (user_id === '') {
-        throw setErrorInput('user_id', 'Fluxo - Responsável é obrigatório!');
-      } else {
-        setErrorInput('user_id', undefined);
-      }
+      // if (user_id === '') {
+      //   throw setErrorInput('user_id', 'Fluxo - Responsável é obrigatório!');
+      // } else {
+      //   setErrorInput('user_id', undefined);
+      // }
 
       if (description === '') {
         throw setErrorInput('description', 'Contexto geral é obrigatório!');
@@ -1062,6 +1080,17 @@ export default function CreateTasks() {
         step
       } = DTOForm;
 
+      if (user_id === '') {
+        addToast({
+          title: 'Atenção',
+          description: 'Responsável é obrigatório!',
+          type: 'warning'
+        });
+        throw setErrorInput('user_id', 'Responsável inicial da tarefa é obrigatório!');
+      } else {
+        setErrorInput('user_id', undefined);
+      }
+
       if (tasksType === 'livre') {
         const createNewData = {
           title,
@@ -1090,6 +1119,8 @@ export default function CreateTasks() {
                   tenant_id: user.principalTenant,
                   size: '000x000',
                   minutes: '00:00:00',
+                  minutes_creation: '00:00:00',
+                  minutes_essay: '00:00:00',
                   quantity: '1',
                   flag: 'false'
                 }
@@ -1301,9 +1332,9 @@ export default function CreateTasks() {
   //   console.log('log do tipo de task', tasksType);
   // }, [tasksType]);
 
-  useEffect(() => {
-    console.log('log do products Array', productsArray);
-  }, [productsArray]);
+  // useEffect(() => {
+  //   console.log('log do products Array', productsArray);
+  // }, [productsArray]);
 
   // useEffect(() => {
   //   console.log('log do Delivery DTO', DTODelivery);
@@ -1472,6 +1503,8 @@ export default function CreateTasks() {
                     summaryExtrainfos={selectedSummaryInfos}
                     taskType={tasksType}
                     updateTask={location.state !== null}
+                    handleInputChange={handleChangeInput}
+                    error={error}
                   />
                 </>
               )}
@@ -1490,6 +1523,8 @@ export default function CreateTasks() {
                   summaryExtrainfos={selectedSummaryInfos}
                   taskType={tasksType}
                   updateTask={location.state !== null}
+                  handleInputChange={handleChangeInput}
+                  error={error}
                 />
               )}
               {tasksType !== 'horas' && (
@@ -1502,6 +1537,8 @@ export default function CreateTasks() {
                   summaryExtrainfos={selectedSummaryInfos}
                   taskType={tasksType}
                   updateTask={location.state !== null}
+                  handleInputChange={handleChangeInput}
+                  error={error}
                 />
               )}
             </>
