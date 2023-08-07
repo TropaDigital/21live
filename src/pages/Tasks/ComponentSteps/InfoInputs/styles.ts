@@ -2,13 +2,15 @@ import styled from 'styled-components';
 
 export const InputTaskWrapper = styled.div`
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  /* flex-direction: column; */
   gap: 16px;
 `;
 
 export const InputField = styled.div`
   display: flex;
   flex-direction: column;
+  width: 50%;
   gap: 8px;
 
   &.error {

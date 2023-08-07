@@ -26,7 +26,6 @@ export default function TaskInputs({
 }: InputsProps) {
   return (
     <InputTaskWrapper>
-      {/* <InputField style={{ border: '2px solid red', padding: '4px' }}> */}
       <InputField className={inputsError?.copywriting_description ? 'error' : ''}>
         <InputFieldTitle>Input Pré-Requisitos</InputFieldTitle>
         <WrapperEditor
