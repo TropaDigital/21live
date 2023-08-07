@@ -33,7 +33,7 @@ export default function Layout() {
               to: '/dashboard',
               name: 'Dashboard',
               icon: IconDash,
-              identifier: 'dashboard_admin'
+              identifier: '21jobs_task_manager'
             },
             {
               to: '/clientes',
@@ -45,13 +45,13 @@ export default function Layout() {
               to: '/projetos',
               name: 'Projetos',
               icon: IconProjects,
-              identifier: 'project_admin'
+              identifier: '21jobs_projects_all'
             },
             {
               to: '/tarefas',
               name: 'Tarefas',
               icon: IconClipboard,
-              identifier: 'task_admin'
+              identifier: '21jobs_tasks_all'
             },
             {
               to: '/suas-tarefas',
@@ -69,7 +69,7 @@ export default function Layout() {
               to: '/produtos',
               name: 'Produtos',
               icon: IconProducts,
-              identifier: 'products_admin'
+              identifier: '21jobs_products_all'
             },
             {
               to: '/fluxo',
