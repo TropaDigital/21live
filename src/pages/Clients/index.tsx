@@ -1,12 +1,19 @@
+/* eslint-disable import-helpers/order-imports */
+// React
 import { useCallback, useEffect, useId, useState } from 'react';
+
+// Icons
 import { BiEdit, BiFilter, BiPlus, BiSearchAlt, BiX } from 'react-icons/bi';
 import { HiOutlineEye } from 'react-icons/hi';
 
+// Services
 import api from '../../services/api';
 
+// Utils
 import { convertToMilliseconds } from '../../utils/convertToMilliseconds';
 import { useDebounce } from '../../utils/useDebounce';
 
+// Components
 import ButtonDefault from '../../components/Buttons/ButtonDefault';
 import HeaderPage from '../../components/HeaderPage';
 import { InputDefault } from '../../components/Inputs/InputDefault';
@@ -23,8 +30,10 @@ import {
   FooterModal
 } from '../../components/UiElements/styles';
 
+// Libraries
 import * as Dialog from '@radix-ui/react-dialog';
 
+// Styles
 import { Container } from './styles';
 
 interface UserProps {
