@@ -385,10 +385,10 @@ export default function TaskList() {
                   <span style={{ marginBottom: '4px', display: 'block' }}>{row.timeConsumed}</span>
                   <ProgressBar
                     totalHours={convertToMilliseconds(row?.totalTime)}
-                    restHours={convertToMilliseconds(row?.timeConsumed)}
+                    restHours={convertToMilliseconds(row.timeConsumed)}
                   />
                 </td>
-                <td>{row.totalTime}</td>
+                <td>{row.totalTime !== 'undefined' ? row.totalTime : '00:00:00'}</td>
                 <td>
                   <Avatar data={avatarAll} />
                 </td>
