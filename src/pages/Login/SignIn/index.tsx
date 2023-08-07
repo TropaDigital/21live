@@ -1,16 +1,24 @@
+/* eslint-disable import-helpers/order-imports */
+// React
 import React, { useCallback, useState } from 'react';
-import { BiEnvelope, BiLockAlt } from 'react-icons/bi';
-import { useNavigate } from 'react-router-dom';
 
+// Icons
+import { BiEnvelope, BiLockAlt } from 'react-icons/bi';
+
+// Hooks
 import { useAuth } from '../../../hooks/AuthContext';
 import { useToast } from '../../../hooks/toast';
 
+// Images
 import logo from '../../../assets/bg.svg';
+import BgImage from '../../../assets/login.jpg';
 
+// Components
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { FieldFormDefault } from '../../../components/UiElements/styles';
 
+// Styles
 import { AnimationContainer, Background, Container, Content } from './styles';
 
 interface SignInFormData {
@@ -20,7 +28,7 @@ interface SignInFormData {
 
 export default function SignIn() {
   const { addToast } = useToast();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { signIn } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<SignInFormData>({
@@ -70,14 +78,14 @@ export default function SignIn() {
         });
       }
     },
-    [signIn, addToast, formData, navigate]
+    [signIn, addToast, formData]
   );
 
   return (
     <Container>
       <Content>
         <AnimationContainer>
-          <img src={logo} alt="GoBarber" />
+          <img src={logo} alt="21Live logo" />
 
           <form onSubmit={handleSubmit}>
             <h1>Faça seu logon</h1>
@@ -122,6 +130,7 @@ export default function SignIn() {
         </AnimationContainer>
       </Content>
 
+      {/* <Background style={{ backgroundImage: `url(${BgImage})` }} /> */}
       <Background />
     </Container>
   );
