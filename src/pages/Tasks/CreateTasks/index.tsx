@@ -1666,7 +1666,7 @@ export default function CreateTasks() {
                       name={row.service_id}
                       onChange={() => handleOnChangeCheckbox(row)}
                       checked={
-                        productsArray.filter((obj) => obj.service_id === row.service_id).length > 0
+                        productsArray?.filter((obj) => obj.service_id === row.service_id).length > 0
                           ? true
                           : false
                       }
