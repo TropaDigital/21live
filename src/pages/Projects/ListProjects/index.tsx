@@ -355,7 +355,7 @@ export default function ListProjects() {
               <tr key={row.project_id}>
                 <td>#{String(row.project_id).padStart(5, '0')}</td>
                 <td>{row.title}</td>
-                <td>{row.client_name}</td>
+                <td style={{ textTransform: 'capitalize' }}>{row.client_name}</td>
                 <td
                   style={{
                     padding: '14px',
