@@ -1,20 +1,29 @@
+/* eslint-disable import-helpers/order-imports */
+// React
 import React, { useCallback, useState } from 'react';
-import { BiEnvelope, BiLeftArrowAlt, BiLockAlt, BiUser } from 'react-icons/bi';
 import { Link, useNavigate } from 'react-router-dom';
 
+// Icons
+import { BiEnvelope, BiLeftArrowAlt, BiLockAlt, BiUser } from 'react-icons/bi';
+
+// Services
 import api from '../../../services/api';
 
-import { useAuth } from '../../../hooks/AuthContext';
+// Hooks
 import { useToast } from '../../../hooks/toast';
 
+// Utils
 import getValidationErrors from '../../../utils/getValidationErrors';
 
+// Images
 import logo from '../../../assets/bg.svg';
 
+// Components
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { FieldFormDefault } from '../../../components/UiElements/styles';
 
+// Styles
 import { AnimationContainer, Background, Container, Content } from './styles';
 
 interface SignInFormData {
@@ -28,7 +37,6 @@ interface SignInFormData {
 export default function SignUp() {
   const { addToast } = useToast();
   const navigate = useNavigate();
-  const { signIn } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<SignInFormData>({
     name: '',
@@ -87,7 +95,7 @@ export default function SignUp() {
         });
       }
     },
-    [signIn, addToast, formData, navigate]
+    [addToast, formData, navigate]
   );
 
   return (
