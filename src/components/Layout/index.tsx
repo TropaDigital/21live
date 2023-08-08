@@ -3,7 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 
 import {
   IconClipboard,
-  IconDash,
+  // IconDash,
   IconProjects,
   IconMeeting,
   IconTeam,
@@ -29,17 +29,17 @@ export default function Layout() {
           modalActive={modalActive}
           path={location.pathname}
           menus={[
-            {
-              to: '/dashboard',
-              name: 'Dashboard',
-              icon: IconDash,
-              identifier: '21jobs_task_manager'
-            },
+            // {
+            //   to: '/dashboard',
+            //   name: 'Dashboard',
+            //   icon: IconDash,
+            //   identifier: ''
+            // },
             {
               to: '/clientes',
               name: 'Clientes',
               icon: IconUsers,
-              identifier: 'client_admin'
+              identifier: '21jobs_client_all'
             },
             {
               to: '/projetos',
@@ -60,12 +60,6 @@ export default function Layout() {
               identifier: 'task_execute'
             },
             {
-              to: '/suas-tarefas',
-              name: 'Tarefas',
-              icon: IconClipboard,
-              identifier: 'task_essay'
-            },
-            {
               to: '/produtos',
               name: 'Produtos',
               icon: IconProducts,
@@ -75,19 +69,19 @@ export default function Layout() {
               to: '/fluxo',
               name: 'Fluxos',
               icon: IconFlux,
-              identifier: 'flow_admin'
+              identifier: '21jobs_flow_all'
             },
             {
               to: '/equipe',
               name: 'Equipe',
               icon: IconTeam,
-              identifier: 'team_admin'
+              identifier: '21jobs_team_all'
             },
             {
               to: '/reuniao',
               name: 'Atas de Reunião',
               icon: IconMeeting,
-              identifier: 'meeting_admin'
+              identifier: '21jobs_meeting_all'
             }
             // {
             //   to: '/form',
