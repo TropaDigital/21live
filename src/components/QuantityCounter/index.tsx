@@ -69,6 +69,8 @@ export default function QuantityCounter({
       size: rowQuantity.size,
       quantity: counter + 1,
       minutes: '' || rowQuantity.minutes,
+      minutes_creation: '' || rowQuantity.minutes_creation,
+      minutes_essay: '' || rowQuantity.minutes_essay,
       period: '' || rowQuantity.period
     };
     handleQuantity(productSelected);
@@ -85,6 +87,8 @@ export default function QuantityCounter({
       size: rowQuantity.size,
       quantity: counter - 1,
       minutes: '' || rowQuantity.minutes,
+      minutes_creation: '' || rowQuantity.minutes_creation,
+      minutes_essay: '' || rowQuantity.minutes_essay,
       period: '' || rowQuantity.period
     };
     handleQuantity(productSelected);
