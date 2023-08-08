@@ -33,6 +33,7 @@ import ViewTaskList from '../pages/Tasks/ViewTasks';
 import WorkingProduct from '../pages/Products/WorkingProduct';
 import ViewDelivery from '../pages/Tasks/ViewDelivery';
 import ViewProductsDeliveries from '../pages/Products/ViewProduct';
+import Requests from '../pages/Requests';
 
 function RoutesAll() {
   return (
@@ -170,6 +171,15 @@ function RoutesAll() {
           element={
             <PrivateRoutes>
               <CreateProject />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/solicitacoes"
+          element={
+            <PrivateRoutes>
+              <Requests />
             </PrivateRoutes>
           }
         />
