@@ -72,6 +72,8 @@ export default function ViewTaskList() {
         searchInfo={searchTerm}
         addFilter={handleFilters}
         taskSelected={handleNavigateTask}
+        pages={pages}
+        pageSelected={setSelected}
       />
     </ContainerDefault>
   );
