@@ -18,6 +18,7 @@ import { TextAreaDefault } from '../../Inputs/TextAreaDefault';
 import ModalDefault from '../../Ui/ModalDefault';
 import { FieldDefault, FooterModal } from '../../UiElements/styles';
 import { Container, Ul, Li } from './styles';
+import { IconDash } from '../../../assets/icons';
 
 interface IMenu {
   to: string;
@@ -134,7 +135,7 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
     setMenuSidebar(filteredMenu);
     // console.log('menus original', menus);
     // console.log('menus filtrados', filteredMenu);
-  }, [user.permissions, menus]);
+  }, [user, menus]);
 
   return (
     <Container modalActive={modalActive}>
@@ -146,6 +147,12 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
       </Link>
 
       <Ul>
+        <Li active={path === '/dashboard' ? true : false} modalActive={modalActive}>
+          <Link to={'/dashboard'}>
+            <IconDash />
+            <span>Dashboard</span>
+          </Link>
+        </Li>
         {menuSidebar?.map((row: IMenu, key: any) => (
           <Li key={key} active={path === row.to ? true : false} modalActive={modalActive}>
             <Link to={row.to} onClick={row.onClick ? row.onClick : () => ''}>

@@ -73,7 +73,7 @@ export const Li = styled.li<sidebarProps>`
   span {
     font-size: var(--text-small-md);
     color: var(--primary-light);
-    font-weight: ${(props) => (props.active ? 'var(--font-bold)' : 'var(--font-medium)')};
+    font-weight: ${(props) => (props.active ? 'var(--weight-semibold)' : 'var(--weight-medium)')};
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
