@@ -1,4 +1,8 @@
 /* eslint-disable import-helpers/order-imports */
+
+// React
+import { useState, useEffect } from 'react';
+
 // Icons
 import { BiFilter, BiSearchAlt } from 'react-icons/bi';
 import { FiFlag } from 'react-icons/fi';
@@ -19,6 +23,7 @@ import { InputDefault } from '../../Inputs/InputDefault';
 import ProgressBar from '../ProgressBar';
 import moment from 'moment';
 import 'moment/dist/locale/pt-br';
+import Pagination from '../../Pagination';
 
 interface TableProps {
   data: any;
@@ -27,6 +32,8 @@ interface TableProps {
   searchInfo: string;
   addFilter: any;
   taskSelected: any;
+  pages: any;
+  pageSelected: any;
 }
 
 export default function TaskTable({
@@ -35,9 +42,16 @@ export default function TaskTable({
   searchInput,
   searchInfo,
   addFilter,
-  taskSelected
+  taskSelected,
+  pages,
+  pageSelected
 }: TableProps) {
   const arrayData = Object.entries(data);
+  const [selectedPage, setSelectedPage] = useState<number>(1);
+
+  useEffect(() => {
+    pageSelected(selectedPage);
+  }, [selectedPage]);
 
   const handleGoToDelivery = (taskInfos: any, taskIndex: any) => {
     const allTaskInfo = {
@@ -174,6 +188,19 @@ export default function TaskTable({
                   </tr>
                 ))}
               </tbody>
+              <tfoot>
+                <tr>
+                  <td colSpan={100}>
+                    <Pagination
+                      total={pages.total}
+                      perPage={pages.perPage}
+                      currentPage={selectedPage}
+                      lastPage={pages.lastPage}
+                      onClickPage={(e: any) => setSelectedPage(e)}
+                    />
+                  </td>
+                </tr>
+              </tfoot>
             </table>
           </TasksTable>
         </TaskDateWrapper>
