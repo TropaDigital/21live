@@ -50,6 +50,7 @@ import { SummaryCard } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 import { SummaryCardTitle } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 import { SummaryCardSubtitle } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 import { ModalShowProjectWrapper } from './styles';
+import FilterMenu from '../../../components/Filter';
 
 interface StateProps {
   [key: string]: any;
