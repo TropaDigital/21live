@@ -20,9 +20,8 @@ type HandleOnChange = (
 
 interface FilterProps {
   filterProps?: SelectedFilters;
-  clearFilters: any;
   applyFilters: any;
-  selectedFilters: any;
+  clearFilters: any;
 }
 
 interface SelectedFilters {
@@ -34,12 +33,7 @@ interface SelectedFilters {
   toDate: string;
 }
 
-export default function FilterMenu({
-  filterProps,
-  clearFilters,
-  applyFilters,
-  selectedFilters
-}: FilterProps) {
+export default function FilterMenu({ filterProps, applyFilters, clearFilters }: FilterProps) {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [choosenFilters, setChoosenFilter] = useState<SelectedFilters>({
     code: '',
@@ -50,10 +44,6 @@ export default function FilterMenu({
     toDate: ''
   });
 
-  useEffect(() => {
-    selectedFilters(choosenFilters);
-  }, [choosenFilters, selectedFilters]);
-
   const handleAddFilters: HandleOnChange = (event) => {
     const { name, value } = event.target;
     console.log('log do add filter', name, value);
@@ -61,7 +51,6 @@ export default function FilterMenu({
   };
 
   const handleClearFilters = () => {
-    console.log('limpar os filtros');
     setChoosenFilter({
       code: '',
       format: '',
@@ -74,7 +63,6 @@ export default function FilterMenu({
   };
 
   const handleApplyFilters = () => {
-    console.log('log apply filters');
     applyFilters(choosenFilters);
   };
 
@@ -82,7 +70,6 @@ export default function FilterMenu({
     <ContainerFilter>
       <FilterHeader>
         <FilterTitle>Filtros</FilterTitle>
-        <IconClose />
       </FilterHeader>
 
       <FilterOptions>
