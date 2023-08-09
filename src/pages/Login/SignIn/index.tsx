@@ -24,6 +24,7 @@ import { AnimationContainer, Background, Container, Content } from './styles';
 interface SignInFormData {
   email: string;
   password: string;
+  tenant_id: any;
 }
 
 export default function SignIn() {
@@ -33,7 +34,8 @@ export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<SignInFormData>({
     email: '',
-    password: ''
+    password: '',
+    tenant_id: ''
   });
 
   function handleInputChange(name: string, event: React.ChangeEvent<HTMLInputElement>) {
@@ -51,12 +53,14 @@ export default function SignIn() {
 
         const data = {
           email,
-          password
+          password,
+          tenant_id: 199
         };
 
         await signIn({
           email: data.email,
-          password: data.password
+          password: data.password,
+          tenant_id: data.tenant_id
         });
 
         addToast({
