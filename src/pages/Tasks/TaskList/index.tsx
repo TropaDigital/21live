@@ -315,7 +315,7 @@ export default function TaskList() {
           <div className="groupTable">
             <h2>
               Lista de tarefas{' '}
-              {data ? (
+              {data !== null && data?.length > 0 ? (
                 <strong>
                   {data?.length < 1 ? `${data?.length} tarefa` : `${data?.length} tarefas`}{' '}
                 </strong>
@@ -372,64 +372,68 @@ export default function TaskList() {
             </tr>
           </thead>
           <tbody>
-            {data?.map((row) => (
-              <tr key={row.task_id}>
-                <td>#{String(row.task_id).padStart(5, '0')}</td>
-                <td>{row.title}</td>
-                <td
-                  style={{
-                    width: '220px',
-                    textAlign: 'left'
-                  }}
-                >
-                  <span style={{ marginBottom: '4px', display: 'block' }}>{row.timeConsumed}</span>
-                  <ProgressBar
-                    totalHours={convertToMilliseconds(row?.totalTime)}
-                    restHours={convertToMilliseconds(row.timeConsumed)}
-                  />
-                </td>
-                <td>{row.totalTime !== 'undefined' ? row.totalTime : '00:00:00'}</td>
-                <td>
-                  <Avatar data={avatarAll} />
-                </td>
-                <td>
-                  <div className="fieldTableClients">
-                    <Flag
-                      style={{ textAlign: 'center' }}
-                      className={row.status === 'true' ? 'flagged' : ''}
-                    >
-                      {row.status === 'true' ? (
-                        <IconContext.Provider
-                          value={{ color: '#F04438', className: 'global-class-name' }}
-                        >
-                          <FiFlag />
-                        </IconContext.Provider>
-                      ) : (
-                        <IconContext.Provider
-                          value={{ color: '#667085', className: 'global-class-name' }}
-                        >
-                          <FiFlag />
-                        </IconContext.Provider>
-                      )}
-                    </Flag>
-                    <ButtonTable typeButton="view" onClick={() => handleOpenModalView(row)} />
-                    <ButtonTable
-                      typeButton="edit"
-                      onClick={() => {
-                        handleEditTask(row);
-                      }}
+            {data !== null &&
+              data?.length > 0 &&
+              data?.map((row) => (
+                <tr key={row.task_id}>
+                  <td>#{String(row.task_id).padStart(5, '0')}</td>
+                  <td>{row.title}</td>
+                  <td
+                    style={{
+                      width: '220px',
+                      textAlign: 'left'
+                    }}
+                  >
+                    <span style={{ marginBottom: '4px', display: 'block' }}>
+                      {row.timeConsumed}
+                    </span>
+                    <ProgressBar
+                      totalHours={convertToMilliseconds(row?.totalTime)}
+                      restHours={convertToMilliseconds(row.timeConsumed)}
                     />
-                    <Alert
-                      title="Atenção"
-                      subtitle="Certeza que gostaria de deletar esta Tarefa? Ao excluir esta ação não poderá ser desfeita."
-                      confirmButton={() => handleOnDelete(row.task_id)}
-                    >
-                      <ButtonTable typeButton="delete" />
-                    </Alert>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td>{row.totalTime !== 'undefined' ? row.totalTime : '00:00:00'}</td>
+                  <td>
+                    <Avatar data={avatarAll} />
+                  </td>
+                  <td>
+                    <div className="fieldTableClients">
+                      <Flag
+                        style={{ textAlign: 'center' }}
+                        className={row.status === 'true' ? 'flagged' : ''}
+                      >
+                        {row.status === 'true' ? (
+                          <IconContext.Provider
+                            value={{ color: '#F04438', className: 'global-class-name' }}
+                          >
+                            <FiFlag />
+                          </IconContext.Provider>
+                        ) : (
+                          <IconContext.Provider
+                            value={{ color: '#667085', className: 'global-class-name' }}
+                          >
+                            <FiFlag />
+                          </IconContext.Provider>
+                        )}
+                      </Flag>
+                      <ButtonTable typeButton="view" onClick={() => handleOpenModalView(row)} />
+                      <ButtonTable
+                        typeButton="edit"
+                        onClick={() => {
+                          handleEditTask(row);
+                        }}
+                      />
+                      <Alert
+                        title="Atenção"
+                        subtitle="Certeza que gostaria de deletar esta Tarefa? Ao excluir esta ação não poderá ser desfeita."
+                        confirmButton={() => handleOnDelete(row.task_id)}
+                      >
+                        <ButtonTable typeButton="delete" />
+                      </Alert>
+                    </div>
+                  </td>
+                </tr>
+              ))}
           </tbody>
 
           <tfoot>
