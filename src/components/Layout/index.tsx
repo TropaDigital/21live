@@ -51,13 +51,13 @@ export default function Layout() {
               to: '/tarefas',
               name: 'Tarefas',
               icon: IconClipboard,
-              identifier: '21jobs_tasks_all'
+              identifier: '21jobs_task_manager'
             },
             {
               to: '/suas-tarefas',
-              name: 'Tarefas',
+              name: 'Suas tarefas',
               icon: IconClipboard,
-              identifier: 'task_execute'
+              identifier: '21jobs_task_execute'
             },
             {
               to: '/produtos',
