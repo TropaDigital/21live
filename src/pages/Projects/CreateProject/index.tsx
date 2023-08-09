@@ -778,7 +778,7 @@ export default function CreateProject() {
                   }, 500);
                 }}
               >
-                <ButtonDefault>Salvar</ButtonDefault>
+                <ButtonDefault typeButton="primary">Salvar</ButtonDefault>
               </SaveButton>
             </>
           )}
