@@ -4,7 +4,7 @@ import api from '../services/api';
 
 export interface User {
   user_id?: number;
-  organization_id: number;
+  organizations: string[];
   tenant_id: number;
   username: string;
   email?: string;
@@ -21,7 +21,7 @@ export interface User {
   companySince?: string;
   office?: string;
   cost_per_hour?: string;
-  permissions: any;
+  permissions: string[];
 }
 
 interface AuthState {
@@ -33,6 +33,7 @@ interface AuthState {
 interface SignInCredentials {
   email: string;
   password: string;
+  tenant_id: any;
 }
 
 interface AuthContextData {
@@ -62,10 +63,11 @@ function AuthProvider({ children }: TransactionsProviderProps) {
     return {} as AuthState;
   });
 
-  const signIn = useCallback(async ({ email, password }: any) => {
+  const signIn = useCallback(async ({ email, password, tenant_id }: any) => {
     const response = await api.post('/login', {
       email,
-      password
+      password,
+      tenant_id
     });
 
     const { token, user, roles } = response.data.result;
