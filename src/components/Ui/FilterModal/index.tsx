@@ -3,6 +3,7 @@ import { BiX } from 'react-icons/bi';
 import * as Dialog from '@radix-ui/react-dialog';
 
 import FilterMenu from '../../Filter';
+import { CloseButton } from './styles';
 
 interface Props {
   isOpen: boolean;
@@ -10,9 +11,8 @@ interface Props {
   closeBtn?: boolean;
   maxWidth?: string;
   filterProps?: SelectedFilters;
-  clearFilters: any;
   applyFilters: any;
-  selectedFilters: any;
+  clearFilters: any;
 }
 
 interface SelectedFilters {
@@ -30,25 +30,20 @@ export default function FilterModal({
   closeBtn,
   maxWidth,
   filterProps,
-  clearFilters,
   applyFilters,
-  selectedFilters
+  clearFilters
 }: Props) {
   return (
     <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="Overlay" />
         <Dialog.Content className="ModalContent" style={{ maxWidth: maxWidth }}>
-          <FilterMenu
-            clearFilters={clearFilters}
-            applyFilters={applyFilters}
-            selectedFilters={selectedFilters}
-          />
+          <FilterMenu applyFilters={applyFilters} clearFilters={clearFilters} />
           {closeBtn && (
             <Dialog.Close asChild>
-              <button className="IconButton" aria-label="Close">
-                <BiX size={30} color="#6C757D" />
-              </button>
+              <CloseButton>
+                <BiX size={30} color="#868E96" />
+              </CloseButton>
             </Dialog.Close>
           )}
         </Dialog.Content>
