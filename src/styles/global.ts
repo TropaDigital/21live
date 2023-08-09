@@ -304,6 +304,44 @@ legend {
     line-height: 1.5;
   }
 
+  .Overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    inset: 0;
+    animation: overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 1;
+  }
+
+  .ModalContent {
+    background-color: var(--background-primary);
+    box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;
+    position: fixed;
+    top: 0;
+    right: 0;    
+    width: fit-content;
+    max-width: 90vw;
+    height: 100%;
+    overflow-y: auto;
+    padding: 20px;
+    animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 2;
+
+    ::-webkit-scrollbar {
+      width: 0.4rem;
+      border-radius: 0.5rem;
+      background-color: hsl(220, 8%, 76%);
+
+      &-thumb {
+        background-color: hsl(220, 8%, 64%);
+        border-radius: 0.5rem;
+
+        &:hover {
+          background-color: hsl(220, 8%, 54%);
+        }
+      }
+    }
+  }
+
   .Button {
     display: inline-flex;
     align-items: center;

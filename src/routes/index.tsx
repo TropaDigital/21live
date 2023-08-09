@@ -12,7 +12,6 @@ import SignIn from '../pages/Login/SignIn';
 import SignUp from '../pages/Login/SignUp';
 import Clients from '../pages/Clients';
 import Users from '../pages/Users';
-import Board from '../pages/Board';
 import Products from '../pages/Products';
 import Team from '../pages/Team/ListTeam';
 import ListOffice from '../pages/Team/ListOffice';
@@ -33,7 +32,8 @@ import ViewTaskList from '../pages/Tasks/ViewTasks';
 import WorkingProduct from '../pages/Products/WorkingProduct';
 import ViewDelivery from '../pages/Tasks/ViewDelivery';
 import ViewProductsDeliveries from '../pages/Products/ViewProduct';
-import Requests from '../pages/Requests';
+import Requests from '../pages/Requests/ListRequests';
+import ViewRequest from '../pages/Requests/ViewRequests';
 
 function RoutesAll() {
   return (
@@ -180,6 +180,15 @@ function RoutesAll() {
           element={
             <PrivateRoutes>
               <Requests />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/solicitacao/:id"
+          element={
+            <PrivateRoutes>
+              <ViewRequest />
             </PrivateRoutes>
           }
         />
