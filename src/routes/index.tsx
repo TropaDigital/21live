@@ -34,10 +34,13 @@ import ViewDelivery from '../pages/Tasks/ViewDelivery';
 import ViewProductsDeliveries from '../pages/Products/ViewProduct';
 import Requests from '../pages/Requests/ListRequests';
 import ViewRequest from '../pages/Requests/ViewRequests';
+import InstanceLogin from '../pages/Login/InstanceLogin';
 
 function RoutesAll() {
   return (
     <Routes>
+      <Route path="/signin/:slug" element={<InstanceLogin />} />
+
       <Route path="/login" element={<SignIn />} />
       <Route path="/cadastrar" element={<SignUp />} />
 
