@@ -280,10 +280,10 @@ export default function ViewProductsDeliveries() {
               <div className="info-description">{dataTask?.card_name}</div>
             </TaskInfoField>
 
-            <TaskInfoField>
+            {/* <TaskInfoField>
               <div className="info-title">Formato:</div>
               <div className="info-description">Do que???</div>
-            </TaskInfoField>
+            </TaskInfoField> */}
 
             <TaskInfoField>
               <div className="info-title">I/D:</div>
