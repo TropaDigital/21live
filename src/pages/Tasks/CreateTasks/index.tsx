@@ -170,7 +170,7 @@ export default function CreateTasks() {
   const { data: dataProjects, fetchData: fetchProjects } = useFetch<ServicesProps[]>(
     `project-products/${DTOForm.tenant_id}`
   );
-  const { data: dataFlow, fetchData: fetchFlow } = useFetch<any[]>(`/flow/${DTOForm?.flow_id}`);
+  const { data: dataFlow, fetchData: fetchFlow } = useFetch<any[]>(`/flow/${DTOForm.flow_id}`);
   const { data: dataTypes } = useFetch<any[]>(`/task-type`);
   const [productsArray, setProductsArray] = useState<ServicesProps[]>([]);
   // const [quantityProductsArray, setQuantityProductsArray] = useState<any[]>([]);
