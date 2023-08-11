@@ -37,6 +37,7 @@ export default function SignIn() {
     password: '',
     tenant_id: ''
   });
+  const tenant_id = sessionStorage.getItem('tenant_id');
 
   function handleInputChange(name: string, event: React.ChangeEvent<HTMLInputElement>) {
     const { value } = event.target;
@@ -54,7 +55,7 @@ export default function SignIn() {
         const data = {
           email,
           password,
-          tenant_id: 199
+          tenant_id: tenant_id
         };
 
         await signIn({
