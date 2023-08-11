@@ -57,6 +57,7 @@ import {
   ShowServicesContainer,
   TableKits
 } from './styles';
+import { TenantProps } from '../../utils/models';
 
 interface ServicesProps {
   service_id?: number | string;
@@ -69,6 +70,7 @@ interface ServicesProps {
   minutes_essay: any;
   category: string;
   flag: string;
+  tenant_id: string;
 }
 
 interface FormDataProps {
@@ -174,6 +176,7 @@ export default function Services() {
     pages: pageKits,
     fetchData: getKitData
   } = useFetch<any[]>(`pack-services?search=${search}`);
+  const { data: dataClients } = useFetch<TenantProps[]>('tenant');
   const [selectedKitPage, setSelectedKitPage] = useState(1);
   const [listSelected, setListSelected] = useState<any[]>([]);
   const [estimatedTimeCreation, setEstimatedTimeCreation] = useState<estimatedHoursPros>({
@@ -186,8 +189,19 @@ export default function Services() {
   });
   const [category, setCategory] = useState<string>('');
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [clientsForKit, setClientsForKit] = useState<string>('');
+  const [productsForClient, setProductForClient] = useState<any[]>([]);
 
   const checkboxWrapperRef = useRef<HTMLDivElement>(null);
+
+  async function getProductsForClients(id: any) {
+    try {
+      const response = await api.get(`services?tenant_id=${id}`);
+      setProductForClient(response.data.result);
+    } catch (error: any) {
+      console.log('log do error getting products', error);
+    }
+  }
 
   const handleOnCancel = useCallback(() => {
     setModal({
@@ -472,7 +486,8 @@ export default function Services() {
           minutes_essay,
           category,
           flag,
-          size
+          size,
+          tenant_id
         } = formData;
         const newFormData = {
           service,
@@ -482,7 +497,8 @@ export default function Services() {
           type,
           size,
           minutes_creation,
-          minutes_essay
+          minutes_essay,
+          tenant_id
         };
 
         if (modal.type === 'Novo produto') {
@@ -619,8 +635,8 @@ export default function Services() {
   );
 
   // useEffect(() => {
-  //   console.log('log do formData', formData);
-  // }, [formData]);
+  //   console.log('log do clients', clientsForKit);
+  // }, [clientsForKit]);
 
   return (
     <ContainerDefault>
@@ -925,6 +941,21 @@ export default function Services() {
           </FieldDefault>
 
           <FieldDefault>
+            <SelectDefault
+              label="Cliente"
+              name="tenant_id"
+              value={formData.tenant_id}
+              onChange={handleOnChange}
+            >
+              {dataClients?.map((row) => (
+                <option key={row.tenant_id} value={row.tenant_id}>
+                  {row.name}
+                </option>
+              ))}
+            </SelectDefault>
+          </FieldDefault>
+
+          <FieldDefault>
             <InputSwitchDefault
               onChange={(e) => handleOnChangeSwitch({ name: 'flag', value: e.target.checked })}
               isChecked={formData.flag === 'true' ? true : false}
@@ -1099,6 +1130,7 @@ export default function Services() {
               defaultValue={modalKit?.kit?.title}
             />
           </FieldDefault>
+
           <FieldDefault>
             <TextAreaDefault
               label="Descrição"
@@ -1107,6 +1139,24 @@ export default function Services() {
               style={{ resize: 'none', width: '100%', height: '80px' }}
               defaultValue={modalKit?.kit?.description}
             />
+          </FieldDefault>
+
+          <FieldDefault>
+            <SelectDefault
+              label="Cliente"
+              name="tenant_id"
+              value={clientsForKit}
+              onChange={(e: any) => {
+                setClientsForKit(e.target.value);
+                getProductsForClients(e.target.value);
+              }}
+            >
+              {dataClients?.map((row) => (
+                <option key={row.tenant_id} value={row.tenant_id}>
+                  {row.name}
+                </option>
+              ))}
+            </SelectDefault>
           </FieldDefault>
 
           <ModalSummary>
@@ -1142,7 +1192,7 @@ export default function Services() {
                 </div>
               </ShowServiceData>
               <ShowServiceData>
-                {data?.map((row) => (
+                {productsForClient?.map((row) => (
                   <div className="service-show-row" key={row?.service_id}>
                     <p className="service-data service" title={row?.service}>
                       {row?.service}
@@ -1161,7 +1211,9 @@ export default function Services() {
                     </div>
                   </div>
                 ))}
-                {!data?.length && <p style={{ padding: '15px' }}>Nenhum produto encontado!</p>}
+                {!productsForClient?.length && (
+                  <p style={{ padding: '15px' }}>Nenhum produto encontado!</p>
+                )}
               </ShowServiceData>
             </ShowServicesContainer>
           </ModalSummary>
