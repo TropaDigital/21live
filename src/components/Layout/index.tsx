@@ -1,20 +1,26 @@
+/* eslint-disable import-helpers/order-imports */
+// React
 import { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 
+// Icons
 import {
   IconClipboard,
   // IconDash,
+  // IconUsers,
   IconProjects,
   IconMeeting,
   IconTeam,
   IconProducts,
-  IconFlux,
-  IconUsers
+  IconFlux
 } from '../../assets/icons';
 
+// Components
 import ScrollAreas from '../Ui/ScrollAreas';
 import Header from './Header';
 import Sidebar from './Sidebar';
+
+// Styles
 import { Container, Main } from './styles';
 
 export default function Layout() {
@@ -35,12 +41,12 @@ export default function Layout() {
             //   icon: IconDash,
             //   identifier: ''
             // },
-            {
-              to: '/clientes',
-              name: 'Clientes',
-              icon: IconUsers,
-              identifier: '21jobs_client_all'
-            },
+            // {
+            //   to: '/clientes',
+            //   name: 'Clientes',
+            //   icon: IconUsers,
+            //   identifier: '21jobs_client_all'
+            // },
             {
               to: '/projetos',
               name: 'Projetos',
@@ -60,6 +66,12 @@ export default function Layout() {
               identifier: '21jobs_task_execute'
             },
             {
+              to: '/suas-tarefas',
+              name: 'Suas tarefas',
+              icon: IconClipboard,
+              identifier: '21jobs_task_essay'
+            },
+            {
               to: '/produtos',
               name: 'Produtos',
               icon: IconProducts,
@@ -75,13 +87,13 @@ export default function Layout() {
               to: '/equipe',
               name: 'Equipe',
               icon: IconTeam,
-              identifier: '21jobs_team_all'
+              identifier: '21jobs_team_view'
             },
             {
               to: '/reuniao',
               name: 'Atas de Reunião',
               icon: IconMeeting,
-              identifier: '21jobs_meeting_all'
+              identifier: '21jobs_meetings_view'
             }
             // {
             //   to: '/form',
