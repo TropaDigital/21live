@@ -8,6 +8,7 @@ import { SelectDefault } from '../../Inputs/SelectDefault';
 import { FieldDefault } from '../../UiElements/styles';
 import ActionPopup from './actionPopup';
 import { Container, FormCardFluxo, HeaderCardFluxo, SectionButtonsHeaderFluxo } from './styles';
+import { useFetch } from '../../../hooks/useFetch';
 
 interface CardProps {
   isLastItem: boolean;
@@ -46,16 +47,23 @@ export default function CardFluxo({
     onUpdate(index, name, String(checked));
   };
 
+  const { data: data_status } = useFetch<any[]>(`ticket-status/${data.tenant_id}`);
+
+  // console.log('log do length + isLastItem flow', length - 1, isLastItem);
+  console.log('log do data_status', data.tenant_id);
+
   return (
-    <Container>
+    <Container className={data.final_card === 'true' ? 'last' : ''}>
       <HeaderCardFluxo>
         <SectionButtonsHeaderFluxo>
-          <ActionPopup
-            handleOnDelete={handleOnDelete}
-            handleOnPosition={(index) => handleOnPosition(index)}
-            index={index}
-            length={length}
-          />
+          {data.final_card !== 'true' && (
+            <ActionPopup
+              handleOnDelete={handleOnDelete}
+              handleOnPosition={(index) => handleOnPosition(index)}
+              index={index}
+              length={length}
+            />
+          )}
         </SectionButtonsHeaderFluxo>
       </HeaderCardFluxo>
 
@@ -129,6 +137,22 @@ export default function CardFluxo({
               onChange={handleOnChangeCheckbox}
               checked={data.necessary_responsible === 'true' ? true : false}
             />
+          </FieldDefault>
+
+          <FieldDefault style={{ marginBottom: '8px' }}>
+            <SelectDefault
+              label="Status para o cliente"
+              name="ticket_status_id"
+              placeHolder="Selecione o status"
+              onChange={handleOnChange}
+              value={data.status}
+            >
+              {data_status?.map((row: any, index: any) => (
+                <option key={index} value={row.ticket_status_id}>
+                  {row.name}
+                </option>
+              ))}
+            </SelectDefault>
           </FieldDefault>
         </fieldset>
       </FormCardFluxo>

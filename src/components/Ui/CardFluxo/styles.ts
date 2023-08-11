@@ -1,5 +1,6 @@
-import styled, { keyframes } from "styled-components";
-import { shade } from "polished";
+import styled, { keyframes } from 'styled-components';
+
+import { shade } from 'polished';
 
 const bounceIn = keyframes`
   0% { 
@@ -26,14 +27,13 @@ export const Container = styled.div`
   width: 320px;
 
   padding: 10px;
-  border: 1px solid #DEE2E6;
+  border: 1px solid #dee2e6;
   border-radius: 0.625rem;
   box-shadow: var(--shadow);
 
   position: relative;
 
   animation: ${bounceIn} 0.5s linear;
-
 
   .buttonCardFluxo {
     position: absolute;
@@ -49,11 +49,15 @@ export const Container = styled.div`
   .arrowCardFluxo {
     display: grid;
     place-items: center;
-    
+
     position: absolute;
     top: 50%;
     left: 116%;
     transform: translate(-50%, -50%);
+  }
+
+  &.last {
+    border: 1px solid var(--primary);
   }
 `;
 
@@ -102,15 +106,14 @@ export const ButtonHeaderCardFluxo = styled.button`
 `;
 
 export const FormCardFluxo = styled.form`
-
   .inputCardFluxo {
     width: 80%;
     min-width: 0px;
     outline: transparent solid 2px;
     outline-offset: 2px;
     appearance: none;
-    transition-property: background-color, border-color, color, fill, stroke,
-      opacity, box-shadow, transform;
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow,
+      transform;
     transition-duration: 200ms;
     font-size: 1.125rem;
     font-weight: 700;
@@ -134,7 +137,6 @@ export const FormCardFluxo = styled.form`
       border-color: rgb(49, 130, 206);
       box-shadow: rgb(49 130 206) 0px 0px 0px 1px;
     }
-
   }
 
   /* fieldset {
@@ -154,11 +156,8 @@ export const FormCardFluxo = styled.form`
     font-weight: 600;
     color: #6C757D;
   } */
-
 `;
 
 // POPUP
 
-export const ContainerPopupCard = styled.div`
-
-`;
+export const ContainerPopupCard = styled.div``;
