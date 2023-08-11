@@ -35,12 +35,15 @@ import {
   FooterModal,
   SectionDefault
 } from '../../../components/UiElements/styles';
+import { TenantProps } from '../../../utils/models';
+import { SelectDefault } from '../../../components/Inputs/SelectDefault';
 
 export default function ListFluxo() {
   const navigate = useNavigate();
   const { addToast } = useToast();
   const { formData, setData, handleOnChange } = useForm({
-    name: ''
+    name: '',
+    tenant_id: ''
   });
 
   const [modal, setModal] = useState(false);
@@ -54,6 +57,7 @@ export default function ListFluxo() {
   );
 
   const { data, pages, fetchData } = useFetch<any[]>(`flow?search=${search}&page=${selected}`);
+  const { data: dataClient } = useFetch<TenantProps[]>('tenant');
 
   const handleOnCancel = useCallback(() => {
     setModal(!modal);
@@ -100,7 +104,8 @@ export default function ListFluxo() {
         fetchData();
         setModal(!modal);
         setData({
-          name: ''
+          name: '',
+          tenant_id: ''
         });
 
         navigate(`/fluxo/editar/${formData.name.replaceAll(' ', '_')}`, {
@@ -161,7 +166,7 @@ export default function ListFluxo() {
                   <th>ID</th>
                   <th>Nome</th>
                   <th>Etapas</th>
-                  <th>Projetos</th>
+                  {/* <th>Projetos</th> */}
                   <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
                 </tr>
               </thead>
@@ -172,7 +177,7 @@ export default function ListFluxo() {
                     <td>#{String(row.flow_id).padStart(5, '0')}</td>
                     <td>{row.name}</td>
                     <td>{row.steps}</td>
-                    <td>5</td>
+                    {/* <td>5</td> */}
                     <td>
                       <div className="fieldTableClients">
                         <ButtonTable
@@ -224,6 +229,21 @@ export default function ListFluxo() {
               onChange={handleOnChange}
               value={formData.name}
             />
+          </FieldDefault>
+
+          <FieldDefault>
+            <SelectDefault
+              label="Cliente"
+              name="tenant_id"
+              value={formData.tenant_id}
+              onChange={handleOnChange}
+            >
+              {dataClient?.map((row) => (
+                <option key={row.tenant_id} value={row.tenant_id}>
+                  {row.name}
+                </option>
+              ))}
+            </SelectDefault>
           </FieldDefault>
 
           <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
