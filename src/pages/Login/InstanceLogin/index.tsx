@@ -3,19 +3,37 @@
 import { useEffect } from 'react';
 
 // Styles
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { InstanceWrapper } from './styles';
 
 // Libraries
 import { Triangle } from 'react-loader-spinner';
+import api from '../../../services/api';
 
 export default function InstanceLogin() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    console.log('log do location no pré-login', location.pathname.replace('/signin/', ''));
+    const slug: string | undefined = location.pathname.split('/').pop();
 
-    // https://app.21live.com.br/demo/
+    async function checkIfHaveAccess() {
+      try {
+        const response = await api.get(`/have-acess?slug=${slug}`);
+
+        if (response.data.result.length > 0) {
+          sessionStorage.setItem('tenant_id', response.data.result[0].tenant_id);
+          navigate('/login');
+        } else {
+          window.location.replace('https://app.21live.com.br/');
+          // https://app.21live.com.br/demo/
+        }
+      } catch (error: any) {
+        console.log('log do error check access', error);
+      }
+    }
+
+    checkIfHaveAccess();
   }, [location]);
 
   return (
