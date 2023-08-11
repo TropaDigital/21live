@@ -295,7 +295,7 @@ export default function ListOffice() {
                     width={40}
                     height={21}
                   />
-                  {row.name.split('_')[0]} - {row.name.split('_')[1]}
+                  {row.name.split('_')[1]} - {row.name.split('_')[2]}
                 </div>
               ))}
             </PermissionsList>
