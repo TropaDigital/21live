@@ -32,7 +32,6 @@ import Switch from 'react-switch';
 import QuantityInput from '../../../../components/Inputs/QuantityInput';
 
 interface PropsProducts {
-  dataOffice: any;
   dataFilter: any;
   handleOnAddProducts: (items: any) => void;
   handleOnPeriod: (e: any, id: any) => void;
@@ -42,6 +41,7 @@ interface PropsProducts {
   setSave: any;
   editProducts: boolean;
   hideSwitch: any;
+  tenant_id: string;
 }
 
 interface IDataKit {
@@ -53,7 +53,6 @@ interface IDataKit {
 }
 
 export default function InfoProducts({
-  dataOffice,
   dataFilter,
   handleOnPeriod,
   handleOnAddProducts,
@@ -62,12 +61,13 @@ export default function InfoProducts({
   okToSave,
   setSave,
   editProducts,
-  hideSwitch
+  hideSwitch,
+  tenant_id
 }: PropsProducts) {
   const { addToast } = useToast();
   const [search, setSearch] = useState<IServices[]>([]);
-  const { data, pages } = useFetch<ServicesProps[]>(`services?search=${search}`);
-  const { data: dataKit } = useFetch(`/pack-services`);
+  const { data, pages } = useFetch<ServicesProps[]>(`services?tenant_id=${tenant_id}`);
+  const { data: dataKit } = useFetch(`/pack-services?tenant_id=${tenant_id}`);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeList, setTypeList] = useState('produtos');
   const [selected, setSelected] = useState(1);
