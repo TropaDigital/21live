@@ -557,7 +557,6 @@ export default function CreateProject() {
             <FormTitle>Produtos</FormTitle>
             <InfoProducts
               handleOnAddProducts={handleOnAddProducts}
-              dataOffice={dataOffice}
               dataFilter={productsArray}
               handleOnPeriod={(value, id) => handleOnPeriod(value, id)}
               handleOnDeleteProduct={(id) => handleDeleteProducts(id)}
@@ -566,6 +565,7 @@ export default function CreateProject() {
               setSave={saveProducts}
               editProducts={editSelectedProducts}
               hideSwitch={DTOForm.category}
+              tenant_id={DTOForm.tenant_id}
             />
           </>
         )}
