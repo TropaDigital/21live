@@ -1,14 +1,24 @@
+/* eslint-disable import-helpers/order-imports */
+/* eslint-disable react-hooks/exhaustive-deps */
+// React
+import { useEffect, useState } from 'react';
+
+// Icons
 import { BiPlus } from 'react-icons/bi';
 
+// Services
+import api from '../../../services/api';
 import { IconArrowFluxo } from '../../../assets/icons';
 
+// Components
 import ButtonDefault from '../../Buttons/ButtonDefault';
 import { CheckboxDefault } from '../../Inputs/CheckboxDefault';
 import { SelectDefault } from '../../Inputs/SelectDefault';
 import { FieldDefault } from '../../UiElements/styles';
 import ActionPopup from './actionPopup';
+
+// Styles
 import { Container, FormCardFluxo, HeaderCardFluxo, SectionButtonsHeaderFluxo } from './styles';
-import { useFetch } from '../../../hooks/useFetch';
 
 interface CardProps {
   isLastItem: boolean;
@@ -35,6 +45,8 @@ export default function CardFluxo({
   onUpdate,
   index
 }: CardProps) {
+  const [dataStatus, setDataStatus] = useState<any[]>([]);
+
   const handleOnChange = (
     event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>
   ) => {
@@ -47,7 +59,20 @@ export default function CardFluxo({
     onUpdate(index, name, String(checked));
   };
 
-  const { data: data_status } = useFetch<any[]>(`ticket-status/${data.tenant_id}`);
+  useEffect(() => {
+    const getDataTicketStatus = async () => {
+      try {
+        const response = await api.get(`ticket-status/${data?.tenant_id}`);
+        setDataStatus(response.data.result);
+
+        console.log('log do response', response.data);
+      } catch (error: any) {
+        console.log('log do error', error);
+      }
+    };
+
+    getDataTicketStatus();
+  }, []);
 
   // console.log('log do length + isLastItem flow', length - 1, isLastItem);
   console.log('log do data_status', data.tenant_id);
@@ -147,7 +172,7 @@ export default function CardFluxo({
               onChange={handleOnChange}
               value={data.status}
             >
-              {data_status?.map((row: any, index: any) => (
+              {dataStatus?.map((row: any, index: any) => (
                 <option key={index} value={row.ticket_status_id}>
                   {row.name}
                 </option>
