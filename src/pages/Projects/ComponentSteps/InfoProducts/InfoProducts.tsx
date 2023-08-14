@@ -321,7 +321,7 @@ export default function InfoProducts({
             </tbody>
           ) : (
             <tbody>
-              {typeList === 'produtos' &&
+              {typeList === 'produtos' && data && data?.length > 0 ? (
                 data?.map((row) => (
                   <tr key={row.service_id}>
                     <td>{row.service_id}</td>
@@ -378,7 +378,16 @@ export default function InfoProducts({
                       </td>
                     )}
                   </tr>
-                ))}
+                ))
+              ) : (
+                <tr>
+                  <td>sem dados</td>
+                  <td>sem dados</td>
+                  <td>sem dados</td>
+                  <td>sem dados</td>
+                  <td>0</td>
+                </tr>
+              )}
 
               {typeList === 'kits-select' &&
                 (dataKit as IDataKit[])?.map((row) => (
