@@ -25,6 +25,7 @@ import moment from 'moment';
 
 // Styles
 import { RequestsWrapper } from './styles';
+import { useNavigate } from 'react-router-dom';
 
 interface ChoosenFilters {
   code: string;
@@ -47,6 +48,7 @@ interface RequestsProps {
 }
 
 export default function Requests() {
+  const navigate = useNavigate();
   const [modalFilters, setModalFilters] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [search, setSearch] = useState('');
@@ -65,8 +67,9 @@ export default function Requests() {
   });
   const { data, pages } = useFetch(`solicitacoes?search=${search}&page=${selected}`);
 
-  const handleViewRequest = (id: any) => {
-    console.log('log request to view', id);
+  const handleViewRequest = (request: any) => {
+    console.log('log request to view', request);
+    navigate(`/solicitacao/${request.id}`, { state: request });
   };
 
   const handleApplyFilters = (filters: any) => {
@@ -211,7 +214,7 @@ export default function Requests() {
                   <td>{moment(row.finishDate).format('DD/MM/YYYY')}</td>
                   <td>
                     <div className="fieldTableClients">
-                      <ButtonTable typeButton="view" onClick={() => handleViewRequest('1')} />
+                      <ButtonTable typeButton="view" onClick={() => handleViewRequest(row)} />
                     </div>
                   </td>
                 </tr>
