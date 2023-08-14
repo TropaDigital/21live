@@ -35,6 +35,7 @@ import {
   RequestInfos,
   RequestInfosCard,
   RequestInfosTop,
+  ResponseButton,
   ViewRequestWrapper
 } from './styles';
 
@@ -43,14 +44,18 @@ import moment from 'moment';
 
 // Images
 import PersonImg from '../../../assets/person.jpg';
+import { useLocation } from 'react-router-dom';
 
 export default function ViewRequest() {
+  const location = useLocation();
   const [selectedCardInfo, setSelectedCardInfo] = useState<string>('');
 
   const titleData = {
-    idNumber: '8800',
-    titleRequest: 'Arte para patrocínio'
+    idNumber: location.state.id,
+    titleRequest: location.state.title
   };
+
+  console.log('log do location on view requests', location.state);
 
   return (
     <ContainerDefault>
@@ -224,13 +229,16 @@ export default function ViewRequest() {
 
           <PublicBottomCard>
             <PublicMessageWrapper>
-              <PublicMessage>Teste de mensagem</PublicMessage>
+              <PublicMessage>
+                <div className="message-user">Usuário da msg</div>
+                <div className="message-body">Teste de mensagem</div>
+              </PublicMessage>
               <MessageUser>
                 <MessageResponseDate>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <ResponseButton>
                     <BsReply />
                     Responder
-                  </div>
+                  </ResponseButton>
 
                   <ClockTimeInfo>
                     <HiOutlineClock />

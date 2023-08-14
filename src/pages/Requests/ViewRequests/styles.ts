@@ -245,7 +245,21 @@ export const PublicMessageWrapper = styled.div`
 `;
 
 export const PublicMessage = styled.div`
+  display: flex;
+  flex-direction: column;
   width: 55%;
+
+  .message-user {
+    color: var(--gray-900);
+    font-weight: var(--weight-bold);
+    font-size: var(--text-small-md);
+  }
+
+  .message-body {
+    color: var(--gray-900);
+    font-size: var(--text-small-md);
+    font-weight: var(--weight-medium);
+  }
 `;
 
 export const MessageUser = styled.div`
@@ -258,17 +272,6 @@ export const MessageResponseDate = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
-
-  color: var(--secundary-300);
-  font-size: var(--text-small-lg);
-  font-weight: var(--weight-semibold);
-
-  svg {
-    width: 24px;
-    height: 24px;
-  }
-
-  cursor: pointer;
 `;
 
 export const AvatarUser = styled.div`
@@ -294,4 +297,26 @@ export const ClockTimeInfo = styled.div`
   color: var(--gray-500);
   font-size: var(--text-small-md);
   font-weight: var(--weight-regular);
+`;
+
+export const ResponseButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  background: none;
+  color: var(--secundary-300);
+  font-size: var(--text-small-lg);
+  font-weight: var(--weight-semibold);
+
+  transition: all 0.3s;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  &:hover {
+    transform: scale(1.1);
+  }
 `;
