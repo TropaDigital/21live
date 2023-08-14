@@ -50,6 +50,7 @@ import 'moment/dist/locale/pt-br';
 
 // Hooks
 import useDebouncedCallback from '../../../hooks/useDebounced';
+import { useFetch } from '../../../hooks/useFetch';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -62,11 +63,10 @@ interface StepTimeline {
 }
 
 interface ModalUsersProps {
-  id: string;
-  user_name: string;
-  role: string;
-  availability: string;
-  tasks_on_file: string;
+  user_id: string;
+  name: string;
+  function: string;
+  tasks: string;
 }
 
 export default function ViewProductsDeliveries() {
@@ -88,6 +88,9 @@ export default function ViewProductsDeliveries() {
     (search: string) => setSearch(search),
     700
   );
+  const [dataUser, setDataUser] = useState<any[]>();
+
+  const deliveryId = location.state.task.deliverys[0].delivery_id;
 
   const titleInfos = {
     idNumber: dataTask?.task_id,
@@ -110,9 +113,15 @@ export default function ViewProductsDeliveries() {
       type_play: 'delivery'
     };
 
+    const taskClock = {
+      task_id: location.state.taskInfos.task_id
+    };
+
     try {
       const response = await api.post(`/task/switch/play`, playType);
+      const responseClock = await api.post(`/clock`, taskClock);
       console.log('log do response', response.data.result);
+      console.log('log do responseClock', responseClock);
     } catch (error: any) {
       console.log('log do error play', error);
     }
@@ -128,7 +137,7 @@ export default function ViewProductsDeliveries() {
 
   const handleNavigateProduct = (infoProduct: any, idProduct: any) => {
     const taskCompleteInfo = {
-      productInfo: infoProduct.service,
+      productInfo: infoProduct,
       titleInfos: titleInfos,
       id_product: idProduct,
       taskInfos: dataTask,
@@ -138,7 +147,6 @@ export default function ViewProductsDeliveries() {
   };
 
   useEffect(() => {
-    // console.log('log do location on ViewProduct', location.state);
     setDataTask(location.state.task);
     const timeDataInfo = {
       totalTime: location.state.task.totalTime,
@@ -160,8 +168,8 @@ export default function ViewProductsDeliveries() {
   }, [location]);
 
   const handleAssignTask = () => {
-    console.log('log do assign task');
     setModalSendToUser(false);
+    handleFinishDelivery();
   };
 
   const handleCheckBox = (id: string) => {
@@ -172,38 +180,73 @@ export default function ViewProductsDeliveries() {
     }
   };
 
+  const handleFinishDelivery = async () => {
+    try {
+      const response = await api.post(`/task/delivery-conclude/${deliveryId}`);
+      console.log('log do response', response.data.result);
+    } catch (error: any) {
+      console.log('log error finish delivery');
+    }
+  };
+
+  useEffect(() => {
+    async function getUserData() {
+      try {
+        const response = await api.get(`task/next-user/${dataTask?.task_id}?search=${search}`);
+        setDataUser(response.data.result);
+      } catch (error: any) {
+        console.log('log error getting user', error);
+      }
+    }
+
+    if (dataTask?.task_id !== undefined) {
+      getUserData();
+    }
+  }, [dataTask, search]);
+
   // useEffect(() => {
   //   console.log('log do playStart =>', localStorage.getItem('playStart'));
   //   console.log('log do pausePlay ||', localStorage.getItem('pausePlay'));
   // }, [playingForSchedule]);
 
-  const mockUsers: ModalUsersProps[] = [
-    {
-      id: '001',
-      user_name: 'Leandro Eusebio',
-      role: 'Redator',
-      availability: '30/06/2023',
-      tasks_on_file: '1'
-    },
-    {
-      id: '002',
-      user_name: 'Guilherme Augusto',
-      role: 'Designer',
-      availability: '01/07/2023',
-      tasks_on_file: '3'
-    }
-  ];
+  // const mockUsers: ModalUsersProps[] = [
+  //   {
+  //     id: '001',
+  //     user_name: 'Leandro Eusebio',
+  //     role: 'Redator',
+  //     availability: '30/06/2023',
+  //     tasks_on_file: '1'
+  //   },
+  //   {
+  //     id: '002',
+  //     user_name: 'Guilherme Augusto',
+  //     role: 'Designer',
+  //     availability: '01/07/2023',
+  //     tasks_on_file: '3'
+  //   }
+  // ];
 
   return (
     <ContainerDefault>
       <DeliveryWrapper>
-        <HeaderOpenTask
-          title={titleInfos}
-          disableButton={false}
-          goBack
-          buttonType="send"
-          sendToNext={() => setModalSendToUser(true)}
-        />
+        {Number(dataProducts.order) < dataTask.deliverys.length && (
+          <HeaderOpenTask
+            title={titleInfos}
+            disableButton={workForProducts}
+            goBack
+            buttonType="send"
+            sendToNext={handleFinishDelivery}
+          />
+        )}
+        {Number(dataProducts.order) === dataTask.deliverys.length && (
+          <HeaderOpenTask
+            title={titleInfos}
+            disableButton={workForProducts}
+            goBack
+            buttonType="send"
+            sendToNext={() => setModalSendToUser(true)}
+          />
+        )}
 
         <CardsWrapper>
           {!workForProducts && (
@@ -349,7 +392,6 @@ export default function ViewProductsDeliveries() {
                 }}
                 value={searchTerm}
                 isLoading={isLoading}
-                error={''}
               />
             </ModalSearch>
 
@@ -364,22 +406,22 @@ export default function ViewProductsDeliveries() {
                   </tr>
                 </thead>
                 <tbody>
-                  {mockUsers.map((row: ModalUsersProps, index: number) => (
-                    <tr key={index} className={selectedUser === row.id ? 'selected' : ''}>
+                  {dataUser?.map((row: ModalUsersProps, index: number) => (
+                    <tr key={index} className={selectedUser === row.user_id ? 'selected' : ''}>
                       <td>
                         <div className="check-name">
                           <CheckboxDefault
                             label=""
                             name="user_selected"
-                            onChange={() => handleCheckBox(row.id)}
-                            checked={selectedUser === row.id ? true : false}
+                            onChange={() => handleCheckBox(row.user_id)}
+                            checked={selectedUser === row.user_id ? true : false}
                           />
-                          {row.user_name}
+                          {row.name}
                         </div>
                       </td>
-                      <td>{row.role}</td>
-                      <td>{row.availability}</td>
-                      <td style={{ textAlign: 'center' }}>{row.tasks_on_file}</td>
+                      <td>{row.function}</td>
+                      <td>30/08/2023</td>
+                      <td style={{ textAlign: 'center' }}>{row.tasks}</td>
                     </tr>
                   ))}
                 </tbody>
