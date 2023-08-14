@@ -97,6 +97,7 @@ export default function WorkingProduct() {
   const typeOfPlay = location?.state?.playType;
 
   // const { data } = useFetch<WorkingProductProps>(`/${location.state.id}`);
+  const productId = location.state.productInfo.products_delivey_id;
 
   useEffect(() => {
     // console.log('log do location on working product', location.state);
@@ -185,21 +186,36 @@ export default function WorkingProduct() {
       const responseTypeOfPlay = await api.post(`/task/switch/play`, playType);
       const responseClock = await api.post(`/clock`, taskClock);
 
+      console.log('log do responsePlay', responseTypeOfPlay);
       console.log('log do responseClock', responseClock);
     } catch (error: any) {
       console.log('log do error play', error);
     }
   };
 
+  async function handleFinishProduct() {
+    try {
+      const response = await api.post(`/task/product-conclude/${productId}`);
+      console.log('log do response', response);
+    } catch (error: any) {
+      console.log('log error getting user', error);
+    }
+  }
+
   return (
     <ContainerDefault>
-      {titleInfos && (
+      {titleInfos && !typeOfPlay && (
         <HeaderOpenTask
           title={titleInfos}
           disableButton={false}
           goBack={true}
           buttonType="finish"
+          sendToNext={handleFinishProduct}
         />
+      )}
+
+      {titleInfos && typeOfPlay && (
+        <HeaderOpenTask title={titleInfos} disableButton={true} goBack={true} buttonType="finish" />
       )}
 
       <SectionCardWrapper>
