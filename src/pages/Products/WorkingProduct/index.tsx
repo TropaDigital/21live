@@ -100,7 +100,8 @@ export default function WorkingProduct() {
   const productId = location.state.productInfo.products_delivey_id;
 
   useEffect(() => {
-    // console.log('log do location on working product', location.state);
+    console.log('log do titleInfos', location.state.titleInfos);
+    console.log('log do taskInfos', location.state.taskInfos);
     setTitleInfos(location.state.titleInfos);
     setTaskInfos(location.state.taskInfos);
   }, [location]);
@@ -179,11 +180,12 @@ export default function WorkingProduct() {
     };
 
     const taskClock = {
-      task_id: location.state.taskInfos.task_id
+      task_id: location.state.taskInfos.task_id,
+      products_delivey_id: productId
     };
 
     try {
-      const responseTypeOfPlay = await api.post(`/task/switch/play`, playType);
+      const responseTypeOfPlay = await api.post(`/task/switch-play`, playType);
       const responseClock = await api.post(`/clock`, taskClock);
 
       console.log('log do responsePlay', responseTypeOfPlay);
