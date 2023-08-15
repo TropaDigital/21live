@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 
 // Icons
 import { IconText } from '../../../assets/icons';
+import { BiPencil } from 'react-icons/bi';
 
 // Styles
 import {
@@ -24,7 +25,9 @@ import ProgressBar from '../ProgressBar';
 
 // Utils
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
-import { ro } from 'date-fns/locale';
+
+// Hooks
+import { useAuth } from '../../../hooks/AuthContext';
 
 interface Product {
   id: string;
@@ -54,12 +57,15 @@ export default function ProductTable({
   isPlayingForSchedule,
   productSelected
 }: ProductTableProps) {
+  const { user } = useAuth();
   const [workFor, setWorkFor] = useState<string>('schedule');
 
   useEffect(() => {
     const workStatus = workFor === 'product' ? true : false;
     workForProduct(workStatus);
   }, [workFor, workForProduct]);
+
+  console.log('log do user auth', user.permissions);
 
   return (
     <ProductContainer>
@@ -110,9 +116,17 @@ export default function ProductTable({
               <tr style={{ cursor: 'pointer' }} onClick={() => productSelected(row, index + 1)}>
                 <td>#{String(index + 1).padStart(2, '0')}</td>
                 <td>
-                  <div className="flex info">
-                    <IconText /> {row.service}
-                  </div>
+                  {user.permissions.includes('21jobs_task_essay') && (
+                    <div className="flex info">
+                      <IconText /> {row.service}
+                    </div>
+                  )}
+
+                  {user.permissions.includes('21jobs_task_execute') && (
+                    <div className="flex info">
+                      <BiPencil /> {row.service}
+                    </div>
+                  )}
                 </td>
                 {workFor === 'product' && (
                   <>
