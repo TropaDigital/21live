@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 
 // Icons
-import { BiFilter, BiSearchAlt } from 'react-icons/bi';
+import { BiFilter, BiPencil, BiSearchAlt } from 'react-icons/bi';
 import { FiFlag } from 'react-icons/fi';
 import { IconContext } from 'react-icons';
 import { IconText } from '../../assets/icons';
@@ -29,7 +29,12 @@ import { InputDefault } from '../Inputs/InputDefault';
 import ProgressBar from '../Ui/ProgressBar';
 import moment from 'moment';
 import 'moment/dist/locale/pt-br';
+
+// Types
 import { IProductTask } from '../../types';
+
+// Hooks
+import { useAuth } from '../../hooks/AuthContext';
 
 interface DeliveryProps {
   data: any;
@@ -73,6 +78,7 @@ export interface IDelivery {
   description?: string;
   order: string;
   products?: Array<IProductTask>;
+  status: string;
 }
 
 export default function DeliveryTable({
@@ -83,6 +89,7 @@ export default function DeliveryTable({
   addFilter,
   taskSelected
 }: DeliveryProps) {
+  const { user } = useAuth();
   const handleGoToProducts = (deliveryInfos: any, taskIndex: any, taskInfos: any) => {
     const allTaskInfo = {
       delivery: deliveryInfos,
@@ -145,9 +152,17 @@ export default function DeliveryTable({
                     </td>
                     <td>
                       <div className="column info">
-                        <div>
-                          <IconText /> {delivery.title}
-                        </div>
+                        {user.permissions.includes('21jobs_task_essay') && (
+                          <div>
+                            <IconText /> {delivery.title}
+                          </div>
+                        )}
+
+                        {user.permissions.includes('21jobs_task_execute') && (
+                          <div>
+                            <BiPencil /> {delivery.title}
+                          </div>
+                        )}
                         <span>
                           {delivery.tenant} / {delivery.project_category} |{' '}
                           {delivery.product_period}
@@ -206,16 +221,16 @@ export default function DeliveryTable({
                     <td>
                       <div
                         className={
-                          delivery.status === 'progress'
+                          row.status === 'Em Andamento'
                             ? 'status progress'
-                            : delivery.status === 'finished'
+                            : row.status === 'Concluida'
                             ? 'status finished'
                             : 'status'
                         }
                       >
-                        {delivery.status === 'progress'
+                        {row.status === 'Em Andamento'
                           ? 'Em progresso'
-                          : delivery.status === 'finished'
+                          : row.status === 'Concluida'
                           ? 'Concluída'
                           : 'Pendente'}
                       </div>
