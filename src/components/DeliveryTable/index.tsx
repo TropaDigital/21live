@@ -193,9 +193,9 @@ export default function DeliveryTable({
                       {moment(delivery.creation_date_end).format('DD/MMM/YYYY')}
                     </td>
                     <td>
-                      {delivery?.deliverys?.length <= 1
-                        ? `${delivery?.deliverys?.length} produto`
-                        : `${delivery?.deliverys?.length} produtos`}
+                      {row.products !== undefined && row.products.length <= 1
+                        ? `${row?.products?.length} produto`
+                        : `${row?.products?.length} produtos`}
                     </td>
                     <td>
                       <div className="column">
