@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 
 // Icons
-import { BiFilter, BiSearchAlt } from 'react-icons/bi';
+import { BiFilter, BiPencil, BiSearchAlt } from 'react-icons/bi';
 import { FiFlag } from 'react-icons/fi';
 import { IconContext } from 'react-icons';
 import { IconText } from '../../../assets/icons';
@@ -32,6 +32,9 @@ import moment from 'moment';
 import 'moment/dist/locale/pt-br';
 import Pagination from '../../Pagination';
 
+// Hooks
+import { useAuth } from '../../../hooks/AuthContext';
+
 interface TableProps {
   data: any;
   loading: boolean;
@@ -53,6 +56,7 @@ export default function TaskTable({
   pages,
   pageSelected
 }: TableProps) {
+  const { user } = useAuth();
   const arrayData = Object.entries(data);
   const [selectedPage, setSelectedPage] = useState<number>(1);
 
@@ -67,8 +71,6 @@ export default function TaskTable({
     };
     taskSelected(allTaskInfo);
   };
-
-  console.log('log do arrayData', arrayData);
 
   return (
     <TaskContainer>
@@ -121,9 +123,17 @@ export default function TaskTable({
                     </td>
                     <td>
                       <div className="column info">
-                        <div>
-                          <IconText /> {task.title}
-                        </div>
+                        {user.permissions.includes('21jobs_task_essay') && (
+                          <div>
+                            <IconText /> {task.title}
+                          </div>
+                        )}
+
+                        {user.permissions.includes('21jobs_task_execute') && (
+                          <div>
+                            <BiPencil /> {task.title}
+                          </div>
+                        )}
                         <span>
                           {task.tenant} / {task.project_category} | {task.product_period}
                         </span>
@@ -181,16 +191,16 @@ export default function TaskTable({
                     <td>
                       <div
                         className={
-                          task.status === 'progress'
+                          task.status === 'Em Andamento'
                             ? 'status progress'
-                            : task.status === 'finished'
+                            : task.status === 'Concluida'
                             ? 'status finished'
                             : 'status'
                         }
                       >
-                        {task.status === 'progress'
+                        {task.status === 'Em Andamento'
                           ? 'Em progresso'
-                          : task.status === 'finished'
+                          : task.status === 'Concluida'
                           ? 'Concluída'
                           : 'Pendente'}
                       </div>
