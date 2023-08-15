@@ -14,6 +14,7 @@ import {
   IconProducts,
   IconFlux
 } from '../../assets/icons';
+import { HiOutlineTicket } from 'react-icons/hi';
 
 // Components
 import ScrollAreas from '../Ui/ScrollAreas';
@@ -26,6 +27,7 @@ import { Container, Main } from './styles';
 export default function Layout() {
   const [modalActive, setModalActive] = useState(false);
   const location = useLocation();
+  const TicketsIcon = HiOutlineTicket;
 
   return (
     <Container>
@@ -93,6 +95,12 @@ export default function Layout() {
               to: '/reuniao',
               name: 'Atas de Reunião',
               icon: IconMeeting,
+              identifier: '21jobs_meetings_view'
+            },
+            {
+              to: '/solicitacoes',
+              name: 'Solicitações',
+              icon: TicketsIcon,
               identifier: '21jobs_meetings_view'
             }
             // {
