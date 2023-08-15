@@ -1,6 +1,6 @@
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 // Icons
@@ -50,7 +50,7 @@ import 'moment/dist/locale/pt-br';
 
 // Hooks
 import useDebouncedCallback from '../../../hooks/useDebounced';
-import { useFetch } from '../../../hooks/useFetch';
+import { useToast } from '../../../hooks/toast';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -72,6 +72,8 @@ interface ModalUsersProps {
 export default function ViewProductsDeliveries() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { addToast } = useToast();
+  const openRightRef = useRef<any>();
   const [modalSendToUser, setModalSendToUser] = useState<boolean>(false);
   const [workForProducts, setWorkForProducts] = useState<boolean>(false);
   const [playingForSchedule, setPlayingForSchedule] = useState<boolean>(false);
@@ -107,44 +109,20 @@ export default function ViewProductsDeliveries() {
     estimatedTime: location.state.task.totalTime
   };
 
-  const handleStartPlayingTime = async () => {
-    const playType = {
-      task_id: location.state.task.task_id,
-      type_play: 'delivery'
-    };
-
-    const taskClock = {
-      task_id: location.state.taskInfos.task_id
-    };
-
-    try {
-      const response = await api.post(`/task/switch/play`, playType);
-      const responseClock = await api.post(`/clock`, taskClock);
-      console.log('log do response', response.data.result);
-      console.log('log do responseClock', responseClock);
-    } catch (error: any) {
-      console.log('log do error play', error);
+  useEffect(() => {
+    async function getUserData() {
+      try {
+        const response = await api.get(`task/next-user/${dataTask?.task_id}?search=${search}`);
+        setDataUser(response.data.result);
+      } catch (error: any) {
+        console.log('log error getting user', error);
+      }
     }
-  };
 
-  const handlePlayingType = (value: boolean) => {
-    // console.log('log do playing type', value);
-    if (value) {
-      setPlayingForSchedule(true);
-      handleStartPlayingTime();
+    if (dataTask?.task_id !== undefined) {
+      getUserData();
     }
-  };
-
-  const handleNavigateProduct = (infoProduct: any, idProduct: any) => {
-    const taskCompleteInfo = {
-      productInfo: infoProduct,
-      titleInfos: titleInfos,
-      id_product: idProduct,
-      taskInfos: dataTask,
-      playType: playingForSchedule
-    };
-    navigate(`/produto/${idProduct}`, { state: taskCompleteInfo });
-  };
+  }, [dataTask, search]);
 
   useEffect(() => {
     setDataTask(location.state.task);
@@ -167,9 +145,59 @@ export default function ViewProductsDeliveries() {
     getTimelineData();
   }, [location]);
 
+  const handleStartPlayingTime = async () => {
+    console.log('log do Start/Pause playing');
+    const playType = {
+      task_id: location.state.task.task_id,
+      type_play: 'delivery'
+    };
+
+    const taskClock = {
+      task_id: location.state.task.task_id,
+      delivery_id: deliveryId
+    };
+
+    try {
+      const response = await api.post(`/task/switch-play`, playType);
+      const responseClock = await api.post(`/clock`, taskClock);
+      console.log('log do response', response.data.result);
+      console.log('log do responseClock', responseClock);
+    } catch (error: any) {
+      console.log('log do error play', error);
+
+      addToast({
+        title: 'Atenção',
+        description: error,
+        type: 'warning'
+      });
+    }
+  };
+
+  const handlePlayingType = (value: boolean) => {
+    console.log('log do playing type', value);
+    if (value) {
+      setPlayingForSchedule(true);
+      handleStartPlayingTime();
+    }
+    if (value === false) {
+      handleStartPlayingTime();
+    }
+  };
+
+  const handleNavigateProduct = (infoProduct: any, idProduct: any) => {
+    const taskCompleteInfo = {
+      productInfo: infoProduct,
+      titleInfos: titleInfos,
+      id_product: idProduct,
+      taskInfos: dataTask,
+      playType: playingForSchedule
+    };
+    navigate(`/produto/${idProduct}`, { state: taskCompleteInfo });
+  };
+
   const handleAssignTask = () => {
     setModalSendToUser(false);
-    handleFinishDelivery();
+    handleSendToNextUser();
   };
 
   const handleCheckBox = (id: string) => {
@@ -182,27 +210,59 @@ export default function ViewProductsDeliveries() {
 
   const handleFinishDelivery = async () => {
     try {
-      const response = await api.post(`/task/delivery-conclude/${deliveryId}`);
-      console.log('log do response', response.data.result);
+      const response = await api.put(`/task/delivery-conclude/${deliveryId}`);
+      if (response.data.result === 1) {
+        localStorage.removeItem('elapsedTime');
+        addToast({
+          title: 'Sucesso',
+          type: 'success',
+          description: 'Entrega finalizada com sucesso'
+        });
+        navigate('/suas-tarefas');
+      }
+      if (response.data.result.last_delivery) {
+        setModalSendToUser(true);
+      }
     } catch (error: any) {
       console.log('log error finish delivery');
     }
   };
 
-  useEffect(() => {
-    async function getUserData() {
-      try {
-        const response = await api.get(`task/next-user/${dataTask?.task_id}?search=${search}`);
-        setDataUser(response.data.result);
-      } catch (error: any) {
-        console.log('log error getting user', error);
-      }
-    }
+  const handleSendToNextUser = async () => {
+    try {
+      const next_user = {
+        next_user: selectedUser
+      };
 
-    if (dataTask?.task_id !== undefined) {
-      getUserData();
+      const response = await api.put(`/task/delivery-conclude/${deliveryId}`, next_user);
+      console.log('log do response', response.data.result);
+
+      if (response.data.result === 1) {
+        localStorage.removeItem('elapsedTime');
+        navigate('/suas-tarefas');
+      }
+    } catch (error) {
+      console.log('log error next user', error);
     }
-  }, [dataTask, search]);
+  };
+
+  useEffect(() => {
+    const checkIfClickedOutside = (e: any) => {
+      if (
+        hideRightCard === 'show' &&
+        openRightRef.current &&
+        !openRightRef.current.contains(e.target)
+      ) {
+        setHideRightCard('hide');
+      }
+    };
+
+    document.addEventListener('mousedown', checkIfClickedOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', checkIfClickedOutside);
+    };
+  }, [hideRightCard]);
 
   // useEffect(() => {
   //   console.log('log do playStart =>', localStorage.getItem('playStart'));
@@ -229,22 +289,17 @@ export default function ViewProductsDeliveries() {
   return (
     <ContainerDefault>
       <DeliveryWrapper>
-        {Number(dataProducts.order) < dataTask.deliverys.length && (
+        {dataProducts?.status === 'Concluida' && (
+          <HeaderOpenTask title={titleInfos} disableButton={true} goBack buttonType="send" />
+        )}
+
+        {dataProducts?.status !== 'Concluida' && (
           <HeaderOpenTask
             title={titleInfos}
             disableButton={workForProducts}
             goBack
             buttonType="send"
             sendToNext={handleFinishDelivery}
-          />
-        )}
-        {Number(dataProducts.order) === dataTask.deliverys.length && (
-          <HeaderOpenTask
-            title={titleInfos}
-            disableButton={workForProducts}
-            goBack
-            buttonType="send"
-            sendToNext={() => setModalSendToUser(true)}
           />
         )}
 
@@ -273,7 +328,7 @@ export default function ViewProductsDeliveries() {
           productSelected={handleNavigateProduct}
         />
 
-        <RightInfosCard hideCard={hideRightCard}>
+        <RightInfosCard hideCard={hideRightCard} ref={openRightRef}>
           <TimeLine>
             <div className="hide-menu" onClick={() => setHideTimeLine(!hideTimeLine)}>
               {hideTimeLine && <FaChevronDown />}
