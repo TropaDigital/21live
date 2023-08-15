@@ -186,3 +186,11 @@ export const TasksTable = styled.div`
     }
   }
 `;
+
+export const PaginationWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 40px;
+`;

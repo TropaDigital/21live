@@ -14,7 +14,14 @@ import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 
 // Styles
 import { Flag } from '../../../pages/Tasks/TaskList/styles';
-import { TaskContainer, TaskDate, TaskDateWrapper, TaskFilter, TasksTable } from './styles';
+import {
+  PaginationWrapper,
+  TaskContainer,
+  TaskDate,
+  TaskDateWrapper,
+  TaskFilter,
+  TasksTable
+} from './styles';
 
 // Components
 import { InputDefault } from '../../Inputs/InputDefault';
@@ -61,6 +68,8 @@ export default function TaskTable({
     taskSelected(allTaskInfo);
   };
 
+  console.log('log do arrayData', arrayData);
+
   return (
     <TaskContainer>
       <TaskFilter>
@@ -99,6 +108,7 @@ export default function TaskTable({
                   <th>Status</th>
                 </tr>
               </thead>
+
               <tbody>
                 {row[1].map((task: any, index: number) => (
                   <tr
@@ -188,7 +198,7 @@ export default function TaskTable({
                   </tr>
                 ))}
               </tbody>
-              <tfoot>
+              {/* <tfoot>
                 <tr>
                   <td colSpan={100}>
                     <Pagination
@@ -200,11 +210,20 @@ export default function TaskTable({
                     />
                   </td>
                 </tr>
-              </tfoot>
+              </tfoot> */}
             </table>
           </TasksTable>
         </TaskDateWrapper>
       ))}
+      <PaginationWrapper>
+        <Pagination
+          total={pages.total}
+          perPage={pages.perPage}
+          currentPage={selectedPage}
+          lastPage={pages.lastPage}
+          onClickPage={(e: any) => setSelectedPage(e)}
+        />
+      </PaginationWrapper>
     </TaskContainer>
   );
 }
