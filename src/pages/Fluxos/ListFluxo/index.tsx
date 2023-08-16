@@ -35,15 +35,12 @@ import {
   FooterModal,
   SectionDefault
 } from '../../../components/UiElements/styles';
-import { TenantProps } from '../../../utils/models';
-import { SelectDefault } from '../../../components/Inputs/SelectDefault';
 
 export default function ListFluxo() {
   const navigate = useNavigate();
   const { addToast } = useToast();
   const { formData, setData, handleOnChange } = useForm({
-    name: '',
-    tenant_id: ''
+    name: ''
   });
 
   const [modal, setModal] = useState(false);
@@ -57,7 +54,6 @@ export default function ListFluxo() {
   );
 
   const { data, pages, fetchData } = useFetch<any[]>(`flow?search=${search}&page=${selected}`);
-  const { data: dataClient } = useFetch<TenantProps[]>('tenant');
 
   const handleOnCancel = useCallback(() => {
     setModal(!modal);
@@ -229,21 +225,6 @@ export default function ListFluxo() {
               onChange={handleOnChange}
               value={formData.name}
             />
-          </FieldDefault>
-
-          <FieldDefault>
-            <SelectDefault
-              label="Cliente"
-              name="tenant_id"
-              value={formData.tenant_id}
-              onChange={handleOnChange}
-            >
-              {dataClient?.map((row) => (
-                <option key={row.tenant_id} value={row.tenant_id}>
-                  {row.name}
-                </option>
-              ))}
-            </SelectDefault>
           </FieldDefault>
 
           <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
