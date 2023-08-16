@@ -60,6 +60,7 @@ export default function CardFluxo({
   };
 
   useEffect(() => {
+    console.log('log do get tenant_id');
     const getDataTicketStatus = async () => {
       try {
         const response = await api.get(`ticket-status/${data?.tenant_id}`);
@@ -73,9 +74,6 @@ export default function CardFluxo({
 
     getDataTicketStatus();
   }, []);
-
-  // console.log('log do length + isLastItem flow', length - 1, isLastItem);
-  console.log('log do data_status', data.tenant_id);
 
   return (
     <Container className={data.final_card === 'true' ? 'last' : ''}>
