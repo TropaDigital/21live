@@ -48,6 +48,8 @@ interface ProductTableProps {
   workForProduct: any;
   isPlayingForSchedule: boolean;
   productSelected: any;
+  isFinished?: boolean;
+  typeOfWorkFinished?: string;
 }
 
 export default function ProductTable({
@@ -55,7 +57,9 @@ export default function ProductTable({
   timeData,
   workForProduct,
   isPlayingForSchedule,
-  productSelected
+  productSelected,
+  isFinished,
+  typeOfWorkFinished
 }: ProductTableProps) {
   const { user } = useAuth();
   const [workFor, setWorkFor] = useState<string>('schedule');
@@ -65,7 +69,7 @@ export default function ProductTable({
     workForProduct(workStatus);
   }, [workFor, workForProduct]);
 
-  console.log('log do user auth', user.permissions);
+  // console.log('log do user auth', user.permissions);
 
   return (
     <ProductContainer>
@@ -76,18 +80,35 @@ export default function ProductTable({
         {!isPlayingForSchedule && (
           <>
             <div>-</div>
-            <ProductSelect>
-              <Switch
-                onChange={() => setWorkFor(workFor === 'product' ? 'schedule' : 'product')}
-                checked={workFor === 'product' ? true : false}
-                uncheckedIcon={false}
-                checkedIcon={false}
-                onColor="#0046B5"
-                width={40}
-                height={21}
-              />
-              Trabalhar por produto
-            </ProductSelect>
+            {!isFinished && (
+              <ProductSelect>
+                <Switch
+                  onChange={() => setWorkFor(workFor === 'product' ? 'schedule' : 'product')}
+                  checked={workFor === 'product' ? true : false}
+                  uncheckedIcon={false}
+                  checkedIcon={false}
+                  onColor="#0046B5"
+                  width={40}
+                  height={21}
+                />
+                Trabalhar por produto
+              </ProductSelect>
+            )}
+
+            {isFinished && (
+              <ProductSelect>
+                <Switch
+                  onChange={() => ''}
+                  checked={typeOfWorkFinished === 'delivery' ? false : true}
+                  uncheckedIcon={false}
+                  checkedIcon={false}
+                  onColor="#0046B5"
+                  width={40}
+                  height={21}
+                />
+                Trabalhar por produto
+              </ProductSelect>
+            )}
           </>
         )}
       </ProductTitleInfos>
