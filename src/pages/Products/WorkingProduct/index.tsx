@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 // Hooks
 import { useFetch } from '../../../hooks/useFetch';
+import { useToast } from '../../../hooks/toast';
 
 // Icons
 import { IconText } from '../../../assets/icons';
@@ -89,6 +90,7 @@ interface TitleInfoProps {
 export default function WorkingProduct() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { addToast } = useToast();
   const [selectedTab, setSelectedTab] = useState<string>('Redação');
   const [notifications, setNotifications] = useState<boolean>(false);
   const [chatMessage, setChatMessage] = useState<string>('');
@@ -204,6 +206,15 @@ export default function WorkingProduct() {
     }
   }
 
+  const handleFinishedPlay = () => {
+    addToast({
+      title: 'Atenção',
+      type: 'warning',
+      description: 'Entrega já concluída'
+    });
+    console.log('log de que tentou dar play com a tarefa concluida');
+  };
+
   return (
     <ContainerDefault>
       {titleInfos && !typeOfPlay && (
@@ -236,7 +247,8 @@ export default function WorkingProduct() {
               cardTitle="Atividade iniciada"
               cardType="time"
               dataTime={taskInfos ? taskInfos.totalTime : ''}
-              isPlayingTime={() => ''}
+              isPlayingTime={handleFinishedPlay}
+              taskIsFinished={taskInfos?.status === 'Concluida' ? true : false}
             />
           )}
 
