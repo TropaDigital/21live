@@ -92,7 +92,9 @@ export default function ViewProductsDeliveries() {
   );
   const [dataUser, setDataUser] = useState<any[]>();
 
-  const deliveryId = location.state.task.deliverys[0].delivery_id;
+  const deliveryId = location.state.task.deliverys.filter(
+    (obj: any) => Number(obj.order) === location.state.task_index
+  );
 
   const titleInfos = {
     idNumber: dataTask?.task_id,
@@ -146,7 +148,6 @@ export default function ViewProductsDeliveries() {
   }, [location]);
 
   const handleStartPlayingTime = async () => {
-    console.log('log do Start/Pause playing');
     const playType = {
       task_id: location.state.task.task_id,
       type_play: 'delivery'
@@ -154,7 +155,7 @@ export default function ViewProductsDeliveries() {
 
     const taskClock = {
       task_id: location.state.task.task_id,
-      delivery_id: deliveryId
+      delivery_id: deliveryId[0].delivery_id
     };
 
     try {
@@ -210,7 +211,7 @@ export default function ViewProductsDeliveries() {
 
   const handleFinishDelivery = async () => {
     try {
-      const response = await api.put(`/task/delivery-conclude/${deliveryId}`);
+      const response = await api.put(`/task/delivery-conclude/${deliveryId[0].delivery_id}`);
       if (response.data.result === 1) {
         localStorage.removeItem('elapsedTime');
         addToast({
@@ -234,7 +235,10 @@ export default function ViewProductsDeliveries() {
         next_user: selectedUser
       };
 
-      const response = await api.put(`/task/delivery-conclude/${deliveryId}`, next_user);
+      const response = await api.put(
+        `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
+        next_user
+      );
       console.log('log do response', response.data.result);
 
       if (response.data.result === 1) {
@@ -244,6 +248,15 @@ export default function ViewProductsDeliveries() {
     } catch (error) {
       console.log('log error next user', error);
     }
+  };
+
+  const handleFinishedPlay = () => {
+    addToast({
+      title: 'Atenção',
+      type: 'warning',
+      description: 'Entrega já concluída'
+    });
+    console.log('log de que tentou dar play com a tarefa concluida');
   };
 
   useEffect(() => {
@@ -269,23 +282,6 @@ export default function ViewProductsDeliveries() {
   //   console.log('log do pausePlay ||', localStorage.getItem('pausePlay'));
   // }, [playingForSchedule]);
 
-  // const mockUsers: ModalUsersProps[] = [
-  //   {
-  //     id: '001',
-  //     user_name: 'Leandro Eusebio',
-  //     role: 'Redator',
-  //     availability: '30/06/2023',
-  //     tasks_on_file: '1'
-  //   },
-  //   {
-  //     id: '002',
-  //     user_name: 'Guilherme Augusto',
-  //     role: 'Designer',
-  //     availability: '01/07/2023',
-  //     tasks_on_file: '3'
-  //   }
-  // ];
-
   return (
     <ContainerDefault>
       <DeliveryWrapper>
@@ -304,12 +300,21 @@ export default function ViewProductsDeliveries() {
         )}
 
         <CardsWrapper>
-          {!workForProducts && (
+          {!workForProducts && dataTask?.status !== 'Concluida' && (
             <CardTaskInfo
               cardTitle="Iniciar atividade"
               cardType="time"
               dataTime={data ? data?.estimatedTime : ''}
               isPlayingTime={handlePlayingType}
+            />
+          )}
+          {dataTask?.status === 'Concluida' && (
+            <CardTaskInfo
+              cardTitle="Iniciar atividade"
+              cardType="time"
+              dataTime={data ? data?.estimatedTime : ''}
+              isPlayingTime={handleFinishedPlay}
+              taskIsFinished={dataTask?.status === 'Concluida' ? true : false}
             />
           )}
           <CardTaskInfo
@@ -326,6 +331,8 @@ export default function ViewProductsDeliveries() {
           workForProduct={setWorkForProducts}
           isPlayingForSchedule={playingForSchedule}
           productSelected={handleNavigateProduct}
+          isFinished={dataTask?.status === 'Concluida' ? true : false}
+          typeOfWorkFinished={dataTask?.type_play}
         />
 
         <RightInfosCard hideCard={hideRightCard} ref={openRightRef}>
@@ -368,10 +375,10 @@ export default function ViewProductsDeliveries() {
               <div className="info-description">{dataTask?.totalTime}</div>
             </TaskInfoField>
 
-            <TaskInfoField>
+            {/* <TaskInfoField>
               <div className="info-title">Responsável:</div>
               <div className="info-description">Qual???</div>
-            </TaskInfoField>
+            </TaskInfoField> */}
 
             <TaskInfoField>
               <div className="info-title">Etapa:</div>
