@@ -507,11 +507,26 @@ export default function Services() {
         fetchData();
       } catch (e: any) {
         // Exibir erro
-        addToast({
-          type: 'danger',
-          title: 'ATENÇÃO',
-          description: e.response.data.message
-        });
+        if (e.response.data.result.length !== 0) {
+          e.response.data.result.map((row: any) => {
+            addToast({
+              type: 'danger',
+              title: 'ATENÇÃO',
+              description: row.error
+            });
+          });
+        } else {
+          addToast({
+            title: 'Atenção',
+            description: e.response.data.message,
+            type: 'danger'
+          });
+        }
+        // addToast({
+        //   type: 'danger',
+        //   title: 'ATENÇÃO',
+        //   description: e.response.data.message
+        // });
       }
     },
     [formData, addToast, fetchData, handleOnCancel, modal]
