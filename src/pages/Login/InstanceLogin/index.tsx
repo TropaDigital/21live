@@ -26,7 +26,6 @@ export default function InstanceLogin() {
           navigate('/login');
         } else {
           window.location.replace('https://app.21live.com.br/');
-          // https://app.21live.com.br/demo/
         }
       } catch (error: any) {
         console.log('log do error check access', error);
