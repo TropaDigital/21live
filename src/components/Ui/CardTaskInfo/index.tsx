@@ -35,6 +35,7 @@ interface CardTaskInfoProps {
   dataTime?: any;
   dataInfos?: DataInfosProps;
   isPlayingTime: (value: any) => void;
+  taskIsFinished?: boolean;
 }
 
 interface DataInfosProps {
@@ -53,7 +54,8 @@ export default function CardTaskInfo({
   dataText,
   dataInfos,
   dataTime,
-  isPlayingTime
+  isPlayingTime,
+  taskIsFinished
 }: CardTaskInfoProps) {
   // const [time, setTime] = useState<number>(0);
   // const [timerOn, setTimerOn] = useState<boolean>(false);
@@ -74,12 +76,14 @@ export default function CardTaskInfo({
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
 
-    if (startTime !== null) {
+    if (startTime !== null && !taskIsFinished) {
       intervalId = setInterval(() => {
         const now = Date.now();
         setElapsedTime((prevElapsedTime) => prevElapsedTime + now - startTime);
         setStartTime(now);
       }, 1000);
+    } else {
+      setStartTime(null);
     }
 
     // Save elapsed time to local storage whenever it changes
@@ -91,7 +95,6 @@ export default function CardTaskInfo({
   }, [startTime, elapsedTime]);
 
   const handleStartStop = () => {
-    console.log('log do handleStartStop', startTime);
     if (startTime === null) {
       setStartTime(Date.now());
       isPlayingTime(true);
