@@ -100,19 +100,28 @@ export default function ListFluxo() {
         fetchData();
         setModal(!modal);
         setData({
-          name: '',
-          tenant_id: ''
+          name: ''
         });
 
         navigate(`/fluxo/editar/${formData.name.replaceAll(' ', '_')}`, {
           state: { id: response.data.result, name: formData.name }
         });
       } catch (e: any) {
-        addToast({
-          type: 'danger',
-          title: 'ATENÇÃO',
-          description: e.response.data.message
-        });
+        if (e.response.data.result.length !== 0) {
+          e.response.data.result.map((row: any) => {
+            addToast({
+              type: 'danger',
+              title: 'ATENÇÃO',
+              description: row.error
+            });
+          });
+        } else {
+          addToast({
+            type: 'danger',
+            title: 'ATENÇÃO',
+            description: e.response.data.message
+          });
+        }
       }
     },
     [formData, addToast, fetchData, modal, setData, navigate]
