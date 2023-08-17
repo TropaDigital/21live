@@ -20,7 +20,9 @@ function useColumn() {
         previous_step: 0
         // tasks: [],
       };
-      setColumn([...column, newItem]);
+
+      const updateColumn = [...column.slice(0, -1), newItem, column[column.length - 1]];
+      setColumn(updateColumn);
     },
     [column, setColumn]
   );
