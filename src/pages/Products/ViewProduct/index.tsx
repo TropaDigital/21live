@@ -161,7 +161,7 @@ export default function ViewProductsDeliveries() {
     try {
       const response = await api.post(`/task/switch-play`, playType);
       const responseClock = await api.post(`/clock`, taskClock);
-      console.log('log do response', response.data.result);
+      console.log('log do response task/switch-play', response.data.result);
       console.log('log do responseClock', responseClock);
     } catch (error: any) {
       console.log('log do error play', error);
