@@ -377,7 +377,7 @@ export default function TaskList() {
               data?.map((row) => (
                 <tr key={row.task_id}>
                   <td>#{String(row.task_id).padStart(5, '0')}</td>
-                  <td>{row.title}</td>
+                  <td style={{ textTransform: 'capitalize' }}>{row.title}</td>
                   <td
                     style={{
                       width: '220px',
@@ -400,9 +400,9 @@ export default function TaskList() {
                     <div className="fieldTableClients">
                       <Flag
                         style={{ textAlign: 'center' }}
-                        className={row.status === 'true' ? 'flagged' : ''}
+                        className={row.urgent === 'true' ? 'flagged' : ''}
                       >
-                        {row.status === 'true' ? (
+                        {row.urgent === 'true' ? (
                           <IconContext.Provider
                             value={{ color: '#F04438', className: 'global-class-name' }}
                           >
