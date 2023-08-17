@@ -86,6 +86,9 @@ function AuthProvider({ children }: TransactionsProviderProps) {
     localStorage.removeItem('@live:user');
     localStorage.removeItem('@live:rules');
     localStorage.removeItem('@live:permissions');
+    localStorage.removeItem('elapsedTime');
+    sessionStorage.removeItem('tenant_id');
+    sessionStorage.removeItem('bucket');
 
     setData({} as AuthState);
   }, []);
