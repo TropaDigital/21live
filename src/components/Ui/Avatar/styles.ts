@@ -49,7 +49,7 @@ export const ContainerAvatar = styled.div<AvatarProps>`
 export const Container = styled.div<Props>`
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   position: relative;
 
   ul {
