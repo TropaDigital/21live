@@ -66,8 +66,10 @@ export default function InfoProducts({
 }: PropsProducts) {
   const { addToast } = useToast();
   const [search, setSearch] = useState<IServices[]>([]);
-  const { data, pages } = useFetch<ServicesProps[]>(`services?tenant_id=${tenant_id}`);
-  const { data: dataKit } = useFetch(`/pack-services?tenant_id=${tenant_id}`);
+  const { data, pages } = useFetch<ServicesProps[]>(
+    `services?tenant_id=${tenant_id}&search=${search}`
+  );
+  const { data: dataKit } = useFetch(`/pack-services?tenant_id=${tenant_id}&search=${search}`);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeList, setTypeList] = useState('produtos');
   const [selected, setSelected] = useState(1);
@@ -321,7 +323,7 @@ export default function InfoProducts({
             </tbody>
           ) : (
             <tbody>
-              {typeList === 'produtos' && data && data?.length > 0 ? (
+              {typeList === 'produtos' &&
                 data?.map((row) => (
                   <tr key={row.service_id}>
                     <td>{row.service_id}</td>
@@ -378,16 +380,7 @@ export default function InfoProducts({
                       </td>
                     )}
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td>sem dados</td>
-                  <td>sem dados</td>
-                  <td>sem dados</td>
-                  <td>sem dados</td>
-                  <td>0</td>
-                </tr>
-              )}
+                ))}
 
               {typeList === 'kits-select' &&
                 (dataKit as IDataKit[])?.map((row) => (
