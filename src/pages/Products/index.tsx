@@ -168,7 +168,9 @@ export default function Services() {
   const { data, pages, fetchData } = useFetch<ServicesProps[]>(
     `services?search=${search}&perPage=15&page=${selected}`
   );
-  const { data: dataCategory } = useFetch<any[]>(`category?search=${search}`);
+  const { data: dataCategory, fetchData: getCategory } = useFetch<any[]>(
+    `category?search=${search}`
+  );
   const {
     data: dataKits,
     pages: pageKits,
@@ -624,6 +626,10 @@ export default function Services() {
           isOpen: false,
           title: ''
         });
+
+        setCategory('');
+        fetchData();
+        getCategory();
       } catch (e: any) {
         addToast({
           type: 'danger',
@@ -746,7 +752,7 @@ export default function Services() {
                 <tr key={row.service_id}>
                   <td>#{String(row.service_id).padStart(5, '0')}</td>
                   <td>{row.service}</td>
-                  <td>{row.category}</td>
+                  <td style={{ textTransform: 'capitalize' }}>{row.category}</td>
                   <td>
                     <Switch
                       onChange={() => handleList(row.service_id)}
@@ -1292,12 +1298,13 @@ export default function Services() {
             <ButtonDefault
               typeButton="dark"
               isOutline
-              onClick={() =>
+              onClick={() => {
                 setModalCategory({
                   isOpen: false,
                   title: ''
-                })
-              }
+                });
+                setCategory('');
+              }}
             >
               Descartar
             </ButtonDefault>
