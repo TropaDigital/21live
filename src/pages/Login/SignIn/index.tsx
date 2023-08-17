@@ -11,7 +11,6 @@ import { useToast } from '../../../hooks/toast';
 
 // Images
 import logo from '../../../assets/bg.svg';
-import BgImage from '../../../assets/login.jpg';
 
 // Components
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
@@ -38,6 +37,8 @@ export default function SignIn() {
     tenant_id: ''
   });
   const tenant_id = sessionStorage.getItem('tenant_id');
+  const bucketImage = sessionStorage.getItem('bucket');
+  const URL = `https://${bucketImage}.s3.amazonaws.com/tenant/login_bg.jpg`;
 
   function handleInputChange(name: string, event: React.ChangeEvent<HTMLInputElement>) {
     const { value } = event.target;
@@ -83,7 +84,7 @@ export default function SignIn() {
         });
       }
     },
-    [signIn, addToast, formData]
+    [signIn, addToast, formData, tenant_id]
   );
 
   return (
@@ -134,9 +135,8 @@ export default function SignIn() {
           </Link> */}
         </AnimationContainer>
       </Content>
-
-      {/* <Background style={{ backgroundImage: `url(${BgImage})` }} /> */}
-      <Background />
+      {bucketImage && <Background style={{ backgroundImage: `url(${URL})` }} />}
+      {!bucketImage && <Background />}
     </Container>
   );
 }
