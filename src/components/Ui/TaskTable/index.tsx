@@ -225,6 +225,41 @@ export default function TaskTable({
           </TasksTable>
         </TaskDateWrapper>
       ))}
+
+      {arrayData.length === 0 && (
+        <TasksTable>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Tarefas</th>
+                <th>Tempo consumido</th>
+                <th>Tempo estimado</th>
+                <th>Data inicial</th>
+                <th>Data final</th>
+                <th>Entregas</th>
+                <th>Etapa</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+        </TasksTable>
+      )}
+
       <PaginationWrapper>
         <Pagination
           total={pages.total}
