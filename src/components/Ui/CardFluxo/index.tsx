@@ -60,13 +60,10 @@ export default function CardFluxo({
   };
 
   useEffect(() => {
-    console.log('log do get tenant_id');
     const getDataTicketStatus = async () => {
       try {
         const response = await api.get(`ticket-status/${data?.tenant_id}`);
         setDataStatus(response.data.result);
-
-        console.log('log do response', response.data);
       } catch (error: any) {
         console.log('log do error', error);
       }
