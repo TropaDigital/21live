@@ -39,7 +39,7 @@ import InstanceLogin from '../pages/Login/InstanceLogin';
 function RoutesAll() {
   return (
     <Routes>
-      <Route path="/signin/:slug" element={<InstanceLogin />} />
+      <Route path="/login/:slug" element={<InstanceLogin />} />
 
       <Route path="/login" element={<SignIn />} />
       <Route path="/cadastrar" element={<SignUp />} />
