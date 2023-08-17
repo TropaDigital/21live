@@ -102,8 +102,8 @@ export default function WorkingProduct() {
   const productId = location.state.productInfo.products_delivey_id;
 
   useEffect(() => {
-    console.log('log do titleInfos', location.state.titleInfos);
-    console.log('log do taskInfos', location.state.taskInfos);
+    // console.log('log do titleInfos', location.state.titleInfos);
+    // console.log('log do taskInfos', location.state.taskInfos);
     setTitleInfos(location.state.titleInfos);
     setTaskInfos(location.state.taskInfos);
   }, [location]);
@@ -169,6 +169,10 @@ export default function WorkingProduct() {
     console.log('log do input', name, value);
   };
 
+  const handleSaveInputs = () => {
+    console.log('log salvando os inputs');
+  };
+
   const handlePlayingType = (value: boolean) => {
     if (value) {
       handleStartPlayingTime();
@@ -200,6 +204,7 @@ export default function WorkingProduct() {
   async function handleFinishProduct() {
     try {
       const response = await api.post(`/task/product-conclude/${productId}`);
+      localStorage.removeItem('elapsedTime');
       console.log('log do response', response);
     } catch (error: any) {
       console.log('log error getting user', error);
@@ -207,12 +212,12 @@ export default function WorkingProduct() {
   }
 
   const handleFinishedPlay = () => {
+    console.log('log de que tentou dar play com a tarefa concluida');
     addToast({
       title: 'Atenção',
       type: 'warning',
       description: 'Entrega já concluída'
     });
-    console.log('log de que tentou dar play com a tarefa concluida');
   };
 
   return (
@@ -311,25 +316,35 @@ export default function WorkingProduct() {
           </>
         )}
         {selectedTab === 'Inputs' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <InputField>
-              <InputFieldTitle>Input - Pré-requisitos</InputFieldTitle>
-              <WrapperEditor
-                value={'Teste 1'}
-                mentionData={[]}
-                handleOnDescription={(value: any) => handleInputs('prerequisites', value)}
-              />
-            </InputField>
+          <>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <InputField>
+                <InputFieldTitle>Input - Pré-requisitos</InputFieldTitle>
+                <WrapperEditor
+                  value={'Teste 1'}
+                  mentionData={[]}
+                  handleOnDescription={(value: any) => handleInputs('prerequisites', value)}
+                />
+              </InputField>
 
-            <InputField>
-              <InputFieldTitle>Input Criação</InputFieldTitle>
-              <WrapperEditor
-                value={'Teste 2'}
-                mentionData={[]}
-                handleOnDescription={(value: any) => handleInputs('creation', value)}
-              />
-            </InputField>
-          </div>
+              <InputField>
+                <InputFieldTitle>Input Criação</InputFieldTitle>
+                <WrapperEditor
+                  value={'Teste 2'}
+                  mentionData={[]}
+                  handleOnDescription={(value: any) => handleInputs('creation', value)}
+                />
+              </InputField>
+            </div>
+            <FooterSection>
+              <ButtonDefault typeButton="lightWhite" isOutline onClick={() => navigate('/tarefas')}>
+                Descartar
+              </ButtonDefault>
+              <ButtonDefault typeButton="primary" onClick={handleSaveInputs}>
+                Salvar Inputs
+              </ButtonDefault>
+            </FooterSection>
+          </>
         )}
         {selectedTab === 'Comentários' && (
           <SectionChatComments>
