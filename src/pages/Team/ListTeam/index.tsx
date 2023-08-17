@@ -31,9 +31,6 @@ import ButtonTable from '../../../components/Buttons/ButtonTable';
 import HeaderPage from '../../../components/HeaderPage';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { SelectDefault } from '../../../components/Inputs/SelectDefault';
-import Paginate from '../../../components/Paginate';
-// import { TableDefault } from '../../../components/TableDefault';
-// import ScrollAreas from '../../../components/Ui/ScrollAreas';
 import Alert from '../../../components/Ui/Alert';
 import AvatarDefault from '../../../components/Ui/Avatar/avatarDefault';
 import ModalDefault from '../../../components/Ui/ModalDefault';
@@ -51,6 +48,7 @@ import { TableHead } from '../../../components/Table/styles';
 
 // Libraries
 import moment from 'moment';
+import Pagination from '../../../components/Pagination';
 
 interface UserProps {
   name: string;
@@ -345,17 +343,23 @@ export default function Team() {
                   </tr>
                 ))}
               </tbody>
+
+              <tfoot>
+                <tr>
+                  <td colSpan={100}>
+                    <Pagination
+                      total={pages.total}
+                      perPage={pages.perPage}
+                      currentPage={selected}
+                      lastPage={pages.lastPage}
+                      onClickPage={(e) => setSelected(e)}
+                    />
+                  </td>
+                </tr>
+              </tfoot>
             </table>
           </Table>
         </div>
-
-        <Paginate
-          total={pages.total}
-          perPage={pages.perPage}
-          currentPage={selected}
-          lastPage={pages.lastPage}
-          onClickPage={(e) => setSelected(e)}
-        />
       </SectionDefault>
 
       <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
