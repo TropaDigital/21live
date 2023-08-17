@@ -1,5 +1,5 @@
-
-import { Container } from "./styles";
+// Styles
+import { Container } from './styles';
 
 interface Props {
   totalHours: any;
@@ -8,9 +8,8 @@ interface Props {
 }
 
 export default function ProgressBar({ totalHours, restHours, isRadius }: Props) {
-
   function convertToPercentage(milliseconds: any, totalMilliseconds: any) {
-    const verifyMilliseconds = milliseconds > totalMilliseconds ? totalMilliseconds : milliseconds
+    const verifyMilliseconds = milliseconds > totalMilliseconds ? totalMilliseconds : milliseconds;
 
     return (verifyMilliseconds / totalMilliseconds) * 100;
   }
@@ -20,9 +19,8 @@ export default function ProgressBar({ totalHours, restHours, isRadius }: Props) 
   return (
     <Container value={percentage} isRadius={isRadius}>
       <div className="progress progress-striped">
-        <div className="progress-bar">
-        </div>                       
-      </div> 
+        <div className="progress-bar"></div>
+      </div>
     </Container>
-  )
+  );
 }

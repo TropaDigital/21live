@@ -38,7 +38,7 @@ export const Container = styled.div<Props>`
         transparent 75%,
         transparent
       );
-      animation: ${props => progressAnimationStrike(props.value)} 6s;
+      animation: ${props => progressAnimationStrike(props.value)} 1s;
     }
 
     ${({ isRadius }) => isRadius && css`
