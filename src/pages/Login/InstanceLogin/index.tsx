@@ -23,6 +23,7 @@ export default function InstanceLogin() {
 
         if (response.data.result.length > 0) {
           sessionStorage.setItem('tenant_id', response.data.result[0].tenant_id);
+          sessionStorage.setItem('bucket', response.data.result[0].bucket);
           navigate('/login');
         } else {
           window.location.replace('https://app.21live.com.br/');
