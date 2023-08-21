@@ -200,6 +200,7 @@ export default function CreateTasks() {
     700
   );
   const [tasksType, setTasksType] = useState<string>('');
+  const [taskEdit, setTaskEdit] = useState<boolean>(false);
   const splitDeliveries = deliveriesSplit === 'no-split' ? false : true;
 
   const DeliveryDefault: DeliveryProps = {
@@ -715,7 +716,7 @@ export default function CreateTasks() {
         }
       }
 
-      if (createStep === 1 && tasksType === 'horas' && !location.state) {
+      if (createStep === 1 && tasksType === 'horas' && !location.state && !taskEdit) {
         setProductsModal(true);
       } else if (createStep === 2 && tasksType === 'horas') {
         if (creation_date_end === '') {
@@ -1497,7 +1498,10 @@ export default function CreateTasks() {
                   <SummaryTasks
                     selectedProducts={productsArray}
                     createTasks={handleOnSubmit}
-                    editTasks={() => setCreateStep(2)}
+                    editTasks={() => {
+                      setCreateStep(2);
+                      setTaskEdit(true);
+                    }}
                     taskSummary={DTOForm}
                     projectInfos={selectedProject}
                     summaryExtrainfos={selectedSummaryInfos}
@@ -1517,7 +1521,10 @@ export default function CreateTasks() {
                 <SummaryTasks
                   selectedProducts={DTODelivery}
                   createTasks={handleOnSubmit}
-                  editTasks={() => setCreateStep(2)}
+                  editTasks={() => {
+                    setCreateStep(2);
+                    setTaskEdit(true);
+                  }}
                   taskSummary={DTOForm}
                   projectInfos={selectedProject}
                   summaryExtrainfos={selectedSummaryInfos}
@@ -1531,7 +1538,10 @@ export default function CreateTasks() {
                 <SummaryTasks
                   selectedProducts={productsArray}
                   createTasks={handleOnSubmit}
-                  editTasks={() => setCreateStep(2)}
+                  editTasks={() => {
+                    setCreateStep(2);
+                    setTaskEdit(true);
+                  }}
                   taskSummary={DTOForm}
                   projectInfos={selectedProject}
                   summaryExtrainfos={selectedSummaryInfos}
