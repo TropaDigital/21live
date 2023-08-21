@@ -128,50 +128,6 @@ export default function WorkingProduct() {
     getComments();
   }, [location, taskId]);
 
-  // const chatMessages: ChatMessages[] = [
-  //   {
-  //     user_id: 154,
-  //     avatar: 'avatar.png',
-  //     nameame: 'Guilherme Augusto',
-  //     message: 'Corrigir texto email marketing',
-  //     messageDate: '2023-07-14 10:56:09',
-  //     read: ''
-  //   },
-  //   {
-  //     user_id: 13,
-  //     avatar: 'avatar.png',
-  //     nameame: 'Danilo Fontes',
-  //     message: 'Certo, vou resolver',
-  //     messageDate: '2023-07-14 11:05:27',
-  //     read: ''
-  //   },
-  //   {
-  //     user_id: 11,
-  //     avatar: 'avatar.png',
-  //     nameame: 'Adolfo Rodolfo',
-  //     message:
-  //       'Elementum vitae feugiat pulvinar mi sed cras. Feugiat nibh nisl dignissim orci in. Imperdiet sed arcu ac consequat.',
-  //     messageDate: '2023-07-15 14:32:18',
-  //     read: ''
-  //   },
-  //   {
-  //     user_id: 13,
-  //     avatar: 'avatar.png',
-  //     nameame: 'Danilo Fontes',
-  //     message: 'Resolvido',
-  //     messageDate: '2023-07-15 16:20:00',
-  //     read: ''
-  //   },
-  //   {
-  //     user_id: 13,
-  //     avatar: 'avatar.png',
-  //     nameame: 'Danilo Fontes',
-  //     message: 'Task concluída',
-  //     messageDate: '2023-07-16 09:09:09',
-  //     read: ''
-  //   }
-  // ];
-
   const handleInputChange = (e: any) => {
     setChatMessage(e.target.value);
   };
