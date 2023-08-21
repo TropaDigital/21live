@@ -69,7 +69,7 @@ export default function CardTaskInfo({
     if (savedElapsedTime !== '0') {
       setElapsedTime(Number(savedElapsedTime));
       // setStartTime(Date.now());
-      isPlayingTime(true);
+      // isPlayingTime(true);
     }
   }, []);
 
