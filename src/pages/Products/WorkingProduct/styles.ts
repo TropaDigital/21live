@@ -135,7 +135,7 @@ export const MessageList = styled.div`
   border: 2px solid var(--gray-200);
   border-radius: 8px;
   box-shadow: 3px 5px 6px 1px rgba(0, 0, 0, 0.2);
-  padding: 8px 8px 60px 8px;
+  padding: 12px 12px 60px 12px;
 
   scrollbar-width: thin;
   scrollbar-color: var(--primary) var(--gray-900);

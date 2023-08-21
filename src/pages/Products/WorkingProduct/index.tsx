@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable import-helpers/order-imports */
 
 // React
@@ -51,6 +52,7 @@ import 'moment/dist/locale/pt-br';
 // Images
 import PersonImg from '../../../assets/person.jpg';
 import api from '../../../services/api';
+import { useAuth } from '../../../hooks/AuthContext';
 
 interface WorkingProductProps {
   estimatedTime?: string;
@@ -67,13 +69,11 @@ interface ProjectInfo {
 }
 
 interface ChatMessages {
-  id: string;
-  userId: number;
-  userImage: string;
-  userName: string;
-  message: string;
-  messageDate: string;
-  read: string;
+  comment: string;
+  user_id: number;
+  name: string;
+  avatar: string;
+  created: string;
 }
 
 interface TitleInfoProps {
@@ -90,72 +90,87 @@ interface TitleInfoProps {
 export default function WorkingProduct() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { addToast } = useToast();
+  const [loading, setLoading] = useState<boolean>(false);
   const [selectedTab, setSelectedTab] = useState<string>('Redação');
   const [notifications, setNotifications] = useState<boolean>(false);
   const [chatMessage, setChatMessage] = useState<string>('');
   const [titleInfos, setTitleInfos] = useState<TitleInfoProps>();
   const [taskInfos, setTaskInfos] = useState<any>();
+  const [dataComments, setDataComments] = useState<ChatMessages[]>([]);
   const typeOfPlay = location?.state?.playType;
 
+  const productId = location.state?.productInfo?.products_delivey_id;
+  const taskId = location.state?.taskInfos?.task_id;
   // const { data } = useFetch<WorkingProductProps>(`/${location.state.id}`);
-  const productId = location.state.productInfo.products_delivey_id;
+
+  async function getComments() {
+    try {
+      setLoading(true);
+      const response = await api.get(`/tasks/comment/${taskId}`);
+      console.log('log do response do comment', response.data.result);
+      setDataComments(response.data.result);
+
+      setLoading(false);
+    } catch (error) {
+      console.log('log error send comment', error);
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    // console.log('log do titleInfos', location.state.titleInfos);
+    // console.log('log do titleInfos', location.state);
     // console.log('log do taskInfos', location.state.taskInfos);
     setTitleInfos(location.state.titleInfos);
     setTaskInfos(location.state.taskInfos);
-  }, [location]);
 
-  const chatMessages: ChatMessages[] = [
-    {
-      id: '00001',
-      userId: 154,
-      userImage: 'avatar.png',
-      userName: 'Guilherme Augusto',
-      message: 'Corrigir texto email marketing',
-      messageDate: '2023-07-14 10:56:09',
-      read: ''
-    },
-    {
-      id: '00002',
-      userId: 13,
-      userImage: 'avatar.png',
-      userName: 'Danilo Fontes',
-      message: 'Certo, vou resolver',
-      messageDate: '2023-07-14 11:05:27',
-      read: ''
-    },
-    {
-      id: '00003',
-      userId: 11,
-      userImage: 'avatar.png',
-      userName: 'Adolfo Rodolfo',
-      message:
-        'Elementum vitae feugiat pulvinar mi sed cras. Feugiat nibh nisl dignissim orci in. Imperdiet sed arcu ac consequat.',
-      messageDate: '2023-07-15 14:32:18',
-      read: ''
-    },
-    {
-      id: '00004',
-      userId: 13,
-      userImage: 'avatar.png',
-      userName: 'Danilo Fontes',
-      message: 'Resolvido',
-      messageDate: '2023-07-15 16:20:00',
-      read: ''
-    },
-    {
-      id: '00005',
-      userId: 13,
-      userImage: 'avatar.png',
-      userName: 'Danilo Fontes',
-      message: 'Task concluída',
-      messageDate: '2023-07-16 09:09:09',
-      read: ''
-    }
-  ];
+    getComments();
+  }, [location, taskId]);
+
+  // const chatMessages: ChatMessages[] = [
+  //   {
+  //     user_id: 154,
+  //     avatar: 'avatar.png',
+  //     nameame: 'Guilherme Augusto',
+  //     message: 'Corrigir texto email marketing',
+  //     messageDate: '2023-07-14 10:56:09',
+  //     read: ''
+  //   },
+  //   {
+  //     user_id: 13,
+  //     avatar: 'avatar.png',
+  //     nameame: 'Danilo Fontes',
+  //     message: 'Certo, vou resolver',
+  //     messageDate: '2023-07-14 11:05:27',
+  //     read: ''
+  //   },
+  //   {
+  //     user_id: 11,
+  //     avatar: 'avatar.png',
+  //     nameame: 'Adolfo Rodolfo',
+  //     message:
+  //       'Elementum vitae feugiat pulvinar mi sed cras. Feugiat nibh nisl dignissim orci in. Imperdiet sed arcu ac consequat.',
+  //     messageDate: '2023-07-15 14:32:18',
+  //     read: ''
+  //   },
+  //   {
+  //     user_id: 13,
+  //     avatar: 'avatar.png',
+  //     nameame: 'Danilo Fontes',
+  //     message: 'Resolvido',
+  //     messageDate: '2023-07-15 16:20:00',
+  //     read: ''
+  //   },
+  //   {
+  //     user_id: 13,
+  //     avatar: 'avatar.png',
+  //     nameame: 'Danilo Fontes',
+  //     message: 'Task concluída',
+  //     messageDate: '2023-07-16 09:09:09',
+  //     read: ''
+  //   }
+  // ];
 
   const handleInputChange = (e: any) => {
     setChatMessage(e.target.value);
@@ -203,11 +218,14 @@ export default function WorkingProduct() {
 
   async function handleFinishProduct() {
     try {
+      setLoading(true);
       const response = await api.post(`/task/product-conclude/${productId}`);
       localStorage.removeItem('elapsedTime');
       console.log('log do response', response);
+      setLoading(false);
     } catch (error: any) {
       console.log('log error getting user', error);
+      setLoading(false);
     }
   }
 
@@ -218,6 +236,37 @@ export default function WorkingProduct() {
       type: 'warning',
       description: 'Entrega já concluída'
     });
+  };
+
+  async function handleSendComment() {
+    try {
+      const taskComment = {
+        task_id: taskId,
+        comment: chatMessage
+      };
+
+      setLoading(true);
+      const response = await api.post(`/tasks/comment/`, taskComment);
+      console.log('log do response do comment', response.data.result);
+
+      addToast({
+        title: 'Sucesso',
+        type: 'success',
+        description: 'Mensagem enviada.'
+      });
+      getComments();
+      setChatMessage('');
+      setLoading(false);
+    } catch (error) {
+      console.log('log error send comment', error);
+      setLoading(false);
+    }
+  }
+
+  const handleKeyDown = (event: any) => {
+    if (event.key === 'Enter') {
+      handleSendComment();
+    }
   };
 
   return (
@@ -349,9 +398,9 @@ export default function WorkingProduct() {
         {selectedTab === 'Comentários' && (
           <SectionChatComments>
             <MessageList>
-              {chatMessages.map((message: ChatMessages) => (
-                <ChatMessage key={message.id}>
-                  {message.userId !== 13 && (
+              {dataComments?.map((message: ChatMessages, index: number) => (
+                <ChatMessage key={index}>
+                  {message.user_id !== user.user_id && (
                     <>
                       <ChatUserImg>
                         <div
@@ -362,27 +411,23 @@ export default function WorkingProduct() {
 
                       <MessageInfos>
                         <UserMessageInfo>
-                          <div className="user-name">{message.userName}</div>
-                          <div className="date-message">
-                            {moment(message.messageDate).fromNow()}
-                          </div>
+                          <div className="user-name">{message.name}</div>
+                          <div className="date-message">{moment(message.created).fromNow()}</div>
                         </UserMessageInfo>
 
-                        <UserMessage>{message.message}</UserMessage>
+                        <UserMessage>{message.comment}</UserMessage>
                       </MessageInfos>
                     </>
                   )}
-                  {message.userId === 13 && (
+                  {message.user_id === user.user_id && (
                     <>
-                      <MessageInfos className={message.userId === 13 ? 'left' : ''}>
+                      <MessageInfos className={message.user_id === user.user_id ? 'left' : ''}>
                         <UserMessageInfo>
-                          <div className="user-name">{message.userName}</div>
-                          <div className="date-message">
-                            {moment(message.messageDate).fromNow()}
-                          </div>
+                          <div className="user-name">{message.name}</div>
+                          <div className="date-message">{moment(message.created).fromNow()}</div>
                         </UserMessageInfo>
 
-                        <UserMessage>{message.message}</UserMessage>
+                        <UserMessage>{message.comment}</UserMessage>
                       </MessageInfos>
 
                       <ChatUserImg>
@@ -404,8 +449,9 @@ export default function WorkingProduct() {
                 name="chat"
                 value={chatMessage}
                 onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
               />
-              <ChatSendButton>
+              <ChatSendButton onClick={handleSendComment}>
                 <HiOutlineArrowRight />
               </ChatSendButton>
             </InputChat>
