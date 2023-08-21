@@ -44,7 +44,7 @@ import api from '../../../services/api';
 import moment from 'moment';
 
 // Styles
-import { ModalShowTaskWrapper, Flag } from './styles';
+import { ModalShowTaskWrapper, Flag, StatusTable } from './styles';
 
 export default function TaskList() {
   const { addToast } = useToast();
@@ -367,7 +367,9 @@ export default function TaskList() {
               <th>Título</th>
               <th>Tempo utilizado</th>
               <th>Tempo estimado</th>
-              <th>Equipe</th>
+              <th>Status</th>
+              <th>Cliente</th>
+              {/* <th>Equipe</th> */}
               <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
             </tr>
           </thead>
@@ -380,7 +382,7 @@ export default function TaskList() {
                   <td style={{ textTransform: 'capitalize' }}>{row.title}</td>
                   <td
                     style={{
-                      width: '220px',
+                      width: '180px',
                       textAlign: 'left'
                     }}
                   >
@@ -394,8 +396,26 @@ export default function TaskList() {
                   </td>
                   <td>{row.totalTime !== 'undefined' ? row.totalTime : '00:00:00'}</td>
                   <td>
-                    <Avatar data={avatarAll} />
+                    <StatusTable
+                      className={
+                        row.status === 'Em Andamento'
+                          ? 'status progress'
+                          : row.status === 'Concluida'
+                          ? 'status finished'
+                          : 'status'
+                      }
+                    >
+                      {row.status === 'Em Andamento'
+                        ? 'Em progresso'
+                        : row.status === 'Concluida'
+                        ? 'Concluída'
+                        : 'Pendente'}
+                    </StatusTable>
                   </td>
+                  <td>{row.tenant}</td>
+                  {/* <td>
+                    <Avatar data={avatarAll} />
+                  </td> */}
                   <td>
                     <div className="fieldTableClients">
                       <Flag
