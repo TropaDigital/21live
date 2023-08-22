@@ -277,11 +277,6 @@ export default function ViewProductsDeliveries() {
     };
   }, [hideRightCard]);
 
-  // useEffect(() => {
-  //   console.log('log do playStart =>', localStorage.getItem('playStart'));
-  //   console.log('log do pausePlay ||', localStorage.getItem('pausePlay'));
-  // }, [playingForSchedule]);
-
   return (
     <ContainerDefault>
       <DeliveryWrapper>
