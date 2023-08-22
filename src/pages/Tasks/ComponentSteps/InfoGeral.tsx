@@ -1,9 +1,10 @@
 /* eslint-disable import-helpers/order-imports */
 // React
-import React, { useState } from 'react';
+import React from 'react';
 
 // Utils
 import { TenantProps } from '../../../utils/models';
+import { OrganizationsProps } from '../../../types';
 
 // Components
 import { InputDefault } from '../../../components/Inputs/InputDefault';
@@ -15,6 +16,7 @@ import api from '../../../services/api';
 
 // Hooks
 import { useToast } from '../../../hooks/toast';
+import { useAuth } from '../../../hooks/AuthContext';
 
 interface FormProps {
   [key: string]: any;
@@ -27,7 +29,8 @@ interface Props {
   handleInputChange: (
     e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>
   ) => void;
-  clients: TenantProps[] | null;
+  clients?: TenantProps[] | null;
+  organizations?: OrganizationsProps[] | null;
   error: FormProps;
 }
 
@@ -51,8 +54,10 @@ export default function InfoGeral({
   dataFlow,
   handleInputChange,
   clients,
+  organizations,
   error
 }: Props) {
+  const { user } = useAuth();
   const { addToast } = useToast();
   // Responsaveis pelo flow
   // const [flowsManagers, setFlowManagers] = useState<FlowRole[]>([]);
@@ -83,20 +88,37 @@ export default function InfoGeral({
           onChange={handleInputChange}
           error={error?.title}
         />
+        {user.organizations.length <= 0 && (
+          <SelectDefault
+            label="Cliente"
+            name="tenant_id"
+            value={data.tenant_id}
+            onChange={handleInputChange}
+            error={error?.tenant_id}
+          >
+            {clients?.map((row) => (
+              <option key={row.tenant_id} value={row.tenant_id}>
+                {row.name}
+              </option>
+            ))}
+          </SelectDefault>
+        )}
 
-        <SelectDefault
-          label="Cliente"
-          name="tenant_id"
-          value={data.tenant_id}
-          onChange={handleInputChange}
-          error={error?.tenant_id}
-        >
-          {clients?.map((row) => (
-            <option key={row.tenant_id} value={row.tenant_id}>
-              {row.name}
-            </option>
-          ))}
-        </SelectDefault>
+        {user.organizations.length > 0 && (
+          <SelectDefault
+            label="Cliente"
+            name="organization_id"
+            value={data.organization_id}
+            onChange={handleInputChange}
+            error={error?.organization_id}
+          >
+            {organizations?.map((row) => (
+              <option key={row.organization_id} value={row.organization_id}>
+                {row.name}
+              </option>
+            ))}
+          </SelectDefault>
+        )}
       </FlexLine>
 
       <FlexLine>
