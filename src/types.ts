@@ -83,6 +83,7 @@ export interface ITaskCreate {
   title: string;
   user_id: string;
   tenant_id: number | string | any;
+  organization_id?: number | string | any;
   product_id: number | string | any; // produto principal, o produto pode ter uma flag que significa que ele lista outros produtos na criação da task
   type?: string | any; //type_id da tabela task_type
   flow_id?: number | any;
@@ -172,4 +173,27 @@ export interface ICommentTask {
   user_id: number; // id de quem está comentando
   task_id: number; // id da tarefa
   comment: string; // se tiver respondendo algum comentário, o id desse comentário
+}
+
+export interface OrganizationsProps {
+  organization_id: string;
+  tenant_id: string;
+  country_id: string;
+  city_id: string;
+  name: string;
+  address: string;
+  email: string;
+  cnpj: string;
+  phone: string;
+  whatsapp: string;
+  facebook: string;
+  fb_page_token: string;
+  instagram: string;
+  website: string;
+  social_footer: string;
+  workhours: string;
+  hourlimit_text: string;
+  logo: string;
+  logo_b: string;
+  logo_w: string;
 }
