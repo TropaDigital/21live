@@ -29,6 +29,7 @@ import { multiplyTime, sumTimes } from '../../../../utils/convertTimes';
 import api from '../../../../services/api';
 import { FlexLine } from '../../../Projects/ComponentSteps/styles';
 import { SelectDefault } from '../../../../components/Inputs/SelectDefault';
+import { useAuth } from '../../../../hooks/AuthContext';
 
 interface TasksProps {
   createTasks: () => void;
@@ -67,6 +68,7 @@ export default function SummaryTasks({
   handleInputChange,
   error
 }: TasksProps) {
+  const { user } = useAuth();
   const [deliveryArrayHours, setDeliveryArrayHours] = useState<any>('');
   const [totalArrayHours, setTotalArrayHours] = useState<any>('');
   const [flowsManagers, setFlowManagers] = useState<FlowRole[]>([]);
@@ -75,7 +77,7 @@ export default function SummaryTasks({
     // console.log('log selected products on summary', selectedProducts);
     console.log('log tasks infos on summary', taskSummary);
     // console.log('log tasks infos on project', projectInfos);
-    // console.log('log extra infos for summary tasks', summaryExtrainfos);
+    console.log('log extra infos for summary tasks', summaryExtrainfos);
 
     const handleGetFlowTask = async (id: any) => {
       try {
@@ -163,11 +165,21 @@ export default function SummaryTasks({
               <div className="info">{taskSummary?.title}</div>
             </SummaryTaskInfo>
 
-            <SummaryTaskInfo>
-              <div className="title-info">Cliente:</div>
-              {updateTask && <div className="info">{taskSummary?.tenant}</div>}
-              {!updateTask && <div className="info">{summaryExtrainfos?.client.name}</div>}
-            </SummaryTaskInfo>
+            {user.organizations.length > 0 && (
+              <SummaryTaskInfo>
+                <div className="title-info">Cliente:</div>
+                {updateTask && <div className="info">{taskSummary?.tenant}</div>}
+                {!updateTask && <div className="info">{summaryExtrainfos?.organization.name}</div>}
+              </SummaryTaskInfo>
+            )}
+
+            {user.organizations.length <= 0 && (
+              <SummaryTaskInfo>
+                <div className="title-info">Cliente:</div>
+                {updateTask && <div className="info">{taskSummary?.tenant}</div>}
+                {!updateTask && <div className="info">{summaryExtrainfos?.client.name}</div>}
+              </SummaryTaskInfo>
+            )}
 
             <SummaryTaskInfo>
               <div className="title-info">Projeto/Contrato:</div>
@@ -184,11 +196,13 @@ export default function SummaryTasks({
               )}
             </SummaryTaskInfo>
 
-            <SummaryTaskInfo>
-              <div className="title-info">Fluxo:</div>
-              {updateTask && <div className="info">{taskSummary?.flow}</div>}
-              {!updateTask && <div className="info">{summaryExtrainfos?.flow.name}</div>}
-            </SummaryTaskInfo>
+            {user.organizations.length <= 0 && (
+              <SummaryTaskInfo>
+                <div className="title-info">Fluxo:</div>
+                {updateTask && <div className="info">{taskSummary?.flow}</div>}
+                {!updateTask && <div className="info">{summaryExtrainfos?.flow.name}</div>}
+              </SummaryTaskInfo>
+            )}
 
             <SummaryTaskDescription>
               <div className="description-title">Contexto geral</div>
