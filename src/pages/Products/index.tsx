@@ -103,10 +103,6 @@ interface IModalKit {
   kit: IDataKit;
 }
 
-interface Error {
-  message: string;
-}
-
 export default function Services() {
   const { addToast } = useToast();
   const { formData, setData, handleOnChange, handleOnChangeSwitch, handleOnChangeMinutes } =
@@ -122,7 +118,6 @@ export default function Services() {
       flag: 'false',
       service_id: ''
     } as FormDataProps);
-
   const [modal, setModal] = useState({
     isOpen: false,
     type: ''
@@ -146,25 +141,20 @@ export default function Services() {
       flag: ''
     }
   });
-
   const [modalKit, setModalKit] = useState<IModalKit>({
     isOpen: false,
     type: '',
     kit: {} as IDataKit
   });
-
   const [isOpenRowShowModalKit, setIsOpenRowShowModalKit] = useState<{ [key: string]: boolean }>();
-
   const [searchTerm, setSearchTerm] = useState('');
   const [search, setSearch] = useState('');
   const { isLoading, debouncedCallback } = useDebouncedCallback(
     (search: string) => setSearch(search),
     700
   );
-
   const [typeList, setTypeList] = useState('produtos');
   const [selected, setSelected] = useState(1);
-
   const { data, pages, fetchData } = useFetch<ServicesProps[]>(
     `services?search=${search}&perPage=15&page=${selected}`
   );
@@ -188,7 +178,6 @@ export default function Services() {
   });
   const [category, setCategory] = useState<string>('');
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
-
   const checkboxWrapperRef = useRef<HTMLDivElement>(null);
 
   const handleOnCancel = useCallback(() => {
@@ -640,10 +629,6 @@ export default function Services() {
     },
     [addToast, category]
   );
-
-  // useEffect(() => {
-  //   console.log('log do clients', clientsForKit);
-  // }, [clientsForKit]);
 
   return (
     <ContainerDefault>
