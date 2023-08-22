@@ -53,7 +53,13 @@ import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useAuth } from '../../../hooks/AuthContext';
 
 // Types
-import { IProduct, IProductBackend, ITaskCreate, ServicesProps } from '../../../types';
+import {
+  IProduct,
+  IProductBackend,
+  ITaskCreate,
+  OrganizationsProps,
+  ServicesProps
+} from '../../../types';
 
 // Utils
 import { TenantProps } from '../../../utils/models';
@@ -143,6 +149,7 @@ export default function CreateTasks() {
   const [DTOForm, setDTOForm] = useState<ITaskCreate>({
     title: '',
     tenant_id: '',
+    organization_id: '',
     product_id: '',
     flow_id: '',
     description: '',
@@ -170,8 +177,13 @@ export default function CreateTasks() {
   const { data: dataProjects, fetchData: fetchProjects } = useFetch<ServicesProps[]>(
     `project-products/${DTOForm.tenant_id}`
   );
+  // /project-products/199?organization_id=28786
+  const { data: organizationProjects } = useFetch<ServicesProps[]>(
+    `project-products/${user.principalTenant}?organization_id=${DTOForm.organization_id}`
+  );
   const { data: dataFlow, fetchData: fetchFlow } = useFetch<any[]>(`/flow`);
   const { data: dataTypes } = useFetch<any[]>(`/task-type`);
+  const { data: dataOrganizations } = useFetch<OrganizationsProps[]>('organization');
   const [productsArray, setProductsArray] = useState<ServicesProps[]>([]);
   // const [quantityProductsArray, setQuantityProductsArray] = useState<any[]>([]);
   const [selectedProject, setSelectedProject] = useState<ProjectProductProps>();
@@ -193,6 +205,28 @@ export default function CreateTasks() {
       steps: '',
       tenant_id: '',
       user_id: ''
+    },
+    organization: {
+      organization_id: '',
+      tenant_id: '',
+      country_id: '',
+      city_id: '',
+      name: '',
+      address: '',
+      email: '',
+      cnpj: '',
+      phone: '',
+      whatsapp: '',
+      facebook: '',
+      fb_page_token: '',
+      instagram: '',
+      website: '',
+      social_footer: '',
+      workhours: '',
+      hourlimit_text: '',
+      logo: '',
+      logo_b: '',
+      logo_w: ''
     }
   });
   const { isLoading, debouncedCallback } = useDebouncedCallback(
@@ -494,6 +528,10 @@ export default function CreateTasks() {
     (obj: any) => obj.product_id === DTOForm.product_id
   );
 
+  const infoOrganizationsProjects: any = organizationProjects?.filter(
+    (obj: any) => obj.product_id === DTOForm.product_id
+  );
+
   const handleSwitch = (value: any) => {
     setDeliveriesSplit(value === true ? 'split' : 'no-split');
   };
@@ -640,6 +678,7 @@ export default function CreateTasks() {
     const {
       title,
       tenant_id,
+      organization_id,
       product_id,
       flow_id,
       user_id,
@@ -657,22 +696,36 @@ export default function CreateTasks() {
         setErrorInput('title', undefined);
       }
 
-      if (tenant_id === '') {
-        throw setErrorInput('tenant_id', 'Cliente é obrigatório!');
+      if (user.organizations.length > 0) {
+        if (organization_id === '') {
+          throw setErrorInput('organization_id', 'Cliente é obrigatório!');
+        } else {
+          setErrorInput('organization_id', undefined);
+        }
       } else {
-        setErrorInput('tenant_id', undefined);
-      }
+        if (tenant_id === '') {
+          throw setErrorInput('tenant_id', 'Cliente é obrigatório!');
+        } else {
+          setErrorInput('tenant_id', undefined);
+        }
 
-      if (product_id === '') {
-        throw setErrorInput('product_id', 'Projeto / Contrato é obrigatório!');
-      } else {
-        setErrorInput('product_id', undefined);
+        // if (flow_id === '') {
+        //   throw setErrorInput('flow_id', 'Fluxo é obrigatório!');
+        // } else {
+        //   setErrorInput('flow_id', undefined);
+        // }
       }
 
       if (flow_id === '') {
         throw setErrorInput('flow_id', 'Fluxo é obrigatório!');
       } else {
         setErrorInput('flow_id', undefined);
+      }
+
+      if (product_id === '') {
+        throw setErrorInput('product_id', 'Projeto / Contrato é obrigatório!');
+      } else {
+        setErrorInput('product_id', undefined);
       }
 
       // if (user_id === '') {
@@ -1250,10 +1303,19 @@ export default function CreateTasks() {
 
   const selectedProjectInfos = (e: any) => {
     if (e.target.name === 'product_id') {
-      const id = e.target.value;
-      const selectedInfos: any = dataProjects?.filter((obj: any) => obj.product_id === id);
-      setSelectedProject(selectedInfos[0]);
-      handleChangeInput(e);
+      if (user.organizations.length > 0) {
+        const id = e.target.value;
+        const selectedInfos: any = organizationProjects?.filter(
+          (obj: any) => obj.product_id === id
+        );
+        setSelectedProject(selectedInfos[0]);
+        handleChangeInput(e);
+      } else {
+        const id = e.target.value;
+        const selectedInfos: any = dataProjects?.filter((obj: any) => obj.product_id === id);
+        setSelectedProject(selectedInfos[0]);
+        handleChangeInput(e);
+      }
     } else if (e.target.name === 'tenant_id') {
       const id = e.target.value;
       const selectedClient: any = dataClient?.filter((obj: any) => obj.tenant_id === id);
@@ -1268,6 +1330,16 @@ export default function CreateTasks() {
       setSelectedSummaryInfos((prevState: any) => ({
         ...prevState,
         ['flow']: selectedFlow[0]
+      }));
+      handleChangeInput(e);
+    } else if (e.target.name === 'organization_id') {
+      const id = e.target.value;
+      const selectedOrganization: any = dataOrganizations?.filter(
+        (obj: OrganizationsProps) => obj.organization_id === id
+      );
+      setSelectedSummaryInfos((prevState: any) => ({
+        ...prevState,
+        ['organization']: selectedOrganization[0]
       }));
       handleChangeInput(e);
     } else {
@@ -1305,12 +1377,26 @@ export default function CreateTasks() {
   };
 
   useEffect(() => {
-    if (DTOForm.product_id !== '' && location.state === null) {
+    if (DTOForm.product_id !== '' && location.state === null && user.organizations.length <= 0) {
       if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel === 'true') {
         setTasksType('horas');
       } else if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel !== 'true') {
         setTasksType('produto');
       } else if (infoProjects[0]?.tipo !== 'product') {
+        setTasksType('livre');
+      }
+    } else if (DTOForm.product_id && location.state === null && user.organizations.length > 0) {
+      if (
+        infoOrganizationsProjects[0]?.tipo === 'product' &&
+        infoOrganizationsProjects[0]?.listavel === 'true'
+      ) {
+        setTasksType('horas');
+      } else if (
+        infoOrganizationsProjects[0]?.tipo === 'product' &&
+        infoOrganizationsProjects[0]?.listavel !== 'true'
+      ) {
+        setTasksType('produto');
+      } else if (infoOrganizationsProjects[0]?.tipo !== 'product') {
         setTasksType('livre');
       }
     } else {
@@ -1322,7 +1408,7 @@ export default function CreateTasks() {
         setTasksType('horas');
       }
     }
-  }, [DTOForm, infoProjects, location]);
+  }, [DTOForm, infoProjects, infoOrganizationsProjects, location]);
 
   const finishCreate = () => {
     setFinishModal(false);
@@ -1360,7 +1446,7 @@ export default function CreateTasks() {
         />
 
         <FormWrapper>
-          {createStep === 1 && (
+          {createStep === 1 && user.organizations.length <= 0 && (
             <>
               <FormTitle>Geral</FormTitle>
               <InfoGeral
@@ -1369,6 +1455,31 @@ export default function CreateTasks() {
                 dataFlow={dataFlow}
                 handleInputChange={selectedProjectInfos}
                 clients={dataClient}
+                error={error}
+              />
+
+              <div className={error.description ? 'label-observation error' : 'label-observation'}>
+                <div className="label">
+                  <p>Contexto geral</p>
+                  {error.description && <span>Contexto geral é obrigatório!</span>}
+                </div>
+                <InfoDescription
+                  value={DTOForm.description}
+                  handleOnDescription={(value) => handleDescription(value)}
+                  mentions={[]}
+                />
+              </div>
+            </>
+          )}
+          {createStep === 1 && user.organizations.length > 0 && (
+            <>
+              <FormTitle>Geral</FormTitle>
+              <InfoGeral
+                data={DTOForm}
+                dataProjects={organizationProjects}
+                dataFlow={dataFlow}
+                handleInputChange={selectedProjectInfos}
+                organizations={dataOrganizations}
                 error={error}
               />
 
