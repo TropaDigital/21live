@@ -19,11 +19,10 @@ import api from '../../../services/api';
 import { useToast } from '../../../hooks/toast';
 import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useFetch } from '../../../hooks/useFetch';
-import useForm from '../../../hooks/useForm';
+import { useAuth } from '../../../hooks/AuthContext';
 
 // Utils
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
-import { TenantProps } from '../../../utils/models';
 
 import { IProjectCreate } from '../../../types';
 
@@ -39,7 +38,6 @@ import Alert from '../../../components/Ui/Alert';
 import ModalDefault from '../../../components/Ui/ModalDefault';
 import ProgressBar from '../../../components/Ui/ProgressBar';
 import { ContainerDefault } from '../../../components/UiElements/styles';
-import { UploadedFilesProps } from '../../../components/Upload/UploadFiles';
 
 // Styles
 import { Summary } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
@@ -50,7 +48,6 @@ import { SummaryCard } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 import { SummaryCardTitle } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 import { SummaryCardSubtitle } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 import { ModalShowProjectWrapper } from './styles';
-import FilterMenu from '../../../components/Filter';
 
 interface StateProps {
   [key: string]: any;
@@ -58,6 +55,7 @@ interface StateProps {
 
 export default function ListProjects() {
   const { addToast } = useToast();
+  const { user } = useAuth();
   const [modalShowProject, setModalShowProject] = useState({
     isOpen: false,
     type: 'Criar nova Ata de Reunião',
@@ -66,6 +64,7 @@ export default function ListProjects() {
       contract_type: '',
       category: '',
       client_name: '',
+      organization_name: '',
       project_id: '',
       date_start: '',
       date_end: '',
@@ -239,13 +238,15 @@ export default function ListProjects() {
     }
   };
 
-  const handleOpenModal = (project: IProjectCreate) => {
+  const handleOpenModal = (project: any) => {
+    console.log('log do project on open modal', project);
     setModalShowProject({
       isOpen: true,
       type: `Resumo do Projeto: #${project.project_id}`,
       project: {
         title: project.title,
         client_name: project.client_name,
+        organization_name: project.organization_name,
         contract_type: project.contract_type,
         category: project.category,
         project_id: project.project_id,
@@ -268,6 +269,7 @@ export default function ListProjects() {
         contract_type: '',
         category: '',
         client_name: '',
+        organization_name: '',
         project_id: '',
         date_start: '',
         date_end: '',
@@ -431,10 +433,19 @@ export default function ListProjects() {
                 <div className="info">{modalShowProject.project.title}</div>
               </SummaryTaskInfo>
 
-              <SummaryTaskInfo>
-                <div className="title-info">Cliente:</div>
-                <div className="info">{modalShowProject.project.client_name}</div>
-              </SummaryTaskInfo>
+              {user.organizations.length <= 0 && (
+                <SummaryTaskInfo>
+                  <div className="title-info">Cliente:</div>
+                  <div className="info">{modalShowProject.project.client_name}</div>
+                </SummaryTaskInfo>
+              )}
+
+              {user.organizations.length > 0 && (
+                <SummaryTaskInfo>
+                  <div className="title-info">Cliente:</div>
+                  <div className="info">{modalShowProject.project.organization_name}</div>
+                </SummaryTaskInfo>
+              )}
 
               <SummaryTaskInfo>
                 <div className="title-info">FEE / SPOT:</div>
