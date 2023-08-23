@@ -109,7 +109,7 @@ export default function WorkingProduct() {
     try {
       setLoading(true);
       const response = await api.get(`/tasks/comment/${taskId}`);
-      console.log('log do response do comment', response.data.result);
+      // console.log('log do response do comment', response.data.result);
       setDataComments(response.data.result);
 
       setLoading(false);
@@ -361,7 +361,7 @@ export default function WorkingProduct() {
                       <ChatUserImg>
                         <div
                           className="user-img"
-                          style={{ backgroundImage: `url(${PersonImg})` }}
+                          style={{ backgroundImage: `url(${message.avatar})` }}
                         />
                       </ChatUserImg>
 
@@ -389,7 +389,7 @@ export default function WorkingProduct() {
                       <ChatUserImg>
                         <div
                           className="user-img"
-                          style={{ backgroundImage: `url(${PersonImg})` }}
+                          style={{ backgroundImage: `url(${message.avatar})` }}
                         />
                       </ChatUserImg>
                     </>
