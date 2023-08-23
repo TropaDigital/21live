@@ -30,11 +30,9 @@ import {
   SummaryTaskDescription,
   SummaryTaskInfo
 } from '../ComponentSteps/SummaryTasks/styles';
-import Avatar from '../../../components/Ui/Avatar';
 import ProgressBar from '../../../components/Ui/ProgressBar';
 
 // Utils
-import { avatarAll } from '../../../utils/dataDefault';
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 
 // Api
@@ -168,7 +166,15 @@ export default function TaskList() {
   // const { data: dataTask, fetchData: fetchTask } = useFetch<any[]>(`tasks/${taskId}`);
 
   const handleEditTask = (task: any) => {
-    getInfoTask(task.task_id);
+    if (task.status !== 'Pendente') {
+      addToast({
+        type: 'warning',
+        title: 'ATENÇÃO',
+        description: 'Não é possivel editar tarefas "EM PROGRESSO" ou "CONCLUÍDAS"'
+      });
+    } else {
+      getInfoTask(task.task_id);
+    }
   };
 
   async function getInfoTask(id: number) {
