@@ -10,7 +10,7 @@ import { useFetch } from '../../../hooks/useFetch';
 import { useAuth } from '../../../hooks/AuthContext';
 
 // Utils
-import { TenantProps } from '../../../utils/models';
+import { TeamProps, TenantProps } from '../../../utils/models';
 import { multiplyTime, sumTimes } from '../../../utils/convertTimes';
 
 // Types
@@ -52,7 +52,8 @@ import {
   SummaryCardSubtitle,
   SummaryCardTitle,
   SummaryContractCard,
-  SummaryWrapper
+  SummaryWrapper,
+  TeamInput
 } from './styles';
 
 // Services
@@ -60,6 +61,7 @@ import api from '../../../services/api';
 
 // Libraries
 import moment from 'moment';
+import InputMultipleSelect from '../../../components/Inputs/InputMultipleSelect';
 
 interface StateProps {
   [key: string]: any;
@@ -79,6 +81,7 @@ interface DTOProps {
   files: [];
   time: string;
   email: string;
+  team: [];
 }
 
 type HandleOnChange = (
@@ -92,8 +95,9 @@ export default function CreateProject() {
   const navigate = useNavigate();
   const { addToast } = useToast();
   const { user } = useAuth();
+  const location = useLocation();
 
-  const [createStep, setCreateStep] = useState<number>(1);
+  const [createStep, setCreateStep] = useState<number>(4);
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const { data: dataOrganizations } = useFetch<OrganizationsProps[]>('organization');
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
@@ -116,11 +120,22 @@ export default function CreateProject() {
     products: [],
     files: [],
     time: '',
-    email: ''
+    email: '',
+    team: []
   });
   const [productsArray, setProductsArray] = useState<IProduct[]>([]);
   const [selectedClient, setSelectedClient] = useState<any>('');
-  const location = useLocation();
+
+  const { data: dataTeam } = useFetch<TeamProps[]>('team');
+
+  const defaultOptionsTeam = dataTeam?.filter((item) =>
+    DTOForm.team.some((member: any) => member.user_id === item.user_id)
+  );
+
+  const onChange = (option: any) => {
+    const dataOption = option.map((row: any) => ({ user_id: row.value }));
+    setDTOForm((prevState: any) => ({ ...prevState, ['team']: dataOption }));
+  };
 
   useEffect(() => {
     if (location.state !== null) {
@@ -148,7 +163,6 @@ export default function CreateProject() {
   // End Hours calculations
 
   const handleOnAddProducts = (items: IProduct) => {
-    console.log('log do items no add products', items);
     setProductsArray((prevState: any) => [...prevState, items]);
   };
 
@@ -406,7 +420,8 @@ export default function CreateProject() {
               contract_type: DTOForm.contract_type,
               files,
               time: totalTime,
-              email: DTOForm.email
+              email: DTOForm.email,
+              team: DTOForm.team
             };
 
             const updateData = {
@@ -422,7 +437,8 @@ export default function CreateProject() {
               contract_type: DTOForm.contract_type,
               files,
               time: totalTime,
-              email: DTOForm.email
+              email: DTOForm.email,
+              team: DTOForm.team
             };
 
             if (location.state !== null && editSelectedProducts) {
@@ -464,7 +480,8 @@ export default function CreateProject() {
               contract_type: DTOForm.contract_type,
               files,
               time: totalTime,
-              email: DTOForm.email
+              email: DTOForm.email,
+              team: DTOForm.team
             };
 
             const updateData = {
@@ -479,7 +496,8 @@ export default function CreateProject() {
               contract_type: DTOForm.contract_type,
               files,
               time: totalTime,
-              email: DTOForm.email
+              email: DTOForm.email,
+              team: DTOForm.team
             };
 
             if (location.state !== null && editSelectedProducts) {
@@ -513,7 +531,8 @@ export default function CreateProject() {
               contract_type: DTOForm.contract_type,
               files,
               time: totalTime,
-              email: DTOForm.email
+              email: DTOForm.email,
+              team: DTOForm.team
             };
 
             const updateData = {
@@ -529,7 +548,8 @@ export default function CreateProject() {
               contract_type: DTOForm.contract_type,
               files,
               time: totalTime,
-              email: DTOForm.email
+              email: DTOForm.email,
+              team: DTOForm.team
             };
 
             if (location.state !== null && editSelectedProducts) {
@@ -560,7 +580,8 @@ export default function CreateProject() {
               contract_type: DTOForm.contract_type,
               files,
               time: totalTime,
-              email: DTOForm.email
+              email: DTOForm.email,
+              team: DTOForm.team
             };
 
             const updateData = {
@@ -575,7 +596,8 @@ export default function CreateProject() {
               contract_type: DTOForm.contract_type,
               files,
               time: totalTime,
-              email: DTOForm.email
+              email: DTOForm.email,
+              team: DTOForm.team
             };
 
             if (location.state !== null && editSelectedProducts) {
@@ -648,6 +670,10 @@ export default function CreateProject() {
       handleChangeInput(e);
     }
   };
+
+  useEffect(() => {
+    console.log('log do DTOTEAM =>', DTOForm.team);
+  }, [DTOForm]);
 
   return (
     <Container>
@@ -883,6 +909,20 @@ export default function CreateProject() {
                     </div>
                   </SummaryContractCard>
                 </Summary>
+
+                <TeamInput>
+                  <InputMultipleSelect
+                    name="members"
+                    options={dataTeam?.map((row) => ({ value: row.user_id, label: row.username }))}
+                    label="Membros"
+                    onChange={(option) => onChange(option)}
+                    defaultValue={defaultOptionsTeam?.map((row) => ({
+                      value: row.user_id,
+                      label: row.username
+                    }))}
+                    alert="Selecione pelo menos um Responsável"
+                  />
+                </TeamInput>
 
                 <FinishButtons>
                   <ButtonDefault onClick={handleOnSubmit}>Salvar Projeto/Contrato</ButtonDefault>

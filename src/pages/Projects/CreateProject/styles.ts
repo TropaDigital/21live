@@ -234,3 +234,14 @@ export const FinishButtons = styled.div`
   flex-direction: column;
   gap: 12px;
 `;
+
+export const TeamInput = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border-radius: 8px;
+  border: 1px solid var(--gray-200);
+  background: #fff;
+
+  padding: 14px;
+`;
