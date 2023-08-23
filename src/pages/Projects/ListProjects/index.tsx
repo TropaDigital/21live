@@ -433,14 +433,14 @@ export default function ListProjects() {
                 <div className="info">{modalShowProject.project.title}</div>
               </SummaryTaskInfo>
 
-              {user.organizations.length <= 0 && (
+              {!user?.organizations && (
                 <SummaryTaskInfo>
                   <div className="title-info">Cliente:</div>
                   <div className="info">{modalShowProject.project.client_name}</div>
                 </SummaryTaskInfo>
               )}
 
-              {user.organizations.length > 0 && (
+              {user?.organizations?.length > 0 && (
                 <SummaryTaskInfo>
                   <div className="title-info">Cliente:</div>
                   <div className="info">{modalShowProject.project.organization_name}</div>
