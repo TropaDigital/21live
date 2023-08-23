@@ -696,7 +696,7 @@ export default function CreateTasks() {
         setErrorInput('title', undefined);
       }
 
-      if (user.organizations.length > 0) {
+      if (user?.organizations?.length > 0) {
         if (organization_id === '') {
           throw setErrorInput('organization_id', 'Cliente é obrigatório!');
         } else {
@@ -1303,7 +1303,7 @@ export default function CreateTasks() {
 
   const selectedProjectInfos = (e: any) => {
     if (e.target.name === 'product_id') {
-      if (user.organizations.length > 0) {
+      if (user?.organizations?.length > 0) {
         const id = e.target.value;
         const selectedInfos: any = organizationProjects?.filter(
           (obj: any) => obj.product_id === id
@@ -1377,7 +1377,7 @@ export default function CreateTasks() {
   };
 
   useEffect(() => {
-    if (DTOForm.product_id !== '' && location.state === null && user.organizations.length <= 0) {
+    if (DTOForm.product_id !== '' && location.state === null && !user?.organizations) {
       if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel === 'true') {
         setTasksType('horas');
       } else if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel !== 'true') {
@@ -1385,7 +1385,7 @@ export default function CreateTasks() {
       } else if (infoProjects[0]?.tipo !== 'product') {
         setTasksType('livre');
       }
-    } else if (DTOForm.product_id && location.state === null && user.organizations.length > 0) {
+    } else if (DTOForm.product_id && location.state === null && user?.organizations?.length > 0) {
       if (
         infoOrganizationsProjects[0]?.tipo === 'product' &&
         infoOrganizationsProjects[0]?.listavel === 'true'
@@ -1446,7 +1446,7 @@ export default function CreateTasks() {
         />
 
         <FormWrapper>
-          {createStep === 1 && user.organizations.length <= 0 && (
+          {createStep === 1 && !user.organizations && (
             <>
               <FormTitle>Geral</FormTitle>
               <InfoGeral
@@ -1471,7 +1471,7 @@ export default function CreateTasks() {
               </div>
             </>
           )}
-          {createStep === 1 && user.organizations.length > 0 && (
+          {createStep === 1 && user?.organizations?.length > 0 && (
             <>
               <FormTitle>Geral</FormTitle>
               <InfoGeral
