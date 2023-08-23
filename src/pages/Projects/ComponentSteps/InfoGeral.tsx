@@ -51,7 +51,7 @@ export default function InfoGeral({
           onChange={handleInputChange}
           error={error?.title}
         />
-        {user.organizations.length <= 0 && (
+        {!user?.organizations && (
           <SelectDefault
             label="Cliente"
             name="tenant_id"
@@ -67,7 +67,7 @@ export default function InfoGeral({
           </SelectDefault>
         )}
 
-        {user.organizations.length > 0 && (
+        {user?.organizations?.length > 0 && (
           <SelectDefault
             label="Cliente"
             name="organization_id"
