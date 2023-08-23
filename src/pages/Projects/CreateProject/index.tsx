@@ -260,7 +260,7 @@ export default function CreateProject() {
         setErrorInput('title', undefined);
       }
 
-      if (user.organizations.length > 0) {
+      if (user?.organizations?.length > 0) {
         if (organization_id === '') {
           throw setErrorInput('organization_id', 'Cliente é obrigatório!');
         } else {
@@ -382,7 +382,7 @@ export default function CreateProject() {
         const totalTime = sumTimes(productsHours);
 
         if (DTOForm.contract_type === 'free') {
-          if (user.organizations.length > 0) {
+          if (user?.organizations?.length > 0) {
             const createNewData = {
               title: DTOForm.title,
               tenant_id: user.principalTenant,
@@ -500,7 +500,7 @@ export default function CreateProject() {
             }
           }
         } else {
-          if (user.organizations.length > 0) {
+          if (user?.organizations?.length > 0) {
             const createNewData = {
               title: DTOForm.title,
               tenant_id: user.principalTenant,
@@ -659,7 +659,7 @@ export default function CreateProject() {
       />
 
       <FormWrapper>
-        {createStep === 1 && user.organizations.length <= 0 && (
+        {createStep === 1 && !user?.organizations && (
           <>
             <FormTitle>Geral</FormTitle>
             <InfoGeral
@@ -682,7 +682,7 @@ export default function CreateProject() {
             </div>
           </>
         )}
-        {createStep === 1 && user.organizations.length > 0 && (
+        {createStep === 1 && user?.organizations?.length > 0 && (
           <>
             <FormTitle>Geral</FormTitle>
             <InfoGeral
