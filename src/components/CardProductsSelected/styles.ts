@@ -74,3 +74,15 @@ export const EstimatedHours = styled.div`
     }
   }
 `;
+
+export const QuantitySelected = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  color: var(--gray-500);
+  font-size: var(--text-small-sm);
+  font-weight: var(--weight-regular);
+
+  margin-top: -12px;
+`;

@@ -3,12 +3,8 @@
 // React
 import { useEffect, useState } from 'react';
 
-// Icons
-import { IconArrowDown } from '../../assets/icons';
-
 // Components
 import InputSwitchDefault from '../Inputs/InputSwitchDefault';
-import QuantityCounter from '../QuantityCounter';
 
 // Styles
 import {
@@ -19,7 +15,8 @@ import {
   CardTop,
   EstimatedHours,
   SwitchSelector,
-  ContainerCard
+  ContainerCard,
+  QuantitySelected
 } from './styles';
 
 // Utils
@@ -118,6 +115,9 @@ export default function CardProductsSelected({
               receiveQuantity={data.quantity}
             /> */}
           </EstimatedHours>
+          <QuantitySelected>
+            Quantidade: <strong>{data.quantity}</strong>
+          </QuantitySelected>
         </CardBottom>
       </CardProduct>
     </ContainerCard>
