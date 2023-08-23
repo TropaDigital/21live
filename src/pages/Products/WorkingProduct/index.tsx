@@ -10,6 +10,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 // Hooks
 import { useFetch } from '../../../hooks/useFetch';
 import { useToast } from '../../../hooks/toast';
+import { useAuth } from '../../../hooks/AuthContext';
 
 // Icons
 import { IconText } from '../../../assets/icons';
@@ -23,6 +24,7 @@ import { ContainerDefault } from '../../../components/UiElements/styles';
 import WrapperEditor from '../../../components/WrapperEditor';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
+import AvatarDefault from '../../../components/Ui/Avatar/avatarDefault';
 
 // Styles
 import {
@@ -30,6 +32,7 @@ import {
   ChatMessage,
   ChatSendButton,
   ChatUserImg,
+  EssayInfo,
   FooterSection,
   InputChat,
   InputField,
@@ -49,10 +52,8 @@ import {
 import moment from 'moment';
 import 'moment/dist/locale/pt-br';
 
-// Images
-import PersonImg from '../../../assets/person.jpg';
+// Services
 import api from '../../../services/api';
-import { useAuth } from '../../../hooks/AuthContext';
 
 interface WorkingProductProps {
   estimatedTime?: string;
@@ -305,19 +306,30 @@ export default function WorkingProduct() {
       <WorkSection>
         {selectedTab === 'Redação' && (
           <>
-            <WrapperEditor
-              value={'Texto inicial'}
-              mentionData={[]}
-              handleOnDescription={(value: any) => console.log('log do editor', value)}
-            />
-            <FooterSection>
-              <ButtonDefault typeButton="lightWhite" isOutline onClick={() => navigate('/tarefas')}>
-                Descartar
-              </ButtonDefault>
-              <ButtonDefault typeButton="primary" onClick={handleSaveEssay}>
-                Salvar Redação
-              </ButtonDefault>
-            </FooterSection>
+            {user.permissions.includes('21jobs_task_essay') ? (
+              <div>
+                <WrapperEditor
+                  value={'Texto inicial'}
+                  mentionData={[]}
+                  handleOnDescription={(value: any) => console.log('log do editor', value)}
+                />
+
+                <FooterSection>
+                  <ButtonDefault
+                    typeButton="lightWhite"
+                    isOutline
+                    onClick={() => navigate('/tarefas')}
+                  >
+                    Descartar
+                  </ButtonDefault>
+                  <ButtonDefault typeButton="primary" onClick={handleSaveEssay}>
+                    Salvar Redação
+                  </ButtonDefault>
+                </FooterSection>
+              </div>
+            ) : (
+              <EssayInfo>Texto de teste</EssayInfo>
+            )}
           </>
         )}
         {selectedTab === 'Inputs' && (
@@ -358,12 +370,18 @@ export default function WorkingProduct() {
                 <ChatMessage key={index}>
                   {message.user_id !== user.user_id && (
                     <>
-                      <ChatUserImg>
-                        <div
-                          className="user-img"
-                          style={{ backgroundImage: `url(${message.avatar})` }}
-                        />
-                      </ChatUserImg>
+                      {message.avatar !== '' ? (
+                        <ChatUserImg>
+                          <div
+                            className="user-img"
+                            style={{ backgroundImage: `url(${message.avatar})` }}
+                          />
+                        </ChatUserImg>
+                      ) : (
+                        <ChatUserImg>
+                          <AvatarDefault url={message.avatar} name={message.name} />
+                        </ChatUserImg>
+                      )}
 
                       <MessageInfos>
                         <UserMessageInfo>
@@ -386,12 +404,18 @@ export default function WorkingProduct() {
                         <UserMessage>{message.comment}</UserMessage>
                       </MessageInfos>
 
-                      <ChatUserImg>
-                        <div
-                          className="user-img"
-                          style={{ backgroundImage: `url(${message.avatar})` }}
-                        />
-                      </ChatUserImg>
+                      {message.avatar !== '' ? (
+                        <ChatUserImg>
+                          <div
+                            className="user-img"
+                            style={{ backgroundImage: `url(${message.avatar})` }}
+                          />
+                        </ChatUserImg>
+                      ) : (
+                        <ChatUserImg>
+                          <AvatarDefault url={message.avatar} name={message.name} />
+                        </ChatUserImg>
+                      )}
                     </>
                   )}
                 </ChatMessage>
