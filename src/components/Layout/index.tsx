@@ -62,14 +62,14 @@ export default function Layout() {
               identifier: '21jobs_task_manager'
             },
             {
-              to: '/suas-tarefas',
-              name: 'Suas tarefas',
+              to: '/minhas-tarefas',
+              name: 'Minhas tarefas',
               icon: IconClipboard,
               identifier: '21jobs_task_execute'
             },
             {
-              to: '/suas-tarefas',
-              name: 'Suas tarefas',
+              to: '/minhas-tarefas',
+              name: 'Minhas tarefas',
               icon: IconClipboard,
               identifier: '21jobs_task_essay'
             },
