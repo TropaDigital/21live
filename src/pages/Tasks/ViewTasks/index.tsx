@@ -60,7 +60,7 @@ export default function ViewTaskList() {
 
   return (
     <ContainerDefault>
-      <HeaderPage title="Suas tarefas" />
+      <HeaderPage title="Minhas tarefas" />
 
       <TaskTable
         data={data ? data : []}
