@@ -165,7 +165,7 @@ export default function SummaryTasks({
               <div className="info">{taskSummary?.title}</div>
             </SummaryTaskInfo>
 
-            {user.organizations.length > 0 && (
+            {user?.organizations?.length > 0 && (
               <SummaryTaskInfo>
                 <div className="title-info">Cliente:</div>
                 {updateTask && <div className="info">{taskSummary?.tenant}</div>}
@@ -173,7 +173,7 @@ export default function SummaryTasks({
               </SummaryTaskInfo>
             )}
 
-            {user.organizations.length <= 0 && (
+            {!user?.organizations && (
               <SummaryTaskInfo>
                 <div className="title-info">Cliente:</div>
                 {updateTask && <div className="info">{taskSummary?.tenant}</div>}
@@ -196,7 +196,7 @@ export default function SummaryTasks({
               )}
             </SummaryTaskInfo>
 
-            {user.organizations.length <= 0 && (
+            {!user?.organizations && (
               <SummaryTaskInfo>
                 <div className="title-info">Fluxo:</div>
                 {updateTask && <div className="info">{taskSummary?.flow}</div>}
