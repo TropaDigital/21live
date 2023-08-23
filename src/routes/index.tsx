@@ -19,6 +19,7 @@ import ListFluxo from '../pages/Fluxos/ListFluxo';
 import EditFluxo from '../pages/Fluxos/EditFluxo';
 import ListProjects from '../pages/Projects/ListProjects';
 import PageNotFound from '../pages/NotFound';
+import Board from '../pages/Board';
 
 // COMPONENTES
 import ComponentsForms from '../pages/components/ComponentsForms';
@@ -160,14 +161,14 @@ function RoutesAll() {
           }
         />
 
-        {/* <Route
+        <Route
           path="/projeto/:id"
           element={
             <PrivateRoutes>
               <Board />
             </PrivateRoutes>
           }
-        /> */}
+        />
 
         <Route
           path="/criar-projeto"
@@ -215,7 +216,7 @@ function RoutesAll() {
         />
 
         <Route
-          path="/suas-tarefas"
+          path="/minhas-tarefas"
           element={
             <PrivateRoutes>
               <ViewTaskList />
@@ -241,23 +242,23 @@ function RoutesAll() {
           }
         />
 
-        <Route
+        {/* <Route
           path="/components"
           element={
             <PrivateRoutes>
               <ComponentsPage />
             </PrivateRoutes>
           }
-        />
+        /> */}
 
-        <Route
+        {/* <Route
           path="/form"
           element={
             <PrivateRoutes>
               <ComponentsForms />
             </PrivateRoutes>
           }
-        />
+        /> */}
 
         <Route
           path="/tabela"
