@@ -80,6 +80,15 @@ export default function EditFluxo() {
     }
   }
 
+  const handleDeleteCard = (id: any) => {
+    if (id.cardId) {
+      deleteFluxo(id.cardId);
+    } else {
+      console.log('log para deletar offline');
+      deleteColumn(id.indexId);
+    }
+  };
+
   async function deleteFluxo(id: any) {
     try {
       const response = await api.delete(`/card/${id}`);
@@ -116,7 +125,7 @@ export default function EditFluxo() {
             gap: '0.75rem'
           }}
         >
-          {/* <ButtonDefault
+          <ButtonDefault
             typeButton="info"
             onClick={() =>
               navigate(`/projeto/${location.state.name.replaceAll(' ', '_')}`, {
@@ -126,7 +135,7 @@ export default function EditFluxo() {
           >
             <BiShow />
             Visualizar
-          </ButtonDefault> */}
+          </ButtonDefault>
           <ButtonDefault typeButton="success" onClick={saveFluxo}>
             <BiSave />
             Salvar
@@ -154,7 +163,9 @@ export default function EditFluxo() {
               responseUser={latesTeam}
               handleOnClick={() => addColumn(user.user_id, location.state.id)}
               handleOnPosition={(newIndex) => moveObject(newIndex, index)}
-              handleOnDelete={() => deleteFluxo(row.card_id)}
+              handleOnDelete={() =>
+                handleDeleteCard(row.card_id ? { cardId: row.card_id } : { indexId: index })
+              }
               onUpdate={(id, name, value) => updateParcialColumn(id, name, value)}
             />
           ))}
