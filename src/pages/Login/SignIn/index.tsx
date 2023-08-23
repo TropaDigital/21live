@@ -101,8 +101,8 @@ export default function SignIn() {
                 name="email"
                 icon={BiEnvelope}
                 type="text"
-                placeholder="E-mail"
-                label="E-mail"
+                placeholder="Username"
+                label="Username"
                 onChange={(e) => handleInputChange('email', e)}
                 value={formData.email}
               />

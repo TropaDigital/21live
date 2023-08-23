@@ -54,7 +54,7 @@ export default function Board() {
     }
   }, [state])
 
-  console.log('state', column)
+  // console.log('state', column)
 
   // const updateTask = (
   //   columns: ITaskColumn[],
