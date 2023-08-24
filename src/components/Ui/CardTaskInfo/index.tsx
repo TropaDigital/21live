@@ -34,7 +34,7 @@ interface CardTaskInfoProps {
   dataText?: string | any;
   dataTime?: any;
   dataInfos?: DataInfosProps;
-  isPlayingTime: (value: any) => void;
+  isPlayingTime: () => void;
   taskIsFinished?: boolean;
 }
 
@@ -97,10 +97,10 @@ export default function CardTaskInfo({
   const handleStartStop = () => {
     if (startTime === null) {
       setStartTime(Date.now());
-      isPlayingTime(true);
+      isPlayingTime();
     } else {
       setStartTime(null);
-      isPlayingTime(false);
+      isPlayingTime();
     }
   };
 
