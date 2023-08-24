@@ -1,5 +1,6 @@
 /* eslint-disable import-helpers/order-imports */
 // React
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 // Icons
@@ -26,6 +27,9 @@ interface HeaderTaskProps {
   buttonType?: 'finish' | 'send';
   disableButton?: boolean;
   sendToNext?: () => void;
+  nextStepInfo?: any;
+  isInsideProduct?: boolean;
+  backToDelivery?: () => void;
 }
 
 interface TitleProps {
@@ -39,15 +43,31 @@ interface TitleProps {
   contract_task: string;
 }
 
+interface StepProps {
+  step: string;
+  name: string;
+}
+
 export default function HeaderOpenTask({
   title,
   backPage,
   goBack,
   buttonType,
   disableButton,
-  sendToNext
+  sendToNext,
+  nextStepInfo,
+  isInsideProduct,
+  backToDelivery
 }: HeaderTaskProps) {
   const navigate = useNavigate();
+  const [nextSteps, setNextSteps] = useState<StepProps>({
+    name: '',
+    step: ''
+  });
+
+  useEffect(() => {
+    setNextSteps(nextStepInfo?.steps?.find((obj: any) => obj.step > nextStepInfo.currentStep));
+  }, [nextStepInfo]);
 
   return (
     <Container>
@@ -59,8 +79,14 @@ export default function HeaderOpenTask({
           </BackButton>
         </Link>
       )}
-      {goBack && (
+      {goBack && !isInsideProduct && (
         <BackButton onClick={() => navigate(-1)}>
+          <IconArrowLeft />
+          Voltar
+        </BackButton>
+      )}
+      {goBack && isInsideProduct && (
+        <BackButton onClick={backToDelivery}>
           <IconArrowLeft />
           Voltar
         </BackButton>
@@ -82,13 +108,13 @@ export default function HeaderOpenTask({
 
         {disableButton && buttonType === 'send' && (
           <ButtonDefault typeButton="blocked">
-            Enviar tarefa para revisão
+            Enviar tarefa para {nextSteps?.name !== '' ? nextSteps?.name?.toLowerCase() : 'revisão'}
             <HiOutlineArrowRight />
           </ButtonDefault>
         )}
         {!disableButton && buttonType === 'send' && (
           <ButtonDefault typeButton="secondary" onClick={sendToNext}>
-            Enviar tarefa para revisão
+            Enviar tarefa para {nextSteps?.name !== '' ? nextSteps?.name?.toLowerCase() : 'revisão'}
             <HiOutlineArrowRight />
           </ButtonDefault>
         )}
