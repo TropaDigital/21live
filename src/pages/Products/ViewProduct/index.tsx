@@ -51,6 +51,8 @@ import 'moment/dist/locale/pt-br';
 // Hooks
 import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useToast } from '../../../hooks/toast';
+import WorkingProduct from '../WorkingProduct';
+import { el } from 'date-fns/locale';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -75,7 +77,8 @@ export default function ViewProductsDeliveries() {
   const { addToast } = useToast();
   const openRightRef = useRef<any>();
   const [modalSendToUser, setModalSendToUser] = useState<boolean>(false);
-  const [workForProducts, setWorkForProducts] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [workForProducts, setWorkProducts] = useState<boolean>(false);
   const [playingForSchedule, setPlayingForSchedule] = useState<boolean>(false);
   const [hideRightCard, setHideRightCard] = useState<string>('show');
   const [dataTask, setDataTask] = useState<any>();
@@ -91,6 +94,7 @@ export default function ViewProductsDeliveries() {
     700
   );
   const [dataUser, setDataUser] = useState<any[]>();
+  const [selectedProduct, setSelectedProduct] = useState<any>('');
 
   const deliveryId = location.state.task.deliverys.filter(
     (obj: any) => Number(obj.order) === location.state.task_index
@@ -148,21 +152,16 @@ export default function ViewProductsDeliveries() {
   }, [location]);
 
   const handleStartPlayingTime = async () => {
-    const playType = {
-      task_id: location.state.task.task_id,
-      type_play: 'delivery'
-    };
-
     const taskClock = {
       task_id: location.state.task.task_id,
       delivery_id: deliveryId[0].delivery_id
     };
 
     try {
-      const response = await api.post(`/task/switch-play`, playType);
+      setLoading(true);
       const responseClock = await api.post(`/clock`, taskClock);
-      console.log('log do response task/switch-play', response.data.result);
       console.log('log do responseClock', responseClock);
+      setLoading(false);
     } catch (error: any) {
       console.log('log do error play', error);
 
@@ -171,29 +170,66 @@ export default function ViewProductsDeliveries() {
         description: error,
         type: 'warning'
       });
+      setLoading(false);
     }
   };
 
-  const handlePlayingType = (value: boolean) => {
-    console.log('log do playing type', value);
-    if (value) {
+  const handlePlayingType = () => {
+    if (selectedProduct === '') {
       setPlayingForSchedule(true);
       handleStartPlayingTime();
     }
-    if (value === false) {
+    if (selectedProduct !== '') {
       handleStartPlayingTime();
+      setPlayingForSchedule(false);
     }
   };
 
-  const handleNavigateProduct = (infoProduct: any, idProduct: any) => {
+  const handleSwitchPlayType = async (value: any) => {
+    console.log('log do tipo de play', value);
+    if (value) {
+      setWorkProducts(true);
+      const playType = {
+        task_id: location.state.task.task_id,
+        type_play: 'product'
+      };
+
+      try {
+        const response = await api.post(`/task/switch-play`, playType);
+        console.log('log do response task/switch-play', response.data.result);
+      } catch (error: any) {
+        addToast({
+          title: 'Atenção',
+          description: error,
+          type: 'warning'
+        });
+      }
+    } else {
+      setWorkProducts(false);
+      const playType = {
+        task_id: location.state.task.task_id,
+        type_play: 'delivery'
+      };
+
+      try {
+        const response = await api.post(`/task/switch-play`, playType);
+        console.log('log do response task/switch-play', response.data.result);
+      } catch (error: any) {
+        addToast({
+          title: 'Atenção',
+          description: error,
+          type: 'warning'
+        });
+      }
+    }
+  };
+
+  const handleNavigateProduct = (infoProduct: any) => {
     const taskCompleteInfo = {
       productInfo: infoProduct,
-      titleInfos: titleInfos,
-      id_product: idProduct,
-      taskInfos: dataTask,
-      playType: playingForSchedule
+      taskInfos: dataTask
     };
-    navigate(`/produto/${idProduct}`, { state: taskCompleteInfo });
+    setSelectedProduct(taskCompleteInfo);
   };
 
   const handleAssignTask = () => {
@@ -211,6 +247,7 @@ export default function ViewProductsDeliveries() {
 
   const handleFinishDelivery = async () => {
     try {
+      setLoading(true);
       const response = await api.put(`/task/delivery-conclude/${deliveryId[0].delivery_id}`);
       if (response.data.result === 1) {
         localStorage.removeItem('elapsedTime');
@@ -224,10 +261,27 @@ export default function ViewProductsDeliveries() {
       if (response.data.result.last_delivery) {
         setModalSendToUser(true);
       }
+      setLoading(false);
     } catch (error: any) {
       console.log('log error finish delivery');
+      setLoading(false);
     }
   };
+
+  async function handleFinishProduct() {
+    try {
+      setLoading(true);
+      const response = await api.post(
+        `/task/product-conclude/${selectedProduct?.productInfo.products_delivey_id}`
+      );
+      localStorage.removeItem('elapsedTime');
+      console.log('log do response', response);
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log error getting user', error);
+      setLoading(false);
+    }
+  }
 
   const handleSendToNextUser = async () => {
     try {
@@ -254,9 +308,8 @@ export default function ViewProductsDeliveries() {
     addToast({
       title: 'Atenção',
       type: 'warning',
-      description: 'Entrega já concluída'
+      description: 'Atividade já concluída'
     });
-    console.log('log de que tentou dar play com a tarefa concluida');
   };
 
   useEffect(() => {
@@ -281,34 +334,55 @@ export default function ViewProductsDeliveries() {
     <ContainerDefault>
       <DeliveryWrapper>
         {dataProducts?.status === 'Concluida' && (
-          <HeaderOpenTask title={titleInfos} disableButton={true} goBack buttonType="send" />
+          <HeaderOpenTask
+            title={titleInfos}
+            disableButton={true}
+            goBack
+            buttonType="send"
+            nextStepInfo={timeLineData}
+          />
         )}
 
-        {dataProducts?.status !== 'Concluida' && (
+        {dataProducts?.status !== 'Concluida' && selectedProduct === '' && (
+          <HeaderOpenTask
+            title={titleInfos}
+            disableButton={false}
+            goBack
+            buttonType="send"
+            sendToNext={handleFinishDelivery}
+            nextStepInfo={timeLineData}
+          />
+        )}
+
+        {dataProducts?.status !== 'Concluida' && selectedProduct !== '' && (
           <HeaderOpenTask
             title={titleInfos}
             disableButton={workForProducts}
             goBack
-            buttonType="send"
-            sendToNext={handleFinishDelivery}
+            buttonType="finish"
+            sendToNext={handleFinishProduct}
+            nextStepInfo={timeLineData}
+            backToDelivery={() => setSelectedProduct('')}
+            isInsideProduct={true}
           />
         )}
 
         <CardsWrapper>
-          {!workForProducts && dataTask?.status !== 'Concluida' && (
-            <CardTaskInfo
-              cardTitle="Iniciar atividade"
-              cardType="time"
-              dataTime={data ? data?.estimatedTime : ''}
-              isPlayingTime={handlePlayingType}
-            />
-          )}
-          {dataTask?.status === 'Concluida' && (
+          {dataProducts?.status === 'Concluida' && (
             <CardTaskInfo
               cardTitle="Iniciar atividade"
               cardType="time"
               dataTime={data ? data?.estimatedTime : ''}
               isPlayingTime={handleFinishedPlay}
+              taskIsFinished={dataTask?.status === 'Concluida' ? true : false}
+            />
+          )}
+          {dataProducts?.status !== 'Concluida' && (
+            <CardTaskInfo
+              cardTitle="Iniciar atividade"
+              cardType="time"
+              dataTime={data ? data?.estimatedTime : ''}
+              isPlayingTime={handlePlayingType}
               taskIsFinished={dataTask?.status === 'Concluida' ? true : false}
             />
           )}
@@ -320,15 +394,21 @@ export default function ViewProductsDeliveries() {
           />
         </CardsWrapper>
 
-        <ProductTable
-          data={dataProducts}
-          timeData={timeData}
-          workForProduct={setWorkForProducts}
-          isPlayingForSchedule={playingForSchedule}
-          productSelected={handleNavigateProduct}
-          isFinished={dataTask?.status === 'Concluida' ? true : false}
-          typeOfWorkFinished={dataTask?.type_play}
-        />
+        {selectedProduct === '' && (
+          <ProductTable
+            data={dataProducts}
+            timeData={timeData}
+            workForProduct={handleSwitchPlayType}
+            isPlayingForSchedule={playingForSchedule}
+            productSelected={handleNavigateProduct}
+            isFinished={dataTask?.status === 'Concluida' ? true : false}
+            typeOfWorkFinished={dataTask?.type_play}
+          />
+        )}
+
+        {selectedProduct !== '' && (
+          <WorkingProduct taskId={selectedProduct?.productInfo?.products_delivey_id} />
+        )}
 
         <RightInfosCard hideCard={hideRightCard} ref={openRightRef}>
           <TimeLine>

@@ -9,7 +9,7 @@ export const DeliveryWrapper = styled.div`
   flex-direction: column;
   gap: 24px;
   position: relative;
-  height: 100vh;
+  min-height: 100vh;
   overflow: hidden;
 `;
 
