@@ -134,7 +134,7 @@ export default function ProductTable({
           </thead>
           {data?.products.map((row: any, index: number) => (
             <tbody key={index}>
-              <tr style={{ cursor: 'pointer' }} onClick={() => productSelected(row, index + 1)}>
+              <tr style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
                 <td>#{String(index + 1).padStart(2, '0')}</td>
                 <td>
                   {user.permissions.includes('21jobs_task_essay') && (
