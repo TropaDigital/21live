@@ -1,18 +1,16 @@
 import { useEffect } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
+
+import useColumn from '../../hooks/useColumn';
+import useLocalStorage from '../../hooks/useLocalStorage';
+import useTask from '../../hooks/useTask';
 
 import HeaderPage from '../../components/HeaderPage';
 import Column from '../../components/Ui/Column';
 import ScrollAreas from '../../components/Ui/ScrollAreas';
 import Task from '../../components/Ui/Task';
 
-import {
-  Container,
-  ContentBoard,
-} from './styles';
-import useLocalStorage from '../../hooks/useLocalStorage';
-import useColumn from '../../hooks/useColumn';
-import useTask from '../../hooks/useTask';
-import { useLocation, useParams } from 'react-router-dom';
+import { Container, ContentBoard } from './styles';
 
 interface ITask {
   id: number;
@@ -38,7 +36,7 @@ interface ITaskColumn {
 }
 
 export default function Board() {
-  const [ state ] = useLocalStorage('COLUMN');
+  const [state] = useLocalStorage('COLUMN');
   const location = useLocation();
   const { deleteTask } = useTask();
   // const {id} = useParams();
@@ -47,14 +45,13 @@ export default function Board() {
   const { column, setColumn } = useColumn();
   // const lengthCard = column.length
 
-  
   useEffect(() => {
-    if(state.length > 0) {
+    if (state.length > 0) {
       setColumn(state);
     }
-  }, [state])
+  }, [state]);
 
-  // console.log('state', column)
+  // console.log('state', column);
 
   // const updateTask = (
   //   columns: ITaskColumn[],
@@ -92,7 +89,7 @@ export default function Board() {
   //     })
   //   );
   // };
-  
+
   // const handleDeleteTask = (column: ITaskColumn, taskId: number) => {
   //   setBoards(
   //     boards.map((obj) => {
