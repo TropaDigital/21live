@@ -56,17 +56,8 @@ import 'moment/dist/locale/pt-br';
 import api from '../../../services/api';
 
 interface WorkingProductProps {
-  estimatedTime?: string;
-  description?: string;
-  projectInfo?: ProjectInfo;
-}
-
-interface ProjectInfo {
-  taskTitle: string;
-  month: string;
-  client: string;
-  type: string;
-  quantity: string;
+  taskId?: any;
+  dataTaskInfo?: string;
 }
 
 interface ChatMessages {
@@ -88,7 +79,7 @@ interface TitleInfoProps {
   contract_task: string;
 }
 
-export default function WorkingProduct() {
+export default function WorkingProduct({ taskId }: WorkingProductProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -97,13 +88,10 @@ export default function WorkingProduct() {
   const [selectedTab, setSelectedTab] = useState<string>('Redação');
   const [notifications, setNotifications] = useState<boolean>(false);
   const [chatMessage, setChatMessage] = useState<string>('');
-  const [titleInfos, setTitleInfos] = useState<TitleInfoProps>();
-  const [taskInfos, setTaskInfos] = useState<any>();
   const [dataComments, setDataComments] = useState<ChatMessages[]>([]);
-  const typeOfPlay = location?.state?.playType;
+  // const typeOfPlay = location?.state?.playType;
 
-  const productId = location.state?.productInfo?.products_delivey_id;
-  const taskId = location.state?.taskInfos?.task_id;
+  // const productId = location.state?.productInfo?.products_delivey_id;
   // const { data } = useFetch<WorkingProductProps>(`/${location.state.id}`);
 
   async function getComments() {
@@ -121,13 +109,8 @@ export default function WorkingProduct() {
   }
 
   useEffect(() => {
-    // console.log('log do titleInfos', location.state);
-    // console.log('log do taskInfos', location.state.taskInfos);
-    setTitleInfos(location.state.titleInfos);
-    setTaskInfos(location.state.taskInfos);
-
     getComments();
-  }, [location, taskId]);
+  }, []);
 
   const handleInputChange = (e: any) => {
     setChatMessage(e.target.value);
@@ -145,55 +128,55 @@ export default function WorkingProduct() {
     console.log('log salvando os inputs');
   };
 
-  const handlePlayingType = (value: boolean) => {
-    if (value) {
-      handleStartPlayingTime();
-    }
-  };
+  // const handlePlayingType = (value: boolean) => {
+  //   if (value) {
+  //     handleStartPlayingTime();
+  //   }
+  // };
 
-  const handleStartPlayingTime = async () => {
-    const playType = {
-      task_id: location.state.taskInfos.task_id,
-      type_play: 'product'
-    };
+  // const handleStartPlayingTime = async () => {
+  //   const playType = {
+  //     task_id: location.state.taskInfos.task_id,
+  //     type_play: 'product'
+  //   };
 
-    const taskClock = {
-      task_id: location.state.taskInfos.task_id,
-      products_delivey_id: productId
-    };
+  //   const taskClock = {
+  //     task_id: location.state.taskInfos.task_id,
+  //     products_delivey_id: productId
+  //   };
 
-    try {
-      const responseTypeOfPlay = await api.post(`/task/switch-play`, playType);
-      const responseClock = await api.post(`/clock`, taskClock);
+  //   try {
+  //     const responseTypeOfPlay = await api.post(`/task/switch-play`, playType);
+  //     const responseClock = await api.post(`/clock`, taskClock);
 
-      console.log('log do responsePlay', responseTypeOfPlay);
-      console.log('log do responseClock', responseClock);
-    } catch (error: any) {
-      console.log('log do error play', error);
-    }
-  };
+  //     console.log('log do responsePlay', responseTypeOfPlay);
+  //     console.log('log do responseClock', responseClock);
+  //   } catch (error: any) {
+  //     console.log('log do error play', error);
+  //   }
+  // };
 
-  async function handleFinishProduct() {
-    try {
-      setLoading(true);
-      const response = await api.post(`/task/product-conclude/${productId}`);
-      localStorage.removeItem('elapsedTime');
-      console.log('log do response', response);
-      setLoading(false);
-    } catch (error: any) {
-      console.log('log error getting user', error);
-      setLoading(false);
-    }
-  }
+  // async function handleFinishProduct() {
+  //   try {
+  //     setLoading(true);
+  //     const response = await api.post(`/task/product-conclude/${productId}`);
+  //     localStorage.removeItem('elapsedTime');
+  //     console.log('log do response', response);
+  //     setLoading(false);
+  //   } catch (error: any) {
+  //     console.log('log error getting user', error);
+  //     setLoading(false);
+  //   }
+  // }
 
-  const handleFinishedPlay = () => {
-    console.log('log de que tentou dar play com a tarefa concluida');
-    addToast({
-      title: 'Atenção',
-      type: 'warning',
-      description: 'Entrega já concluída'
-    });
-  };
+  // const handleFinishedPlay = () => {
+  //   console.log('log de que tentou dar play com a tarefa concluida');
+  //   addToast({
+  //     title: 'Atenção',
+  //     type: 'warning',
+  //     description: 'Entrega já concluída'
+  //   });
+  // };
 
   async function handleSendComment() {
     try {
@@ -228,7 +211,7 @@ export default function WorkingProduct() {
 
   return (
     <ContainerDefault>
-      {titleInfos && !typeOfPlay && (
+      {/* {titleInfos && !typeOfPlay && (
         <HeaderOpenTask
           title={titleInfos}
           disableButton={false}
@@ -240,9 +223,9 @@ export default function WorkingProduct() {
 
       {titleInfos && typeOfPlay && (
         <HeaderOpenTask title={titleInfos} disableButton={true} goBack={true} buttonType="finish" />
-      )}
+      )} */}
 
-      <SectionCardWrapper>
+      {/* <SectionCardWrapper>
         <CardsTopWrapper>
           {!typeOfPlay && (
             <CardTaskInfo
@@ -270,7 +253,7 @@ export default function WorkingProduct() {
             isPlayingTime={() => ''}
           />
         </CardsTopWrapper>
-      </SectionCardWrapper>
+      </SectionCardWrapper> */}
 
       <TabsWrapper>
         <TaskTab
