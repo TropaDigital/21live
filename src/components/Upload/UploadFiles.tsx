@@ -37,6 +37,10 @@ interface UpdateFileData {
   bucket?: string;
   key?: string;
   loading?: boolean;
+  ETag?: string;
+  file_name?: string;
+  folder?: string;
+  size?: string;
 }
 
 interface PostsResponse {
@@ -138,10 +142,14 @@ export default function UploadFiles({
 
       updateFile(uploadedFile.file_id, {
         uploaded: true,
+        ETag: response.data.result.ETag,
         file_id: response.data.result.key.split('-')[0], // correto => response.data._id
         url: response.data.result.url,
         bucket: response.data.result.bucket,
         key: response.data.result.key,
+        file_name: response.data.result.file_name,
+        size: response.data.result.size,
+        folder: response.data.result.folder,
         loading: loading
       });
     } catch (err) {
