@@ -97,7 +97,7 @@ export default function CreateProject() {
   const { user } = useAuth();
   const location = useLocation();
 
-  const [createStep, setCreateStep] = useState<number>(4);
+  const [createStep, setCreateStep] = useState<number>(1);
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const { data: dataOrganizations } = useFetch<OrganizationsProps[]>('organization');
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
