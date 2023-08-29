@@ -108,7 +108,7 @@ export default function Team() {
   );
 
   const { data, pages, fetchData } = useFetch<UserProps[]>(
-    `team?page=${selected}&search=${search}`
+    `team?page=${selected}&search=${search}&perPage=15`
   );
   const { data: dataOffice } = useFetch<OfficeProps[]>(`function`);
 
