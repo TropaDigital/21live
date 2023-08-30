@@ -23,6 +23,7 @@ import { useAuth } from '../../../hooks/AuthContext';
 
 // Utils
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
+import { avatarAll } from '../../../utils/dataDefault';
 
 import { IProjectCreate } from '../../../types';
 
@@ -48,6 +49,7 @@ import { SummaryCard } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 import { SummaryCardTitle } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 import { SummaryCardSubtitle } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 import { ModalShowProjectWrapper } from './styles';
+import Avatar from '../../../components/Ui/Avatar';
 
 interface StateProps {
   [key: string]: any;
@@ -348,6 +350,7 @@ export default function ListProjects() {
               <th>Cliente</th>
               <th>Tempo</th>
               <th>Status</th>
+              <th>Equipe</th>
               <th>Data de criação</th>
               <th>Entrega estimada</th>
               <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
@@ -362,7 +365,7 @@ export default function ListProjects() {
                 <td
                   style={{
                     padding: '14px',
-                    width: '220px',
+                    width: '140px',
                     textAlign: 'left'
                   }}
                 >
@@ -383,6 +386,9 @@ export default function ListProjects() {
                     checkedIcon={false}
                     onColor="#0046B5"
                   />
+                </td>
+                <td>
+                  <Avatar data={avatarAll} />
                 </td>
                 <td>{moment(row.date_start).format('DD/MM/YYYY')}</td>
                 <td>{moment(row.date_end).format('DD/MM/YYYY')}</td>
