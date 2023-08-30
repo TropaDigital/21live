@@ -60,6 +60,7 @@ interface UploadedFilesProps {
   file_name: string;
   isNew: boolean;
   loading: boolean;
+  folder: string;
 }
 
 interface FormProps {
@@ -118,6 +119,7 @@ export default function ListMeeting() {
 
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
   const [selected, setSelected] = useState(1);
+  const [loading, setLoading] = useState(false);
 
   const [text, setText] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<any>('all');
@@ -566,6 +568,9 @@ export default function ListMeeting() {
               setUploadedFiles={setUploadedFiles}
               tenant={formData?.tenant_id}
               isDisabed={!formData?.tenant_id}
+              loading={loading}
+              setLoading={setLoading}
+              folderInfo="meetings"
             />
           </FieldDefault>
 
