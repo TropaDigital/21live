@@ -65,6 +65,7 @@ export interface IProjectCreate {
   time_consumed?: string | any;
   products?: Array<IProduct> | any;
   files?: Array<IDocProject> | any;
+  team?: string | any;
 }
 
 export interface IServices {
