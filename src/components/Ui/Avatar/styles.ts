@@ -1,7 +1,7 @@
-import styled, { css } from "styled-components";
+import styled, { css } from 'styled-components';
 
 interface Props {
-  length: number
+  length: number;
 }
 
 interface AvatarProps {
@@ -22,9 +22,11 @@ export const ContainerAvatar = styled.div<AvatarProps>`
     border-radius: 50%;
     border: 3px solid #fff;
 
-    /* ${({isImage}) => isImage && css`
-      border: 3px solid #ced4da;
-    `} */
+    /* ${({ isImage }) =>
+      isImage &&
+      css`
+        border: 3px solid #ced4da;
+      `} */
 
     > img {
       border-radius: 50%;
@@ -68,13 +70,13 @@ export const Container = styled.div<Props>`
       place-items: center;
 
       &.isOnline {
-        border: 3px solid #93E088;
+        border: 3px solid #93e088;
       }
 
       &.isAvatar {
         border: 3px solid #ced4da;
       }
-  
+
       img {
         max-width: 100%;
         border-radius: 50%;
@@ -82,9 +84,9 @@ export const Container = styled.div<Props>`
       }
       transition: transform 300ms;
     }
-  
-    .avatar-ui:hover ~ .avatar-ui  {
-      transform: translateX(.625rem);
+
+    .avatar-ui:hover ~ .avatar-ui {
+      transform: translateX(0.625rem);
     }
   }
 `;

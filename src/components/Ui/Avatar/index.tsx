@@ -16,9 +16,9 @@ import AvatarTest from '../../../assets/person.jpg';
 
 interface PropsAvatar {
   name: string;
-  url: any;
+  avatar: any;
   isOnline: boolean;
-  id: any;
+  user_id: any;
 }
 
 interface Props {
@@ -44,8 +44,12 @@ export default function Avatar({ data }: Props) {
     <Container length={latesAvatar.length}>
       <ul>
         {latesAvatar.map((row: any) => (
-          <li key={row.name} className={`avatar-ui ${!row.url ? 'isAvatar' : ''}`}>
-            {row.url ? <img src={row.url} alt="profile" /> : <BiUser size={22} color="#ced4da" />}
+          <li key={row.name} className={`avatar-ui ${!row.avatar ? 'isAvatar' : ''}`}>
+            {row.avatar ? (
+              <img src={row.avatar} alt="profile" />
+            ) : (
+              <BiUser size={22} color="#ced4da" />
+            )}
             {/* <img src={avatar} alt="imagem usuario" /> */}
           </li>
         ))}
@@ -72,7 +76,10 @@ export default function Avatar({ data }: Props) {
                     </p>
                     <ul className="listAllAvatars">
                       {allAvatar.map((row) => (
-                        <li key={row.id} className={`avatar-al ${row.isOnline ? 'isOnline' : ''}`}>
+                        <li
+                          key={row.user_id}
+                          className={`avatar-al ${row.isOnline ? 'isOnline' : ''}`}
+                        >
                           <img src={AvatarTest} alt="imagem usuario" />
                           <h2>{row.name}</h2>
                         </li>
