@@ -32,6 +32,7 @@ export default function InfoFiles({
           isDisabed={isDisabed}
           loading={loading}
           setLoading={setLoading}
+          folderInfo="projects"
         />
       </FieldDefault>
     </ContainerSteps>
