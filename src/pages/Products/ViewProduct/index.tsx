@@ -256,7 +256,7 @@ export default function ViewProductsDeliveries() {
           type: 'success',
           description: 'Entrega finalizada com sucesso'
         });
-        navigate('/suas-tarefas');
+        navigate('/minhas-tarefas');
       }
       if (response.data.result.last_delivery) {
         setModalSendToUser(true);
@@ -297,7 +297,7 @@ export default function ViewProductsDeliveries() {
 
       if (response.data.result === 1) {
         localStorage.removeItem('elapsedTime');
-        navigate('/suas-tarefas');
+        navigate('/minhas-tarefas');
       }
     } catch (error) {
       console.log('log error next user', error);
