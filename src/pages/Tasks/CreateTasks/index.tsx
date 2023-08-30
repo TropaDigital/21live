@@ -236,6 +236,7 @@ export default function CreateTasks() {
   const [tasksType, setTasksType] = useState<string>('');
   const [taskEdit, setTaskEdit] = useState<boolean>(false);
   const splitDeliveries = deliveriesSplit === 'no-split' ? false : true;
+  const [selectUserModal, setSelectUserModal] = useState<boolean>(false);
 
   const DeliveryDefault: DeliveryProps = {
     deliveryId: 1,
@@ -1376,6 +1377,11 @@ export default function CreateTasks() {
     setDTODelivery(DTODelivery.filter((obj) => obj.deliveryId !== id));
   };
 
+  const handleSelectUserForTask = () => {
+    console.log('log to selectUser');
+    setSelectUserModal(true);
+  };
+
   useEffect(() => {
     if (DTOForm.product_id !== '' && location.state === null && !user?.organizations) {
       if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel === 'true') {
@@ -1608,7 +1614,7 @@ export default function CreateTasks() {
                   <FormTitle>Resumo da tarefa</FormTitle>
                   <SummaryTasks
                     selectedProducts={productsArray}
-                    createTasks={handleOnSubmit}
+                    createTasks={handleSelectUserForTask}
                     editTasks={() => {
                       setCreateStep(2);
                       setTaskEdit(true);
@@ -1631,7 +1637,7 @@ export default function CreateTasks() {
               {tasksType === 'horas' && (
                 <SummaryTasks
                   selectedProducts={DTODelivery}
-                  createTasks={handleOnSubmit}
+                  createTasks={handleSelectUserForTask}
                   editTasks={() => {
                     setCreateStep(2);
                     setTaskEdit(true);
@@ -1648,7 +1654,7 @@ export default function CreateTasks() {
               {tasksType !== 'horas' && (
                 <SummaryTasks
                   selectedProducts={productsArray}
-                  createTasks={handleOnSubmit}
+                  createTasks={handleSelectUserForTask}
                   editTasks={() => {
                     setCreateStep(2);
                     setTaskEdit(true);
@@ -2010,6 +2016,11 @@ export default function CreateTasks() {
               </ButtonDefault>
             </AddProductButton>
           </ProductsModalWrapper>
+        </ModalDefault>
+
+        {/* Modal to select user */}
+        <ModalDefault isOpen={selectUserModal} onOpenChange={() => setSelectUserModal(false)}>
+          <div>texto de teste</div>
         </ModalDefault>
       </ContainerWrapper>
     </>
