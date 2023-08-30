@@ -1,6 +1,11 @@
+// React
+import { useState } from 'react';
+
+// Components
 import { FieldDefault } from '../../../components/UiElements/styles';
 import UploadFiles, { UploadedFilesProps } from '../../../components/Upload/UploadFiles';
 
+// Styles
 import { ContainerSteps } from './styles';
 
 interface InfoFilesSteps {
@@ -16,6 +21,7 @@ export default function InfoFiles({
   tenant,
   isDisabed
 }: InfoFilesSteps) {
+  const [loading, setLoading] = useState(false);
   return (
     <ContainerSteps>
       <FieldDefault>
@@ -24,6 +30,9 @@ export default function InfoFiles({
           setUploadedFiles={setUploadedFiles}
           tenant={tenant}
           isDisabed={isDisabed}
+          folderInfo="tasks"
+          loading={loading}
+          setLoading={setLoading}
         />
       </FieldDefault>
     </ContainerSteps>
