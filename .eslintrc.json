@@ -34,26 +34,6 @@
         "endOfLine": "auto"
       }
     ],
-    "import-helpers/order-imports": [
-      "warn",
-      { // example configuration
-          "newlinesBetween": "always",
-          "groups": [
-              ["/^react/"],
-              "/services/",
-              "/hooks/",
-              "/utils/",
-              "/types/",
-              "/assets/",
-              "/@components/",
-              "/components/",
-              "module",
-              "/^@shared/",
-              "/absolute/",
-              ["parent", "sibling", "index"]
-          ],
-          "alphabetize": { "order": "asc", "ignoreCase": true }
-      }
-    ]
+    "import-helpers/order-imports": "off"
   }
 }
