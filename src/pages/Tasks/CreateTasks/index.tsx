@@ -79,6 +79,7 @@ import api from '../../../services/api';
 
 // Libraries
 import moment from 'moment';
+import ScheduleUser from '../../../components/ScheduleUser';
 
 interface StateProps {
   [key: string]: any;
@@ -2019,8 +2020,12 @@ export default function CreateTasks() {
         </ModalDefault>
 
         {/* Modal to select user */}
-        <ModalDefault isOpen={selectUserModal} onOpenChange={() => setSelectUserModal(false)}>
-          <div>texto de teste</div>
+        <ModalDefault
+          isOpen={selectUserModal}
+          onOpenChange={() => setSelectUserModal(false)}
+          title="Selecione um usuário"
+        >
+          <ScheduleUser />
         </ModalDefault>
       </ContainerWrapper>
     </>
