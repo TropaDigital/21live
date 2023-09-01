@@ -130,11 +130,14 @@ export const UserTable = styled.div`
 
   width: 211px;
 
-  box-shadow: 8px 0 10px -1px #eaecf0;
+  /* box-shadow: 8px 0 10px -1px #eaecf0; */
 
   .user-title {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
     padding: 12px 24px;
-    height: 44px;
+    height: 60px;
 
     color: var(--gray-500);
     font-size: var(--text-small-xs);
@@ -186,9 +189,26 @@ export const HoursTable = styled.div`
   flex-direction: column;
 
   width: calc(100% - 211px);
+  padding-left: 4px;
 
   overflow-y: hidden;
   overflow-x: auto;
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--thumbBG) #ced4da;
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 11px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #adb5bd;
+    border-radius: 4px;
+    border: 3px solid #ced4da;
+  }
+  ::-webkit-scrollbar-track {
+    border-radius: 4px;
+    background: #ced4da;
+  }
 `;
 
 export const HoursTitle = styled.div`
@@ -201,5 +221,19 @@ export const HoursTitle = styled.div`
     width: 84px;
 
     padding: 12px 24px;
+  }
+
+  .actual-time {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      height: 40px;
+      top: 0;
+      right: 0;
+      border-right: 2px solid red;
+      z-index: 99;
+    }
   }
 `;

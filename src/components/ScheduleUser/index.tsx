@@ -20,7 +20,11 @@ import { BsArrowLeft, BsArrowRight } from 'react-icons/bs';
 import { InputDefault } from '../Inputs/InputDefault';
 import ButtonDefault from '../Buttons/ButtonDefault';
 import { CheckboxDefault } from '../Inputs/CheckboxDefault';
-import { HourDate } from '../../utils/dataDefault';
+
+// Planby
+import { useApp } from './useApp';
+import { Epg, Layout } from 'planby';
+import { Program, Timeline } from './components';
 
 interface Task {
   task_id?: string | null;
@@ -134,6 +138,14 @@ export default function ScheduleUser() {
     }
   ];
 
+  const starterDate = '2022-10-18T00:00:00';
+  const finishDate = '2022-10-18T24:00:00';
+
+  const { isLoading, getEpgProps, getLayoutProps } = useApp({
+    starterDate: starterDate,
+    finishDate: finishDate
+  });
+
   return (
     <ScheduleWrapper>
       <ScheduleSubtitle>
@@ -190,14 +202,17 @@ export default function ScheduleUser() {
         </UserTable>
 
         <HoursTable>
-          <HoursTitle>
-            {HourDate.map((row: any, index: number) => (
-              <div className="hours" key={index}>
-                {row.hour}
-              </div>
-            ))}
-          </HoursTitle>
-          <div style={{ height: '72px' }}></div>
+          <div style={{ backgroundColor: 'white' }}>
+            <Epg isLoading={isLoading} {...getEpgProps()}>
+              <Layout
+                {...getLayoutProps()}
+                renderTimeline={(props) => <Timeline {...props} />}
+                renderProgram={({ program, ...rest }) => (
+                  <Program key={program.data.id} program={program} {...rest} />
+                )}
+              />
+            </Epg>
+          </div>
         </HoursTable>
       </ScheduleTable>
 
