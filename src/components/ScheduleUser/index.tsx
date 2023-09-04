@@ -25,6 +25,7 @@ import { CheckboxDefault } from '../Inputs/CheckboxDefault';
 import { useApp } from './useApp';
 import { Epg, Layout } from 'planby';
 import { Program, Timeline } from './components';
+import moment from 'moment';
 
 interface Task {
   task_id?: string | null;
@@ -63,39 +64,39 @@ export default function ScheduleUser() {
       agenda: [
         {
           task_id: '170',
-          start: '2023-08-31 09:30',
-          end: '2023-08-31 13:30',
+          start: '2023-09-04 09:30',
+          end: '2023-09-04 13:30',
           type: 'job',
           title: 'Tarefa 1'
         },
         {
-          start: '2023-08-31 13:30',
-          end: '2023-08-31 14:00',
+          start: '2023-09-04 13:30',
+          end: '2023-09-04 14:00',
           type: 'pause'
         },
         {
           task_id: '170',
-          start: '2023-08-31 14:00',
-          end: '2023-08-31 16:00',
+          start: '2023-09-04 14:00',
+          end: '2023-09-04 16:00',
           type: 'job',
           title: 'Tarefa 2'
         },
         {
-          start: '2023-08-31 16:00',
-          end: '2023-08-31 16:30',
+          start: '2023-09-04 16:00',
+          end: '2023-09-04 16:30',
           type: 'pause'
         },
         {
           task_id: '170',
-          start: '2023-08-31 16:30',
-          end: '2023-08-31 17:30',
+          start: '2023-09-04 16:30',
+          end: '2023-09-04 17:30',
           type: 'job',
           title: 'Tarefa 3'
         }
       ]
     },
     {
-      user_id: '15853',
+      user_id: '15854',
       name: 'Darlene Robertson',
       function: 'Gerente de Projeto',
       work: {
@@ -105,32 +106,32 @@ export default function ScheduleUser() {
       agenda: [
         {
           task_id: '171',
-          start: '2023-08-31 10:30',
-          end: '2023-08-31 13:30',
+          start: '2023-09-04 10:30',
+          end: '2023-09-04 13:30',
           type: 'job',
           title: 'Tarefa 1'
         },
         {
-          start: '2023-08-31 13:30',
-          end: '2023-08-31 14:00',
+          start: '2023-09-04 13:30',
+          end: '2023-09-04 14:00',
           type: 'pause'
         },
         {
           task_id: '170',
-          start: '2023-08-31 14:00',
-          end: '2023-08-31 16:00',
+          start: '2023-09-04 14:00',
+          end: '2023-09-04 16:00',
           type: 'job',
           title: 'Tarefa 2'
         },
         {
-          start: '2023-08-31 16:00',
-          end: '2023-08-31 16:30',
+          start: '2023-09-04 16:00',
+          end: '2023-09-04 16:30',
           type: 'pause'
         },
         {
           task_id: '170',
-          start: '2023-08-31 16:30',
-          end: '2023-08-31 17:30',
+          start: '2023-09-04 16:30',
+          end: '2023-09-04 17:30',
           type: 'job',
           title: 'tarefa 3'
         }
@@ -138,12 +139,17 @@ export default function ScheduleUser() {
     }
   ];
 
-  const starterDate = '2022-10-18T00:00:00';
-  const finishDate = '2022-10-18T24:00:00';
+  const handleDayOfUSer = () => {
+    console.log('log do handle Day');
+  };
+
+  // const starterDate = moment().startOf('day').add(1, 'days').format('YYYY-MM-DD HH:mm:ss');
+  const starterDate = moment().startOf('day').format('YYYY-MM-DD HH:mm:ss');
 
   const { isLoading, getEpgProps, getLayoutProps } = useApp({
     starterDate: starterDate,
-    finishDate: finishDate
+    finishDate: '2023-09-04T24:00:00',
+    data: dataTest
   });
 
   return (
