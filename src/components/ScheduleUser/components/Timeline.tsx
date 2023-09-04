@@ -34,7 +34,6 @@ export function Timeline({
       <TimelineDividers>{renderDividers()}</TimelineDividers>
     </TimelineBox>
   );
-  console.log('log do hours width', offsetStartHoursRange);
 
   const renderDividers = () =>
     dividers.map((_, index) => <TimelineDivider key={index} width={hourWidth} />);
