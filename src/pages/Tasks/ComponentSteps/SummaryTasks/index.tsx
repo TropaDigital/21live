@@ -190,8 +190,8 @@ export default function SummaryTasks({
               )}
               {!updateTask && (
                 <div className="info">
-                  {projectInfos.categoria} | {projectInfos?.tempo?.split(':')[0]}H/
-                  {projectInfos.categoria === 'fee' ? 'ANO' : 'MENSAL'}
+                  {projectInfos?.categoria} | {projectInfos?.tempo?.split(':')[0]}H/
+                  {projectInfos?.categoria === 'fee' ? 'ANO' : 'MENSAL'}
                 </div>
               )}
             </SummaryTaskInfo>
@@ -437,7 +437,7 @@ export default function SummaryTasks({
               </div>
               <div className="splitter"></div>
               <div className="item-hours">
-                Horas estimadas <span>{projectInfos.tempo}</span>
+                Horas estimadas <span>{projectInfos?.tempo}</span>
               </div>
             </>
           )}
