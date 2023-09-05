@@ -20,6 +20,7 @@ import AddTextButton from '../../../components/Buttons/AddTextButton';
 import TaskInputs from '../ComponentSteps/InfoInputs';
 import SummaryTasks from '../ComponentSteps/SummaryTasks';
 import QuantityInput from '../../../components/Inputs/QuantityInput';
+import ScheduleUser from '../../../components/ScheduleUser';
 
 // Styles
 import {
@@ -79,7 +80,6 @@ import api from '../../../services/api';
 
 // Libraries
 import moment from 'moment';
-import ScheduleUser from '../../../components/ScheduleUser';
 
 interface StateProps {
   [key: string]: any;
@@ -187,7 +187,17 @@ export default function CreateTasks() {
   const { data: dataOrganizations } = useFetch<OrganizationsProps[]>('organization');
   const [productsArray, setProductsArray] = useState<ServicesProps[]>([]);
   // const [quantityProductsArray, setQuantityProductsArray] = useState<any[]>([]);
-  const [selectedProject, setSelectedProject] = useState<ProjectProductProps>();
+  const [selectedProject, setSelectedProject] = useState<ProjectProductProps>({
+    categoria: '',
+    listavel: '',
+    product_id: '',
+    produto: '',
+    projeto: '',
+    quantidade: '',
+    select: '',
+    tempo: '',
+    tipo: ''
+  });
   const [selectedSummaryInfos, setSelectedSummaryInfos] = useState<any>({
     client: {
       bucket: '',
@@ -238,6 +248,7 @@ export default function CreateTasks() {
   const [taskEdit, setTaskEdit] = useState<boolean>(false);
   const splitDeliveries = deliveriesSplit === 'no-split' ? false : true;
   const [selectUserModal, setSelectUserModal] = useState<boolean>(false);
+  const [estimatedTime, setEstimatedTime] = useState<string>('');
 
   const DeliveryDefault: DeliveryProps = {
     deliveryId: 1,
@@ -774,6 +785,12 @@ export default function CreateTasks() {
       if (createStep === 1 && tasksType === 'horas' && !location.state && !taskEdit) {
         setProductsModal(true);
       } else if (createStep === 2 && tasksType === 'horas') {
+        if (DTOForm.copywriting_date_end === '') {
+          throw setErrorInput('copywriting_date_end', 'Data de entrega inicial não informada!');
+        } else {
+          setErrorInput('copywriting_date_end', undefined);
+        }
+
         if (creation_date_end === '') {
           throw setErrorInput('creation_date_end', 'Data de Entrega Criação é obrigatória!');
         } else {
@@ -873,6 +890,12 @@ export default function CreateTasks() {
           }
         }
       } else if (createStep === 2 && tasksType === 'produto') {
+        if (DTOForm.copywriting_date_end === '') {
+          throw setErrorInput('copywriting_date_end', 'Data de entrega inicial não informada!');
+        } else {
+          setErrorInput('copywriting_date_end', undefined);
+        }
+
         if (creation_date_end === '') {
           throw setErrorInput('creation_date_end', 'Data de Entrega Criação é obrigatória!');
         } else {
@@ -1626,6 +1649,7 @@ export default function CreateTasks() {
                     taskType={tasksType}
                     updateTask={location.state !== null}
                     handleInputChange={handleChangeInput}
+                    estimatedTotalTime={() => ''}
                     error={error}
                   />
                 </>
@@ -1649,6 +1673,7 @@ export default function CreateTasks() {
                   taskType={tasksType}
                   updateTask={location.state !== null}
                   handleInputChange={handleChangeInput}
+                  estimatedTotalTime={setEstimatedTime}
                   error={error}
                 />
               )}
@@ -1666,6 +1691,7 @@ export default function CreateTasks() {
                   taskType={tasksType}
                   updateTask={location.state !== null}
                   handleInputChange={handleChangeInput}
+                  estimatedTotalTime={() => ''}
                   error={error}
                 />
               )}
@@ -2025,7 +2051,13 @@ export default function CreateTasks() {
           onOpenChange={() => setSelectUserModal(false)}
           title="Selecione um usuário"
         >
-          <ScheduleUser />
+          <ScheduleUser
+            task_title={DTOForm.title}
+            estimated_time={tasksType === 'horas' ? estimatedTime : selectedProject.tempo}
+            flow={DTOForm.flow_id}
+            product_id={DTOForm.product_id}
+            user_alocated={() => ''}
+          />
         </ModalDefault>
       </ContainerWrapper>
     </>
