@@ -44,6 +44,7 @@ interface TasksProps {
     e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>
   ) => void;
   error: FormProps;
+  estimatedTotalTime: (value: any) => void;
 }
 
 interface FlowRole {
@@ -66,7 +67,8 @@ export default function SummaryTasks({
   taskType,
   updateTask,
   handleInputChange,
-  error
+  error,
+  estimatedTotalTime
 }: TasksProps) {
   const { user } = useAuth();
   const [deliveryArrayHours, setDeliveryArrayHours] = useState<any>('');
@@ -75,9 +77,9 @@ export default function SummaryTasks({
 
   useEffect(() => {
     // console.log('log selected products on summary', selectedProducts);
-    console.log('log tasks infos on summary', taskSummary);
+    // console.log('log tasks infos on summary', taskSummary);
     // console.log('log tasks infos on project', projectInfos);
-    console.log('log extra infos for summary tasks', summaryExtrainfos);
+    // console.log('log extra infos for summary tasks', summaryExtrainfos);
 
     const handleGetFlowTask = async (id: any) => {
       try {
@@ -152,6 +154,10 @@ export default function SummaryTasks({
       setTotalArrayHours(sumTimes(deliveryArrayHours));
     }
   }, [deliveryArrayHours]);
+
+  useEffect(() => {
+    estimatedTotalTime(totalArrayHours);
+  }, [totalArrayHours]);
 
   return (
     <SummaryWrapper>
@@ -410,7 +416,7 @@ export default function SummaryTasks({
 
       <div>
         {/* Select responsável flow */}
-        {flowsManagers.length > 0 && (
+        {flowsManagers?.length > 0 && (
           <FlexLine>
             <SelectDefault
               label="Selecione o responsável inicial da tarefa"
