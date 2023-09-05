@@ -77,6 +77,12 @@ export const ScheduleDate = styled.div`
     color: var(--gray-700);
     font-size: var(--text-small-xl);
     font-weight: var(--weight-semibold);
+
+    text-transform: capitalize;
+
+    span {
+      text-transform: lowercase;
+    }
   }
 `;
 
@@ -106,12 +112,25 @@ export const ScheduleSelectUser = styled.div`
 export const UserFields = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 4px;
+
+  &.hours {
+    max-width: 150px;
+    position: relative;
+  }
+
+  .hour-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-top: -24px;
+  }
 
   .selectedUser {
     color: var(--gray-700);
     font-size: var(--text-small-sm);
     font-weight: var(--weight-medium);
+    margin-right: 8px;
   }
 `;
 
@@ -170,6 +189,8 @@ export const UserInfosCard = styled.div`
     color: var(--gray-700);
     font-size: var(--text-small-sm);
     font-weight: var(--weight-semibold);
+
+    text-transform: capitalize;
   }
 
   .working-hours {
@@ -235,5 +256,31 @@ export const HoursTitle = styled.div`
       border-right: 2px solid red;
       z-index: 99;
     }
+  }
+`;
+
+export const EndTaskDate = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  position: relative;
+
+  .date-title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-top: -24px;
+  }
+
+  .end-date {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 40px;
+    padding: 8px;
+
+    border: 1px solid var(--gray-200);
+    border-radius: 4px;
   }
 `;

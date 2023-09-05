@@ -1,7 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+// React
+import { useEffect, useState } from 'react';
 
+// Styles
 import {
   ArrowButton,
+  EndTaskDate,
   HoursTable,
   HoursTitle,
   ScheduleDate,
@@ -15,8 +19,12 @@ import {
   UserInfosCard,
   UserTable
 } from './styles';
+
+// Icons
 import { IconClose } from '../../assets/icons';
 import { BsArrowLeft, BsArrowRight } from 'react-icons/bs';
+
+// Components
 import { InputDefault } from '../Inputs/InputDefault';
 import ButtonDefault from '../Buttons/ButtonDefault';
 import { CheckboxDefault } from '../Inputs/CheckboxDefault';
@@ -25,7 +33,11 @@ import { CheckboxDefault } from '../Inputs/CheckboxDefault';
 import { useApp } from './useApp';
 import { Epg, Layout } from 'planby';
 import { Program, Timeline } from './components';
+
+// Libraries
 import moment from 'moment';
+import { useFetch } from '../../hooks/useFetch';
+import api from '../../services/api';
 
 interface Task {
   task_id?: string | null;
@@ -48,121 +60,258 @@ interface UserData {
   agenda: Task[];
 }
 
-export default function ScheduleUser() {
-  const [hours, setHours] = useState<number>(0);
-  const [minutes, setMinutes] = useState<number>(0);
+interface ScheduleProps {
+  scheduleDay: string;
+  user_selected: string;
+  starterHour: string;
+}
 
-  const dataTest: UserData[] = [
-    {
-      user_id: '15853',
-      name: 'Robert Fox',
-      function: 'Gerente de Projeto',
-      work: {
-        start_work: '09:30',
-        end_work: '17:30'
-      },
-      agenda: [
-        {
-          task_id: '170',
-          start: '2023-09-04 09:30',
-          end: '2023-09-04 13:30',
-          type: 'job',
-          title: 'Tarefa 1'
-        },
-        {
-          start: '2023-09-04 13:30',
-          end: '2023-09-04 14:00',
-          type: 'pause'
-        },
-        {
-          task_id: '170',
-          start: '2023-09-04 14:00',
-          end: '2023-09-04 16:00',
-          type: 'job',
-          title: 'Tarefa 2'
-        },
-        {
-          start: '2023-09-04 16:00',
-          end: '2023-09-04 16:30',
-          type: 'pause'
-        },
-        {
-          task_id: '170',
-          start: '2023-09-04 16:30',
-          end: '2023-09-04 17:30',
-          type: 'job',
-          title: 'Tarefa 3'
+interface TaskExchangeProps {
+  task_title: string;
+  estimated_time: string;
+  flow: string;
+  product_id: string;
+  user_alocated: any;
+}
+
+interface NewTaskItem {
+  end: string;
+  start: string;
+  task_id: string;
+  title: string;
+  type: string;
+}
+
+export default function ScheduleUser({
+  task_title,
+  estimated_time,
+  flow,
+  product_id,
+  user_alocated
+}: TaskExchangeProps) {
+  const [DTOTaskSelect, setDTOTaskSelect] = useState<ScheduleProps>({
+    scheduleDay: '',
+    user_selected: '',
+    starterHour: '00:00:00'
+  });
+  const [hours, setHours] = useState<number | null>();
+  const [minutes, setMinutes] = useState<number | null>();
+  const [dayCounter, setDayCounter] = useState<number>(0);
+  const [dataUserSchedule, setDataUserSchedule] = useState<UserData[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const starterDate = moment().startOf('day').format('YYYY-MM-DD HH:mm:ss');
+  const finishDate = moment().format('YYYY-MM-DD') + 'T24:00:00';
+  const dinamicDate = moment().startOf('day').add(dayCounter, 'days').format('YYYY-MM-DD HH:mm:ss');
+
+  useEffect(() => {
+    async function getUserSchedule() {
+      try {
+        setLoading(true);
+        const response = await api.get(
+          `/task/next?flow=${flow}&product_id=${product_id}&step=1&date=${moment(
+            dinamicDate
+          ).format('YYYY-MM-DD')}`
+        );
+
+        if (response.data.result.length > 0) {
+          setDataUserSchedule(response.data.result);
         }
-      ]
-    },
-    {
-      user_id: '15854',
-      name: 'Darlene Robertson',
-      function: 'Gerente de Projeto',
-      work: {
-        start_work: '10:00',
-        end_work: '19:00'
-      },
-      agenda: [
-        {
-          task_id: '171',
-          start: '2023-09-04 10:30',
-          end: '2023-09-04 13:30',
-          type: 'job',
-          title: 'Tarefa 1'
-        },
-        {
-          start: '2023-09-04 13:30',
-          end: '2023-09-04 14:00',
-          type: 'pause'
-        },
-        {
-          task_id: '170',
-          start: '2023-09-04 14:00',
-          end: '2023-09-04 16:00',
-          type: 'job',
-          title: 'Tarefa 2'
-        },
-        {
-          start: '2023-09-04 16:00',
-          end: '2023-09-04 16:30',
-          type: 'pause'
-        },
-        {
-          task_id: '170',
-          start: '2023-09-04 16:30',
-          end: '2023-09-04 17:30',
-          type: 'job',
-          title: 'tarefa 3'
-        }
-      ]
+
+        setLoading(false);
+      } catch (error: any) {
+        console.log('log error getSchedule', error);
+        setLoading(false);
+      }
     }
-  ];
 
-  const handleDayOfUSer = () => {
-    console.log('log do handle Day');
+    getUserSchedule();
+  }, [dayCounter]);
+
+  const addNewObjectToAgenda = (userId: string, newTaskItem: any) => {
+    setDataUserSchedule((prevUserData) => {
+      return prevUserData.map((user) => {
+        if (user.user_id === userId) {
+          const updatedUser = {
+            ...user,
+            agenda: [...user.agenda, newTaskItem]
+          };
+          return updatedUser;
+        }
+        return user;
+      });
+    });
   };
 
-  // const starterDate = moment().startOf('day').add(1, 'days').format('YYYY-MM-DD HH:mm:ss');
-  const starterDate = moment().startOf('day').format('YYYY-MM-DD HH:mm:ss');
+  // const { data: dataUserSchedule } = useFetch<UserData[]>(
+  //   `/task/next?flow=${flow}&product_id=${product_id}&step=1&date=${moment(dinamicDate).format(
+  //     'YYYY-MM-DD'
+  //   )}`
+  // );
 
-  const { isLoading, getEpgProps, getLayoutProps } = useApp({
+  // const dataTest: UserData[] = [
+  //   {
+  //     user_id: '15853',
+  //     name: 'Robert Fox',
+  //     function: 'Gerente de Projeto',
+  //     work: {
+  //       start_work: '09:30',
+  //       end_work: '17:30'
+  //     },
+  //     agenda: [
+  //       {
+  //         task_id: '170',
+  //         start: '2023-09-05 09:30',
+  //         end: '2023-09-05 13:30',
+  //         type: 'job',
+  //         title: 'Tarefa 1'
+  //       },
+  //       {
+  //         start: '2023-09-05 13:30',
+  //         end: '2023-09-05 14:00',
+  //         type: 'pause'
+  //       },
+  //       {
+  //         task_id: '170',
+  //         start: '2023-09-05 14:00',
+  //         end: '2023-09-05 16:00',
+  //         type: 'job',
+  //         title: 'Tarefa 2'
+  //       },
+  //       {
+  //         start: '2023-09-05 16:00',
+  //         end: '2023-09-05 16:30',
+  //         type: 'pause'
+  //       },
+  //       {
+  //         task_id: '170',
+  //         start: '2023-09-05 16:30',
+  //         end: '2023-09-05 17:30',
+  //         type: 'job',
+  //         title: 'Tarefa 3'
+  //       }
+  //     ]
+  //   },
+  //   {
+  //     user_id: '15854',
+  //     name: 'Darlene Robertson',
+  //     function: 'Gerente de Projeto',
+  //     work: {
+  //       start_work: '10:00',
+  //       end_work: '19:00'
+  //     },
+  //     agenda: [
+  //       {
+  //         task_id: '171',
+  //         start: '2023-09-05 10:30',
+  //         end: '2023-09-05 13:30',
+  //         type: 'job',
+  //         title: 'Tarefa 1'
+  //       },
+  //       {
+  //         start: '2023-09-05 13:30',
+  //         end: '2023-09-05 14:00',
+  //         type: 'pause'
+  //       },
+  //       {
+  //         task_id: '170',
+  //         start: '2023-09-05 14:00',
+  //         end: '2023-09-05 16:00',
+  //         type: 'job',
+  //         title: 'Tarefa 2'
+  //       },
+  //       {
+  //         start: '2023-09-05 16:00',
+  //         end: '2023-09-05 16:30',
+  //         type: 'pause'
+  //       },
+  //       {
+  //         task_id: '170',
+  //         start: '2023-09-05 16:30',
+  //         end: '2023-09-05 17:30',
+  //         type: 'job',
+  //         title: 'tarefa 3'
+  //       }
+  //     ]
+  //   }
+  // ];
+
+  function handleOnChange(name: string, value: string) {
+    const newDTO: any = DTOTaskSelect;
+    newDTO[name] = value;
+    setDTOTaskSelect({ ...newDTO });
+  }
+
+  const handleDayOfUSer = (value: any) => {
+    setDayCounter(dayCounter + value);
+  };
+
+  function handleHoursMinutes(event: React.ChangeEvent<HTMLInputElement>) {
+    const { name, value } = event.target;
+    if (name === 'hours_task') {
+      if (Number(value) > 23) {
+        setHours(23);
+      } else {
+        setHours(Number(value));
+      }
+    }
+
+    if (name === 'minutes_task') {
+      if (Number(value) > 59) {
+        setMinutes(59);
+      } else {
+        setMinutes(Number(value));
+      }
+    }
+  }
+
+  const { getEpgProps, getLayoutProps } = useApp({
     starterDate: starterDate,
-    finishDate: '2023-09-04T24:00:00',
-    data: dataTest
+    finishDate: finishDate,
+    data: dataUserSchedule,
+    taskDate: moment(dinamicDate).format('YYYY-MM-DD')
   });
+
+  const userSelected = dataUserSchedule?.filter(
+    (obj: UserData) => obj.user_id === DTOTaskSelect.user_selected
+  );
+
+  const handleAlocatedUser = () => {
+    const newTaskItem = {
+      start: '2023-09-05 14:30:00',
+      end: '2023-09-05 15:00:00',
+      title: '',
+      type: 'job'
+    };
+
+    addNewObjectToAgenda(DTOTaskSelect.user_selected, newTaskItem);
+    console.log('log que selecionei o usuário');
+  };
+
+  useEffect(() => {
+    const hoursAndMinutes = `${hours}:${minutes}:00`;
+    handleOnChange('starterHour', hoursAndMinutes);
+  }, [hours, minutes]);
+
+  useEffect(() => {
+    handleOnChange('scheduleDay', moment(dinamicDate).format('YYYY-MM-DD'));
+  }, [dayCounter]);
+
+  // useEffect(() => {
+  //   console.log('log do DTO', DTOTaskSelect);
+  // }, [DTOTaskSelect]);
 
   return (
     <ScheduleWrapper>
       <ScheduleSubtitle>
         <SubtitleInfo>
           <div className="title">Título da tarefa:</div>
-          <div className="info">Plano de comunicação</div>
+          <div className="info">{task_title ? task_title : 'Teste'}</div>
         </SubtitleInfo>
         <div>•</div>
         <SubtitleInfo>
           <div className="title">Tempo estimado:</div>
-          <div className="info">02:00:00</div>
+          <div className="info">{estimated_time ? estimated_time : '02:00:00'}</div>
         </SubtitleInfo>
 
         <button className="close">
@@ -171,28 +320,29 @@ export default function ScheduleUser() {
       </ScheduleSubtitle>
 
       <ScheduleDate>
-        <ArrowButton>
+        <ArrowButton onClick={() => handleDayOfUSer(-1)}>
           <BsArrowLeft />
         </ArrowButton>
 
-        <div className="date">16 de Agosto</div>
+        <div className="date">
+          {moment(dinamicDate).format('DD')} <span>de</span> {moment(dinamicDate).format('MMMM')}
+        </div>
 
-        <ArrowButton>
+        <ArrowButton onClick={() => handleDayOfUSer(1)}>
           <BsArrowRight />
         </ArrowButton>
       </ScheduleDate>
 
-      {/* Aqui vai a tabela */}
       <ScheduleTable>
         <UserTable>
           <div className="user-title">Usuário</div>
-          {dataTest.map((row: UserData) => (
+          {dataUserSchedule?.map((row: UserData) => (
             <UserCard key={row.user_id}>
               <CheckboxDefault
                 label=""
-                name="necessary_responsible"
-                onChange={() => ''}
-                checked={false}
+                name="user_selected"
+                onChange={() => handleOnChange('user_selected', row.user_id)}
+                checked={DTOTaskSelect.user_selected === row.user_id ? true : false}
               />
               <UserInfosCard>
                 <div className="user-name">{row.name}</div>
@@ -209,7 +359,7 @@ export default function ScheduleUser() {
 
         <HoursTable>
           <div style={{ backgroundColor: 'white' }}>
-            <Epg isLoading={isLoading} {...getEpgProps()}>
+            <Epg {...getEpgProps()}>
               <Layout
                 {...getLayoutProps()}
                 renderTimeline={(props) => <Timeline {...props} />}
@@ -223,37 +373,51 @@ export default function ScheduleUser() {
       </ScheduleTable>
 
       <ScheduleSelectUser>
-        <UserFields>
-          <InputDefault
-            label="Hora início"
-            name="hours_creation"
-            onChange={(value) => setHours(Number(value))}
-            value={hours}
-            type="number"
-            min="0"
-            max="23"
-            step="1"
-            required
-          />
-          :
-          <InputDefault
-            label="Hora final"
-            name="minutes_creation"
-            onChange={(value) => setMinutes(Number(value))}
-            value={minutes}
-            type="number"
-            min="0"
-            max="59"
-            step="1"
-            required
-          />
-        </UserFields>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <UserFields className="hours">
+            <div className="hour-label">Hora inicial</div>
+            <InputDefault
+              label=""
+              name="hours_task"
+              onChange={handleHoursMinutes}
+              value={hours ? hours : ''}
+              placeholder="00"
+              type="number"
+              min="0"
+              max="23"
+              step="1"
+              required
+            />
+            :
+            <InputDefault
+              label=""
+              name="minutes_task"
+              onChange={handleHoursMinutes}
+              value={minutes ? minutes : ''}
+              placeholder="00"
+              type="number"
+              min="0"
+              max="59"
+              step="1"
+              required
+            />
+          </UserFields>
+          <EndTaskDate>
+            <div className="date-title">Data / Hora final</div>
+            <div className="end-date">08/09/2023 - 09:00</div>
+          </EndTaskDate>
+        </div>
 
         <UserFields>
           <div className="selectedUser">
-            Usuário selecionado: <strong>Cara da gestão</strong>
+            Usuário selecionado: <strong>{userSelected ? userSelected[0]?.name : ''}</strong>
           </div>
-          <ButtonDefault typeButton="blocked">Alocar usuário</ButtonDefault>
+          <ButtonDefault
+            typeButton={DTOTaskSelect.user_selected ? 'primary' : 'blocked'}
+            onClick={() => handleAlocatedUser()}
+          >
+            Alocar usuário
+          </ButtonDefault>
         </UserFields>
       </ScheduleSelectUser>
     </ScheduleWrapper>
