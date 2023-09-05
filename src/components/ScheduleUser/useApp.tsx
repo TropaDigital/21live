@@ -1,4 +1,5 @@
-import React from 'react';
+// React
+import { useEffect, useState } from 'react';
 
 import { fetchChannels, fetchEpg } from './helpers';
 
@@ -22,25 +23,36 @@ interface AppDataProps {
   starterDate: string;
   finishDate: string;
   data: any;
+  taskDate: string;
 }
 
-export function useApp({ starterDate, finishDate, data }: AppDataProps) {
-  const [channels, setChannels] = React.useState<Channel[]>([]);
-  const [epg, setEpg] = React.useState<Program[]>([]);
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+export function useApp({ starterDate, finishDate, data, taskDate }: AppDataProps) {
+  const [isToShowLine, setIsToShowLine] = useState<boolean>(true);
+  // const [channels, setChannels] = React.useState<Channel[]>([]);
+  // const [epg, setEpg] = React.useState<Program[]>([]);
+  // const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
-  const channelsData = handleUsers(data);
+  const channelsData = data ? handleUsers(data) : [];
+  const epgData = data ? [].concat(...data.map(handleUserTasks)) : [];
   // const epgData = React.useMemo(() => epg, [epg]);
-  const epgData = [].concat(...data.map(handleUserTasks));
+  const today = moment().format('YYYY-MM-DD');
+
+  useEffect(() => {
+    if (moment(taskDate).isSame(today)) {
+      setIsToShowLine(true);
+    } else {
+      setIsToShowLine(false);
+    }
+  }, [taskDate, today]);
 
   function handleUsers(dataArray: any[]) {
-    return dataArray.map((item) => ({
+    return dataArray?.map((item) => ({
       uuid: item.user_id,
       type: 'channel',
       title: item.name,
       country: 'any',
       provider: '1234',
-      logo: 'empty',
+      logo: '',
       year: 'empty'
     }));
   }
@@ -48,10 +60,10 @@ export function useApp({ starterDate, finishDate, data }: AppDataProps) {
   function handleUserTasks(tasksArray: any) {
     const channelUuid = tasksArray.user_id;
 
-    return tasksArray.agenda.map((item: any, index: number) => {
+    return tasksArray?.agenda.map((item: any, index: number) => {
       const isPause = item.type;
-      const id = item.task_id || index.toString();
-      const description = item.title || 'No title';
+      const id = channelUuid + index;
+      const description = item.title || 'Pausa';
       const since = String(moment(item.start).format('YYYY-MM-DDTHH:mm:ss'));
       const till = String(moment(item.end).format('YYYY-MM-DDTHH:mm:ss'));
       const image = '';
@@ -78,25 +90,25 @@ export function useApp({ starterDate, finishDate, data }: AppDataProps) {
     itemHeight: 72,
     isSidebar: false,
     isTimeline: true,
-    isLine: true,
+    isLine: isToShowLine,
     startDate: starterDate,
     endDate: finishDate,
     isBaseTimeFormat: false,
     theme
   });
 
-  const handleFetchResources = React.useCallback(async () => {
-    setIsLoading(false);
-    const epg = await fetchEpg();
-    const channels = await fetchChannels();
-    setEpg(epg as Program[]);
-    setChannels(channels as Channel[]);
-    setIsLoading(false);
-  }, []);
+  // const handleFetchResources = React.useCallback(async () => {
+  //   setIsLoading(false);
+  //   const epg = await fetchEpg();
+  //   const channels = await fetchChannels();
+  //   setEpg(epg as Program[]);
+  //   setChannels(channels as Channel[]);
+  //   setIsLoading(false);
+  // }, []);
 
-  React.useEffect(() => {
-    handleFetchResources();
-  }, [handleFetchResources]);
+  // React.useEffect(() => {
+  //   handleFetchResources();
+  // }, [handleFetchResources]);
 
-  return { getEpgProps, getLayoutProps, isLoading };
+  return { getEpgProps, getLayoutProps };
 }
