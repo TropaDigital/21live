@@ -31,7 +31,6 @@ export const Program = ({ program, ...rest }: ProgramItem) => {
           isLive={isLive}
         >
           <ProgramFlex>
-            {isLive && isMinWidth && <ProgramImage src={image} alt="Preview" />}
             <ProgramStack>
               <ProgramTitle style={{ color: '#7A271A' }}>{title}</ProgramTitle>
               <ProgramText style={{ color: '#7A271A' }}>
@@ -44,7 +43,6 @@ export const Program = ({ program, ...rest }: ProgramItem) => {
       {isPause === 'job' && (
         <ProgramContent width={styles.width} isLive={isLive}>
           <ProgramFlex>
-            {isLive && isMinWidth && <ProgramImage src={image} alt="Preview" />}
             <ProgramStack>
               <ProgramTitle>{title}</ProgramTitle>
               <ProgramText>
