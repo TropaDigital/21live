@@ -44,6 +44,7 @@ import {
   FinishModal,
   FinishModalButtons,
   FinishModalMessage,
+  FinishModalTitle,
   Footer,
   FormTitle,
   FormWrapper,
@@ -78,7 +79,6 @@ interface DTOProps {
   description: string;
   category: string;
   products: [];
-  files: [];
   time: string;
   email: string;
   team: [];
@@ -118,13 +118,14 @@ export default function CreateProject() {
     description: '',
     category: '',
     products: [],
-    files: [],
     time: '',
     email: '',
     team: []
   });
   const [productsArray, setProductsArray] = useState<IProduct[]>([]);
   const [selectedClient, setSelectedClient] = useState<any>('');
+  const [sendFiles, setSendFiles] = useState<boolean>(false);
+  const [projectId, setProjectId] = useState<string>('');
 
   const { data: dataTeam } = useFetch<TeamProps[]>('team');
 
@@ -368,8 +369,7 @@ export default function CreateProject() {
       date_start: '',
       date_end: '',
       description: '',
-      products: [],
-      files: []
+      products: []
     } as DTOProps);
     setUploadedFiles([]);
     setProductsArray([]);
@@ -382,16 +382,15 @@ export default function CreateProject() {
         event.preventDefault();
 
         // Inserir lógica
-        const files = uploadedFiles.map(
-          (row: { bucket: any; file_name: any; key: any; size: any; url: any }) => ({
-            bucket: row.bucket,
-            file_name: row.file_name,
-            // file_id: row.file_id,
-            key: row.key,
-            size: row.size,
-            url: row.url
-          })
-        );
+        // const files = uploadedFiles.map(
+        //   (row: { bucket: any; file_name: any; key: any; size: any; }) => ({
+        //     bucket: row.bucket,
+        //     file_name: row.file_name,
+        //     // file_id: row.file_id,
+        //     key: row.key,
+        //     size: row.size,
+        //   })
+        // );
 
         const totalTime = sumTimes(productsHours);
 
@@ -418,7 +417,7 @@ export default function CreateProject() {
               date_start: DTOForm.date_start,
               date_end: DTOForm.date_end,
               contract_type: DTOForm.contract_type,
-              files,
+              // files,
               time: totalTime,
               email: DTOForm.email,
               team: DTOForm.team
@@ -435,7 +434,7 @@ export default function CreateProject() {
               date_start: DTOForm.date_start,
               date_end: DTOForm.date_end,
               contract_type: DTOForm.contract_type,
-              files,
+              // files,
               time: totalTime,
               email: DTOForm.email,
               team: DTOForm.team
@@ -449,7 +448,8 @@ export default function CreateProject() {
                 description: 'Projeto editado com sucesso!'
               });
             } else {
-              await api.post(`project`, createNewData);
+              const response = await api.post(`project`, createNewData);
+              setProjectId(response.data.result);
               setFinishModal(true);
               // addToast({
               //   type: 'success',
@@ -478,7 +478,7 @@ export default function CreateProject() {
               date_start: DTOForm.date_start,
               date_end: DTOForm.date_end,
               contract_type: DTOForm.contract_type,
-              files,
+              // files,
               time: totalTime,
               email: DTOForm.email,
               team: DTOForm.team
@@ -494,7 +494,7 @@ export default function CreateProject() {
               date_start: DTOForm.date_start,
               date_end: DTOForm.date_end,
               contract_type: DTOForm.contract_type,
-              files,
+              // files,
               time: totalTime,
               email: DTOForm.email,
               team: DTOForm.team
@@ -508,7 +508,8 @@ export default function CreateProject() {
                 description: 'Projeto editado com sucesso!'
               });
             } else {
-              await api.post(`project`, createNewData);
+              const response = await api.post(`project`, createNewData);
+              setProjectId(response.data.result);
               setFinishModal(true);
               // addToast({
               //   type: 'success',
@@ -529,7 +530,7 @@ export default function CreateProject() {
               date_start: DTOForm.date_start,
               date_end: DTOForm.date_end,
               contract_type: DTOForm.contract_type,
-              files,
+              // files,
               time: totalTime,
               email: DTOForm.email,
               team: DTOForm.team
@@ -546,7 +547,7 @@ export default function CreateProject() {
               date_start: DTOForm.date_start,
               date_end: DTOForm.date_end,
               contract_type: DTOForm.contract_type,
-              files,
+              // files,
               time: totalTime,
               email: DTOForm.email,
               team: DTOForm.team
@@ -560,7 +561,8 @@ export default function CreateProject() {
                 description: 'Projeto editado com sucesso!'
               });
             } else {
-              await api.post(`project`, createNewData);
+              const response = await api.post(`project`, createNewData);
+              setProjectId(response.data.result);
               setFinishModal(true);
               // addToast({
               //   type: 'success',
@@ -578,7 +580,7 @@ export default function CreateProject() {
               date_start: DTOForm.date_start,
               date_end: DTOForm.date_end,
               contract_type: DTOForm.contract_type,
-              files,
+              // files,
               time: totalTime,
               email: DTOForm.email,
               team: DTOForm.team
@@ -594,7 +596,7 @@ export default function CreateProject() {
               date_start: DTOForm.date_start,
               date_end: DTOForm.date_end,
               contract_type: DTOForm.contract_type,
-              files,
+              // files,
               time: totalTime,
               email: DTOForm.email,
               team: DTOForm.team
@@ -608,7 +610,8 @@ export default function CreateProject() {
                 description: 'Projeto editado com sucesso!'
               });
             } else {
-              await api.post(`project`, createNewData);
+              const response = await api.post(`project`, createNewData);
+              setProjectId(response.data.result);
               setFinishModal(true);
               // addToast({
               //   type: 'success',
@@ -650,8 +653,42 @@ export default function CreateProject() {
 
   const finishCreate = () => {
     setFinishModal(false);
-    navigate('/projetos');
+    setSendFiles(false);
+    // navigate('/projetos');
+    sendFilesOfProject();
   };
+
+  async function sendFilesOfProject() {
+    try {
+      const files = uploadedFiles.map(
+        (row: { bucket: any; file_name: any; key: any; size: any }) => ({
+          file_name: row.file_name,
+          bucket: row.bucket,
+          key: row.key,
+          size: row.size
+        })
+      );
+
+      const upload = {
+        folder: 'projects',
+        id: projectId,
+        archives: files
+      };
+
+      setLoading(true);
+
+      const response = await api.post(`/archive/insert`, upload);
+
+      if (response.data.status === 'success') {
+        navigate('/projetos');
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.log('log error upload', error);
+      setLoading(false);
+    }
+  }
 
   const ifIsSelectedClient = (e: any) => {
     if (e.target.name === 'tenant_id') {
@@ -671,9 +708,9 @@ export default function CreateProject() {
     }
   };
 
-  useEffect(() => {
-    console.log('log do DTOTEAM =>', DTOForm.team);
-  }, [DTOForm]);
+  // useEffect(() => {
+  //   console.log('log do DTOTEAM =>', DTOForm.team);
+  // }, [DTOForm]);
 
   return (
     <Container>
@@ -750,7 +787,7 @@ export default function CreateProject() {
         )}
         {createStep === 3 && (
           <>
-            <FormTitle>Anexos</FormTitle>
+            {/* <FormTitle>Anexos</FormTitle>
             <InfoFiles
               uploadedFiles={uploadedFiles}
               setUploadedFiles={setUploadedFiles}
@@ -759,11 +796,7 @@ export default function CreateProject() {
               isDisabed={false}
               loading={loading}
               setLoading={setLoading}
-            />
-          </>
-        )}
-        {createStep === 4 && (
-          <>
+            /> */}
             <div className="flex-title">
               <FormTitle>Resumo do projeto</FormTitle>
               <EmailButton>
@@ -941,9 +974,13 @@ export default function CreateProject() {
             </SummaryWrapper>
           </>
         )}
+        {/* {createStep === 4 && (
+          <>
+          </>
+        )} */}
       </FormWrapper>
 
-      {createStep !== 4 && (
+      {createStep !== 3 && (
         <Footer>
           {showSave && (
             <>
@@ -1019,10 +1056,10 @@ export default function CreateProject() {
       <ModalDefault
         isOpen={finishModal}
         onOpenChange={() => setFinishModal(false)}
-        maxWidth="400px"
+        maxWidth="1200px"
       >
         <FinishModal>
-          <div>
+          {/* <div>
             <IconChecked />
           </div>
           <FinishModalMessage>
@@ -1030,16 +1067,54 @@ export default function CreateProject() {
             <div className="modal-subtitle">
               O projeto foi criado com êxito, visualize os detalhes na página de projetos salvos.
             </div>
-          </FinishModalMessage>
+          </FinishModalMessage> */}
+          {!sendFiles && (
+            <>
+              <FinishModalTitle>Enviar anexos</FinishModalTitle>
+              <FinishModalMessage>
+                <div className="modal-title">Projeto criado com sucesso</div>
+                <div className="modal-subtitle">Deseja enviar arquivos para esse projeto?</div>
+              </FinishModalMessage>
+              <FinishModalButtons>
+                <ButtonDefault typeButton="dark" isOutline onClick={() => setFinishModal(false)}>
+                  Cancelar
+                </ButtonDefault>
+                <ButtonDefault typeButton="primary" onClick={() => setSendFiles(true)}>
+                  Confirmar
+                </ButtonDefault>
+              </FinishModalButtons>
+            </>
+          )}
 
-          <FinishModalButtons>
-            <ButtonDefault typeButton="dark" isOutline onClick={() => setFinishModal(false)}>
-              Cancelar
-            </ButtonDefault>
-            <ButtonDefault typeButton="primary" onClick={finishCreate}>
-              Confirmar
-            </ButtonDefault>
-          </FinishModalButtons>
+          {sendFiles && (
+            <>
+              <FinishModalTitle>Anexos</FinishModalTitle>
+              <InfoFiles
+                uploadedFiles={uploadedFiles}
+                setUploadedFiles={setUploadedFiles}
+                tenant={DTOForm?.tenant_id}
+                // isDisabed={!formData?.tenant_id}
+                isDisabed={false}
+                loading={loading}
+                setLoading={setLoading}
+              />
+              <FinishModalButtons>
+                <ButtonDefault
+                  typeButton="dark"
+                  isOutline
+                  onClick={() => {
+                    setFinishModal(false);
+                    setSendFiles(false);
+                  }}
+                >
+                  Cancelar
+                </ButtonDefault>
+                <ButtonDefault typeButton="primary" onClick={finishCreate}>
+                  Confirmar
+                </ButtonDefault>
+              </FinishModalButtons>
+            </>
+          )}
         </FinishModal>
       </ModalDefault>
     </Container>
