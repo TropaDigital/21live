@@ -388,7 +388,7 @@ export default function ListProjects() {
                   />
                 </td>
                 <td>
-                  <Avatar data={avatarAll} />
+                  <Avatar data={row.team} />
                 </td>
                 <td>{moment(row.date_start).format('DD/MM/YYYY')}</td>
                 <td>{moment(row.date_end).format('DD/MM/YYYY')}</td>
