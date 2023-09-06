@@ -2057,6 +2057,7 @@ export default function CreateTasks() {
             flow={DTOForm.flow_id}
             product_id={DTOForm.product_id}
             user_alocated={() => ''}
+            closeModal={() => setSelectUserModal(false)}
           />
         </ModalDefault>
       </ContainerWrapper>
