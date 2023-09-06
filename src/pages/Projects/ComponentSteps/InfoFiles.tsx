@@ -23,7 +23,7 @@ export default function InfoFiles({
   setLoading
 }: InfoFilesSteps) {
   return (
-    <ContainerSteps>
+    <ContainerSteps style={{ width: '800px' }}>
       <FieldDefault>
         <UploadFiles
           uploadedFiles={uploadedFiles}
