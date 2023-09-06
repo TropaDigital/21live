@@ -376,7 +376,7 @@ export default function TaskList() {
               <th>Status</th>
               <th>Cliente</th>
               {/* <th>Equipe</th> */}
-              <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
+              <th style={{ color: '#F9FAFB' }}>-</th>
             </tr>
           </thead>
           <tbody>
