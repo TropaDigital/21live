@@ -33,7 +33,7 @@ export function useApp({ starterDate, finishDate, data, taskDate }: AppDataProps
   // const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const channelsData = data ? handleUsers(data) : [];
-  const epgData = data ? [].concat(...data.map(handleUserTasks)) : [];
+  const epgData = [].concat(...data.map(handleUserTasks));
   // const epgData = React.useMemo(() => epg, [epg]);
   const today = moment().format('YYYY-MM-DD');
 
@@ -46,7 +46,7 @@ export function useApp({ starterDate, finishDate, data, taskDate }: AppDataProps
   }, [taskDate, today]);
 
   function handleUsers(dataArray: any[]) {
-    return dataArray?.map((item) => ({
+    return dataArray.map((item) => ({
       uuid: item.user_id,
       type: 'channel',
       title: item.name,

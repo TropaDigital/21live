@@ -72,6 +72,7 @@ interface TaskExchangeProps {
   flow: string;
   product_id: string;
   user_alocated: any;
+  closeModal: () => void;
 }
 
 interface NewTaskItem {
@@ -87,7 +88,8 @@ export default function ScheduleUser({
   estimated_time,
   flow,
   product_id,
-  user_alocated
+  user_alocated,
+  closeModal
 }: TaskExchangeProps) {
   const [DTOTaskSelect, setDTOTaskSelect] = useState<ScheduleProps>({
     scheduleDay: '',
@@ -100,9 +102,9 @@ export default function ScheduleUser({
   const [dataUserSchedule, setDataUserSchedule] = useState<UserData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const starterDate = moment().startOf('day').format('YYYY-MM-DD HH:mm:ss');
-  const finishDate = moment().format('YYYY-MM-DD') + 'T24:00:00';
   const dinamicDate = moment().startOf('day').add(dayCounter, 'days').format('YYYY-MM-DD HH:mm:ss');
+  const starterDate = moment(dinamicDate).startOf('day').format('YYYY-MM-DD HH:mm:ss');
+  const finishDate = moment(dinamicDate).format('YYYY-MM-DD') + 'T24:00:00';
 
   useEffect(() => {
     async function getUserSchedule() {
@@ -278,9 +280,9 @@ export default function ScheduleUser({
 
   const handleAlocatedUser = () => {
     const newTaskItem = {
-      start: '2023-09-05 14:30:00',
+      start: `${DTOTaskSelect.scheduleDay} ${DTOTaskSelect.starterHour}`,
       end: '2023-09-05 15:00:00',
-      title: '',
+      title: task_title,
       type: 'job'
     };
 
@@ -314,7 +316,7 @@ export default function ScheduleUser({
           <div className="info">{estimated_time ? estimated_time : '02:00:00'}</div>
         </SubtitleInfo>
 
-        <button className="close">
+        <button className="close" onClick={closeModal}>
           <IconClose />
         </button>
       </ScheduleSubtitle>
