@@ -27,13 +27,16 @@ import ModalDefault from '../ModalDefault';
 // Libraries
 import moment from 'moment';
 import 'moment/dist/locale/pt-br';
+import api from '../../../services/api';
+import { useAuth } from '../../../hooks/AuthContext';
 
 interface CardTaskInfoProps {
   cardTitle: string;
-  cardType: 'text' | 'time' | 'info';
+  cardType: 'text' | 'info';
   dataText?: string | any;
   dataTime?: any;
   dataInfos?: DataInfosProps;
+  dataClock?: any;
   isPlayingTime: () => void;
   taskIsFinished?: boolean;
 }
@@ -54,6 +57,7 @@ export default function CardTaskInfo({
   dataText,
   dataInfos,
   dataTime,
+  dataClock,
   isPlayingTime,
   taskIsFinished
 }: CardTaskInfoProps) {
@@ -61,48 +65,49 @@ export default function CardTaskInfo({
   // const [timerOn, setTimerOn] = useState<boolean>(false);
   const [modalContext, setModalContext] = useState<boolean>(false);
 
-  const [startTime, setStartTime] = useState<number | null>(null);
-  const [elapsedTime, setElapsedTime] = useState<number>(0);
+  // const [startTime, setStartTime] = useState<number | null>(null);
+  // const [elapsedTime, setElapsedTime] = useState<number>(0);
+  // const [loading, setLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    const savedElapsedTime = localStorage.getItem('elapsedTime');
-    if (savedElapsedTime !== '0') {
-      setElapsedTime(Number(savedElapsedTime));
-      // setStartTime(Date.now());
-      // isPlayingTime(true);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const savedElapsedTime = localStorage.getItem('elapsedTime');
+  //   if (savedElapsedTime !== '0') {
+  //     setElapsedTime(Number(savedElapsedTime));
+  //     // setStartTime(Date.now());
+  //     // isPlayingTime(true);
+  //   }
+  // }, []);
 
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout;
+  // useEffect(() => {
+  //   let intervalId: NodeJS.Timeout;
 
-    if (startTime !== null && !taskIsFinished) {
-      intervalId = setInterval(() => {
-        const now = Date.now();
-        setElapsedTime((prevElapsedTime) => prevElapsedTime + now - startTime);
-        setStartTime(now);
-      }, 1000);
-    } else {
-      setStartTime(null);
-    }
+  //   if (startTime !== null && !taskIsFinished) {
+  //     intervalId = setInterval(() => {
+  //       const now = Date.now();
+  //       setElapsedTime((prevElapsedTime) => prevElapsedTime + now - startTime);
+  //       setStartTime(now);
+  //     }, 1000);
+  //   } else {
+  //     setStartTime(null);
+  //   }
 
-    // Save elapsed time to local storage whenever it changes
-    localStorage.setItem('elapsedTime', String(elapsedTime));
+  //   // Save elapsed time to local storage whenever it changes
+  //   localStorage.setItem('elapsedTime', String(elapsedTime));
 
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-    };
-  }, [startTime, elapsedTime]);
+  //   return () => {
+  //     if (intervalId) clearInterval(intervalId);
+  //   };
+  // }, [startTime, elapsedTime]);
 
-  const handleStartStop = () => {
-    if (startTime === null) {
-      setStartTime(Date.now());
-      isPlayingTime();
-    } else {
-      setStartTime(null);
-      isPlayingTime();
-    }
-  };
+  // const handleStartStop = () => {
+  //   if (startTime === null) {
+  //     setStartTime(Date.now());
+  //     // isPlayingTime();
+  //   } else {
+  //     setStartTime(null);
+  //     // isPlayingTime();
+  //   }
+  // };
 
   // const handleReset = () => {
   //   setStartTime(null);
@@ -110,15 +115,15 @@ export default function CardTaskInfo({
   //   localStorage.removeItem('elapsedTime');
   // };
 
-  const formatTime = (time: number): string => {
-    const hours = Math.floor(time / 3600000);
-    const minutes = Math.floor((time % 3600000) / 60000);
-    const seconds = Math.floor((time % 60000) / 1000);
+  // const formatTime = (time: number): string => {
+  //   const hours = Math.floor(time / 3600000);
+  //   const minutes = Math.floor((time % 3600000) / 60000);
+  //   const seconds = Math.floor((time % 60000) / 1000);
 
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(
-      seconds
-    ).padStart(2, '0')}`;
-  };
+  //   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(
+  //     seconds
+  //   ).padStart(2, '0')}`;
+  // };
 
   // useEffect(() => {
   //   let interval: any = null;
@@ -177,7 +182,7 @@ export default function CardTaskInfo({
             </div>
           </TextCard>
         )}
-        {cardType === 'time' && (
+        {/* {cardType === 'time' && (
           <>
             <PlayTimer>
               {startTime === null && (
@@ -192,18 +197,13 @@ export default function CardTaskInfo({
               )}
               <StopWatchTimer className={!startTime ? 'stopped' : 'running'}>
                 {formatTime(elapsedTime)}
-                {/* {('0' + Math.floor((time / 3600000) % 60)).slice(-2)}:
-                {('0' + Math.floor((time / 60000) % 60)).slice(-2)}:
-                {('0' + Math.floor((time / 1000) % 60)).slice(-2)} */}
-                {/* Milémisimos de segundos */}
-                {/* {('0' + Math.floor((time / 10) % 100)).slice(-2)} */}
               </StopWatchTimer>
             </PlayTimer>
             <EstimatedTime>
               Tempo estimado: <span>{dataTime}</span>
             </EstimatedTime>
           </>
-        )}
+        )} */}
         {cardType === 'info' && (
           <CardInfo>
             <CardInfoField>
