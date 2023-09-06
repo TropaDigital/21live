@@ -181,10 +181,9 @@ export default function Requests() {
                 <th>Unidade</th>
                 <th>Data de criação</th>
                 <th>Data de entrega</th>
-                <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
+                <th style={{ color: '#F9FAFB' }}>-</th>
               </tr>
             </thead>
-
             <tbody>
               {data?.map((row: any, index: number) => (
                 <tr key={index}>
@@ -209,9 +208,9 @@ export default function Requests() {
                     </div>
                   </td>
                   <td>{row.user_name}</td>
-                  <td>{row.unit}</td>
+                  <td>{row.organization_name}</td>
                   <td>{moment(row.created).format('DD/MM/YYYY')}</td>
-                  <td>{moment(row.finished).format('DD/MM/YYYY')}</td>
+                  <td>{row.finished ? moment(row.finished).format('DD/MM/YYYY') : 'A concluir'}</td>
                   <td>
                     <div className="fieldTableClients">
                       <ButtonTable typeButton="view" onClick={() => handleViewRequest(row)} />
