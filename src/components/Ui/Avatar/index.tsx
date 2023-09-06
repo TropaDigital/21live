@@ -1,9 +1,9 @@
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useEffect, useState } from 'react';
+// import { useEffect, useState } from 'react';
 
 // Icons
-import { BiPlusCircle, BiUser, BiXCircle } from 'react-icons/bi';
+import { BiPlusCircle, BiXCircle } from 'react-icons/bi';
 
 // Any
 import * as Popover from '@radix-ui/react-popover';
@@ -11,8 +11,8 @@ import * as Popover from '@radix-ui/react-popover';
 // Styles
 import { Container, SectionAllAvatars } from './styles';
 
-// Images
-import AvatarTest from '../../../assets/person.jpg';
+// Components
+import AvatarDefault from './avatarDefault';
 
 interface PropsAvatar {
   name: string;
@@ -28,17 +28,8 @@ interface Props {
 export default function Avatar({ data }: Props) {
   // const [avatar, setAvatar] = useState('');
   const latesAvatar = data.slice(0, 4);
-  const allAvatar = data.slice(2, data.length);
-
-  // useEffect(() => {
-  //   getUser();
-  // }, []);
-
-  // async function getUser() {
-  //   const response = await fetch('https://api.github.com/users/Raafa1993');
-  //   const body = await response.json();
-  //   setAvatar(body.avatar_url);
-  // }
+  // const allAvatar = data.slice(2, data.length);
+  const allAvatar = data;
 
   return (
     <Container length={latesAvatar.length}>
@@ -46,9 +37,18 @@ export default function Avatar({ data }: Props) {
         {latesAvatar.map((row: any) => (
           <li key={row.name} className={`avatar-ui ${!row.avatar ? 'isAvatar' : ''}`}>
             {row.avatar ? (
-              <img src={row.avatar} alt="profile" />
+              <div
+                style={{
+                  backgroundImage: `url(https://app.21live.com.br/public/files/user/${row.avatar})`
+                }}
+                className="image-avatar"
+              />
             ) : (
-              <BiUser size={22} color="#ced4da" />
+              // <img
+              //   src={`https://app.21live.com.br/public/files/user/${row.avatar}`}
+              //   alt="profile"
+              // />
+              <AvatarDefault url={row.avatar} name={row.name} />
             )}
             {/* <img src={avatar} alt="imagem usuario" /> */}
           </li>
@@ -80,7 +80,16 @@ export default function Avatar({ data }: Props) {
                           key={row.user_id}
                           className={`avatar-al ${row.isOnline ? 'isOnline' : ''}`}
                         >
-                          <img src={AvatarTest} alt="imagem usuario" />
+                          {row.avatar ? (
+                            <div
+                              style={{
+                                backgroundImage: `url(https://app.21live.com.br/public/files/user/${row.avatar})`
+                              }}
+                              className="image-avatar"
+                            />
+                          ) : (
+                            <AvatarDefault url={row.avatar} name={row.name} />
+                          )}
                           <h2>{row.name}</h2>
                         </li>
                       ))}

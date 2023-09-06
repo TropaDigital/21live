@@ -65,7 +65,7 @@ export const Container = styled.div<Props>`
       width: 2.37rem;
       height: 2.37rem;
       border-radius: 50%;
-      border: 3px solid #fff;
+      /* border: 3px solid #fff; */
       display: grid;
       place-items: center;
 
@@ -74,7 +74,20 @@ export const Container = styled.div<Props>`
       }
 
       &.isAvatar {
-        border: 3px solid #ced4da;
+        /* border: 3px solid #ced4da; */
+      }
+
+      .image-avatar {
+        width: 100%;
+        height: 100%;
+
+        background-color: #fff;
+        background-position: center center;
+        background-size: contain;
+        background-repeat: no-repeat;
+
+        border: 3px solid var(--success-300);
+        border-radius: 50%;
       }
 
       img {
