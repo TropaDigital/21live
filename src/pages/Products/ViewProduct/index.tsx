@@ -52,7 +52,10 @@ import 'moment/dist/locale/pt-br';
 import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useToast } from '../../../hooks/toast';
 import WorkingProduct from '../WorkingProduct';
-import { el } from 'date-fns/locale';
+import { useAuth } from '../../../hooks/AuthContext';
+import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
+import CardTaskPlay from '../../../components/CardTaskPlay';
+import ScheduleUser from '../../../components/ScheduleUser';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -75,6 +78,7 @@ export default function ViewProductsDeliveries() {
   const location = useLocation();
   const navigate = useNavigate();
   const { addToast } = useToast();
+  const { user } = useAuth();
   const openRightRef = useRef<any>();
   const [modalSendToUser, setModalSendToUser] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -95,6 +99,7 @@ export default function ViewProductsDeliveries() {
   );
   const [dataUser, setDataUser] = useState<any[]>();
   const [selectedProduct, setSelectedProduct] = useState<any>('');
+  const [elapsedTimeExist, setElapsedTimeExist] = useState<any>();
 
   const deliveryId = location.state.task.deliverys.filter(
     (obj: any) => Number(obj.order) === location.state.task_index
@@ -114,6 +119,36 @@ export default function ViewProductsDeliveries() {
   const data = {
     estimatedTime: location.state.task.totalTime
   };
+
+  useEffect(() => {
+    async function getClockIsOpen() {
+      try {
+        setLoading(true);
+
+        const response = await api.get(`rescue-clock/${user.user_id}`);
+        if (
+          response.data.result.delivery_id === deliveryId[0].delivery_id &&
+          response.data.result.task_id === location.state.task.task_id
+        ) {
+          setPlayingForSchedule(true);
+          setElapsedTimeExist(response.data.result.diff);
+        } else {
+          // console.log('log response delivery id', response.data.result.delivery_id);
+          // console.log('log delivery id', deliveryId);
+          // console.log('log response task id', response.data.result.task_id);
+          // console.log('log task id', location.state.task.task_id);
+          setElapsedTimeExist(0);
+        }
+
+        setLoading(false);
+      } catch (error) {
+        console.log('log error rescue clock', error);
+        setLoading(false);
+      }
+    }
+
+    getClockIsOpen();
+  }, []);
 
   useEffect(() => {
     async function getUserData() {
@@ -186,7 +221,7 @@ export default function ViewProductsDeliveries() {
   };
 
   const handleSwitchPlayType = async (value: any) => {
-    console.log('log do tipo de play', value);
+    // console.log('log do tipo de play', value);
     if (value) {
       setWorkProducts(true);
       const playType = {
@@ -196,7 +231,7 @@ export default function ViewProductsDeliveries() {
 
       try {
         const response = await api.post(`/task/switch-play`, playType);
-        console.log('log do response task/switch-play', response.data.result);
+        // console.log('log do response task/switch-play', response.data.result);
       } catch (error: any) {
         addToast({
           title: 'Atenção',
@@ -213,7 +248,7 @@ export default function ViewProductsDeliveries() {
 
       try {
         const response = await api.post(`/task/switch-play`, playType);
-        console.log('log do response task/switch-play', response.data.result);
+        // console.log('log do response task/switch-play', response.data.result);
       } catch (error: any) {
         addToast({
           title: 'Atenção',
@@ -330,6 +365,8 @@ export default function ViewProductsDeliveries() {
     };
   }, [hideRightCard]);
 
+  console.log('log do location task', location.state.task);
+
   return (
     <ContainerDefault>
       <DeliveryWrapper>
@@ -369,21 +406,20 @@ export default function ViewProductsDeliveries() {
 
         <CardsWrapper>
           {dataProducts?.status === 'Concluida' && (
-            <CardTaskInfo
+            <CardTaskPlay
               cardTitle="Iniciar atividade"
-              cardType="time"
               dataTime={data ? data?.estimatedTime : ''}
               isPlayingTime={handleFinishedPlay}
               taskIsFinished={dataTask?.status === 'Concluida' ? true : false}
             />
           )}
           {dataProducts?.status !== 'Concluida' && (
-            <CardTaskInfo
+            <CardTaskPlay
               cardTitle="Iniciar atividade"
-              cardType="time"
               dataTime={data ? data?.estimatedTime : ''}
               isPlayingTime={handlePlayingType}
               taskIsFinished={dataTask?.status === 'Concluida' ? true : false}
+              elapsedTimeBack={elapsedTimeExist}
             />
           )}
           <CardTaskInfo
@@ -511,76 +547,14 @@ export default function ViewProductsDeliveries() {
         title="Lista de pessoas"
         onOpenChange={() => setModalSendToUser(false)}
       >
-        <ModalWrapperList>
-          <div className="close-button" onClick={() => setModalSendToUser(false)}>
-            <IconClose />
-          </div>
-          <ModalSubtitle>Escolha alguém para atribuir esta tarefa.</ModalSubtitle>
-          <ModalList>
-            <ModalSearch>
-              <InputDefault
-                label=""
-                placeholder="Buscar pelo nome..."
-                name="search"
-                icon={BiSearchAlt}
-                onChange={(event) => {
-                  setSearchTerm(event.target.value);
-                  debouncedCallback(event.target.value);
-                }}
-                value={searchTerm}
-                isLoading={isLoading}
-              />
-            </ModalSearch>
-
-            <ModalTable>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Nome</th>
-                    <th>Cargo</th>
-                    <th>Disponível em</th>
-                    <th>Tarefas na fila</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {dataUser?.map((row: ModalUsersProps, index: number) => (
-                    <tr key={index} className={selectedUser === row.user_id ? 'selected' : ''}>
-                      <td>
-                        <div className="check-name">
-                          <CheckboxDefault
-                            label=""
-                            name="user_selected"
-                            onChange={() => handleCheckBox(row.user_id)}
-                            checked={selectedUser === row.user_id ? true : false}
-                          />
-                          {row.name}
-                        </div>
-                      </td>
-                      <td>{row.function}</td>
-                      <td>30/08/2023</td>
-                      <td style={{ textAlign: 'center' }}>{row.tasks}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </ModalTable>
-          </ModalList>
-
-          <ModalButtons>
-            <ButtonDefault
-              typeButton="lightWhite"
-              isOutline
-              onClick={() => {
-                setSelectedUser('');
-                setModalSendToUser(false);
-                setSearchTerm('');
-              }}
-            >
-              Cancelar
-            </ButtonDefault>
-            <ButtonDefault onClick={() => handleAssignTask()}>Atribuir tarefa</ButtonDefault>
-          </ModalButtons>
-        </ModalWrapperList>
+        <ScheduleUser
+          task_title={dataTask?.title}
+          estimated_time={location.state.task.totalTime}
+          flow={location.state.task.flow_id}
+          product_id={location.state.task.product_id}
+          user_alocated={() => ''}
+          closeModal={() => setModalSendToUser(false)}
+        />
       </ModalDefault>
     </ContainerDefault>
   );
