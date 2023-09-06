@@ -198,3 +198,16 @@ export interface OrganizationsProps {
   logo_b: string;
   logo_w: string;
 }
+
+export interface RescueClock {
+  clock_id: 1;
+  created: string;
+  delivery_id: string;
+  pause: string;
+  play: string;
+  products_delivey_id: string;
+  task_id: string;
+  time_lapse: string;
+  updated: string;
+  user_id: string;
+}

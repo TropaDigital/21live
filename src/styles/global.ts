@@ -649,13 +649,26 @@ legend {
 .avatar-al {
   display: flex;
   align-items: center;
-  width: 2.37rem;
+  width: fit-content;
   height: 2.37rem;
   border-radius: 50%;
-  border: 3px solid #fff;
+  /* border: 3px solid #fff; */
 
   &.isOnline {
     border: 3px solid #93E088;
+  }
+
+  .image-avatar {
+    min-width: 2.37rem;
+    height: 2.37rem;
+
+    background-color: #fff;
+    background-position: center center;
+    background-size: contain;
+    background-repeat: no-repeat;
+
+    border: 2px solid var(--gray-400);
+    border-radius: 50%;
   }
   
   img {
