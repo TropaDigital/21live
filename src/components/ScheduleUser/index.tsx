@@ -71,7 +71,7 @@ interface TaskExchangeProps {
   estimated_time: string;
   flow: string;
   product_id: string;
-  user_alocated: any;
+  user_alocated: (value: any) => void;
   closeModal: () => void;
 }
 
@@ -286,9 +286,33 @@ export default function ScheduleUser({
       type: 'job'
     };
 
+    checkIfIsAvaliable(DTOTaskSelect.user_selected, newTaskItem.start, estimated_time);
     addNewObjectToAgenda(DTOTaskSelect.user_selected, newTaskItem);
-    console.log('log que selecionei o usuário');
   };
+
+  async function checkIfIsAvaliable(user: any, date: any, time: any) {
+    try {
+      const response = await api.get(
+        `/task/verify-agenda?user_id=${user}&date=${date}&total_time=${time}`
+      );
+
+      console.log('log do response verify', response.data.result);
+
+      if (response.data.result.message === 'Agenda livre') {
+        const responseSchedule = {
+          start_job: response.data.result.start_job,
+          end_job: response.data.result.end_job,
+          user_id: user
+        };
+
+        user_alocated(responseSchedule);
+      } else {
+        console.log('tá lotado', response.data.result);
+      }
+    } catch (error: any) {
+      console.log('log do error verify', error);
+    }
+  }
 
   useEffect(() => {
     const hoursAndMinutes = `${hours}:${minutes}:00`;
