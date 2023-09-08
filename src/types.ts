@@ -97,6 +97,8 @@ export interface ITaskCreate {
   deadlines?: Array<IDelivery> | any; //se for dividir a entrega, entra agqui
   step?: number | any;
   project_id?: string;
+  start_job: string;
+  end_job: string;
 }
 
 export interface IDelivery {
