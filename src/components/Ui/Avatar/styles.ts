@@ -86,7 +86,7 @@ export const Container = styled.div<Props>`
         background-size: contain;
         background-repeat: no-repeat;
 
-        border: 3px solid var(--success-300);
+        border: 3px solid var(--gray-300);
         border-radius: 50%;
       }
 
