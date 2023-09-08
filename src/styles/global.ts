@@ -667,7 +667,7 @@ legend {
     background-size: contain;
     background-repeat: no-repeat;
 
-    border: 2px solid var(--gray-400);
+    border: 2px solid var(--gray-300);
     border-radius: 50%;
   }
   
