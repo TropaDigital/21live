@@ -40,6 +40,24 @@ export const Program = ({ program, ...rest }: ProgramItem) => {
           </ProgramFlex>
         </ProgramContent>
       )}
+
+      {isPause === 'new' && (
+        <ProgramContent
+          style={{ background: '#DEF6ED', border: '1px solid #00C899' }}
+          width={styles.width}
+          isLive={isLive}
+        >
+          <ProgramFlex>
+            <ProgramStack>
+              <ProgramTitle style={{ color: '#005C31' }}>{title}</ProgramTitle>
+              <ProgramText style={{ color: '#005C31' }}>
+                {sinceTime} - {tillTime}
+              </ProgramText>
+            </ProgramStack>
+          </ProgramFlex>
+        </ProgramContent>
+      )}
+
       {isPause === 'job' && (
         <ProgramContent width={styles.width} isLive={isLive}>
           <ProgramFlex>

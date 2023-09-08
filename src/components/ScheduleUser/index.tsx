@@ -38,6 +38,7 @@ import { Program, Timeline } from './components';
 import moment from 'moment';
 import { useFetch } from '../../hooks/useFetch';
 import api from '../../services/api';
+import { useToast } from '../../hooks/toast';
 
 interface Task {
   task_id?: string | null;
@@ -91,20 +92,28 @@ export default function ScheduleUser({
   user_alocated,
   closeModal
 }: TaskExchangeProps) {
+  const { addToast } = useToast();
   const [DTOTaskSelect, setDTOTaskSelect] = useState<ScheduleProps>({
     scheduleDay: '',
     user_selected: '',
     starterHour: '00:00:00'
   });
   const [hours, setHours] = useState<number | null>();
-  const [minutes, setMinutes] = useState<number | null>();
+  const [minutes, setMinutes] = useState<string | number | null>('00');
   const [dayCounter, setDayCounter] = useState<number>(0);
   const [dataUserSchedule, setDataUserSchedule] = useState<UserData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [checkAvailability, setCheckAvailability] = useState<boolean>(false);
 
   const dinamicDate = moment().startOf('day').add(dayCounter, 'days').format('YYYY-MM-DD HH:mm:ss');
   const starterDate = moment(dinamicDate).startOf('day').format('YYYY-MM-DD HH:mm:ss');
   const finishDate = moment(dinamicDate).format('YYYY-MM-DD') + 'T24:00:00';
+
+  let responseSchedule = {
+    start_job: '',
+    end_job: '',
+    user_id: ''
+  };
 
   useEffect(() => {
     async function getUserSchedule() {
@@ -278,36 +287,33 @@ export default function ScheduleUser({
     (obj: UserData) => obj.user_id === DTOTaskSelect.user_selected
   );
 
-  const handleAlocatedUser = () => {
-    const newTaskItem = {
-      start: `${DTOTaskSelect.scheduleDay} ${DTOTaskSelect.starterHour}`,
-      end: '2023-09-05 15:00:00',
-      title: task_title,
-      type: 'job'
-    };
-
-    checkIfIsAvaliable(DTOTaskSelect.user_selected, newTaskItem.start, estimated_time);
-    addNewObjectToAgenda(DTOTaskSelect.user_selected, newTaskItem);
-  };
-
   async function checkIfIsAvaliable(user: any, date: any, time: any) {
     try {
       const response = await api.get(
         `/task/verify-agenda?user_id=${user}&date=${date}&total_time=${time}`
       );
-
-      console.log('log do response verify', response.data.result);
-
       if (response.data.result.message === 'Agenda livre') {
-        const responseSchedule = {
+        const newTaskItem = {
+          start: response.data.result.start_job,
+          end: response.data.result.end_job,
+          title: task_title,
+          type: 'new'
+        };
+
+        responseSchedule = {
           start_job: response.data.result.start_job,
           end_job: response.data.result.end_job,
           user_id: user
         };
 
-        user_alocated(responseSchedule);
+        addNewObjectToAgenda(DTOTaskSelect.user_selected, newTaskItem);
+        setCheckAvailability(true);
       } else {
-        console.log('tá lotado', response.data.result);
+        addToast({
+          type: 'warning',
+          title: 'Aviso',
+          description: response.data.result.message
+        });
       }
     } catch (error: any) {
       console.log('log do error verify', error);
@@ -419,7 +425,7 @@ export default function ScheduleUser({
               label=""
               name="minutes_task"
               onChange={handleHoursMinutes}
-              value={minutes ? minutes : ''}
+              value={minutes ? minutes : '00'}
               placeholder="00"
               type="number"
               min="0"
@@ -438,12 +444,29 @@ export default function ScheduleUser({
           <div className="selectedUser">
             Usuário selecionado: <strong>{userSelected ? userSelected[0]?.name : ''}</strong>
           </div>
-          <ButtonDefault
-            typeButton={DTOTaskSelect.user_selected ? 'primary' : 'blocked'}
-            onClick={() => handleAlocatedUser()}
-          >
-            Alocar usuário
-          </ButtonDefault>
+          {!checkAvailability && (
+            <ButtonDefault
+              typeButton={DTOTaskSelect.user_selected ? 'primary' : 'blocked'}
+              onClick={() =>
+                checkIfIsAvaliable(
+                  DTOTaskSelect.user_selected,
+                  `${DTOTaskSelect.scheduleDay} ${DTOTaskSelect.starterHour}`,
+                  estimated_time
+                )
+              }
+            >
+              Verificar disponibilidade
+            </ButtonDefault>
+          )}
+
+          {checkAvailability && (
+            <ButtonDefault
+              typeButton={DTOTaskSelect.user_selected ? 'primary' : 'blocked'}
+              onClick={() => user_alocated(responseSchedule)}
+            >
+              Alocar usuário
+            </ButtonDefault>
+          )}
         </UserFields>
       </ScheduleSelectUser>
     </ScheduleWrapper>
