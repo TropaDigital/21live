@@ -160,6 +160,8 @@ export default function CreateTasks() {
     copywriting_date_end: '',
     deadlines: [],
     user_id: '',
+    start_job: '',
+    end_job: '',
     step: ''
   });
   const [search, setSearch] = useState('');
@@ -1155,7 +1157,8 @@ export default function CreateTasks() {
         creation_date_end,
         copywriting_description,
         copywriting_date_end,
-        deadlines,
+        start_job,
+        end_job,
         step
       } = DTOForm;
 
@@ -1183,6 +1186,8 @@ export default function CreateTasks() {
           copywriting_date_end,
           copywriting_description,
           step,
+          end_job,
+          start_job,
           deadlines: [
             {
               date_end: DTOForm?.creation_date_end,
@@ -1231,6 +1236,8 @@ export default function CreateTasks() {
           creation_date_end,
           copywriting_date_end,
           copywriting_description,
+          end_job,
+          start_job,
           deadlines: [deadline],
           step
         };
@@ -1257,6 +1264,8 @@ export default function CreateTasks() {
             product_id,
             flow_id,
             user_id,
+            end_job,
+            start_job,
             description,
             creation_description,
             creation_date_end,
@@ -1286,6 +1295,8 @@ export default function CreateTasks() {
             tenant_id,
             product_id,
             user_id,
+            end_job,
+            start_job,
             flow_id,
             description,
             creation_description,
@@ -1402,7 +1413,6 @@ export default function CreateTasks() {
   };
 
   const handleSelectUserForTask = () => {
-    console.log('log to selectUser');
     setSelectUserModal(true);
   };
 
@@ -1443,6 +1453,15 @@ export default function CreateTasks() {
   const finishCreate = () => {
     setFinishModal(false);
     navigate('/tarefas');
+  };
+
+  const handleScheduleUser = (values: any) => {
+    setDTOForm((prevState: any) => ({ ...prevState, ['user_id']: values.user_id }));
+    setDTOForm((prevState: any) => ({ ...prevState, ['start_job']: values.start_job }));
+    setDTOForm((prevState: any) => ({ ...prevState, ['end_job']: values.end_job }));
+
+    setSelectUserModal(false);
+    handleOnSubmit();
   };
 
   // useEffect(() => {
@@ -1893,7 +1912,7 @@ export default function CreateTasks() {
         <ModalDefault
           isOpen={finishModal}
           onOpenChange={() => setFinishModal(false)}
-          maxWidth="400px"
+          maxWidth="800px"
         >
           <FinishModal>
             <div>
@@ -2056,7 +2075,7 @@ export default function CreateTasks() {
             estimated_time={tasksType === 'horas' ? estimatedTime : selectedProject.tempo}
             flow={DTOForm.flow_id}
             product_id={DTOForm.product_id}
-            user_alocated={() => ''}
+            user_alocated={handleScheduleUser}
             closeModal={() => setSelectUserModal(false)}
           />
         </ModalDefault>
