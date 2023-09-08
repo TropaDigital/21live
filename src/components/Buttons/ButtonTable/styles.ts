@@ -1,6 +1,6 @@
-import styled, { css } from "styled-components";
+import styled, { css } from 'styled-components';
 interface ButtonProps {
-  typeButton?: "view" | "delete" | "edit";
+  typeButton?: 'view' | 'delete' | 'edit' | 'work';
 }
 
 const buttonVariations = {
@@ -31,6 +31,15 @@ const buttonVariations = {
       color: #fff;
     }
   `,
+  work: css`
+    &:hover {
+      svg {
+        fill: #027a48;
+      }
+      background: #d1fadf;
+      color: #fff;
+    }
+  `
 };
 
 export const Container = styled.button<ButtonProps>`
@@ -49,5 +58,5 @@ export const Container = styled.button<ButtonProps>`
     fill: #344054;
   }
 
-  ${(props) => buttonVariations[props.typeButton || "view"]}
+  ${(props) => buttonVariations[props.typeButton || 'view']}
 `;
