@@ -49,6 +49,7 @@ import { TableHead } from '../../../components/Table/styles';
 // Libraries
 import moment from 'moment';
 import Pagination from '../../../components/Pagination';
+import { ModalSubtitle, ModalWrapper, SelectedTab, TabsWrapper } from './styles';
 
 interface UserProps {
   name: string;
@@ -73,6 +74,25 @@ interface OfficeProps {
   function_id: number;
 }
 
+interface WorkloadProps {
+  workday: WorkdayProps[];
+}
+
+interface WorkdayProps {
+  dayName: string;
+  work: boolean;
+  startAt: string;
+  endAt: string;
+  breaks: BreaksProps[];
+}
+
+interface BreaksProps {
+  idBreak: string | number;
+  pauseName: string;
+  startAt: string;
+  endAt: string;
+}
+
 export default function Team() {
   const { addToast } = useToast();
   const navigate = useNavigate();
@@ -94,9 +114,177 @@ export default function Team() {
     confirmPassword: ''
   } as UserProps);
 
+  const [workload, setWorkload] = useState<WorkloadProps[]>([
+    {
+      workday: [
+        {
+          dayName: 'Domingo',
+          work: false,
+          startAt: '00:00:00',
+          endAt: '00:00:00',
+          breaks: [
+            {
+              idBreak: '001',
+              pauseName: 'almoço',
+              startAt: '00:00:00',
+              endAt: '00:00:00'
+            },
+            {
+              idBreak: '002',
+              pauseName: 'descanso',
+              startAt: '00:00:00',
+              endAt: '00:00:00'
+            }
+          ]
+        },
+        {
+          dayName: 'Segunda-feira',
+          work: false,
+          startAt: '00:00:00',
+          endAt: '00:00:00',
+          breaks: [
+            {
+              idBreak: '001',
+              pauseName: 'almoço',
+              startAt: '00:00:00',
+              endAt: '00:00:00'
+            },
+            {
+              idBreak: '002',
+              pauseName: 'descanso',
+              startAt: '00:00:00',
+              endAt: '00:00:00'
+            }
+          ]
+        },
+        {
+          dayName: 'Terça-feira',
+          work: false,
+          startAt: '00:00:00',
+          endAt: '00:00:00',
+          breaks: [
+            {
+              idBreak: '001',
+              pauseName: 'almoço',
+              startAt: '00:00:00',
+              endAt: '00:00:00'
+            },
+            {
+              idBreak: '002',
+              pauseName: 'descanso',
+              startAt: '00:00:00',
+              endAt: '00:00:00'
+            }
+          ]
+        },
+        {
+          dayName: 'Quarta-feira',
+          work: false,
+          startAt: '00:00:00',
+          endAt: '00:00:00',
+          breaks: [
+            {
+              idBreak: '001',
+              pauseName: 'almoço',
+              startAt: '00:00:00',
+              endAt: '00:00:00'
+            },
+            {
+              idBreak: '002',
+              pauseName: 'descanso',
+              startAt: '00:00:00',
+              endAt: '00:00:00'
+            }
+          ]
+        },
+        {
+          dayName: 'Quinta-feira',
+          work: false,
+          startAt: '00:00:00',
+          endAt: '00:00:00',
+          breaks: [
+            {
+              idBreak: '001',
+              pauseName: 'almoço',
+              startAt: '00:00:00',
+              endAt: '00:00:00'
+            },
+            {
+              idBreak: '002',
+              pauseName: 'descanso',
+              startAt: '00:00:00',
+              endAt: '00:00:00'
+            }
+          ]
+        },
+        {
+          dayName: 'Sexta-feira',
+          work: false,
+          startAt: '00:00:00',
+          endAt: '00:00:00',
+          breaks: [
+            {
+              idBreak: '001',
+              pauseName: 'almoço',
+              startAt: '00:00:00',
+              endAt: '00:00:00'
+            },
+            {
+              idBreak: '002',
+              pauseName: 'descanso',
+              startAt: '00:00:00',
+              endAt: '00:00:00'
+            }
+          ]
+        },
+        {
+          dayName: 'Sábado',
+          work: false,
+          startAt: '00:00:00',
+          endAt: '00:00:00',
+          breaks: [
+            {
+              idBreak: '001',
+              pauseName: 'almoço',
+              startAt: '00:00:00',
+              endAt: '00:00:00'
+            },
+            {
+              idBreak: '002',
+              pauseName: 'descanso',
+              startAt: '00:00:00',
+              endAt: '00:00:00'
+            }
+          ]
+        }
+      ]
+    }
+  ]);
+
   const [modal, setModal] = useState({
     isOpen: false,
     type: 'Novo Usuário'
+  });
+
+  const [modalWorkDays, setModalWorkDays] = useState({
+    isOpen: false,
+    title: 'Carga horária',
+    user: {
+      name: '',
+      avatar: '',
+      function: '',
+      function_id: 0,
+      birthday: '',
+      email: '',
+      phone: '',
+      username: '',
+      cost_per_hour: '',
+      hiring_date: '',
+      tenant_id: 0,
+      user_id: 0,
+      password: '',
+      confirmPassword: ''
+    }
   });
 
   const [selected, setSelected] = useState(1);
@@ -111,6 +299,7 @@ export default function Team() {
     `team?page=${selected}&search=${search}&perPage=15`
   );
   const { data: dataOffice } = useFetch<OfficeProps[]>(`function`);
+  const [selectedTab, setSelectedTab] = useState<string>('Jornada');
 
   const handleOnCancel = useCallback(() => {
     setModal({
@@ -201,6 +390,31 @@ export default function Team() {
     },
     [formData, addToast, fetchData, handleOnCancel, modal]
   );
+
+  const handleEditWorkload = (userInfos: UserProps) => {
+    console.log('log do edit workload', userInfos);
+
+    setModalWorkDays({
+      isOpen: true,
+      title: 'Carga horária',
+      user: {
+        name: userInfos.name,
+        avatar: userInfos.avatar,
+        function: userInfos.function,
+        function_id: userInfos.function_id,
+        birthday: userInfos.birthday,
+        email: userInfos.email,
+        phone: userInfos.phone,
+        username: userInfos.username,
+        cost_per_hour: userInfos.cost_per_hour,
+        hiring_date: userInfos.hiring_date,
+        tenant_id: userInfos.tenant_id,
+        user_id: userInfos.user_id,
+        password: userInfos.password,
+        confirmPassword: userInfos.confirmPassword
+      }
+    });
+  };
 
   return (
     <ContainerDefault>
@@ -313,7 +527,7 @@ export default function Team() {
                   <th>Nome</th>
                   <th>E-mail</th>
                   <th>Cargo</th>
-                  <th>Tarefas na fila</th>
+                  <th>Jornada</th>
                   <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
                 </tr>
               </thead>
@@ -327,10 +541,11 @@ export default function Team() {
                     <td>{row.name}</td>
                     <td>{row.email}</td>
                     <td>{row.function}</td>
-                    <td>{row.tasks}</td>
+                    <td>40h00 !!!</td>
                     <td>
                       <div className="fieldTableClients">
                         <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
+                        <ButtonTable typeButton="work" onClick={() => handleEditWorkload(row)} />
                         <Alert
                           title="Atenção"
                           subtitle="Certeza que gostaria de deletar esta Equipe? Ao excluir a acão não poderá ser desfeita."
@@ -495,6 +710,59 @@ export default function Team() {
             </ButtonDefault>
           </FooterModal>
         </form>
+      </ModalDefault>
+
+      <ModalDefault
+        isOpen={modalWorkDays.isOpen}
+        title={modalWorkDays.title}
+        onOpenChange={() =>
+          setModalWorkDays({
+            isOpen: false,
+            title: '',
+            user: {
+              name: '',
+              avatar: '',
+              function: '',
+              function_id: 0,
+              birthday: '',
+              email: '',
+              phone: '',
+              username: '',
+              cost_per_hour: '',
+              hiring_date: '',
+              tenant_id: 0,
+              user_id: 0,
+              password: '',
+              confirmPassword: ''
+            }
+          })
+        }
+      >
+        <ModalWrapper>
+          <ModalSubtitle>
+            Defina a agenda do usuário, escolha os dias e quantidade de horas que o usuário irá
+            trabalhar
+          </ModalSubtitle>
+
+          <TabsWrapper>
+            <SelectedTab
+              onClick={(e: any) => {
+                setSelectedTab(e.target.innerText);
+              }}
+              className={selectedTab === 'Jornada' ? 'active' : ''}
+            >
+              Jornada
+            </SelectedTab>
+            <SelectedTab
+              onClick={(e: any) => {
+                setSelectedTab(e.target.innerText);
+              }}
+              className={selectedTab === 'Pausas' ? 'active' : ''}
+            >
+              Pausas
+            </SelectedTab>
+          </TabsWrapper>
+        </ModalWrapper>
       </ModalDefault>
     </ContainerDefault>
   );
