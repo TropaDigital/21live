@@ -1162,16 +1162,38 @@ export default function CreateTasks() {
         step
       } = DTOForm;
 
-      if (user_id === '') {
-        addToast({
-          title: 'Atenção',
-          description: 'Responsável é obrigatório!',
-          type: 'warning'
-        });
-        throw setErrorInput('user_id', 'Responsável inicial da tarefa é obrigatório!');
-      } else {
-        setErrorInput('user_id', undefined);
-      }
+      // if (user_id === '') {
+      //   addToast({
+      //     title: 'Atenção',
+      //     description: 'Responsável é obrigatório!',
+      //     type: 'warning'
+      //   });
+      //   throw setErrorInput('user_id', 'Responsável inicial da tarefa é obrigatório!');
+      // } else {
+      //   setErrorInput('user_id', undefined);
+      // }
+
+      // if (start_job === '') {
+      //   addToast({
+      //     title: 'Atenção',
+      //     description: 'Hora inicial da tarefa é obrigatória!!',
+      //     type: 'warning'
+      //   });
+      //   throw setErrorInput('start_job', 'Hora inicial da tarefa é obrigatória!');
+      // } else {
+      //   setErrorInput('start_job', undefined);
+      // }
+
+      // if (end_job === '') {
+      //   addToast({
+      //     title: 'Atenção',
+      //     description: 'Hora final da tarefa é obrigatória!',
+      //     type: 'warning'
+      //   });
+      //   throw setErrorInput('end_job', 'Hora final da tarefa é obrigatória!!');
+      // } else {
+      //   setErrorInput('end_job', undefined);
+      // }
 
       if (tasksType === 'livre') {
         const createNewData = {
@@ -1315,6 +1337,11 @@ export default function CreateTasks() {
         }
       }
 
+      addToast({
+        type: 'success',
+        title: 'Sucesso',
+        description: 'Tarefa criada com sucesso!'
+      });
       setFinishModal(true);
     } catch (e: any) {
       if (e.response.data.result.length !== 0) {
@@ -1461,7 +1488,15 @@ export default function CreateTasks() {
     setDTOForm((prevState: any) => ({ ...prevState, ['end_job']: values.end_job }));
 
     setSelectUserModal(false);
-    handleOnSubmit();
+    setTimeout(() => {
+      handleCreateTask();
+    }, 1000);
+  };
+
+  const handleCreateTask = () => {
+    if (DTOForm.end_job !== '' && DTOForm.start_job !== '' && DTOForm.user_id !== '') {
+      handleOnSubmit();
+    }
   };
 
   // useEffect(() => {
@@ -1912,7 +1947,7 @@ export default function CreateTasks() {
         <ModalDefault
           isOpen={finishModal}
           onOpenChange={() => setFinishModal(false)}
-          maxWidth="800px"
+          maxWidth="400px"
         >
           <FinishModal>
             <div>
@@ -1926,11 +1961,11 @@ export default function CreateTasks() {
             </FinishModalMessage>
 
             <FinishModalButtons>
-              <ButtonDefault typeButton="dark" isOutline onClick={() => setFinishModal(false)}>
+              {/* <ButtonDefault typeButton="dark" isOutline onClick={() => setFinishModal(false)}>
                 Cancelar
-              </ButtonDefault>
+              </ButtonDefault> */}
               <ButtonDefault typeButton="primary" onClick={finishCreate}>
-                Confirmar
+                Ir para tela de tarefas
               </ButtonDefault>
             </FinishModalButtons>
           </FinishModal>
