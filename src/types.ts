@@ -119,7 +119,7 @@ export interface IDocTask {
 }
 
 export interface IProductTask {
-  products_delivey_id?: number;
+  products_delivery_id?: number;
   task_id: number;
   product_id: number;
   service: string;
@@ -207,7 +207,7 @@ export interface RescueClock {
   delivery_id: string;
   pause: string;
   play: string;
-  products_delivey_id: string;
+  products_delivery_id: string;
   task_id: string;
   time_lapse: string;
   updated: string;
