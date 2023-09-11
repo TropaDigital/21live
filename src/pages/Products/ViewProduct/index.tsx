@@ -90,14 +90,8 @@ export default function ViewProductsDeliveries() {
   const [timeData, setTimeData] = useState<any>();
   const [timeLineData, setTimelineData] = useState<TimelineProps>();
   const [hideTimeLine, setHideTimeLine] = useState<boolean>(false);
-  const [selectedUser, setSelectedUser] = useState<string>('');
-  const [search, setSearch] = useState('');
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const { isLoading, debouncedCallback } = useDebouncedCallback(
-    (search: string) => setSearch(search),
-    700
-  );
-  const [dataUser, setDataUser] = useState<any[]>();
+  // const [search, setSearch] = useState('');
+  // const [dataUser, setDataUser] = useState<any[]>();
   const [selectedProduct, setSelectedProduct] = useState<any>('');
   const [elapsedTimeExist, setElapsedTimeExist] = useState<any>();
 
@@ -150,20 +144,20 @@ export default function ViewProductsDeliveries() {
     getClockIsOpen();
   }, []);
 
-  useEffect(() => {
-    async function getUserData() {
-      try {
-        const response = await api.get(`task/next-user/${dataTask?.task_id}?search=${search}`);
-        setDataUser(response.data.result);
-      } catch (error: any) {
-        console.log('log error getting user', error);
-      }
-    }
+  // useEffect(() => {
+  //   async function getUserData() {
+  //     try {
+  //       const response = await api.get(`task/next-user/${dataTask?.task_id}?search=${search}`);
+  //       setDataUser(response.data.result);
+  //     } catch (error: any) {
+  //       console.log('log error getting user', error);
+  //     }
+  //   }
 
-    if (dataTask?.task_id !== undefined) {
-      getUserData();
-    }
-  }, [dataTask, search]);
+  //   if (dataTask?.task_id !== undefined) {
+  //     getUserData();
+  //   }
+  // }, [dataTask, search]);
 
   useEffect(() => {
     setDataTask(location.state.task);
@@ -267,17 +261,9 @@ export default function ViewProductsDeliveries() {
     setSelectedProduct(taskCompleteInfo);
   };
 
-  const handleAssignTask = () => {
+  const handleAssignTask = (values: any) => {
     setModalSendToUser(false);
-    handleSendToNextUser();
-  };
-
-  const handleCheckBox = (id: string) => {
-    if (selectedUser === id) {
-      setSelectedUser('');
-    } else {
-      setSelectedUser(id);
-    }
+    handleSendToNextUser(values.user_id);
   };
 
   const handleFinishDelivery = async () => {
@@ -285,7 +271,6 @@ export default function ViewProductsDeliveries() {
       setLoading(true);
       const response = await api.put(`/task/delivery-conclude/${deliveryId[0].delivery_id}`);
       if (response.data.result === 1) {
-        localStorage.removeItem('elapsedTime');
         addToast({
           title: 'Sucesso',
           type: 'success',
@@ -307,9 +292,9 @@ export default function ViewProductsDeliveries() {
     try {
       setLoading(true);
       const response = await api.post(
-        `/task/product-conclude/${selectedProduct?.productInfo.products_delivey_id}`
+        `/task/product-conclude/${selectedProduct?.productInfo.products_delivery_id}`
       );
-      localStorage.removeItem('elapsedTime');
+
       console.log('log do response', response);
       setLoading(false);
     } catch (error: any) {
@@ -318,10 +303,10 @@ export default function ViewProductsDeliveries() {
     }
   }
 
-  const handleSendToNextUser = async () => {
+  const handleSendToNextUser = async (user_id: any) => {
     try {
       const next_user = {
-        next_user: selectedUser
+        next_user: user_id
       };
 
       const response = await api.put(
@@ -331,7 +316,6 @@ export default function ViewProductsDeliveries() {
       console.log('log do response', response.data.result);
 
       if (response.data.result === 1) {
-        localStorage.removeItem('elapsedTime');
         navigate('/minhas-tarefas');
       }
     } catch (error) {
@@ -364,8 +348,6 @@ export default function ViewProductsDeliveries() {
       document.removeEventListener('mousedown', checkIfClickedOutside);
     };
   }, [hideRightCard]);
-
-  console.log('log do location task', location.state.task);
 
   return (
     <ContainerDefault>
@@ -443,7 +425,7 @@ export default function ViewProductsDeliveries() {
         )}
 
         {selectedProduct !== '' && (
-          <WorkingProduct taskId={selectedProduct?.productInfo?.products_delivey_id} />
+          <WorkingProduct taskId={selectedProduct?.productInfo?.products_delivery_id} />
         )}
 
         <RightInfosCard hideCard={hideRightCard} ref={openRightRef}>
@@ -552,7 +534,7 @@ export default function ViewProductsDeliveries() {
           estimated_time={location.state.task.totalTime}
           flow={location.state.task.flow_id}
           product_id={location.state.task.product_id}
-          user_alocated={() => ''}
+          user_alocated={handleAssignTask}
           closeModal={() => setModalSendToUser(false)}
         />
       </ModalDefault>
