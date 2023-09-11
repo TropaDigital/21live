@@ -72,6 +72,7 @@ interface TaskExchangeProps {
   estimated_time: string;
   flow: string;
   product_id: string;
+  step?: string | number | any;
   user_alocated: (value: any) => void;
   closeModal: () => void;
 }
@@ -89,6 +90,7 @@ export default function ScheduleUser({
   estimated_time,
   flow,
   product_id,
+  step,
   user_alocated,
   closeModal
 }: TaskExchangeProps) {
@@ -119,7 +121,7 @@ export default function ScheduleUser({
       try {
         setLoading(true);
         const response = await api.get(
-          `/task/next?flow=${flow}&product_id=${product_id}&step=1&date=${moment(
+          `/task/next?flow=${flow}&product_id=${product_id}&step=${step ? step : 1}&date=${moment(
             dinamicDate
           ).format('YYYY-MM-DD')}`
         );
@@ -152,12 +154,6 @@ export default function ScheduleUser({
       });
     });
   };
-
-  // const { data: dataUserSchedule } = useFetch<UserData[]>(
-  //   `/task/next?flow=${flow}&product_id=${product_id}&step=1&date=${moment(dinamicDate).format(
-  //     'YYYY-MM-DD'
-  //   )}`
-  // );
 
   // const dataTest: UserData[] = [
   //   {

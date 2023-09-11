@@ -60,7 +60,7 @@ export function useApp({ starterDate, finishDate, data, taskDate }: AppDataProps
   function handleUserTasks(tasksArray: any) {
     const channelUuid = tasksArray.user_id;
 
-    return tasksArray?.agenda.map((item: any, index: number) => {
+    return tasksArray.agenda.map((item: any, index: number) => {
       const isPause = item.type;
       const id = channelUuid + index;
       const description = item.title || 'Pausa';
