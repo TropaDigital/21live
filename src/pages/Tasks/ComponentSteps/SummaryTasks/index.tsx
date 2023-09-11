@@ -73,25 +73,25 @@ export default function SummaryTasks({
   const { user } = useAuth();
   const [deliveryArrayHours, setDeliveryArrayHours] = useState<any>('');
   const [totalArrayHours, setTotalArrayHours] = useState<any>('');
-  const [flowsManagers, setFlowManagers] = useState<FlowRole[]>([]);
+  // const [flowsManagers, setFlowManagers] = useState<FlowRole[]>([]);
 
-  useEffect(() => {
-    // console.log('log selected products on summary', selectedProducts);
-    // console.log('log tasks infos on summary', taskSummary);
-    // console.log('log tasks infos on project', projectInfos);
-    // console.log('log extra infos for summary tasks', summaryExtrainfos);
+  // useEffect(() => {
+  //   // console.log('log selected products on summary', selectedProducts);
+  //   // console.log('log tasks infos on summary', taskSummary);
+  //   // console.log('log tasks infos on project', projectInfos);
+  //   // console.log('log extra infos for summary tasks', summaryExtrainfos);
 
-    const handleGetFlowTask = async (id: any) => {
-      try {
-        const responseFlow = await api.get(`/task-function?flow=${id}`);
-        setFlowManagers(responseFlow.data.result);
-      } catch (error: any) {
-        console.log('log do error', error);
-      }
-    };
+  //   const handleGetFlowTask = async (id: any) => {
+  //     try {
+  //       const responseFlow = await api.get(`/task-function?flow=${id}`);
+  //       setFlowManagers(responseFlow.data.result);
+  //     } catch (error: any) {
+  //       console.log('log do error', error);
+  //     }
+  //   };
 
-    handleGetFlowTask(taskSummary.flow_id);
-  }, [taskSummary, projectInfos, summaryExtrainfos, selectedProducts]);
+  //   handleGetFlowTask(taskSummary.flow_id);
+  // }, [taskSummary, projectInfos, summaryExtrainfos, selectedProducts]);
 
   function setTotalHours() {
     if (updateTask) {
@@ -416,7 +416,7 @@ export default function SummaryTasks({
 
       <div>
         {/* Select responsável flow */}
-        {flowsManagers?.length > 0 && (
+        {/* {flowsManagers?.length > 0 && (
           <FlexLine>
             <SelectDefault
               label="Selecione o responsável inicial da tarefa"
@@ -432,7 +432,7 @@ export default function SummaryTasks({
               ))}
             </SelectDefault>
           </FlexLine>
-        )}
+        )} */}
         <SummaryTasksAbout>
           <div className="title">Sobre a tarefa</div>
           {taskType !== 'horas' && (
