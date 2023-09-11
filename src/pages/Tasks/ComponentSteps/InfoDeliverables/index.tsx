@@ -855,13 +855,13 @@ export default function InfoDeliveries({
                                 handleTaskType(
                                   index,
                                   indexProduct,
-                                  product.products_delivey_id,
+                                  product.products_delivery_id,
                                   e.target.value
                                 )
                               }
                               placeHolder="Selecione..."
                               error={
-                                errorCategory.includes(product.products_delivey_id)
+                                errorCategory.includes(product.products_delivery_id)
                                   ? 'Campo vazio'
                                   : ''
                               }
