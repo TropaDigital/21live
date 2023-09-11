@@ -349,6 +349,8 @@ export default function ViewProductsDeliveries() {
     };
   }, [hideRightCard]);
 
+  console.log('log do taks infos', location.state);
+
   return (
     <ContainerDefault>
       <DeliveryWrapper>
@@ -534,6 +536,7 @@ export default function ViewProductsDeliveries() {
           estimated_time={location.state.task.totalTime}
           flow={location.state.task.flow_id}
           product_id={location.state.task.product_id}
+          step={Number(location.state.task.step) + 1}
           user_alocated={handleAssignTask}
           closeModal={() => setModalSendToUser(false)}
         />
