@@ -1947,7 +1947,7 @@ export default function CreateTasks() {
         <ModalDefault
           isOpen={finishModal}
           onOpenChange={() => setFinishModal(false)}
-          maxWidth="400px"
+          maxWidth="500px"
         >
           <FinishModal>
             <div>
