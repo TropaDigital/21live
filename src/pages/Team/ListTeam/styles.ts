@@ -71,3 +71,84 @@ export const SelectedTab = styled.button`
     border-radius: 100%;
   }
 `;
+
+export const CardsWrapper = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+export const CardWorkPause = styled.div`
+  display: flex;
+  padding: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  align-self: stretch;
+
+  border-radius: 8px;
+  border: 1px solid var(--gray-300);
+  background: var(--background-primary);
+
+  &.selected {
+    border-color: var(--primary);
+  }
+`;
+
+export const CardTitleCheck = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+
+  color: var(--gray-800);
+  font-size: var(--text-small-md);
+  font-weight: var(--weight-semibold);
+  text-transform: capitalize;
+
+  .trash-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+`;
+
+export const CardHours = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  width: 100%;
+`;
+
+export const DivHour = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  width: 100%;
+
+  color: var(--gray-700);
+  font-size: var(--text-small-sm);
+  font-weight: var(--weight-medium);
+
+  .react-time-picker {
+    width: 100%;
+    .react-time-picker__wrapper {
+      display: flex;
+      flex-grow: 1;
+      flex-shrink: 0;
+      border: 1px solid var(--gray-300);
+      border-radius: 4px;
+    }
+
+    .react-time-picker__inputGroup {
+      min-width: calc((4px * 3) + 0.54em * 6 + 0.217em * 2);
+      flex-grow: 1;
+      padding: 10px 14px;
+      box-sizing: content-box;
+    }
+  }
+`;

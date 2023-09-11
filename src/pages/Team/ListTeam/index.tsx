@@ -1,6 +1,6 @@
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Icons
@@ -13,6 +13,7 @@ import {
   BiPhoneCall,
   BiPlus,
   BiSearchAlt,
+  BiTrash,
   BiUser
 } from 'react-icons/bi';
 
@@ -45,54 +46,59 @@ import {
 } from '../../../components/UiElements/styles';
 import { Table } from '../../../components/Table';
 import { TableHead } from '../../../components/Table/styles';
+import Pagination from '../../../components/Pagination';
+import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
 
 // Libraries
 import moment from 'moment';
-import Pagination from '../../../components/Pagination';
-import { ModalSubtitle, ModalWrapper, SelectedTab, TabsWrapper } from './styles';
+import TimePicker from 'react-time-picker';
+import 'react-time-picker/dist/TimePicker.css';
+import 'react-clock/dist/Clock.css';
+
+// Styles
+import {
+  CardHours,
+  CardTitleCheck,
+  CardWorkPause,
+  CardsWrapper,
+  DivHour,
+  ModalSubtitle,
+  ModalWrapper,
+  SelectedTab,
+  TabsWrapper
+} from './styles';
+import { ModalButtons } from '../../Products/ViewProduct/styles';
+import { IconTrash } from '../../../assets/icons';
 
 interface UserProps {
-  name: string;
   avatar: string;
+  birthday: string;
+  cost_per_hour: string;
+  email: string;
+  friday: any;
   function: string;
   function_id: number;
-  birthday: string;
-  email: string;
-  phone: string;
-  username: string;
-  cost_per_hour: string;
   hiring_date: string;
+  monday: any;
+  name: string;
+  phone: string;
+  saturday: any;
+  sunday: any;
+  tasks: number;
   tenant_id: number;
+  thursday: any;
+  tuesday: any;
   user_id: number;
+  username: string;
+  wednesday: any;
   password: string;
   confirmPassword: string;
-  tasks: number;
 }
 
 interface OfficeProps {
   function: string;
   function_id: number;
 }
-
-interface WorkloadProps {
-  workday: WorkdayProps[];
-}
-
-interface WorkdayProps {
-  dayName: string;
-  work: boolean;
-  startAt: string;
-  endAt: string;
-  breaks: BreaksProps[];
-}
-
-interface BreaksProps {
-  idBreak: string | number;
-  pauseName: string;
-  startAt: string;
-  endAt: string;
-}
-
 export default function Team() {
   const { addToast } = useToast();
   const navigate = useNavigate();
@@ -111,180 +117,27 @@ export default function Team() {
     tenant_id: 0,
     user_id: 0,
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    friday: '',
+    monday: '',
+    saturday: '',
+    sunday: '',
+    thursday: '',
+    tuesday: '',
+    wednesday: ''
   } as UserProps);
-
-  const [workload, setWorkload] = useState<WorkloadProps[]>([
-    {
-      workday: [
-        {
-          dayName: 'Domingo',
-          work: false,
-          startAt: '00:00:00',
-          endAt: '00:00:00',
-          breaks: [
-            {
-              idBreak: '001',
-              pauseName: 'almoço',
-              startAt: '00:00:00',
-              endAt: '00:00:00'
-            },
-            {
-              idBreak: '002',
-              pauseName: 'descanso',
-              startAt: '00:00:00',
-              endAt: '00:00:00'
-            }
-          ]
-        },
-        {
-          dayName: 'Segunda-feira',
-          work: false,
-          startAt: '00:00:00',
-          endAt: '00:00:00',
-          breaks: [
-            {
-              idBreak: '001',
-              pauseName: 'almoço',
-              startAt: '00:00:00',
-              endAt: '00:00:00'
-            },
-            {
-              idBreak: '002',
-              pauseName: 'descanso',
-              startAt: '00:00:00',
-              endAt: '00:00:00'
-            }
-          ]
-        },
-        {
-          dayName: 'Terça-feira',
-          work: false,
-          startAt: '00:00:00',
-          endAt: '00:00:00',
-          breaks: [
-            {
-              idBreak: '001',
-              pauseName: 'almoço',
-              startAt: '00:00:00',
-              endAt: '00:00:00'
-            },
-            {
-              idBreak: '002',
-              pauseName: 'descanso',
-              startAt: '00:00:00',
-              endAt: '00:00:00'
-            }
-          ]
-        },
-        {
-          dayName: 'Quarta-feira',
-          work: false,
-          startAt: '00:00:00',
-          endAt: '00:00:00',
-          breaks: [
-            {
-              idBreak: '001',
-              pauseName: 'almoço',
-              startAt: '00:00:00',
-              endAt: '00:00:00'
-            },
-            {
-              idBreak: '002',
-              pauseName: 'descanso',
-              startAt: '00:00:00',
-              endAt: '00:00:00'
-            }
-          ]
-        },
-        {
-          dayName: 'Quinta-feira',
-          work: false,
-          startAt: '00:00:00',
-          endAt: '00:00:00',
-          breaks: [
-            {
-              idBreak: '001',
-              pauseName: 'almoço',
-              startAt: '00:00:00',
-              endAt: '00:00:00'
-            },
-            {
-              idBreak: '002',
-              pauseName: 'descanso',
-              startAt: '00:00:00',
-              endAt: '00:00:00'
-            }
-          ]
-        },
-        {
-          dayName: 'Sexta-feira',
-          work: false,
-          startAt: '00:00:00',
-          endAt: '00:00:00',
-          breaks: [
-            {
-              idBreak: '001',
-              pauseName: 'almoço',
-              startAt: '00:00:00',
-              endAt: '00:00:00'
-            },
-            {
-              idBreak: '002',
-              pauseName: 'descanso',
-              startAt: '00:00:00',
-              endAt: '00:00:00'
-            }
-          ]
-        },
-        {
-          dayName: 'Sábado',
-          work: false,
-          startAt: '00:00:00',
-          endAt: '00:00:00',
-          breaks: [
-            {
-              idBreak: '001',
-              pauseName: 'almoço',
-              startAt: '00:00:00',
-              endAt: '00:00:00'
-            },
-            {
-              idBreak: '002',
-              pauseName: 'descanso',
-              startAt: '00:00:00',
-              endAt: '00:00:00'
-            }
-          ]
-        }
-      ]
-    }
-  ]);
 
   const [modal, setModal] = useState({
     isOpen: false,
     type: 'Novo Usuário'
   });
 
+  const weekdays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+
   const [modalWorkDays, setModalWorkDays] = useState({
     isOpen: false,
     title: 'Carga horária',
-    user: {
-      name: '',
-      avatar: '',
-      function: '',
-      function_id: 0,
-      birthday: '',
-      email: '',
-      phone: '',
-      username: '',
-      cost_per_hour: '',
-      hiring_date: '',
-      tenant_id: 0,
-      user_id: 0,
-      password: '',
-      confirmPassword: ''
-    }
+    user: ''
   });
 
   const [selected, setSelected] = useState(1);
@@ -300,6 +153,7 @@ export default function Team() {
   );
   const { data: dataOffice } = useFetch<OfficeProps[]>(`function`);
   const [selectedTab, setSelectedTab] = useState<string>('Jornada');
+  const [workDays, setWorkDays] = useState<any[]>([]);
 
   const handleOnCancel = useCallback(() => {
     setModal({
@@ -391,30 +245,48 @@ export default function Team() {
     [formData, addToast, fetchData, handleOnCancel, modal]
   );
 
-  const handleEditWorkload = (userInfos: UserProps) => {
-    console.log('log do edit workload', userInfos);
+  const handleEditWorkload = (userInfos: any) => {
+    const workdaysArray: any = [];
+
+    weekdays.forEach((day) => {
+      const workingHours = userInfos[day];
+
+      if (workingHours) {
+        workdaysArray.push({
+          day: day.charAt(0).toUpperCase() + day.slice(1),
+          start_work: workingHours.start_work,
+          end_work: workingHours.end_work
+        });
+      }
+    });
+
+    setWorkDays(workdaysArray);
 
     setModalWorkDays({
       isOpen: true,
       title: 'Carga horária',
-      user: {
-        name: userInfos.name,
-        avatar: userInfos.avatar,
-        function: userInfos.function,
-        function_id: userInfos.function_id,
-        birthday: userInfos.birthday,
-        email: userInfos.email,
-        phone: userInfos.phone,
-        username: userInfos.username,
-        cost_per_hour: userInfos.cost_per_hour,
-        hiring_date: userInfos.hiring_date,
-        tenant_id: userInfos.tenant_id,
-        user_id: userInfos.user_id,
-        password: userInfos.password,
-        confirmPassword: userInfos.confirmPassword
-      }
+      user: userInfos.user_id
     });
   };
+
+  // const handleCheckDay = (dayIndex: any) => {
+  //   const updateCheckedDay = { ...workload };
+
+  //   updateCheckedDay.workday[dayIndex].work = !updateCheckedDay.workday[dayIndex].work;
+
+  //   setWorkload(updateCheckedDay);
+  // };
+
+  // const handleTimeChange = (dayIndex: any, field: any, newValue: any) => {
+  //   const updatedWorkload: any = { ...workload };
+
+  //   updatedWorkload.workday[dayIndex][field] = newValue;
+
+  //   setWorkload(updatedWorkload);
+  // };
+  useEffect(() => {
+    console.log('log do workDays', workDays);
+  }, [workDays]);
 
   return (
     <ContainerDefault>
@@ -471,48 +343,6 @@ export default function Team() {
           </FieldGroupFormDefault>
         </ContentDefault>
 
-        {/* <ContainerGroupTable style={{ marginTop: '1rem' }}>
-          <ScrollAreas>
-            <TableDefault title="Equipe">
-              <thead>
-                <tr style={{ whiteSpace: 'nowrap' }}>
-                  <th>Avatar</th>
-                  <th>Nome</th>
-                  <th>E-mail</th>
-                  <th>Cargo</th>
-                  <th>Tarefas na fila</th>
-                  <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {data?.map((row) => (
-                  <tr key={row.user_id}>
-                    <td style={{ padding: '1rem' }}>
-                      <AvatarDefault url={row.avatar} name={row.name} />
-                    </td>
-                    <td>{row.name}</td>
-                    <td>{row.email}</td>
-                    <td>{row.function}</td>
-                    <td>{''}</td>
-                    <td>
-                      <div className="fieldTableClients">
-                        <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
-                        <Alert
-                          title="Atenção"
-                          subtitle="Certeza que gostaria de deletar esta Equipe? Ao excluir a acão não poderá ser desfeita."
-                          confirmButton={() => handleOnDelete(row.function_id)}
-                        >
-                          <ButtonTable typeButton="delete" />
-                        </Alert>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </TableDefault>
-          </ScrollAreas>
-        </ContainerGroupTable> */}
         <div style={{ margin: '-24px -30px' }}>
           <Table>
             <TableHead>
@@ -719,22 +549,7 @@ export default function Team() {
           setModalWorkDays({
             isOpen: false,
             title: '',
-            user: {
-              name: '',
-              avatar: '',
-              function: '',
-              function_id: 0,
-              birthday: '',
-              email: '',
-              phone: '',
-              username: '',
-              cost_per_hour: '',
-              hiring_date: '',
-              tenant_id: 0,
-              user_id: 0,
-              password: '',
-              confirmPassword: ''
-            }
+            user: ''
           })
         }
       >
@@ -762,6 +577,116 @@ export default function Team() {
               Pausas
             </SelectedTab>
           </TabsWrapper>
+
+          <CardsWrapper>
+            {selectedTab === 'Jornada' && (
+              <CardWorkPause className="selected">
+                <CardTitleCheck>
+                  <CheckboxDefault
+                    label=""
+                    name="user_selected"
+                    onChange={() => ''}
+                    checked={false}
+                  />
+                </CardTitleCheck>
+
+                <CardHours>
+                  <DivHour>
+                    Início
+                    <TimePicker
+                      onChange={() => ''}
+                      value={'00:00:00'}
+                      clearIcon={null}
+                      clockIcon={null}
+                      locale="pt-BR"
+                      disableClock={true}
+                      maxDetail="second"
+                      disabled={false}
+                    />
+                  </DivHour>
+
+                  <DivHour>
+                    Fim
+                    <TimePicker
+                      onChange={() => ''}
+                      value={'00:00:00'}
+                      clearIcon={null}
+                      clockIcon={null}
+                      locale="pt-BR"
+                      disableClock={true}
+                      maxDetail="second"
+                      disabled={false}
+                    />
+                  </DivHour>
+                </CardHours>
+              </CardWorkPause>
+            )}
+
+            {/* {selectedTab === 'Pausas' && (
+              <>
+                <SelectDefault
+                  label="Dia"
+                  name="tenant_id"
+                  placeHolder="Selecione"
+                  onChange={(e) => setSelectedBreakDay(e.target.value)}
+                  value={selectedBreakDay}
+                  alert="Para qual dia deseja criar as pausas?"
+                >
+                  {workDays?.map((row, index: number) => (
+                    <option key={index} value={row.dayName}>
+                      {row.dayName}
+                    </option>
+                  ))}
+                </SelectDefault>
+
+                <CardWorkPause key={row.idBreak}>
+                  <CardTitleCheck>
+                    {row.pauseName}
+                    <div className="trash-icon">
+                      <BiTrash />
+                    </div>
+                  </CardTitleCheck>
+
+                  <CardHours>
+                    <DivHour>
+                      Início
+                      <TimePicker
+                        onChange={(value: any) => handleTimeChange(index, 'startAt', value)}
+                        value={row.startAt}
+                        clearIcon={null}
+                        clockIcon={null}
+                        locale="pt-BR"
+                        disableClock={true}
+                        maxDetail="second"
+                      />
+                    </DivHour>
+
+                    <DivHour>
+                      Fim
+                      <TimePicker
+                        onChange={(value: any) => handleTimeChange(index, 'endAt', value)}
+                        value={row.endAt}
+                        clearIcon={null}
+                        clockIcon={null}
+                        locale="pt-BR"
+                        disableClock={true}
+                        maxDetail="second"
+                      />
+                    </DivHour>
+                  </CardHours>
+                </CardWorkPause>
+              </>
+            )} */}
+          </CardsWrapper>
+
+          {selectedTab === 'Jornada' && (
+            <ModalButtons>
+              <ButtonDefault typeButton="lightWhite" isOutline>
+                Cancelar
+              </ButtonDefault>
+              <ButtonDefault typeButton="primary">Salvar</ButtonDefault>
+            </ModalButtons>
+          )}
         </ModalWrapper>
       </ModalDefault>
     </ContainerDefault>
