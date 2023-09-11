@@ -98,22 +98,21 @@ export default function ScheduleUser({
     user_selected: '',
     starterHour: '00:00:00'
   });
-  const [hours, setHours] = useState<number | null>();
+  const [hours, setHours] = useState<string>('00');
   const [minutes, setMinutes] = useState<string | number | null>('00');
   const [dayCounter, setDayCounter] = useState<number>(0);
   const [dataUserSchedule, setDataUserSchedule] = useState<UserData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [checkAvailability, setCheckAvailability] = useState<boolean>(false);
+  const [responseScheduleInfos, setResponseScheduleInfos] = useState({
+    start_job: '',
+    end_job: '',
+    user_id: ''
+  });
 
   const dinamicDate = moment().startOf('day').add(dayCounter, 'days').format('YYYY-MM-DD HH:mm:ss');
   const starterDate = moment(dinamicDate).startOf('day').format('YYYY-MM-DD HH:mm:ss');
   const finishDate = moment(dinamicDate).format('YYYY-MM-DD') + 'T24:00:00';
-
-  let responseSchedule = {
-    start_job: '',
-    end_job: '',
-    user_id: ''
-  };
 
   useEffect(() => {
     async function getUserSchedule() {
@@ -261,17 +260,17 @@ export default function ScheduleUser({
     const { name, value } = event.target;
     if (name === 'hours_task') {
       if (Number(value) > 23) {
-        setHours(23);
+        setHours('23');
       } else {
-        setHours(Number(value));
+        setHours(String(value));
       }
     }
 
     if (name === 'minutes_task') {
       if (Number(value) > 59) {
-        setMinutes(59);
+        setMinutes('59');
       } else {
-        setMinutes(Number(value));
+        setMinutes(String(value));
       }
     }
   }
@@ -300,11 +299,11 @@ export default function ScheduleUser({
           type: 'new'
         };
 
-        responseSchedule = {
+        setResponseScheduleInfos({
           start_job: response.data.result.start_job,
           end_job: response.data.result.end_job,
           user_id: user
-        };
+        });
 
         addNewObjectToAgenda(DTOTaskSelect.user_selected, newTaskItem);
         setCheckAvailability(true);
@@ -332,6 +331,10 @@ export default function ScheduleUser({
   // useEffect(() => {
   //   console.log('log do DTO', DTOTaskSelect);
   // }, [DTOTaskSelect]);
+
+  // useEffect(() => {
+  //   console.log('log do response', responseScheduleInfos);
+  // }, [responseScheduleInfos]);
 
   return (
     <ScheduleWrapper>
@@ -434,10 +437,14 @@ export default function ScheduleUser({
               required
             />
           </UserFields>
-          <EndTaskDate>
-            <div className="date-title">Data / Hora final</div>
-            <div className="end-date">08/09/2023 - 09:00</div>
-          </EndTaskDate>
+          {responseScheduleInfos.end_job !== '' && (
+            <EndTaskDate>
+              <div className="date-title">Data / Hora final</div>
+              <div className="end-date">
+                {moment(responseScheduleInfos.end_job).format('DD/MM/YYYY - HH:mm')}
+              </div>
+            </EndTaskDate>
+          )}
         </div>
 
         <UserFields>
@@ -462,7 +469,7 @@ export default function ScheduleUser({
           {checkAvailability && (
             <ButtonDefault
               typeButton={DTOTaskSelect.user_selected ? 'primary' : 'blocked'}
-              onClick={() => user_alocated(responseSchedule)}
+              onClick={() => user_alocated(responseScheduleInfos)}
             >
               Alocar usuário
             </ButtonDefault>
