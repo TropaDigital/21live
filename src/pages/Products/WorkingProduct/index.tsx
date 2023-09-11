@@ -91,7 +91,7 @@ export default function WorkingProduct({ taskId }: WorkingProductProps) {
   const [dataComments, setDataComments] = useState<ChatMessages[]>([]);
   // const typeOfPlay = location?.state?.playType;
 
-  // const productId = location.state?.productInfo?.products_delivey_id;
+  // const productId = location.state?.productInfo?.products_delivery_id;
   // const { data } = useFetch<WorkingProductProps>(`/${location.state.id}`);
 
   async function getComments() {
@@ -142,7 +142,7 @@ export default function WorkingProduct({ taskId }: WorkingProductProps) {
 
   //   const taskClock = {
   //     task_id: location.state.taskInfos.task_id,
-  //     products_delivey_id: productId
+  //     products_delivery_id: productId
   //   };
 
   //   try {
