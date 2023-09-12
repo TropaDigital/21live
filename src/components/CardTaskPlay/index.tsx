@@ -18,6 +18,7 @@ interface CardTaskPlayProps {
   isPlayingTime: () => void;
   taskIsFinished?: boolean;
   elapsedTimeBack?: any;
+  stopThePlay: any;
 }
 
 export default function CardTaskPlay({
@@ -25,19 +26,21 @@ export default function CardTaskPlay({
   cardTitle,
   elapsedTimeBack,
   taskIsFinished,
+  stopThePlay,
   isPlayingTime
 }: CardTaskPlayProps) {
   const [startTime, setStartTime] = useState<number | null>(null);
   const [elapsedTime, setElapsedTime] = useState<number>(0);
-  console.log('log do elapsedtime no TASKPLAY', elapsedTimeBack);
 
   useEffect(() => {
-    if (elapsedTimeBack !== 0 && elapsedTimeBack !== undefined) {
+    if (elapsedTimeBack !== 0 && elapsedTimeBack !== undefined && stopThePlay) {
       setElapsedTime(elapsedTimeBack);
       setStartTime(Date.now());
       // isPlayingTime(true);
+    } else {
+      setElapsedTime(elapsedTimeBack);
     }
-  }, [elapsedTimeBack]);
+  }, [elapsedTimeBack, stopThePlay]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -55,7 +58,7 @@ export default function CardTaskPlay({
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
-  }, [startTime, elapsedTime]);
+  }, [startTime, elapsedTime, taskIsFinished]);
 
   const handleStartStop = () => {
     if (startTime === null) {
