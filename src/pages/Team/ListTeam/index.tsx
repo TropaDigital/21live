@@ -68,7 +68,6 @@ import {
   TabsWrapper
 } from './styles';
 import { ModalButtons } from '../../Products/ViewProduct/styles';
-import { IconTrash } from '../../../assets/icons';
 
 interface UserProps {
   avatar: string;
@@ -99,6 +98,13 @@ interface OfficeProps {
   function: string;
   function_id: number;
 }
+
+interface BreaksProps {
+  name: string;
+  end_pause: any;
+  start_pause: any;
+}
+
 export default function Team() {
   const { addToast } = useToast();
   const navigate = useNavigate();
@@ -154,6 +160,8 @@ export default function Team() {
   const { data: dataOffice } = useFetch<OfficeProps[]>(`function`);
   const [selectedTab, setSelectedTab] = useState<string>('Jornada');
   const [workDays, setWorkDays] = useState<any[]>([]);
+  const [selectedBreaks, setSelectedBreaks] = useState<any[]>([]);
+  const [selectedBreakDay, setSelectedBreakDay] = useState<string>('');
 
   const handleOnCancel = useCallback(() => {
     setModal({
@@ -251,13 +259,12 @@ export default function Team() {
     weekdays.forEach((day) => {
       const workingHours = userInfos[day];
 
-      if (workingHours) {
-        workdaysArray.push({
-          day: day.charAt(0).toUpperCase() + day.slice(1),
-          start_work: workingHours.start_work,
-          end_work: workingHours.end_work
-        });
-      }
+      workdaysArray.push({
+        day: day.charAt(0).toUpperCase() + day.slice(1),
+        start_work: workingHours.start_work,
+        end_work: workingHours.end_work,
+        pause: workingHours.pause
+      });
     });
 
     setWorkDays(workdaysArray);
@@ -269,24 +276,102 @@ export default function Team() {
     });
   };
 
-  // const handleCheckDay = (dayIndex: any) => {
-  //   const updateCheckedDay = { ...workload };
+  const handleCheckDay = (dayIndex: number, value: any) => {
+    const updatedWorkload: any = { ...workDays };
 
-  //   updateCheckedDay.workday[dayIndex].work = !updateCheckedDay.workday[dayIndex].work;
+    if (value.start_work === undefined) {
+      const newValue = {
+        day: value.day,
+        start_work: '00:00:00',
+        end_work: '00:00:00',
+        pause: value.pause
+      };
+      updatedWorkload[dayIndex] = newValue;
+      setWorkDays(updatedWorkload);
+    } else {
+      const newValue = {
+        day: value.day,
+        start_work: undefined,
+        end_work: undefined,
+        pause: value.pause
+      };
+      updatedWorkload[dayIndex] = newValue;
+      setWorkDays(updatedWorkload);
+    }
+  };
 
-  //   setWorkload(updateCheckedDay);
-  // };
+  const handleChangeHours = (dayIndex: number, type: string, value: any) => {
+    console.log('log do change Hours', dayIndex, type, value);
+    const updatedWorkload: any = { ...workDays };
 
-  // const handleTimeChange = (dayIndex: any, field: any, newValue: any) => {
-  //   const updatedWorkload: any = { ...workload };
+    if (type === 'start') {
+      const newValue = {
+        day: workDays[dayIndex].day,
+        start_work: value,
+        end_work: workDays[dayIndex].end_work,
+        pause: workDays[dayIndex].pause
+      };
+      updatedWorkload[dayIndex] = newValue;
+      setWorkDays(updatedWorkload);
+    }
 
-  //   updatedWorkload.workday[dayIndex][field] = newValue;
+    if (type === 'end') {
+      const newValue = {
+        day: workDays[dayIndex].day,
+        start_work: workDays[dayIndex].start_work,
+        end_work: value,
+        pause: workDays[dayIndex].pause
+      };
+      updatedWorkload[dayIndex] = newValue;
+      setWorkDays(updatedWorkload);
+    }
+  };
 
-  //   setWorkload(updatedWorkload);
-  // };
+  const handleSelectedBreakDay = (dayIndex: any) => {
+    setSelectedBreakDay(dayIndex);
+    const breaks: any[] = [];
+
+    workDays[dayIndex]?.pause.forEach((obj: any) => {
+      breaks.push({
+        name: '',
+        end_pause: obj.end_pause,
+        start_pause: obj.start_pause
+      });
+    });
+
+    setSelectedBreaks(breaks);
+  };
+
+  const addNewBreak = () => {
+    const newBreak = {
+      name: '',
+      end_pause: '00:00:00',
+      start_pause: '00:00:00'
+    };
+
+    setSelectedBreaks((selectedBreaks) => [...selectedBreaks, newBreak]);
+  };
+
+  const deleteBreak = (breakId: any) => {
+    setSelectedBreaks((prevState) => {
+      return prevState.filter((_, i) => i !== breakId);
+    });
+  };
+
+  const handleTimeChange = (dayIndex: number, field: string, value: any) => {
+    // setSelectedBreaks(prevState => prevState.map(obj => {
+    //   if (obj[dayIndex])
+    // }))
+    // const updatedBreaks = { ...selectedBreaks };
+    // const newValue = `${value.split(':')[0]}:${value.split(':')[1]}`;
+    // updatedBreaks[dayIndex][field] = newValue;
+    // console.log('log do update Breaks', updatedBreaks);
+    // setSelectedBreaks(updatedBreaks);
+  };
+
   useEffect(() => {
-    console.log('log do workDays', workDays);
-  }, [workDays]);
+    console.log('log das pausas', selectedBreaks);
+  }, [selectedBreaks]);
 
   return (
     <ContainerDefault>
@@ -545,13 +630,15 @@ export default function Team() {
       <ModalDefault
         isOpen={modalWorkDays.isOpen}
         title={modalWorkDays.title}
-        onOpenChange={() =>
+        onOpenChange={() => {
           setModalWorkDays({
             isOpen: false,
             title: '',
             user: ''
-          })
-        }
+          });
+          setSelectedBreaks([]);
+          setSelectedBreakDay('');
+        }}
       >
         <ModalWrapper>
           <ModalSubtitle>
@@ -580,103 +667,383 @@ export default function Team() {
 
           <CardsWrapper>
             {selectedTab === 'Jornada' && (
-              <CardWorkPause className="selected">
-                <CardTitleCheck>
-                  <CheckboxDefault
-                    label=""
-                    name="user_selected"
-                    onChange={() => ''}
-                    checked={false}
-                  />
-                </CardTitleCheck>
-
-                <CardHours>
-                  <DivHour>
-                    Início
-                    <TimePicker
-                      onChange={() => ''}
-                      value={'00:00:00'}
-                      clearIcon={null}
-                      clockIcon={null}
-                      locale="pt-BR"
-                      disableClock={true}
-                      maxDetail="second"
-                      disabled={false}
-                    />
-                  </DivHour>
-
-                  <DivHour>
-                    Fim
-                    <TimePicker
-                      onChange={() => ''}
-                      value={'00:00:00'}
-                      clearIcon={null}
-                      clockIcon={null}
-                      locale="pt-BR"
-                      disableClock={true}
-                      maxDetail="second"
-                      disabled={false}
-                    />
-                  </DivHour>
-                </CardHours>
-              </CardWorkPause>
-            )}
-
-            {/* {selectedTab === 'Pausas' && (
               <>
-                <SelectDefault
-                  label="Dia"
-                  name="tenant_id"
-                  placeHolder="Selecione"
-                  onChange={(e) => setSelectedBreakDay(e.target.value)}
-                  value={selectedBreakDay}
-                  alert="Para qual dia deseja criar as pausas?"
-                >
-                  {workDays?.map((row, index: number) => (
-                    <option key={index} value={row.dayName}>
-                      {row.dayName}
-                    </option>
-                  ))}
-                </SelectDefault>
-
-                <CardWorkPause key={row.idBreak}>
+                <CardWorkPause className={workDays[0]?.start_work !== undefined ? 'selected' : ''}>
                   <CardTitleCheck>
-                    {row.pauseName}
-                    <div className="trash-icon">
-                      <BiTrash />
-                    </div>
+                    Domingo
+                    <CheckboxDefault
+                      label=""
+                      name="day_selected"
+                      onChange={() => handleCheckDay(0, workDays[0])}
+                      checked={workDays[0]?.start_work !== undefined ? true : false}
+                    />
                   </CardTitleCheck>
 
                   <CardHours>
                     <DivHour>
                       Início
                       <TimePicker
-                        onChange={(value: any) => handleTimeChange(index, 'startAt', value)}
-                        value={row.startAt}
+                        onChange={(value) => handleChangeHours(0, 'start', value)}
+                        value={workDays[0]?.start_work ? workDays[0]?.start_work : '00:00:00'}
                         clearIcon={null}
                         clockIcon={null}
                         locale="pt-BR"
                         disableClock={true}
                         maxDetail="second"
+                        disabled={workDays[0]?.start_work === undefined ? true : false}
                       />
                     </DivHour>
 
                     <DivHour>
                       Fim
                       <TimePicker
-                        onChange={(value: any) => handleTimeChange(index, 'endAt', value)}
-                        value={row.endAt}
+                        onChange={(value) => handleChangeHours(0, 'end', value)}
+                        value={workDays[0]?.end_work ? workDays[0]?.end_work : '00:00:00'}
                         clearIcon={null}
                         clockIcon={null}
                         locale="pt-BR"
                         disableClock={true}
                         maxDetail="second"
+                        disabled={workDays[0]?.start_work === undefined ? true : false}
+                      />
+                    </DivHour>
+                  </CardHours>
+                </CardWorkPause>
+
+                <CardWorkPause className={workDays[1]?.start_work !== undefined ? 'selected' : ''}>
+                  <CardTitleCheck>
+                    Segunda-feira
+                    <CheckboxDefault
+                      label=""
+                      name="day_selected"
+                      onChange={() => handleCheckDay(1, workDays[1])}
+                      checked={workDays[1]?.start_work !== undefined ? true : false}
+                    />
+                  </CardTitleCheck>
+
+                  <CardHours>
+                    <DivHour>
+                      Início
+                      <TimePicker
+                        onChange={(value) => handleChangeHours(1, 'start', value)}
+                        value={workDays[1]?.start_work ? workDays[1]?.start_work : '00:00:00'}
+                        clearIcon={null}
+                        clockIcon={null}
+                        locale="pt-BR"
+                        disableClock={true}
+                        maxDetail="second"
+                        disabled={workDays[1]?.start_work === undefined ? true : false}
+                      />
+                    </DivHour>
+
+                    <DivHour>
+                      Fim
+                      <TimePicker
+                        onChange={(value) => handleChangeHours(1, 'end', value)}
+                        value={workDays[1]?.end_work ? workDays[1]?.end_work : '00:00:00'}
+                        clearIcon={null}
+                        clockIcon={null}
+                        locale="pt-BR"
+                        disableClock={true}
+                        maxDetail="second"
+                        disabled={workDays[1]?.start_work === undefined ? true : false}
+                      />
+                    </DivHour>
+                  </CardHours>
+                </CardWorkPause>
+
+                <CardWorkPause className={workDays[2]?.start_work !== undefined ? 'selected' : ''}>
+                  <CardTitleCheck>
+                    Terça-feira
+                    <CheckboxDefault
+                      label=""
+                      name="day_selected"
+                      onChange={() => handleCheckDay(2, workDays[2])}
+                      checked={workDays[2]?.start_work !== undefined ? true : false}
+                    />
+                  </CardTitleCheck>
+
+                  <CardHours>
+                    <DivHour>
+                      Início
+                      <TimePicker
+                        onChange={(value) => handleChangeHours(2, 'start', value)}
+                        value={workDays[2]?.start_work ? workDays[2]?.start_work : '00:00:00'}
+                        clearIcon={null}
+                        clockIcon={null}
+                        locale="pt-BR"
+                        disableClock={true}
+                        maxDetail="second"
+                        disabled={workDays[2]?.start_work === undefined ? true : false}
+                      />
+                    </DivHour>
+
+                    <DivHour>
+                      Fim
+                      <TimePicker
+                        onChange={(value) => handleChangeHours(2, 'end', value)}
+                        value={workDays[2]?.end_work ? workDays[2]?.end_work : '00:00:00'}
+                        clearIcon={null}
+                        clockIcon={null}
+                        locale="pt-BR"
+                        disableClock={true}
+                        maxDetail="second"
+                        disabled={workDays[2]?.start_work === undefined ? true : false}
+                      />
+                    </DivHour>
+                  </CardHours>
+                </CardWorkPause>
+
+                <CardWorkPause className={workDays[3]?.start_work !== undefined ? 'selected' : ''}>
+                  <CardTitleCheck>
+                    Quarta-feira
+                    <CheckboxDefault
+                      label=""
+                      name="day_selected"
+                      onChange={() => handleCheckDay(3, workDays[3])}
+                      checked={workDays[3]?.start_work !== undefined ? true : false}
+                    />
+                  </CardTitleCheck>
+
+                  <CardHours>
+                    <DivHour>
+                      Início
+                      <TimePicker
+                        onChange={(value) => handleChangeHours(3, 'start', value)}
+                        value={workDays[3]?.start_work ? workDays[3]?.start_work : '00:00:00'}
+                        clearIcon={null}
+                        clockIcon={null}
+                        locale="pt-BR"
+                        disableClock={true}
+                        maxDetail="second"
+                        disabled={workDays[3]?.start_work === undefined ? true : false}
+                      />
+                    </DivHour>
+
+                    <DivHour>
+                      Fim
+                      <TimePicker
+                        onChange={(value) => handleChangeHours(3, 'end', value)}
+                        value={workDays[3]?.end_work ? workDays[3]?.end_work : '00:00:00'}
+                        clearIcon={null}
+                        clockIcon={null}
+                        locale="pt-BR"
+                        disableClock={true}
+                        maxDetail="second"
+                        disabled={workDays[3]?.start_work === undefined ? true : false}
+                      />
+                    </DivHour>
+                  </CardHours>
+                </CardWorkPause>
+
+                <CardWorkPause className={workDays[4]?.start_work !== undefined ? 'selected' : ''}>
+                  <CardTitleCheck>
+                    Quinta-feira
+                    <CheckboxDefault
+                      label=""
+                      name="day_selected"
+                      onChange={() => handleCheckDay(4, workDays[4])}
+                      checked={workDays[4]?.start_work !== undefined ? true : false}
+                    />
+                  </CardTitleCheck>
+
+                  <CardHours>
+                    <DivHour>
+                      Início
+                      <TimePicker
+                        onChange={(value) => handleChangeHours(4, 'start', value)}
+                        value={workDays[4]?.start_work ? workDays[4]?.start_work : '00:00:00'}
+                        clearIcon={null}
+                        clockIcon={null}
+                        locale="pt-BR"
+                        disableClock={true}
+                        maxDetail="second"
+                        disabled={workDays[4]?.start_work === undefined ? true : false}
+                      />
+                    </DivHour>
+
+                    <DivHour>
+                      Fim
+                      <TimePicker
+                        onChange={(value) => handleChangeHours(4, 'end', value)}
+                        value={workDays[4]?.end_work ? workDays[4]?.end_work : '00:00:00'}
+                        clearIcon={null}
+                        clockIcon={null}
+                        locale="pt-BR"
+                        disableClock={true}
+                        maxDetail="second"
+                        disabled={workDays[4]?.start_work === undefined ? true : false}
+                      />
+                    </DivHour>
+                  </CardHours>
+                </CardWorkPause>
+
+                <CardWorkPause className={workDays[5]?.start_work !== undefined ? 'selected' : ''}>
+                  <CardTitleCheck>
+                    Sexta-feira
+                    <CheckboxDefault
+                      label=""
+                      name="day_selected"
+                      onChange={() => handleCheckDay(5, workDays[5])}
+                      checked={workDays[5]?.start_work !== undefined ? true : false}
+                    />
+                  </CardTitleCheck>
+
+                  <CardHours>
+                    <DivHour>
+                      Início
+                      <TimePicker
+                        onChange={(value) => handleChangeHours(5, 'start', value)}
+                        value={workDays[5]?.start_work ? workDays[5]?.start_work : '00:00:00'}
+                        clearIcon={null}
+                        clockIcon={null}
+                        locale="pt-BR"
+                        disableClock={true}
+                        maxDetail="second"
+                        disabled={workDays[5]?.start_work === undefined ? true : false}
+                      />
+                    </DivHour>
+
+                    <DivHour>
+                      Fim
+                      <TimePicker
+                        onChange={(value) => handleChangeHours(5, 'end', value)}
+                        value={workDays[5]?.end_work ? workDays[5]?.end_work : '00:00:00'}
+                        clearIcon={null}
+                        clockIcon={null}
+                        locale="pt-BR"
+                        disableClock={true}
+                        maxDetail="second"
+                        disabled={workDays[5]?.start_work === undefined ? true : false}
+                      />
+                    </DivHour>
+                  </CardHours>
+                </CardWorkPause>
+
+                <CardWorkPause className={workDays[6]?.start_work !== undefined ? 'selected' : ''}>
+                  <CardTitleCheck>
+                    Sabado
+                    <CheckboxDefault
+                      label=""
+                      name="day_selected"
+                      onChange={() => handleCheckDay(6, workDays[6])}
+                      checked={workDays[6]?.start_work !== undefined ? true : false}
+                    />
+                  </CardTitleCheck>
+
+                  <CardHours>
+                    <DivHour>
+                      Início
+                      <TimePicker
+                        onChange={(value) => handleChangeHours(6, 'start', value)}
+                        value={workDays[6]?.start_work ? workDays[6]?.start_work : '00:00:00'}
+                        clearIcon={null}
+                        clockIcon={null}
+                        locale="pt-BR"
+                        disableClock={true}
+                        maxDetail="second"
+                        disabled={workDays[6]?.start_work === undefined ? true : false}
+                      />
+                    </DivHour>
+
+                    <DivHour>
+                      Fim
+                      <TimePicker
+                        onChange={(value) => handleChangeHours(6, 'end', value)}
+                        value={workDays[6]?.end_work ? workDays[6]?.end_work : '00:00:00'}
+                        clearIcon={null}
+                        clockIcon={null}
+                        locale="pt-BR"
+                        disableClock={true}
+                        maxDetail="second"
+                        disabled={workDays[6]?.start_work === undefined ? true : false}
                       />
                     </DivHour>
                   </CardHours>
                 </CardWorkPause>
               </>
-            )} */}
+            )}
+
+            {selectedTab === 'Pausas' && (
+              <>
+                <SelectDefault
+                  label="Dia"
+                  name="tenant_id"
+                  placeHolder="Selecione"
+                  onChange={(e) => handleSelectedBreakDay(e.target.value)}
+                  value={selectedBreakDay}
+                  alert="Para qual dia deseja criar as pausas?"
+                >
+                  {workDays?.map((row, index: number) => (
+                    <option key={index} value={index}>
+                      {row.day === 'Sunday'
+                        ? 'Domingo'
+                        : row.day === 'Monday'
+                        ? 'Segunda-feira'
+                        : row.day === 'Tuesday'
+                        ? 'Terça-feira'
+                        : row.day === 'Wednesday'
+                        ? 'Quarta-feira'
+                        : row.day === 'Thursday'
+                        ? 'Quinta-feira'
+                        : row.day === 'Friday'
+                        ? 'Sexta-feira'
+                        : row.day === 'Saturday'
+                        ? 'Sábado'
+                        : ''}
+                    </option>
+                  ))}
+                </SelectDefault>
+
+                {selectedBreaks &&
+                  selectedBreaks?.map((row: BreaksProps, index: number) => (
+                    <CardWorkPause key={index}>
+                      <CardTitleCheck>
+                        {row?.name !== '' ? row?.name : `Pausa ${index + 1}`}
+                        <div className="trash-icon" onClick={() => deleteBreak(index)}>
+                          <BiTrash />
+                        </div>
+                      </CardTitleCheck>
+
+                      <CardHours>
+                        <DivHour>
+                          Início
+                          <TimePicker
+                            onChange={(value: any) => handleTimeChange(index, 'start_pause', value)}
+                            // onChange={() => ''}
+                            value={row?.start_pause}
+                            clearIcon={null}
+                            clockIcon={null}
+                            locale="pt-BR"
+                            disableClock={true}
+                            maxDetail="second"
+                          />
+                        </DivHour>
+
+                        <DivHour>
+                          Fim
+                          <TimePicker
+                            onChange={(value: any) => handleTimeChange(index, 'end_pause', value)}
+                            value={row?.end_pause}
+                            clearIcon={null}
+                            clockIcon={null}
+                            locale="pt-BR"
+                            disableClock={true}
+                            maxDetail="second"
+                          />
+                        </DivHour>
+                      </CardHours>
+                    </CardWorkPause>
+                  ))}
+
+                {selectedBreakDay.length > 0 && (
+                  <ButtonDefault typeButton="lightWhite" isOutline onClick={addNewBreak}>
+                    <BiPlus />
+                    Adicionar Pausa
+                  </ButtonDefault>
+                )}
+              </>
+            )}
           </CardsWrapper>
 
           {selectedTab === 'Jornada' && (
