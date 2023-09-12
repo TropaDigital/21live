@@ -57,7 +57,7 @@ import api from '../../../services/api';
 
 interface WorkingProductProps {
   taskId?: any;
-  dataTaskInfo?: string;
+  productInfos?: any;
 }
 
 interface ChatMessages {
@@ -68,18 +68,7 @@ interface ChatMessages {
   created: string;
 }
 
-interface TitleInfoProps {
-  idNumber: string;
-  numberTask: string;
-  titleTask: string;
-  monthTask: '';
-  client_task: string;
-  typeTask: string;
-  quantityTask: '';
-  contract_task: string;
-}
-
-export default function WorkingProduct({ taskId }: WorkingProductProps) {
+export default function WorkingProduct({ taskId, productInfos }: WorkingProductProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -89,10 +78,14 @@ export default function WorkingProduct({ taskId }: WorkingProductProps) {
   const [notifications, setNotifications] = useState<boolean>(false);
   const [chatMessage, setChatMessage] = useState<string>('');
   const [dataComments, setDataComments] = useState<ChatMessages[]>([]);
+  const [essayInfo, setEssayInfo] = useState<string>('');
   // const typeOfPlay = location?.state?.playType;
 
-  // const productId = location.state?.productInfo?.products_delivery_id;
+  // const productInfos = location.state?.productInfo?.products_delivery_id;
   // const { data } = useFetch<WorkingProductProps>(`/${location.state.id}`);
+  useEffect(() => {
+    setEssayInfo(productInfos.essay);
+  }, [productInfos]);
 
   async function getComments() {
     try {
@@ -116,9 +109,29 @@ export default function WorkingProduct({ taskId }: WorkingProductProps) {
     setChatMessage(e.target.value);
   };
 
-  const handleSaveEssay = () => {
-    console.log('log salvando a redação');
-  };
+  async function handleSaveEssay() {
+    try {
+      const essayBody = {
+        products_delivery_id: productInfos?.products_delivery_id,
+        essay: essayInfo
+      };
+      setLoading(true);
+
+      const response = await api.post(`/task/create-essay`, essayBody);
+      console.log('log do response post essay', response.data.result);
+
+      setLoading(false);
+
+      addToast({
+        title: 'Sucesso',
+        type: 'success',
+        description: 'Redação enviada.'
+      });
+    } catch (error) {
+      console.log('log post essay', error);
+      setLoading(false);
+    }
+  }
 
   const handleInputs = (name: string, value: any) => {
     console.log('log do input', name, value);
@@ -127,56 +140,6 @@ export default function WorkingProduct({ taskId }: WorkingProductProps) {
   const handleSaveInputs = () => {
     console.log('log salvando os inputs');
   };
-
-  // const handlePlayingType = (value: boolean) => {
-  //   if (value) {
-  //     handleStartPlayingTime();
-  //   }
-  // };
-
-  // const handleStartPlayingTime = async () => {
-  //   const playType = {
-  //     task_id: location.state.taskInfos.task_id,
-  //     type_play: 'product'
-  //   };
-
-  //   const taskClock = {
-  //     task_id: location.state.taskInfos.task_id,
-  //     products_delivery_id: productId
-  //   };
-
-  //   try {
-  //     const responseTypeOfPlay = await api.post(`/task/switch-play`, playType);
-  //     const responseClock = await api.post(`/clock`, taskClock);
-
-  //     console.log('log do responsePlay', responseTypeOfPlay);
-  //     console.log('log do responseClock', responseClock);
-  //   } catch (error: any) {
-  //     console.log('log do error play', error);
-  //   }
-  // };
-
-  // async function handleFinishProduct() {
-  //   try {
-  //     setLoading(true);
-  //     const response = await api.post(`/task/product-conclude/${productId}`);
-  //     localStorage.removeItem('elapsedTime');
-  //     console.log('log do response', response);
-  //     setLoading(false);
-  //   } catch (error: any) {
-  //     console.log('log error getting user', error);
-  //     setLoading(false);
-  //   }
-  // }
-
-  // const handleFinishedPlay = () => {
-  //   console.log('log de que tentou dar play com a tarefa concluida');
-  //   addToast({
-  //     title: 'Atenção',
-  //     type: 'warning',
-  //     description: 'Entrega já concluída'
-  //   });
-  // };
 
   async function handleSendComment() {
     try {
@@ -187,7 +150,6 @@ export default function WorkingProduct({ taskId }: WorkingProductProps) {
 
       setLoading(true);
       const response = await api.post(`/tasks/comment/`, taskComment);
-      console.log('log do response do comment', response.data.result);
 
       addToast({
         title: 'Sucesso',
@@ -211,50 +173,6 @@ export default function WorkingProduct({ taskId }: WorkingProductProps) {
 
   return (
     <ContainerDefault>
-      {/* {titleInfos && !typeOfPlay && (
-        <HeaderOpenTask
-          title={titleInfos}
-          disableButton={false}
-          goBack={true}
-          buttonType="finish"
-          sendToNext={handleFinishProduct}
-        />
-      )}
-
-      {titleInfos && typeOfPlay && (
-        <HeaderOpenTask title={titleInfos} disableButton={true} goBack={true} buttonType="finish" />
-      )} */}
-
-      {/* <SectionCardWrapper>
-        <CardsTopWrapper>
-          {!typeOfPlay && (
-            <CardTaskInfo
-              cardTitle="Iniciar atividade"
-              cardType="time"
-              dataTime={taskInfos ? taskInfos.totalTime : ''}
-              isPlayingTime={handlePlayingType}
-            />
-          )}
-
-          {typeOfPlay && (
-            <CardTaskInfo
-              cardTitle="Atividade iniciada"
-              cardType="time"
-              dataTime={taskInfos ? taskInfos.totalTime : ''}
-              isPlayingTime={handleFinishedPlay}
-              taskIsFinished={taskInfos?.status === 'Concluida' ? true : false}
-            />
-          )}
-
-          <CardTaskInfo
-            cardTitle="Contexto geral"
-            cardType="text"
-            dataText={taskInfos ? taskInfos.description : ''}
-            isPlayingTime={() => ''}
-          />
-        </CardsTopWrapper>
-      </SectionCardWrapper> */}
-
       <TabsWrapper>
         <TaskTab
           onClick={(e: any) => {
@@ -292,16 +210,16 @@ export default function WorkingProduct({ taskId }: WorkingProductProps) {
             {user.permissions.includes('21jobs_task_essay') ? (
               <div>
                 <WrapperEditor
-                  value={'Texto inicial'}
+                  value={essayInfo}
                   mentionData={[]}
-                  handleOnDescription={(value: any) => console.log('log do editor', value)}
+                  handleOnDescription={(value: any) => setEssayInfo(value)}
                 />
 
                 <FooterSection>
                   <ButtonDefault
                     typeButton="lightWhite"
                     isOutline
-                    onClick={() => navigate('/tarefas')}
+                    onClick={() => navigate('/minhas-tarefas')}
                   >
                     Descartar
                   </ButtonDefault>
