@@ -94,6 +94,7 @@ export default function ViewProductsDeliveries() {
   // const [dataUser, setDataUser] = useState<any[]>();
   const [selectedProduct, setSelectedProduct] = useState<any>('');
   const [elapsedTimeExist, setElapsedTimeExist] = useState<any>();
+  const [timeIsPlaying, setTimeIsPlaying] = useState<boolean>(false);
 
   const deliveryId = location.state.task.deliverys.filter(
     (obj: any) => Number(obj.order) === location.state.task_index
@@ -119,19 +120,14 @@ export default function ViewProductsDeliveries() {
       try {
         setLoading(true);
 
-        const response = await api.get(`rescue-clock/${user.user_id}`);
-        if (
-          response.data.result.delivery_id === deliveryId[0].delivery_id &&
-          response.data.result.task_id === location.state.task.task_id
-        ) {
+        const response = await api.get(`/clock/consumed?delivery_id=${deliveryId[0].delivery_id}`);
+        if (response.data.result.play === true) {
           setPlayingForSchedule(true);
           setElapsedTimeExist(response.data.result.diff);
+          setTimeIsPlaying(true);
         } else {
-          // console.log('log response delivery id', response.data.result.delivery_id);
-          // console.log('log delivery id', deliveryId);
-          // console.log('log response task id', response.data.result.task_id);
-          // console.log('log task id', location.state.task.task_id);
-          setElapsedTimeExist(0);
+          setElapsedTimeExist(response.data.result.diff);
+          setTimeIsPlaying(false);
         }
 
         setLoading(false);
@@ -181,25 +177,50 @@ export default function ViewProductsDeliveries() {
   }, [location]);
 
   const handleStartPlayingTime = async () => {
-    const taskClock = {
-      task_id: location.state.task.task_id,
-      delivery_id: deliveryId[0].delivery_id
-    };
+    if (selectedProduct === '') {
+      const taskClock = {
+        task_id: location.state.task.task_id,
+        delivery_id: deliveryId[0].delivery_id
+      };
 
-    try {
-      setLoading(true);
-      const responseClock = await api.post(`/clock`, taskClock);
-      console.log('log do responseClock', responseClock);
-      setLoading(false);
-    } catch (error: any) {
-      console.log('log do error play', error);
+      try {
+        setLoading(true);
+        const responseClock = await api.post(`/clock`, taskClock);
+        console.log('log do responseClock', responseClock);
+        setLoading(false);
+      } catch (error: any) {
+        console.log('log do error play', error);
 
-      addToast({
-        title: 'Atenção',
-        description: error,
-        type: 'warning'
-      });
-      setLoading(false);
+        addToast({
+          title: 'Atenção',
+          description: error,
+          type: 'warning'
+        });
+        setLoading(false);
+      }
+    }
+
+    if (selectedProduct !== '') {
+      const taskClock = {
+        task_id: location.state.task.task_id,
+        product_delivery_id: selectedProduct?.productInfo?.products_delivery_id
+      };
+
+      try {
+        setLoading(true);
+        const responseClock = await api.post(`/clock`, taskClock);
+        console.log('log do responseClock', responseClock);
+        setLoading(false);
+      } catch (error: any) {
+        console.log('log do error play', error);
+
+        addToast({
+          title: 'Atenção',
+          description: error,
+          type: 'warning'
+        });
+        setLoading(false);
+      }
     }
   };
 
@@ -209,8 +230,8 @@ export default function ViewProductsDeliveries() {
       handleStartPlayingTime();
     }
     if (selectedProduct !== '') {
-      handleStartPlayingTime();
       setPlayingForSchedule(false);
+      handleStartPlayingTime();
     }
   };
 
@@ -349,8 +370,6 @@ export default function ViewProductsDeliveries() {
     };
   }, [hideRightCard]);
 
-  console.log('log do taks infos', location.state);
-
   return (
     <ContainerDefault>
       <DeliveryWrapper>
@@ -395,6 +414,7 @@ export default function ViewProductsDeliveries() {
               dataTime={data ? data?.estimatedTime : ''}
               isPlayingTime={handleFinishedPlay}
               taskIsFinished={dataTask?.status === 'Concluida' ? true : false}
+              stopThePlay={false}
             />
           )}
           {dataProducts?.status !== 'Concluida' && (
@@ -404,6 +424,7 @@ export default function ViewProductsDeliveries() {
               isPlayingTime={handlePlayingType}
               taskIsFinished={dataTask?.status === 'Concluida' ? true : false}
               elapsedTimeBack={elapsedTimeExist}
+              stopThePlay={timeIsPlaying}
             />
           )}
           <CardTaskInfo
@@ -427,7 +448,10 @@ export default function ViewProductsDeliveries() {
         )}
 
         {selectedProduct !== '' && (
-          <WorkingProduct taskId={selectedProduct?.productInfo?.products_delivery_id} />
+          <WorkingProduct
+            taskId={selectedProduct?.productInfo?.products_delivery_id}
+            productInfos={selectedProduct.productInfo}
+          />
         )}
 
         <RightInfosCard hideCard={hideRightCard} ref={openRightRef}>
