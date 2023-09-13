@@ -36,8 +36,14 @@ import { Program, Timeline } from './components';
 
 // Libraries
 import moment from 'moment';
-import { useFetch } from '../../hooks/useFetch';
+import TimePicker from 'react-time-picker';
+import 'react-time-picker/dist/TimePicker.css';
+import 'react-clock/dist/Clock.css';
+
+// Services
 import api from '../../services/api';
+
+// Hooks
 import { useToast } from '../../hooks/toast';
 
 interface Task {
@@ -100,8 +106,6 @@ export default function ScheduleUser({
     user_selected: '',
     starterHour: '00:00:00'
   });
-  const [hours, setHours] = useState<string>('00');
-  const [minutes, setMinutes] = useState<string | number | null>('00');
   const [dayCounter, setDayCounter] = useState<number>(0);
   const [dataUserSchedule, setDataUserSchedule] = useState<UserData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -116,27 +120,27 @@ export default function ScheduleUser({
   const starterDate = moment(dinamicDate).startOf('day').format('YYYY-MM-DD HH:mm:ss');
   const finishDate = moment(dinamicDate).format('YYYY-MM-DD') + 'T24:00:00';
 
-  useEffect(() => {
-    async function getUserSchedule() {
-      try {
-        setLoading(true);
-        const response = await api.get(
-          `/task/next?flow=${flow}&product_id=${product_id}&step=${step ? step : 1}&date=${moment(
-            dinamicDate
-          ).format('YYYY-MM-DD')}`
-        );
+  async function getUserSchedule() {
+    try {
+      setLoading(true);
+      const response = await api.get(
+        `/task/next?flow=${flow}&product_id=${product_id}&step=${step ? step : 1}&date=${moment(
+          dinamicDate
+        ).format('YYYY-MM-DD')}`
+      );
 
-        if (response.data.result.length > 0) {
-          setDataUserSchedule(response.data.result);
-        }
-
-        setLoading(false);
-      } catch (error: any) {
-        console.log('log error getSchedule', error);
-        setLoading(false);
+      if (response.data.result.length > 0) {
+        setDataUserSchedule(response.data.result);
       }
-    }
 
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log error getSchedule', error);
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
     getUserSchedule();
   }, [dayCounter]);
 
@@ -146,7 +150,7 @@ export default function ScheduleUser({
         if (user.user_id === userId) {
           const updatedUser = {
             ...user,
-            agenda: [...user.agenda, newTaskItem]
+            agenda: newTaskItem
           };
           return updatedUser;
         }
@@ -246,30 +250,16 @@ export default function ScheduleUser({
     const newDTO: any = DTOTaskSelect;
     newDTO[name] = value;
     setDTOTaskSelect({ ...newDTO });
+
+    if (name === 'user_selected') {
+      getUserSchedule();
+      setCheckAvailability(false);
+    }
   }
 
   const handleDayOfUSer = (value: any) => {
     setDayCounter(dayCounter + value);
   };
-
-  function handleHoursMinutes(event: React.ChangeEvent<HTMLInputElement>) {
-    const { name, value } = event.target;
-    if (name === 'hours_task') {
-      if (Number(value) > 23) {
-        setHours('23');
-      } else {
-        setHours(String(value));
-      }
-    }
-
-    if (name === 'minutes_task') {
-      if (Number(value) > 59) {
-        setMinutes('59');
-      } else {
-        setMinutes(String(value));
-      }
-    }
-  }
 
   const { getEpgProps, getLayoutProps } = useApp({
     starterDate: starterDate,
@@ -287,21 +277,21 @@ export default function ScheduleUser({
       const response = await api.get(
         `/task/verify-agenda?user_id=${user}&date=${date}&total_time=${time}`
       );
-      if (response.data.result.message === 'Agenda livre') {
-        const newTaskItem = {
-          start: response.data.result.start_job,
-          end: response.data.result.end_job,
-          title: task_title,
-          type: 'new'
-        };
+      if (response.data.result.agenda.length > 0) {
+        // const newTaskItem = {
+        //   start: response.data.result.start_job,
+        //   end: response.data.result.end_job,
+        //   title: task_title,
+        //   type: 'new'
+        // };
 
         setResponseScheduleInfos({
-          start_job: response.data.result.start_job,
-          end_job: response.data.result.end_job,
+          start_job: response.data.result.agenda[0].start,
+          end_job: response.data.result.agenda[response.data.result.agenda.length - 1].end,
           user_id: user
         });
 
-        addNewObjectToAgenda(DTOTaskSelect.user_selected, newTaskItem);
+        addNewObjectToAgenda(DTOTaskSelect.user_selected, response.data.result.agenda);
         setCheckAvailability(true);
       } else {
         addToast({
@@ -314,11 +304,6 @@ export default function ScheduleUser({
       console.log('log do error verify', error);
     }
   }
-
-  useEffect(() => {
-    const hoursAndMinutes = `${hours}:${minutes}:00`;
-    handleOnChange('starterHour', hoursAndMinutes);
-  }, [hours, minutes]);
 
   useEffect(() => {
     handleOnChange('scheduleDay', moment(dinamicDate).format('YYYY-MM-DD'));
@@ -407,30 +392,15 @@ export default function ScheduleUser({
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <UserFields className="hours">
             <div className="hour-label">Hora inicial</div>
-            <InputDefault
-              label=""
-              name="hours_task"
-              onChange={handleHoursMinutes}
-              value={hours ? hours : ''}
-              placeholder="00"
-              type="number"
-              min="0"
-              max="23"
-              step="1"
-              required
-            />
-            :
-            <InputDefault
-              label=""
-              name="minutes_task"
-              onChange={handleHoursMinutes}
-              value={minutes ? minutes : '00'}
-              placeholder="00"
-              type="number"
-              min="0"
-              max="59"
-              step="1"
-              required
+            <TimePicker
+              onChange={(value: any) => handleOnChange('starterHour', value)}
+              // onChange={() => ''}
+              value={DTOTaskSelect?.starterHour}
+              clearIcon={null}
+              clockIcon={null}
+              locale="pt-BR"
+              disableClock={true}
+              maxDetail="second"
             />
           </UserFields>
           {responseScheduleInfos.end_job !== '' && (
