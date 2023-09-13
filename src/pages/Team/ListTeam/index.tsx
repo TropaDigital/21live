@@ -57,10 +57,12 @@ import 'react-clock/dist/Clock.css';
 
 // Styles
 import {
+  BreakName,
   CardHours,
   CardTitleCheck,
   CardWorkPause,
   CardsWrapper,
+  ChangeNameField,
   DivHour,
   ModalSubtitle,
   ModalWrapper,
@@ -90,6 +92,7 @@ interface UserProps {
   user_id: number;
   username: string;
   wednesday: any;
+  journey: string;
   password: string;
   confirmPassword: string;
 }
@@ -100,6 +103,7 @@ interface OfficeProps {
 }
 
 interface BreaksProps {
+  id: any;
   name: string;
   end_pause: any;
   start_pause: any;
@@ -132,20 +136,16 @@ export default function Team() {
     tuesday: '',
     wednesday: ''
   } as UserProps);
-
   const [modal, setModal] = useState({
     isOpen: false,
     type: 'Novo Usuário'
   });
-
   const weekdays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-
   const [modalWorkDays, setModalWorkDays] = useState({
     isOpen: false,
     title: 'Carga horária',
     user: ''
   });
-
   const [selected, setSelected] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [search, setSearch] = useState('');
@@ -153,7 +153,6 @@ export default function Team() {
     (search: string) => setSearch(search),
     700
   );
-
   const { data, pages, fetchData } = useFetch<UserProps[]>(
     `team?page=${selected}&search=${search}&perPage=15`
   );
@@ -162,6 +161,8 @@ export default function Team() {
   const [workDays, setWorkDays] = useState<any[]>([]);
   const [selectedBreaks, setSelectedBreaks] = useState<any[]>([]);
   const [selectedBreakDay, setSelectedBreakDay] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [changeBreakName, setChangeBreakName] = useState<string>('');
 
   const handleOnCancel = useCallback(() => {
     setModal({
@@ -331,8 +332,9 @@ export default function Team() {
     setSelectedBreakDay(dayIndex);
     const breaks: any[] = [];
 
-    workDays[dayIndex]?.pause.forEach((obj: any) => {
+    workDays[dayIndex]?.pause?.forEach((obj: any) => {
       breaks.push({
+        id: breaks.length + 1,
         name: '',
         end_pause: obj.end_pause,
         start_pause: obj.start_pause
@@ -344,6 +346,7 @@ export default function Team() {
 
   const addNewBreak = () => {
     const newBreak = {
+      id: selectedBreaks.length + 1,
       name: '',
       end_pause: '00:00:00',
       start_pause: '00:00:00'
@@ -353,25 +356,91 @@ export default function Team() {
   };
 
   const deleteBreak = (breakId: any) => {
-    setSelectedBreaks((prevState) => {
-      return prevState.filter((_, i) => i !== breakId);
-    });
+    setSelectedBreaks((prevState) => prevState.filter((obj) => obj.id !== breakId));
   };
 
-  const handleTimeChange = (dayIndex: number, field: string, value: any) => {
-    // setSelectedBreaks(prevState => prevState.map(obj => {
-    //   if (obj[dayIndex])
-    // }))
-    // const updatedBreaks = { ...selectedBreaks };
-    // const newValue = `${value.split(':')[0]}:${value.split(':')[1]}`;
-    // updatedBreaks[dayIndex][field] = newValue;
-    // console.log('log do update Breaks', updatedBreaks);
-    // setSelectedBreaks(updatedBreaks);
+  const handleTimeChange = (timeId: number, field: string, value: any) => {
+    setSelectedBreaks((prevState) =>
+      prevState.map((obj) => {
+        if (obj.id === timeId) {
+          return { ...obj, [field]: value };
+        }
+        return obj;
+      })
+    );
+  };
+
+  const handleNameChange = (timeId: number, field: string, value: any) => {
+    console.log('log do changeName', timeId, field, value);
+    setSelectedBreaks((prevState) =>
+      prevState.map((obj) => {
+        if (obj.id === timeId) {
+          return { ...obj, [field]: value };
+        }
+        return obj;
+      })
+    );
+  };
+
+  function transformState(initialState: any) {
+    const day = initialState.day.toLowerCase();
+    const transformedState: any = {};
+
+    transformedState[day] = {
+      start_work: initialState.start_work,
+      end_work: initialState.end_work,
+      pause: []
+    };
+
+    for (let i = 0; i < selectedBreaks.length; i++) {
+      transformedState[day].pause.push({
+        start_pause: selectedBreaks[i].start_pause,
+        end_pause: selectedBreaks[i].end_pause,
+        name: selectedBreaks[i].name
+      });
+    }
+
+    // console.log('log do transformedState', transformedState);
+    return transformedState;
+  }
+
+  async function handleSubmit() {
+    try {
+      setLoading(true);
+
+      const selectedWorkDay = workDays[Number(selectedBreakDay)];
+
+      const updateTeam = transformState(selectedWorkDay);
+
+      console.log('log do updateTeam', updateTeam);
+
+      const response = await api.put(`/team/${modalWorkDays.user}`, updateTeam);
+      console.log('log do response', response.data);
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log do erro', error);
+      setLoading(false);
+    }
+  }
+
+  const handleOnCancelWorkload = () => {
+    setModalWorkDays({
+      isOpen: false,
+      title: '',
+      user: ''
+    });
+    setSelectedBreaks([]);
+    setWorkDays([]);
+    setSelectedBreakDay('');
+    setSelectedTab('Jornada');
   };
 
   useEffect(() => {
     console.log('log das pausas', selectedBreaks);
-  }, [selectedBreaks]);
+    console.log('log dos workdays', workDays);
+    console.log('log do dia selecionado', selectedBreakDay);
+  }, [selectedBreaks, workDays, selectedBreakDay]);
 
   return (
     <ContainerDefault>
@@ -456,7 +525,11 @@ export default function Team() {
                     <td>{row.name}</td>
                     <td>{row.email}</td>
                     <td>{row.function}</td>
-                    <td>40h00 !!!</td>
+                    <td>
+                      {row.journey
+                        ? `${row.journey.split(':')[0]}h${row.journey.split(':')[1]}`
+                        : ''}
+                    </td>
                     <td>
                       <div className="fieldTableClients">
                         <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
@@ -637,7 +710,9 @@ export default function Team() {
             user: ''
           });
           setSelectedBreaks([]);
+          setWorkDays([]);
           setSelectedBreakDay('');
+          setSelectedTab('Jornada');
         }}
       >
         <ModalWrapper>
@@ -999,8 +1074,30 @@ export default function Team() {
                   selectedBreaks?.map((row: BreaksProps, index: number) => (
                     <CardWorkPause key={index}>
                       <CardTitleCheck>
-                        {row?.name !== '' ? row?.name : `Pausa ${index + 1}`}
-                        <div className="trash-icon" onClick={() => deleteBreak(index)}>
+                        <BreakName
+                          onClick={() => setChangeBreakName(changeBreakName === '' ? row.id : '')}
+                        >
+                          {changeBreakName !== row.id &&
+                            (row?.name !== '' ? row?.name : `Pausa ${index + 1}`)}
+                        </BreakName>
+                        {changeBreakName === row.id && (
+                          <ChangeNameField>
+                            <InputDefault
+                              label=""
+                              placeholder="Digite o nome da pausa"
+                              name="name"
+                              onChange={(e) => handleNameChange(row.id, 'name', e.target.value)}
+                              value={row.name}
+                            />
+                            <ButtonDefault
+                              onClick={() => setChangeBreakName('')}
+                              typeButton="secondary"
+                            >
+                              OK
+                            </ButtonDefault>
+                          </ChangeNameField>
+                        )}
+                        <div className="trash-icon" onClick={() => deleteBreak(row.id)}>
                           <BiTrash />
                         </div>
                       </CardTitleCheck>
@@ -1009,7 +1106,9 @@ export default function Team() {
                         <DivHour>
                           Início
                           <TimePicker
-                            onChange={(value: any) => handleTimeChange(index, 'start_pause', value)}
+                            onChange={(value: any) =>
+                              handleTimeChange(row.id, 'start_pause', value)
+                            }
                             // onChange={() => ''}
                             value={row?.start_pause}
                             clearIcon={null}
@@ -1023,7 +1122,7 @@ export default function Team() {
                         <DivHour>
                           Fim
                           <TimePicker
-                            onChange={(value: any) => handleTimeChange(index, 'end_pause', value)}
+                            onChange={(value: any) => handleTimeChange(row.id, 'end_pause', value)}
                             value={row?.end_pause}
                             clearIcon={null}
                             clockIcon={null}
@@ -1048,10 +1147,23 @@ export default function Team() {
 
           {selectedTab === 'Jornada' && (
             <ModalButtons>
-              <ButtonDefault typeButton="lightWhite" isOutline>
+              <ButtonDefault typeButton="lightWhite" isOutline onClick={handleOnCancelWorkload}>
                 Cancelar
               </ButtonDefault>
-              <ButtonDefault typeButton="primary">Salvar</ButtonDefault>
+              <ButtonDefault typeButton="primary" onClick={handleSubmit}>
+                Salvar
+              </ButtonDefault>
+            </ModalButtons>
+          )}
+
+          {selectedTab === 'Pausas' && (
+            <ModalButtons>
+              <ButtonDefault typeButton="lightWhite" isOutline onClick={handleOnCancelWorkload}>
+                Cancelar
+              </ButtonDefault>
+              <ButtonDefault typeButton="primary" onClick={handleSubmit}>
+                Salvar
+              </ButtonDefault>
             </ModalButtons>
           )}
         </ModalWrapper>

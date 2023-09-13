@@ -152,3 +152,21 @@ export const DivHour = styled.div`
     }
   }
 `;
+
+export const BreakName = styled.div`
+  display: flex;
+  align-items: center;
+
+  height: fit-content;
+
+  cursor: pointer;
+`;
+
+export const ChangeNameField = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  width: 100%;
+  margin-right: 12px;
+`;
