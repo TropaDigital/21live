@@ -1,9 +1,7 @@
 // React
 import { useEffect, useState } from 'react';
 
-import { fetchChannels, fetchEpg } from './helpers';
-
-import { Channel, Program, useEpg } from 'planby';
+import { useEpg } from 'planby';
 
 // Import theme
 import { theme } from './helpers/theme';
