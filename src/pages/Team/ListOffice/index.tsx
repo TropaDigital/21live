@@ -31,7 +31,7 @@ import {
 } from '../../../components/UiElements/styles';
 
 // Styles
-import { PermissionsList, PermissionsTitle, PermissionsWrapper } from './styles';
+// import { PermissionsList, PermissionsTitle, PermissionsWrapper } from './styles';
 
 // Libraries
 import Switch from 'react-switch';
@@ -44,11 +44,11 @@ interface OfficeProps {
   permissions?: string;
 }
 
-interface PermissionProps {
-  permission_id: string;
-  name: string;
-  checked: boolean;
-}
+// interface PermissionProps {
+//   permission_id: string;
+//   name: string;
+//   checked: boolean;
+// }
 
 export default function ListOffice() {
   const { addToast } = useToast();
@@ -71,8 +71,8 @@ export default function ListOffice() {
     700
   );
   const { data, fetchData } = useFetch<OfficeProps[]>(`function?=${search}`);
-  const [permissionFor, setPermissionFor] = useState<any[]>([]);
-  const [permissionsData, setPermissionsData] = useState<PermissionProps[]>([]);
+  // const [permissionFor, setPermissionFor] = useState<any[]>([]);
+  // const [permissionsData, setPermissionsData] = useState<PermissionProps[]>([]);
 
   const handleOnCancel = useCallback(() => {
     setModal({
@@ -125,8 +125,8 @@ export default function ListOffice() {
         // Inserir lógica
         const newFormData = {
           function: AsFuncation,
-          description,
-          permissions: permissionFor
+          description
+          // permissions: permissionFor
         };
 
         if (modal.type === 'Novo Cargo') {
@@ -151,40 +151,40 @@ export default function ListOffice() {
         });
       }
     },
-    [formData, addToast, fetchData, handleOnCancel, modal, permissionFor]
+    [formData, addToast, fetchData, handleOnCancel, modal]
   );
 
-  const handlePermissions = (id: any) => {
-    if (permissionFor.includes(id)) {
-      setPermissionFor(permissionFor.filter((obj) => obj !== id));
-    } else {
-      setPermissionFor((prevState: any) => [...prevState, id]);
-    }
-  };
+  // const handlePermissions = (id: any) => {
+  //   if (permissionFor.includes(id)) {
+  //     setPermissionFor(permissionFor.filter((obj) => obj !== id));
+  //   } else {
+  //     setPermissionFor((prevState: any) => [...prevState, id]);
+  //   }
+  // };
 
-  useEffect(() => {
-    const handleGetPermissions = async () => {
-      try {
-        const response = await api.get(`/permissions`);
+  // useEffect(() => {
+  //   const handleGetPermissions = async () => {
+  //     try {
+  //       const response = await api.get(`/permissions`);
 
-        const allPermissions: PermissionProps[] = [];
+  //       const allPermissions: PermissionProps[] = [];
 
-        response.data.result.map((row: any) => {
-          allPermissions.push({
-            permission_id: row.permission_id,
-            name: row.name,
-            checked: false
-          });
-        });
+  //       response.data.result.map((row: any) => {
+  //         allPermissions.push({
+  //           permission_id: row.permission_id,
+  //           name: row.name,
+  //           checked: false
+  //         });
+  //       });
 
-        setPermissionsData(allPermissions);
-      } catch (error) {
-        console.log('log do error getting permissions');
-      }
-    };
+  //       setPermissionsData(allPermissions);
+  //     } catch (error) {
+  //       console.log('log do error getting permissions');
+  //     }
+  //   };
 
-    handleGetPermissions();
-  }, []);
+  //   handleGetPermissions();
+  // }, []);
 
   return (
     <ContainerDefault>
@@ -281,7 +281,7 @@ export default function ListOffice() {
               value={formData.description}
             />
           </FieldDefault>
-          <PermissionsWrapper>
+          {/* <PermissionsWrapper>
             <PermissionsTitle>Permissões</PermissionsTitle>
             <PermissionsList>
               {permissionsData.map((row: PermissionProps, index: number) => (
@@ -299,7 +299,7 @@ export default function ListOffice() {
                 </div>
               ))}
             </PermissionsList>
-          </PermissionsWrapper>
+          </PermissionsWrapper> */}
           <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
             <ButtonDefault typeButton="dark" isOutline onClick={handleOnCancel}>
               Descartar
