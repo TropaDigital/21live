@@ -95,6 +95,7 @@ export default function ViewProductsDeliveries() {
   const [selectedProduct, setSelectedProduct] = useState<any>('');
   const [elapsedTimeExist, setElapsedTimeExist] = useState<any>();
   const [timeIsPlaying, setTimeIsPlaying] = useState<boolean>(false);
+  const [typeOfPlay, setTypeOfPlay] = useState<string>('');
 
   const deliveryId = location.state.task.deliverys.filter(
     (obj: any) => Number(obj.order) === location.state.task_index
@@ -157,6 +158,15 @@ export default function ViewProductsDeliveries() {
 
   useEffect(() => {
     setDataTask(location.state.task);
+
+    if (location.state.task.type_play === 'delivery') {
+      setTypeOfPlay('schedule');
+    }
+
+    if (location.state.task.type_play === 'product') {
+      setTypeOfPlay('product');
+    }
+
     const timeDataInfo = {
       totalTime: location.state.task.totalTime,
       timeConsumed: location.state.task.timeConsumed
@@ -203,7 +213,7 @@ export default function ViewProductsDeliveries() {
     if (selectedProduct !== '') {
       const taskClock = {
         task_id: location.state.task.task_id,
-        product_delivery_id: selectedProduct?.productInfo?.products_delivery_id
+        products_delivery_id: selectedProduct?.productInfo?.products_delivery_id
       };
 
       try {
@@ -227,30 +237,32 @@ export default function ViewProductsDeliveries() {
   const handlePlayingType = () => {
     if (selectedProduct === '') {
       setPlayingForSchedule(true);
+      handleSwitchPlayType(true);
       handleStartPlayingTime();
     }
     if (selectedProduct !== '') {
       setPlayingForSchedule(false);
+      handleSwitchPlayType(false);
       handleStartPlayingTime();
     }
   };
 
   const handleSwitchPlayType = async (value: any) => {
-    // console.log('log do tipo de play', value);
+    console.log('log do tipo de play', value);
     if (value) {
       setWorkProducts(true);
       const playType = {
         task_id: location.state.task.task_id,
         type_play: 'product'
       };
-
       try {
         const response = await api.post(`/task/switch-play`, playType);
         // console.log('log do response task/switch-play', response.data.result);
       } catch (error: any) {
+        console.log('log do switch play', error);
         addToast({
           title: 'Atenção',
-          description: error,
+          description: 'Tarefa iniciada, não alterar o tipo do play',
           type: 'warning'
         });
       }
@@ -260,7 +272,6 @@ export default function ViewProductsDeliveries() {
         task_id: location.state.task.task_id,
         type_play: 'delivery'
       };
-
       try {
         const response = await api.post(`/task/switch-play`, playType);
         // console.log('log do response task/switch-play', response.data.result);
@@ -284,7 +295,7 @@ export default function ViewProductsDeliveries() {
 
   const handleAssignTask = (values: any) => {
     setModalSendToUser(false);
-    handleSendToNextUser(values.user_id);
+    handleSendToNextUser(values);
   };
 
   const handleFinishDelivery = async () => {
@@ -324,10 +335,12 @@ export default function ViewProductsDeliveries() {
     }
   }
 
-  const handleSendToNextUser = async (user_id: any) => {
+  const handleSendToNextUser = async (values: any) => {
     try {
       const next_user = {
-        next_user: user_id
+        next_user: values.user_id,
+        start_job: values.start_job,
+        end_job: values.end_job
       };
 
       const response = await api.put(
@@ -444,6 +457,7 @@ export default function ViewProductsDeliveries() {
             productSelected={handleNavigateProduct}
             isFinished={dataTask?.status === 'Concluida' ? true : false}
             typeOfWorkFinished={dataTask?.type_play}
+            typeOfPlay={'schedule'}
           />
         )}
 
