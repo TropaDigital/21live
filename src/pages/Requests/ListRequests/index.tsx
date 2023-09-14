@@ -69,7 +69,7 @@ export default function Requests() {
 
   const handleViewRequest = (request: any) => {
     console.log('log request to view', request);
-    navigate(`/solicitacao/${request.id}`, { state: request });
+    navigate(`/solicitacao/${request.ticket_id}`, { state: request });
   };
 
   const handleApplyFilters = (filters: any) => {
