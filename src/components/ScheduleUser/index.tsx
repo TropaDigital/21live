@@ -286,8 +286,8 @@ export default function ScheduleUser({
         // };
 
         setResponseScheduleInfos({
-          start_job: response.data.result.agenda[0].start,
-          end_job: response.data.result.agenda[response.data.result.agenda.length - 1].end,
+          start_job: response.data.result.start_job,
+          end_job: response.data.result.end_job,
           user_id: user
         });
 
