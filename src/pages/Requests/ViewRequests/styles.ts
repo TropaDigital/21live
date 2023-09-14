@@ -1,3 +1,4 @@
+import { FaDownload } from 'react-icons/fa';
 import styled from 'styled-components';
 
 interface OpenCard {
@@ -129,8 +130,6 @@ export const RequestBottomCard = styled.div<OpenCard>`
   border: 1px solid var(--gray-300);
   background: var(--gray-50);
   box-shadow: 3px 3px 6px 0 var(--gray-200);
-
-  cursor: pointer;
 `;
 
 export const BottomCardTitle = styled.div`
@@ -144,6 +143,8 @@ export const BottomCardTitle = styled.div`
   font-weight: var(--weight-semibold);
 
   margin-bottom: 6px;
+
+  cursor: pointer;
 `;
 
 export const BottomCardInfos = styled.div`
@@ -318,5 +319,129 @@ export const ResponseButton = styled.button`
 
   &:hover {
     transform: scale(1.1);
+  }
+`;
+
+export const BottomCardImages = styled.div`
+  display: block;
+  width: 100%;
+
+  background: var(--background-primary);
+  border: 1px solid var(--gray-300);
+  border-radius: 8px;
+  box-shadow: 3px 3px 3px 0 rgba(0, 0, 0, 0.2);
+
+  padding: 12px;
+`;
+
+export const ImagesWrapper = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  justify-items: center;
+  gap: 24px;
+`;
+
+export const ImageCard = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  width: 250px;
+  height: 250px;
+  background: rgb(140, 203, 255);
+  background: linear-gradient(100deg, rgba(140, 203, 255, 1) 0%, rgba(0, 70, 181, 1) 57%);
+
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+
+  .image {
+    width: 250px;
+    height: 150px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+`;
+
+export const DownloadIconBtn = styled.button`
+  width: 250px;
+  height: 50px;
+  padding: 0 12px;
+  background-color: transparent;
+  opacity: 0;
+  transition: all 0.3s;
+
+  svg {
+    margin-left: 90%;
+    color: white;
+  }
+
+  ${ImageCard}:hover & {
+    opacity: 1;
+  }
+`;
+
+export const HoverIconButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 80%;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 0 0 8px 8px;
+
+  opacity: 0;
+  transition: all 0.4s;
+
+  position: absolute;
+  bottom: 0;
+  left: -100px;
+
+  font-size: 40px;
+
+  svg {
+    color: var(--primary-500);
+  }
+
+  ${ImageCard}:hover & {
+    opacity: 1;
+    left: 0;
+  }
+`;
+
+export const ModalImage = styled.div`
+  width: 70vw;
+  height: 80vh;
+
+  /* border: 2px solid var(--primary); */
+  border-radius: 12px;
+
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+
+  position: relative;
+
+  .close-button {
+    width: 20px;
+    height: 20px;
+    transition: all 0.3s;
+    cursor: pointer;
+
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-top: -35px;
+
+    svg {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--gray-500);
+    }
+
+    &:hover {
+      transform: scale(1.3);
+    }
   }
 `;
