@@ -50,6 +50,7 @@ interface ProductTableProps {
   productSelected: any;
   isFinished?: boolean;
   typeOfWorkFinished?: string;
+  typeOfPlay: string;
 }
 
 export default function ProductTable({
@@ -59,15 +60,26 @@ export default function ProductTable({
   isPlayingForSchedule,
   productSelected,
   isFinished,
-  typeOfWorkFinished
+  typeOfWorkFinished,
+  typeOfPlay
 }: ProductTableProps) {
   const { user } = useAuth();
   const [workFor, setWorkFor] = useState<string>('schedule');
+  // const workStatus = workFor === 'product' ? true : false;
 
   useEffect(() => {
-    const workStatus = workFor === 'product' ? true : false;
-    workForProduct(workStatus);
-  }, [workFor, workForProduct]);
+    setWorkFor(typeOfPlay);
+  }, [typeOfPlay]);
+
+  const handleWorkFor = (value: any) => {
+    setWorkFor(value);
+    if (value === 'product') {
+      workForProduct(true);
+    }
+    if (value === 'schedule') {
+      workForProduct(true);
+    }
+  };
 
   // console.log('log do user auth', user.permissions);
 
@@ -83,7 +95,7 @@ export default function ProductTable({
             {!isFinished && (
               <ProductSelect>
                 <Switch
-                  onChange={() => setWorkFor(workFor === 'product' ? 'schedule' : 'product')}
+                  onChange={() => handleWorkFor(workFor === 'product' ? 'schedule' : 'product')}
                   checked={workFor === 'product' ? true : false}
                   uncheckedIcon={false}
                   checkedIcon={false}
