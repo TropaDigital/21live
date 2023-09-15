@@ -229,8 +229,8 @@ export default function DeliveryTable({
                         }
                       >
                         {row.status === 'Em Andamento'
-                          ? 'Em progresso'
-                          : row.status === 'Concluida'
+                          ? 'Em Andamento'
+                          : row.status === 'Concluída'
                           ? 'Concluída'
                           : 'Pendente'}
                       </div>
