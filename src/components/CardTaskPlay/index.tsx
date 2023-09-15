@@ -19,6 +19,7 @@ interface CardTaskPlayProps {
   taskIsFinished?: boolean;
   elapsedTimeBack?: any;
   stopThePlay: any;
+  blockPlay: boolean;
 }
 
 export default function CardTaskPlay({
@@ -27,6 +28,7 @@ export default function CardTaskPlay({
   elapsedTimeBack,
   taskIsFinished,
   stopThePlay,
+  blockPlay,
   isPlayingTime
 }: CardTaskPlayProps) {
   const [startTime, setStartTime] = useState<number | null>(null);
@@ -61,12 +63,14 @@ export default function CardTaskPlay({
   }, [startTime, elapsedTime, taskIsFinished]);
 
   const handleStartStop = () => {
-    if (startTime === null) {
-      setStartTime(Date.now());
-      isPlayingTime();
-    } else {
-      setStartTime(null);
-      isPlayingTime();
+    if (!blockPlay) {
+      if (startTime === null) {
+        setStartTime(Date.now());
+        isPlayingTime();
+      } else {
+        setStartTime(null);
+        isPlayingTime();
+      }
     }
   };
 
