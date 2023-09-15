@@ -54,13 +54,13 @@ import api from '../../../services/api';
 interface WorkingProductProps {
   productDeliveryId?: any;
   productInfos?: any;
-  taskInputs: InputProps;
+  taskInputs?: InputProps;
   taskId?: string;
 }
 
 interface InputProps {
-  copywriting_description: string;
-  creation_description: string;
+  copywriting_description: any;
+  creation_description: any;
 }
 
 interface ChatMessages {
@@ -116,8 +116,8 @@ export default function WorkingProduct({
   useEffect(() => {
     getComments();
     setInputschanges({
-      copywriting_description: taskInputs.copywriting_description,
-      creation_description: taskInputs.creation_description
+      copywriting_description: taskInputs?.copywriting_description,
+      creation_description: taskInputs?.creation_description
     });
   }, []);
 
@@ -273,7 +273,7 @@ export default function WorkingProduct({
               <InputField>
                 <InputFieldTitle>Input - Pré-requisitos</InputFieldTitle>
                 <WrapperEditor
-                  value={taskInputs.copywriting_description}
+                  value={taskInputs?.copywriting_description}
                   mentionData={[]}
                   handleOnDescription={(value: any) =>
                     handleInputs('copywriting_description', value)
@@ -284,7 +284,7 @@ export default function WorkingProduct({
               <InputField>
                 <InputFieldTitle>Input Criação</InputFieldTitle>
                 <WrapperEditor
-                  value={taskInputs.creation_description}
+                  value={taskInputs?.creation_description}
                   mentionData={[]}
                   handleOnDescription={(value: any) => handleInputs('creation_description', value)}
                 />
