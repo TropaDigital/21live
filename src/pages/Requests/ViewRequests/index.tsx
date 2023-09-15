@@ -135,7 +135,7 @@ export default function ViewRequest() {
   //   }
   // }
 
-  console.log('log do location on view requests', location.state);
+  // console.log('log do location on view requests', location.state);
 
   return (
     <ContainerDefault>
@@ -265,24 +265,28 @@ export default function ViewRequest() {
                   </div>
                 )}
               </BottomCardTitle>
-
-              <BottomCardImages>
-                <ImagesWrapper>
-                  {requestData?.files.map((row: any, index: number) => (
-                    <ImageCard key={index}>
-                      <DownloadIconBtn>
-                        <FaDownload />
-                      </DownloadIconBtn>
-                      <div className="image" style={{ backgroundImage: `url(${TestImage})` }}></div>
-                      <HoverIconButton
-                        onClick={() => setModalImage({ isOpen: true, path: row.path })}
-                      >
-                        <FaSearchPlus />
-                      </HoverIconButton>
-                    </ImageCard>
-                  ))}
-                </ImagesWrapper>
-              </BottomCardImages>
+              {requestData?.files !== undefined && requestData?.files.length > 0 && (
+                <BottomCardImages>
+                  <ImagesWrapper>
+                    {requestData?.files.map((row: any, index: number) => (
+                      <ImageCard key={index}>
+                        <DownloadIconBtn>
+                          <FaDownload />
+                        </DownloadIconBtn>
+                        <div
+                          className="image"
+                          style={{ backgroundImage: `url(${row.path})` }}
+                        ></div>
+                        <HoverIconButton
+                          onClick={() => setModalImage({ isOpen: true, path: row.path })}
+                        >
+                          <FaSearchPlus />
+                        </HoverIconButton>
+                      </ImageCard>
+                    ))}
+                  </ImagesWrapper>
+                </BottomCardImages>
+              )}
             </RequestBottomCard>
 
             {/* history */}
