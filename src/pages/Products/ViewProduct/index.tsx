@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable import-helpers/order-imports */
 // React
 import { useState, useEffect, useRef } from 'react';
@@ -93,9 +94,10 @@ export default function ViewProductsDeliveries() {
   // const [search, setSearch] = useState('');
   // const [dataUser, setDataUser] = useState<any[]>();
   const [selectedProduct, setSelectedProduct] = useState<any>('');
-  const [elapsedTimeExist, setElapsedTimeExist] = useState<any>();
+  const [elapsedTimeExist, setElapsedTimeExist] = useState<any>(0);
   const [timeIsPlaying, setTimeIsPlaying] = useState<boolean>(false);
   const [typeOfPlay, setTypeOfPlay] = useState<string>('');
+  const [blockPlayButton, setBlockPlayButton] = useState<boolean>(false);
 
   const deliveryId = location.state.task.deliverys.filter(
     (obj: any) => Number(obj.order) === location.state.task_index
@@ -116,19 +118,46 @@ export default function ViewProductsDeliveries() {
     estimatedTime: location.state.task.totalTime
   };
 
+  const InputsTask = {
+    copywriting_description: location.state.task.copywriting_description,
+    creation_description: location.state.task.creation_description
+  };
+
   useEffect(() => {
     async function getClockIsOpen() {
       try {
         setLoading(true);
 
-        const response = await api.get(`/clock/consumed?delivery_id=${deliveryId[0].delivery_id}`);
-        if (response.data.result.play === true) {
-          setPlayingForSchedule(true);
-          setElapsedTimeExist(response.data.result.diff);
-          setTimeIsPlaying(true);
-        } else {
-          setElapsedTimeExist(response.data.result.diff);
-          setTimeIsPlaying(false);
+        if (typeOfPlay === 'schedule') {
+          const response = await api.get(
+            `/clock/consumed?delivery_id=${deliveryId[0].delivery_id}`
+          );
+          if (response.data.result.play === true) {
+            setPlayingForSchedule(true);
+            setElapsedTimeExist(response.data.result.diff);
+            setTimeIsPlaying(true);
+          } else {
+            setElapsedTimeExist(response.data.result.diff);
+            setTimeIsPlaying(false);
+          }
+        }
+
+        if (typeOfPlay === 'product' && selectedProduct === '') {
+          setElapsedTimeExist(0);
+        }
+
+        if (typeOfPlay === 'product' && selectedProduct !== '') {
+          const response = await api.get(
+            `/clock/consumed?products_delivery_id=${selectedProduct?.productInfo?.products_delivery_id}`
+          );
+          if (response.data.result.play === true) {
+            setPlayingForSchedule(true);
+            setElapsedTimeExist(response.data.result.diff);
+            setTimeIsPlaying(true);
+          } else {
+            setElapsedTimeExist(response.data.result.diff);
+            setTimeIsPlaying(false);
+          }
         }
 
         setLoading(false);
@@ -139,7 +168,7 @@ export default function ViewProductsDeliveries() {
     }
 
     getClockIsOpen();
-  }, []);
+  }, [selectedProduct]);
 
   // useEffect(() => {
   //   async function getUserData() {
@@ -186,6 +215,37 @@ export default function ViewProductsDeliveries() {
     getTimelineData();
   }, [location]);
 
+  useEffect(() => {
+    if (selectedProduct !== '' && typeOfPlay === 'schedule') {
+      setBlockPlayButton(true);
+    }
+
+    if (selectedProduct === '' && typeOfPlay === 'schedule') {
+      setBlockPlayButton(false);
+    }
+
+    if (selectedProduct === '' && typeOfPlay === 'product') {
+      setBlockPlayButton(false);
+    }
+
+    if (selectedProduct !== '' && typeOfPlay === 'delivery') {
+      setBlockPlayButton(true);
+    }
+  }, [selectedProduct]);
+
+  const handlePlayingType = () => {
+    if (selectedProduct === '' && typeOfPlay === 'schedule') {
+      setPlayingForSchedule(true);
+      handleSwitchPlayType(false);
+      handleStartPlayingTime();
+    }
+    if (selectedProduct !== '' && typeOfPlay === 'product') {
+      setPlayingForSchedule(false);
+      handleSwitchPlayType(true);
+      handleStartPlayingTime();
+    }
+  };
+
   const handleStartPlayingTime = async () => {
     if (selectedProduct === '') {
       const taskClock = {
@@ -201,11 +261,21 @@ export default function ViewProductsDeliveries() {
       } catch (error: any) {
         console.log('log do error play', error);
 
-        addToast({
-          title: 'Atenção',
-          description: error,
-          type: 'warning'
-        });
+        if (error.response.data.result.length !== 0) {
+          error.response.data.result.map((row: any) => {
+            addToast({
+              title: 'Atenção',
+              description: row.error,
+              type: 'warning'
+            });
+          });
+        } else {
+          addToast({
+            title: 'Atenção',
+            description: error.response.data.message,
+            type: 'danger'
+          });
+        }
         setLoading(false);
       }
     }
@@ -224,26 +294,23 @@ export default function ViewProductsDeliveries() {
       } catch (error: any) {
         console.log('log do error play', error);
 
-        addToast({
-          title: 'Atenção',
-          description: error,
-          type: 'warning'
-        });
+        if (error.response.data.result.length !== 0) {
+          error.response.data.result.map((row: any) => {
+            addToast({
+              title: 'Atenção',
+              description: row.error,
+              type: 'warning'
+            });
+          });
+        } else {
+          addToast({
+            title: 'Atenção',
+            description: error.response.data.message,
+            type: 'danger'
+          });
+        }
         setLoading(false);
       }
-    }
-  };
-
-  const handlePlayingType = () => {
-    if (selectedProduct === '') {
-      setPlayingForSchedule(true);
-      handleSwitchPlayType(true);
-      handleStartPlayingTime();
-    }
-    if (selectedProduct !== '') {
-      setPlayingForSchedule(false);
-      handleSwitchPlayType(false);
-      handleStartPlayingTime();
     }
   };
 
@@ -278,7 +345,7 @@ export default function ViewProductsDeliveries() {
       } catch (error: any) {
         addToast({
           title: 'Atenção',
-          description: error,
+          description: 'Tarefa iniciada, não alterar o tipo do play',
           type: 'warning'
         });
       }
@@ -317,13 +384,29 @@ export default function ViewProductsDeliveries() {
     } catch (error: any) {
       console.log('log error finish delivery');
       setLoading(false);
+
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
     }
   };
 
   async function handleFinishProduct() {
     try {
       setLoading(true);
-      const response = await api.post(
+      const response = await api.put(
         `/task/product-conclude/${selectedProduct?.productInfo.products_delivery_id}`
       );
 
@@ -410,7 +493,7 @@ export default function ViewProductsDeliveries() {
         {dataProducts?.status !== 'Concluida' && selectedProduct !== '' && (
           <HeaderOpenTask
             title={titleInfos}
-            disableButton={workForProducts}
+            disableButton={typeOfPlay === 'product' ? false : true}
             goBack
             buttonType="finish"
             sendToNext={handleFinishProduct}
@@ -428,18 +511,37 @@ export default function ViewProductsDeliveries() {
               isPlayingTime={handleFinishedPlay}
               taskIsFinished={dataTask?.status === 'Concluida' ? true : false}
               stopThePlay={false}
+              blockPlay={false}
             />
           )}
-          {dataProducts?.status !== 'Concluida' && (
-            <CardTaskPlay
-              cardTitle="Iniciar atividade"
-              dataTime={data ? data?.estimatedTime : ''}
-              isPlayingTime={handlePlayingType}
-              taskIsFinished={dataTask?.status === 'Concluida' ? true : false}
-              elapsedTimeBack={elapsedTimeExist}
-              stopThePlay={timeIsPlaying}
-            />
-          )}
+
+          {dataProducts?.status !== 'Concluida' &&
+            typeOfPlay === 'product' &&
+            selectedProduct !== '' && (
+              <CardTaskPlay
+                cardTitle="Iniciar atividade"
+                dataTime={data ? data?.estimatedTime : ''}
+                isPlayingTime={handlePlayingType}
+                taskIsFinished={dataTask?.status === 'Concluida' ? true : false}
+                elapsedTimeBack={elapsedTimeExist}
+                stopThePlay={timeIsPlaying}
+                blockPlay={blockPlayButton}
+              />
+            )}
+
+          {dataProducts?.status !== 'Concluida' &&
+            typeOfPlay === 'product' &&
+            selectedProduct === '' && (
+              <CardTaskPlay
+                cardTitle="Iniciar atividade"
+                dataTime={data ? data?.estimatedTime : ''}
+                isPlayingTime={handlePlayingType}
+                taskIsFinished={dataTask?.status === 'Concluida' ? true : false}
+                elapsedTimeBack={elapsedTimeExist}
+                stopThePlay={timeIsPlaying}
+                blockPlay={true}
+              />
+            )}
           <CardTaskInfo
             cardTitle="Contexto geral"
             cardType="text"
@@ -457,14 +559,16 @@ export default function ViewProductsDeliveries() {
             productSelected={handleNavigateProduct}
             isFinished={dataTask?.status === 'Concluida' ? true : false}
             typeOfWorkFinished={dataTask?.type_play}
-            typeOfPlay={'schedule'}
+            typeOfPlay={typeOfPlay}
           />
         )}
 
         {selectedProduct !== '' && (
           <WorkingProduct
-            taskId={selectedProduct?.productInfo?.products_delivery_id}
+            productDeliveryId={selectedProduct?.productInfo?.products_delivery_id}
             productInfos={selectedProduct.productInfo}
+            taskInputs={InputsTask}
+            taskId={dataTask?.task_id}
           />
         )}
 
