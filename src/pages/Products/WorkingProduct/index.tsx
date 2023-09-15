@@ -18,8 +18,6 @@ import { BiInfoCircle } from 'react-icons/bi';
 import { HiOutlineArrowRight, HiOutlineChatAlt } from 'react-icons/hi';
 
 // Components
-import HeaderOpenTask from '../../../components/HeaderTaskPage';
-import CardTaskInfo from '../../../components/Ui/CardTaskInfo';
 import { ContainerDefault } from '../../../components/UiElements/styles';
 import WrapperEditor from '../../../components/WrapperEditor';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
@@ -28,7 +26,6 @@ import AvatarDefault from '../../../components/Ui/Avatar/avatarDefault';
 
 // Styles
 import {
-  CardsTopWrapper,
   ChatMessage,
   ChatSendButton,
   ChatUserImg,
@@ -39,7 +36,6 @@ import {
   InputFieldTitle,
   MessageInfos,
   MessageList,
-  SectionCardWrapper,
   SectionChatComments,
   TabsWrapper,
   TaskTab,
@@ -56,8 +52,15 @@ import 'moment/dist/locale/pt-br';
 import api from '../../../services/api';
 
 interface WorkingProductProps {
-  taskId?: any;
+  productDeliveryId?: any;
   productInfos?: any;
+  taskInputs: InputProps;
+  taskId?: string;
+}
+
+interface InputProps {
+  copywriting_description: string;
+  creation_description: string;
 }
 
 interface ChatMessages {
@@ -68,7 +71,12 @@ interface ChatMessages {
   created: string;
 }
 
-export default function WorkingProduct({ taskId, productInfos }: WorkingProductProps) {
+export default function WorkingProduct({
+  productDeliveryId,
+  productInfos,
+  taskInputs,
+  taskId
+}: WorkingProductProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -79,6 +87,10 @@ export default function WorkingProduct({ taskId, productInfos }: WorkingProductP
   const [chatMessage, setChatMessage] = useState<string>('');
   const [dataComments, setDataComments] = useState<ChatMessages[]>([]);
   const [essayInfo, setEssayInfo] = useState<string>('');
+  const [inputsChanges, setInputschanges] = useState({
+    copywriting_description: '',
+    creation_description: ''
+  });
   // const typeOfPlay = location?.state?.playType;
 
   // const productInfos = location.state?.productInfo?.products_delivery_id;
@@ -103,6 +115,10 @@ export default function WorkingProduct({ taskId, productInfos }: WorkingProductP
 
   useEffect(() => {
     getComments();
+    setInputschanges({
+      copywriting_description: taskInputs.copywriting_description,
+      creation_description: taskInputs.creation_description
+    });
   }, []);
 
   const handleInputChange = (e: any) => {
@@ -125,7 +141,7 @@ export default function WorkingProduct({ taskId, productInfos }: WorkingProductP
       addToast({
         title: 'Sucesso',
         type: 'success',
-        description: 'Redação enviada.'
+        description: 'Inputs salvos com sucesso.'
       });
     } catch (error) {
       console.log('log post essay', error);
@@ -134,12 +150,30 @@ export default function WorkingProduct({ taskId, productInfos }: WorkingProductP
   }
 
   const handleInputs = (name: string, value: any) => {
-    console.log('log do input', name, value);
+    const newDTO: any = inputsChanges;
+    newDTO[name] = value;
+    setInputschanges({ ...newDTO });
   };
 
-  const handleSaveInputs = () => {
-    console.log('log salvando os inputs');
-  };
+  async function handleSaveInputs() {
+    try {
+      setLoading(true);
+
+      const response = await api.put(`/task/input/${taskId}`, inputsChanges);
+      console.log('log do response', response.data.result);
+
+      addToast({
+        title: 'Sucesso',
+        type: 'success',
+        description: 'Inputs alterados com sucesso.'
+      });
+
+      setLoading(false);
+    } catch (error) {
+      console.log('log do error inputs', error);
+      setLoading(false);
+    }
+  }
 
   async function handleSendComment() {
     try {
@@ -239,18 +273,20 @@ export default function WorkingProduct({ taskId, productInfos }: WorkingProductP
               <InputField>
                 <InputFieldTitle>Input - Pré-requisitos</InputFieldTitle>
                 <WrapperEditor
-                  value={'Teste 1'}
+                  value={taskInputs.copywriting_description}
                   mentionData={[]}
-                  handleOnDescription={(value: any) => handleInputs('prerequisites', value)}
+                  handleOnDescription={(value: any) =>
+                    handleInputs('copywriting_description', value)
+                  }
                 />
               </InputField>
 
               <InputField>
                 <InputFieldTitle>Input Criação</InputFieldTitle>
                 <WrapperEditor
-                  value={'Teste 2'}
+                  value={taskInputs.creation_description}
                   mentionData={[]}
-                  handleOnDescription={(value: any) => handleInputs('creation', value)}
+                  handleOnDescription={(value: any) => handleInputs('creation_description', value)}
                 />
               </InputField>
             </div>
