@@ -277,54 +277,73 @@ export default function Team() {
     });
   };
 
-  const handleCheckDay = (dayIndex: number, value: any) => {
-    const updatedWorkload: any = { ...workDays };
-
+  const handleCheckDay = (value: any) => {
     if (value.start_work === undefined) {
       const newValue = {
         day: value.day,
         start_work: '00:00:00',
         end_work: '00:00:00',
-        pause: value.pause
+        pause: value.pause ? value.pause : []
       };
-      updatedWorkload[dayIndex] = newValue;
-      setWorkDays(updatedWorkload);
+      setWorkDays((prevState) =>
+        prevState.map((obj) => {
+          if (obj.day === value.day) {
+            return {
+              ...obj,
+              start_work: newValue.start_work,
+              end_work: newValue.end_work,
+              pause: newValue.pause
+            };
+          }
+          return obj;
+        })
+      );
     } else {
-      const newValue = {
-        day: value.day,
-        start_work: undefined,
-        end_work: undefined,
-        pause: value.pause
-      };
-      updatedWorkload[dayIndex] = newValue;
-      setWorkDays(updatedWorkload);
+      setWorkDays((prevState) =>
+        prevState.map((obj) => {
+          if (obj.day === value.day) {
+            return {
+              ...obj,
+              start_work: undefined,
+              end_work: undefined,
+              pause: undefined
+            };
+          }
+          return obj;
+        })
+      );
     }
   };
 
-  const handleChangeHours = (dayIndex: number, type: string, value: any) => {
-    console.log('log do change Hours', dayIndex, type, value);
-    const updatedWorkload: any = { ...workDays };
+  const handleChangeHours = (dayName: string, type: string, value: any) => {
+    console.log('log do change Hours', dayName, type, value);
 
     if (type === 'start') {
-      const newValue = {
-        day: workDays[dayIndex].day,
-        start_work: value,
-        end_work: workDays[dayIndex].end_work,
-        pause: workDays[dayIndex].pause
-      };
-      updatedWorkload[dayIndex] = newValue;
-      setWorkDays(updatedWorkload);
+      setWorkDays((prevState) =>
+        prevState.map((obj) => {
+          if (obj.day === dayName) {
+            return {
+              ...obj,
+              start_work: value
+            };
+          }
+          return obj;
+        })
+      );
     }
 
     if (type === 'end') {
-      const newValue = {
-        day: workDays[dayIndex].day,
-        start_work: workDays[dayIndex].start_work,
-        end_work: value,
-        pause: workDays[dayIndex].pause
-      };
-      updatedWorkload[dayIndex] = newValue;
-      setWorkDays(updatedWorkload);
+      setWorkDays((prevState) =>
+        prevState.map((obj) => {
+          if (obj.day === dayName) {
+            return {
+              ...obj,
+              end_work: value
+            };
+          }
+          return obj;
+        })
+      );
     }
   };
 
@@ -416,6 +435,59 @@ export default function Team() {
 
       const response = await api.put(`/team/${modalWorkDays.user}`, updateTeam);
       console.log('log do response', response.data);
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log do erro', error);
+      setLoading(false);
+    }
+  }
+
+  async function handleSubmitWorkDays() {
+    try {
+      setLoading(true);
+
+      const outputObject: any = {};
+
+      for (let i = 0; i < workDays.length; i++) {
+        const currentDay = workDays[i];
+        const nextDay = workDays[i + 1];
+
+        if (currentDay.day) {
+          const dayName = currentDay.day.toLowerCase();
+          outputObject[dayName] = {
+            start_work: currentDay.start_work,
+            end_work: currentDay.end_work,
+            pause: currentDay.pause !== undefined ? currentDay.pause : []
+          };
+
+          // if (nextDay && nextDay.day) {
+          //   addPause(outputObject[dayName], nextDay.start_work, nextDay.end_work);
+          // }
+        }
+      }
+
+      const response = await api.put(`/team/${modalWorkDays.user}`, outputObject);
+      console.log('log do response', response.data);
+      if (response.data.status === 'success') {
+        addToast({
+          type: 'success',
+          title: 'Sucesso',
+          description: 'Carga horária salva com sucesso!'
+        });
+
+        setModalWorkDays({
+          isOpen: false,
+          title: 'Carga horária',
+          user: ''
+        });
+
+        setSelectedBreaks([]);
+        setWorkDays([]);
+        setSelectedBreakDay('');
+        setSelectedTab('Jornada');
+        fetchData();
+      }
 
       setLoading(false);
     } catch (error: any) {
@@ -749,7 +821,7 @@ export default function Team() {
                     <CheckboxDefault
                       label=""
                       name="day_selected"
-                      onChange={() => handleCheckDay(0, workDays[0])}
+                      onChange={() => handleCheckDay(workDays[0])}
                       checked={workDays[0]?.start_work !== undefined ? true : false}
                     />
                   </CardTitleCheck>
@@ -758,7 +830,7 @@ export default function Team() {
                     <DivHour>
                       Início
                       <TimePicker
-                        onChange={(value) => handleChangeHours(0, 'start', value)}
+                        onChange={(value) => handleChangeHours('Sunday', 'start', value)}
                         value={workDays[0]?.start_work ? workDays[0]?.start_work : '00:00:00'}
                         clearIcon={null}
                         clockIcon={null}
@@ -772,7 +844,7 @@ export default function Team() {
                     <DivHour>
                       Fim
                       <TimePicker
-                        onChange={(value) => handleChangeHours(0, 'end', value)}
+                        onChange={(value) => handleChangeHours('Sunday', 'end', value)}
                         value={workDays[0]?.end_work ? workDays[0]?.end_work : '00:00:00'}
                         clearIcon={null}
                         clockIcon={null}
@@ -791,7 +863,7 @@ export default function Team() {
                     <CheckboxDefault
                       label=""
                       name="day_selected"
-                      onChange={() => handleCheckDay(1, workDays[1])}
+                      onChange={() => handleCheckDay(workDays[1])}
                       checked={workDays[1]?.start_work !== undefined ? true : false}
                     />
                   </CardTitleCheck>
@@ -800,7 +872,7 @@ export default function Team() {
                     <DivHour>
                       Início
                       <TimePicker
-                        onChange={(value) => handleChangeHours(1, 'start', value)}
+                        onChange={(value) => handleChangeHours('Monday', 'start', value)}
                         value={workDays[1]?.start_work ? workDays[1]?.start_work : '00:00:00'}
                         clearIcon={null}
                         clockIcon={null}
@@ -814,7 +886,7 @@ export default function Team() {
                     <DivHour>
                       Fim
                       <TimePicker
-                        onChange={(value) => handleChangeHours(1, 'end', value)}
+                        onChange={(value) => handleChangeHours('Monday', 'end', value)}
                         value={workDays[1]?.end_work ? workDays[1]?.end_work : '00:00:00'}
                         clearIcon={null}
                         clockIcon={null}
@@ -833,7 +905,7 @@ export default function Team() {
                     <CheckboxDefault
                       label=""
                       name="day_selected"
-                      onChange={() => handleCheckDay(2, workDays[2])}
+                      onChange={() => handleCheckDay(workDays[2])}
                       checked={workDays[2]?.start_work !== undefined ? true : false}
                     />
                   </CardTitleCheck>
@@ -842,7 +914,7 @@ export default function Team() {
                     <DivHour>
                       Início
                       <TimePicker
-                        onChange={(value) => handleChangeHours(2, 'start', value)}
+                        onChange={(value) => handleChangeHours('Tuesday', 'start', value)}
                         value={workDays[2]?.start_work ? workDays[2]?.start_work : '00:00:00'}
                         clearIcon={null}
                         clockIcon={null}
@@ -856,7 +928,7 @@ export default function Team() {
                     <DivHour>
                       Fim
                       <TimePicker
-                        onChange={(value) => handleChangeHours(2, 'end', value)}
+                        onChange={(value) => handleChangeHours('Tuesday', 'end', value)}
                         value={workDays[2]?.end_work ? workDays[2]?.end_work : '00:00:00'}
                         clearIcon={null}
                         clockIcon={null}
@@ -875,7 +947,7 @@ export default function Team() {
                     <CheckboxDefault
                       label=""
                       name="day_selected"
-                      onChange={() => handleCheckDay(3, workDays[3])}
+                      onChange={() => handleCheckDay(workDays[3])}
                       checked={workDays[3]?.start_work !== undefined ? true : false}
                     />
                   </CardTitleCheck>
@@ -884,7 +956,7 @@ export default function Team() {
                     <DivHour>
                       Início
                       <TimePicker
-                        onChange={(value) => handleChangeHours(3, 'start', value)}
+                        onChange={(value) => handleChangeHours('Wednesday', 'start', value)}
                         value={workDays[3]?.start_work ? workDays[3]?.start_work : '00:00:00'}
                         clearIcon={null}
                         clockIcon={null}
@@ -898,7 +970,7 @@ export default function Team() {
                     <DivHour>
                       Fim
                       <TimePicker
-                        onChange={(value) => handleChangeHours(3, 'end', value)}
+                        onChange={(value) => handleChangeHours('Wednesday', 'end', value)}
                         value={workDays[3]?.end_work ? workDays[3]?.end_work : '00:00:00'}
                         clearIcon={null}
                         clockIcon={null}
@@ -917,7 +989,7 @@ export default function Team() {
                     <CheckboxDefault
                       label=""
                       name="day_selected"
-                      onChange={() => handleCheckDay(4, workDays[4])}
+                      onChange={() => handleCheckDay(workDays[4])}
                       checked={workDays[4]?.start_work !== undefined ? true : false}
                     />
                   </CardTitleCheck>
@@ -926,7 +998,7 @@ export default function Team() {
                     <DivHour>
                       Início
                       <TimePicker
-                        onChange={(value) => handleChangeHours(4, 'start', value)}
+                        onChange={(value) => handleChangeHours('Thursday', 'start', value)}
                         value={workDays[4]?.start_work ? workDays[4]?.start_work : '00:00:00'}
                         clearIcon={null}
                         clockIcon={null}
@@ -940,7 +1012,7 @@ export default function Team() {
                     <DivHour>
                       Fim
                       <TimePicker
-                        onChange={(value) => handleChangeHours(4, 'end', value)}
+                        onChange={(value) => handleChangeHours('Thursday', 'end', value)}
                         value={workDays[4]?.end_work ? workDays[4]?.end_work : '00:00:00'}
                         clearIcon={null}
                         clockIcon={null}
@@ -959,7 +1031,7 @@ export default function Team() {
                     <CheckboxDefault
                       label=""
                       name="day_selected"
-                      onChange={() => handleCheckDay(5, workDays[5])}
+                      onChange={() => handleCheckDay(workDays[5])}
                       checked={workDays[5]?.start_work !== undefined ? true : false}
                     />
                   </CardTitleCheck>
@@ -968,7 +1040,7 @@ export default function Team() {
                     <DivHour>
                       Início
                       <TimePicker
-                        onChange={(value) => handleChangeHours(5, 'start', value)}
+                        onChange={(value) => handleChangeHours('Friday', 'start', value)}
                         value={workDays[5]?.start_work ? workDays[5]?.start_work : '00:00:00'}
                         clearIcon={null}
                         clockIcon={null}
@@ -982,7 +1054,7 @@ export default function Team() {
                     <DivHour>
                       Fim
                       <TimePicker
-                        onChange={(value) => handleChangeHours(5, 'end', value)}
+                        onChange={(value) => handleChangeHours('Friday', 'end', value)}
                         value={workDays[5]?.end_work ? workDays[5]?.end_work : '00:00:00'}
                         clearIcon={null}
                         clockIcon={null}
@@ -1001,7 +1073,7 @@ export default function Team() {
                     <CheckboxDefault
                       label=""
                       name="day_selected"
-                      onChange={() => handleCheckDay(6, workDays[6])}
+                      onChange={() => handleCheckDay(workDays[6])}
                       checked={workDays[6]?.start_work !== undefined ? true : false}
                     />
                   </CardTitleCheck>
@@ -1010,7 +1082,7 @@ export default function Team() {
                     <DivHour>
                       Início
                       <TimePicker
-                        onChange={(value) => handleChangeHours(6, 'start', value)}
+                        onChange={(value) => handleChangeHours('Saturday', 'start', value)}
                         value={workDays[6]?.start_work ? workDays[6]?.start_work : '00:00:00'}
                         clearIcon={null}
                         clockIcon={null}
@@ -1024,7 +1096,7 @@ export default function Team() {
                     <DivHour>
                       Fim
                       <TimePicker
-                        onChange={(value) => handleChangeHours(6, 'end', value)}
+                        onChange={(value) => handleChangeHours('Saturday', 'end', value)}
                         value={workDays[6]?.end_work ? workDays[6]?.end_work : '00:00:00'}
                         clearIcon={null}
                         clockIcon={null}
@@ -1150,7 +1222,7 @@ export default function Team() {
               <ButtonDefault typeButton="lightWhite" isOutline onClick={handleOnCancelWorkload}>
                 Cancelar
               </ButtonDefault>
-              <ButtonDefault typeButton="primary" onClick={handleSubmit}>
+              <ButtonDefault typeButton="primary" onClick={handleSubmitWorkDays}>
                 Salvar
               </ButtonDefault>
             </ModalButtons>
