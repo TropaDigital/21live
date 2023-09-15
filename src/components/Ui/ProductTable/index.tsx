@@ -193,16 +193,16 @@ export default function ProductTable({
                   <td>
                     <div
                       className={
-                        row.status === 'progress'
+                        row.status === 'Em Andamento'
                           ? 'status progress'
-                          : row.status === 'finished'
+                          : row.status === 'Concluída'
                           ? 'status finished'
                           : 'status'
                       }
                     >
-                      {row.status === 'progress'
-                        ? 'Em progresso'
-                        : row.status === 'finished'
+                      {row.status === 'Em Andamento'
+                        ? 'Em Andamento'
+                        : row.status === 'Concluída'
                         ? 'Concluída'
                         : 'Pendente'}
                     </div>
