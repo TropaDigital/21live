@@ -52,6 +52,8 @@ interface TaskDelivery {
   tenant_id: number | string | any;
   product_id: number | string | any; // produto principal, o produto pode ter uma flag que significa que ele lista outros produtos na criação da task
   type?: string | any; //type_id da tabela task_type
+  end_job?: string;
+  start_job?: string;
   flow_id?: number | any;
   flow: string;
   description: string | any; //descricao geral
