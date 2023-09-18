@@ -149,6 +149,7 @@ export const BottomCardTitle = styled.div`
 export const BottomCardInfos = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
 
   background: var(--background-primary);
   border: 1px solid var(--gray-300);
@@ -270,6 +271,7 @@ export const PublicImageWrapper = styled.div`
 export const PublicMessage = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 8px;
   width: 100%;
 
   .message-user {

@@ -364,7 +364,9 @@ export default function ViewRequest() {
                         </DownloadIconBtn>
                         <div
                           className="image"
-                          style={{ backgroundImage: `url(${row.path})` }}
+                          style={{
+                            backgroundImage: `url(https://app.21live.com.br/public/files/tickets/${requestData.ticket_id}/${row.path})`
+                          }}
                         ></div>
                         <HoverIconButton
                           onClick={() => setModalImage({ isOpen: true, path: row.path })}
@@ -450,14 +452,19 @@ export default function ViewRequest() {
                     {row.annex !== '' && (
                       <PublicImageWrapper>
                         <div
-                          style={{ backgroundImage: `url(${row.annex})` }}
+                          style={{
+                            backgroundImage: `url(https://app.21live.com.br/public/files/tickets/${row.ticket_interaction_id}/${row.annex})`
+                          }}
                           className="image-interaction"
                         />
                       </PublicImageWrapper>
                     )}
                     <PublicMessage>
                       <div className="message-user">{row.user_name}</div>
-                      <div className="message-body">{row.message}</div>
+                      <div
+                        className="message-body"
+                        dangerouslySetInnerHTML={{ __html: row.message }}
+                      />
                     </PublicMessage>
                   </PublicMessageImage>
                   <MessageUser>
