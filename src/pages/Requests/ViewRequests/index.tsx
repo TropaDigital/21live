@@ -8,14 +8,17 @@ import HeaderRequest from '../../../components/HeaderRequestPage';
 import { ContainerDefault } from '../../../components/UiElements/styles';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import ModalDefault from '../../../components/Ui/ModalDefault';
+import WrapperEditor from '../../../components/WrapperEditor';
+import UploadFiles, { UploadedFilesProps } from '../../../components/Upload/UploadFiles';
 
 // Icons
-import { BiInfoCircle, BiPlus } from 'react-icons/bi';
+import { BiInfoCircle, BiPlus, BiX } from 'react-icons/bi';
 import { BsImage, BsQuestionCircle, BsReply } from 'react-icons/bs';
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { HiOutlineClock } from 'react-icons/hi';
 import { FaDownload, FaRegCommentAlt, FaSearchPlus } from 'react-icons/fa';
 import { MdClose } from 'react-icons/md';
+import { IoIosChatbubbles } from 'react-icons/io';
 
 // Styles
 import {
@@ -34,9 +37,14 @@ import {
   MessageResponseDate,
   MessageUser,
   ModalImage,
+  ModalInteractionHeader,
+  ModalInteractionWrapper,
+  ModalMessageInfo,
   PublicBottomCard,
+  PublicImageWrapper,
   PublicInteraction,
   PublicMessage,
+  PublicMessageImage,
   PublicMessageWrapper,
   PublicTopCard,
   RequestBottomCard,
@@ -52,8 +60,9 @@ import {
 import moment from 'moment';
 
 // Images
-import PersonImg from '../../../assets/person.jpg';
 import TestImage from '../../../assets/testImage.jpeg';
+import api from '../../../services/api';
+import { useToast } from '../../../hooks/toast';
 
 interface TicketProps {
   ticket_id: string;
@@ -94,19 +103,48 @@ interface TicketProps {
   fields: [];
 }
 
+interface InteractionProps {
+  access: string;
+  annex: string;
+  annex_title: string;
+  avatar: string;
+  created: string;
+  message: string;
+  reply_id: string;
+  status: string;
+  ticket_id: string;
+  ticket_interaction_id: string;
+  updated: string;
+  user_id: string;
+  user_name: string;
+}
+
 interface ModalProps {
   isOpen: boolean;
   path: string;
 }
 
+interface ModalInteractionProps {
+  isOpen: boolean;
+  ticketAnswearId: string;
+}
+
 export default function ViewRequest() {
   const location = useLocation();
+  const { addToast } = useToast();
+  const [loading, setLoading] = useState<boolean>(false);
   const [selectedCardInfo, setSelectedCardInfo] = useState<string>('');
   const [requestData, setRequestData] = useState<TicketProps>();
   const [modalImage, setModalImage] = useState<ModalProps>({
     isOpen: false,
     path: ''
   });
+  const [modalNewInteraction, setModalNewInteraction] = useState<ModalInteractionProps>({
+    isOpen: false,
+    ticketAnswearId: ''
+  });
+  // const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
+  const [newInteractionMessage, setNewInteractionMessage] = useState<string>('');
 
   const titleData = {
     idNumber: location.state.ticket_id,
@@ -116,6 +154,54 @@ export default function ViewRequest() {
   useEffect(() => {
     setRequestData(location.state);
   }, [location]);
+
+  async function handleSubmit() {
+    try {
+      const newInteraction = {
+        ticket_id: requestData?.ticket_id,
+        message: newInteractionMessage,
+        annex: '',
+        reply_id:
+          modalNewInteraction.ticketAnswearId !== '' ? modalNewInteraction.ticketAnswearId : ''
+      };
+
+      setLoading(true);
+      const response = await api.post(`/ticket-interactions`, newInteraction);
+
+      if (response.data.status === 'success') {
+        addToast({
+          title: 'Sucesso',
+          type: 'success',
+          description: 'Interação criada com sucesso.'
+        });
+
+        setModalNewInteraction({
+          isOpen: false,
+          ticketAnswearId: ''
+        });
+      }
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log do error submit new interaction', error);
+      // if (error.response.data.result.length !== 0) {
+      //   error.response.data.result.map((row: any) => {
+      //     addToast({
+      //       title: 'Atenção',
+      //       description: row.error,
+      //       type: 'warning'
+      //     });
+      //   });
+      // } else {
+      //   addToast({
+      //     title: 'Atenção',
+      //     description: error.response.data.message,
+      //     type: 'danger'
+      //   });
+      // }
+      setLoading(false);
+    }
+  }
 
   // async function downloadProposal() {
   //   try {
@@ -214,22 +300,25 @@ export default function ViewRequest() {
                     <div className="side-info">{requestData?.target}</div>
                   </InfoSideCard>
 
-                  <InfoSideCard>
-                    <div className="side-title">Informações Extras e Observações:</div>
-                    <div className="side-info">{requestData?.obs ? requestData.obs : '----'}</div>
-                  </InfoSideCard>
+                  {requestData?.obs !== '' && (
+                    <InfoSideCard>
+                      <div className="side-title">Informações Extras e Observações:</div>
+                      <div className="side-info">{requestData?.obs}</div>
+                    </InfoSideCard>
+                  )}
 
-                  <InfoSideCard>
-                    <div className="side-title">Formato de Arquivo:</div>
-                    <div className="side-info">
-                      {requestData?.file_format ? requestData?.file_format : '---'}
-                    </div>
-                  </InfoSideCard>
+                  {requestData?.file_format !== '' && (
+                    <InfoSideCard>
+                      <div className="side-title">Formato de Arquivo:</div>
+                      <div className="side-info">{requestData?.file_format}</div>
+                    </InfoSideCard>
+                  )}
 
-                  <InfoSideCard>
+                  {/* Aqui preciso descobrir o campo do brinde para verificação */}
+                  {/* <InfoSideCard>
                     <div className="side-title">Brinde:</div>
                     <div className="side-info">Nenhum</div>
-                  </InfoSideCard>
+                  </InfoSideCard> */}
                 </BottomCardInfoSide>
 
                 <BottomCardInfoSide>
@@ -321,8 +410,11 @@ export default function ViewRequest() {
                 >
                   <BiPlus />
                 </div>
-                <div>Criado em 14:53:54 03/08/2023 por Usuário da Tropa Digital</div>
-                <span>@tropa</span>
+                <div>
+                  Criado em {moment(requestData?.created).format('HH:mm:ss DD/MM/YYYY')} por{' '}
+                  {requestData?.user_name.split(' ')[0]}
+                </div>
+                <span>@{requestData?.tenant_name}</span>
               </BottomCardHistory>
             </RequestBottomCard>
           </RequestInfos>
@@ -335,33 +427,66 @@ export default function ViewRequest() {
               Interações públicas
             </div>
 
-            <ButtonDefault typeButton="secondary">
+            <ButtonDefault
+              typeButton="secondary"
+              onClick={() =>
+                setModalNewInteraction({
+                  isOpen: true,
+                  ticketAnswearId: ''
+                })
+              }
+            >
               <BiPlus />
               Nova interação
             </ButtonDefault>
           </PublicTopCard>
 
           <PublicBottomCard>
-            <PublicMessageWrapper>
-              <PublicMessage>
-                <div className="message-user">Usuário da msg</div>
-                <div className="message-body">Teste de mensagem</div>
-              </PublicMessage>
-              <MessageUser>
-                <MessageResponseDate>
-                  <ResponseButton>
-                    <BsReply />
-                    Responder
-                  </ResponseButton>
+            {requestData?.interactions !== undefined &&
+              requestData?.interactions.length > 0 &&
+              requestData.interactions.map((row: InteractionProps) => (
+                <PublicMessageWrapper key={row.ticket_interaction_id}>
+                  <PublicMessageImage>
+                    {row.annex !== '' && (
+                      <PublicImageWrapper>
+                        <div
+                          style={{ backgroundImage: `url(${row.annex})` }}
+                          className="image-interaction"
+                        />
+                      </PublicImageWrapper>
+                    )}
+                    <PublicMessage>
+                      <div className="message-user">{row.user_name}</div>
+                      <div className="message-body">{row.message}</div>
+                    </PublicMessage>
+                  </PublicMessageImage>
+                  <MessageUser>
+                    <MessageResponseDate>
+                      <ResponseButton
+                        onClick={() =>
+                          setModalNewInteraction({
+                            isOpen: true,
+                            ticketAnswearId: row.ticket_interaction_id
+                          })
+                        }
+                      >
+                        <BsReply />
+                        Responder
+                      </ResponseButton>
 
-                  <ClockTimeInfo>
-                    <HiOutlineClock />
-                    {moment('2023/08/06').fromNow()}
-                  </ClockTimeInfo>
-                </MessageResponseDate>
-                <AvatarUser style={{ backgroundImage: `url(${PersonImg})` }} />
-              </MessageUser>
-            </PublicMessageWrapper>
+                      <ClockTimeInfo>
+                        <HiOutlineClock />
+                        {moment(row.created).fromNow()}
+                      </ClockTimeInfo>
+                    </MessageResponseDate>
+                    <AvatarUser
+                      style={{
+                        backgroundImage: `url(https://app.21live.com.br/public/files/user/${row.avatar})`
+                      }}
+                    />
+                  </MessageUser>
+                </PublicMessageWrapper>
+              ))}
           </PublicBottomCard>
         </PublicInteraction>
       </ViewRequestWrapper>
@@ -377,6 +502,59 @@ export default function ViewRequest() {
             <MdClose />
           </div>
         </ModalImage>
+      </ModalDefault>
+
+      <ModalDefault
+        isOpen={modalNewInteraction.isOpen}
+        onOpenChange={() =>
+          setModalNewInteraction({
+            isOpen: false,
+            ticketAnswearId: ''
+          })
+        }
+      >
+        <ModalInteractionWrapper>
+          <ModalInteractionHeader>
+            <div className="header-title">
+              <IoIosChatbubbles />
+              Nova interação - Ticket #{requestData?.ticket_id} - {requestData?.title}
+            </div>
+
+            <div
+              className="close-button"
+              onClick={() =>
+                setModalNewInteraction({
+                  isOpen: false,
+                  ticketAnswearId: ''
+                })
+              }
+            >
+              <BiX size={30} />
+            </div>
+          </ModalInteractionHeader>
+
+          <ModalMessageInfo>
+            <WrapperEditor
+              mentionData={[]}
+              value={newInteractionMessage}
+              handleOnDescription={(value: any) => setNewInteractionMessage(value)}
+            />
+          </ModalMessageInfo>
+
+          {/* <UploadFiles
+            uploadedFiles={uploadedFiles}
+            setUploadedFiles={setUploadedFiles}
+            tenant={7}
+            isDisabed={false}
+            folderInfo="requests"
+            loading={loading}
+            setLoading={setLoading}
+          /> */}
+
+          <ButtonDefault typeButton="primary" onClick={() => handleSubmit()}>
+            Salvar
+          </ButtonDefault>
+        </ModalInteractionWrapper>
       </ModalDefault>
     </ContainerDefault>
   );

@@ -1,4 +1,3 @@
-import { FaDownload } from 'react-icons/fa';
 import styled from 'styled-components';
 
 interface OpenCard {
@@ -234,6 +233,7 @@ export const PublicTopCard = styled.div`
 export const PublicBottomCard = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 24px;
   height: 100%;
 
   padding: 24px;
@@ -243,12 +243,34 @@ export const PublicMessageWrapper = styled.div`
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
+
+  padding: 12px 0;
+`;
+
+export const PublicMessageImage = styled.div`
+  display: flex;
+  align-items: center;
+  width: 55%;
+`;
+
+export const PublicImageWrapper = styled.div`
+  width: 210px;
+  height: 130px;
+
+  border-radius: 4px;
+  overflow: hidden;
+
+  .image-interaction {
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
 `;
 
 export const PublicMessage = styled.div`
   display: flex;
   flex-direction: column;
-  width: 55%;
+  width: 100%;
 
   .message-user {
     color: var(--gray-900);
@@ -280,7 +302,7 @@ export const AvatarUser = styled.div`
   height: 56px;
   border-radius: 50%;
 
-  background-repeat: none;
+  background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
 `;
@@ -444,4 +466,51 @@ export const ModalImage = styled.div`
       transform: scale(1.3);
     }
   }
+`;
+
+export const ModalInteractionWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+`;
+
+export const ModalInteractionHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 1000px;
+  height: 60px;
+
+  border-bottom: 1px solid var(--gray-300);
+
+  color: var(--title-color);
+  font-size: var(--text-small-md);
+  font-weight: var(--weight-medium);
+
+  .header-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .close-button {
+    cursor: pointer;
+    transition: all 0.3s;
+
+    svg {
+      color: #868e96;
+    }
+
+    &:hover {
+      transform: scale(1.2);
+      svg {
+        color: var(--Danger);
+      }
+    }
+  }
+`;
+
+export const ModalMessageInfo = styled.div`
+  width: 100%;
 `;
