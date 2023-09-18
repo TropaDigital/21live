@@ -193,18 +193,18 @@ export default function Requests() {
                   <td>
                     <div
                       className={
-                        row.status === 'progress'
+                        row.status === 'Em Análise'
                           ? 'status progress'
                           : row.status === 'Entregue'
                           ? 'status finished'
                           : 'status'
                       }
                     >
-                      {row.status === 'progress'
-                        ? 'Em progresso'
+                      {row.status === 'Em Análise'
+                        ? 'Em Análise'
                         : row.status === 'Entregue'
-                        ? 'Concluída'
-                        : 'Pendente'}
+                        ? 'Entregue'
+                        : 'Aguardando Aprovação'}
                     </div>
                   </td>
                   <td>{row.user_name}</td>
