@@ -168,11 +168,11 @@ export default function TaskTable({
                             </IconContext.Provider>
                           )}
                         </Flag>
-                        {task.totalTime}
+                        {task.totalTime !== 'undefined' ? task.totalTime : 'Livre'}
                       </div>
                     </td>
                     <td style={{ textTransform: 'capitalize' }}>
-                      {moment(task.copywriting_date_end).format('DD/MMM/YYYY')}
+                      {moment(task.start_job).format('DD/MMM/YYYY')}
                     </td>
                     <td style={{ textTransform: 'capitalize' }}>
                       {moment(task.creation_date_end).format('DD/MMM/YYYY')}
@@ -199,8 +199,8 @@ export default function TaskTable({
                         }
                       >
                         {task.status === 'Em Andamento'
-                          ? 'Em progresso'
-                          : task.status === 'Concluida'
+                          ? 'Em Andamento'
+                          : task.status === 'Concluída'
                           ? 'Concluída'
                           : 'Pendente'}
                       </div>
