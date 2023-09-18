@@ -141,7 +141,7 @@ export default function WorkingProduct({
       addToast({
         title: 'Sucesso',
         type: 'success',
-        description: 'Inputs salvos com sucesso.'
+        description: 'Redação salva com sucesso.'
       });
     } catch (error) {
       console.log('log post essay', error);
