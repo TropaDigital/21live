@@ -351,6 +351,8 @@ export default function Team() {
     const breaks: any[] = [];
 
     if (workDays[dayIndex].start_work !== undefined) {
+      setSelectedBreakDay(dayIndex);
+
       workDays[dayIndex]?.pause?.forEach((obj: any) => {
         breaks.push({
           id: breaks.length + 1,
@@ -359,8 +361,6 @@ export default function Team() {
           start_pause: obj.start_pause
         });
       });
-
-      setSelectedBreakDay(dayIndex);
     } else {
       addToast({
         type: 'warning',
