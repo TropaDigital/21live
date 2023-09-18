@@ -281,8 +281,8 @@ export default function Team() {
     if (value.start_work === undefined) {
       const newValue = {
         day: value.day,
-        start_work: '00:00:00',
-        end_work: '00:00:00',
+        start_work: '00:00',
+        end_work: '00:00',
         pause: value.pause ? value.pause : []
       };
       setWorkDays((prevState) =>
@@ -348,17 +348,28 @@ export default function Team() {
   };
 
   const handleSelectedBreakDay = (dayIndex: any) => {
-    setSelectedBreakDay(dayIndex);
     const breaks: any[] = [];
 
-    workDays[dayIndex]?.pause?.forEach((obj: any) => {
-      breaks.push({
-        id: breaks.length + 1,
-        name: '',
-        end_pause: obj.end_pause,
-        start_pause: obj.start_pause
+    if (workDays[dayIndex].start_work !== undefined) {
+      workDays[dayIndex]?.pause?.forEach((obj: any) => {
+        breaks.push({
+          id: breaks.length + 1,
+          name: '',
+          end_pause: obj.end_pause,
+          start_pause: obj.start_pause
+        });
       });
-    });
+
+      setSelectedBreakDay(dayIndex);
+    } else {
+      addToast({
+        type: 'warning',
+        title: 'Aviso!',
+        description: 'Dia não selecionado na jornada, não possível adicionar pausa'
+      });
+
+      //   setSelectedTab('Jornada');
+    }
 
     setSelectedBreaks(breaks);
   };
@@ -436,6 +447,12 @@ export default function Team() {
       const response = await api.put(`/team/${modalWorkDays.user}`, updateTeam);
       console.log('log do response', response.data);
 
+      setSelectedBreaks([]);
+      setWorkDays([]);
+      setSelectedBreakDay('');
+      setSelectedTab('Jornada');
+      fetchData();
+
       setLoading(false);
     } catch (error: any) {
       console.log('log do erro', error);
@@ -453,7 +470,7 @@ export default function Team() {
         const currentDay = workDays[i];
         const nextDay = workDays[i + 1];
 
-        if (currentDay.day) {
+        if (currentDay.day && currentDay.start_work !== undefined) {
           const dayName = currentDay.day.toLowerCase();
           outputObject[dayName] = {
             start_work: currentDay.start_work,
@@ -466,6 +483,8 @@ export default function Team() {
           // }
         }
       }
+
+      //   console.log('log do object', outputObject);
 
       const response = await api.put(`/team/${modalWorkDays.user}`, outputObject);
       console.log('log do response', response.data);
@@ -831,12 +850,12 @@ export default function Team() {
                       Início
                       <TimePicker
                         onChange={(value) => handleChangeHours('Sunday', 'start', value)}
-                        value={workDays[0]?.start_work ? workDays[0]?.start_work : '00:00:00'}
+                        value={workDays[0]?.start_work ? workDays[0]?.start_work : '00:00'}
                         clearIcon={null}
                         clockIcon={null}
                         locale="pt-BR"
                         disableClock={true}
-                        maxDetail="second"
+                        maxDetail="minute"
                         disabled={workDays[0]?.start_work === undefined ? true : false}
                       />
                     </DivHour>
@@ -845,12 +864,12 @@ export default function Team() {
                       Fim
                       <TimePicker
                         onChange={(value) => handleChangeHours('Sunday', 'end', value)}
-                        value={workDays[0]?.end_work ? workDays[0]?.end_work : '00:00:00'}
+                        value={workDays[0]?.end_work ? workDays[0]?.end_work : '00:00'}
                         clearIcon={null}
                         clockIcon={null}
                         locale="pt-BR"
                         disableClock={true}
-                        maxDetail="second"
+                        maxDetail="minute"
                         disabled={workDays[0]?.start_work === undefined ? true : false}
                       />
                     </DivHour>
@@ -873,12 +892,12 @@ export default function Team() {
                       Início
                       <TimePicker
                         onChange={(value) => handleChangeHours('Monday', 'start', value)}
-                        value={workDays[1]?.start_work ? workDays[1]?.start_work : '00:00:00'}
+                        value={workDays[1]?.start_work ? workDays[1]?.start_work : '00:00'}
                         clearIcon={null}
                         clockIcon={null}
                         locale="pt-BR"
                         disableClock={true}
-                        maxDetail="second"
+                        maxDetail="minute"
                         disabled={workDays[1]?.start_work === undefined ? true : false}
                       />
                     </DivHour>
@@ -887,12 +906,12 @@ export default function Team() {
                       Fim
                       <TimePicker
                         onChange={(value) => handleChangeHours('Monday', 'end', value)}
-                        value={workDays[1]?.end_work ? workDays[1]?.end_work : '00:00:00'}
+                        value={workDays[1]?.end_work ? workDays[1]?.end_work : '00:00'}
                         clearIcon={null}
                         clockIcon={null}
                         locale="pt-BR"
                         disableClock={true}
-                        maxDetail="second"
+                        maxDetail="minute"
                         disabled={workDays[1]?.start_work === undefined ? true : false}
                       />
                     </DivHour>
@@ -915,12 +934,12 @@ export default function Team() {
                       Início
                       <TimePicker
                         onChange={(value) => handleChangeHours('Tuesday', 'start', value)}
-                        value={workDays[2]?.start_work ? workDays[2]?.start_work : '00:00:00'}
+                        value={workDays[2]?.start_work ? workDays[2]?.start_work : '00:00'}
                         clearIcon={null}
                         clockIcon={null}
                         locale="pt-BR"
                         disableClock={true}
-                        maxDetail="second"
+                        maxDetail="minute"
                         disabled={workDays[2]?.start_work === undefined ? true : false}
                       />
                     </DivHour>
@@ -929,12 +948,12 @@ export default function Team() {
                       Fim
                       <TimePicker
                         onChange={(value) => handleChangeHours('Tuesday', 'end', value)}
-                        value={workDays[2]?.end_work ? workDays[2]?.end_work : '00:00:00'}
+                        value={workDays[2]?.end_work ? workDays[2]?.end_work : '00:00'}
                         clearIcon={null}
                         clockIcon={null}
                         locale="pt-BR"
                         disableClock={true}
-                        maxDetail="second"
+                        maxDetail="minute"
                         disabled={workDays[2]?.start_work === undefined ? true : false}
                       />
                     </DivHour>
@@ -957,12 +976,12 @@ export default function Team() {
                       Início
                       <TimePicker
                         onChange={(value) => handleChangeHours('Wednesday', 'start', value)}
-                        value={workDays[3]?.start_work ? workDays[3]?.start_work : '00:00:00'}
+                        value={workDays[3]?.start_work ? workDays[3]?.start_work : '00:00'}
                         clearIcon={null}
                         clockIcon={null}
                         locale="pt-BR"
                         disableClock={true}
-                        maxDetail="second"
+                        maxDetail="minute"
                         disabled={workDays[3]?.start_work === undefined ? true : false}
                       />
                     </DivHour>
@@ -971,12 +990,12 @@ export default function Team() {
                       Fim
                       <TimePicker
                         onChange={(value) => handleChangeHours('Wednesday', 'end', value)}
-                        value={workDays[3]?.end_work ? workDays[3]?.end_work : '00:00:00'}
+                        value={workDays[3]?.end_work ? workDays[3]?.end_work : '00:00'}
                         clearIcon={null}
                         clockIcon={null}
                         locale="pt-BR"
                         disableClock={true}
-                        maxDetail="second"
+                        maxDetail="minute"
                         disabled={workDays[3]?.start_work === undefined ? true : false}
                       />
                     </DivHour>
@@ -999,12 +1018,12 @@ export default function Team() {
                       Início
                       <TimePicker
                         onChange={(value) => handleChangeHours('Thursday', 'start', value)}
-                        value={workDays[4]?.start_work ? workDays[4]?.start_work : '00:00:00'}
+                        value={workDays[4]?.start_work ? workDays[4]?.start_work : '00:00'}
                         clearIcon={null}
                         clockIcon={null}
                         locale="pt-BR"
                         disableClock={true}
-                        maxDetail="second"
+                        maxDetail="minute"
                         disabled={workDays[4]?.start_work === undefined ? true : false}
                       />
                     </DivHour>
@@ -1013,12 +1032,12 @@ export default function Team() {
                       Fim
                       <TimePicker
                         onChange={(value) => handleChangeHours('Thursday', 'end', value)}
-                        value={workDays[4]?.end_work ? workDays[4]?.end_work : '00:00:00'}
+                        value={workDays[4]?.end_work ? workDays[4]?.end_work : '00:00'}
                         clearIcon={null}
                         clockIcon={null}
                         locale="pt-BR"
                         disableClock={true}
-                        maxDetail="second"
+                        maxDetail="minute"
                         disabled={workDays[4]?.start_work === undefined ? true : false}
                       />
                     </DivHour>
@@ -1041,12 +1060,12 @@ export default function Team() {
                       Início
                       <TimePicker
                         onChange={(value) => handleChangeHours('Friday', 'start', value)}
-                        value={workDays[5]?.start_work ? workDays[5]?.start_work : '00:00:00'}
+                        value={workDays[5]?.start_work ? workDays[5]?.start_work : '00:00'}
                         clearIcon={null}
                         clockIcon={null}
                         locale="pt-BR"
                         disableClock={true}
-                        maxDetail="second"
+                        maxDetail="minute"
                         disabled={workDays[5]?.start_work === undefined ? true : false}
                       />
                     </DivHour>
@@ -1055,12 +1074,12 @@ export default function Team() {
                       Fim
                       <TimePicker
                         onChange={(value) => handleChangeHours('Friday', 'end', value)}
-                        value={workDays[5]?.end_work ? workDays[5]?.end_work : '00:00:00'}
+                        value={workDays[5]?.end_work ? workDays[5]?.end_work : '00:00'}
                         clearIcon={null}
                         clockIcon={null}
                         locale="pt-BR"
                         disableClock={true}
-                        maxDetail="second"
+                        maxDetail="minute"
                         disabled={workDays[5]?.start_work === undefined ? true : false}
                       />
                     </DivHour>
@@ -1083,12 +1102,12 @@ export default function Team() {
                       Início
                       <TimePicker
                         onChange={(value) => handleChangeHours('Saturday', 'start', value)}
-                        value={workDays[6]?.start_work ? workDays[6]?.start_work : '00:00:00'}
+                        value={workDays[6]?.start_work ? workDays[6]?.start_work : '00:00'}
                         clearIcon={null}
                         clockIcon={null}
                         locale="pt-BR"
                         disableClock={true}
-                        maxDetail="second"
+                        maxDetail="minute"
                         disabled={workDays[6]?.start_work === undefined ? true : false}
                       />
                     </DivHour>
@@ -1097,12 +1116,12 @@ export default function Team() {
                       Fim
                       <TimePicker
                         onChange={(value) => handleChangeHours('Saturday', 'end', value)}
-                        value={workDays[6]?.end_work ? workDays[6]?.end_work : '00:00:00'}
+                        value={workDays[6]?.end_work ? workDays[6]?.end_work : '00:00'}
                         clearIcon={null}
                         clockIcon={null}
                         locale="pt-BR"
                         disableClock={true}
-                        maxDetail="second"
+                        maxDetail="minute"
                         disabled={workDays[6]?.start_work === undefined ? true : false}
                       />
                     </DivHour>
@@ -1187,7 +1206,7 @@ export default function Team() {
                             clockIcon={null}
                             locale="pt-BR"
                             disableClock={true}
-                            maxDetail="second"
+                            maxDetail="minute"
                           />
                         </DivHour>
 
@@ -1200,7 +1219,7 @@ export default function Team() {
                             clockIcon={null}
                             locale="pt-BR"
                             disableClock={true}
-                            maxDetail="second"
+                            maxDetail="minute"
                           />
                         </DivHour>
                       </CardHours>
