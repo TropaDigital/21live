@@ -466,6 +466,11 @@ export default function ViewProductsDeliveries() {
     };
   }, [hideRightCard]);
 
+  // useEffect(() => {
+  //   console.log('log do type of play', typeOfPlay);
+  //   console.log('log do selectedProducts', selectedProduct);
+  // }, [selectedProduct, typeOfPlay]);
+
   return (
     <ContainerDefault>
       <DeliveryWrapper>
@@ -520,7 +525,7 @@ export default function ViewProductsDeliveries() {
             selectedProduct !== '' && (
               <CardTaskPlay
                 cardTitle="Iniciar atividade"
-                dataTime={data ? data?.estimatedTime : ''}
+                dataTime={data ? data?.estimatedTime : '00:00:00'}
                 isPlayingTime={handlePlayingType}
                 taskIsFinished={dataTask?.status === 'Concluida' ? true : false}
                 elapsedTimeBack={elapsedTimeExist}
@@ -530,11 +535,39 @@ export default function ViewProductsDeliveries() {
             )}
 
           {dataProducts?.status !== 'Concluida' &&
+            typeOfPlay === 'schedule' &&
+            selectedProduct === '' && (
+              <CardTaskPlay
+                cardTitle="Iniciar atividade"
+                dataTime={data ? data?.estimatedTime : '00:00:00'}
+                isPlayingTime={handlePlayingType}
+                taskIsFinished={dataTask?.status === 'Concluida' ? true : false}
+                elapsedTimeBack={elapsedTimeExist}
+                stopThePlay={timeIsPlaying}
+                blockPlay={blockPlayButton}
+              />
+            )}
+
+          {dataProducts?.status !== 'Concluida' &&
+            typeOfPlay === 'schedule' &&
+            selectedProduct !== '' && (
+              <CardTaskPlay
+                cardTitle="Iniciar atividade"
+                dataTime={data ? data?.estimatedTime : '00:00:00'}
+                isPlayingTime={handlePlayingType}
+                taskIsFinished={dataTask?.status === 'Concluida' ? true : false}
+                elapsedTimeBack={elapsedTimeExist}
+                stopThePlay={timeIsPlaying}
+                blockPlay={true}
+              />
+            )}
+
+          {dataProducts?.status !== 'Concluida' &&
             typeOfPlay === 'product' &&
             selectedProduct === '' && (
               <CardTaskPlay
                 cardTitle="Iniciar atividade"
-                dataTime={data ? data?.estimatedTime : ''}
+                dataTime={data ? data?.estimatedTime : '00:00:00'}
                 isPlayingTime={handlePlayingType}
                 taskIsFinished={dataTask?.status === 'Concluida' ? true : false}
                 elapsedTimeBack={elapsedTimeExist}
