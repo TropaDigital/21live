@@ -1,6 +1,6 @@
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 // Icons
 import { IconArrowLeft } from '../../assets/icons';
@@ -22,9 +22,12 @@ interface TitleProps {
 
 export default function HeaderRequest({ title }: HeaderRequestProps) {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const ticketInfos = location.state;
 
   const handleBaseTask = () => {
-    console.log('log que cliquei para usar de base para task');
+    navigate('/criar-tarefa', { state: ticketInfos });
   };
 
   return (
