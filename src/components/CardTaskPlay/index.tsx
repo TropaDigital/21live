@@ -84,6 +84,10 @@ export default function CardTaskPlay({
     ).padStart(2, '0')}`;
   };
 
+  useEffect(() => {
+    console.log('log do dataTime =>', dataTime);
+  }, [dataTime]);
+
   return (
     <CardWrapper>
       <CardTitle>{cardTitle}</CardTitle>
@@ -108,7 +112,7 @@ export default function CardTaskPlay({
         </StopWatchTimer>
       </PlayTimer>
       <EstimatedTime>
-        Tempo estimado: <span>{dataTime}</span>
+        Tempo estimado: <span>{dataTime !== 'undefined' ? dataTime : 'Livre'}</span>
       </EstimatedTime>
     </CardWrapper>
   );
