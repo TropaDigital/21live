@@ -128,6 +128,56 @@ interface ILocation {
   state: ITaskCreate;
 }
 
+interface ITicketProps {
+  ticket_id: string;
+  tenant_id: string;
+  ticket_cat_id: string;
+  ticket_status_id: string;
+  user_id: string;
+  organization_id: string;
+  media_id: string;
+  title: string;
+  width: string;
+  height: string;
+  info: string;
+  target: string;
+  obs: string;
+  file_format: string;
+  workminutes: string;
+  deadline: string;
+  created: string;
+  updated: string;
+  finished: string;
+  tenant_name: string;
+  user_name: string;
+  status: string;
+  organization_name: string;
+  media_name: string;
+  measure: string;
+  value: string;
+  media_cat_id: string;
+  midia_cat_title: string;
+  files: [];
+  interactions: [
+    {
+      ticket_interaction_id: string;
+      ticket_id: string;
+      reply_id: string;
+      user_id: string;
+      message: string;
+      annex: string;
+      annex_title: string;
+      status: string;
+      access: string;
+      created: string;
+      updated: string;
+      user_name: string;
+      avatar: string;
+    }
+  ];
+  fields: [];
+}
+
 type HandleOnChange = (
   event:
     | React.ChangeEvent<HTMLInputElement>
@@ -140,7 +190,7 @@ export default function CreateTasks() {
   const [createStep, setCreateStep] = useState<number>(1);
   const { addToast } = useToast();
   const { user } = useAuth();
-  const location: ILocation = useLocation();
+  const location = useLocation();
 
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const [error, setError] = useState<StateProps>({});
@@ -153,6 +203,7 @@ export default function CreateTasks() {
     organization_id: '',
     product_id: '',
     flow_id: '',
+    ticket_id: '',
     description: '',
     creation_description: '',
     creation_date_end: '',
@@ -276,7 +327,20 @@ export default function CreateTasks() {
   };
 
   useEffect(() => {
-    if (location.state !== null) {
+    if (location.state !== null && location.state.ticket_id !== '') {
+      fetchProjects();
+      setProductsArray([]);
+      setDTOForm((prevState: any) => ({
+        ...prevState,
+        ['tenant_id']: location.state.tenant_id
+      }));
+      setDTOForm((prevState: any) => ({
+        ...prevState,
+        ['ticket_id']: location.state.ticket_id
+      }));
+    }
+
+    if (location.state !== null && location.state.task_id) {
       fetchProjects();
       setProductsArray([]);
       setDTOForm(location.state);
@@ -1380,13 +1444,21 @@ export default function CreateTasks() {
         handleChangeInput(e);
       }
     } else if (e.target.name === 'tenant_id') {
-      const id = e.target.value;
-      const selectedClient: any = dataClient?.filter((obj: any) => obj.tenant_id === id);
-      setSelectedSummaryInfos((prevState: any) => ({
-        ...prevState,
-        ['client']: selectedClient[0]
-      }));
-      handleChangeInput(e);
+      if (DTOForm.tenant_id !== '' && DTOForm.ticket_id !== '') {
+        addToast({
+          type: 'warning',
+          title: 'ATENÇÃO',
+          description: 'Não é possivel alterar o cliente ao criar tarefa com base no ticket'
+        });
+      } else {
+        const id = e.target.value;
+        const selectedClient: any = dataClient?.filter((obj: any) => obj.tenant_id === id);
+        setSelectedSummaryInfos((prevState: any) => ({
+          ...prevState,
+          ['client']: selectedClient[0]
+        }));
+        handleChangeInput(e);
+      }
     } else if (e.target.name === 'flow_id') {
       const id = e.target.value;
       const selectedFlow: any = dataFlow?.filter((obj: any) => obj.flow_id === id);
@@ -1511,9 +1583,9 @@ export default function CreateTasks() {
   //   console.log('log do Delivery DTO', DTODelivery);
   // }, [DTODelivery]);
 
-  // useEffect(() => {
-  //   console.log('Log do DTO', DTOForm);
-  // }, [DTOForm]);
+  useEffect(() => {
+    console.log('Log do DTO', DTOForm);
+  }, [DTOForm]);
 
   // useEffect(() => {
   //   console.log('log dos erros', errorCategory);
