@@ -58,10 +58,12 @@ import {
 
 // Libraries
 import moment from 'moment';
+import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
 
-// Images
-import TestImage from '../../../assets/testImage.jpeg';
+// Services
 import api from '../../../services/api';
+
+// Hooks
 import { useToast } from '../../../hooks/toast';
 
 interface TicketProps {
@@ -359,9 +361,7 @@ export default function ViewRequest() {
                   <ImagesWrapper>
                     {requestData?.files.map((row: any, index: number) => (
                       <ImageCard key={index}>
-                        <DownloadIconBtn>
-                          <FaDownload />
-                        </DownloadIconBtn>
+                        <DownloadIconBtn>{/* <FaDownload /> */}</DownloadIconBtn>
                         <div
                           className="image"
                           style={{
@@ -449,7 +449,7 @@ export default function ViewRequest() {
               requestData.interactions.map((row: InteractionProps) => (
                 <PublicMessageWrapper key={row.ticket_interaction_id}>
                   <PublicMessageImage>
-                    {row.annex !== '' && (
+                    {row.annex !== '' && row.annex.split('.')[1] !== 'pptx' && (
                       <PublicImageWrapper>
                         <div
                           style={{
@@ -458,6 +458,16 @@ export default function ViewRequest() {
                           className="image-interaction"
                         />
                       </PublicImageWrapper>
+                    )}
+                    {row.annex !== '' && row.annex.split('.')[1] === 'pptx' && (
+                      <DocViewer
+                        documents={[
+                          {
+                            uri: `https://app.21live.com.br/public/files/tickets/${location.state.ticket_id}/${row.annex}`,
+                            fileType: 'pptx'
+                          }
+                        ]}
+                      />
                     )}
                     <PublicMessage>
                       <div className="message-user">{row.user_name}</div>
@@ -498,19 +508,25 @@ export default function ViewRequest() {
         </PublicInteraction>
       </ViewRequestWrapper>
 
+      {/* Modal image preview */}
       <ModalDefault
         isOpen={modalImage.isOpen}
         title={'Image'}
         onOpenChange={() => setModalImage({ isOpen: false, path: '' })}
         maxWidth="80%"
       >
-        <ModalImage style={{ backgroundImage: `url(${TestImage})` }}>
+        <ModalImage
+          style={{
+            backgroundImage: `url(https://app.21live.com.br/public/files/tickets/${requestData?.ticket_id}/${modalImage.path})`
+          }}
+        >
           <div className="close-button" onClick={() => setModalImage({ isOpen: false, path: '' })}>
             <MdClose />
           </div>
         </ModalImage>
       </ModalDefault>
 
+      {/* Modal interaction */}
       <ModalDefault
         isOpen={modalNewInteraction.isOpen}
         onOpenChange={() =>

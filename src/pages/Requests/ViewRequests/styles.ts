@@ -251,7 +251,13 @@ export const PublicMessageWrapper = styled.div`
 export const PublicMessageImage = styled.div`
   display: flex;
   align-items: center;
+  gap: 8px;
+
   width: 55%;
+
+  #react-doc-viewer #header-bar {
+    display: none;
+  }
 `;
 
 export const PublicImageWrapper = styled.div`
