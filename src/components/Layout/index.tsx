@@ -15,6 +15,8 @@ import {
   IconFlux
 } from '../../assets/icons';
 import { HiOutlineTicket } from 'react-icons/hi';
+import { TbCheckupList } from 'react-icons/tb';
+import { HiOutlineClipboardList } from 'react-icons/hi';
 
 // Components
 import ScrollAreas from '../Ui/ScrollAreas';
@@ -28,6 +30,8 @@ export default function Layout() {
   const [modalActive, setModalActive] = useState(false);
   const location = useLocation();
   const TicketsIcon = HiOutlineTicket;
+  const MyTasksIcon = TbCheckupList;
+  const ClipboardTask = HiOutlineClipboardList;
 
   return (
     <Container>
@@ -58,19 +62,19 @@ export default function Layout() {
             {
               to: '/tarefas',
               name: 'Tarefas',
-              icon: IconClipboard,
+              icon: ClipboardTask,
               identifier: '21jobs_task_manager'
             },
             {
               to: '/minhas-tarefas',
               name: 'Minhas tarefas',
-              icon: IconClipboard,
+              icon: MyTasksIcon,
               identifier: '21jobs_task_execute'
             },
             {
               to: '/minhas-tarefas',
               name: 'Minhas tarefas',
-              icon: IconClipboard,
+              icon: MyTasksIcon,
               identifier: '21jobs_task_essay'
             },
             {
