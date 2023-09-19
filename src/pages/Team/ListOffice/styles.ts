@@ -34,3 +34,9 @@ export const PermissionsList = styled.div`
     text-transform: capitalize;
   }
 `;
+
+export const SwitchField = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;

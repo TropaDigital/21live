@@ -35,13 +35,16 @@ import {
 
 // Libraries
 import Switch from 'react-switch';
+import { SwitchSelector } from '../../../components/CardProductsSelected/styles';
+import InputSwitchDefault from '../../../components/Inputs/InputSwitchDefault';
+import { SwitchField } from './styles';
 
 interface OfficeProps {
   function_id: number;
   tenant_id: string;
   function: string;
   description: string;
-  permissions?: string;
+  show_hours: boolean;
 }
 
 // interface PermissionProps {
@@ -52,11 +55,12 @@ interface OfficeProps {
 
 export default function ListOffice() {
   const { addToast } = useToast();
-  const { formData, setData, handleOnChange } = useForm({
+  const { formData, setData, handleOnChange, handleOnChangeSwitch } = useForm({
     function_id: 0,
     tenant_id: '',
     function: '',
-    description: ''
+    description: '',
+    show_hours: false
   } as OfficeProps);
 
   const [modal, setModal] = useState({
@@ -73,6 +77,13 @@ export default function ListOffice() {
   const { data, fetchData } = useFetch<OfficeProps[]>(`function?=${search}`);
   // const [permissionFor, setPermissionFor] = useState<any[]>([]);
   // const [permissionsData, setPermissionsData] = useState<PermissionProps[]>([]);
+  const [showHours, setShowHours] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (formData.show_hours) {
+      setShowHours(true);
+    }
+  }, [formData]);
 
   const handleOnCancel = useCallback(() => {
     setModal({
@@ -153,6 +164,10 @@ export default function ListOffice() {
     },
     [formData, addToast, fetchData, handleOnCancel, modal]
   );
+
+  // const handleSwitch = (value: any) => {
+  //   setShowHours(value);
+  // };
 
   // const handlePermissions = (id: any) => {
   //   if (permissionFor.includes(id)) {
@@ -281,6 +296,18 @@ export default function ListOffice() {
               value={formData.description}
             />
           </FieldDefault>
+          <SwitchField>
+            <Switch
+              onChange={(value: any) => setShowHours(value)}
+              checked={showHours}
+              uncheckedIcon={false}
+              checkedIcon={false}
+              onColor="#0046B5"
+              width={40}
+              height={21}
+            />
+            Exibir horas
+          </SwitchField>
           {/* <PermissionsWrapper>
             <PermissionsTitle>Permissões</PermissionsTitle>
             <PermissionsList>
