@@ -523,11 +523,11 @@ export default function Team() {
     setSelectedTab('Jornada');
   };
 
-  useEffect(() => {
-    console.log('log das pausas', selectedBreaks);
-    console.log('log dos workdays', workDays);
-    console.log('log do dia selecionado', selectedBreakDay);
-  }, [selectedBreaks, workDays, selectedBreakDay]);
+  // useEffect(() => {
+  //   console.log('log das pausas', selectedBreaks);
+  //   console.log('log dos workdays', workDays);
+  //   console.log('log do dia selecionado', selectedBreakDay);
+  // }, [selectedBreaks, workDays, selectedBreakDay]);
 
   return (
     <ContainerDefault>
