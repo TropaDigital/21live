@@ -76,23 +76,23 @@ interface UserProps {
   birthday: string;
   cost_per_hour: string;
   email: string;
-  friday: any;
+  friday?: any;
   function: string;
   function_id: number;
   hiring_date: string;
-  monday: any;
+  monday?: any;
   name: string;
   phone: string;
-  saturday: any;
-  sunday: any;
+  saturday?: any;
+  sunday?: any;
   tasks: number;
   tenant_id: number;
-  thursday: any;
-  tuesday: any;
+  thursday?: any;
+  tuesday?: any;
   user_id: number;
   username: string;
-  wednesday: any;
-  journey: string;
+  wednesday?: any;
+  journey?: string;
   password: string;
   confirmPassword: string;
 }
@@ -127,14 +127,7 @@ export default function Team() {
     tenant_id: 0,
     user_id: 0,
     password: '',
-    confirmPassword: '',
-    friday: '',
-    monday: '',
-    saturday: '',
-    sunday: '',
-    thursday: '',
-    tuesday: '',
-    wednesday: ''
+    confirmPassword: ''
   } as UserProps);
   const [modal, setModal] = useState({
     isOpen: false,
@@ -222,6 +215,9 @@ export default function Team() {
 
         // Inserir lógica
         const { hiring_date, birthday } = formData;
+        if (formData.journey === '') {
+          delete formData.journey;
+        }
 
         const newFormData = {
           ...formData,
