@@ -200,7 +200,7 @@ export default function DeliveryTable({
                             </IconContext.Provider>
                           )}
                         </Flag>
-                        {delivery.totalTime}
+                        {delivery.totalTime !== 'undefined' ? delivery.totalTime : 'Livre'}
                       </div>
                     </td>
                     <td style={{ textTransform: 'capitalize' }}>
