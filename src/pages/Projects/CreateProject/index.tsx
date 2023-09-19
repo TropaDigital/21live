@@ -708,6 +708,11 @@ export default function CreateProject() {
     }
   };
 
+  const handleFinishWithoutFiles = () => {
+    setFinishModal(false);
+    navigate('/projetos');
+  };
+
   // useEffect(() => {
   //   console.log('log do DTOTEAM =>', DTOForm.team);
   // }, [DTOForm]);
@@ -1076,7 +1081,7 @@ export default function CreateProject() {
                 <div className="modal-subtitle">Deseja enviar arquivos para esse projeto?</div>
               </FinishModalMessage>
               <FinishModalButtons>
-                <ButtonDefault typeButton="dark" isOutline onClick={() => setFinishModal(false)}>
+                <ButtonDefault typeButton="dark" isOutline onClick={handleFinishWithoutFiles}>
                   Cancelar
                 </ButtonDefault>
                 <ButtonDefault typeButton="primary" onClick={() => setSendFiles(true)}>
