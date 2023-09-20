@@ -46,7 +46,6 @@ export default function FilterMenu({ filterProps, applyFilters, clearFilters }: 
 
   const handleAddFilters: HandleOnChange = (event) => {
     const { name, value } = event.target;
-    console.log('log do add filter', name, value);
     setChoosenFilter({ ...choosenFilters, [name]: value });
   };
 
@@ -77,7 +76,7 @@ export default function FilterMenu({ filterProps, applyFilters, clearFilters }: 
           <InputDefault
             label="Código"
             name="search"
-            placeholder="Busque pelo título..."
+            placeholder="Busque pelo código..."
             onChange={(event) => setSearchTerm(event.target.value)}
             value={searchTerm}
             icon={BiSearchAlt}
@@ -137,7 +136,7 @@ export default function FilterMenu({ filterProps, applyFilters, clearFilters }: 
           <InputDefault
             label="De"
             placeholder="dd/mm/aaaa"
-            name="dateStart"
+            name="fromDate"
             type="date"
             icon={BiCalendar}
             onChange={handleAddFilters}
