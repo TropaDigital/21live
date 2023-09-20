@@ -886,6 +886,14 @@ export default function CreateTasks() {
 
         if (splitDeliveries && location.state === null) {
           DTODelivery.map((current: DeliveryProps) => {
+            if (current.deliveryProducts.length === 0) {
+              throw new Error(
+                'Existem entregas sem produto! Exclua a entrega ou adicione um produto para continuar'
+              );
+            }
+          });
+
+          DTODelivery.map((current: DeliveryProps) => {
             current.deliveryProducts.map((obj: any) => {
               if (obj.reason_change === '' || obj.reason_change === undefined) {
                 // console.log('log se tiver erro', DTODelivery);
@@ -1775,7 +1783,7 @@ export default function CreateTasks() {
                     taskType={tasksType}
                     updateTask={location.state !== null}
                     handleInputChange={handleChangeInput}
-                    estimatedTotalTime={() => ''}
+                    estimatedtotalTime={() => ''}
                     error={error}
                   />
                 </>
@@ -1799,7 +1807,7 @@ export default function CreateTasks() {
                   taskType={tasksType}
                   updateTask={location.state !== null}
                   handleInputChange={handleChangeInput}
-                  estimatedTotalTime={setEstimatedTime}
+                  estimatedtotalTime={setEstimatedTime}
                   error={error}
                 />
               )}
@@ -1817,7 +1825,7 @@ export default function CreateTasks() {
                   taskType={tasksType}
                   updateTask={location.state !== null}
                   handleInputChange={handleChangeInput}
-                  estimatedTotalTime={() => ''}
+                  estimatedtotalTime={() => ''}
                   error={error}
                 />
               )}
