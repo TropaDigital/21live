@@ -66,14 +66,14 @@ function subtractTime(timePassed: string, timeToSubtract: string): string {
   return formattedTime;
 }
 
-function isTimeConsumedMoreThanPercent(timePassed: string, totalTime: string): string {
+function isTimeConsumedMoreThanPercent(timePassed: string, total_time: string): string {
   const timePassedArray: number[] = timePassed?.split(':').map(Number);
-  const totalTimeArray: number[] = totalTime?.split(':').map(Number);
+  const total_timeArray: number[] = total_time?.split(':').map(Number);
 
   const passedSeconds: number =
     timePassedArray[0] * 3600 + timePassedArray[1] * 60 + timePassedArray[2];
   const totalSeconds: number =
-    totalTimeArray[0] * 3600 + totalTimeArray[1] * 60 + totalTimeArray[2];
+    total_timeArray[0] * 3600 + total_timeArray[1] * 60 + total_timeArray[2];
 
   const consumedPercentage: number = (passedSeconds / totalSeconds) * 100;
   if (consumedPercentage > 50) {
