@@ -213,10 +213,15 @@ export default function InfoDeliveries({
 
   const handleDeliveryDate = (e: any, deliveryId: any) => {
     updateDeliveryDate(e, deliveryId);
-    setDateDelivery({
-      isOpen: false,
-      indexDelivery: ''
-    });
+  };
+
+  const handleKeyDown = (event: any) => {
+    if (event.key === 'Enter') {
+      setDateDelivery({
+        isOpen: false,
+        indexDelivery: ''
+      });
+    }
   };
 
   useEffect(() => {
@@ -446,12 +451,13 @@ export default function InfoDeliveries({
                   <div style={{ marginRight: 'auto', marginLeft: '16px' }} ref={dateRef}>
                     <InputDefault
                       label=""
-                      placeholder=""
-                      name="dateStart"
+                      placeholder="00/00/0000"
+                      name="deliveryDate"
                       type="date"
                       icon={BiCalendar}
                       onChange={(e) => handleDeliveryDate(e.target.value, row.deliveryId)}
                       value={row?.deliveryDate}
+                      onKeyDown={handleKeyDown}
                     />
                   </div>
                 )}
