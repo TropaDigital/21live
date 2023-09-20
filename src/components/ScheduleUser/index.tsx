@@ -131,6 +131,12 @@ export default function ScheduleUser({
 
       if (response.data.result.length > 0) {
         setDataUserSchedule(response.data.result);
+      } else {
+        addToast({
+          type: 'warning',
+          title: 'Aviso',
+          description: 'Sem usuários disponíveis para a data escolhida'
+        });
       }
 
       setLoading(false);
@@ -302,6 +308,21 @@ export default function ScheduleUser({
       }
     } catch (error: any) {
       console.log('log do error verify', error);
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            type: 'danger',
+            title: 'ATENÇÃO',
+            description: row.error
+          });
+        });
+      } else {
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: error.response.data.message
+        });
+      }
     }
   }
 
