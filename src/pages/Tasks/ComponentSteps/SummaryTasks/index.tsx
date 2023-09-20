@@ -44,7 +44,7 @@ interface TasksProps {
     e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>
   ) => void;
   error: FormProps;
-  estimatedTotalTime: (value: any) => void;
+  estimatedtotalTime: (value: any) => void;
 }
 
 interface FlowRole {
@@ -68,7 +68,7 @@ export default function SummaryTasks({
   updateTask,
   handleInputChange,
   error,
-  estimatedTotalTime
+  estimatedtotalTime
 }: TasksProps) {
   const { user } = useAuth();
   const [deliveryArrayHours, setDeliveryArrayHours] = useState<any>('');
@@ -156,7 +156,7 @@ export default function SummaryTasks({
   }, [deliveryArrayHours]);
 
   useEffect(() => {
-    estimatedTotalTime(totalArrayHours);
+    estimatedtotalTime(totalArrayHours);
   }, [totalArrayHours]);
 
   return (
