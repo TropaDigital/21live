@@ -222,7 +222,7 @@ export default function ListOffice() {
         <ContentDefault>
           <FieldGroupFormDefault>
             <InputDefault
-              label="BUSCA"
+              label="Busca"
               name="search"
               placeholder="Faça sua busca..."
               onChange={(event) => {
