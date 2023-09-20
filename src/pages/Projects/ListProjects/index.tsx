@@ -48,7 +48,7 @@ import { SummaryTaskDescription } from '../../Tasks/ComponentSteps/SummaryTasks/
 import { SummaryCard } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 import { SummaryCardTitle } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 import { SummaryCardSubtitle } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
-import { ModalShowProjectWrapper } from './styles';
+import { FileList, ModalShowProjectWrapper } from './styles';
 import Avatar from '../../../components/Ui/Avatar';
 
 interface StateProps {
@@ -491,6 +491,14 @@ export default function ListProjects() {
                   dangerouslySetInnerHTML={{ __html: modalShowProject.project.description }}
                 ></div>
               </SummaryTaskDescription>
+              {modalShowProject.project.files.length > 0 && (
+                <SummaryTaskDescription>
+                  <div className="description-title">Arquivos:</div>
+                  {modalShowProject.project.files.map((row: any) => (
+                    <FileList key={row.file_id}>{row.file_name}</FileList>
+                  ))}
+                </SummaryTaskDescription>
+              )}
             </SummaryInfoWrapper>
           </Summary>
 
@@ -512,38 +520,66 @@ export default function ListProjects() {
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'space-around',
+                      justifyContent: 'flex-start',
                       width: '100%'
                     }}
                   >
-                    <div className="description-wrap">
+                    <div>
                       Descrição: <span>{row.description}</span>
                     </div>
+                  </div>
+
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      width: '100%'
+                    }}
+                  >
                     <div>
                       Periodo: <span>{row.period}</span>
                     </div>
                     <div>
                       I/D: <span>{row.type}</span>
                     </div>
+                    <div>
+                      Formato: <span>{row.size}</span>
+                    </div>
                   </div>
+
                   <div
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'space-around',
+                      justifyContent: 'space-between',
                       width: '100%'
                     }}
                   >
                     <div>
-                      Formato: <span>{row.size}</span>
+                      Quantidade contratada: <span>{row.quantity_initial}</span>
                     </div>
                     <div>
-                      Quantidade: <span>{row.quantity}</span>
-                    </div>
-                    <div>
-                      Tempo estimado <span>{row.minutes}</span>
+                      Tempo contratado <span>{row.minutes_initial}</span>
                     </div>
                   </div>
+                  {/* {row.flag === 'true' && (
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        width: '100%'
+                      }}
+                    >
+                      <div>
+                        Quantidade disponível: <span>{row.quantity}</span>
+                      </div>
+                      <div>
+                        Tempo restante <span>{row.minutes_total}</span>
+                      </div>
+                    </div>
+                  )} */}
                 </SummaryCardSubtitle>
               </SummaryCard>
             ))}
