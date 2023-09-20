@@ -68,8 +68,8 @@ interface TaskDelivery {
   tenant: string;
   product_period: string;
   project_category: string;
-  timeConsumed: string;
-  totalTime: string;
+  time_consumed: string;
+  total_time: string;
   status: string;
   card_name: string;
 }
@@ -173,11 +173,11 @@ export default function DeliveryTable({
                     </td>
                     <td>
                       <span style={{ marginBottom: '4px', display: 'block' }}>
-                        {delivery.timeConsumed}
+                        {delivery.time_consumed}
                       </span>
                       <ProgressBar
-                        totalHours={convertToMilliseconds(delivery.totalTime)}
-                        restHours={convertToMilliseconds(delivery.timeConsumed)}
+                        totalHours={convertToMilliseconds(delivery.total_time)}
+                        restHours={convertToMilliseconds(delivery.time_consumed)}
                       />
                     </td>
                     <td>
@@ -200,7 +200,7 @@ export default function DeliveryTable({
                             </IconContext.Provider>
                           )}
                         </Flag>
-                        {delivery.totalTime !== 'undefined' ? delivery.totalTime : 'Livre'}
+                        {delivery.total_time !== 'undefined' ? delivery.total_time : 'Livre'}
                       </div>
                     </td>
                     <td style={{ textTransform: 'capitalize' }}>
