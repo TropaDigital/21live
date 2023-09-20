@@ -86,3 +86,77 @@ export const FilterButton = styled.button`
     background-color: var(--gray-300);
   }
 `;
+
+export const ModalInfosWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 500px;
+
+  padding-top: 20px;
+
+  position: relative;
+
+  .close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background-color: transparent;
+
+    position: absolute;
+    top: -40px;
+    right: 0;
+    transition: all 0.3s;
+
+    svg {
+      width: 32px;
+      height: 32px;
+      path {
+        stroke: var(--gray-600);
+      }
+    }
+
+    &:hover {
+      transform: scale(1.3);
+
+      svg {
+        path {
+          stroke: var(--Danger);
+        }
+      }
+    }
+  }
+`;
+
+export const ModalField = styled.div`
+  display: flex;
+  gap: 12px;
+  height: fit-content;
+
+  .title-info {
+    color: var(--gray-600);
+    font-size: var(--text-small-sm);
+    font-weight: var(--weight-regular);
+    line-height: 24px;
+  }
+
+  .info {
+    color: var(--gray-900);
+    font-size: var(--text-small-md);
+    font-weight: var(--weight-medium);
+    line-height: 24px;
+    text-transform: uppercase;
+
+    text-align: justify;
+  }
+
+  &.info-description {
+    flex-direction: column;
+
+    .info {
+      text-transform: none;
+    }
+  }
+`;

@@ -39,10 +39,11 @@ import WrapperEditor from '../../../components/WrapperEditor';
 import Pagination from '../../../components/Pagination';
 
 // Styles
-import { ButtonsFilter, Container, FilterButton } from './styles';
+import { ButtonsFilter, Container, FilterButton, ModalField, ModalInfosWrapper } from './styles';
 
 // Libraries
 import moment from 'moment';
+import { IconClose } from '../../../assets/icons';
 
 interface UploadedFilesProps {
   file?: File;
@@ -72,6 +73,20 @@ interface FormProps {
   date: string;
   files: string;
   description: string;
+}
+
+interface MeetingInfoProps {
+  cliente: string;
+  date: string;
+  meeting_id: string;
+  responsavel: string;
+  title: string;
+  description: string;
+  files: any;
+  members: any;
+  tenant_id: any;
+  email_alert: any;
+  user_id: string;
 }
 
 export default function ListMeeting() {
@@ -123,6 +138,23 @@ export default function ListMeeting() {
 
   const [text, setText] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<any>('all');
+
+  const [modalView, setModalView] = useState({
+    isOpen: false,
+    meetingInfos: {
+      meeting_id: '',
+      title: '',
+      date: '',
+      responsavel: '',
+      cliente: '',
+      tenant_id: '',
+      user_id: '',
+      description: '',
+      email_alert: '',
+      members: [],
+      files: []
+    }
+  });
 
   const handleChangeClient = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedIndex = event.target.selectedIndex;
@@ -277,6 +309,44 @@ export default function ListMeeting() {
     }
   };
 
+  const handleOpenViewInfos = (infos: MeetingInfoProps) => {
+    setModalView({
+      isOpen: true,
+      meetingInfos: {
+        meeting_id: infos.meeting_id,
+        title: infos.title,
+        date: infos.date,
+        responsavel: infos.responsavel,
+        cliente: infos.cliente,
+        tenant_id: infos.tenant_id,
+        user_id: infos.user_id,
+        description: infos.description,
+        email_alert: infos.email_alert,
+        members: infos.members,
+        files: infos.files
+      }
+    });
+  };
+
+  const handleCloseModalInfos = () => {
+    setModalView({
+      isOpen: false,
+      meetingInfos: {
+        meeting_id: '',
+        title: '',
+        date: '',
+        responsavel: '',
+        cliente: '',
+        tenant_id: '',
+        user_id: '',
+        description: '',
+        email_alert: '',
+        members: [],
+        files: []
+      }
+    });
+  };
+
   return (
     <Container>
       <HeaderPage title="Atas e Reuniões">
@@ -364,7 +434,10 @@ export default function ListMeeting() {
               >
                 <ButtonsFilter>
                   <FilterButton
-                    onClick={() => setSelectedFilter('all')}
+                    onClick={() => {
+                      setSelectedFilter('all');
+                      setFilterOrder('');
+                    }}
                     className={selectedFilter === 'all' ? 'selected' : ''}
                   >
                     Ver todos
@@ -392,7 +465,7 @@ export default function ListMeeting() {
                   <InputDefault
                     label=""
                     name="search"
-                    placeholder="Search"
+                    placeholder="Faça sua busca..."
                     onChange={(event) => {
                       setSearchTerm(event.target.value);
                       debouncedCallback(event.target.value);
@@ -432,7 +505,7 @@ export default function ListMeeting() {
                       <td>
                         <div className="fieldTableClients">
                           <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
-
+                          <ButtonTable typeButton="view" onClick={() => handleOpenViewInfos(row)} />
                           <Alert
                             title="Atenção"
                             subtitle="Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita."
@@ -591,6 +664,49 @@ export default function ListMeeting() {
             </ButtonDefault>
           </FooterModal>
         </form>
+      </ModalDefault>
+
+      <ModalDefault
+        isOpen={modalView.isOpen}
+        onOpenChange={handleCloseModalInfos}
+        title={modalView.meetingInfos.title}
+      >
+        <ModalInfosWrapper>
+          <button className="close" onClick={handleCloseModalInfos}>
+            <IconClose />
+          </button>
+
+          <ModalField>
+            <div className="title-info">Cliente:</div>
+            <div className="info">{modalView.meetingInfos.cliente}</div>
+          </ModalField>
+
+          <ModalField>
+            <div className="title-info">Responsável:</div>
+            <div className="info">{modalView.meetingInfos.responsavel}</div>
+          </ModalField>
+
+          <ModalField>
+            <div className="title-info">Membros:</div>
+            <div className="info">
+              {/* {modalView.meetingInfos.members.map((row) => row.user_id)} */}
+              ???
+            </div>
+          </ModalField>
+
+          <ModalField>
+            <div className="title-info">Data:</div>
+            <div className="info">{moment(modalView.meetingInfos.date).format('DD/MM/YYYY')}</div>
+          </ModalField>
+
+          <ModalField className="info-description">
+            <div className="title-info">Descrição:</div>
+            <div
+              className="info"
+              dangerouslySetInnerHTML={{ __html: modalView.meetingInfos.description }}
+            ></div>
+          </ModalField>
+        </ModalInfosWrapper>
       </ModalDefault>
     </Container>
   );
