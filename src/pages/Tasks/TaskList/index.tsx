@@ -54,7 +54,7 @@ export default function TaskList() {
       title: '',
       tenant_id: '',
       tenant: '',
-      totalTime: '',
+      total_time: '',
       product_id: '',
       product_period: '',
       project: '',
@@ -115,7 +115,7 @@ export default function TaskList() {
         title: task.title,
         tenant_id: task.tenant_id,
         tenant: task.tenant,
-        totalTime: task.totalTime,
+        total_time: task.total_time,
         product_id: task.product_id,
         product_period: task.product_period,
         project: task.project,
@@ -144,7 +144,7 @@ export default function TaskList() {
         title: '',
         tenant_id: '',
         tenant: '',
-        totalTime: '',
+        total_time: '',
         product_id: '',
         product_period: '',
         project: '',
@@ -184,7 +184,7 @@ export default function TaskList() {
         title: response.data.result[0].title,
         tenant_id: response.data.result[0].tenant_id,
         tenant: response.data.result[0].tenant,
-        totalTime: response.data.result[0].totalTime,
+        total_time: response.data.result[0].total_time,
         product_id: response.data.result[0].product_id,
         product_period: response.data.result[0].product_period,
         project: response.data.result[0].project,
@@ -393,14 +393,14 @@ export default function TaskList() {
                     }}
                   >
                     <span style={{ marginBottom: '4px', display: 'block' }}>
-                      {row.timeConsumed}
+                      {row.time_consumed}
                     </span>
                     <ProgressBar
-                      totalHours={convertToMilliseconds(row?.totalTime)}
-                      restHours={convertToMilliseconds(row.timeConsumed)}
+                      totalHours={convertToMilliseconds(row?.total_time)}
+                      restHours={convertToMilliseconds(row.time_consumed)}
                     />
                   </td>
-                  <td>{row.totalTime !== 'undefined' ? row.totalTime : '00:00:00'}</td>
+                  <td>{row.total_time !== 'undefined' ? row.total_time : '00:00:00'}</td>
                   <td>
                     <StatusTable
                       className={
@@ -502,7 +502,7 @@ export default function TaskList() {
                 <div className="title-info">Projeto/Contrato:</div>
                 <div className="info">
                   {modalViewTask.task.project_category} |{' '}
-                  {modalViewTask.task.totalTime.slice(0, -6)}
+                  {modalViewTask.task.total_time.slice(0, -6)}
                   <span style={{ textTransform: 'lowercase' }}>h</span>/
                   {modalViewTask.task.product_period === 'anual' ? 'ANO' : 'MÊS'}
                 </div>
