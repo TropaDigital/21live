@@ -115,7 +115,7 @@ export default function ViewProductsDeliveries() {
   };
 
   const data = {
-    estimatedTime: location.state.task.totalTime
+    estimatedTime: location.state.task.total_time
   };
 
   const InputsTask = {
@@ -197,8 +197,8 @@ export default function ViewProductsDeliveries() {
     }
 
     const timeDataInfo = {
-      totalTime: location.state.task.totalTime,
-      timeConsumed: location.state.task.timeConsumed
+      totalTime: location.state.task.total_time,
+      timeConsumed: location.state.task.time_consumed
     };
     setTimeData(timeDataInfo);
     setDataProducts(location.state.delivery);
@@ -642,7 +642,7 @@ export default function ViewProductsDeliveries() {
             <RightInfosTitle>Detalhes da tarefa</RightInfosTitle>
             <TaskInfoField>
               <div className="info-title">Tempo estimado:</div>
-              <div className="info-description">{dataTask?.totalTime}</div>
+              <div className="info-description">{dataTask?.total_time}</div>
             </TaskInfoField>
 
             {/* <TaskInfoField>
@@ -708,7 +708,7 @@ export default function ViewProductsDeliveries() {
       >
         <ScheduleUser
           task_title={dataTask?.title}
-          estimated_time={location.state.task.totalTime}
+          estimated_time={location.state.task.total_time}
           flow={location.state.task.flow_id}
           product_id={location.state.task.product_id}
           step={Number(location.state.task.step) + 1}
