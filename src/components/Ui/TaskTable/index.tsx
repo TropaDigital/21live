@@ -141,11 +141,11 @@ export default function TaskTable({
                     </td>
                     <td>
                       <span style={{ marginBottom: '4px', display: 'block' }}>
-                        {task.timeConsumed}
+                        {task.time_consumed}
                       </span>
                       <ProgressBar
-                        totalHours={convertToMilliseconds(task.totalTime)}
-                        restHours={convertToMilliseconds(task.timeConsumed)}
+                        totalHours={convertToMilliseconds(task.total_time)}
+                        restHours={convertToMilliseconds(task.time_consumed)}
                       />
                     </td>
                     <td>
@@ -168,7 +168,7 @@ export default function TaskTable({
                             </IconContext.Provider>
                           )}
                         </Flag>
-                        {task.totalTime !== 'undefined' ? task.totalTime : 'Livre'}
+                        {task.total_time !== 'undefined' ? task.total_time : 'Livre'}
                       </div>
                     </td>
                     <td style={{ textTransform: 'capitalize' }}>
