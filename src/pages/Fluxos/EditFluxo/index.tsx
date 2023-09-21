@@ -119,7 +119,7 @@ export default function EditFluxo() {
           <ButtonDefault
             typeButton="info"
             onClick={() =>
-              navigate(`/projeto/${location.state.name.replaceAll(' ', '_')}`, {
+              navigate(`/fluxo/${location.state.id}`, {
                 state: { id: location.state.id, name: location.state.name }
               })
             }
