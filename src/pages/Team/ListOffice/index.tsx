@@ -224,7 +224,7 @@ export default function ListOffice() {
             <InputDefault
               label="Busca"
               name="search"
-              placeholder="Faça sua busca..."
+              placeholder="Buscar..."
               onChange={(event) => {
                 setSearchTerm(event.target.value);
                 debouncedCallback(event.target.value);
