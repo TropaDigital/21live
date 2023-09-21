@@ -40,7 +40,7 @@ const Pagination: React.FC<Props> = (props) => {
             disabled={props.currentPage === 1}
           >
             <BiLeftArrowAlt size={20} />
-            Anterior
+            Primeira
           </button>
 
           {pages.map((page) => (
@@ -59,7 +59,7 @@ const Pagination: React.FC<Props> = (props) => {
             style={{ borderRadius: '0 4px 4px 0' }}
             disabled={props.lastPage === 1}
           >
-            Próximo
+            Última
             <BiRightArrowAlt size={20} />
           </button>
         </ContainerPaginate>
