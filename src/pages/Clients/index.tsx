@@ -243,7 +243,7 @@ export default function Clients() {
           <InputDefault
             label="Busca"
             name="search"
-            placeholder="Faça sua busca..."
+            placeholder="Buscar..."
             onChange={(event) => setSearchTerm(event.target.value)}
             icon={BiSearchAlt}
           />
