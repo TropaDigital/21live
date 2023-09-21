@@ -108,6 +108,15 @@ function RoutesAll() {
         />
 
         <Route
+          path="/fluxo/:id"
+          element={
+            <PrivateRoutes>
+              <Board />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
           path="/equipe"
           element={
             <PrivateRoutes>
@@ -157,15 +166,6 @@ function RoutesAll() {
           element={
             <PrivateRoutes>
               <ListProjects />
-            </PrivateRoutes>
-          }
-        />
-
-        <Route
-          path="/projeto/:id"
-          element={
-            <PrivateRoutes>
-              <Board />
             </PrivateRoutes>
           }
         />
