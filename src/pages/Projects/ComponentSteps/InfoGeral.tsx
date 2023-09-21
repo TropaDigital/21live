@@ -28,6 +28,7 @@ interface Props {
   ) => void;
   clients?: TenantProps[] | null;
   organizations?: OrganizationsProps[] | null;
+  editProject: boolean;
   error: FormProps;
 }
 
@@ -36,6 +37,7 @@ export default function InfoGeral({
   handleInputChange,
   clients,
   organizations,
+  editProject,
   error
 }: Props) {
   const { user } = useAuth();
@@ -57,6 +59,7 @@ export default function InfoGeral({
             name="tenant_id"
             value={data.tenant_id}
             onChange={handleInputChange}
+            disabled={editProject}
             error={error?.tenant_id}
           >
             {clients?.map((row) => (
@@ -73,6 +76,7 @@ export default function InfoGeral({
             name="organization_id"
             value={data.organization_id}
             onChange={handleInputChange}
+            disabled={editProject}
             error={error?.organization_id}
           >
             {organizations?.map((row) => (
@@ -90,6 +94,7 @@ export default function InfoGeral({
           name="category"
           value={data.category}
           onChange={handleInputChange}
+          disabled={editProject}
           error={error?.category}
         >
           <option value="fee">Fee</option>
@@ -101,6 +106,7 @@ export default function InfoGeral({
           name="contract_type"
           value={data.contract_type}
           onChange={handleInputChange}
+          disabled={editProject}
           error={error?.contract_type}
         >
           <option value="free">Livre</option>
@@ -116,6 +122,7 @@ export default function InfoGeral({
           icon={BiCalendar}
           value={data.date_start}
           onChange={handleInputChange}
+          disabled={editProject}
           error={error?.date_start}
         />
 
@@ -126,6 +133,7 @@ export default function InfoGeral({
           icon={BiCalendar}
           value={data.date_end}
           onChange={handleInputChange}
+          disabled={editProject}
           error={error?.date_end}
         />
       </FlexLine>
