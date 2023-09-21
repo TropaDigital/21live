@@ -63,7 +63,7 @@ export default function InfoGeral({
   // const [flowsManagers, setFlowManagers] = useState<FlowRole[]>([]);
   const handleGetFlowTask = async (id: any) => {
     try {
-      const responseFlow = await api.get(`/task-function?flow=${id}`);
+      const responseFlow = await api.get(`/task-next?flow=${id}`);
       // setFlowManagers(responseFlow.data.result);
       if (responseFlow.data.result.length === 0) {
         addToast({
