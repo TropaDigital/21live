@@ -212,6 +212,17 @@ export default function TaskList() {
     }
   }
 
+  async function handleChangeUrgency(taskId: string) {
+    try {
+      const response = await api.put(`/task/urgent/${taskId}`);
+      if (response.data.status === 'success') {
+        fetchData();
+      }
+    } catch (error) {
+      console.log('log error change urgency of task', error);
+    }
+  }
+
   // const { formData, handleOnChange } = useForm({
   //   tenant_id: '',
   //   title: '',
@@ -427,6 +438,7 @@ export default function TaskList() {
                       <Flag
                         style={{ textAlign: 'center' }}
                         className={row.urgent === 'true' ? 'flagged' : ''}
+                        onClick={() => handleChangeUrgency(row.task_id)}
                       >
                         {row.urgent === 'true' ? (
                           <IconContext.Provider
