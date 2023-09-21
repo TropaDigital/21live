@@ -140,9 +140,9 @@ export default function ListFluxo() {
         <ContentDefault>
           <FieldGroupFormDefault>
             <InputDefault
-              label="Busca"
+              label=""
               name="search"
-              placeholder="Busque pelo nome..."
+              placeholder="Buscar..."
               onChange={(event) => {
                 setSearchTerm(event.target.value);
                 debouncedCallback(event.target.value);
@@ -193,6 +193,7 @@ export default function ListFluxo() {
                             })
                           }
                         />
+                        {/* <ButtonTable typeButton="view" onClick={() => ''} /> */}
                         <Alert
                           title="Atenção"
                           subtitle="Certeza que gostaria de remover esse fluxo? Ao excluir a acão não poderá ser desfeita."
