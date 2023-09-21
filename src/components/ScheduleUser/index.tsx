@@ -348,7 +348,7 @@ export default function ScheduleUser({
         <div>•</div>
         <SubtitleInfo>
           <div className="title">Tempo estimado:</div>
-          <div className="info">{estimated_time ? estimated_time : '02:00:00'}</div>
+          <div className="info">{estimated_time ? estimated_time : '--:--:--'}</div>
         </SubtitleInfo>
 
         <button className="close" onClick={closeModal}>
