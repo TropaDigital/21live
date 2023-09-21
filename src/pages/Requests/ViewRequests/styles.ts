@@ -180,6 +180,8 @@ export const InfoSideCard = styled.div`
     color: var(--gray-900);
     font-size: var(--text-small-md);
     font-weight: var(--weight-medium);
+
+    white-space: pre-wrap;
   }
 `;
 

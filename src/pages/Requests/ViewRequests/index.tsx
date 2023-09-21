@@ -291,6 +291,29 @@ export default function ViewRequest() {
                     <div className="side-title">Formato da peça solicitada:</div>
                     <div className="side-info">{requestData?.media_name}</div>
                   </InfoSideCard>
+                  {requestData?.height !== '' && requestData?.width !== '' && (
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '120px'
+                      }}
+                    >
+                      <InfoSideCard>
+                        <div className="side-title">Largura:</div>
+                        <div className="side-info">
+                          {requestData?.width} {requestData?.measure}
+                        </div>
+                      </InfoSideCard>
+
+                      <InfoSideCard>
+                        <div className="side-title">Altura:</div>
+                        <div className="side-info">
+                          {requestData?.height} {requestData?.measure}
+                        </div>
+                      </InfoSideCard>
+                    </div>
+                  )}
 
                   <InfoSideCard>
                     <div className="side-title">Informações que devem estar na peça:</div>
@@ -331,7 +354,11 @@ export default function ViewRequest() {
 
                   <InfoSideCard>
                     <div className="side-title">Unidade:</div>
-                    <div className="side-info">{requestData?.organization_name}</div>
+                    <div className="side-info">
+                      {requestData?.organization_name !== ''
+                        ? requestData?.organization_name
+                        : '(unidade não encontrada)'}
+                    </div>
                   </InfoSideCard>
                 </BottomCardInfoSide>
               </BottomCardInfos>
