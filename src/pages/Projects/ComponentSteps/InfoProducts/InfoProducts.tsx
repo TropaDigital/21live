@@ -40,6 +40,7 @@ interface PropsProducts {
   okToSave: any;
   setSave: any;
   editProducts: boolean;
+  editProject: boolean;
   hideSwitch: any;
   tenant_id: string;
 }
@@ -61,6 +62,7 @@ export default function InfoProducts({
   okToSave,
   setSave,
   editProducts,
+  editProject,
   hideSwitch,
   tenant_id
 }: PropsProducts) {
@@ -291,6 +293,7 @@ export default function InfoProducts({
                       rowQuantity={row.quantity}
                       clearQuantity={handleDeleteProducts}
                       receiveQuantity={Number(row.quantity)}
+                      editProject={editProject}
                     />
                   </td>
                   {/* <td
