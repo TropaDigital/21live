@@ -154,7 +154,7 @@ export default function Requests() {
             <InputDefault
               label=""
               name="search"
-              placeholder="Busque pelo título..."
+              placeholder="Buscar..."
               onChange={(event) => {
                 setSearchTerm(event.target.value);
                 debouncedCallback(event.target.value);
