@@ -15,13 +15,15 @@ interface QuantityProps {
   rowQuantity?: any;
   clearQuantity?: any;
   receiveQuantity?: any;
+  editProject?: boolean;
 }
 
 export default function QuantityCounter({
   handleQuantity,
   rowQuantity,
   clearQuantity,
-  receiveQuantity
+  receiveQuantity,
+  editProject
 }: QuantityProps) {
   const [counter, setCounter] = useState<number>(0);
 
@@ -58,40 +60,44 @@ export default function QuantityCounter({
   }
 
   function incrementCounter() {
-    setCounter(counter + 1);
+    if (!editProject) {
+      setCounter(counter + 1);
 
-    const productSelected: IProduct = {
-      service_id: rowQuantity.service_id || rowQuantity.project_id || rowQuantity.product_id,
-      service: rowQuantity.service,
-      description: rowQuantity.description,
-      flag: rowQuantity.flag,
-      type: rowQuantity.type,
-      size: rowQuantity.size,
-      quantity: counter + 1,
-      minutes: '' || rowQuantity.minutes,
-      minutes_creation: '' || rowQuantity.minutes_creation,
-      minutes_essay: '' || rowQuantity.minutes_essay,
-      period: '' || rowQuantity.period
-    };
-    handleQuantity(productSelected);
+      const productSelected: IProduct = {
+        service_id: rowQuantity.service_id || rowQuantity.project_id || rowQuantity.product_id,
+        service: rowQuantity.service,
+        description: rowQuantity.description,
+        flag: rowQuantity.flag,
+        type: rowQuantity.type,
+        size: rowQuantity.size,
+        quantity: counter + 1,
+        minutes: '' || rowQuantity.minutes,
+        minutes_creation: '' || rowQuantity.minutes_creation,
+        minutes_essay: '' || rowQuantity.minutes_essay,
+        period: '' || rowQuantity.period
+      };
+      handleQuantity(productSelected);
+    }
   }
 
   function decrementCount() {
-    setCounter(counter - 1);
-    const productSelected: IProduct = {
-      service_id: rowQuantity.service_id || rowQuantity.project_id || rowQuantity.product_id,
-      service: rowQuantity.service,
-      description: rowQuantity.description,
-      flag: rowQuantity.flag,
-      type: rowQuantity.type,
-      size: rowQuantity.size,
-      quantity: counter - 1,
-      minutes: '' || rowQuantity.minutes,
-      minutes_creation: '' || rowQuantity.minutes_creation,
-      minutes_essay: '' || rowQuantity.minutes_essay,
-      period: '' || rowQuantity.period
-    };
-    handleQuantity(productSelected);
+    if (!editProject) {
+      setCounter(counter - 1);
+      const productSelected: IProduct = {
+        service_id: rowQuantity.service_id || rowQuantity.project_id || rowQuantity.product_id,
+        service: rowQuantity.service,
+        description: rowQuantity.description,
+        flag: rowQuantity.flag,
+        type: rowQuantity.type,
+        size: rowQuantity.size,
+        quantity: counter - 1,
+        minutes: '' || rowQuantity.minutes,
+        minutes_creation: '' || rowQuantity.minutes_creation,
+        minutes_essay: '' || rowQuantity.minutes_essay,
+        period: '' || rowQuantity.period
+      };
+      handleQuantity(productSelected);
+    }
   }
 
   return (
