@@ -414,7 +414,9 @@ export default function InfoDeliveries({
                         placeholder="Digite o título..."
                         name="deliveryTitle"
                         type="text"
-                        onChange={(e) => handleTitleOfDelivery(e.target.value, row.deliveryId)}
+                        onChange={(e) =>
+                          handleTitleOfDelivery(e.target.value.trimStart(), row.deliveryId)
+                        }
                         value={row.deliveryTitle}
                         error={''}
                       />
