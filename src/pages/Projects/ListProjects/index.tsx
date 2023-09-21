@@ -241,7 +241,6 @@ export default function ListProjects() {
   };
 
   const handleOpenModal = (project: any) => {
-    console.log('log do project on open modal', project);
     setModalShowProject({
       isOpen: true,
       type: `Resumo do Projeto: #${project.project_id}`,
@@ -284,23 +283,6 @@ export default function ListProjects() {
   };
 
   const handleEditProject = (project: any) => {
-    // const product: any = {
-    //   category: '',
-    //   client_name: '',
-    //   contract_type: '',
-    //   date_end: '',
-    //   date_start: '',
-    //   deleted: '',
-    //   description: '',
-    //   files: [],
-    //   products: [],
-    //   project_id: '',
-    //   status: '',
-    //   tenant_id: '',
-    //   time: '',
-    //   time_consumed: '',
-    //   title: ''
-    // };
     console.log('log do projeto a editar', project);
     navigate('/criar-projeto', { state: project });
   };
@@ -395,7 +377,7 @@ export default function ListProjects() {
                 <td>
                   <div className="fieldTableClients">
                     <ButtonTable typeButton="view" onClick={() => handleOpenModal(row)} />
-                    {/* <ButtonTable typeButton="edit" onClick={() => handleEditProject(row)} /> */}
+                    <ButtonTable typeButton="edit" onClick={() => handleEditProject(row)} />
                     <Alert
                       title="Atenção"
                       subtitle="Certeza que gostaria de deletar este Projeto? Ao excluir a ação não poderá ser desfeita."
