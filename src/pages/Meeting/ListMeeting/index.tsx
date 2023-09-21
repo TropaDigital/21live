@@ -39,7 +39,15 @@ import WrapperEditor from '../../../components/WrapperEditor';
 import Pagination from '../../../components/Pagination';
 
 // Styles
-import { ButtonsFilter, Container, FilterButton, ModalField, ModalInfosWrapper } from './styles';
+import {
+  ButtonsFilter,
+  Container,
+  FilterButton,
+  ModalField,
+  ModalInfosWrapper,
+  NameField,
+  NamesWrapper
+} from './styles';
 
 // Libraries
 import moment from 'moment';
@@ -688,10 +696,11 @@ export default function ListMeeting() {
 
           <ModalField>
             <div className="title-info">Membros:</div>
-            <div className="info">
-              {/* {modalView.meetingInfos.members.map((row) => row.user_id)} */}
-              ???
-            </div>
+            <NamesWrapper>
+              {modalView.meetingInfos.members.map((row: any, index: number) => {
+                return <NameField key={index}>{(index ? ', ' : '') + row.name}</NameField>;
+              })}
+            </NamesWrapper>
           </ModalField>
 
           <ModalField>

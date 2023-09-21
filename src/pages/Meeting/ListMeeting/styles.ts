@@ -160,3 +160,19 @@ export const ModalField = styled.div`
     }
   }
 `;
+
+export const NamesWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+`;
+
+export const NameField = styled.div`
+  width: fit-content;
+  height: 24px;
+
+  color: var(--gray-900);
+  font-size: var(--text-small-md);
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+`;
