@@ -570,9 +570,9 @@ export default function Team() {
             </SelectDefault> */}
 
             <InputDefault
-              label="Busca"
+              label=""
               name="search"
-              placeholder="Faça sua busca..."
+              placeholder="Buscar..."
               onChange={(event) => {
                 setSearchTerm(event.target.value);
                 debouncedCallback(event.target.value);
