@@ -126,6 +126,7 @@ export default function CreateProject() {
   const [selectedClient, setSelectedClient] = useState<any>('');
   const [sendFiles, setSendFiles] = useState<boolean>(false);
   const [projectId, setProjectId] = useState<string>('');
+  const [editProject, setEditProject] = useState<boolean>(false);
 
   const { data: dataTeam } = useFetch<TeamProps[]>('team');
 
@@ -143,6 +144,7 @@ export default function CreateProject() {
       setDTOForm(location.state);
       setProductsArray(location.state.products);
       setEditSelectedProducts(true);
+      setEditProject(true);
     }
   }, [location]);
 
@@ -306,8 +308,8 @@ export default function CreateProject() {
         setErrorInput('date_start', undefined);
       }
 
-      if (moment(date_start).isSameOrBefore(newDate)) {
-        throw setErrorInput('date_start', 'Data inicial menor que a atual');
+      if (moment(date_start).isSameOrBefore(newDate) && !editProject) {
+        throw setErrorInput('date_start', 'Data inicial igual ou menor que a atual');
       } else {
         setErrorInput('date_start', undefined);
       }
@@ -393,8 +395,23 @@ export default function CreateProject() {
         // );
 
         const totalTime = sumTimes(productsHours);
+        if (editProject) {
+          const teamFiltered = DTOForm?.team.map((row: any) => ({ user_id: row.value }));
 
-        if (DTOForm.contract_type === 'free') {
+          const updateData = {
+            title: DTOForm?.title,
+            description: DTOForm?.description,
+            team: teamFiltered
+          };
+
+          await api.put(`project/${DTOForm.project_id}`, updateData);
+          addToast({
+            type: 'success',
+            title: 'Sucesso',
+            description: 'Projeto editado com sucesso!'
+          });
+          navigate('/projetos');
+        } else if (DTOForm.contract_type === 'free') {
           if (user?.organizations?.length > 0) {
             const createNewData = {
               title: DTOForm.title,
@@ -423,40 +440,14 @@ export default function CreateProject() {
               team: DTOForm.team
             };
 
-            const updateData = {
-              project_id: DTOForm.project_id,
-              title: DTOForm.title,
-              tenant_id: user.principalTenant,
-              organization_id: DTOForm.organization_id,
-              products: productsArray,
-              description: DTOForm.description,
-              category: DTOForm.category,
-              date_start: DTOForm.date_start,
-              date_end: DTOForm.date_end,
-              contract_type: DTOForm.contract_type,
-              // files,
-              time: totalTime,
-              email: DTOForm.email,
-              team: DTOForm.team
-            };
-
-            if (location.state !== null && editSelectedProducts) {
-              await api.put(`project/${DTOForm.project_id}`, updateData);
-              addToast({
-                type: 'success',
-                title: 'Sucesso',
-                description: 'Projeto editado com sucesso!'
-              });
-            } else {
-              const response = await api.post(`project`, createNewData);
-              setProjectId(response.data.result);
-              setFinishModal(true);
-              // addToast({
-              //   type: 'success',
-              //   title: 'Sucesso',
-              //   description: 'Projeto cadastrado com sucesso!'
-              // });
-            }
+            const response = await api.post(`project`, createNewData);
+            setProjectId(response.data.result);
+            setFinishModal(true);
+            // addToast({
+            //   type: 'success',
+            //   title: 'Sucesso',
+            //   description: 'Projeto cadastrado com sucesso!'
+            // });
           } else {
             const createNewData = {
               title: DTOForm.title,
@@ -484,39 +475,14 @@ export default function CreateProject() {
               team: DTOForm.team
             };
 
-            const updateData = {
-              project_id: DTOForm.project_id,
-              title: DTOForm.title,
-              tenant_id: DTOForm.tenant_id,
-              products: productsArray,
-              description: DTOForm.description,
-              category: DTOForm.category,
-              date_start: DTOForm.date_start,
-              date_end: DTOForm.date_end,
-              contract_type: DTOForm.contract_type,
-              // files,
-              time: totalTime,
-              email: DTOForm.email,
-              team: DTOForm.team
-            };
-
-            if (location.state !== null && editSelectedProducts) {
-              await api.put(`project/${DTOForm.project_id}`, updateData);
-              addToast({
-                type: 'success',
-                title: 'Sucesso',
-                description: 'Projeto editado com sucesso!'
-              });
-            } else {
-              const response = await api.post(`project`, createNewData);
-              setProjectId(response.data.result);
-              setFinishModal(true);
-              // addToast({
-              //   type: 'success',
-              //   title: 'Sucesso',
-              //   description: 'Projeto cadastrado com sucesso!'
-              // });
-            }
+            const response = await api.post(`project`, createNewData);
+            setProjectId(response.data.result);
+            setFinishModal(true);
+            // addToast({
+            //   type: 'success',
+            //   title: 'Sucesso',
+            //   description: 'Projeto cadastrado com sucesso!'
+            // });
           }
         } else {
           if (user?.organizations?.length > 0) {
@@ -536,40 +502,14 @@ export default function CreateProject() {
               team: DTOForm.team
             };
 
-            const updateData = {
-              project_id: DTOForm.project_id,
-              title: DTOForm.title,
-              tenant_id: user.principalTenant,
-              organization_id: DTOForm.organization_id,
-              products: productsArray,
-              description: DTOForm.description,
-              category: DTOForm.category,
-              date_start: DTOForm.date_start,
-              date_end: DTOForm.date_end,
-              contract_type: DTOForm.contract_type,
-              // files,
-              time: totalTime,
-              email: DTOForm.email,
-              team: DTOForm.team
-            };
-
-            if (location.state !== null && editSelectedProducts) {
-              await api.put(`project/${DTOForm.project_id}`, updateData);
-              addToast({
-                type: 'success',
-                title: 'Sucesso',
-                description: 'Projeto editado com sucesso!'
-              });
-            } else {
-              const response = await api.post(`project`, createNewData);
-              setProjectId(response.data.result);
-              setFinishModal(true);
-              // addToast({
-              //   type: 'success',
-              //   title: 'Sucesso',
-              //   description: 'Projeto cadastrado com sucesso!'
-              // });
-            }
+            const response = await api.post(`project`, createNewData);
+            setProjectId(response.data.result);
+            setFinishModal(true);
+            // addToast({
+            //   type: 'success',
+            //   title: 'Sucesso',
+            //   description: 'Projeto cadastrado com sucesso!'
+            // });
           } else {
             const createNewData = {
               title: DTOForm.title,
@@ -586,39 +526,14 @@ export default function CreateProject() {
               team: DTOForm.team
             };
 
-            const updateData = {
-              project_id: DTOForm.project_id,
-              title: DTOForm.title,
-              tenant_id: DTOForm.tenant_id,
-              products: productsArray,
-              description: DTOForm.description,
-              category: DTOForm.category,
-              date_start: DTOForm.date_start,
-              date_end: DTOForm.date_end,
-              contract_type: DTOForm.contract_type,
-              // files,
-              time: totalTime,
-              email: DTOForm.email,
-              team: DTOForm.team
-            };
-
-            if (location.state !== null && editSelectedProducts) {
-              await api.put(`project/${DTOForm.project_id}`, updateData);
-              addToast({
-                type: 'success',
-                title: 'Sucesso',
-                description: 'Projeto editado com sucesso!'
-              });
-            } else {
-              const response = await api.post(`project`, createNewData);
-              setProjectId(response.data.result);
-              setFinishModal(true);
-              // addToast({
-              //   type: 'success',
-              //   title: 'Sucesso',
-              //   description: 'Projeto cadastrado com sucesso!'
-              // });
-            }
+            const response = await api.post(`project`, createNewData);
+            setProjectId(response.data.result);
+            setFinishModal(true);
+            // addToast({
+            //   type: 'success',
+            //   title: 'Sucesso',
+            //   description: 'Projeto cadastrado com sucesso!'
+            // });
           }
         }
 
@@ -714,7 +629,7 @@ export default function CreateProject() {
   };
 
   // useEffect(() => {
-  //   console.log('log do DTOTEAM =>', DTOForm.team);
+  //   console.log('log do DTO FORM =>', DTOForm);
   // }, [DTOForm]);
 
   return (
@@ -734,6 +649,7 @@ export default function CreateProject() {
               data={DTOForm}
               handleInputChange={ifIsSelectedClient}
               clients={dataClient}
+              editProject={editProject}
               error={error}
             />
 
@@ -757,6 +673,7 @@ export default function CreateProject() {
               data={DTOForm}
               handleInputChange={ifIsSelectedClient}
               organizations={dataOrganizations}
+              editProject={editProject}
               error={error}
             />
 
@@ -785,6 +702,7 @@ export default function CreateProject() {
               okToSave={setShowSave}
               setSave={saveProducts}
               editProducts={editSelectedProducts}
+              editProject={editProject}
               hideSwitch={DTOForm.category}
               tenant_id={DTOForm.tenant_id}
             />
