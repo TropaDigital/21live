@@ -1379,7 +1379,7 @@ export default function CreateTasks() {
             return {
               date_end: row.deliveryDate,
               description: DTOForm?.creation_description,
-              title: row.deliveryTitle ? row.deliveryTitle : `${index + 1}ª entrega`,
+              title: row.deliveryTitle !== '' ? row.deliveryTitle : `${index + 1}ª entrega`,
               products: row.deliveryProducts
             };
           });
@@ -1594,6 +1594,14 @@ export default function CreateTasks() {
   // useEffect(() => {
   //   console.log('Log do DTO', DTOForm);
   // }, [DTOForm]);
+
+  // useEffect(() => {
+  //   console.log('log do selectedProject', selectedProject);
+  // }, [selectedProject]);
+
+  // useEffect(() => {
+  //   console.log('log do estimated time', estimatedTime);
+  // }, [estimatedTime]);
 
   // useEffect(() => {
   //   console.log('log dos erros', errorCategory);
