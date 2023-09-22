@@ -1437,7 +1437,30 @@ export default function CreateTasks() {
   }, [DTOForm, addToast, productsArray, tasksType, user, DTODelivery]);
 
   const selectedProjectInfos = (e: any) => {
-    if (e.target.name === 'product_id') {
+    if (e.name === 'tenant_id') {
+      setDTOForm({ ...DTOForm, ['tenant_id']: e.infos.value });
+      const selectedClient: any = dataClient?.filter((obj: any) => obj.tenant_id === e.infos.value);
+      setSelectedSummaryInfos((prevState: any) => ({
+        ...prevState,
+        ['client']: selectedClient[0]
+      }));
+
+      // if (DTOForm.tenant_id !== '' && DTOForm.ticket_id !== '') {
+      //   addToast({
+      //     type: 'warning',
+      //     title: 'ATENÇÃO',
+      //     description: 'Não é possivel alterar o cliente ao criar tarefa com base no ticket'
+      //   });
+      // } else {
+      //   const id = e.target.value;
+      //   const selectedClient: any = dataClient?.filter((obj: any) => obj.tenant_id === id);
+      //   setSelectedSummaryInfos((prevState: any) => ({
+      //     ...prevState,
+      //     ['client']: selectedClient[0]
+      //   }));
+      //   handleChangeInput(e);
+      // }
+    } else if (e.target.name === 'product_id') {
       if (user?.organizations?.length > 0) {
         const id = e.target.value;
         const selectedInfos: any = organizationProjects?.filter(
@@ -1449,22 +1472,6 @@ export default function CreateTasks() {
         const id = e.target.value;
         const selectedInfos: any = dataProjects?.filter((obj: any) => obj.product_id === id);
         setSelectedProject(selectedInfos[0]);
-        handleChangeInput(e);
-      }
-    } else if (e.target.name === 'tenant_id') {
-      if (DTOForm.tenant_id !== '' && DTOForm.ticket_id !== '') {
-        addToast({
-          type: 'warning',
-          title: 'ATENÇÃO',
-          description: 'Não é possivel alterar o cliente ao criar tarefa com base no ticket'
-        });
-      } else {
-        const id = e.target.value;
-        const selectedClient: any = dataClient?.filter((obj: any) => obj.tenant_id === id);
-        setSelectedSummaryInfos((prevState: any) => ({
-          ...prevState,
-          ['client']: selectedClient[0]
-        }));
         handleChangeInput(e);
       }
     } else if (e.target.name === 'flow_id') {
@@ -1946,7 +1953,21 @@ export default function CreateTasks() {
                   isLoading={isLoading}
                   className="search-field"
                 />
+
+                {tasksType === 'horas' && (
+                  <ButtonDefault
+                    typeButton="primary"
+                    onClick={() => {
+                      setProductsModal(false);
+                      setCreateStep(createStep + 1);
+                      setDTODelivery([{ ...DTODelivery[0], deliveryProducts: productsArray }]);
+                    }}
+                  >
+                    Adicionar Produto
+                  </ButtonDefault>
+                )}
               </SearchProductsModal>
+
               <ProductListHeader>
                 <div className="list-title">Produto</div>
                 <div className="list-title">Categoria</div>

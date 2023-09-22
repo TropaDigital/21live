@@ -131,7 +131,8 @@ export const ProductListWrapper = styled.div`
 export const SearchProductsModal = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  gap: 12px;
   height: 68px;
   padding: 16px 12px;
 `;
