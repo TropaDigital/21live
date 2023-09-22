@@ -1,6 +1,4 @@
 /* eslint-disable import-helpers/order-imports */
-// React
-import React from 'react';
 
 // Utils
 import { TenantProps } from '../../../utils/models';
@@ -18,6 +16,9 @@ import api from '../../../services/api';
 import { useToast } from '../../../hooks/toast';
 import { useAuth } from '../../../hooks/AuthContext';
 
+// Libraries
+import Select from 'react-select';
+
 interface FormProps {
   [key: string]: any;
 }
@@ -26,9 +27,7 @@ interface Props {
   data: any;
   dataProjects: any;
   dataFlow: any;
-  handleInputChange: (
-    e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>
-  ) => void;
+  handleInputChange: any;
   clients?: TenantProps[] | null;
   organizations?: OrganizationsProps[] | null;
   error: FormProps;
@@ -77,6 +76,22 @@ export default function InfoGeral({
     }
   };
 
+  const clientsOptions = clients?.map((row) => {
+    return {
+      value: row.tenant_id,
+      label: row.name
+    };
+  });
+
+  const handleClientSelected = (select: any) => {
+    const selectOptions = {
+      name: 'tenant_id',
+      infos: select
+    };
+
+    handleInputChange(selectOptions);
+  };
+
   return (
     <div>
       <FlexLine>
@@ -89,19 +104,26 @@ export default function InfoGeral({
           error={error?.title}
         />
         {!user?.organizations && (
-          <SelectDefault
-            label="Cliente"
-            name="tenant_id"
-            value={data.tenant_id}
-            onChange={handleInputChange}
-            error={error?.tenant_id}
-          >
-            {clients?.map((row) => (
-              <option key={row.tenant_id} value={row.tenant_id}>
-                {row.name}
-              </option>
-            ))}
-          </SelectDefault>
+          <Select
+            placeholder={'Selecione...'}
+            defaultValue={data.tenant_id}
+            options={clientsOptions}
+            onChange={handleClientSelected}
+          />
+
+          // <SelectDefault
+          //   label="Cliente"
+          //   name="tenant_id"
+          //   value={data.tenant_id}
+          //   onChange={handleInputChange}
+          //   error={error?.tenant_id}
+          // >
+          //   {clients?.map((row) => (
+          //     <option key={row.tenant_id} value={row.tenant_id}>
+          //       {row.name}
+          //     </option>
+          //   ))}
+          // </SelectDefault>
         )}
 
         {user?.organizations?.length > 0 && (
