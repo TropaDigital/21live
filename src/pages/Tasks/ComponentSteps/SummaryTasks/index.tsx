@@ -150,7 +150,7 @@ export default function SummaryTasks({
   }, [selectedProducts]);
 
   useEffect(() => {
-    if (deliveryArrayHours.length > 1) {
+    if (deliveryArrayHours.length > 0) {
       setTotalArrayHours(sumTimes(deliveryArrayHours));
     }
   }, [deliveryArrayHours]);
@@ -158,6 +158,12 @@ export default function SummaryTasks({
   useEffect(() => {
     estimatedtotalTime(totalArrayHours);
   }, [totalArrayHours]);
+
+  // useEffect(() => {
+  //   console.log('log do deliveryArrayHours', deliveryArrayHours);
+  //   console.log('log do totalArrayHours', totalArrayHours);
+  //   console.log('log do selectedProducts', selectedProducts);
+  // }, [deliveryArrayHours, totalArrayHours, selectedProducts]);
 
   return (
     <SummaryWrapper>
