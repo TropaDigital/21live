@@ -14,6 +14,8 @@ export const Flag = styled.div`
   width: 36px;
   height: 36px;
 
+  cursor: pointer;
+
   svg {
     width: 20px;
     height: 20px;
