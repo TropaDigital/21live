@@ -68,7 +68,6 @@ export default function Requests() {
   const { data, pages } = useFetch<any[]>(`ticket?search=${search}&page=${selected}`);
 
   const handleViewRequest = (request: any) => {
-    console.log('log request to view', request);
     navigate(`/solicitacao/${request.ticket_id}`, { state: request });
   };
 
