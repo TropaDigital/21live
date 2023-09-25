@@ -1,4 +1,6 @@
 /* eslint-disable import-helpers/order-imports */
+// React
+import { useEffect, useState } from 'react';
 
 // Utils
 import { TenantProps } from '../../../utils/models';
@@ -17,7 +19,7 @@ import { useToast } from '../../../hooks/toast';
 import { useAuth } from '../../../hooks/AuthContext';
 
 // Libraries
-import Select from 'react-select';
+import SelectImage from '../../../components/Inputs/SelectWithImage';
 
 interface FormProps {
   [key: string]: any;
@@ -41,11 +43,11 @@ interface FlowProps {
   user_id: string;
 }
 
-// interface FlowRole {
-//   function: string;
-//   name: string;
-//   user_id: string;
-// }
+interface RequesterProps {
+  user_id: string;
+  name: string;
+  username: string;
+}
 
 export default function InfoGeral({
   data,
@@ -58,8 +60,13 @@ export default function InfoGeral({
 }: Props) {
   const { user } = useAuth();
   const { addToast } = useToast();
-  // Responsaveis pelo flow
-  // const [flowsManagers, setFlowManagers] = useState<FlowRole[]>([]);
+  const [initialValue, setInitialValue] = useState({
+    value: '',
+    label: '',
+    image: ''
+  });
+  const [requestersList, setRequestersList] = useState<RequesterProps[]>([]);
+
   const handleGetFlowTask = async (id: any) => {
     try {
       const responseFlow = await api.get(`/task-next?flow=${id}`);
@@ -79,7 +86,8 @@ export default function InfoGeral({
   const clientsOptions = clients?.map((row) => {
     return {
       value: row.tenant_id,
-      label: row.name
+      label: row.name,
+      image: row.bucket
     };
   });
 
@@ -91,6 +99,32 @@ export default function InfoGeral({
 
     handleInputChange(selectOptions);
   };
+
+  async function getRequesters(tenantId: string) {
+    try {
+      const response = await api.get(`/task/requester/${tenantId}`);
+      if (response.data.result.length > 0) {
+        setRequestersList(response.data.result);
+      }
+    } catch (error) {
+      console.log('log do get requesters', error);
+    }
+  }
+
+  useEffect(() => {
+    const defaultValue = clients && clients.filter((obj) => obj.tenant_id === data.tenant_id);
+    if (data.tenant_id !== '') {
+      setInitialValue({
+        value: defaultValue !== undefined && defaultValue !== null ? defaultValue[0].tenant_id : '',
+        label: defaultValue !== undefined && defaultValue !== null ? defaultValue[0].name : '',
+        image: defaultValue !== undefined && defaultValue !== null ? defaultValue[0].bucket : ''
+      });
+    }
+
+    if (data.ticket_id !== '') {
+      getRequesters(data.tenant_id);
+    }
+  }, [data, clients]);
 
   return (
     <div>
@@ -104,26 +138,16 @@ export default function InfoGeral({
           error={error?.title}
         />
         {!user?.organizations && (
-          <Select
-            placeholder={'Selecione...'}
-            defaultValue={data.tenant_id}
-            options={clientsOptions}
-            onChange={handleClientSelected}
-          />
-
-          // <SelectDefault
-          //   label="Cliente"
-          //   name="tenant_id"
-          //   value={data.tenant_id}
-          //   onChange={handleInputChange}
-          //   error={error?.tenant_id}
-          // >
-          //   {clients?.map((row) => (
-          //     <option key={row.tenant_id} value={row.tenant_id}>
-          //       {row.name}
-          //     </option>
-          //   ))}
-          // </SelectDefault>
+          <div style={{ flex: '1' }}>
+            <SelectImage
+              label={'Cliente'}
+              dataOptions={clientsOptions}
+              value={initialValue.value !== '' ? initialValue : null}
+              onChange={handleClientSelected}
+              placeholder={'Selecione o cliente...'}
+              error={error?.tenant_id}
+            />
+          </div>
         )}
 
         {user?.organizations?.length > 0 && (
@@ -175,6 +199,27 @@ export default function InfoGeral({
           ))}
         </SelectDefault>
       </FlexLine>
+
+      {requestersList.length > 0 && (
+        <FlexLine>
+          <div style={{ flex: '1' }}>
+            <SelectDefault
+              label="Solicitante"
+              name="requester_id"
+              value={data.requester_id}
+              onChange={handleInputChange}
+              error={error?.requester_id}
+            >
+              {requestersList?.map((row) => (
+                <option key={row.user_id} value={row.user_id}>
+                  {row.name}
+                </option>
+              ))}
+            </SelectDefault>
+          </div>
+          <div style={{ flex: '1' }}></div>
+        </FlexLine>
+      )}
 
       {/* Select responsável flow */}
       {/* {flowsManagers.length > 0 && (
