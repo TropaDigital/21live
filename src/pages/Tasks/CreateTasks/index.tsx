@@ -338,6 +338,10 @@ export default function CreateTasks() {
         ...prevState,
         ['ticket_id']: location.state.ticket_id
       }));
+      setDTOForm((prevState: any) => ({
+        ...prevState,
+        ['title']: location.state.title
+      }));
     }
 
     if (location.state !== null && location.state.task_id) {
@@ -1693,7 +1697,7 @@ export default function CreateTasks() {
                 <Deliveries>
                   <InputDefault
                     label="Entrega - Pré-Requisitos"
-                    placeholder="00/00/0000"
+                    // placeholder="00/00/0000"
                     name="dateStart"
                     type="date"
                     icon={BiCalendar}
