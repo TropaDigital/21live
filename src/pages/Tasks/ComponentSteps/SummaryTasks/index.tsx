@@ -23,7 +23,7 @@ import {
 } from './styles';
 
 // Utils
-import { multiplyTime, sumTimes } from '../../../../utils/convertTimes';
+import { multiplyTime, subtractTime, sumTimes } from '../../../../utils/convertTimes';
 
 // Services
 import api from '../../../../services/api';
@@ -462,6 +462,9 @@ export default function SummaryTasks({
               <div className="splitter"></div>
               <div className="item-hours">
                 Horas estimadas <span>{totalArrayHours}</span>
+              </div>
+              <div className="item-hours">
+                Horas disponíveis <span>{subtractTime(projectInfos?.tempo, totalArrayHours)}</span>
               </div>
             </>
           )}
