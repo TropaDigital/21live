@@ -152,9 +152,9 @@ export default function TaskTable({
                       <div className="flag-info">
                         <Flag
                           style={{ textAlign: 'center' }}
-                          className={task.status === 'true' ? 'flagged' : ''}
+                          className={task.urgent === 'true' ? 'flagged' : ''}
                         >
-                          {task.status === 'true' ? (
+                          {task.urgent === 'true' ? (
                             <IconContext.Provider
                               value={{ color: '#F04438', className: 'global-class-name' }}
                             >
