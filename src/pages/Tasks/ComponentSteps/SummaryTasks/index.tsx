@@ -30,6 +30,7 @@ import api from '../../../../services/api';
 import { FlexLine } from '../../../Projects/ComponentSteps/styles';
 import { SelectDefault } from '../../../../components/Inputs/SelectDefault';
 import { useAuth } from '../../../../hooks/AuthContext';
+import { FileList } from '../../../Projects/ListProjects/styles';
 
 interface TasksProps {
   createTasks: () => void;
@@ -45,6 +46,7 @@ interface TasksProps {
   ) => void;
   error: FormProps;
   estimatedtotalTime: (value: any) => void;
+  taskFiles: any[];
 }
 
 interface FlowRole {
@@ -68,7 +70,8 @@ export default function SummaryTasks({
   updateTask,
   handleInputChange,
   error,
-  estimatedtotalTime
+  estimatedtotalTime,
+  taskFiles
 }: TasksProps) {
   const { user } = useAuth();
   const [deliveryArrayHours, setDeliveryArrayHours] = useState<any>('');
@@ -225,6 +228,14 @@ export default function SummaryTasks({
                 {/* {taskSummary?.description.replace('<p>', '').replace('</p>', '')} */}
               </div>
             </SummaryTaskDescription>
+            {taskFiles.length > 0 && (
+              <SummaryTaskDescription>
+                <div className="description-title">Arquivos:</div>
+                {taskFiles.map((row: any) => (
+                  <FileList key={row.file_id}>&#x2022; {row.file_name}</FileList>
+                ))}
+              </SummaryTaskDescription>
+            )}
           </SummaryInfoWrapper>
         </Summary>
         {taskType === 'horas' && updateTask && (
