@@ -168,7 +168,7 @@ export default function ViewProductsDeliveries() {
     }
 
     getClockIsOpen();
-  }, [selectedProduct]);
+  }, [typeOfPlay, selectedProduct]);
 
   // useEffect(() => {
   //   async function getUserData() {
