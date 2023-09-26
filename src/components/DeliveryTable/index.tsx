@@ -70,7 +70,7 @@ interface TaskDelivery {
   project_category: string;
   time_consumed: string;
   total_time: string;
-  status: string;
+  urgent: string;
   card_name: string;
 }
 
@@ -184,9 +184,9 @@ export default function DeliveryTable({
                       <div className="flag-info">
                         <Flag
                           style={{ textAlign: 'center' }}
-                          className={delivery.status === 'true' ? 'flagged' : ''}
+                          className={delivery.urgent === 'true' ? 'flagged' : ''}
                         >
-                          {delivery.status === 'true' ? (
+                          {delivery.urgent === 'true' ? (
                             <IconContext.Provider
                               value={{ color: '#F04438', className: 'global-class-name' }}
                             >
