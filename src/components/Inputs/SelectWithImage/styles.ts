@@ -11,8 +11,12 @@ export const ContainerSelect = styled.div`
     gap: 12px;
 
     .client-image {
-      width: 20px;
-      height: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 4px;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
     }
   }
 `;

@@ -50,7 +50,19 @@ export default function SelectImage({
         ref={inputRef}
         formatOptionLabel={(obj) => (
           <div className="client-option">
-            {obj.image !== '' && <img src={obj.image} alt="client-image" />}
+            {obj.image !== '' && (
+              <div
+                className="client-image"
+                style={{
+                  backgroundImage: `url(https://${obj.image}.s3.amazonaws.com/tenant/login_bg.jpg)`
+                }}
+              ></div>
+              // <img
+              //   src={`https://${obj.image}.s3.amazonaws.com/tenant/login_bg.jpg`}
+              //   alt="client-image"
+              //   className="client-image"
+              // />
+            )}
             <span>{obj.label}</span>
           </div>
         )}
@@ -69,7 +81,10 @@ export default function SelectImage({
               ? '0px 0px 0px 1px #3182ce'
               : error !== undefined
               ? '0px 0px 0px 1px #F04438'
-              : '#e2e8f0'
+              : '#e2e8f0',
+            '&:hover': {
+              borderColor: 'none'
+            }
           }),
           placeholder: (provided: Record<string, unknown>) => ({
             ...provided,
