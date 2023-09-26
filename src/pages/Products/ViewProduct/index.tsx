@@ -642,7 +642,9 @@ export default function ViewProductsDeliveries() {
             <RightInfosTitle>Detalhes da tarefa</RightInfosTitle>
             <TaskInfoField>
               <div className="info-title">Tempo estimado:</div>
-              <div className="info-description">{dataTask?.total_time}</div>
+              <div className="info-description">
+                {dataTask?.total_time !== 'undefined' ? dataTask?.total_time : 'Livre'}
+              </div>
             </TaskInfoField>
 
             {/* <TaskInfoField>
