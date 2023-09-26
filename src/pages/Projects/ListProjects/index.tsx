@@ -477,7 +477,7 @@ export default function ListProjects() {
                 <SummaryTaskDescription>
                   <div className="description-title">Arquivos:</div>
                   {modalShowProject.project.files.map((row: any) => (
-                    <FileList key={row.file_id}>{row.file_name}</FileList>
+                    <FileList key={row.file_id}>&#x2022; {row.file_name}</FileList>
                   ))}
                 </SummaryTaskDescription>
               )}
