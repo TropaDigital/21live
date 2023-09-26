@@ -14,6 +14,7 @@ import ModalDefault from '../../../components/Ui/ModalDefault';
 import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
 import { SwitchSelector } from '../../../components/CardProductsSelected/styles';
 import InputSwitchDefault from '../../../components/Inputs/InputSwitchDefault';
+import { UploadedFilesProps } from '../../../components/Upload/UploadFiles';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import InfoDeliveries from '../ComponentSteps/InfoDeliverables';
 import AddTextButton from '../../../components/Buttons/AddTextButton';
@@ -80,6 +81,7 @@ import api from '../../../services/api';
 
 // Libraries
 import moment from 'moment';
+import InfoFiles from '../ComponentSteps/InfoFiles';
 
 interface StateProps {
   [key: string]: any;
@@ -204,12 +206,14 @@ export default function CreateTasks() {
     product_id: '',
     flow_id: '',
     ticket_id: '',
+    requester_id: '',
     description: '',
     creation_description: '',
     creation_date_end: '',
     copywriting_description: '',
     copywriting_date_end: '',
     deadlines: [],
+    files: [],
     user_id: '',
     start_job: '',
     end_job: '',
@@ -302,6 +306,7 @@ export default function CreateTasks() {
   const splitDeliveries = deliveriesSplit === 'no-split' ? false : true;
   const [selectUserModal, setSelectUserModal] = useState<boolean>(false);
   const [estimatedTime, setEstimatedTime] = useState<string>('');
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
 
   const DeliveryDefault: DeliveryProps = {
     deliveryId: 1,
@@ -1222,12 +1227,22 @@ export default function CreateTasks() {
 
   const handleOnSubmit = useCallback(async () => {
     try {
+      const fileArray = uploadedFiles.map(
+        (row: { bucket: any; file_name: any; key: any; size: any }) => ({
+          file_name: row.file_name,
+          bucket: row.bucket,
+          key: row.key,
+          size: row.size
+        })
+      );
+
       const {
         title,
         tenant_id,
         product_id,
         flow_id,
         user_id,
+        requester_id,
         description,
         creation_description,
         creation_date_end,
@@ -1278,6 +1293,7 @@ export default function CreateTasks() {
           product_id,
           flow_id,
           user_id,
+          requester_id,
           description,
           creation_description,
           creation_date_end,
@@ -1286,6 +1302,7 @@ export default function CreateTasks() {
           step,
           end_job,
           start_job,
+          files: fileArray,
           deadlines: [
             {
               date_end: DTOForm?.creation_date_end,
@@ -1310,6 +1327,10 @@ export default function CreateTasks() {
             }
           ]
         };
+
+        if (requester_id === '') {
+          delete createNewData.requester_id;
+        }
         if (location.state !== null) {
           await api.put(`tasks/${location.state.project_id}`, createNewData);
         } else {
@@ -1329,6 +1350,7 @@ export default function CreateTasks() {
           product_id,
           flow_id,
           user_id,
+          requester_id,
           description,
           creation_description,
           creation_date_end,
@@ -1336,9 +1358,14 @@ export default function CreateTasks() {
           copywriting_description,
           end_job,
           start_job,
+          files: fileArray,
           deadlines: [deadline],
           step
         };
+
+        if (requester_id === '') {
+          delete createNewData.requester_id;
+        }
 
         if (location.state !== null) {
           await api.put(`tasks/${location.state.project_id}`, createNewData);
@@ -1362,9 +1389,11 @@ export default function CreateTasks() {
             product_id,
             flow_id,
             user_id,
+            requester_id,
             end_job,
             start_job,
             description,
+            files: fileArray,
             creation_description,
             creation_date_end,
             copywriting_date_end,
@@ -1372,6 +1401,10 @@ export default function CreateTasks() {
             deadlines: deadlines,
             step
           };
+
+          if (requester_id === '') {
+            delete createNewData.requester_id;
+          }
 
           if (location.state !== null) {
             await api.put(`tasks/${location.state.project_id}`, createNewData);
@@ -1397,6 +1430,7 @@ export default function CreateTasks() {
             start_job,
             flow_id,
             description,
+            // files: fileArray,
             creation_description,
             creation_date_end,
             copywriting_date_end,
@@ -1418,7 +1452,8 @@ export default function CreateTasks() {
         title: 'Sucesso',
         description: 'Tarefa criada com sucesso!'
       });
-      setFinishModal(true);
+      // setFinishModal(true);
+      navigate('tarefas');
     } catch (e: any) {
       if (e.response.data.result.length !== 0) {
         e.response.data.result.map((row: any) => {
@@ -1788,6 +1823,36 @@ export default function CreateTasks() {
               )}
               {tasksType === 'livre' && (
                 <>
+                  <FormTitle>Arquivos</FormTitle>
+                  <InfoFiles
+                    uploadedFiles={uploadedFiles}
+                    setUploadedFiles={setUploadedFiles}
+                    tenant={DTOForm?.tenant_id}
+                  />
+                  {/* <SummaryTasks
+                    selectedProducts={productsArray}
+                    createTasks={handleSelectUserForTask}
+                    editTasks={() => {
+                      setCreateStep(2);
+                      setTaskEdit(true);
+                    }}
+                    taskSummary={DTOForm}
+                    projectInfos={selectedProject}
+                    summaryExtrainfos={selectedSummaryInfos}
+                    taskType={tasksType}
+                    updateTask={location.state !== null}
+                    handleInputChange={handleChangeInput}
+                    estimatedtotalTime={() => ''}
+                    error={error} 
+                  />*/}
+                </>
+              )}
+            </>
+          )}
+          {createStep === 4 && (
+            <>
+              {tasksType === 'livre' && (
+                <>
                   <FormTitle>Resumo da tarefa</FormTitle>
                   <SummaryTasks
                     selectedProducts={productsArray}
@@ -1803,13 +1868,24 @@ export default function CreateTasks() {
                     updateTask={location.state !== null}
                     handleInputChange={handleChangeInput}
                     estimatedtotalTime={() => ''}
+                    taskFiles={uploadedFiles}
                     error={error}
+                  />
+                </>
+              )}
+              {tasksType !== 'livre' && (
+                <>
+                  <FormTitle>Arquivos</FormTitle>
+                  <InfoFiles
+                    uploadedFiles={uploadedFiles}
+                    setUploadedFiles={setUploadedFiles}
+                    tenant={DTOForm?.tenant_id}
                   />
                 </>
               )}
             </>
           )}
-          {createStep === 4 && (
+          {createStep === 5 && (
             <>
               <FormTitle>Resumo da tarefa</FormTitle>
               {tasksType === 'horas' && (
@@ -1827,6 +1903,7 @@ export default function CreateTasks() {
                   updateTask={location.state !== null}
                   handleInputChange={handleChangeInput}
                   estimatedtotalTime={setEstimatedTime}
+                  taskFiles={uploadedFiles}
                   error={error}
                 />
               )}
@@ -1845,6 +1922,7 @@ export default function CreateTasks() {
                   updateTask={location.state !== null}
                   handleInputChange={handleChangeInput}
                   estimatedtotalTime={() => ''}
+                  taskFiles={uploadedFiles}
                   error={error}
                 />
               )}
@@ -1852,7 +1930,7 @@ export default function CreateTasks() {
           )}
         </FormWrapper>
 
-        {createStep !== 4 && tasksType !== 'livre' && (
+        {createStep !== 5 && tasksType !== 'livre' && (
           <Footer>
             <>
               <Link to={'/tarefas'}>
@@ -1881,7 +1959,7 @@ export default function CreateTasks() {
           </Footer>
         )}
 
-        {createStep !== 3 && tasksType === 'livre' && (
+        {createStep !== 4 && tasksType === 'livre' && (
           <Footer>
             <>
               <Link to={'/tarefas'}>
