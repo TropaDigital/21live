@@ -91,6 +91,7 @@ export interface ITaskCreate {
   flow_id?: number | any;
   description: string | any; //descricao geral
   name?: string | any;
+  files?: string | any;
   creation_description?: string | any; //entrega de criação
   creation_date_end?: string | any;
   copywriting_description?: string | any;
@@ -100,6 +101,7 @@ export interface ITaskCreate {
   project_id?: string;
   start_job: string;
   end_job: string;
+  requester_id?: string;
 }
 
 export interface IDelivery {
