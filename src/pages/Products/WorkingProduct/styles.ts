@@ -280,3 +280,17 @@ export const EssayInfo = styled.div`
   font-weight: var(--weight-regular);
   line-height: 24px;
 `;
+
+export const ModalInfos = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  width: 400px;
+
+  .title-modal {
+    color: var(--gray-800);
+    font-size: var(--text-small-lg);
+    font-weight: var(--weight-semibold);
+  }
+`;

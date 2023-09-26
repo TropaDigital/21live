@@ -14,7 +14,7 @@ import { useAuth } from '../../../hooks/AuthContext';
 
 // Icons
 import { IconText } from '../../../assets/icons';
-import { BiInfoCircle } from 'react-icons/bi';
+import { BiInfoCircle, BiTrash } from 'react-icons/bi';
 import { HiOutlineArrowRight, HiOutlineChatAlt } from 'react-icons/hi';
 
 // Components
@@ -36,6 +36,7 @@ import {
   InputFieldTitle,
   MessageInfos,
   MessageList,
+  ModalInfos,
   SectionChatComments,
   TabsWrapper,
   TaskTab,
@@ -50,6 +51,8 @@ import 'moment/dist/locale/pt-br';
 
 // Services
 import api from '../../../services/api';
+import { BsGear } from 'react-icons/bs';
+import ModalDefault from '../../../components/Ui/ModalDefault';
 
 interface WorkingProductProps {
   productDeliveryId?: any;
@@ -69,6 +72,7 @@ interface ChatMessages {
   name: string;
   avatar: string;
   created: string;
+  comment_id: string;
 }
 
 export default function WorkingProduct({
@@ -91,6 +95,8 @@ export default function WorkingProduct({
     copywriting_description: '',
     creation_description: ''
   });
+  const [showSystemLog, setShowSystemLog] = useState<boolean>(false);
+  const [logIsOn, setLogIsOn] = useState<boolean>(false);
   // const typeOfPlay = location?.state?.playType;
 
   // const productInfos = location.state?.productInfo?.products_delivery_id;
@@ -113,13 +119,29 @@ export default function WorkingProduct({
     }
   }
 
+  async function getCommentSystem() {
+    try {
+      setLoading(true);
+      const response = await api.get(`/tasks/comment/${taskId}?filter=system`);
+      // console.log('log do response do comment', response.data.result);
+      setDataComments(response.data.result);
+
+      setLoading(false);
+    } catch (error) {
+      console.log('log error send comment', error);
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
-    getComments();
-    setInputschanges({
-      copywriting_description: taskInputs?.copywriting_description,
-      creation_description: taskInputs?.creation_description
-    });
-  }, []);
+    if (selectedTab === 'Comentários') {
+      getComments();
+      setInputschanges({
+        copywriting_description: taskInputs?.copywriting_description,
+        creation_description: taskInputs?.creation_description
+      });
+    }
+  }, [selectedTab]);
 
   const handleInputChange = (e: any) => {
     setChatMessage(e.target.value);
@@ -205,6 +227,33 @@ export default function WorkingProduct({
     }
   };
 
+  async function handleDeleteComment(id: any) {
+    try {
+      setLoading(true);
+      if (id !== '') {
+        throw new Error('ID do comentário não identificado');
+      }
+      const response = await api.delete(`/tasks/comment/${id}`);
+
+      addToast({
+        title: 'Sucesso',
+        type: 'success',
+        description: 'Comentário excluido com sucesso.'
+      });
+      getComments();
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log error delete comment', error);
+
+      addToast({
+        title: 'ATENÇÃO',
+        type: 'danger',
+        description: error.message
+      });
+      setLoading(false);
+    }
+  }
+
   return (
     <ContainerDefault>
       <TabsWrapper>
@@ -235,6 +284,11 @@ export default function WorkingProduct({
           <HiOutlineChatAlt />
           Comentários
           {notifications && <div className="notification" />}
+        </TaskTab>
+
+        <TaskTab onClick={() => setShowSystemLog(true)}>
+          <BsGear />
+          Logs
         </TaskTab>
       </TabsWrapper>
 
@@ -324,6 +378,12 @@ export default function WorkingProduct({
                         <UserMessageInfo>
                           <div className="user-name">{message.name}</div>
                           <div className="date-message">{moment(message.created).fromNow()}</div>
+                          <div
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => handleDeleteComment(message.comment_id)}
+                          >
+                            <BiTrash />
+                          </div>
                         </UserMessageInfo>
 
                         <UserMessage>{message.comment}</UserMessage>
@@ -336,6 +396,12 @@ export default function WorkingProduct({
                         <UserMessageInfo>
                           <div className="user-name">{message.name}</div>
                           <div className="date-message">{moment(message.created).fromNow()}</div>
+                          <div
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => handleDeleteComment(message.comment_id)}
+                          >
+                            <BiTrash />
+                          </div>
                         </UserMessageInfo>
 
                         <UserMessage>{message.comment}</UserMessage>
@@ -358,23 +424,57 @@ export default function WorkingProduct({
                 </ChatMessage>
               ))}
             </MessageList>
-
-            <InputChat>
-              <InputDefault
-                label=""
-                placeholder="Mensagem..."
-                name="chat"
-                value={chatMessage}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-              />
-              <ChatSendButton onClick={handleSendComment}>
-                <HiOutlineArrowRight />
-              </ChatSendButton>
-            </InputChat>
+            {!logIsOn && (
+              <InputChat>
+                <InputDefault
+                  label=""
+                  placeholder="Mensagem..."
+                  name="chat"
+                  value={chatMessage}
+                  onChange={handleInputChange}
+                  onKeyDown={handleKeyDown}
+                />
+                <ChatSendButton onClick={handleSendComment}>
+                  <HiOutlineArrowRight />
+                </ChatSendButton>
+              </InputChat>
+            )}
           </SectionChatComments>
         )}
       </WorkSection>
+
+      <ModalDefault isOpen={showSystemLog} onOpenChange={() => setShowSystemLog(false)}>
+        <ModalInfos>
+          <div className="title-modal">Ver comentários ou logs do sistema?</div>
+
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <ButtonDefault
+              typeButton="primary"
+              isOutline
+              onClick={() => {
+                setShowSystemLog(false);
+                getComments();
+                setLogIsOn(false);
+                setSelectedTab('Comentários');
+              }}
+            >
+              Comentários
+            </ButtonDefault>
+            <ButtonDefault
+              typeButton="primary"
+              isOutline
+              onClick={() => {
+                getCommentSystem();
+                setShowSystemLog(false);
+                setLogIsOn(true);
+                setSelectedTab('Comentários');
+              }}
+            >
+              Logs do sistema
+            </ButtonDefault>
+          </div>
+        </ModalInfos>
+      </ModalDefault>
     </ContainerDefault>
   );
 }
