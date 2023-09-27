@@ -14,7 +14,7 @@ interface SelectProps {
   value: any;
   onChange: (value: any) => void;
   placeholder: string;
-  error: any;
+  error?: any;
 }
 
 export default function SelectImage({
@@ -54,7 +54,8 @@ export default function SelectImage({
         //       <div
         //         className="client-image"
         //         style={{
-        //           backgroundImage: `url(https://${obj.image}.s3.amazonaws.com/tenant/login_bg.jpg)`
+        //           backgroundColor: `#${obj.color}`,
+        //           backgroundImage: `url(https://${obj.image}.s3.amazonaws.com/tenant/logo.png)`
         //         }}
         //       ></div>
         //       // <img
@@ -91,6 +92,10 @@ export default function SelectImage({
             color: '#cccccc',
             fontSize: '16px',
             fontWeight: '400'
+          }),
+          menu: (provided: Record<string, unknown>) => ({
+            ...provided,
+            zIndex: 3
           })
         }}
       />
