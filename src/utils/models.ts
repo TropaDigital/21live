@@ -42,6 +42,7 @@ export interface MeetingProps {
 
 export interface TenantProps {
   bucket: string;
+  colormain: string;
   name: string;
   slug: string;
   tenant_id: string;
