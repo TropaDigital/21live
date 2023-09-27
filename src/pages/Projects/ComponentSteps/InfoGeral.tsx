@@ -1,6 +1,6 @@
 /* eslint-disable import-helpers/order-imports */
 // React
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 // Icons
 import { BiCalendar } from 'react-icons/bi';
@@ -12,9 +12,12 @@ import { OrganizationsProps } from '../../../types';
 // Components
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { SelectDefault } from '../../../components/Inputs/SelectDefault';
+import SelectImage from '../../../components/Inputs/SelectWithImage';
 
 // Styles
 import { FlexLine } from './styles';
+
+// Hooks
 import { useAuth } from '../../../hooks/AuthContext';
 
 interface FormProps {
@@ -23,9 +26,7 @@ interface FormProps {
 
 interface Props {
   data: any;
-  handleInputChange: (
-    e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>
-  ) => void;
+  handleInputChange: any;
   clients?: TenantProps[] | null;
   organizations?: OrganizationsProps[] | null;
   editProject: boolean;
@@ -42,6 +43,65 @@ export default function InfoGeral({
 }: Props) {
   const { user } = useAuth();
 
+  const [initialValue, setInitialValue] = useState({
+    value: '',
+    label: '',
+    image: '',
+    color: ''
+  });
+
+  const clientsOptions = clients?.map((row) => {
+    return {
+      value: row.tenant_id,
+      label: row.name,
+      image: row.bucket
+    };
+  });
+
+  const handleClientSelected = (select: any) => {
+    const selectOptions = {
+      name: 'tenant_id',
+      infos: select
+    };
+
+    handleInputChange(selectOptions);
+  };
+
+  useEffect(() => {
+    const defaultValue = clients && clients.filter((obj) => obj.tenant_id === data.tenant_id);
+    if (data.tenant_id !== '' && organizations === undefined) {
+      setInitialValue({
+        value: defaultValue !== undefined && defaultValue !== null ? defaultValue[0].tenant_id : '',
+        label: defaultValue !== undefined && defaultValue !== null ? defaultValue[0].name : '',
+        image: defaultValue !== undefined && defaultValue !== null ? defaultValue[0].bucket : '',
+        color: defaultValue !== undefined && defaultValue !== null ? defaultValue[0].colormain : ''
+      });
+    }
+
+    // const defaultOrganizationValue =
+    //   organizations && organizations.filter((obj) => obj.tenant_id === data.tenant_id);
+    // if (data.tenant_id !== '' && organizations !== undefined) {
+    //   setInitialValue({
+    //     value:
+    //       defaultOrganizationValue !== undefined && defaultOrganizationValue !== null
+    //         ? defaultOrganizationValue[0].tenant_id
+    //         : '',
+    //     label:
+    //       defaultOrganizationValue !== undefined && defaultOrganizationValue !== null
+    //         ? defaultOrganizationValue[0].name
+    //         : '',
+    //     image:
+    //       defaultOrganizationValue !== undefined && defaultOrganizationValue !== null
+    //         ? defaultOrganizationValue[0].logo
+    //         : '',
+    //     color:
+    //       defaultOrganizationValue !== undefined && defaultOrganizationValue !== null
+    //         ? defaultOrganizationValue[0].logo
+    //         : ''
+    //   });
+    // }
+  }, [data, clients, organizations]);
+
   return (
     <div>
       <FlexLine>
@@ -54,20 +114,30 @@ export default function InfoGeral({
           error={error?.title}
         />
         {!user?.organizations && (
-          <SelectDefault
-            label="Cliente"
-            name="tenant_id"
-            value={data.tenant_id}
-            onChange={handleInputChange}
-            disabled={editProject}
-            error={error?.tenant_id}
-          >
-            {clients?.map((row) => (
-              <option key={row.tenant_id} value={row.tenant_id}>
-                {row.name}
-              </option>
-            ))}
-          </SelectDefault>
+          <div style={{ flex: '1' }}>
+            <SelectImage
+              label={'Cliente'}
+              dataOptions={clientsOptions}
+              value={initialValue.value !== '' ? initialValue : null}
+              onChange={handleClientSelected}
+              placeholder={'Selecione o cliente...'}
+              error={error?.tenant_id}
+            />
+          </div>
+          // <SelectDefault
+          //   label="Cliente"
+          //   name="tenant_id"
+          //   value={data.tenant_id}
+          //   onChange={handleInputChange}
+          //   disabled={editProject}
+          //   error={error?.tenant_id}
+          // >
+          //   {clients?.map((row) => (
+          //     <option key={row.tenant_id} value={row.tenant_id}>
+          //       {row.name}
+          //     </option>
+          //   ))}
+          // </SelectDefault>
         )}
 
         {user?.organizations?.length > 0 && (
