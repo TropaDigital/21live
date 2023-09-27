@@ -1453,7 +1453,7 @@ export default function CreateTasks() {
         description: 'Tarefa criada com sucesso!'
       });
       // setFinishModal(true);
-      navigate('tarefas');
+      navigate('/tarefas');
     } catch (e: any) {
       if (e.response.data.result.length !== 0) {
         e.response.data.result.map((row: any) => {
@@ -1615,11 +1615,18 @@ export default function CreateTasks() {
 
     setSelectUserModal(false);
     setTimeout(() => {
-      handleCreateTask();
-    }, 1000);
+      if (DTOForm.end_job !== '' && DTOForm.start_job !== '' && DTOForm.user_id !== '') {
+        handleOnSubmit();
+        console.log('log do submit', DTOForm);
+      } else {
+        handleCreateTask();
+        console.log('log do create task', DTOForm);
+      }
+    }, 1200);
   };
 
   const handleCreateTask = () => {
+    console.log('log inside create task', DTOForm);
     if (DTOForm.end_job !== '' && DTOForm.start_job !== '' && DTOForm.user_id !== '') {
       handleOnSubmit();
     }
