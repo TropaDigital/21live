@@ -10,6 +10,7 @@ interface ContainerProps {
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
+  flex: 1;
 
   label {
     font-size: var(--text-small-sm);
@@ -27,9 +28,11 @@ export const ContainerInput = styled.div<ContainerProps>`
   border-color: #e2e8f0;
   word-wrap: break-word;
 
-  ${(props) => props.isDisabled && css`
-    cursor: not-Allowed;
-  `}
+  ${(props) =>
+    props.isDisabled &&
+    css`
+      cursor: not-Allowed;
+    `}
 
   ${(props) =>
     props.isErrored &&
@@ -38,13 +41,11 @@ export const ContainerInput = styled.div<ContainerProps>`
     `}
 
    .react-select-container {
-
     .react-select--is-disabled {
       cursor: not-allowed;
     }
-     .react-select__control {
-       .react-select__value-container {
-
+    .react-select__control {
+      .react-select__value-container {
         .react-select__multi-value {
           .react-select__multi-value__label {
             color: #667085;
@@ -62,20 +63,20 @@ export const ContainerInput = styled.div<ContainerProps>`
           opacity: 0;
           visibility: hidden;
         }
-       .react-select__indicator-separator {
-        background-color: transparent;
-       }
+        .react-select__indicator-separator {
+          background-color: transparent;
+        }
       }
-     }
+    }
 
-     .react-select__menu {
-       .react-select__menu-list {
-         .react-select__option {
-         }
-       }
-     }
-   }
-      
+    .react-select__menu {
+      z-index: 3;
+      .react-select__menu-list {
+        .react-select__option {
+        }
+      }
+    }
+  }
 
   /* select {
     padding-inline-end: 2rem;
@@ -125,6 +126,7 @@ export const ContainerInput = styled.div<ContainerProps>`
     position: absolute;
     top: 0px;
     pointer-events: none;
+  }
 `;
 
 export const Error = styled(Tooltip)`
