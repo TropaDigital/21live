@@ -10,6 +10,7 @@ import { OrganizationsProps } from '../../../types';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { SelectDefault } from '../../../components/Inputs/SelectDefault';
 import { FlexLine } from '../../Projects/ComponentSteps/styles';
+import SelectImage from '../../../components/Inputs/SelectWithImage';
 
 // Services
 import api from '../../../services/api';
@@ -17,9 +18,6 @@ import api from '../../../services/api';
 // Hooks
 import { useToast } from '../../../hooks/toast';
 import { useAuth } from '../../../hooks/AuthContext';
-
-// Libraries
-import SelectImage from '../../../components/Inputs/SelectWithImage';
 
 interface FormProps {
   [key: string]: any;
@@ -63,7 +61,8 @@ export default function InfoGeral({
   const [initialValue, setInitialValue] = useState({
     value: '',
     label: '',
-    image: ''
+    image: '',
+    color: ''
   });
   const [requestersList, setRequestersList] = useState<RequesterProps[]>([]);
 
@@ -113,18 +112,42 @@ export default function InfoGeral({
 
   useEffect(() => {
     const defaultValue = clients && clients.filter((obj) => obj.tenant_id === data.tenant_id);
-    if (data.tenant_id !== '') {
+    if (data.tenant_id !== '' && organizations === undefined) {
       setInitialValue({
         value: defaultValue !== undefined && defaultValue !== null ? defaultValue[0].tenant_id : '',
         label: defaultValue !== undefined && defaultValue !== null ? defaultValue[0].name : '',
-        image: defaultValue !== undefined && defaultValue !== null ? defaultValue[0].bucket : ''
+        image: defaultValue !== undefined && defaultValue !== null ? defaultValue[0].bucket : '',
+        color: defaultValue !== undefined && defaultValue !== null ? defaultValue[0].colormain : ''
+      });
+    }
+
+    const defaultOrganizationValue =
+      organizations && organizations.filter((obj) => obj.tenant_id === data.tenant_id);
+    if (data.tenant_id !== '' && organizations !== undefined) {
+      setInitialValue({
+        value:
+          defaultOrganizationValue !== undefined && defaultOrganizationValue !== null
+            ? defaultOrganizationValue[0].tenant_id
+            : '',
+        label:
+          defaultOrganizationValue !== undefined && defaultOrganizationValue !== null
+            ? defaultOrganizationValue[0].name
+            : '',
+        image:
+          defaultOrganizationValue !== undefined && defaultOrganizationValue !== null
+            ? defaultOrganizationValue[0].logo
+            : '',
+        color:
+          defaultOrganizationValue !== undefined && defaultOrganizationValue !== null
+            ? defaultOrganizationValue[0].logo
+            : ''
       });
     }
 
     if (data.ticket_id !== '') {
       getRequesters(data.tenant_id);
     }
-  }, [data, clients]);
+  }, [data, clients, organizations]);
 
   return (
     <div>
@@ -151,6 +174,16 @@ export default function InfoGeral({
         )}
 
         {user?.organizations?.length > 0 && (
+          // <div style={{ flex: '1' }}>
+          //   <SelectImage
+          //     label={'Cliente'}
+          //     dataOptions={organizations}
+          //     value={initialValue.value !== '' ? initialValue : null}
+          //     onChange={handleClientSelected}
+          //     placeholder={'Selecione o cliente...'}
+          //     error={error?.tenant_id}
+          //   />
+          // </div>
           <SelectDefault
             label="Cliente"
             name="organization_id"
