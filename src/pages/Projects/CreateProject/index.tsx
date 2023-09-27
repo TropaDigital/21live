@@ -17,7 +17,7 @@ import { multiplyTime, sumTimes } from '../../../utils/convertTimes';
 import { IProduct, OrganizationsProps } from '../../../types';
 
 // Icons
-import { IconChecked, IconMail } from '../../../assets/icons';
+import { IconMail } from '../../../assets/icons';
 
 // Components
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
@@ -607,11 +607,12 @@ export default function CreateProject() {
   }
 
   const ifIsSelectedClient = (e: any) => {
-    if (e.target.name === 'tenant_id') {
-      const id = e.target.value;
-      const selectedClientInfos: any = dataClient?.filter((obj: any) => obj.tenant_id === id);
+    if (e.name === 'tenant_id') {
+      const selectedClientInfos: any = dataClient?.filter(
+        (obj: any) => obj.tenant_id === e.infos.value
+      );
       setSelectedClient(selectedClientInfos[0]);
-      handleChangeInput(e);
+      setDTOForm({ ...DTOForm, ['tenant_id']: e.infos.value });
     } else if (e.target.name === 'organization_id') {
       const id = e.target.value;
       const selectedClientInfos: any = dataOrganizations?.filter(

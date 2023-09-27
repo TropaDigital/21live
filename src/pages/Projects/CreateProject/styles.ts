@@ -251,11 +251,11 @@ export const FinishButtons = styled.div`
 
 export const TeamInput = styled.div`
   display: flex;
-  flex-direction: column;
   align-items: flex-start;
   border-radius: 8px;
   border: 1px solid var(--gray-200);
   background: #fff;
+  width: 100%;
 
   padding: 14px;
 `;
