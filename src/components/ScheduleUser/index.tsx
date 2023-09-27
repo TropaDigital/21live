@@ -151,12 +151,22 @@ export default function ScheduleUser({
   }, [dayCounter]);
 
   const addNewObjectToAgenda = (userId: string, newTaskItem: any) => {
+    const taskNewInfos = newTaskItem.map((item: any) => {
+      let title = '';
+      if (item.type === 'new') {
+        title = task_title;
+      } else if (item.type === 'pause' && item.title === '') {
+        title = 'Pausa';
+      }
+      return { ...item, title };
+    });
+
     setDataUserSchedule((prevUserData) => {
       return prevUserData.map((user) => {
         if (user.user_id === userId) {
           const updatedUser = {
             ...user,
-            agenda: newTaskItem
+            agenda: taskNewInfos
           };
           return updatedUser;
         }
@@ -333,10 +343,6 @@ export default function ScheduleUser({
   // useEffect(() => {
   //   console.log('log do DTO', DTOTaskSelect);
   // }, [DTOTaskSelect]);
-
-  // useEffect(() => {
-  //   console.log('log do response', responseScheduleInfos);
-  // }, [responseScheduleInfos]);
 
   return (
     <ScheduleWrapper>
