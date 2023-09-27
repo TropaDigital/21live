@@ -52,6 +52,7 @@ import {
 // Libraries
 import moment from 'moment';
 import { IconClose } from '../../../assets/icons';
+import SelectImage from '../../../components/Inputs/SelectWithImage';
 
 interface UploadedFilesProps {
   file?: File;
@@ -163,13 +164,19 @@ export default function ListMeeting() {
       files: []
     }
   });
+  const [initialValue, setInitialValue] = useState({
+    value: '',
+    label: '',
+    image: '',
+    color: ''
+  });
 
-  const handleChangeClient = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedIndex = event.target.selectedIndex;
-    const selectedId = parseInt(event.target.options[selectedIndex].value);
-    const selectedItem = dataClient?.find((item: any) => Number(item.tenant_id) === selectedId);
+  const handleChangeClient = (clientInfos: any) => {
+    // const selectedIndex = event.target.selectedIndex;
+    // const selectedId = parseInt(event.target.options[selectedIndex].value);
+    // const selectedItem = dataClient?.find((item: any) => Number(item.tenant_id) === selectedId);
 
-    setFormValue('tenant_id', selectedItem?.tenant_id);
+    setFormValue('tenant_id', clientInfos.value);
   };
 
   const onChange = (option: any) => {
@@ -354,6 +361,14 @@ export default function ListMeeting() {
       }
     });
   };
+
+  const clientsOptions = dataClient?.map((row) => {
+    return {
+      value: row.tenant_id,
+      label: row.name,
+      image: row.bucket
+    };
+  });
 
   return (
     <Container>
@@ -569,7 +584,14 @@ export default function ListMeeting() {
           </FieldDefault>
 
           <FieldDefault>
-            <SelectDefault
+            <SelectImage
+              label={'Cliente'}
+              dataOptions={clientsOptions}
+              value={formData.tenent_id}
+              onChange={handleChangeClient}
+              placeholder={'Selecione o cliente...'}
+            />
+            {/* <SelectDefault
               label="Cliente"
               name="tenant_id"
               placeHolder="Selecione"
@@ -583,7 +605,7 @@ export default function ListMeeting() {
                   {row.name}
                 </option>
               ))}
-            </SelectDefault>
+            </SelectDefault> */}
           </FieldDefault>
 
           <FieldDefault>
