@@ -201,6 +201,7 @@ export default function CreateProject() {
   };
 
   const handleDeleteProducts = (id: any) => {
+    console.log('logo do delete product', id);
     if (editSelectedProducts) {
       setProductsArray(productsArray.filter((obj: any) => obj.product_id !== id));
       if (productsArray.length <= 1) {
@@ -1028,6 +1029,7 @@ export default function CreateProject() {
                   onClick={() => {
                     setFinishModal(false);
                     setSendFiles(false);
+                    navigate('/projetos');
                   }}
                 >
                   Cancelar
