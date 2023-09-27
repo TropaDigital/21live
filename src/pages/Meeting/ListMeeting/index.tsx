@@ -453,7 +453,7 @@ export default function ListMeeting() {
                   <FilterButton
                     onClick={() => {
                       setSelectedFilter('recent');
-                      setFilterOrder('asc');
+                      setFilterOrder('desc');
                     }}
                     className={selectedFilter === 'recent' ? 'borders selected' : 'borders'}
                   >
@@ -462,7 +462,7 @@ export default function ListMeeting() {
                   <FilterButton
                     onClick={() => {
                       setSelectedFilter('older');
-                      setFilterOrder('desc');
+                      setFilterOrder('asc');
                     }}
                     className={selectedFilter === 'older' ? 'selected' : ''}
                   >
