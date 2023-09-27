@@ -50,6 +50,7 @@ import { SummaryCardTitle } from '../../Tasks/ComponentSteps/SummaryTasks/styles
 import { SummaryCardSubtitle } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 import { FileList, ModalShowProjectWrapper } from './styles';
 import Avatar from '../../../components/Ui/Avatar';
+import { tr } from 'date-fns/locale';
 
 interface StateProps {
   [key: string]: any;
@@ -58,6 +59,7 @@ interface StateProps {
 export default function ListProjects() {
   const { addToast } = useToast();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [modalShowProject, setModalShowProject] = useState({
     isOpen: false,
     type: 'Criar nova Ata de Reunião',
@@ -110,8 +112,7 @@ export default function ListProjects() {
     fetchData: fetchProject,
     pages
   } = useFetch<IProjectCreate[]>(`project?search=${search}&page=${selected}`);
-  const [listSelected, setListSelected] = useState<any[]>([]);
-  const navigate = useNavigate();
+  // const [listSelected, setListSelected] = useState<any[]>([]);
 
   // const handleOnAddProducts = (items: any) => {
   //   setFormValue('products', [...formData.products, ...items]);
@@ -199,27 +200,29 @@ export default function ListProjects() {
   //   });
   // };
 
-  // function handleList(value: any) {
-  //   if (listSelected.includes(value)) {
-  //     setListSelected(listSelected.filter((obj) => obj !== value));
-  //   } else {
-  //     setListSelected((obj) => [...obj, value]);
-  //   }
-  // }
-
-  useEffect(() => {
-    function handleSelectedProjects(): any {
-      dataProject?.forEach((item) => {
-        const cloneItem: any = item;
-
-        if (cloneItem?.status === '1' || cloneItem?.status === 'true') {
-          setListSelected((obj) => [...obj, cloneItem?.project_id]);
-        }
-      });
+  async function handleStatus(id: any) {
+    try {
+      const response = await api.put(`/project/switch/${id}`);
+      console.log('log do response', response.data);
+      fetchProject();
+    } catch (error) {
+      console.log('log do error', error);
     }
+  }
 
-    handleSelectedProjects();
-  }, [dataProject]);
+  // useEffect(() => {
+  //   function handleSelectedProjects(): any {
+  //     dataProject?.forEach((item) => {
+  //       const cloneItem: any = item;
+
+  //       if (cloneItem?.status === '1' || cloneItem?.status === 'true') {
+  //         setListSelected((obj) => [...obj, cloneItem?.project_id]);
+  //       }
+  //     });
+  //   }
+
+  //   handleSelectedProjects();
+  // }, [dataProject]);
 
   const handleOnDelete = async (id: any) => {
     try {
@@ -361,9 +364,9 @@ export default function ListProjects() {
                 </td>
                 <td>
                   <Switch
-                    // onChange={() => handleList(row.project_id)}
-                    onChange={() => console.log('log do switch button', row.project_id)}
-                    checked={listSelected.includes(row.project_id) ? true : false}
+                    onChange={() => handleStatus(row.project_id)}
+                    // onChange={() => console.log('log do switch button', row.project_id)}
+                    checked={row.status === 'true' ? true : false}
                     uncheckedIcon={false}
                     checkedIcon={false}
                     onColor="#0046B5"
