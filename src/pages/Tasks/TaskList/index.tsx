@@ -90,13 +90,15 @@ export default function TaskList() {
 
   const handleOnDelete = async (id: any) => {
     try {
-      await api.delete(`tasks/${id}`);
-      addToast({
-        type: 'success',
-        title: 'Sucesso',
-        description: 'Tarefa foi deletada!'
-      });
-      fetchData();
+      const response = await api.delete(`tasks/${id}`);
+      if (response.data.status === 'success') {
+        addToast({
+          type: 'success',
+          title: 'Sucesso',
+          description: 'Tarefa foi deletada!'
+        });
+        fetchData();
+      }
     } catch (error: any) {
       addToast({
         type: 'danger',
