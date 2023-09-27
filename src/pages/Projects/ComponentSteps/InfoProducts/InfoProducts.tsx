@@ -346,7 +346,10 @@ export default function InfoProducts({
                         receiveQuantity={row.quantity ? 1 : 0}
                         infosReceived={row}
                         handleQuantity={(value: any) => handleOnQuantity(row, value)}
-                        clearQuantity={() => setQuantityProducts('')}
+                        clearQuantity={() => {
+                          setQuantityProducts('');
+                          handleDeleteProducts(row);
+                        }}
                         disabledInput={false}
                       />
                       {/* <QuantityCounter
