@@ -77,7 +77,7 @@ export default function ProductTable({
       workForProduct(true);
     }
     if (value === 'schedule') {
-      workForProduct(true);
+      workForProduct(false);
     }
   };
 
