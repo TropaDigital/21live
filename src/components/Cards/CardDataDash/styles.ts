@@ -24,7 +24,7 @@ const cardTypeVariations = {
   creation: css`
     background: var(--degrade-purple);
     color: #fff;
-  `,
+  `
 };
 
 export const Container = styled.div<ContainerProps>`
@@ -48,10 +48,7 @@ export const Container = styled.div<ContainerProps>`
       font-weight: 700;
       color: #fff;
       line-height: 40px;
-      
     }
   }
   ${(props) => cardTypeVariations[props.type || 'info']}
- 
-
 `;

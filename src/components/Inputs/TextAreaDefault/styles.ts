@@ -12,9 +12,9 @@ export const Container = styled.div`
   flex-direction: column;
 
   label {
-    font-size: 14px;
-    font-weight: 700;
-    color: #6c757d;
+    font-size: var(--text-small-sm);
+    font-weight: var(--weight-medium);
+    color: var(--gray-700);
     margin-bottom: 5px;
   }
 `;
@@ -43,8 +43,9 @@ export const ContainerInput = styled.div<ContainerProps>`
     transition-property: background-color, border-color, color, fill, stroke,
       opacity, box-shadow, transform;
     transition-duration: 200ms;
-    font-size: 14px;
-    color: #6c757d;
+    font-size: var(--text-small-md);
+    font-weight: var(--weight-reular);
+    color: var(--gray-700);
     padding-inline-start: 1rem;
     padding-inline-end: 1rem;
     height: 2.5rem;

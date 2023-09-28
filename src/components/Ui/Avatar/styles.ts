@@ -1,7 +1,7 @@
-import styled, { css } from "styled-components";
+import styled, { css } from 'styled-components';
 
 interface Props {
-  length: number
+  length: number;
 }
 
 interface AvatarProps {
@@ -22,9 +22,11 @@ export const ContainerAvatar = styled.div<AvatarProps>`
     border-radius: 50%;
     border: 3px solid #fff;
 
-    /* ${({isImage}) => isImage && css`
-      border: 3px solid #ced4da;
-    `} */
+    /* ${({ isImage }) =>
+      isImage &&
+      css`
+        border: 3px solid #ced4da;
+      `} */
 
     > img {
       border-radius: 50%;
@@ -49,7 +51,7 @@ export const ContainerAvatar = styled.div<AvatarProps>`
 export const Container = styled.div<Props>`
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   position: relative;
 
   ul {
@@ -63,18 +65,31 @@ export const Container = styled.div<Props>`
       width: 2.37rem;
       height: 2.37rem;
       border-radius: 50%;
-      border: 3px solid #fff;
+      /* border: 3px solid #fff; */
       display: grid;
       place-items: center;
 
       &.isOnline {
-        border: 3px solid #93E088;
+        border: 3px solid #93e088;
       }
 
       &.isAvatar {
-        border: 3px solid #ced4da;
+        /* border: 3px solid #ced4da; */
       }
-  
+
+      .image-avatar {
+        width: 100%;
+        height: 100%;
+
+        background-color: #fff;
+        background-position: center center;
+        background-size: contain;
+        background-repeat: no-repeat;
+
+        border: 3px solid var(--gray-300);
+        border-radius: 50%;
+      }
+
       img {
         max-width: 100%;
         border-radius: 50%;
@@ -82,9 +97,9 @@ export const Container = styled.div<Props>`
       }
       transition: transform 300ms;
     }
-  
-    .avatar-ui:hover ~ .avatar-ui  {
-      transform: translateX(.625rem);
+
+    .avatar-ui:hover ~ .avatar-ui {
+      transform: translateX(0.625rem);
     }
   }
 `;

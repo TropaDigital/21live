@@ -1,14 +1,64 @@
-import { ColumnType } from './enums';
-
 export interface TaskModel {
-  id: string;
+  task_id: string;
+  card_id: string;
   title: string;
-  column: ColumnType;
-  color: string;
+  client: string;
+  project: string;
+  frame: string;
+  type: string;
+  order: string;
+  final_data: string;
+  description: string;
 }
 
-export interface DragItem {
-  index: number;
-  id: TaskModel['id'];
-  from: ColumnType;
+export interface ColumnModel {
+  card_id: string;
+  email_alert: string;
+  flow_id: string;
+  idCreator: string;
+  name: string;
+  nameCreator: string;
+  necessary_upload: string;
+  next_step: string;
+  previous_step: string;
+  step: string;
+  tasks: TaskModel[];
+}
+
+export interface MeetingProps {
+  cliente: string;
+  date: string;
+  meeting_id: string;
+  responsavel: string;
+  title: string;
+  description: string;
+  files: any[];
+  members: any;
+
+  tenant_id: any;
+  email_alert: boolean;
+  user_id: string;
+}
+
+export interface TenantProps {
+  bucket: string;
+  colormain: string;
+  name: string;
+  slug: string;
+  tenant_id: string;
+}
+
+export interface TeamProps {
+  avatar: string;
+  birthday: string;
+  cost_per_hour: string;
+  email: string;
+  function: string;
+  function_id: string;
+  hiring_date: string;
+  name: string;
+  phone: string;
+  tenant_id: string;
+  user_id: string;
+  username: string;
 }

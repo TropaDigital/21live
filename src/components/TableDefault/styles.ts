@@ -11,24 +11,24 @@ export const Container = styled.div`
     border-spacing: 5px 0;
 
     tbody > tr:nth-child(2n) td {
-      background-color: #f6f7fb;
+      background-color: var(--gray-50);
     }
 
     th {
-      color: var(--light);
       background-color: var(--primary);
       border-radius: 5px;
       text-transform: capitalize;
-      font-weight: 700;
-      font-size: var(--small-font-size);
-      padding: 1rem 2rem;
+      font-size: var(--text-small-sm);
+      font-weight: var(--weight-bold);
+      color: var(--light);
+      padding: 8px 24px;
       text-align: center;
-      line-height: 1.5rem;
+      line-height: 20px;
     }
     td {
-      font-size: var(--small-font-size);
-      font-weight: 400;
-      color: var(--text-color-light);
+      font-size: var(--text-small-sm);
+      font-weight: var(--weight-medium);
+      color: var(--gray-700);
       border: 0;
       padding: 1rem 2rem;
       background: #ffffff;
@@ -57,9 +57,10 @@ export const Container = styled.div`
 `;
 
 export const TitleTable = styled.h1`
-  font-size: var(--small-font-size);
-  text-transform: capitalize;
-  font-weight: 700;
+  font-size: var(--text-small-xl);
+  font-weight: var(--weight-semibold);
   color: var(--title-color);
-  margin-bottom: 10px;
+  text-transform: capitalize;
+  margin-bottom: 1rem;
+  margin-left: 5px;
 `;

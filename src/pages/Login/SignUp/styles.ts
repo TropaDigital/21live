@@ -1,7 +1,6 @@
-import styled, { keyframes } from "styled-components";
-import { shade } from "polished";
+import styled, { keyframes } from 'styled-components';
 
-
+import { shade } from 'polished';
 
 export const Container = styled.div`
   height: 100vh;
@@ -50,12 +49,12 @@ export const AnimationContainer = styled.div`
     }
   }
   > a {
-    color: #FAAE42;
+    color: #faae42;
     display: flex;
     align-items: center;
     transition: color 0.2s;
     &:hover {
-      color: ${shade(0.2, "#FAAE42")};
+      color: ${shade(0.2, '#FAAE42')};
     }
     svg {
       margin-right: 8px;

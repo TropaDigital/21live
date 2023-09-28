@@ -1,6 +1,10 @@
+// Libraries
+import CountUp from 'react-countup';
+// Icons
 import { BiGitBranch, BiGroup, BiPaint } from 'react-icons/bi';
 import { FiAlertOctagon, FiAlertTriangle } from 'react-icons/fi';
-import CountUp from 'react-countup';
+
+// Styles
 import { Container } from './styles';
 
 interface Props {
@@ -14,7 +18,7 @@ const icons = {
   success: <BiGroup size={28} />,
   danger: <BiGitBranch size={28} />,
   warning: <FiAlertOctagon size={28} />,
-  creation: <BiPaint size={28} />,
+  creation: <BiPaint size={28} />
 };
 
 export function CardDataDash({ type, data, description }: Props) {

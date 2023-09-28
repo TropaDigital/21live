@@ -2,18 +2,21 @@ import { useState } from 'react';
 import { BiLogOut, BiUser } from 'react-icons/bi';
 import { FiMenu, FiXCircle } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
+
 import { useAuth } from '../../../hooks/AuthContext';
-import { LogoIcon } from '../../assets/icons';
+
+import { LogoIcon } from '../../../assets/icons';
+
 import {
-  Container,
-  SectionProfile,
+  ButtonBurguer,
   ButtonConfigProfile,
+  Container,
   IconGear,
-  Profile,
   ImageProfile,
   Logo,
-  ButtonBurguer,
-  SectionPopUpHeader
+  Profile,
+  SectionPopUpHeader,
+  SectionProfile
 } from './styles';
 
 interface HeaderProps {
@@ -31,15 +34,8 @@ export default function Header({ handleOnMenu, modalActive }: HeaderProps) {
       <SectionProfile>
         <Logo modalActive={modalActive}>
           <LogoIcon />
-          <ButtonBurguer
-            modalActive={modalActive}
-            onClick={handleOnMenu}
-          >
-            {modalActive ? (
-              <FiMenu />
-            ) : (
-              <FiXCircle />
-            )}
+          <ButtonBurguer modalActive={modalActive} onClick={handleOnMenu}>
+            {modalActive ? <FiMenu /> : <FiXCircle />}
           </ButtonBurguer>
         </Logo>
 
@@ -49,22 +45,21 @@ export default function Header({ handleOnMenu, modalActive }: HeaderProps) {
           </ButtonConfigProfile>
           <h2>{user.name}</h2>
           <ImageProfile onClick={() => setMenuUser(!menuUser)}>
-            {!!user.avatar ? (
+            {user.avatar ? (
               <img src={user.avatar} alt="profile" />
-              ) : (
-              <BiUser size={26} color='#fff'/>
+            ) : (
+              <BiUser size={26} color="#fff" />
             )}
           </ImageProfile>
         </Profile>
-
       </SectionProfile>
 
       <SectionPopUpHeader menuUser={menuUser}>
         <ul>
           <li>
-            <button 
+            <button
               onClick={() => {
-                navigate("/perfil");
+                navigate('/perfil');
                 setMenuUser(false);
               }}
             >
@@ -80,7 +75,6 @@ export default function Header({ handleOnMenu, modalActive }: HeaderProps) {
           </li>
         </ul>
       </SectionPopUpHeader>
-
     </Container>
-  )
+  );
 }

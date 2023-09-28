@@ -1,8 +1,11 @@
-import { useEffect } from 'react'
+import { useEffect } from 'react';
 
-import { IconFile } from '../../../components/assets/icons';
-import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import { useToast } from '../../../hooks/toast';
+
+import { IconFile } from '../../../assets/icons';
+
+import ButtonDefault from '../../../components/Buttons/ButtonDefault';
+
 import { Container, Content } from './styles';
 
 export default function ComponentsPage() {
@@ -10,13 +13,13 @@ export default function ComponentsPage() {
 
   useEffect(() => {
     getAll();
-  }, [])
+  }, []);
 
   function getAll() {
     addToast({
-      type: "success",
-      title: "Cadastro realizado",
-      description: "Formulario cadastrado com sucesso!",
+      type: 'success',
+      title: 'Cadastro realizado',
+      description: 'Formulario cadastrado com sucesso!'
     });
   }
 
@@ -46,17 +49,13 @@ export default function ComponentsPage() {
                 </ButtonDefault>
               </td>
               <td>
-                <ButtonDefault 
-                  sizeButton="small"
-                >
+                <ButtonDefault sizeButton="small">
                   <IconFile />
                   Texto do botao
                 </ButtonDefault>
               </td>
               <td>
-                <ButtonDefault 
-                  sizeButton="big"
-                >
+                <ButtonDefault sizeButton="big">
                   <IconFile />
                   Texto do botao
                 </ButtonDefault>
@@ -67,11 +66,7 @@ export default function ComponentsPage() {
                 </ButtonDefault>
               </td>
               <td>
-                <ButtonDefault
-                  isOutline
-                  sizeButton="small"
-                  typeButton="primary"
-                >
+                <ButtonDefault isOutline sizeButton="small" typeButton="primary">
                   Texto do botao
                 </ButtonDefault>
               </td>
@@ -85,9 +80,7 @@ export default function ComponentsPage() {
             <tr>
               <td>Secundary</td>
               <td>
-                <ButtonDefault typeButton="secondary">
-                  Texto do botao
-                </ButtonDefault>
+                <ButtonDefault typeButton="secondary">Texto do botao</ButtonDefault>
               </td>
               <td>
                 <ButtonDefault sizeButton="small" typeButton="secondary">
@@ -105,20 +98,12 @@ export default function ComponentsPage() {
                 </ButtonDefault>
               </td>
               <td>
-                <ButtonDefault
-                  isOutline
-                  sizeButton="small"
-                  typeButton="secondary"
-                >
+                <ButtonDefault isOutline sizeButton="small" typeButton="secondary">
                   Texto do botao
                 </ButtonDefault>
               </td>
               <td>
-                <ButtonDefault
-                  isOutline
-                  sizeButton="big"
-                  typeButton="secondary"
-                >
+                <ButtonDefault isOutline sizeButton="big" typeButton="secondary">
                   Texto do botao
                 </ButtonDefault>
               </td>
@@ -127,9 +112,7 @@ export default function ComponentsPage() {
             <tr>
               <td>Success</td>
               <td>
-                <ButtonDefault typeButton="success">
-                  Texto do botao
-                </ButtonDefault>
+                <ButtonDefault typeButton="success">Texto do botao</ButtonDefault>
               </td>
               <td>
                 <ButtonDefault sizeButton="small" typeButton="success">
@@ -147,11 +130,7 @@ export default function ComponentsPage() {
                 </ButtonDefault>
               </td>
               <td>
-                <ButtonDefault
-                  isOutline
-                  sizeButton="small"
-                  typeButton="success"
-                >
+                <ButtonDefault isOutline sizeButton="small" typeButton="success">
                   Texto do botao
                 </ButtonDefault>
               </td>
@@ -165,9 +144,7 @@ export default function ComponentsPage() {
             <tr>
               <td>Danger</td>
               <td>
-                <ButtonDefault typeButton="danger">
-                  Texto do botao
-                </ButtonDefault>
+                <ButtonDefault typeButton="danger">Texto do botao</ButtonDefault>
               </td>
               <td>
                 <ButtonDefault sizeButton="small" typeButton="danger">
@@ -199,9 +176,7 @@ export default function ComponentsPage() {
             <tr>
               <td>Warning</td>
               <td>
-                <ButtonDefault typeButton="warning">
-                  Texto do botao
-                </ButtonDefault>
+                <ButtonDefault typeButton="warning">Texto do botao</ButtonDefault>
               </td>
               <td>
                 <ButtonDefault sizeButton="small" typeButton="warning">
@@ -219,11 +194,7 @@ export default function ComponentsPage() {
                 </ButtonDefault>
               </td>
               <td>
-                <ButtonDefault
-                  isOutline
-                  sizeButton="small"
-                  typeButton="warning"
-                >
+                <ButtonDefault isOutline sizeButton="small" typeButton="warning">
                   Texto do botao
                 </ButtonDefault>
               </td>

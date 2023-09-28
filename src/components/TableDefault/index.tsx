@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+
 import { Container, TitleTable } from './styles';
 
 interface DataTable {
@@ -11,9 +12,7 @@ export function TableDefault({ title, children }: DataTable) {
     <Container>
       <TitleTable>{title}</TitleTable>
 
-      <table>
-        {children}
-      </table>
+      <table>{children}</table>
     </Container>
   );
 }

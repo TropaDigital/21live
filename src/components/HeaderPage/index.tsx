@@ -1,16 +1,15 @@
-
-import { 
+import {
   Container,
-  SectionTitleHeader,
-  TitleHeader,
-  SubTitleHeader,
   SectionActionsHeader,
+  SectionTitleHeader,
+  SubTitleHeader,
+  TitleHeader
 } from './styles';
 
 interface Props {
   title: string;
   subTitle?: string;
-  children?: JSX.Element,
+  children?: JSX.Element;
 }
 
 export default function HeaderPage({ title, subTitle, children }: Props) {
@@ -21,11 +20,7 @@ export default function HeaderPage({ title, subTitle, children }: Props) {
         <SubTitleHeader>{subTitle}</SubTitleHeader>
       </SectionTitleHeader>
 
-      {children && (
-        <SectionActionsHeader>
-          {children}
-        </SectionActionsHeader>
-      )}
+      {children && <SectionActionsHeader>{children}</SectionActionsHeader>}
     </Container>
-  )
+  );
 }

@@ -1,29 +1,27 @@
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-  useState,
-} from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import { createContext, ReactNode, useCallback, useContext, useState } from 'react';
+
 import api from '../services/api';
 
 export interface User {
   user_id?: number;
-  organization_id: number;
+  organizations: string[];
   tenant_id: number;
   username: string;
   email?: string;
   name: string;
   avatar?: string;
+  principalTenant?: string;
+  function?: string;
 
   profiles: any;
   language?: string;
-  birthDate?: string;
+  hiring_date?: string;
+  birthday?: string;
   phone?: string;
   companySince?: string;
   office?: string;
-  costPerhour?: string;
+  cost_per_hour?: string;
+  permissions: string[];
 }
 
 interface AuthState {
@@ -35,6 +33,7 @@ interface AuthState {
 interface SignInCredentials {
   email: string;
   password: string;
+  tenant_id: any;
 }
 
 interface AuthContextData {
@@ -49,25 +48,26 @@ interface TransactionsProviderProps {
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
-let user: User;
 
 function AuthProvider({ children }: TransactionsProviderProps) {
   const [data, setData] = useState<AuthState>(() => {
     const token = localStorage.getItem('@live:token');
     const user = localStorage.getItem('@live:user');
     const roles = localStorage.getItem('@live:rules');
+    const permissions = localStorage.getItem('@live:permissions');
 
     if (token && user) {
       api.defaults.headers.authorization = `Bearer ${token}`;
-      return { token, user: JSON.parse(user), roles };
+      return { token, user: JSON.parse(user), roles, permissions };
     }
     return {} as AuthState;
   });
 
-  const signIn = useCallback(async ({ email, password }: any) => {
+  const signIn = useCallback(async ({ email, password, tenant_id }: any) => {
     const response = await api.post('/login', {
       email,
       password,
+      tenant_id
     });
 
     const { token, user, roles } = response.data.result;
@@ -76,6 +76,7 @@ function AuthProvider({ children }: TransactionsProviderProps) {
     localStorage.setItem('@live:token', token);
     localStorage.setItem('@live:user', JSON.stringify(user));
     localStorage.setItem('@live:rules', roles);
+    localStorage.setItem('@live:permissions', JSON.stringify(user.permissions));
 
     setData({ token, user, roles });
   }, []);
@@ -84,6 +85,10 @@ function AuthProvider({ children }: TransactionsProviderProps) {
     localStorage.removeItem('@live:token');
     localStorage.removeItem('@live:user');
     localStorage.removeItem('@live:rules');
+    localStorage.removeItem('@live:permissions');
+    localStorage.removeItem('elapsedTime');
+    sessionStorage.removeItem('tenant_id');
+    sessionStorage.removeItem('bucket');
 
     setData({} as AuthState);
   }, []);
@@ -95,16 +100,14 @@ function AuthProvider({ children }: TransactionsProviderProps) {
       setData({
         token: data.token,
         user,
-        roles: data.roles,
+        roles: data.roles
       });
     },
-    [setData, data.token]
+    [setData, data.token, data.roles]
   );
 
   return (
-    <AuthContext.Provider
-      value={{ user: data.user, signIn, signOut, updateUser }}
-    >
+    <AuthContext.Provider value={{ user: data.user, signIn, signOut, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

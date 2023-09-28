@@ -1,297 +1,342 @@
-import { useCallback, useEffect, useId, useState } from 'react';
+/* eslint-disable import-helpers/order-imports */
+// react
+import { useCallback, useEffect, useState } from 'react';
+import { BiPlus, BiSearchAlt } from 'react-icons/bi';
+
+// Api
 import api from '../../../services/api';
 
-import { BiEdit, BiFilter, BiPlus, BiSearchAlt, BiTrash, BiX, BiXCircle } from 'react-icons/bi';
-import { HiOutlineEye } from 'react-icons/hi';
-import * as Dialog from '@radix-ui/react-dialog';
+// Hooks
+import { useToast } from '../../../hooks/toast';
+import useDebouncedCallback from '../../../hooks/useDebounced';
+import { useFetch } from '../../../hooks/useFetch';
+import useForm from '../../../hooks/useForm';
 
-import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
-import { useDebounce } from '../../../utils/useDebounce';
-
-import HeaderPage from '../../../components/HeaderPage';
-import Avatar from '../../../components/Ui/Avatar';
-import ScrollAreas from '../../../components/Ui/ScrollAreas';
-import InputSwitchDefault from '../../../components/Inputs/InputSwitchDefault';
-import ProgressBar from '../../../components/Ui/ProgressBar';
+// Components
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
+import ButtonTable from '../../../components/Buttons/ButtonTable';
+import HeaderPage from '../../../components/HeaderPage';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
-import { SelectDefault } from '../../../components/Inputs/SelectDefault';
-import { TableDefault } from '../../../components/TableDefault';
-
-import { Container } from './styles';
+import { Table } from '../../../components/Table';
+import { TableHead } from '../../../components/Table/styles';
+import Alert from '../../../components/Ui/Alert';
+import ModalDefault from '../../../components/Ui/ModalDefault';
 import {
-  ContainerGroupTable,
+  ContainerDefault,
   ContentDefault,
   FieldDefault,
   FieldGroupFormDefault,
   FooterModal,
+  SectionDefault
 } from '../../../components/UiElements/styles';
-import { useFetch } from '../../../hooks/useFetch';
-import { useToast } from '../../../hooks/toast';
 
-interface Avatar {
-  id: number,
-  name: string,
-  url: string,
-  isOnline: boolean,
-}
+// Styles
+// import { PermissionsList, PermissionsTitle, PermissionsWrapper } from './styles';
+
+// Libraries
+import Switch from 'react-switch';
+import { SwitchSelector } from '../../../components/CardProductsSelected/styles';
+import InputSwitchDefault from '../../../components/Inputs/InputSwitchDefault';
+import { SwitchField } from './styles';
 
 interface OfficeProps {
   function_id: number;
-  tenant_id: number;
+  tenant_id: string;
   function: string;
   description: string;
+  show_hours: boolean;
 }
+
+// interface PermissionProps {
+//   permission_id: string;
+//   name: string;
+//   checked: boolean;
+// }
 
 export default function ListOffice() {
   const { addToast } = useToast();
-  const [open, setOpen] = useState({
-    isOpen: false,
-    title: 'Novo cargo'
-  });
-  const [openModalDelete, setOpenModalDelete] = useState({
-    isOpen: false,
-    title: 'Deseja deletar cargo:',
-    id: 0
-  });
-  const { data, fetchData } = useFetch<OfficeProps[]>(`function`);
-  const [formData, setFormData] = useState<OfficeProps>({
+  const { formData, setData, handleOnChange, handleOnChangeSwitch } = useForm({
     function_id: 0,
-    tenant_id: 0,
+    tenant_id: '',
     function: '',
     description: '',
-  } as OfficeProps)
+    show_hours: false
+  } as OfficeProps);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
-  }
+  const [modal, setModal] = useState({
+    isOpen: false,
+    type: 'Novo Cargo'
+  });
 
-  function handleOnModalEdit(data: OfficeProps) {
-    setOpen({
-      ...open,
-      ['isOpen']: !open.isOpen,
-      ['title']: `Editar cargo ${data.function}`
+  const [searchTerm, setSearchTerm] = useState('');
+  const [search, setSearch] = useState('');
+  const { isLoading, debouncedCallback } = useDebouncedCallback(
+    (search: string) => setSearch(search),
+    700
+  );
+  const { data, fetchData } = useFetch<OfficeProps[]>(`function?=${search}`);
+  // const [permissionFor, setPermissionFor] = useState<any[]>([]);
+  // const [permissionsData, setPermissionsData] = useState<PermissionProps[]>([]);
+  const [showHours, setShowHours] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (formData.show_hours) {
+      setShowHours(true);
+    }
+  }, [formData]);
+
+  const handleOnCancel = useCallback(() => {
+    setModal({
+      isOpen: false,
+      type: 'Novo serviço'
     });
-    setFormData(data)
-  }
-
-  const handleOnToggleModal = (toggle: boolean, text: string) => {
-    setOpen({
-      ...open,
-      ['isOpen']: toggle,
-      ['title']: text
-    });
-    setFormData({
+    setData({
       function_id: 0,
-      tenant_id: 0,
+      tenant_id: '',
       function: '',
-      description: '',
+      description: ''
     } as OfficeProps);
-  }
+  }, [setData]);
 
-  const handleOnToggleModalDelete = (toggle: boolean, text: string) => {
-    setOpenModalDelete({
-      ...open,
-      ['isOpen']: toggle,
-      ['title']: text,
-      ['id']: 0
+  const handleOnEdit = (item: OfficeProps) => {
+    setData(item);
+
+    setModal({
+      isOpen: true,
+      type: `Editar serviço: ${item.function}`
     });
-  }
+  };
 
-  const handleOnModalDelete = (toggle: boolean, data: any) => {
-    setOpenModalDelete({
-      ...open,
-      ['isOpen']: toggle,
-      ['title']: `Deseja deletar cargo: ${data.function}`,
-      ['id']: data.function_id
-    });
-  }
-
-  const handleOnSubmit = useCallback(async (event: any) => {
+  const handleOnDelete = async (id: any) => {
     try {
-      event.preventDefault();
-
-      const { function: AsFuncation, description } = formData
-
-      // Inserir lógica
-      const newFormData = {
-        function: AsFuncation,
-        description
-      }
- 
-      if(open.title === 'Novo cargo') {
-        await api.post('function', newFormData);
-      } else {
-        await api.put(`function/${formData.function_id}`, newFormData);
-      }
-   
+      await api.delete(`function/${id}`);
       addToast({
         type: 'success',
         title: 'Sucesso',
-        description: 'Serviço cadastrado com sucesso!',
+        description: 'Serviço foi deletado!'
       });
- 
-      setOpen({...open, ['isOpen']: false});
-      setFormData({
-      function_id: 0,
-      tenant_id: 0,
-      function: '',
-      description: '',
-    } as OfficeProps);
-      fetchData();
 
-    } catch (e: any) {
+      fetchData();
+    } catch (error: any) {
       addToast({
         type: 'danger',
         title: 'ATENÇÃO',
-        description: e.response.data.message,
+        description: error.response.data.message
       });
     }
-  }, [formData, open]);
+  };
 
-  const handleOnDeleOffice = useCallback(async (event: any, data: any) => {
-    try {
-      event.preventDefault();
-      await api.delete(`function/${data.id}`);
-      addToast({
-        type: 'success',
-        title: 'Sucesso',
-        description: `Serviço deletado com sucesso!`,
-      });
+  const handleOnSubmit = useCallback(
+    async (event: any) => {
+      try {
+        event.preventDefault();
 
-      setOpenModalDelete({...openModalDelete, ['isOpen']: false})
-      fetchData();
-    } catch(e: any) {
-      addToast({
-        type: 'danger',
-        title: 'ATENÇÃO',
-        description: e.response.data.message,
-      });
-    }
-  }, [openModalDelete]);
+        const { function: AsFuncation, description } = formData;
+
+        // Inserir lógica
+        const newFormData = {
+          function: AsFuncation,
+          description
+          // permissions: permissionFor
+        };
+
+        if (modal.type === 'Novo Cargo') {
+          await api.post('function', newFormData);
+        } else {
+          await api.put(`function/${formData.function_id}`, newFormData);
+        }
+
+        addToast({
+          type: 'success',
+          title: 'Sucesso',
+          description: 'Serviço cadastrado com sucesso!'
+        });
+
+        handleOnCancel();
+        fetchData();
+      } catch (e: any) {
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: e.response.data.message
+        });
+      }
+    },
+    [formData, addToast, fetchData, handleOnCancel, modal]
+  );
+
+  // const handleSwitch = (value: any) => {
+  //   setShowHours(value);
+  // };
+
+  // const handlePermissions = (id: any) => {
+  //   if (permissionFor.includes(id)) {
+  //     setPermissionFor(permissionFor.filter((obj) => obj !== id));
+  //   } else {
+  //     setPermissionFor((prevState: any) => [...prevState, id]);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   const handleGetPermissions = async () => {
+  //     try {
+  //       const response = await api.get(`/permissions`);
+
+  //       const allPermissions: PermissionProps[] = [];
+
+  //       response.data.result.map((row: any) => {
+  //         allPermissions.push({
+  //           permission_id: row.permission_id,
+  //           name: row.name,
+  //           checked: false
+  //         });
+  //       });
+
+  //       setPermissionsData(allPermissions);
+  //     } catch (error) {
+  //       console.log('log do error getting permissions');
+  //     }
+  //   };
+
+  //   handleGetPermissions();
+  // }, []);
 
   return (
-    <Container>
+    <ContainerDefault>
       <HeaderPage title="Cargos">
-        <ButtonDefault typeButton="success" onClick={() => setOpen({...open, ['isOpen']: !open.isOpen})}>
+        <ButtonDefault
+          typeButton="success"
+          onClick={() =>
+            setModal({
+              isOpen: !modal.isOpen,
+              type: 'Novo Cargo'
+            })
+          }
+        >
           <BiPlus color="#fff" />
-            Novo Cargo
+          Novo Cargo
         </ButtonDefault>
       </HeaderPage>
 
-      <ContainerGroupTable style={{ marginTop: '1rem' }}>
-        <ScrollAreas>
-          <TableDefault title="Cargos">
-            <thead>
-              <tr style={{ whiteSpace: 'nowrap' }}>
-                <th>ID</th>
-                <th>Cargo</th>
-                <th>Descrição</th>
-                <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {data?.map((row) => (
-                <tr key={row.function_id}>
-                  <td>{row.function_id}</td>
-                  <td>
-                    {row.function}
-                  </td>
-                  <td>{row.description}</td>
-                  <td>
-                    <div className="fieldTableClients">
-                      <ButtonDefault typeButton="danger" onClick={() => handleOnModalDelete(!openModalDelete.isOpen, row)}>
-                        <BiTrash  />
-                      </ButtonDefault>
-                      <ButtonDefault typeButton="info" onClick={() => handleOnModalEdit(row)}>
-                        <BiEdit />
-                      </ButtonDefault>
-                    </div>
-                  </td>
+      <SectionDefault>
+        <ContentDefault>
+          <FieldGroupFormDefault>
+            <InputDefault
+              label="Busca"
+              name="search"
+              placeholder="Buscar..."
+              onChange={(event) => {
+                setSearchTerm(event.target.value);
+                debouncedCallback(event.target.value);
+              }}
+              value={searchTerm}
+              icon={BiSearchAlt}
+              isLoading={isLoading}
+            />
+          </FieldGroupFormDefault>
+        </ContentDefault>
+        <div style={{ margin: '-24px -30px' }}>
+          <Table>
+            <TableHead>
+              <div className="groupTable">
+                <h2>Lista de cargos</h2>
+              </div>
+            </TableHead>
+            <table>
+              <thead>
+                <tr style={{ whiteSpace: 'nowrap' }}>
+                  <th>ID</th>
+                  <th>Cargo</th>
+                  <th>Descrição</th>
+                  <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
                 </tr>
+              </thead>
+
+              <tbody>
+                {data?.map((row) => (
+                  <tr key={row.function_id}>
+                    <td>#{String(row.function_id).padStart(5, '0')}</td>
+                    <td>{row.function}</td>
+                    <td>{row.description}</td>
+                    <td>
+                      <div className="fieldTableClients">
+                        <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
+                        <Alert
+                          title="Atenção"
+                          subtitle="Certeza que gostaria de deletar este Serviço? Ao excluir a acão não poderá ser desfeita."
+                          confirmButton={() => handleOnDelete(row.function_id)}
+                        >
+                          <ButtonTable typeButton="delete" />
+                        </Alert>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Table>
+        </div>
+      </SectionDefault>
+
+      <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
+        <form onSubmit={handleOnSubmit}>
+          <FieldDefault>
+            <InputDefault
+              label="Nome do cargo"
+              name="function"
+              onChange={handleOnChange}
+              value={formData.function}
+            />
+          </FieldDefault>
+          <FieldDefault>
+            <InputDefault
+              label="Descrição"
+              name="description"
+              onChange={handleOnChange}
+              value={formData.description}
+            />
+          </FieldDefault>
+          <SwitchField>
+            <Switch
+              onChange={(value: any) => setShowHours(value)}
+              checked={showHours}
+              uncheckedIcon={false}
+              checkedIcon={false}
+              onColor="#0046B5"
+              width={40}
+              height={21}
+            />
+            Exibir horas
+          </SwitchField>
+          {/* <PermissionsWrapper>
+            <PermissionsTitle>Permissões</PermissionsTitle>
+            <PermissionsList>
+              {permissionsData.map((row: PermissionProps, index: number) => (
+                <div className="permission-field" key={index}>
+                  <Switch
+                    onChange={() => handlePermissions(row.permission_id)}
+                    checked={permissionFor.includes(row.permission_id) ? true : false}
+                    uncheckedIcon={false}
+                    checkedIcon={false}
+                    onColor="#0046B5"
+                    width={40}
+                    height={21}
+                  />
+                  {row.name.split('_')[1]} - {row.name.split('_')[2]}
+                </div>
               ))}
-            </tbody>
-          </TableDefault>
-        </ScrollAreas>
-      </ContainerGroupTable>
-
-      <Dialog.Root open={open.isOpen} onOpenChange={(open) => handleOnToggleModal(open, 'Novo cargo')}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="DialogOverlay" />
-          <Dialog.Content className="DialogContent">
-            <Dialog.Title className="DialogTitle">{open.title}</Dialog.Title>
-            <form onSubmit={handleOnSubmit}>
-              <FieldDefault>
-                <InputDefault
-                  label="Nome do cargo"
-                  name="function"
-                  onChange={handleChange}
-                  value={formData.function}
-                />
-              </FieldDefault>
-              <FieldDefault>
-              <InputDefault
-                  label="Descrição"
-                  name="description"
-                  onChange={handleChange}
-                  value={formData.description}
-                />
-              </FieldDefault>
-              <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
-                <ButtonDefault
-                  typeButton="dark"
-                  isOutline
-                  onClick={() => handleOnToggleModal(!open.isOpen, 'Novo cargo')}
-                >
-                  Descartar
-                </ButtonDefault>
-                <ButtonDefault typeButton="primary" isOutline type="submit">
-                  Salvar
-                </ButtonDefault>
-              </FooterModal>
-            </form>
-            <Dialog.Close asChild>
-              <button className="IconButton" aria-label="Close">
-                <BiX size={30} color="#6C757D" />
-              </button>
-            </Dialog.Close>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
-
-      <Dialog.Root open={openModalDelete.isOpen} onOpenChange={(open) => handleOnToggleModalDelete(open, 'Deseja deletar cargo:')}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="DialogOverlay"/>
-          <Dialog.Content className="DialogContent" style={{ width: '480px' }}>
-            <Dialog.Title className="DialogTitle">{openModalDelete.title}</Dialog.Title>
-              <form onSubmit={(event) => handleOnDeleOffice(event, openModalDelete)}>
-                <FieldGroupFormDefault style={{ marginTop: '40px' }}>
-                  <ButtonDefault 
-                    typeButton="dark" 
-                    isOutline
-                    onClick={() => handleOnToggleModalDelete(false, 'Deseja deletar cargo:')}
-                  >
-                    Cancelar
-                  </ButtonDefault>
-                  <ButtonDefault
-                    typeButton="danger"
-                    type="submit"
-                    // onClick={(event) => handleOnDeleteService(event, dataDelete)}
-                  >
-                    Deletar                    
-                  </ButtonDefault>
-                </FieldGroupFormDefault>
-              </form>
-            <Dialog.Close asChild>
-              <button className="IconButton" aria-label="Close">
-                <BiX size={30} color="#6C757D" />
-              </button>
-            </Dialog.Close>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
-    </Container>
+            </PermissionsList>
+          </PermissionsWrapper> */}
+          <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
+            <ButtonDefault typeButton="dark" isOutline onClick={handleOnCancel}>
+              Descartar
+            </ButtonDefault>
+            <ButtonDefault typeButton="primary" isOutline type="submit">
+              Salvar
+            </ButtonDefault>
+          </FooterModal>
+        </form>
+      </ModalDefault>
+    </ContainerDefault>
   );
 }

@@ -18,11 +18,12 @@ export const Container = styled.div<sidebarProps>`
   position: relative;
 
   overflow-y: scroll;
-  
+  z-index: 1;
+
   ::-webkit-scrollbar {
     display: none;
   }
-  
+
   .scrolltrack {
     position: absolute;
     width: 6px;
@@ -52,15 +53,11 @@ export const Li = styled.li<sidebarProps>`
   line-height: 50px;
   border-radius: 12px;
   position: relative;
-  /* ${(props) =>
+  ${(props) =>
     props.active &&
     css`
-      background: linear-gradient(
-        90deg,
-        rgba(103, 116, 236, 1) 0%,
-        rgba(137, 236, 242, 1) 100%
-      );
-    `} */
+      background: var(--primary-050);
+    `}
   a {
     display: flex;
     align-items: center;
@@ -74,10 +71,9 @@ export const Li = styled.li<sidebarProps>`
     }
   }
   span {
-    font-size: var(--h6-font-size);
+    font-size: var(--text-small-md);
     color: var(--primary-light);
-    font-weight: ${(props) =>
-      props.active ? 'var(--font-bold)' : 'var(--font-medium)'};
+    font-weight: ${(props) => (props.active ? 'var(--weight-semibold)' : 'var(--weight-medium)')};
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;

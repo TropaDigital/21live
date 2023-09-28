@@ -1,19 +1,21 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
+
 `;
 
 export const Main = styled.div`
   display: flex;
   height: calc(100vh - 60px);
-  background-color: #F6F7FB;
+  background-color: #f6f7fb;
 
   .contentMain {
-    padding: 30px;
-    height: 100%;
+    /* padding: 0 30px; */
     width: 100%;
+    height: 100%;
+    flex: 1;
   }
 `;

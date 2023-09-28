@@ -1,5 +1,9 @@
+/* eslint-disable import-helpers/order-imports */
 import { Routes, Route } from 'react-router-dom';
 import { PrivateRoutes } from './PrivateRoutes';
+
+// LAYOUT
+import Layout from '../components/Layout';
 
 // PAGES
 import Dashboard from '../pages/Dashboard';
@@ -8,21 +12,36 @@ import SignIn from '../pages/Login/SignIn';
 import SignUp from '../pages/Login/SignUp';
 import Clients from '../pages/Clients';
 import Users from '../pages/Users';
-
-// COMPONENTES
-import ComponentsPage from '../pages/components/ComponentsPage';
-import ComponentsForms from '../pages/components/ComponentsForms';
-import ComponentTable from '../pages/components/ComponentTable';
-import Board from '../pages/Board';
-import Services from '../pages/Services';
+import Products from '../pages/Products';
 import Team from '../pages/Team/ListTeam';
 import ListOffice from '../pages/Team/ListOffice';
-import Layout from '../components/Layout';
 import ListFluxo from '../pages/Fluxos/ListFluxo';
+import EditFluxo from '../pages/Fluxos/EditFluxo';
+import ListProjects from '../pages/Projects/ListProjects';
+import PageNotFound from '../pages/NotFound';
+import Board from '../pages/Board';
+
+// COMPONENTES
+import ComponentsForms from '../pages/components/ComponentsForms';
+import ComponentsPage from '../pages/components/ComponentsPage';
+import ComponentTable from '../pages/components/ComponentTable';
+import ListMeeting from '../pages/Meeting/ListMeeting';
+import TaskList from '../pages/Tasks/TaskList';
+import CreateProject from '../pages/Projects/CreateProject';
+import CreateTasks from '../pages/Tasks/CreateTasks';
+import ViewTaskList from '../pages/Tasks/ViewTasks';
+import WorkingProduct from '../pages/Products/WorkingProduct';
+import ViewDelivery from '../pages/Tasks/ViewDelivery';
+import ViewProductsDeliveries from '../pages/Products/ViewProduct';
+import Requests from '../pages/Requests/ListRequests';
+import ViewRequest from '../pages/Requests/ViewRequests';
+import InstanceLogin from '../pages/Login/InstanceLogin';
 
 function RoutesAll() {
   return (
     <Routes>
+      <Route path="/login/:slug" element={<InstanceLogin />} />
+
       <Route path="/login" element={<SignIn />} />
       <Route path="/cadastrar" element={<SignUp />} />
 
@@ -44,10 +63,10 @@ function RoutesAll() {
         />
 
         <Route
-          path="/fluxo"
+          path="/perfil"
           element={
             <PrivateRoutes>
-              <ListFluxo />
+              <Profile />
             </PrivateRoutes>
           }
         />
@@ -74,7 +93,25 @@ function RoutesAll() {
           path="/fluxo"
           element={
             <PrivateRoutes>
-              <Clients />
+              <ListFluxo />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/fluxo/editar/:id"
+          element={
+            <PrivateRoutes>
+              <EditFluxo />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/fluxo/:id"
+          element={
+            <PrivateRoutes>
+              <Board />
             </PrivateRoutes>
           }
         />
@@ -98,40 +135,130 @@ function RoutesAll() {
         />
 
         <Route
-          path="/servicos"
+          path="/entrega/:id"
           element={
             <PrivateRoutes>
-              <Services />
+              <ViewProductsDeliveries />
             </PrivateRoutes>
           }
         />
 
         <Route
-          path="/board"
+          path="/produtos"
           element={
             <PrivateRoutes>
-              <Board />
+              <Products />
             </PrivateRoutes>
           }
         />
 
         <Route
+          path="/produto/:id"
+          element={
+            <PrivateRoutes>
+              <WorkingProduct />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/projetos"
+          element={
+            <PrivateRoutes>
+              <ListProjects />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/criar-projeto"
+          element={
+            <PrivateRoutes>
+              <CreateProject />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/solicitacoes"
+          element={
+            <PrivateRoutes>
+              <Requests />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/solicitacao/:id"
+          element={
+            <PrivateRoutes>
+              <ViewRequest />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/tarefas"
+          element={
+            <PrivateRoutes>
+              <TaskList />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/tarefa/:id"
+          element={
+            <PrivateRoutes>
+              <ViewDelivery />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/minhas-tarefas"
+          element={
+            <PrivateRoutes>
+              <ViewTaskList />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/criar-tarefa"
+          element={
+            <PrivateRoutes>
+              <CreateTasks />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/reuniao"
+          element={
+            <PrivateRoutes>
+              <ListMeeting />
+            </PrivateRoutes>
+          }
+        />
+
+        {/* <Route
           path="/components"
           element={
             <PrivateRoutes>
               <ComponentsPage />
             </PrivateRoutes>
           }
-        />
+        /> */}
 
-        <Route
+        {/* <Route
           path="/form"
           element={
             <PrivateRoutes>
               <ComponentsForms />
             </PrivateRoutes>
           }
-        />
+        /> */}
 
         <Route
           path="/tabela"
@@ -142,6 +269,8 @@ function RoutesAll() {
           }
         />
       </Route>
+
+      <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
 }

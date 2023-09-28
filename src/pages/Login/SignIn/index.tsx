@@ -1,31 +1,44 @@
-import React, { useState, useCallback } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+/* eslint-disable import-helpers/order-imports */
+// React
+import React, { useCallback, useState } from 'react';
+
+// Icons
+import { BiEnvelope, BiLockAlt } from 'react-icons/bi';
+
+// Hooks
 import { useAuth } from '../../../hooks/AuthContext';
 import { useToast } from '../../../hooks/toast';
 
-import { InputDefault } from '../../../components/Inputs/InputDefault';
+// Images
+import logo from '../../../assets/bg.svg';
+
+// Components
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
-
-import { BiEnvelope, BiLockAlt, BiLogIn } from 'react-icons/bi';
-import logo from '../../../components/assets/bg.svg';
-
+import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { FieldFormDefault } from '../../../components/UiElements/styles';
-import { Container, Content, AnimationContainer, Background } from "./styles";
+
+// Styles
+import { AnimationContainer, Background, Container, Content } from './styles';
 
 interface SignInFormData {
   email: string;
   password: string;
+  tenant_id: any;
 }
 
 export default function SignIn() {
   const { addToast } = useToast();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { signIn } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<SignInFormData>({
     email: '',
     password: '',
+    tenant_id: ''
   });
+  const tenant_id = sessionStorage.getItem('tenant_id');
+  const bucketImage = sessionStorage.getItem('bucket');
+  const URL = `https://${bucketImage}.s3.amazonaws.com/tenant/login_bg.jpg`;
 
   function handleInputChange(name: string, event: React.ChangeEvent<HTMLInputElement>) {
     const { value } = event.target;
@@ -43,20 +56,22 @@ export default function SignIn() {
         const data = {
           email,
           password,
+          tenant_id: tenant_id
         };
 
         await signIn({
           email: data.email,
           password: data.password,
+          tenant_id: data.tenant_id
         });
 
         addToast({
           type: 'success',
           title: 'Sucesso',
-          description: 'Login realizado com sucesso!',
+          description: 'Login realizado com sucesso!'
         });
 
-        window.location.pathname = '/dashboard' 
+        window.location.pathname = '/dashboard';
 
         setLoading(false);
       } catch (e: any) {
@@ -65,18 +80,18 @@ export default function SignIn() {
         addToast({
           type: 'danger',
           title: 'ATENÇÃO',
-          description: e.response.data.message,
+          description: e.response.data.message
         });
       }
     },
-    [signIn, addToast, formData, navigate]
+    [signIn, addToast, formData, tenant_id]
   );
 
   return (
     <Container>
       <Content>
         <AnimationContainer>
-          <img src={logo} alt="GoBarber" />
+          <img src={logo} alt="21Live logo" />
 
           <form onSubmit={handleSubmit}>
             <h1>Faça seu logon</h1>
@@ -86,8 +101,8 @@ export default function SignIn() {
                 name="email"
                 icon={BiEnvelope}
                 type="text"
-                placeholder="E-mail"
-                label='E-mail'
+                placeholder="Login"
+                label="Login"
                 onChange={(e) => handleInputChange('email', e)}
                 value={formData.email}
               />
@@ -99,7 +114,7 @@ export default function SignIn() {
                 icon={BiLockAlt}
                 type="password"
                 placeholder="Senha"
-                label='Senha'
+                label="Senha"
                 onChange={(e) => handleInputChange('password', e)}
                 value={formData.password}
               />
@@ -120,8 +135,8 @@ export default function SignIn() {
           </Link> */}
         </AnimationContainer>
       </Content>
-
-      <Background />
+      {bucketImage && <Background style={{ backgroundImage: `url(${URL})` }} />}
+      {!bucketImage && <Background />}
     </Container>
   );
 }

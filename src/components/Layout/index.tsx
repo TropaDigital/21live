@@ -1,75 +1,112 @@
+/* eslint-disable import-helpers/order-imports */
+// React
 import { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
+
+// Icons
 import {
   IconClipboard,
-  IconDash,
+  // IconDash,
+  // IconUsers,
+  IconProjects,
+  IconMeeting,
   IconTeam,
-  IconUsers,
-} from '../assets/icons';
-import ScrollAreas from '../Ui/ScrollAreas';
+  IconProducts,
+  IconFlux
+} from '../../assets/icons';
+import { HiOutlineTicket } from 'react-icons/hi';
+import { TbCheckupList } from 'react-icons/tb';
+import { HiOutlineClipboardList } from 'react-icons/hi';
 
+// Components
+import ScrollAreas from '../Ui/ScrollAreas';
 import Header from './Header';
 import Sidebar from './Sidebar';
 
+// Styles
 import { Container, Main } from './styles';
 
 export default function Layout() {
   const [modalActive, setModalActive] = useState(false);
   const location = useLocation();
+  const TicketsIcon = HiOutlineTicket;
+  const MyTasksIcon = TbCheckupList;
+  const ClipboardTask = HiOutlineClipboardList;
 
   return (
     <Container>
-      <Header
-        handleOnMenu={() => setModalActive(!modalActive)}
-        modalActive={modalActive}
-      />
+      <Header handleOnMenu={() => setModalActive(!modalActive)} modalActive={modalActive} />
       <Main>
-
         <Sidebar
           modalActive={modalActive}
           path={location.pathname}
           menus={[
-            {
-              to: '/dashboard',
-              name: 'Dashboard',
-              icon: IconDash,
-            },
+            // {
+            //   to: '/dashboard',
+            //   name: 'Dashboard',
+            //   icon: IconDash,
+            //   identifier: ''
+            // },
             // {
             //   to: '/clientes',
             //   name: 'Clientes',
             //   icon: IconUsers,
-            // },
-            // {
-            //   to: '/usuarios',
-            //   name: 'Usuarios',
-            //   icon: IconTeam,
+            //   identifier: '21jobs_client_all'
             // },
             {
-              to: '/servicos',
-              name: 'Serviços',
-              icon: IconClipboard,
+              to: '/projetos',
+              name: 'Projetos',
+              icon: IconProjects,
+              identifier: '21jobs_projects_all'
+            },
+            {
+              to: '/tarefas',
+              name: 'Tarefas',
+              icon: ClipboardTask,
+              identifier: '21jobs_task_manager'
+            },
+            {
+              to: '/minhas-tarefas',
+              name: 'Minhas tarefas',
+              icon: MyTasksIcon,
+              identifier: '21jobs_task_execute'
+            },
+            {
+              to: '/minhas-tarefas',
+              name: 'Minhas tarefas',
+              icon: MyTasksIcon,
+              identifier: '21jobs_task_essay'
+            },
+            {
+              to: '/produtos',
+              name: 'Produtos',
+              icon: IconProducts,
+              identifier: '21jobs_products_all'
+            },
+            {
+              to: '/fluxo',
+              name: 'Fluxos',
+              icon: IconFlux,
+              identifier: '21jobs_flow_all'
             },
             {
               to: '/equipe',
               name: 'Equipe',
               icon: IconTeam,
+              identifier: '21jobs_team_view'
             },
-
             {
-              to: '/fluxo',
-              name: 'Fluxo',
-              icon: IconTeam,
+              to: '/reuniao',
+              name: 'Atas de Reunião',
+              icon: IconMeeting,
+              identifier: '21jobs_meetings_view'
             },
-            // {
-            //   to: '/quadros',
-            //   name: 'Quadros',
-            //   icon: IconFile,
-            // },
-            // {
-            //   to: '/tarefas',
-            //   name: 'Tarefas',
-            //   icon: IconClipboard,
-            // },
+            {
+              to: '/solicitacoes',
+              name: 'Solicitações',
+              icon: TicketsIcon,
+              identifier: '21jobs_meetings_view'
+            }
             // {
             //   to: '/form',
             //   name: 'Form',

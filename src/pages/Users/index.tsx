@@ -1,32 +1,30 @@
-import { useCallback, useEffect, useId, useState } from 'react';
-import api from '../../services/api';
-
-import { BiDownload, BiEdit, BiPlus, BiSearchAlt, BiX } from 'react-icons/bi';
+import { useCallback, useId, useState } from 'react';
+import { BiEdit, BiPlus, BiSearchAlt, BiX } from 'react-icons/bi';
 import { HiOutlineEye } from 'react-icons/hi';
-import * as Dialog from '@radix-ui/react-dialog';
 
-import { useDebounce } from '../../utils/useDebounce';
+import useDebouncedCallback from '../../hooks/useDebounced';
+import { useFetch } from '../../hooks/useFetch';
 
-import HeaderPage from '../../components/HeaderPage';
-import Avatar from '../../components/Ui/Avatar';
-import ScrollAreas from '../../components/Ui/ScrollAreas';
-import InputSwitchDefault from '../../components/Inputs/InputSwitchDefault';
+import { generateNameAndColor } from '../../utils/generateNameAndColors';
+
 import ButtonDefault from '../../components/Buttons/ButtonDefault';
+import HeaderPage from '../../components/HeaderPage';
 import { InputDefault } from '../../components/Inputs/InputDefault';
 import { SelectDefault } from '../../components/Inputs/SelectDefault';
 import { TableDefault } from '../../components/TableDefault';
-
+import AvatarDefault from '../../components/Ui/Avatar/avatarDefault';
+import ScrollAreas from '../../components/Ui/ScrollAreas';
 import {
   ContainerGroupTable,
   ContentDefault,
   FieldDefault,
   FieldGroupFormDefault,
-  FooterModal,
+  FooterModal
 } from '../../components/UiElements/styles';
-import { Container} from './styles';
-import AvatarDefault from '../../components/Ui/Avatar/avatarDefault';
-import { generateNameAndColor } from '../../utils/generateNameAndColors';
-import { useFetch } from '../../hooks/useFetch';
+
+import * as Dialog from '@radix-ui/react-dialog';
+
+import { Container } from './styles';
 
 interface UserProps {
   avatar: string;
@@ -39,50 +37,28 @@ interface UserProps {
 
 export default function Users() {
   const [open, setOpen] = useState(false);
-  // const [data, setData] = useState<UserProps[]>([])
-  const { data, pages, fetchData } = useFetch<UserProps[]>(`user`);
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [results, setResults] = useState([] as any);
-  const [isSearching, setSearching] = useState(false);
-  const debouncedSearchTerm = useDebounce(searchTerm, 700);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [search, setSearch] = useState('');
+  const { isLoading, debouncedCallback } = useDebouncedCallback(
+    (search: string) => setSearch(search),
+    700
+  );
 
-  useEffect(() => {
-    if(debouncedSearchTerm) {
-      setSearching(true);
-      setResults(
-        avatarData.filter((obj: any) => obj.name.toLowerCase().includes(searchTerm.toLowerCase()))
-      );
-      setSearching(false);
-    } else {
-      setResults([]);
-      setSearching(false);
-    }
-  }, [debouncedSearchTerm])
-
-  // useEffect(() => {
-  //   getUsers();
-  // }, [])
-
-  // async function getUsers() {
-  //   const response = await api.get('user')
-
-  //   setData(response.data.result)
-  // }
-
+  const { data } = useFetch<UserProps[]>(`user`);
   const optionsCoffe = [
     {
       id: 1,
-      name: 'Cagfé Melita',
+      name: 'Cagfé Melita'
     },
     {
       id: 2,
-      name: 'Café Pelé',
+      name: 'Café Pelé'
     },
     {
       id: 3,
-      name: 'Café Tres corações',
-    },
+      name: 'Café Tres corações'
+    }
   ];
 
   const avatarData = [
@@ -90,13 +66,13 @@ export default function Users() {
       id: 1,
       name: 'João',
       url: null,
-      isOnline: false,
-    },
-  ]
+      isOnline: false
+    }
+  ];
 
   const [formDataClient, setFormDataClient] = useState({
     name: '',
-    code: '',
+    code: ''
   });
 
   const [formData, setFormData] = useState([
@@ -107,7 +83,7 @@ export default function Users() {
       activityHours: '05:20:24',
       projects: '5',
       hoursinvested: '10:00:00',
-      hoursLeft: '07:00:00',
+      hoursLeft: '07:00:00'
     },
     {
       id: useId(),
@@ -116,7 +92,7 @@ export default function Users() {
       activityHours: '02:30:24',
       projects: '4',
       hoursinvested: '10:00:00',
-      hoursLeft: '04:00:00',
+      hoursLeft: '04:00:00'
     },
     {
       id: useId(),
@@ -125,7 +101,7 @@ export default function Users() {
       activityHours: '04:20:24',
       projects: '2',
       hoursinvested: '10:00:00',
-      hoursLeft: '01:00:00',
+      hoursLeft: '01:00:00'
     },
     {
       id: useId(),
@@ -134,8 +110,8 @@ export default function Users() {
       activityHours: '15:20:24',
       projects: '1',
       hoursinvested: '10:00:00',
-      hoursLeft: '05:00:00',
-    },
+      hoursLeft: '05:00:00'
+    }
   ]);
 
   function changePosition(arr: any, from: any, to: any) {
@@ -143,28 +119,17 @@ export default function Users() {
     return arr;
   }
 
-  const handleInputChange = (
-    name: string,
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleInputChange = (name: string, event: React.ChangeEvent<HTMLInputElement>) => {
     setFormDataClient({ ...formDataClient, [name]: event.target.value });
   };
 
-  const handleSwitchChange = (
-    position: any,
-    id: any,
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleSwitchChange = (position: any, id: any, e: React.ChangeEvent<HTMLInputElement>) => {
     const filterData = formData.filter((obj) => obj.id === id);
     filterData[0].isActive = e.target.checked;
 
     const filterFormData = formData.filter((obj) => obj.id !== id);
 
-    const positionArray = changePosition(
-      filterData.concat(filterFormData),
-      0,
-      position
-    );
+    const positionArray = changePosition(filterData.concat(filterFormData), 0, position);
     setFormData(positionArray);
   };
 
@@ -173,16 +138,15 @@ export default function Users() {
       event.preventDefault();
 
       // Inserir lógica
-    } catch (e: any) {}
-      // Exibir erro
-
+    } catch (e: any) {
+      console.log(e);
+    }
+    // Exibir erro
   }, []);
 
   return (
     <Container>
-      <HeaderPage
-        title='Usuario'
-      >
+      <HeaderPage title="Usuario">
         <>
           <ButtonDefault typeButton="info" onClick={() => setOpen(!open)}>
             <BiEdit color="#fff" />
@@ -196,7 +160,7 @@ export default function Users() {
         </>
       </HeaderPage>
 
-      <ContentDefault style={{ position: 'relative' }}>
+      <ContentDefault>
         <FieldGroupFormDefault>
           <SelectDefault
             name="filterOffice"
@@ -228,8 +192,13 @@ export default function Users() {
             label="BUSCA"
             name="search"
             placeholder="Buscar..."
-            onChange={(event) => setSearchTerm(event.target.value)}
+            onChange={(event) => {
+              setSearchTerm(event.target.value);
+              debouncedCallback(event.target.value);
+            }}
+            value={searchTerm}
             icon={BiSearchAlt}
+            isLoading={isLoading}
           />
         </FieldGroupFormDefault>
         {/* <ButtonDefault
@@ -242,7 +211,6 @@ export default function Users() {
 
       <ContainerGroupTable style={{ marginTop: '1rem' }}>
         <ScrollAreas>
-
           <TableDefault title="Usuario">
             <thead>
               <tr style={{ whiteSpace: 'nowrap' }}>
@@ -256,13 +224,10 @@ export default function Users() {
             </thead>
 
             <tbody>
-              {data?.map((row, key) => (
+              {data?.map((row) => (
                 <tr key={row.user_id}>
                   <td style={{ padding: '1rem' }}>
-                    <AvatarDefault 
-                      url={row.avatar}
-                      name={generateNameAndColor(row.name)}
-                    />
+                    <AvatarDefault url={row.avatar} name={generateNameAndColor(row.name)} />
                   </td>
                   <td>{row.name}</td>
                   {/* <td>
@@ -272,9 +237,7 @@ export default function Users() {
                       disabled
                     />
                   </td> */}
-                  <td>
-                    {row.username}
-                  </td>
+                  <td>{row.username}</td>
                   <td>{row.email}</td>
                   <td style={{ padding: '0.75rem' }}>
                     <SelectDefault
@@ -330,13 +293,9 @@ export default function Users() {
                 />
               </FieldDefault>
               <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
-                <ButtonDefault
-                    typeButton="dark"
-                    isOutline
-                    onClick={() => setOpen(!open)}
-                  >
-                    Descartar
-                  </ButtonDefault>
+                <ButtonDefault typeButton="dark" isOutline onClick={() => setOpen(!open)}>
+                  Descartar
+                </ButtonDefault>
                 <ButtonDefault typeButton="primary" isOutline type="submit">
                   Salvar
                 </ButtonDefault>
@@ -344,7 +303,7 @@ export default function Users() {
             </form>
             <Dialog.Close asChild>
               <button className="IconButton" aria-label="Close">
-                <BiX size={30} color="#6C757D"/>
+                <BiX size={30} color="#6C757D" />
               </button>
             </Dialog.Close>
           </Dialog.Content>
