@@ -69,7 +69,7 @@ export const RightInfosCard = styled.div<HideCardProps>`
   top: 0;
   right: ${({ hideCard }) => (hideCard === 'show' ? '0' : '-352px')};
 
-  z-index: 2;
+  z-index: 5;
   box-shadow: -4px 5px 10px 1px rgba(0, 0, 0, 0.2);
 
   scrollbar-width: thin;
