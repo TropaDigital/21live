@@ -11,104 +11,126 @@ import {
 } from './styles';
 import { IconPlay } from '../../assets/icons';
 import { IoMdPause } from 'react-icons/io';
+import formatTime from '../../utils/convertSecondsToHours';
+import { useStopWatch } from '../../hooks/stopWatch';
+import { useToast } from '../../hooks/toast';
 
 interface CardTaskPlayProps {
   cardTitle: string;
   dataTime?: any;
-  isPlayingTime: () => void;
-  taskIsFinished?: boolean;
-  elapsedTimeBack?: any;
-  stopThePlay: any;
   blockPlay: boolean;
+  handlePlay: (value: any) => void;
 }
 
 export default function CardTaskPlay({
   dataTime,
   cardTitle,
-  elapsedTimeBack,
-  taskIsFinished,
-  stopThePlay,
   blockPlay,
-  isPlayingTime
+  handlePlay
 }: CardTaskPlayProps) {
-  const [startTime, setStartTime] = useState<number | null>(null);
-  const [elapsedTime, setElapsedTime] = useState<number>(0);
+  const { state, start, stop } = useStopWatch();
+  const { addToast } = useToast();
+  // const [startTime, setStartTime] = useState<number | null>(null);
+  // const [elapsedTime, setElapsedTime] = useState<number>(0);
 
-  useEffect(() => {
-    if (elapsedTimeBack !== 0 && elapsedTimeBack !== undefined && stopThePlay) {
-      setElapsedTime(elapsedTimeBack);
-      setStartTime(Date.now());
-      // isPlayingTime(true);
-    } else {
-      setElapsedTime(elapsedTimeBack);
+  // useEffect(() => {
+  //   if (elapsedTimeBack !== 0 && elapsedTimeBack !== undefined && stopThePlay) {
+  //     setElapsedTime(elapsedTimeBack);
+  //     setStartTime(Date.now());
+  //     // isPlayingTime(true);
+  //   } else {
+  //     setElapsedTime(elapsedTimeBack);
+  //   }
+  // }, [elapsedTimeBack, stopThePlay]);
+
+  // useEffect(() => {
+  //   let intervalId: NodeJS.Timeout;
+
+  //   if (startTime !== null && !taskIsFinished) {
+  //     intervalId = setInterval(() => {
+  //       const now = Date.now();
+  //       setElapsedTime((prevElapsedTime) => prevElapsedTime + now - startTime);
+  //       setStartTime(now);
+  //     }, 1000);
+  //   } else {
+  //     setStartTime(null);
+  //   }
+
+  //   return () => {
+  //     if (intervalId) clearInterval(intervalId);
+  //   };
+  // }, [startTime, elapsedTime, taskIsFinished]);
+
+  // const handleStartStop = () => {
+  //   if (!blockPlay) {
+  //     if (startTime === null) {
+  //       setStartTime(Date.now());
+  //       isPlayingTime();
+  //     } else {
+  //       setStartTime(null);
+  //       isPlayingTime();
+  //     }
+  //   }
+  // };
+
+  // const formatTime = (time: number): string => {
+  //   const hours = Math.floor(time / 3600000);
+  //   const minutes = Math.floor((time % 3600000) / 60000);
+  //   const seconds = Math.floor((time % 60000) / 1000);
+
+  //   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(
+  //     seconds
+  //   ).padStart(2, '0')}`;
+  // };
+
+  // useEffect(() => {
+  //   console.log('log do dataTime =>', dataTime);
+  // }, [dataTime]);
+
+  const handlePassPlayProps = (value: any) => {
+    if (value === 'play' && !blockPlay) {
+      start();
+      handlePlay('play');
     }
-  }, [elapsedTimeBack, stopThePlay]);
-
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-
-    if (startTime !== null && !taskIsFinished) {
-      intervalId = setInterval(() => {
-        const now = Date.now();
-        setElapsedTime((prevElapsedTime) => prevElapsedTime + now - startTime);
-        setStartTime(now);
-      }, 1000);
-    } else {
-      setStartTime(null);
+    if (value === 'stop' && !blockPlay) {
+      stop();
+      handlePlay('stop');
     }
 
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-    };
-  }, [startTime, elapsedTime, taskIsFinished]);
+    if (blockPlay && cardTitle === 'Atividade concluída') {
+      addToast({
+        title: 'Atenção',
+        type: 'warning',
+        description: 'Atividade concluída'
+      });
+    }
 
-  const handleStartStop = () => {
-    if (!blockPlay) {
-      if (startTime === null) {
-        setStartTime(Date.now());
-        isPlayingTime();
-      } else {
-        setStartTime(null);
-        isPlayingTime();
-      }
+    if (blockPlay && cardTitle !== 'Atividade concluída') {
+      addToast({
+        title: 'Atenção',
+        type: 'warning',
+        description: 'Esta ação não pode ser executada nesse local'
+      });
+      // O play pode ter sido dado por entrega ou para dar play por produto é necessário dar o play dentro do produto escolhido
     }
   };
-
-  const formatTime = (time: number): string => {
-    const hours = Math.floor(time / 3600000);
-    const minutes = Math.floor((time % 3600000) / 60000);
-    const seconds = Math.floor((time % 60000) / 1000);
-
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(
-      seconds
-    ).padStart(2, '0')}`;
-  };
-
-  useEffect(() => {
-    console.log('log do dataTime =>', dataTime);
-  }, [dataTime]);
 
   return (
     <CardWrapper>
       <CardTitle>{cardTitle}</CardTitle>
       <PlayTimer>
-        {startTime === null && (
-          <PlayPauseButton onClick={handleStartStop} className="stop">
+        {!state.isRunning && (
+          <PlayPauseButton onClick={() => handlePassPlayProps('play')} className="stop">
             <IconPlay />
           </PlayPauseButton>
         )}
-        {startTime !== null && (
-          <PlayPauseButton onClick={handleStartStop} className="play">
+        {state.isRunning && (
+          <PlayPauseButton onClick={() => handlePassPlayProps('stop')} className="play">
             <IoMdPause />
           </PlayPauseButton>
         )}
-        <StopWatchTimer className={!startTime ? 'stopped' : 'running'}>
-          {formatTime(elapsedTime)}
-          {/* {('0' + Math.floor((time / 3600000) % 60)).slice(-2)}:
-                {('0' + Math.floor((time / 60000) % 60)).slice(-2)}:
-                {('0' + Math.floor((time / 1000) % 60)).slice(-2)} */}
-          {/* Milémisimos de segundos */}
-          {/* {('0' + Math.floor((time / 10) % 100)).slice(-2)} */}
+        <StopWatchTimer className={state.isRunning ? 'running' : 'stopped'}>
+          {formatTime(state.elapsedTime)}
         </StopWatchTimer>
       </PlayTimer>
       <EstimatedTime>
