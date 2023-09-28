@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 import { FiSettings } from 'react-icons/fi';
 
 interface sidebarProps {
@@ -11,14 +11,13 @@ interface PropsMenu {
 }
 
 export const Container = styled.div`
-  display: grid;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   height: 60px;
   background-color: var(--primary);
   padding: 10px 30px;
-`
+`;
 
 export const SectionProfile = styled.div`
   display: flex;
@@ -95,12 +94,12 @@ export const SectionPopUpHeader = styled.div<PropsMenu>`
 
   background-color: var(--background-primary);
   box-shadow: var(--shadow);
-  
+
   position: absolute;
   top: ${(props) => (props.menuUser ? '55px' : '-130px')};
   opacity: ${(props) => (props.menuUser ? '1' : '0.5')};
 
-  transition: all .5s ease-in-out;
+  transition: all 0.5s ease-in-out;
   z-index: 10;
 
   ul {
@@ -108,9 +107,8 @@ export const SectionPopUpHeader = styled.div<PropsMenu>`
     flex-direction: column;
     gap: 14px;
 
-
     li:not(:last-child) {
-      border-bottom: 2px solid #E3E5EA;
+      border-bottom: 2px solid #e3e5ea;
       padding-bottom: 14px;
     }
 
@@ -129,5 +127,94 @@ export const SectionPopUpHeader = styled.div<PropsMenu>`
         color: var(--text-color-light);
       }
     }
+  }
+`;
+
+export const HeaderTimerWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 0 12px;
+
+  width: fit-content;
+  max-width: 900px;
+  height: 100%;
+
+  background-color: white;
+
+  border-radius: 8px;
+  /* box-shadow: 1px 1px 1px 1px rgba(255, 255, 255, 0.5); */
+`;
+
+export const PlayPauseButton = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;
+  height: 32px;
+  padding: 4px;
+
+  border-radius: 4px;
+
+  transition: ease-in-out 0.3s;
+
+  cursor: pointer;
+
+  &.play {
+    background-color: var(--success-500);
+  }
+
+  &.stop {
+    background-color: var(--primary);
+  }
+
+  svg {
+    path {
+      fill: var(--light);
+    }
+  }
+
+  &:hover {
+    transform: scale(1.1);
+  }
+`;
+
+export const StopWatchTimer = styled.div`
+  display: flex;
+  align-items: center;
+  width: 92px;
+  height: 32px;
+
+  font-size: var(--text-small-xl);
+  font-weight: var(--weight-semibold);
+
+  &.stopped {
+    color: var(--primary);
+  }
+
+  &.running {
+    color: var(--success-500);
+  }
+`;
+
+export const TaskInfoPlayer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  color: var(--gray-800);
+  font-size: var(--text-small-lg);
+  font-weight: var(--weight-semibold);
+
+  .id-task {
+    color: var(--gray-500);
+  }
+
+  .extra-task-infos {
+    color: var(--gray-500);
+    font-size: var(--text-small-sm);
+    font-weight: var(--weight-medium);
   }
 `;
