@@ -195,7 +195,7 @@ export default function Team() {
       addToast({
         type: 'success',
         title: 'Sucesso',
-        description: 'Equipe foi deletado!'
+        description: 'Equipe foi deletada!'
       });
 
       fetchData();
