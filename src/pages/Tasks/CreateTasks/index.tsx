@@ -217,7 +217,8 @@ export default function CreateTasks() {
     user_id: '',
     start_job: '',
     end_job: '',
-    step: ''
+    step: '',
+    gen_ticket: ''
   });
   const [search, setSearch] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -307,6 +308,7 @@ export default function CreateTasks() {
   const [selectUserModal, setSelectUserModal] = useState<boolean>(false);
   const [estimatedTime, setEstimatedTime] = useState<string>('');
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
+  const [ticketAsk, setTicketAsk] = useState<string | null>('');
 
   const DeliveryDefault: DeliveryProps = {
     deliveryId: 1,
@@ -360,6 +362,10 @@ export default function CreateTasks() {
         setDeliveriesSplit('split');
       }
     }
+
+    const ticketInfo = localStorage.getItem('@live:ticket');
+    setTicketAsk(ticketInfo);
+    console.log('log do ticket info', ticketInfo);
   }, [location]);
 
   // useEffect(() => {
@@ -1236,6 +1242,20 @@ export default function CreateTasks() {
         })
       );
 
+      if (DTOForm.gen_ticket === '' && ticketAsk === 'never') {
+        setDTOForm((prevState: any) => ({
+          ...prevState,
+          ['gen_ticket']: 'false'
+        }));
+      }
+
+      if (DTOForm.gen_ticket === '' && ticketAsk === 'always') {
+        setDTOForm((prevState: any) => ({
+          ...prevState,
+          ['gen_ticket']: 'true'
+        }));
+      }
+
       const {
         title,
         tenant_id,
@@ -1250,7 +1270,8 @@ export default function CreateTasks() {
         copywriting_date_end,
         start_job,
         end_job,
-        step
+        step,
+        gen_ticket
       } = DTOForm;
 
       // if (user_id === '') {
@@ -1303,6 +1324,7 @@ export default function CreateTasks() {
           end_job,
           start_job,
           files: fileArray,
+          gen_ticket,
           deadlines: [
             {
               date_end: DTOForm?.creation_date_end,
@@ -1360,7 +1382,8 @@ export default function CreateTasks() {
           start_job,
           files: fileArray,
           deadlines: [deadline],
-          step
+          step,
+          gen_ticket
         };
 
         if (requester_id === '') {
@@ -1399,7 +1422,8 @@ export default function CreateTasks() {
             copywriting_date_end,
             copywriting_description,
             deadlines: deadlines,
-            step
+            step,
+            gen_ticket
           };
 
           if (requester_id === '') {
@@ -1430,13 +1454,14 @@ export default function CreateTasks() {
             start_job,
             flow_id,
             description,
-            // files: fileArray,
+            files: fileArray,
             creation_description,
             creation_date_end,
             copywriting_date_end,
             copywriting_description,
             deadlines: deadlines,
-            step
+            step,
+            gen_ticket
           };
 
           if (location.state !== null) {
@@ -1614,21 +1639,28 @@ export default function CreateTasks() {
     setDTOForm((prevState: any) => ({ ...prevState, ['end_job']: values.end_job }));
 
     setSelectUserModal(false);
-    setTimeout(() => {
-      if (DTOForm.end_job !== '' && DTOForm.start_job !== '' && DTOForm.user_id !== '') {
-        handleOnSubmit();
-        console.log('log do submit', DTOForm);
-      } else {
-        handleCreateTask();
-        console.log('log do create task', DTOForm);
-      }
-    }, 1200);
+    handleCreateTask();
   };
 
   const handleCreateTask = () => {
     console.log('log inside create task', DTOForm);
     if (DTOForm.end_job !== '' && DTOForm.start_job !== '' && DTOForm.user_id !== '') {
       handleOnSubmit();
+    }
+  };
+
+  const handleGenerateTicket = (value: boolean) => {
+    if (value) {
+      setDTOForm((prevState: any) => ({
+        ...prevState,
+        ['gen_ticket']: 'true'
+      }));
+    }
+    if (!value) {
+      setDTOForm((prevState: any) => ({
+        ...prevState,
+        ['gen_ticket']: 'false'
+      }));
     }
   };
 
@@ -1644,9 +1676,9 @@ export default function CreateTasks() {
   //   console.log('log do Delivery DTO', DTODelivery);
   // }, [DTODelivery]);
 
-  // useEffect(() => {
-  //   console.log('Log do DTO', DTOForm);
-  // }, [DTOForm]);
+  useEffect(() => {
+    console.log('Log do DTO', DTOForm);
+  }, [DTOForm]);
 
   // useEffect(() => {
   //   console.log('log do selectedProject', selectedProject);
@@ -1873,9 +1905,10 @@ export default function CreateTasks() {
                     summaryExtrainfos={selectedSummaryInfos}
                     taskType={tasksType}
                     updateTask={location.state !== null}
-                    handleInputChange={handleChangeInput}
+                    handleTicket={handleGenerateTicket}
                     estimatedtotalTime={() => ''}
                     taskFiles={uploadedFiles}
+                    ticketAsk={ticketAsk}
                     error={error}
                   />
                 </>
@@ -1908,9 +1941,10 @@ export default function CreateTasks() {
                   summaryExtrainfos={selectedSummaryInfos}
                   taskType={tasksType}
                   updateTask={location.state !== null}
-                  handleInputChange={handleChangeInput}
+                  handleTicket={handleGenerateTicket}
                   estimatedtotalTime={setEstimatedTime}
                   taskFiles={uploadedFiles}
+                  ticketAsk={ticketAsk}
                   error={error}
                 />
               )}
@@ -1927,9 +1961,10 @@ export default function CreateTasks() {
                   summaryExtrainfos={selectedSummaryInfos}
                   taskType={tasksType}
                   updateTask={location.state !== null}
-                  handleInputChange={handleChangeInput}
+                  handleTicket={handleGenerateTicket}
                   estimatedtotalTime={() => ''}
                   taskFiles={uploadedFiles}
+                  ticketAsk={ticketAsk}
                   error={error}
                 />
               )}
