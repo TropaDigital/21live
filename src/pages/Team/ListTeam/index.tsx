@@ -464,7 +464,7 @@ export default function Team() {
 
       for (let i = 0; i < workDays.length; i++) {
         const currentDay = workDays[i];
-        const nextDay = workDays[i + 1];
+        // const nextDay = workDays[i + 1];
 
         if (currentDay.day && currentDay.start_work !== undefined) {
           const dayName = currentDay.day.toLowerCase();
@@ -478,9 +478,14 @@ export default function Team() {
           //   addPause(outputObject[dayName], nextDay.start_work, nextDay.end_work);
           // }
         }
+
+        if (currentDay.day && currentDay.start_work === undefined) {
+          const dayName = currentDay.day.toLowerCase();
+          outputObject[dayName] = {};
+        }
       }
 
-      //   console.log('log do object', outputObject);
+      // console.log('log do object', outputObject);
 
       const response = await api.put(`/team/${modalWorkDays.user}`, outputObject);
       console.log('log do response', response.data);
