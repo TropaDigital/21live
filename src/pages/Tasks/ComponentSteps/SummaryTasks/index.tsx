@@ -8,6 +8,7 @@ import ButtonDefault from '../../../../components/Buttons/ButtonDefault';
 
 // Styles
 import {
+  CreateTicketOption,
   DeliveriesTitle,
   DeliveriesWrapper,
   Summary,
@@ -21,16 +22,16 @@ import {
   SummaryTasksAbout,
   SummaryWrapper
 } from './styles';
+import { FileList } from '../../../Projects/ListProjects/styles';
 
 // Utils
 import { multiplyTime, subtractTime, sumTimes } from '../../../../utils/convertTimes';
 
-// Services
-import api from '../../../../services/api';
-import { FlexLine } from '../../../Projects/ComponentSteps/styles';
-import { SelectDefault } from '../../../../components/Inputs/SelectDefault';
+// Hooks
 import { useAuth } from '../../../../hooks/AuthContext';
-import { FileList } from '../../../Projects/ListProjects/styles';
+
+// Libraries
+import Switch from 'react-switch';
 
 interface TasksProps {
   createTasks: () => void;
@@ -41,12 +42,11 @@ interface TasksProps {
   summaryExtrainfos: any;
   taskType: any;
   updateTask: boolean;
-  handleInputChange: (
-    e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>
-  ) => void;
   error: FormProps;
   estimatedtotalTime: (value: any) => void;
   taskFiles: any[];
+  ticketAsk: string | null;
+  handleTicket: (value: any) => void;
 }
 
 interface FlowRole {
@@ -68,10 +68,11 @@ export default function SummaryTasks({
   summaryExtrainfos,
   taskType,
   updateTask,
-  handleInputChange,
   error,
   estimatedtotalTime,
-  taskFiles
+  handleTicket,
+  taskFiles,
+  ticketAsk
 }: TasksProps) {
   const { user } = useAuth();
   const [deliveryArrayHours, setDeliveryArrayHours] = useState<any>('');
@@ -166,7 +167,8 @@ export default function SummaryTasks({
   //   console.log('log do deliveryArrayHours', deliveryArrayHours);
   //   console.log('log do totalArrayHours', totalArrayHours);
   //   console.log('log do selectedProducts', selectedProducts);
-  // }, [deliveryArrayHours, totalArrayHours, selectedProducts]);
+  //   console.log('log do taskSummaries', taskSummary);
+  // }, [deliveryArrayHours, totalArrayHours, selectedProducts, taskSummary]);
 
   return (
     <SummaryWrapper>
@@ -479,6 +481,25 @@ export default function SummaryTasks({
               </div>
             </>
           )}
+
+          {ticketAsk === 'ask' && (
+            <>
+              <div className="splitter" />
+              <CreateTicketOption>
+                {/* <div>Aqui vai o switch</div> */}
+                <Switch
+                  onChange={handleTicket}
+                  checked={taskSummary.gen_ticket === 'true' ? true : false}
+                  uncheckedIcon={false}
+                  checkedIcon={false}
+                  onColor="#0046B5"
+                  className="switch-ticket"
+                />
+                <div>Deseja gerar ticket</div>
+              </CreateTicketOption>
+            </>
+          )}
+
           <SummaryButtons>
             <ButtonDefault typeButton="primary" isOutline onClick={() => editTasks()}>
               Editar tarefa
