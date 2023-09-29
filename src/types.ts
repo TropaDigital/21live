@@ -103,6 +103,7 @@ export interface ITaskCreate {
   start_job: string;
   end_job: string;
   requester_id?: string;
+  gen_ticket: string;
 }
 
 export interface IDelivery {
