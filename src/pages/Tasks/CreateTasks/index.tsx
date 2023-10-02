@@ -365,7 +365,6 @@ export default function CreateTasks() {
 
     const ticketInfo = localStorage.getItem('@live:ticket');
     setTicketAsk(ticketInfo);
-    console.log('log do ticket info', ticketInfo);
   }, [location]);
 
   // useEffect(() => {
@@ -1676,9 +1675,9 @@ export default function CreateTasks() {
   //   console.log('log do Delivery DTO', DTODelivery);
   // }, [DTODelivery]);
 
-  useEffect(() => {
-    console.log('Log do DTO', DTOForm);
-  }, [DTOForm]);
+  // useEffect(() => {
+  //   console.log('Log do DTO', DTOForm);
+  // }, [DTOForm]);
 
   // useEffect(() => {
   //   console.log('log do selectedProject', selectedProject);
