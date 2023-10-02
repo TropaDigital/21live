@@ -11,10 +11,10 @@ export const ContainerSelect = styled.div`
     gap: 12px;
 
     .client-image {
-      width: 60px;
-      height: 60px;
+      width: 34px;
+      height: 34px;
       border-radius: 4px;
-      background-size: cover;
+      background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
     }
