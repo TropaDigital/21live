@@ -6,7 +6,7 @@ export const Container = styled.div`
 
   .contentData {
     display: grid;
-    grid-template-columns: repeat( auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1rem;
     margin-top: 1rem;
   }

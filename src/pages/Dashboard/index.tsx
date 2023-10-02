@@ -43,19 +43,19 @@ export default function Dashboard() {
   ];
   return (
     <Container>
-      <SectionDefault>
+      <SectionDefault style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
         <CardWelcomeDash user={user.name} />
 
         <div className="contentData">
-          <CardDataDash data={42} type="success" description="Clientes" />
+          <CardDataDash data={42} type="success" description="Total de clientes" />
 
-          <CardDataDash data={42} type="creation" description="Clientes" />
+          <CardDataDash data={443} type="creation" description="Horas de criação" />
 
-          <CardDataDash data={5} type="info" description="Clientes" />
+          <CardDataDash data={46} type="info" description="Alt. internas" />
 
-          <CardDataDash data={101} type="danger" description="Clientes" />
+          <CardDataDash data={56} type="danger" description="Alt. externas" />
 
-          <CardDataDash data={36} type="warning" description="Clientes" />
+          <CardDataDash data={52} type="warning" description="Equipes" />
         </div>
 
         <ContainerGroupTable style={{ marginTop: '1rem' }}>
