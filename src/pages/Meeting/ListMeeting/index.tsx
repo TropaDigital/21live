@@ -366,7 +366,8 @@ export default function ListMeeting() {
     return {
       value: row.tenant_id,
       label: row.name,
-      image: row.bucket
+      image: row.bucket,
+      color: row.colormain
     };
   });
 
