@@ -260,14 +260,14 @@ function RoutesAll() {
           }
         /> */}
 
-        <Route
+        {/* <Route
           path="/tabela"
           element={
             <PrivateRoutes>
               <ComponentTable />
             </PrivateRoutes>
           }
-        />
+        /> */}
       </Route>
 
       <Route path="*" element={<PageNotFound />} />
