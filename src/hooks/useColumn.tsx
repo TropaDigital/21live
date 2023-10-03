@@ -42,7 +42,8 @@ function useColumn() {
 
   const updateParcialColumn = useCallback(
     (id: string, name: string, value: string) => {
-      column[id][name] = value;
+      console.log('log update parcial column', id, name, value.replace(/[^\d.-]/g, ''));
+      column[id][name] = value.replace(/[^\d.-]/g, '');
       setColumn([...column]);
     },
     [column, setColumn]
