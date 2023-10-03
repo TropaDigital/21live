@@ -11,6 +11,7 @@ export const CardWellcomeDash = styled.div`
     display: flex;
     flex-direction: column;
     align-content: center;
+    gap: 4px;
 
     h1 {
       font-size: var(--text-headline-sm);
