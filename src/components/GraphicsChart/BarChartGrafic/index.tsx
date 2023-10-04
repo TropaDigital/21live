@@ -64,7 +64,7 @@ const BarChartGrafic = ({ data, isVertical, title }: Props) => {
         >
           <XAxis
             type={isVertical ? 'number' : 'category'}
-            dataKey={'name'}
+            dataKey={isVertical ? undefined : 'name'}
             axisLine={false}
             tickLine={false}
             fontSize={12}
@@ -78,13 +78,18 @@ const BarChartGrafic = ({ data, isVertical, title }: Props) => {
             tickLine={false}
           />
 
-          <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#c7c7c7" />
+          <CartesianGrid
+            // vertical={isVertical ? true : false}
+            // horizontal={isVertical ? false : true}
+            strokeDasharray="3 3"
+            stroke="#c7c7c7"
+          />
           <Tooltip />
           <Bar
             dataKey="pv"
             fill="#8884d8"
             radius={isVertical ? [0, 5, 5, 0] : [5, 5, 0, 0]}
-            barSize={isVertical ? 300 : 122}
+            barSize={isVertical ? 60 : 122}
           >
             <LabelList
               dataKey="pv"
