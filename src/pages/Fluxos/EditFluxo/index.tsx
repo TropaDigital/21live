@@ -1,23 +1,31 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect } from 'react';
-import { BiSave, BiShow } from 'react-icons/bi';
+// React
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+// Icons
+import { BiSave, BiShow } from 'react-icons/bi';
+
+// Services
 import api from '../../../services/api';
 
+// Hooks
 import { useAuth } from '../../../hooks/AuthContext';
 import { useToast } from '../../../hooks/toast';
 import useColumn from '../../../hooks/useColumn';
 import { useFetch } from '../../../hooks/useFetch';
 import useLocalStorage from '../../../hooks/useLocalStorage';
 
+// Utils
 import { ColumnModel } from '../../../utils/models';
 
+// Components
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import HeaderPage from '../../../components/HeaderPage';
 import CardFluxo from '../../../components/Ui/CardFluxo';
 import { SectionDefault } from '../../../components/UiElements/styles';
 
+// Styles
 import { Container, ContentEditFluxo, HeaderEditPlus } from './styled';
 
 interface OfficeProps {
@@ -42,6 +50,7 @@ export default function EditFluxo() {
   const { addColumn, moveObject, deleteColumn, updateParcialColumn, column, setColumn } =
     useColumn();
   const lengthCard = column.length;
+  const [errorMissingResponsible, setErrorMissingResponsible] = useState<any[]>([]);
 
   useEffect(() => {
     if (!isFetching) {
@@ -49,17 +58,44 @@ export default function EditFluxo() {
     }
   }, [isFetching, data]);
 
+  const checkResponsible = () => {
+    try {
+      column.map((row: any) => {
+        if (row.function_id === '0') {
+          setErrorMissingResponsible((prevState: any) => [...prevState, row.card_id]);
+          throw new Error();
+        } else if (row.function_id !== '0') {
+          setErrorMissingResponsible((prevState) =>
+            prevState.filter((error) => error !== row.card_id)
+          );
+
+          if (errorMissingResponsible.length <= 0) {
+            saveFluxo();
+          }
+        }
+      });
+    } catch (error) {
+      addToast({
+        title: 'Atenção',
+        description: 'Não é possível salvar um fluxo sem todos os responsáveis escolhidos',
+        type: 'warning'
+      });
+    }
+  };
+
   async function saveFluxo() {
     try {
       const response = await api.post('/card', column);
       setState(response.data.result);
       setColumn(response.data.result);
 
-      addToast({
-        title: 'Sucesso',
-        description: 'Fluxos salvos com sucesso!',
-        type: 'success'
-      });
+      if (response.data.status === 'success') {
+        addToast({
+          title: 'Sucesso',
+          description: 'Fluxos salvos com sucesso!',
+          type: 'success'
+        });
+      }
     } catch (err: any) {
       console.log('ERR =>', err);
       if (err.response.data.result.length !== 0) {
@@ -127,7 +163,7 @@ export default function EditFluxo() {
             <BiShow />
             Visualizar
           </ButtonDefault>
-          <ButtonDefault typeButton="success" onClick={saveFluxo}>
+          <ButtonDefault typeButton="success" onClick={checkResponsible}>
             <BiSave />
             Salvar
           </ButtonDefault>
@@ -156,6 +192,7 @@ export default function EditFluxo() {
               handleOnPosition={(newIndex) => moveObject(newIndex, index)}
               handleOnDelete={() => deleteFluxo(row.card_id)}
               onUpdate={(id, name, value) => updateParcialColumn(id, name, value)}
+              errorField={errorMissingResponsible}
             />
           ))}
         </ContentEditFluxo>
