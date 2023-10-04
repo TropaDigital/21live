@@ -31,6 +31,7 @@ interface CardProps {
   data: any;
   columnStep: any;
   responseUser: any;
+  errorField: any;
 }
 
 export default function CardFluxo({
@@ -43,7 +44,8 @@ export default function CardFluxo({
   handleOnPosition,
   handleOnDelete,
   onUpdate,
-  index
+  index,
+  errorField
 }: CardProps) {
   const [dataStatus, setDataStatus] = useState<any[]>([]);
 
@@ -104,6 +106,7 @@ export default function CardFluxo({
             placeHolder="Selecione o cargo"
             onChange={handleOnChange}
             value={data.function_id ?? ''}
+            error={errorField?.includes(data.card_id) ? 'Selecione o responsável' : ''}
           >
             {responseUser?.map((row: any) => (
               <option key={Number(row.function_id)} value={row.function_id}>
@@ -156,6 +159,15 @@ export default function CardFluxo({
               name="necessary_responsible"
               onChange={handleOnChangeCheckbox}
               checked={data.necessary_responsible === 'true' ? true : false}
+            />
+          </FieldDefault>
+
+          <FieldDefault style={{ marginBottom: '8px' }}>
+            <CheckboxDefault
+              label="Aprovação do Cliente"
+              name="tenant_approve"
+              onChange={handleOnChangeCheckbox}
+              checked={data.tenant_approve === 'true' ? true : false}
             />
           </FieldDefault>
 
