@@ -543,7 +543,7 @@ export default function Team() {
             Cargos
           </ButtonDefault>
 
-          <ButtonDefault
+          {/* <ButtonDefault
             typeButton="success"
             onClick={() =>
               setModal({
@@ -554,7 +554,7 @@ export default function Team() {
           >
             <BiPlus color="#fff" />
             Novo Usuário
-          </ButtonDefault>
+          </ButtonDefault> */}
         </>
       </HeaderPage>
 
@@ -661,7 +661,7 @@ export default function Team() {
         <form onSubmit={handleOnSubmit}>
           <FieldDefault>
             <InputDefault
-              label="Nome do cliente"
+              label="Nome do usuário"
               placeholder="Digite seu nome..."
               name="name"
               onChange={handleOnChange}
@@ -671,7 +671,7 @@ export default function Team() {
           </FieldDefault>
           <FieldDefault>
             <InputDefault
-              label="UserName"
+              label="UserName (utilizado para logar na plataforma)"
               name="username"
               onChange={handleOnChange}
               value={formData.username}
