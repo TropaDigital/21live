@@ -42,9 +42,14 @@ function useColumn() {
 
   const updateParcialColumn = useCallback(
     (id: string, name: string, value: string) => {
-      console.log('log update parcial column', id, name, value.replace(/[^\d.-]/g, ''));
-      column[id][name] = value.replace(/[^\d.-]/g, '');
-      setColumn([...column]);
+      if (name === 'previous_step') {
+        column[id][name] = value.replace(/[^\d.-]/g, '');
+        setColumn([...column]);
+      } else {
+        column[id][name] = value;
+        setColumn([...column]);
+      }
+      // column[id][name] = value.replace(/[^\d.-]/g, '');
     },
     [column, setColumn]
   );
