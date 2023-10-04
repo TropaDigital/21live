@@ -12,6 +12,35 @@ export const Container = styled.div`
   }
 `;
 
+export const GraphicLine = styled.div`
+  display: grid;
+  align-items: center;
+  grid-template-columns: 2fr 1fr;
+  width: 100%;
+  gap: 16px;
+`;
+
+export const CardBase = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: fit-content;
+
+  gap: 10px;
+
+  background-color: var(--background-primary);
+  padding: 10px 20px 20px 20px;
+
+  border-radius: 10px;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.05);
+
+  .card-title {
+    color: var(--title-color);
+    font-size: var(--text-small-sm);
+    font-weight: var(--weight-bold);
+  }
+`;
+
 export const JobStatus = styled.div`
   display: flex;
   justify-content: center;
@@ -80,6 +109,9 @@ export const UserInfo = styled.div`
     height: 100px;
     border-radius: 50%;
     background-color: purple;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
   }
 
   .user-name {
@@ -119,4 +151,43 @@ export const MensalReport = styled.div`
     font-size: var(--text-small-md);
     font-weight: var(--weight-regular);
   }
+`;
+
+export const BlueCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 215px;
+  height: 120px;
+  border-radius: 10px;
+  background-color: var(--primary-050);
+
+  .numberCard {
+    color: var(--primary-900);
+    font-size: var(--text-headline-xl);
+    font-weight: var(--weight-bold);
+  }
+
+  .blueCard-title {
+    color: var(--primary-900);
+    font-size: var(--text-small-sm);
+    font-weight: var(--weight-regular);
+  }
+
+  &.small {
+    height: 76px;
+  }
+`;
+
+export const GridServiceWrapper = styled.div`
+  display: grid;
+  grid-template-columns: 300px 1fr 215px;
+  gap: 12px;
+  width: 100%;
+  height: fit-content;
+  background-color: #f6f7fb;
+  border-radius: 10px;
+
+  padding: 12px;
 `;
