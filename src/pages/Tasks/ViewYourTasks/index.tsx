@@ -55,7 +55,7 @@ export default function ViewTaskList() {
 
   const handleNavigateTask = (infos: any) => {
     const taskId = infos?.task?.task_id;
-    navigate(`/tarefa/${infos.task.task_id}`, { state: taskId });
+    navigate(`/entregas/${infos.task.task_id}`, { state: taskId });
   };
 
   return (
