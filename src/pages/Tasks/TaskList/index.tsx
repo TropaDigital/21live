@@ -225,6 +225,14 @@ export default function TaskList() {
     }
   }
 
+  const handleViewTask = (taskId: string) => {
+    console.log('log do id da task para ser visualizada', taskId);
+    const idTask = {
+      id: taskId
+    };
+    navigate(`/tarefa/${taskId}`, { state: idTask });
+  };
+
   // const { formData, handleOnChange } = useForm({
   //   tenant_id: '',
   //   title: '',
@@ -457,6 +465,7 @@ export default function TaskList() {
                         )}
                       </Flag>
                       <ButtonTable typeButton="view" onClick={() => handleOpenModalView(row)} />
+                      {/* <ButtonTable typeButton="view" onClick={() => handleViewTask(row.task_id)} /> */}
                       <ButtonTable
                         typeButton="edit"
                         onClick={() => {
