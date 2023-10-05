@@ -320,6 +320,7 @@ export default function CreateTasks() {
   };
   const [DTODelivery, setDTODelivery] = useState<any[]>([DeliveryDefault]);
   // const [dataFlow, setDataFlow] = useState<any[]>();
+  const [submitState, setSubmitState] = useState<Date>(new Date());
 
   const addDelivery = () => {
     const newDelivery: DeliveryProps = {
@@ -1586,6 +1587,9 @@ export default function CreateTasks() {
   };
 
   const handleDeleteDelivery = (id: any) => {
+    if (DTODelivery.length === 1) {
+      setDeliveriesSplit('no-split');
+    }
     setDTODelivery(DTODelivery.filter((obj) => obj.deliveryId !== id));
   };
 
@@ -1638,15 +1642,14 @@ export default function CreateTasks() {
     setDTOForm((prevState: any) => ({ ...prevState, ['end_job']: values.end_job }));
 
     setSelectUserModal(false);
-    handleCreateTask();
+    setSubmitState(new Date());
   };
 
-  const handleCreateTask = () => {
-    console.log('log inside create task', DTOForm);
+  useEffect(() => {
     if (DTOForm.end_job !== '' && DTOForm.start_job !== '' && DTOForm.user_id !== '') {
       handleOnSubmit();
     }
-  };
+  }, [submitState]);
 
   const handleGenerateTicket = (value: boolean) => {
     if (value) {
@@ -1773,6 +1776,7 @@ export default function CreateTasks() {
                     // placeholder="00/00/0000"
                     name="dateStart"
                     type="date"
+                    max={'9999-12-31'}
                     icon={BiCalendar}
                     onChange={(e) => handleTaskDeliveries('dateStart', e.target.value)}
                     value={DTOForm.copywriting_date_end}
@@ -1784,6 +1788,7 @@ export default function CreateTasks() {
                     placeholder="00/00/0000"
                     name="creationDate"
                     type="date"
+                    max={'9999-12-31'}
                     icon={BiCalendar}
                     onChange={(e) => handleTaskDeliveries('creationDate', e.target.value)}
                     value={DTOForm.creation_date_end}
