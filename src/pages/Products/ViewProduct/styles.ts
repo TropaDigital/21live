@@ -26,6 +26,7 @@ export const ShowInfosButton = styled.button`
   justify-content: center;
   width: 40px;
   height: 40px;
+  z-index: 4;
 
   position: absolute;
   top: 42%;
