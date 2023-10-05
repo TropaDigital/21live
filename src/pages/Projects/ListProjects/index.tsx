@@ -469,13 +469,6 @@ export default function ListProjects() {
                 </div>
               </SummaryTaskInfo>
 
-              <SummaryTaskDescription>
-                <div className="description-title">Contexto geral</div>
-                <div
-                  className="description-info"
-                  dangerouslySetInnerHTML={{ __html: modalShowProject.project.description }}
-                ></div>
-              </SummaryTaskDescription>
               {modalShowProject.project.files.length > 0 && (
                 <SummaryTaskDescription>
                   <div className="description-title">Arquivos:</div>
@@ -484,6 +477,14 @@ export default function ListProjects() {
                   ))}
                 </SummaryTaskDescription>
               )}
+
+              <SummaryTaskDescription>
+                <div className="description-title">Contexto geral</div>
+                <div
+                  className="description-info"
+                  dangerouslySetInnerHTML={{ __html: modalShowProject.project.description }}
+                ></div>
+              </SummaryTaskDescription>
             </SummaryInfoWrapper>
           </Summary>
 
