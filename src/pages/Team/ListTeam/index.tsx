@@ -716,6 +716,7 @@ export default function Team() {
                 value={formData.birthday}
                 required
                 type="date"
+                max={'9999-12-31'}
                 icon={BiCalendar}
               />
             </FieldDefault>
@@ -727,6 +728,7 @@ export default function Team() {
                 value={formData.hiring_date}
                 required
                 type="date"
+                max={'9999-12-31'}
                 icon={BiCalendar}
               />
             </FieldDefault>
