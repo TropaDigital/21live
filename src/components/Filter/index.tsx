@@ -138,6 +138,7 @@ export default function FilterMenu({ filterProps, applyFilters, clearFilters }: 
             placeholder="dd/mm/aaaa"
             name="fromDate"
             type="date"
+            max={'9999-12-31'}
             icon={BiCalendar}
             onChange={handleAddFilters}
             value={choosenFilters.fromDate}
@@ -150,6 +151,7 @@ export default function FilterMenu({ filterProps, applyFilters, clearFilters }: 
             placeholder="dd/mm/aaaa"
             name="toDate"
             type="date"
+            max={'9999-12-31'}
             icon={BiCalendar}
             onChange={handleAddFilters}
             value={choosenFilters.toDate}
