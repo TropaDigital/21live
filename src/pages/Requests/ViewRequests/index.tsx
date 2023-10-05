@@ -317,7 +317,12 @@ export default function ViewRequest() {
 
                   <InfoSideCard>
                     <div className="side-title">Informações que devem estar na peça:</div>
-                    <div className="side-info">{requestData?.info}</div>
+                    <div
+                      className="side-info"
+                      dangerouslySetInnerHTML={{
+                        __html: requestData?.info ? requestData?.info : ''
+                      }}
+                    />
                   </InfoSideCard>
 
                   <InfoSideCard>

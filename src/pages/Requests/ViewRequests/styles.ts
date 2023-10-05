@@ -181,7 +181,11 @@ export const InfoSideCard = styled.div`
     font-size: var(--text-small-md);
     font-weight: var(--weight-medium);
 
+    max-width: 600px;
     white-space: pre-wrap;
+    word-wrap: break-word;
+
+    overflow: hidden;
   }
 `;
 
