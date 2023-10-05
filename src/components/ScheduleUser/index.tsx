@@ -143,6 +143,21 @@ export default function ScheduleUser({
     } catch (error: any) {
       console.log('log error getSchedule', error);
       setLoading(false);
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            type: 'danger',
+            title: 'ATENÇÃO',
+            description: row.error
+          });
+        });
+      } else {
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: error.response.data.message
+        });
+      }
     }
   }
 
