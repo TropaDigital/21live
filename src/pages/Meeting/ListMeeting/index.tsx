@@ -658,6 +658,7 @@ export default function ListMeeting() {
               placeholder="00/00/0000"
               name="date"
               type="date"
+              max={'9999-12-31'}
               icon={BiCalendar}
               onChange={handleOnChange}
               value={formData.date}
