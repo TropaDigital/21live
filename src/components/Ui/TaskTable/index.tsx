@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable import-helpers/order-imports */
 
 // React
@@ -245,15 +246,15 @@ export default function TaskTable({
 
             <tbody>
               <tr>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
+                <td>Sem tarefa</td>
+                <td>Sem tarefa</td>
+                <td>Sem tarefa</td>
+                <td>Sem tarefa</td>
+                <td>Sem tarefa</td>
+                <td>Sem tarefa</td>
+                <td>Sem tarefa</td>
+                <td>Sem tarefa</td>
+                <td>Sem tarefa</td>
               </tr>
             </tbody>
           </table>
