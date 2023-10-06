@@ -1,5 +1,5 @@
 //  React
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Icons
@@ -45,6 +45,7 @@ export default function Header({ handleOnMenu, modalActive }: HeaderProps) {
   const { signOut, user } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
+  const userMenuRef = useRef<any>();
   const { state, start, stop, titleTaskInfos, clockInfos } = useStopWatch();
   const [menuUser, setMenuUser] = useState(false);
 
@@ -142,6 +143,20 @@ export default function Header({ handleOnMenu, modalActive }: HeaderProps) {
     }
   };
 
+  useEffect(() => {
+    const checkIfClickedOutside = (e: any) => {
+      if (menuUser && userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setMenuUser(false);
+      }
+    };
+
+    document.addEventListener('mousedown', checkIfClickedOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', checkIfClickedOutside);
+    };
+  }, [menuUser]);
+
   return (
     <Container>
       <SectionProfile>
@@ -210,7 +225,7 @@ export default function Header({ handleOnMenu, modalActive }: HeaderProps) {
           </ImageProfile>
         </Profile>
       </SectionProfile>
-      <SectionPopUpHeader menuUser={menuUser}>
+      <SectionPopUpHeader menuUser={menuUser} ref={userMenuRef}>
         <ul>
           <li>
             <button
@@ -223,6 +238,9 @@ export default function Header({ handleOnMenu, modalActive }: HeaderProps) {
               Meu perfil
             </button>
           </li>
+          {/* <li>
+            <button>Paramêtros</button>
+          </li> */}
           <li>
             <button onClick={signOut}>
               <BiLogOut size={24} color="#6C757D" />

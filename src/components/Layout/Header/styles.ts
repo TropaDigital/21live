@@ -96,7 +96,7 @@ export const SectionPopUpHeader = styled.div<PropsMenu>`
   box-shadow: var(--shadow);
 
   position: absolute;
-  top: ${(props) => (props.menuUser ? '55px' : '-130px')};
+  top: ${(props) => (props.menuUser ? '50px' : '-170px')};
   opacity: ${(props) => (props.menuUser ? '1' : '0.5')};
 
   transition: all 0.5s ease-in-out;
