@@ -464,8 +464,8 @@ export default function TaskList() {
                           </IconContext.Provider>
                         )}
                       </Flag>
-                      <ButtonTable typeButton="view" onClick={() => handleOpenModalView(row)} />
-                      {/* <ButtonTable typeButton="view" onClick={() => handleViewTask(row.task_id)} /> */}
+                      {/* <ButtonTable typeButton="view" onClick={() => handleOpenModalView(row)} /> */}
+                      <ButtonTable typeButton="view" onClick={() => handleViewTask(row.task_id)} />
                       <ButtonTable
                         typeButton="edit"
                         onClick={() => {
