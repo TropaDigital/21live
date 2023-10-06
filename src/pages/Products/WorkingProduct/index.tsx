@@ -14,7 +14,7 @@ import { useAuth } from '../../../hooks/AuthContext';
 
 // Icons
 import { IconText } from '../../../assets/icons';
-import { BiInfoCircle, BiTrash } from 'react-icons/bi';
+import { BiArrowBack, BiInfoCircle, BiTrash } from 'react-icons/bi';
 import { HiOutlineArrowRight, HiOutlineChatAlt } from 'react-icons/hi';
 
 // Components
@@ -59,6 +59,8 @@ interface WorkingProductProps {
   productInfos?: any;
   taskInputs?: InputProps;
   taskId?: string;
+  goBack?: () => void;
+  backButtonTitle?: string;
 }
 
 interface InputProps {
@@ -79,7 +81,9 @@ export default function WorkingProduct({
   productDeliveryId,
   productInfos,
   taskInputs,
-  taskId
+  taskId,
+  backButtonTitle,
+  goBack
 }: WorkingProductProps) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -266,6 +270,7 @@ export default function WorkingProduct({
           <IconText />
           Redação
         </TaskTab>
+
         <TaskTab
           onClick={(e: any) => {
             setSelectedTab(e.target.innerText);
@@ -275,9 +280,11 @@ export default function WorkingProduct({
           <BiInfoCircle />
           Inputs
         </TaskTab>
+
         <TaskTab
           onClick={(e: any) => {
             setSelectedTab(e.target.innerText);
+            getComments();
           }}
           className={selectedTab === 'Comentários' ? 'active' : ''}
         >
@@ -290,6 +297,13 @@ export default function WorkingProduct({
           <BsGear />
           Logs
         </TaskTab>
+
+        {backButtonTitle && (
+          <button className="go-back" onClick={goBack}>
+            <BiArrowBack />
+            {backButtonTitle}
+          </button>
+        )}
       </TabsWrapper>
 
       <WorkSection>
@@ -317,7 +331,7 @@ export default function WorkingProduct({
                 </FooterSection>
               </div>
             ) : (
-              <EssayInfo>Texto de teste</EssayInfo>
+              <EssayInfo>{essayInfo}</EssayInfo>
             )}
           </>
         )}

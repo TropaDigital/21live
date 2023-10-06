@@ -8,6 +8,23 @@ export const TabsWrapper = styled.div`
 
   margin: 0 40px;
   border-bottom: 1px solid var(--gray-200);
+
+  .go-back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 24px;
+    padding: 0 12px;
+    transition: all 0.3s;
+
+    background: transparent;
+
+    :hover {
+      background-color: var(--primary-050);
+      border-radius: 16px;
+    }
+  }
 `;
 
 export const TaskTab = styled.button`
