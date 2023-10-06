@@ -13,6 +13,8 @@ import { IconBigCheck } from '../../../assets/icons';
 import HeaderOpenTask from '../../../components/HeaderTaskPage';
 import CardTaskInfo from '../../../components/Ui/CardTaskInfo';
 import { ContainerDefault } from '../../../components/UiElements/styles';
+import { TasksTable } from '../../../components/Ui/TaskTable/styles';
+import ProgressBar from '../../../components/Ui/ProgressBar';
 import WorkingProduct from '../../Products/WorkingProduct';
 
 // Styles
@@ -34,7 +36,7 @@ import {
   TimelineInfo,
   TimelineStep,
   DeliveriesWrapper,
-  DeliveriesTableWrapper
+  TableWrapper
 } from './styles';
 
 // Services
@@ -47,6 +49,10 @@ import 'moment/dist/locale/pt-br';
 // Hooks
 import { useToast } from '../../../hooks/toast';
 
+// Utils
+import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
+import { BiArrowBack } from 'react-icons/bi';
+
 interface TimelineProps {
   steps: StepTimeline[];
   currentStep: string;
@@ -55,6 +61,47 @@ interface TimelineProps {
 interface StepTimeline {
   step: string;
   name: string;
+}
+
+interface TaskInfos {
+  delivery_id: string;
+  task_id: string;
+  date_end: string;
+  description: string;
+  created: string;
+  updated: string;
+  order: string;
+  title: string;
+  status: string;
+  total_time: string;
+  time_consumed: string;
+  time_creation: string;
+  time_essay: string;
+  products: [];
+}
+
+interface ProductsProps {
+  service_id: number;
+  service: string;
+  description: string;
+  type: string;
+  size: string;
+  minutes: string;
+  minutes_creation: any;
+  minutes_consumed: any;
+  minutes_essay: any;
+  created: string;
+  updated: string;
+  category?: string;
+  flag: string;
+  quantity?: any;
+  tenant_id?: string;
+  products_delivery_id?: string;
+  period?: string;
+  essay?: string;
+  status?: string;
+  ticket_interaction_id: string;
+  reason_change?: string;
 }
 
 export default function ViewTask() {
@@ -66,7 +113,9 @@ export default function ViewTask() {
   const [dataTask, setDataTask] = useState<any>();
   const [timeLineData, setTimelineData] = useState<TimelineProps>();
   const [hideTimeLine, setHideTimeLine] = useState<boolean>(false);
+  const [deliveryProduct, setDeliveryProduct] = useState<ProductsProps[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<any>('');
+  const [visualizationType, setVisualizationType] = useState<string>('deliveries');
 
   const titleInfos = {
     idNumber: dataTask?.task_id,
@@ -117,7 +166,7 @@ export default function ViewTask() {
     }
 
     getTimelineData();
-    // getTaskInfos(location.state.id);
+    getTaskInfos(location.state.id);
   }, [location]);
 
   const handleNavigateProduct = (infoProduct: any) => {
@@ -189,33 +238,170 @@ export default function ViewTask() {
           />
         </CardsWrapper>
 
-        <DeliveriesWrapper>
-          <span className="title-info">Entregas</span>
+        {visualizationType === 'deliveries' && (
+          <DeliveriesWrapper>
+            <span className="title-info">Entregas</span>
 
-          <DeliveriesTableWrapper>
-            <span className="date-info">{moment(dataTask?.start_job).format('DD/MM/YYYY')}</span>
-          </DeliveriesTableWrapper>
-        </DeliveriesWrapper>
+            <TableWrapper>
+              <span className="date-info">{moment(dataTask?.start_job).format('DD/MM/YYYY')}</span>
+              <TasksTable>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Título</th>
+                      <th>Tempo consumido</th>
+                      <th>Tempo estimado</th>
+                      <th>Data inicial</th>
+                      <th>Data final</th>
+                      <th>Produtos</th>
+                      <th>Etapa</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
 
-        {/* {selectedProduct === '' && (
-          <ProductTable
-            data={dataProducts}
-            timeData={timeData}
-            workForProduct={() => ''}
-            isPlayingForSchedule={false}
-            productSelected={handleNavigateProduct}
-            isFinished={dataTask?.status === 'Concluida' ? true : false}
-            typeOfWorkFinished={dataTask?.type_play}
-            typeOfPlay={''}
-          />
-        )} */}
+                  <tbody>
+                    {dataTask?.deliverys.map((row: TaskInfos) => (
+                      <tr
+                        key={row.delivery_id}
+                        onClick={() => {
+                          setDeliveryProduct(row.products);
+                          setVisualizationType('delivery-products');
+                        }}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <td>#{String(row.delivery_id).padStart(2, '0')}</td>
+                        <td>{row.title}</td>
+                        <td>
+                          <span style={{ marginBottom: '4px', display: 'block' }}>
+                            {row.time_consumed}
+                          </span>
+                          <ProgressBar
+                            totalHours={convertToMilliseconds(dataTask?.total_time)}
+                            restHours={convertToMilliseconds(row.time_consumed)}
+                          />
+                        </td>
+                        <td>{dataTask?.total_time}</td>
+                        <td>{moment(row.date_end).format('DD/MM/YYYY')}</td>
+                        <td>{moment(dataTask?.end_job).format('DD/MM/YYYY')}</td>
+                        <td>
+                          {row.products.length <= 1
+                            ? `${row.products.length} produto`
+                            : `${row.products.length} produtos`}
+                        </td>
+                        <td>
+                          <div className="column">
+                            {dataTask?.card_name}
+                            <span>Fluxo: {dataTask?.flow}</span>
+                          </div>
+                        </td>
+                        <td>
+                          <div
+                            className={
+                              dataTask?.status === 'Em Andamento'
+                                ? 'status progress'
+                                : dataTask?.status === 'Concluida'
+                                ? 'status finished'
+                                : 'status'
+                            }
+                          >
+                            {dataTask?.status === 'Em Andamento'
+                              ? 'Em Andamento'
+                              : dataTask?.status === 'Concluída'
+                              ? 'Concluída'
+                              : 'Pendente'}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </TasksTable>
+            </TableWrapper>
+          </DeliveriesWrapper>
+        )}
 
-        {selectedProduct !== '' && (
+        {visualizationType === 'delivery-products' && (
+          <DeliveriesWrapper>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span className="title-info">Produtos</span>
+
+              <button className="go-back" onClick={() => setVisualizationType('deliveries')}>
+                <BiArrowBack />
+                Voltar para entregas
+              </button>
+            </div>
+
+            <TableWrapper>
+              <TasksTable>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Produto</th>
+                      <th>Descrição</th>
+                      <th>Formato</th>
+                      <th>Tipo</th>
+                      <th>I/D</th>
+                      <th>Tempo consumido</th>
+                      <th>Tempo estimado</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {deliveryProduct.map((row: ProductsProps) => (
+                      <tr
+                        key={row.products_delivery_id}
+                        onClick={() => {
+                          handleNavigateProduct(row);
+                          setVisualizationType('product');
+                        }}
+                      >
+                        <td>#{String(row.products_delivery_id).padStart(2, '0')}</td>
+                        <td>{row.service}</td>
+                        <td>
+                          <div dangerouslySetInnerHTML={{ __html: row.description }} />
+                        </td>
+                        <td>{row.size}</td>
+                        <td>
+                          {row.reason_change === '1'
+                            ? 'Criação'
+                            : row.reason_change === '2'
+                            ? 'Desmembramento'
+                            : row.reason_change === '3'
+                            ? 'Alteração Interna'
+                            : 'Alteração externa'}
+                        </td>
+                        <td>{row.type}</td>
+                        <td>
+                          <span style={{ marginBottom: '4px', display: 'block' }}>
+                            {row.minutes_consumed}
+                          </span>
+                          <ProgressBar
+                            totalHours={convertToMilliseconds(row.minutes)}
+                            restHours={convertToMilliseconds(row.minutes_consumed)}
+                          />
+                        </td>
+                        <td>{row.minutes}</td>
+                        {/* <td>{moment(row.date_end).format('DD/MM/YYYY')}</td>
+                        <td>{moment(dataTask?.end_job).format('DD/MM/YYYY')}</td> */}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </TasksTable>
+            </TableWrapper>
+          </DeliveriesWrapper>
+        )}
+
+        {visualizationType === 'product' && (
           <WorkingProduct
             productDeliveryId={selectedProduct?.productInfo?.products_delivery_id}
             productInfos={selectedProduct.productInfo}
             taskInputs={InputsTask}
             taskId={dataTask?.task_id}
+            goBack={() => setVisualizationType('delivery-products')}
+            backButtonTitle={'Voltar para produtos'}
           />
         )}
 

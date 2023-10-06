@@ -27,22 +27,62 @@ export const DeliveriesWrapper = styled.div`
 
   padding: 0 40px;
 
+  transition: all 1s;
+
   .title-info {
     color: var(--gray-900);
     font-size: var(--text-small-xl);
     font-weight: var(--weight-semibold);
   }
+
+  div {
+    .go-back {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 24px;
+      padding: 0 12px;
+      transition: all 0.3s;
+
+      background: transparent;
+
+      :hover {
+        background-color: var(--primary-050);
+        border-radius: 16px;
+      }
+    }
+  }
 `;
 
-export const DeliveriesTableWrapper = styled.div`
+export const TableWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 24px;
+
+  background: var(--background-primary);
+  border: 1px solid var(--gray-200);
+  border-radius: 12px;
+
+  padding: 16px 0 0 0;
+  overflow: hidden;
 
   .date-info {
     color: var(--gray-900);
     font-size: var(--text-small-md);
     font-weight: var(--weight-medium);
+
+    padding-left: 16px;
+  }
+
+  div > table {
+    tbody {
+      tr {
+        td {
+          padding: 0 24px;
+        }
+      }
+    }
   }
 `;
 
