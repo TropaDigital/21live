@@ -131,6 +131,13 @@ interface ModalInteractionProps {
   ticketAnswearId: string;
 }
 
+interface NewInteractionProps {
+  ticket_id: string | undefined;
+  message: string;
+  annex: string;
+  reply_id: string | undefined;
+}
+
 export default function ViewRequest() {
   const location = useLocation();
   const { addToast } = useToast();
@@ -159,13 +166,17 @@ export default function ViewRequest() {
 
   async function handleSubmit() {
     try {
-      const newInteraction = {
+      const newInteraction: NewInteractionProps = {
         ticket_id: requestData?.ticket_id,
         message: newInteractionMessage,
         annex: '',
         reply_id:
           modalNewInteraction.ticketAnswearId !== '' ? modalNewInteraction.ticketAnswearId : ''
       };
+
+      if (newInteraction.reply_id === '') {
+        delete newInteraction.reply_id;
+      }
 
       setLoading(true);
       const response = await api.post(`/ticket-interactions`, newInteraction);
@@ -181,6 +192,7 @@ export default function ViewRequest() {
           isOpen: false,
           ticketAnswearId: ''
         });
+        setNewInteractionMessage('');
       }
 
       setLoading(false);
