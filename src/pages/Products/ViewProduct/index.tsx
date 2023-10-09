@@ -412,6 +412,7 @@ export default function ViewProductsDeliveries() {
           description: 'Entrega finalizada com sucesso'
         });
         navigate('/minhas-tarefas');
+        localStorage.removeItem('stopwatchState');
       }
       if (response.data.result.last_delivery) {
         setModalSendToUser(true);
@@ -447,6 +448,7 @@ export default function ViewProductsDeliveries() {
       );
 
       console.log('log do response', response);
+      localStorage.removeItem('stopwatchState');
       setLoading(false);
     } catch (error: any) {
       console.log('log error getting user', error);
@@ -470,6 +472,7 @@ export default function ViewProductsDeliveries() {
 
       if (response.data.result === 1) {
         navigate('/minhas-tarefas');
+        localStorage.removeItem('stopwatchState');
       }
     } catch (error) {
       console.log('log error next user', error);
@@ -617,6 +620,7 @@ export default function ViewProductsDeliveries() {
             productInfos={selectedProduct.productInfo}
             taskInputs={InputsTask}
             taskId={dataTask?.task_id}
+            taskFiles={dataTask?.files}
           />
         )}
 
