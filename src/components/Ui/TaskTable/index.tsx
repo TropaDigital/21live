@@ -145,7 +145,9 @@ export default function TaskTable({
                         {task.time_consumed}
                       </span>
                       <ProgressBar
-                        totalHours={convertToMilliseconds(task.total_time)}
+                        totalHours={convertToMilliseconds(
+                          task.total_time !== 'undefined' ? task.total_time : task.time_consumed
+                        )}
                         restHours={convertToMilliseconds(task.time_consumed)}
                       />
                     </td>
