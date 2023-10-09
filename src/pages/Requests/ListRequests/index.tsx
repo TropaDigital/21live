@@ -26,6 +26,7 @@ import moment from 'moment';
 // Styles
 import { RequestsWrapper } from './styles';
 import { useNavigate } from 'react-router-dom';
+import Loader from '../../../components/LoaderSpin';
 
 interface ChoosenFilters {
   code: string;
@@ -65,7 +66,7 @@ export default function Requests() {
     fromDate: '',
     toDate: ''
   });
-  const { data, pages } = useFetch<any[]>(`ticket?search=${search}&page=${selected}`);
+  const { data, pages, isFetching } = useFetch<any[]>(`ticket?search=${search}&page=${selected}`);
 
   const handleViewRequest = (request: any) => {
     navigate(`/solicitacao/${request.ticket_id}`, { state: request });
@@ -147,94 +148,104 @@ export default function Requests() {
     <ContainerDefault>
       <HeaderPage title="Solicitações" />
 
-      <RequestsWrapper>
-        <Table>
-          <FilterGroup>
-            <InputDefault
-              label=""
-              name="search"
-              placeholder="Buscar..."
-              onChange={(event) => {
-                setSearchTerm(event.target.value);
-                debouncedCallback(event.target.value);
-              }}
-              value={searchTerm}
-              icon={BiSearchAlt}
-              isLoading={isLoading}
-              className="search-field"
-            />
+      {isFetching && <Loader />}
 
-            <ButtonDefault typeButton="lightWhite" isOutline onClick={() => setModalFilters(true)}>
-              <BiFilter />
-              Filtros
-            </ButtonDefault>
-          </FilterGroup>
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Título</th>
-                <th>Formato da peça</th>
-                <th>Status</th>
-                <th>Usuário</th>
-                <th>Unidade</th>
-                <th>Data de criação</th>
-                <th>Data de entrega</th>
-                <th style={{ color: '#F9FAFB' }}>-</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data?.map((row: any, index: number) => (
-                <tr key={index}>
-                  <td>#{String(row.ticket_id).padStart(5, '0')}</td>
-                  <td>{row.title}</td>
-                  <td>{row.media_name}</td>
-                  <td>
-                    <div
-                      className={
-                        row.status === 'Em Análise'
-                          ? 'status progress'
+      {!isFetching && (
+        <RequestsWrapper>
+          <Table>
+            <FilterGroup>
+              <InputDefault
+                label=""
+                name="search"
+                placeholder="Buscar..."
+                onChange={(event) => {
+                  setSearchTerm(event.target.value);
+                  debouncedCallback(event.target.value);
+                }}
+                value={searchTerm}
+                icon={BiSearchAlt}
+                isLoading={isLoading}
+                className="search-field"
+              />
+
+              <ButtonDefault
+                typeButton="lightWhite"
+                isOutline
+                onClick={() => setModalFilters(true)}
+              >
+                <BiFilter />
+                Filtros
+              </ButtonDefault>
+            </FilterGroup>
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Título</th>
+                  <th>Formato da peça</th>
+                  <th>Status</th>
+                  <th>Usuário</th>
+                  <th>Unidade</th>
+                  <th>Data de criação</th>
+                  <th>Data de entrega</th>
+                  <th style={{ color: '#F9FAFB' }}>-</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data?.map((row: any, index: number) => (
+                  <tr key={index}>
+                    <td>#{String(row.ticket_id).padStart(5, '0')}</td>
+                    <td>{row.title}</td>
+                    <td>{row.media_name}</td>
+                    <td>
+                      <div
+                        className={
+                          row.status === 'Em Análise'
+                            ? 'status progress'
+                            : row.status === 'Entregue'
+                            ? 'status finished'
+                            : 'status'
+                        }
+                      >
+                        {row.status === 'Em Análise'
+                          ? 'Em Análise'
                           : row.status === 'Entregue'
-                          ? 'status finished'
-                          : 'status'
-                      }
-                    >
-                      {row.status === 'Em Análise'
-                        ? 'Em Análise'
-                        : row.status === 'Entregue'
-                        ? 'Entregue'
-                        : 'Aguardando Aprovação'}
-                    </div>
-                  </td>
-                  <td>{row.user_name}</td>
-                  <td>{row.organization_name}</td>
-                  <td>{moment(row.created).format('DD/MM/YYYY')}</td>
-                  <td>{row.finished ? moment(row.finished).format('DD/MM/YYYY') : 'A concluir'}</td>
-                  <td>
-                    <div className="fieldTableClients">
-                      <ButtonTable typeButton="view" onClick={() => handleViewRequest(row)} />
-                    </div>
+                          ? 'Entregue'
+                          : 'Aguardando Aprovação'}
+                      </div>
+                    </td>
+                    <td>{row.user_name}</td>
+                    <td>{row.organization_name}</td>
+                    <td>{moment(row.created).format('DD/MM/YYYY')}</td>
+                    <td>
+                      {row.finished ? moment(row.finished).format('DD/MM/YYYY') : 'A concluir'}
+                    </td>
+                    <td>
+                      <div className="fieldTableClients">
+                        <ButtonTable typeButton="view" onClick={() => handleViewRequest(row)} />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+
+              <tfoot>
+                <tr>
+                  <td colSpan={100}>
+                    <Pagination
+                      total={pages.total}
+                      perPage={pages.perPage}
+                      currentPage={selected}
+                      lastPage={pages.lastPage}
+                      onClickPage={(e) => setSelected(e)}
+                    />
                   </td>
                 </tr>
-              ))}
-            </tbody>
-
-            <tfoot>
-              <tr>
-                <td colSpan={100}>
-                  <Pagination
-                    total={pages.total}
-                    perPage={pages.perPage}
-                    currentPage={selected}
-                    lastPage={pages.lastPage}
-                    onClickPage={(e) => setSelected(e)}
-                  />
-                </td>
-              </tr>
-            </tfoot>
-          </table>
-        </Table>
-      </RequestsWrapper>
+              </tfoot>
+            </table>
+          </Table>
+        </RequestsWrapper>
+      )}
 
       <FilterModal
         isOpen={modalFilters}
