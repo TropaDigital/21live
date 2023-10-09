@@ -8,6 +8,7 @@ export const TabsWrapper = styled.div`
 
   margin: 0 40px;
   border-bottom: 1px solid var(--gray-200);
+  position: relative;
 
   .go-back {
     display: flex;
@@ -120,6 +121,7 @@ export const InputFieldTitle = styled.div`
 export const SectionChatComments = styled.div`
   height: 55vh;
   position: relative;
+  margin-bottom: 50px;
 
   @media (max-height: 800px) {
     height: 50vh;
@@ -226,7 +228,7 @@ export const InputChat = styled.div`
 
   padding: 10px 14px;
   position: absolute;
-  bottom: 6px;
+  bottom: -25px;
   left: 12px;
 
   height: 44px;
@@ -298,16 +300,142 @@ export const EssayInfo = styled.div`
   line-height: 24px;
 `;
 
-export const ModalInfos = styled.div`
+export const CheckboxWrapper = styled.div`
+  width: 100%;
+  height: 40px;
+
+  padding-left: 4px;
+`;
+
+export const FilesTableWrapper = styled.div`
+  margin: -24px -30px;
+`;
+
+export const StatusTable = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 24px;
+  justify-content: center;
+  align-items: center;
 
-  width: 400px;
+  padding: 4px 8px;
+  width: fit-content;
+  border-radius: 35px;
+  background: var(--warning-100);
 
-  .title-modal {
-    color: var(--gray-800);
-    font-size: var(--text-small-lg);
-    font-weight: var(--weight-semibold);
+  color: var(--warning-700);
+  font-size: var(--text-small-sm);
+  font-weight: var(--weight-medium);
+
+  &.progress {
+    color: var(--primary-700);
+    background: var(--primary-050);
+  }
+
+  &.finished {
+    color: var(--secundary-700);
+    background: var(--secundary-100);
+  }
+`;
+
+export const DownloadIcon = styled.div`
+  display: grid;
+  place-items: center;
+
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  padding: 8px;
+  height: 36px;
+  width: 36px;
+  transition: all 0.35s ease;
+
+  cursor: pointer;
+
+  svg {
+    fill: #344054;
+  }
+
+  &:hover {
+    svg {
+      fill: #0046b5;
+      stroke: #0046b5;
+    }
+    background: #e2f2ff;
+    color: #fff;
+  }
+`;
+
+export const ButtonsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  margin-left: auto;
+`;
+
+export const ButtonApproveReject = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+
+  position: relative;
+  cursor: pointer;
+
+  transition: all 0.35s ease;
+
+  svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  &.reject {
+    &:hover {
+      background-color: var(--error-100);
+
+      svg {
+        color: var(--Danger);
+      }
+
+      .hover-text {
+        opacity: 1;
+        bottom: -10px;
+      }
+    }
+  }
+
+  &.check {
+    svg {
+      width: 18.5px;
+      height: 18.5px;
+    }
+
+    &:hover {
+      background-color: var(--success-100);
+
+      svg {
+        color: var(--success);
+      }
+
+      .hover-text {
+        opacity: 1;
+        bottom: -10px;
+      }
+    }
+  }
+
+  .hover-text {
+    position: absolute;
+    bottom: -25px;
+    left: -5px;
+
+    opacity: 0;
+
+    transition: all 0.4s;
   }
 `;

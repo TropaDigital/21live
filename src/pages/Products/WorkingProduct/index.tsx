@@ -5,10 +5,9 @@
 import { useEffect, useState } from 'react';
 
 // Components
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // Hooks
-import { useFetch } from '../../../hooks/useFetch';
 import { useToast } from '../../../hooks/toast';
 import { useAuth } from '../../../hooks/AuthContext';
 
@@ -23,21 +22,27 @@ import WrapperEditor from '../../../components/WrapperEditor';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import AvatarDefault from '../../../components/Ui/Avatar/avatarDefault';
+import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
 
 // Styles
 import {
+  ButtonApproveReject,
+  ButtonsWrapper,
   ChatMessage,
   ChatSendButton,
   ChatUserImg,
+  CheckboxWrapper,
+  DownloadIcon,
   EssayInfo,
+  FilesTableWrapper,
   FooterSection,
   InputChat,
   InputField,
   InputFieldTitle,
   MessageInfos,
   MessageList,
-  ModalInfos,
   SectionChatComments,
+  StatusTable,
   TabsWrapper,
   TaskTab,
   UserMessage,
@@ -51,14 +56,21 @@ import 'moment/dist/locale/pt-br';
 
 // Services
 import api from '../../../services/api';
-import { BsGear } from 'react-icons/bs';
-import ModalDefault from '../../../components/Ui/ModalDefault';
+import { BsCheckCircle, BsCheckLg, BsFolder } from 'react-icons/bs';
+import { Table } from '../../../components/Table';
+import Alert from '../../../components/Ui/Alert';
+import ButtonTable from '../../../components/Buttons/ButtonTable';
+import { FiDownload } from 'react-icons/fi';
+import { FaDownload } from 'react-icons/fa';
+import { formatBytes } from '../../../utils/convertBytes';
+import { IoIosCloseCircleOutline } from 'react-icons/io';
 
 interface WorkingProductProps {
   productDeliveryId?: any;
   productInfos?: any;
   taskInputs?: InputProps;
   taskId?: string;
+  taskFiles?: [];
   goBack?: () => void;
   backButtonTitle?: string;
 }
@@ -77,15 +89,29 @@ interface ChatMessages {
   comment_id: string;
 }
 
+interface FilesMap {
+  bucket: string;
+  created: string;
+  file_name: string;
+  key: string;
+  last_archive: string;
+  products_delivery_id: string;
+  size: string;
+  status: string;
+  task_file_id: string;
+  task_id: string;
+  updated: string;
+  url: string;
+}
+
 export default function WorkingProduct({
-  productDeliveryId,
   productInfos,
   taskInputs,
   taskId,
+  taskFiles,
   backButtonTitle,
   goBack
 }: WorkingProductProps) {
-  const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addToast } = useToast();
@@ -99,12 +125,8 @@ export default function WorkingProduct({
     copywriting_description: '',
     creation_description: ''
   });
-  const [showSystemLog, setShowSystemLog] = useState<boolean>(false);
   const [logIsOn, setLogIsOn] = useState<boolean>(false);
-  // const typeOfPlay = location?.state?.playType;
 
-  // const productInfos = location.state?.productInfo?.products_delivery_id;
-  // const { data } = useFetch<WorkingProductProps>(`/${location.state.id}`);
   useEffect(() => {
     setEssayInfo(productInfos.essay);
   }, [productInfos]);
@@ -258,12 +280,45 @@ export default function WorkingProduct({
     }
   }
 
+  const handleShowLogs = () => {
+    if (logIsOn) {
+      setLogIsOn(false);
+      getComments();
+    } else {
+      setLogIsOn(true);
+      getCommentSystem();
+    }
+  };
+
+  const handleDownload = (file: any) => {
+    console.log('log para fazer download do file', file);
+  };
+
+  // async function downloadProposal() {
+  //   try {
+
+  //     const response = await api.get(`proposta-csv?${requestedPayload}`);
+  //     const url = window.URL.createObjectURL(new Blob([s2ab(response.data)]));
+  //     const link = document.createElement('a');
+  //     link.href = url;
+  //     link.setAttribute('download', 'demandas.csv');
+  //     document.body.appendChild(link);
+  //     link.click();
+
+  //   } catch (error: any) {
+
+  //     console.log('log error download csv', error)
+
+  //   }
+  // }
+
   return (
     <ContainerDefault>
       <TabsWrapper>
         <TaskTab
           onClick={(e: any) => {
             setSelectedTab(e.target.innerText);
+            setLogIsOn(false);
           }}
           className={selectedTab === 'Redação' ? 'active' : ''}
         >
@@ -274,6 +329,7 @@ export default function WorkingProduct({
         <TaskTab
           onClick={(e: any) => {
             setSelectedTab(e.target.innerText);
+            setLogIsOn(false);
           }}
           className={selectedTab === 'Inputs' ? 'active' : ''}
         >
@@ -293,10 +349,16 @@ export default function WorkingProduct({
           {notifications && <div className="notification" />}
         </TaskTab>
 
-        <TaskTab onClick={() => setShowSystemLog(true)}>
-          <BsGear />
-          Logs
-        </TaskTab>
+        {/* <TaskTab
+          onClick={(e: any) => {
+            setSelectedTab(e.target.innerText);
+            getComments();
+          }}
+          className={selectedTab === 'Arquivos' ? 'active' : ''}
+        >
+          <BsFolder />
+          Arquivos
+        </TaskTab> */}
 
         {backButtonTitle && (
           <button className="go-back" onClick={goBack}>
@@ -304,6 +366,11 @@ export default function WorkingProduct({
             {backButtonTitle}
           </button>
         )}
+
+        {/* <ButtonsWrapper>
+          <ButtonDefault typeButton="primary">Enviar para aprovação</ButtonDefault>
+          <ButtonDefault typeButton="primary">Adicionar arquivo</ButtonDefault>
+        </ButtonsWrapper> */}
       </TabsWrapper>
 
       <WorkSection>
@@ -370,6 +437,15 @@ export default function WorkingProduct({
         )}
         {selectedTab === 'Comentários' && (
           <SectionChatComments>
+            <CheckboxWrapper>
+              <CheckboxDefault
+                label="Logs do sistema"
+                name="user_selected"
+                onChange={handleShowLogs}
+                checked={logIsOn}
+              />
+            </CheckboxWrapper>
+
             <MessageList>
               {dataComments?.map((message: ChatMessages, index: number) => (
                 <ChatMessage key={index}>
@@ -455,40 +531,98 @@ export default function WorkingProduct({
             )}
           </SectionChatComments>
         )}
+        {selectedTab === 'Arquivos' && (
+          <FilesTableWrapper>
+            <Table>
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Produto</th>
+                    <th>Nome do arquivo</th>
+                    <th>Tamanho</th>
+                    <th>Usuário</th>
+                    <th>Data</th>
+                    <th>Status</th>
+                    <th></th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {taskFiles
+                    ? taskFiles?.length > 0 &&
+                      taskFiles?.map((row: FilesMap) => (
+                        <tr key={row.task_file_id}>
+                          <td>
+                            <div className="id-column">
+                              #{String(row.task_file_id).padStart(2, '0')}
+                            </div>
+                          </td>
+                          <td>Nome do produto</td>
+                          <td>{row.file_name}</td>
+                          <td>{formatBytes(row.size)}</td>
+                          <td style={{ textTransform: 'capitalize' }}>Criação</td>
+                          <td style={{ textTransform: 'capitalize' }}>
+                            {moment('2023/11/31').format('DD/MM/YYYY')}
+                          </td>
+                          <td>
+                            <StatusTable
+                            // className={
+                            //   row.status === 'Em Andamento'
+                            //     ? 'status progress'
+                            //     : row.status === 'Concluida'
+                            //       ? 'status finished'
+                            //       : 'status'
+                            // }
+                            >
+                              {/* {row.status === 'Em Andamento'
+                              ? 'Em progresso'
+                              : row.status === 'Concluida'
+                                ? 'Concluída'
+                                : 'Pendente'} */}
+                              Aguardando aprovação
+                            </StatusTable>
+                          </td>
+                          <td>
+                            {/* <div className="fieldTableClients">
+                            <DownloadIcon>
+                              <FaDownload />
+                            </DownloadIcon>
+                            <Alert
+                              title="Atenção"
+                              subtitle="Certeza que gostaria de deletar este arquivo? Ao excluir esta ação não poderá ser desfeita."
+                              confirmButton={() => ''}
+                            >
+                              <ButtonTable typeButton="delete" />
+                            </Alert>
+                          </div> */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <DownloadIcon onClick={() => handleDownload(row)}>
+                                <FaDownload />
+                              </DownloadIcon>
+
+                              <ButtonApproveReject className="reject">
+                                <IoIosCloseCircleOutline />
+
+                                {/* <div className="hover-text">Reprovar</div> */}
+                              </ButtonApproveReject>
+
+                              <ButtonApproveReject className="check">
+                                <BsCheckCircle />
+
+                                {/* <div className="hover-text">Aprovar</div> */}
+                              </ButtonApproveReject>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    : ''}
+                </tbody>
+              </table>
+            </Table>
+          </FilesTableWrapper>
+        )}
       </WorkSection>
-
-      <ModalDefault isOpen={showSystemLog} onOpenChange={() => setShowSystemLog(false)}>
-        <ModalInfos>
-          <div className="title-modal">Ver comentários ou logs do sistema?</div>
-
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <ButtonDefault
-              typeButton="primary"
-              isOutline
-              onClick={() => {
-                setShowSystemLog(false);
-                getComments();
-                setLogIsOn(false);
-                setSelectedTab('Comentários');
-              }}
-            >
-              Comentários
-            </ButtonDefault>
-            <ButtonDefault
-              typeButton="primary"
-              isOutline
-              onClick={() => {
-                getCommentSystem();
-                setShowSystemLog(false);
-                setLogIsOn(true);
-                setSelectedTab('Comentários');
-              }}
-            >
-              Logs do sistema
-            </ButtonDefault>
-          </div>
-        </ModalInfos>
-      </ModalDefault>
     </ContainerDefault>
   );
 }
