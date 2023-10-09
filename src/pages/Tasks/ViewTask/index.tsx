@@ -404,6 +404,7 @@ export default function ViewTask() {
             productInfos={selectedProduct.productInfo}
             taskInputs={InputsTask}
             taskId={dataTask?.task_id}
+            taskFiles={dataTask?.files}
             goBack={() => setVisualizationType('delivery-products')}
             backButtonTitle={'Voltar para produtos'}
           />
