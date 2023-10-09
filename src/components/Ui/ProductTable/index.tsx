@@ -28,6 +28,7 @@ import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 
 // Hooks
 import { useAuth } from '../../../hooks/AuthContext';
+import { FaUpload } from 'react-icons/fa';
 
 interface Product {
   id: string;
@@ -141,14 +142,17 @@ export default function ProductTable({
               <th>Formato</th>
               <th>I/D</th>
               <th>Tipo</th>
+              <th>Upload</th>
               {workFor === 'product' && <th>Status</th>}
             </tr>
           </thead>
           {data?.products.map((row: any, index: number) => (
             <tbody key={index}>
-              <tr style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
-                <td>#{String(index + 1).padStart(2, '0')}</td>
-                <td>
+              <tr>
+                <td style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
+                  #{String(index + 1).padStart(2, '0')}
+                </td>
+                <td style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
                   {user.permissions.includes('21jobs_task_essay') && (
                     <div className="flex info">
                       <IconText /> {row.service}
@@ -163,7 +167,7 @@ export default function ProductTable({
                 </td>
                 {workFor === 'product' && (
                   <>
-                    <td>
+                    <td style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
                       <span style={{ marginBottom: '4px', display: 'block' }}>
                         {timeData?.timeConsumed}
                       </span>
@@ -175,12 +179,19 @@ export default function ProductTable({
                     <td>{row?.minutes}</td>
                   </>
                 )}
-                <td>
+                <td style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
                   <div dangerouslySetInnerHTML={{ __html: row.description }} />
                 </td>
-                <td>{row.size}</td>
-                <td style={{ textTransform: 'capitalize' }}>{row.type}</td>
-                <td>
+                <td style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
+                  {row.size}
+                </td>
+                <td
+                  style={{ cursor: 'pointer', textTransform: 'capitalize' }}
+                  onClick={() => productSelected(row)}
+                >
+                  {row.type}
+                </td>
+                <td style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
                   {row.reason_change === '1'
                     ? 'Criação'
                     : row.reason_change === '2'
@@ -188,6 +199,11 @@ export default function ProductTable({
                     : row.reason_change === '3'
                     ? 'Alteração Interna'
                     : 'Alteração externa'}
+                </td>
+                <td onClick={() => console.log('log do upload', row)}>
+                  <div className="upload">
+                    <FaUpload />
+                  </div>
                 </td>
                 {workFor === 'product' && (
                   <td>

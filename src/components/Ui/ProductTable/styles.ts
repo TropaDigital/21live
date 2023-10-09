@@ -42,6 +42,8 @@ export const ProductsTable = styled.div`
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1rem;
 
+  overflow-y: scroll;
+
   table {
     width: 100%;
     border-spacing: 0;
@@ -137,6 +139,33 @@ export const ProductsTable = styled.div`
         td {
           background-color: var(--primary-025);
         }
+      }
+    }
+  }
+
+  .upload {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+
+    background: transparent;
+    border-radius: 4px;
+
+    transition: all 0.3s;
+
+    cursor: pointer;
+
+    svg {
+      color: var(--gray-700);
+    }
+
+    &:hover {
+      background-color: var(--success-100);
+
+      svg {
+        color: var(--success-600);
       }
     }
   }
