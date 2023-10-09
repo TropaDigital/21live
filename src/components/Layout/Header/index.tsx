@@ -239,7 +239,7 @@ export default function Header({ handleOnMenu, modalActive }: HeaderProps) {
             </button>
           </li>
           {/* <li>
-            <button>Paramêtros</button>
+            <button>Parâmetros</button>
           </li> */}
           <li>
             <button onClick={signOut}>
