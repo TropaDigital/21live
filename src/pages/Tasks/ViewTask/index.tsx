@@ -283,7 +283,11 @@ export default function ViewTask() {
                         </td>
                         <td>{dataTask?.total_time}</td>
                         <td>{moment(row.date_end).format('DD/MM/YYYY')}</td>
-                        <td>{moment(dataTask?.end_job).format('DD/MM/YYYY')}</td>
+                        <td>
+                          {dataTask?.end_job !== ''
+                            ? moment(dataTask?.end_job).format('DD/MM/YYYY')
+                            : '----'}
+                        </td>
                         <td>
                           {row.products.length <= 1
                             ? `${row.products.length} produto`
