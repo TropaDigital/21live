@@ -218,3 +218,22 @@ export interface RescueClock {
   updated: string;
   user_id: string;
 }
+
+export interface UploadedFilesProps {
+  file?: File;
+  file_id: string;
+  name: string;
+  readableSize: string;
+  preview: string;
+  progress?: number;
+  uploaded: boolean;
+  error?: boolean;
+  url: string | null;
+  bucket: string;
+  key: string;
+  size: number;
+  file_name: string;
+  isNew: boolean;
+  loading: boolean;
+  folder: string;
+}
