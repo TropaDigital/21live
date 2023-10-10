@@ -78,7 +78,7 @@ interface WorkingProductProps {
   taskTenant?: string;
   goBack?: () => void;
   backButtonTitle?: string;
-  uploadEnabled: boolean;
+  uploadEnabled?: boolean;
   stepToReturn?: string;
   sendToApprove?: boolean;
   toApprove?: () => void;
