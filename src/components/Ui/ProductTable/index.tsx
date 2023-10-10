@@ -52,6 +52,8 @@ interface ProductTableProps {
   isFinished?: boolean;
   typeOfWorkFinished?: string;
   typeOfPlay: string;
+  uploadEnabled: boolean;
+  uploadProduct: (value: any) => void;
 }
 
 export default function ProductTable({
@@ -62,7 +64,9 @@ export default function ProductTable({
   productSelected,
   isFinished,
   typeOfWorkFinished,
-  typeOfPlay
+  typeOfPlay,
+  uploadProduct,
+  uploadEnabled
 }: ProductTableProps) {
   const { user } = useAuth();
   const [workFor, setWorkFor] = useState<string>('schedule');
@@ -81,8 +85,6 @@ export default function ProductTable({
       workForProduct(false);
     }
   };
-
-  // console.log('log do user auth', user.permissions);
 
   return (
     <ProductContainer>
@@ -142,7 +144,7 @@ export default function ProductTable({
               <th>Formato</th>
               <th>I/D</th>
               <th>Tipo</th>
-              <th>Upload</th>
+              {uploadEnabled && <th>Upload</th>}
               {workFor === 'product' && <th>Status</th>}
             </tr>
           </thead>
@@ -200,11 +202,13 @@ export default function ProductTable({
                     ? 'Alteração Interna'
                     : 'Alteração externa'}
                 </td>
-                <td onClick={() => console.log('log do upload', row)}>
-                  <div className="upload">
-                    <FaUpload />
-                  </div>
-                </td>
+                {uploadEnabled && (
+                  <td onClick={() => uploadProduct(row)}>
+                    <div className="upload">
+                      <FaUpload />
+                    </div>
+                  </td>
+                )}
                 {workFor === 'product' && (
                   <td>
                     <div
