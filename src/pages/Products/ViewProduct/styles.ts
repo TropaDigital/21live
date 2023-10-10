@@ -439,3 +439,17 @@ export const ModalButtons = styled.div`
   justify-content: flex-end;
   gap: 12px;
 `;
+
+export const ModalUploadWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 500px;
+
+  .modal-buttons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+  }
+`;

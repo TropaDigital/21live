@@ -29,6 +29,7 @@ import {
   ModalSearch,
   ModalSubtitle,
   ModalTable,
+  ModalUploadWrapper,
   ModalWrapperList,
   RightInfosCard,
   RightInfosTitle,
@@ -53,6 +54,9 @@ import { useToast } from '../../../hooks/toast';
 import WorkingProduct from '../WorkingProduct';
 import { useAuth } from '../../../hooks/AuthContext';
 import { useStopWatch } from '../../../hooks/stopWatch';
+import { UploadedFilesProps } from '../../../types';
+import ButtonDefault from '../../../components/Buttons/ButtonDefault';
+import UploadFiles from '../../../components/Upload/UploadFiles';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -62,6 +66,19 @@ interface TimelineProps {
 interface StepTimeline {
   step: string;
   name: string;
+  card_id: string;
+  flow_id: string;
+  necessary_upload: string;
+  necessary_responsible: string;
+  email_alert: string;
+  tenant_approve: string;
+  manager_approve: string;
+  previous_step: string;
+  function_id: string;
+  final_card: string;
+  ticket_status: string;
+  ticket_status_id: string;
+  tenant_id: string;
 }
 
 interface ModalUsersProps {
@@ -89,6 +106,10 @@ export default function ViewProductsDeliveries() {
   const [hideTimeLine, setHideTimeLine] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<any>('');
   const [typeOfPlay, setTypeOfPlay] = useState<string>('');
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
+  const [modalUpload, setModalUpload] = useState<boolean>(false);
+  const [productForUpload, setProductForUpload] = useState<any>({});
+  const [enableUpload, setEnableUpload] = useState<boolean>(false);
 
   const deliveryId = location.state.task.deliverys.filter(
     (obj: any) => Number(obj.order) === location.state.task_index
@@ -113,6 +134,14 @@ export default function ViewProductsDeliveries() {
     copywriting_description: location.state.task.copywriting_description,
     creation_description: location.state.task.creation_description
   };
+
+  const actualStep = timeLineData?.currentStep;
+  const uploadIsTrue = timeLineData
+    ? timeLineData.steps.filter((obj) => obj.step === actualStep)
+    : '';
+  const nextStep = timeLineData
+    ? timeLineData.steps.filter((obj) => Number(obj.step) === Number(actualStep) + 1)
+    : '';
 
   useEffect(() => {
     async function getClockIsOpen() {
@@ -224,6 +253,7 @@ export default function ViewProductsDeliveries() {
 
   useEffect(() => {
     setDataTask(location.state.task);
+    console.log('log do dataTask', location.state.task);
 
     if (location.state.task.type_play === 'delivery') {
       setTypeOfPlay('schedule');
@@ -251,6 +281,12 @@ export default function ViewProductsDeliveries() {
 
     getTimelineData();
   }, [location]);
+
+  useEffect(() => {
+    if (uploadIsTrue && uploadIsTrue[0].necessary_upload === 'true') {
+      setEnableUpload(true);
+    }
+  }, [timeLineData]);
 
   const handlePlayingType = () => {
     if (typeOfPlay === 'schedule') {
@@ -404,22 +440,46 @@ export default function ViewProductsDeliveries() {
   const handleFinishDelivery = async () => {
     try {
       setLoading(true);
-      const response = await api.put(`/task/delivery-conclude/${deliveryId[0].delivery_id}`);
-      if (response.data.result === 1) {
-        addToast({
-          title: 'Sucesso',
-          type: 'success',
-          description: 'Entrega finalizada com sucesso'
-        });
-        navigate('/minhas-tarefas');
-        localStorage.removeItem('stopwatchState');
+
+      if (dataTask.type === 'Livre') {
+        const response = await api.get(`/task/next-user/${dataTask?.task_id}`);
+
+        if (response.data.result.length > 0) {
+          const payload = {
+            next_user: response.data.result[0].user_id,
+            start_job: moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
+            end_job: null
+          };
+
+          const responseConclude = await api.put(
+            `/task/delivery-conclude/${dataTask?.task_id}`,
+            payload
+          );
+
+          console.log('log do response conclude', responseConclude.data.result);
+        }
+
+        setLoading(false);
+
+        console.log('log do response for free task', response.data);
+      } else {
+        const response = await api.put(`/task/delivery-conclude/${deliveryId[0].delivery_id}`);
+        if (response.data.result === 1) {
+          addToast({
+            title: 'Sucesso',
+            type: 'success',
+            description: 'Entrega finalizada com sucesso'
+          });
+          navigate('/minhas-tarefas');
+          localStorage.removeItem('stopwatchState');
+        }
+        if (response.data.result.last_delivery) {
+          setModalSendToUser(true);
+        }
+        setLoading(false);
       }
-      if (response.data.result.last_delivery) {
-        setModalSendToUser(true);
-      }
-      setLoading(false);
     } catch (error: any) {
-      console.log('log error finish delivery');
+      console.log('log error finish delivery', error);
       setLoading(false);
 
       if (error.response.data.result.length !== 0) {
@@ -479,6 +539,34 @@ export default function ViewProductsDeliveries() {
     }
   };
 
+  async function handleSendToManager() {
+    try {
+      setLoading(true);
+
+      const response = await api.get(`/task/next-user/${dataTask?.task_id}`);
+
+      if (response.data.result.length > 0) {
+        const payload = {
+          next_user: response.data.result[0].user_id,
+          start_job: moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
+          end_job: null
+        };
+
+        const responseConclude = await api.put(
+          `/task/delivery-conclude/${dataTask?.task_id}`,
+          payload
+        );
+
+        console.log('log do response conclude', responseConclude.data.result);
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.log('log error send to manager', error);
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
     const checkIfClickedOutside = (e: any) => {
       if (
@@ -496,6 +584,30 @@ export default function ViewProductsDeliveries() {
       document.removeEventListener('mousedown', checkIfClickedOutside);
     };
   }, [hideRightCard]);
+
+  const handleUploadForProduct = (value: any) => {
+    setProductForUpload(value);
+    setModalUpload(true);
+  };
+
+  async function handleSaveUpload() {
+    try {
+      const uploadInfos = {
+        task_id: dataTask?.task_id,
+        file_name: uploadedFiles[0].file_name,
+        size: uploadedFiles[0].size,
+        key: uploadedFiles[0].key,
+        bucket: uploadedFiles[0].bucket,
+        products_delivery_id: productForUpload?.products_delivery_id
+      };
+
+      const response = await api.put(`/task/upload-manager-approve`, uploadInfos);
+
+      console.log('log do response do saveUpload', response.data.result);
+    } catch (error) {
+      console.log('log save upload for product', error);
+    }
+  }
 
   // useEffect(() => {
   //   console.log('log do type of play', typeOfPlay);
@@ -611,6 +723,8 @@ export default function ViewProductsDeliveries() {
             isFinished={dataTask?.status === 'Concluida' ? true : false}
             typeOfWorkFinished={dataTask?.type_play}
             typeOfPlay={typeOfPlay}
+            uploadProduct={handleUploadForProduct}
+            uploadEnabled={enableUpload}
           />
         )}
 
@@ -621,6 +735,11 @@ export default function ViewProductsDeliveries() {
             taskInputs={InputsTask}
             taskId={dataTask?.task_id}
             taskFiles={dataTask?.files}
+            taskTenant={dataTask?.tenant_id}
+            uploadEnabled={enableUpload}
+            stepToReturn={uploadIsTrue !== '' ? uploadIsTrue[0].previous_step : ''}
+            sendToApprove={nextStep && nextStep[0].manager_approve === 'true' ? true : false}
+            toApprove={handleSendToManager}
           />
         )}
 
@@ -722,6 +841,7 @@ export default function ViewProductsDeliveries() {
         </ShowInfosButton>
       </DeliveryWrapper>
 
+      {/* Modal Schedule user */}
       <ModalDefault
         isOpen={modalSendToUser}
         title="Lista de pessoas"
@@ -736,6 +856,44 @@ export default function ViewProductsDeliveries() {
           user_alocated={handleAssignTask}
           closeModal={() => setModalSendToUser(false)}
         />
+      </ModalDefault>
+
+      {/* Modal upload files */}
+      <ModalDefault
+        isOpen={modalUpload}
+        onOpenChange={() => {
+          setModalUpload(false);
+          setUploadedFiles([]);
+        }}
+        title="Upload para aprovação"
+      >
+        <ModalUploadWrapper>
+          <UploadFiles
+            uploadedFiles={uploadedFiles}
+            setUploadedFiles={setUploadedFiles}
+            tenant={dataTask?.tenant_id}
+            isDisabed={!dataTask?.tenant_id}
+            loading={loading}
+            setLoading={setLoading}
+            folderInfo="tasks"
+          />
+
+          <div className="modal-buttons">
+            <ButtonDefault
+              typeButton="lightWhite"
+              isOutline
+              onClick={() => {
+                setModalUpload(false);
+                setUploadedFiles([]);
+              }}
+            >
+              Cancelar
+            </ButtonDefault>
+            <ButtonDefault typeButton="primary" onClick={handleSaveUpload}>
+              Salvar
+            </ButtonDefault>
+          </div>
+        </ModalUploadWrapper>
       </ModalDefault>
     </ContainerDefault>
   );
