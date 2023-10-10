@@ -15,6 +15,9 @@ import { useAuth } from '../../../hooks/AuthContext';
 import { IconText } from '../../../assets/icons';
 import { BiArrowBack, BiInfoCircle, BiTrash } from 'react-icons/bi';
 import { HiOutlineArrowRight, HiOutlineChatAlt } from 'react-icons/hi';
+import { BsCheckCircle, BsFolder } from 'react-icons/bs';
+import { IoIosCloseCircleOutline } from 'react-icons/io';
+import { FaDownload } from 'react-icons/fa';
 
 // Components
 import { ContainerDefault } from '../../../components/UiElements/styles';
@@ -23,6 +26,11 @@ import { InputDefault } from '../../../components/Inputs/InputDefault';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import AvatarDefault from '../../../components/Ui/Avatar/avatarDefault';
 import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
+import { Table } from '../../../components/Table';
+import Alert from '../../../components/Ui/Alert';
+import ButtonTable from '../../../components/Buttons/ButtonTable';
+import ModalDefault from '../../../components/Ui/ModalDefault';
+import UploadFiles from '../../../components/Upload/UploadFiles';
 
 // Styles
 import {
@@ -41,6 +49,7 @@ import {
   InputFieldTitle,
   MessageInfos,
   MessageList,
+  ModalUploadWrapper,
   SectionChatComments,
   StatusTable,
   TabsWrapper,
@@ -56,14 +65,9 @@ import 'moment/dist/locale/pt-br';
 
 // Services
 import api from '../../../services/api';
-import { BsCheckCircle, BsCheckLg, BsFolder } from 'react-icons/bs';
-import { Table } from '../../../components/Table';
-import Alert from '../../../components/Ui/Alert';
-import ButtonTable from '../../../components/Buttons/ButtonTable';
-import { FiDownload } from 'react-icons/fi';
-import { FaDownload } from 'react-icons/fa';
+
+// Utils
 import { formatBytes } from '../../../utils/convertBytes';
-import { IoIosCloseCircleOutline } from 'react-icons/io';
 
 interface WorkingProductProps {
   productDeliveryId?: any;
@@ -71,8 +75,13 @@ interface WorkingProductProps {
   taskInputs?: InputProps;
   taskId?: string;
   taskFiles?: [];
+  taskTenant?: string;
   goBack?: () => void;
   backButtonTitle?: string;
+  uploadEnabled: boolean;
+  stepToReturn?: string;
+  sendToApprove?: boolean;
+  toApprove?: () => void;
 }
 
 interface InputProps {
@@ -104,12 +113,69 @@ interface FilesMap {
   url: string;
 }
 
+interface ProductInfo {
+  category: string;
+  created: string;
+  delivery_id: string;
+  description: string;
+  essay: string;
+  file_status: string;
+  flag: string;
+  minutes: string;
+  minutes_consumed: string;
+  minutes_creation: string;
+  minutes_essay: string;
+  period: string;
+  products_delivery_id: string;
+  quantity: string;
+  reason_change: string;
+  service: string;
+  service_id: string;
+  size: string;
+  status: string;
+  task_file_id: string;
+  ticket_interaction_id: string;
+  type: string;
+  updated: string;
+}
+
+interface UploadedFilesProps {
+  file?: File;
+  file_id: string;
+  name: string;
+  readableSize: string;
+  preview: string;
+  progress?: number;
+  uploaded: boolean;
+  error?: boolean;
+  url: string | null;
+  bucket: string;
+  key: string;
+  size: number;
+  file_name: string;
+  isNew: boolean;
+  loading: boolean;
+  folder: string;
+}
+
+interface ModalApprovationInfos {
+  isOpen: boolean;
+  productId: string;
+  approve: boolean;
+  disapprove: boolean;
+}
+
 export default function WorkingProduct({
   productInfos,
   taskInputs,
   taskId,
   taskFiles,
+  taskTenant,
   backButtonTitle,
+  uploadEnabled,
+  stepToReturn,
+  sendToApprove,
+  toApprove,
   goBack
 }: WorkingProductProps) {
   const navigate = useNavigate();
@@ -126,9 +192,19 @@ export default function WorkingProduct({
     creation_description: ''
   });
   const [logIsOn, setLogIsOn] = useState<boolean>(false);
+  const [productsInfo, setProductsInfo] = useState<ProductInfo>();
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
+  const [modalUpload, setModalUpload] = useState<boolean>(false);
+  const [modalApproveDisapprove, setModalApproveDisapprove] = useState<ModalApprovationInfos>({
+    isOpen: false,
+    productId: '',
+    approve: false,
+    disapprove: false
+  });
 
   useEffect(() => {
     setEssayInfo(productInfos.essay);
+    setProductsInfo(productInfos);
   }, [productInfos]);
 
   async function getComments() {
@@ -294,6 +370,61 @@ export default function WorkingProduct({
     console.log('log para fazer download do file', file);
   };
 
+  async function approveFile(productId: string) {
+    try {
+      const approve = {
+        products_delivery_id: productId,
+        status: 'pass'
+      };
+
+      const response = await api.put(`/task/manager-approve`, approve);
+      console.log('log do response approve', response.data);
+      if (response.data.status === 'success') {
+        addToast({
+          title: 'Sucesso',
+          type: 'success',
+          description: 'Arquivo aprovado com sucesso.'
+        });
+      }
+    } catch (error) {
+      console.log('log do error approve file', error);
+    }
+  }
+
+  async function disapproveFile(productId: string) {
+    try {
+      const approve = {
+        products_delivery_id: productId,
+        status: 'fail'
+      };
+
+      const response = await api.put(`/task/manager-approve`, approve);
+      console.log('log do response disapprove', response.data);
+
+      if (response.data.status === 'success') {
+        addToast({
+          title: 'Sucesso',
+          type: 'success',
+          description: 'Arquivo reprovado!'
+        });
+
+        nextToPrevStep();
+      }
+    } catch (error) {
+      console.log('log do error disapprove file', error);
+    }
+  }
+
+  async function nextToPrevStep() {
+    try {
+      const response = await api.post(`/task/next?step=${stepToReturn}`);
+
+      console.log('log do response next step', response.data.result);
+    } catch (error) {
+      console.log('log do error next step', error);
+    }
+  }
+
   // async function downloadProposal() {
   //   try {
 
@@ -349,7 +480,7 @@ export default function WorkingProduct({
           {notifications && <div className="notification" />}
         </TaskTab>
 
-        {/* <TaskTab
+        <TaskTab
           onClick={(e: any) => {
             setSelectedTab(e.target.innerText);
             getComments();
@@ -358,7 +489,7 @@ export default function WorkingProduct({
         >
           <BsFolder />
           Arquivos
-        </TaskTab> */}
+        </TaskTab>
 
         {backButtonTitle && (
           <button className="go-back" onClick={goBack}>
@@ -366,11 +497,19 @@ export default function WorkingProduct({
             {backButtonTitle}
           </button>
         )}
-
-        {/* <ButtonsWrapper>
-          <ButtonDefault typeButton="primary">Enviar para aprovação</ButtonDefault>
-          <ButtonDefault typeButton="primary">Adicionar arquivo</ButtonDefault>
-        </ButtonsWrapper> */}
+        {/* productsInfo?.file_status === 'pass' && - Usava para checar se precisa enviar para aprovação */}
+        {selectedTab === 'Arquivos' && uploadEnabled && (
+          <ButtonsWrapper>
+            {sendToApprove && (
+              <ButtonDefault typeButton="primary" onClick={toApprove}>
+                Enviar para aprovação
+              </ButtonDefault>
+            )}
+            <ButtonDefault typeButton="primary" onClick={() => setModalUpload(true)}>
+              Adicionar arquivo
+            </ButtonDefault>
+          </ButtonsWrapper>
+        )}
       </TabsWrapper>
 
       <WorkSection>
@@ -538,7 +677,7 @@ export default function WorkingProduct({
                 <thead>
                   <tr>
                     <th>ID</th>
-                    <th>Produto</th>
+                    <th>Produto ID</th>
                     <th>Nome do arquivo</th>
                     <th>Tamanho</th>
                     <th>Usuário</th>
@@ -558,7 +697,9 @@ export default function WorkingProduct({
                               #{String(row.task_file_id).padStart(2, '0')}
                             </div>
                           </td>
-                          <td>Nome do produto</td>
+                          <td>
+                            {row.products_delivery_id !== '' ? row.products_delivery_id : '-----'}
+                          </td>
                           <td>{row.file_name}</td>
                           <td>{formatBytes(row.size)}</td>
                           <td style={{ textTransform: 'capitalize' }}>Criação</td>
@@ -566,53 +707,84 @@ export default function WorkingProduct({
                             {moment('2023/11/31').format('DD/MM/YYYY')}
                           </td>
                           <td>
-                            <StatusTable
-                            // className={
-                            //   row.status === 'Em Andamento'
-                            //     ? 'status progress'
-                            //     : row.status === 'Concluida'
-                            //       ? 'status finished'
-                            //       : 'status'
-                            // }
-                            >
-                              {/* {row.status === 'Em Andamento'
-                              ? 'Em progresso'
-                              : row.status === 'Concluida'
-                                ? 'Concluída'
-                                : 'Pendente'} */}
-                              Aguardando aprovação
-                            </StatusTable>
+                            {row.products_delivery_id !== '' ? (
+                              <StatusTable
+                                className={
+                                  row.status === 'fail'
+                                    ? 'status reject'
+                                    : row.status === 'pass'
+                                    ? 'status accept'
+                                    : 'status'
+                                }
+                              >
+                                {row.status === 'fail'
+                                  ? 'Reprovado'
+                                  : row.status === 'pass'
+                                  ? 'Aprovado'
+                                  : row.status === 'await'
+                                  ? 'Aguardando aprovação'
+                                  : ''}
+                              </StatusTable>
+                            ) : (
+                              '-----'
+                            )}
                           </td>
                           <td>
-                            {/* <div className="fieldTableClients">
-                            <DownloadIcon>
-                              <FaDownload />
-                            </DownloadIcon>
-                            <Alert
-                              title="Atenção"
-                              subtitle="Certeza que gostaria de deletar este arquivo? Ao excluir esta ação não poderá ser desfeita."
-                              confirmButton={() => ''}
-                            >
-                              <ButtonTable typeButton="delete" />
-                            </Alert>
-                          </div> */}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                              <DownloadIcon onClick={() => handleDownload(row)}>
-                                <FaDownload />
-                              </DownloadIcon>
+                            {productsInfo?.file_status === 'pass' && (
+                              <div className="fieldTableClients">
+                                {/* <DownloadIcon>
+                                  <FaDownload />
+                                </DownloadIcon> */}
+                                <Alert
+                                  title="Atenção"
+                                  subtitle="Certeza que gostaria de deletar este arquivo? Ao excluir esta ação não poderá ser desfeita."
+                                  confirmButton={() => ''}
+                                >
+                                  <ButtonTable typeButton="delete" />
+                                </Alert>
+                              </div>
+                            )}
+                            {productsInfo?.file_status === 'await' && (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                {/* <DownloadIcon onClick={() => handleDownload(row)}>
+                                  <FaDownload />
+                                </DownloadIcon> */}
 
-                              <ButtonApproveReject className="reject">
-                                <IoIosCloseCircleOutline />
+                                <ButtonApproveReject
+                                  className="reject"
+                                  // onClick={() => disapproveFile(row.products_delivery_id)}
+                                  onClick={() =>
+                                    setModalApproveDisapprove({
+                                      isOpen: true,
+                                      productId: row.products_delivery_id,
+                                      approve: false,
+                                      disapprove: true
+                                    })
+                                  }
+                                >
+                                  <IoIosCloseCircleOutline />
 
-                                {/* <div className="hover-text">Reprovar</div> */}
-                              </ButtonApproveReject>
+                                  {/* <div className="hover-text">Reprovar</div> */}
+                                </ButtonApproveReject>
 
-                              <ButtonApproveReject className="check">
-                                <BsCheckCircle />
+                                <ButtonApproveReject
+                                  className="check"
+                                  // onClick={() => approveFile(row.products_delivery_id)}
+                                  onClick={() =>
+                                    setModalApproveDisapprove({
+                                      isOpen: true,
+                                      productId: row.products_delivery_id,
+                                      approve: true,
+                                      disapprove: false
+                                    })
+                                  }
+                                >
+                                  <BsCheckCircle />
 
-                                {/* <div className="hover-text">Aprovar</div> */}
-                              </ButtonApproveReject>
-                            </div>
+                                  {/* <div className="hover-text">Aprovar</div> */}
+                                </ButtonApproveReject>
+                              </div>
+                            )}
                           </td>
                         </tr>
                       ))
@@ -623,6 +795,81 @@ export default function WorkingProduct({
           </FilesTableWrapper>
         )}
       </WorkSection>
+
+      <ModalDefault
+        isOpen={modalUpload}
+        onOpenChange={() => setModalUpload(false)}
+        title="Upload para aprovação"
+      >
+        <ModalUploadWrapper>
+          <UploadFiles
+            uploadedFiles={uploadedFiles}
+            setUploadedFiles={setUploadedFiles}
+            tenant={taskTenant}
+            isDisabed={!taskTenant}
+            loading={loading}
+            setLoading={setLoading}
+            folderInfo="meetings"
+          />
+
+          <div className="modal-buttons">
+            <ButtonDefault typeButton="lightWhite" isOutline onClick={() => setModalUpload(false)}>
+              Cancelar
+            </ButtonDefault>
+            <ButtonDefault typeButton="primary">Salvar</ButtonDefault>
+          </div>
+        </ModalUploadWrapper>
+      </ModalDefault>
+
+      <ModalDefault
+        isOpen={modalApproveDisapprove.isOpen}
+        onOpenChange={() =>
+          setModalApproveDisapprove({
+            isOpen: false,
+            productId: '',
+            approve: false,
+            disapprove: false
+          })
+        }
+        title={
+          modalApproveDisapprove.approve ? 'Deseja aprovar arquivo?' : 'Deseja reprovar arquivo?'
+        }
+      >
+        <div
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}
+        >
+          <ButtonDefault
+            typeButton="lightWhite"
+            isOutline
+            onClick={() =>
+              setModalApproveDisapprove({
+                isOpen: false,
+                disapprove: false,
+                approve: false,
+                productId: ''
+              })
+            }
+          >
+            Cancelar
+          </ButtonDefault>
+          {modalApproveDisapprove.approve && (
+            <ButtonDefault
+              typeButton="primary"
+              onClick={() => approveFile(modalApproveDisapprove.productId)}
+            >
+              Aprovar
+            </ButtonDefault>
+          )}
+          {modalApproveDisapprove.disapprove && (
+            <ButtonDefault
+              typeButton="danger"
+              onClick={() => disapproveFile(modalApproveDisapprove.productId)}
+            >
+              Reprovar
+            </ButtonDefault>
+          )}
+        </div>
+      </ModalDefault>
     </ContainerDefault>
   );
 }

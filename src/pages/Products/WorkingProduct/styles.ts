@@ -325,14 +325,19 @@ export const StatusTable = styled.div`
   font-size: var(--text-small-sm);
   font-weight: var(--weight-medium);
 
-  &.progress {
+  /* &.progress {
     color: var(--primary-700);
     background: var(--primary-050);
-  }
+  } */
 
-  &.finished {
+  &.accept {
     color: var(--secundary-700);
     background: var(--secundary-100);
+  }
+
+  &.reject {
+    color: var(--error-700);
+    background: var(--error-200);
   }
 `;
 
@@ -437,5 +442,19 @@ export const ButtonApproveReject = styled.div`
     opacity: 0;
 
     transition: all 0.4s;
+  }
+`;
+
+export const ModalUploadWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 500px;
+
+  .modal-buttons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
   }
 `;
