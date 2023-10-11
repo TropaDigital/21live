@@ -138,6 +138,7 @@ export const ProductsTable = styled.div`
       &:hover {
         td {
           background-color: var(--primary-025);
+          z-index: 1;
         }
       }
     }
