@@ -58,7 +58,7 @@ export default function EditFluxo() {
     }
   }, [isFetching, data]);
 
-  const checkResponsible = () => {
+  const checkCards = () => {
     try {
       column.map((row: any) => {
         if (row.function_id === '0') {
@@ -68,12 +68,11 @@ export default function EditFluxo() {
           setErrorMissingResponsible((prevState) =>
             prevState.filter((error) => error !== row.card_id)
           );
-
-          if (errorMissingResponsible.length <= 0) {
-            saveFluxo();
-          }
         }
       });
+      if (errorMissingResponsible.length <= 0) {
+        saveFluxo();
+      }
     } catch (error) {
       addToast({
         title: 'Atenção',
@@ -163,7 +162,7 @@ export default function EditFluxo() {
             <BiShow />
             Visualizar
           </ButtonDefault>
-          <ButtonDefault typeButton="success" onClick={checkResponsible}>
+          <ButtonDefault typeButton="success" onClick={checkCards}>
             <BiSave />
             Salvar
           </ButtonDefault>
