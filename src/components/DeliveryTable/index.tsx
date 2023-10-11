@@ -176,7 +176,11 @@ export default function DeliveryTable({
                         {delivery.time_consumed}
                       </span>
                       <ProgressBar
-                        totalHours={convertToMilliseconds(delivery.total_time)}
+                        totalHours={convertToMilliseconds(
+                          delivery.total_time !== 'undefined'
+                            ? delivery.total_time
+                            : delivery.time_consumed
+                        )}
                         restHours={convertToMilliseconds(delivery.time_consumed)}
                       />
                     </td>
@@ -232,7 +236,7 @@ export default function DeliveryTable({
                       >
                         {row.status === 'Em Andamento'
                           ? 'Em Andamento'
-                          : row.status === 'Concluída'
+                          : row.status === 'Concluida'
                           ? 'Concluída'
                           : 'Pendente'}
                       </div>
