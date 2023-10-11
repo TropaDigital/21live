@@ -1,5 +1,4 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
+/* eslint-disable no-extra-boolean-cast */
 import { useAuth } from '../hooks/AuthContext';
 
 export function PrivateRoutes({ children }: any) {
