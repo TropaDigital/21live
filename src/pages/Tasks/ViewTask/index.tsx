@@ -311,7 +311,7 @@ export default function ViewTask() {
                           >
                             {dataTask?.status === 'Em Andamento'
                               ? 'Em Andamento'
-                              : dataTask?.status === 'Concluída'
+                              : dataTask?.status === 'Concluida'
                               ? 'Concluída'
                               : 'Pendente'}
                           </div>
