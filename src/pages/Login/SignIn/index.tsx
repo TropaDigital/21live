@@ -19,6 +19,7 @@ import { FieldFormDefault } from '../../../components/UiElements/styles';
 
 // Styles
 import { AnimationContainer, Background, Container, Content } from './styles';
+import PageNotFound from '../../NotFound';
 
 interface SignInFormData {
   email: string;
@@ -89,54 +90,59 @@ export default function SignIn() {
 
   return (
     <Container>
-      <Content>
-        <AnimationContainer>
-          <img src={logo} alt="21Live logo" />
+      {tenant_id !== null && tenant_id !== '' && (
+        <>
+          <Content>
+            <AnimationContainer>
+              <img src={logo} alt="21Live logo" />
 
-          <form onSubmit={handleSubmit}>
-            <h1>Faça seu logon</h1>
+              <form onSubmit={handleSubmit}>
+                <h1>Faça seu logon</h1>
 
-            <FieldFormDefault bottom={12}>
-              <InputDefault
-                name="email"
-                icon={BiEnvelope}
-                type="text"
-                placeholder="Login"
-                label="Login"
-                onChange={(e) => handleInputChange('email', e)}
-                value={formData.email}
-              />
-            </FieldFormDefault>
+                <FieldFormDefault bottom={12}>
+                  <InputDefault
+                    name="email"
+                    icon={BiEnvelope}
+                    type="text"
+                    placeholder="Login"
+                    label="Login"
+                    onChange={(e) => handleInputChange('email', e)}
+                    value={formData.email}
+                  />
+                </FieldFormDefault>
 
-            <FieldFormDefault>
-              <InputDefault
-                name="password"
-                icon={BiLockAlt}
-                type="password"
-                placeholder="Senha"
-                label="Senha"
-                onChange={(e) => handleInputChange('password', e)}
-                value={formData.password}
-              />
-            </FieldFormDefault>
+                <FieldFormDefault>
+                  <InputDefault
+                    name="password"
+                    icon={BiLockAlt}
+                    type="password"
+                    placeholder="Senha"
+                    label="Senha"
+                    onChange={(e) => handleInputChange('password', e)}
+                    value={formData.password}
+                  />
+                </FieldFormDefault>
 
-            <FieldFormDefault>
-              <ButtonDefault loading={loading} type="submit">
-                Entrar
-              </ButtonDefault>
-            </FieldFormDefault>
+                <FieldFormDefault>
+                  <ButtonDefault loading={loading} type="submit">
+                    Entrar
+                  </ButtonDefault>
+                </FieldFormDefault>
 
-            {/* <Link to="/forgot-password">Esqueci minha senha</Link> */}
-          </form>
+                {/* <Link to="/forgot-password">Esqueci minha senha</Link> */}
+              </form>
 
-          {/* <Link to="/cadastrar">
-            <BiLogIn />
-            Criar conta
-          </Link> */}
-        </AnimationContainer>
-      </Content>
-      {bucketImage && <Background style={{ backgroundImage: `url(${URL})` }} />}
-      {!bucketImage && <Background />}
+              {/* <Link to="/cadastrar">
+              <BiLogIn />
+              Criar conta
+            </Link> */}
+            </AnimationContainer>
+          </Content>
+          {bucketImage && <Background style={{ backgroundImage: `url(${URL})` }} />}
+          {!bucketImage && <Background />}
+        </>
+      )}
+      {tenant_id === null && <PageNotFound />}
     </Container>
   );
 }
