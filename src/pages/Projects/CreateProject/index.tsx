@@ -97,7 +97,7 @@ export default function CreateProject() {
   const { user } = useAuth();
   const location = useLocation();
 
-  const [createStep, setCreateStep] = useState<number>(1);
+  const [createStep, setCreateStep] = useState<number>(3);
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const { data: dataOrganizations } = useFetch<OrganizationsProps[]>('organization');
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
@@ -156,7 +156,6 @@ export default function CreateProject() {
   //   (accumulator: any, currentValue: any) => accumulator + currentValue.minutes,
   //   0
   // );
-  const newDate = new Date();
   const productsHours = productsArray?.map((row) => {
     return multiplyTime(row?.minutes, row?.quantity);
   });
@@ -309,11 +308,11 @@ export default function CreateProject() {
         setErrorInput('date_start', undefined);
       }
 
-      if (moment(date_start).isSameOrBefore(newDate) && !editProject) {
-        throw setErrorInput('date_start', 'Data inicial igual ou menor que a atual');
-      } else {
-        setErrorInput('date_start', undefined);
-      }
+      // if (moment(date_start).isSameOrBefore(newDate) && !editProject) {
+      //   throw setErrorInput('date_start', 'Data inicial igual ou menor que a atual');
+      // } else {
+      //   setErrorInput('date_start', undefined);
+      // }
 
       if (date_end === '') {
         throw setErrorInput('date_end', 'Data final é obrigatório!');
@@ -383,6 +382,10 @@ export default function CreateProject() {
     async (event: any) => {
       try {
         event.preventDefault();
+
+        // if (DTOForm.team.length < 1) {
+        //   throw new Error();
+        // }
 
         // Inserir lógica
         // const files = uploadedFiles.map(
@@ -640,6 +643,7 @@ export default function CreateProject() {
         title="Criar novo projeto/contrato"
         backButton={createStep <= 1}
         stepSelected={createStep}
+        maxStep={3}
         backPage="/projetos"
       />
 
@@ -871,12 +875,12 @@ export default function CreateProject() {
                 <TeamInput>
                   <InputMultipleSelect
                     name="members"
-                    options={dataTeam?.map((row) => ({ value: row.user_id, label: row.username }))}
+                    options={dataTeam?.map((row) => ({ value: row.user_id, label: row.name }))}
                     label="Membros"
                     onChange={(option) => onChange(option)}
                     defaultValue={defaultOptionsTeam?.map((row) => ({
                       value: row.user_id,
-                      label: row.username
+                      label: row.name
                     }))}
                     alert="Selecione pelo menos um Responsável"
                   />
@@ -892,7 +896,7 @@ export default function CreateProject() {
                       setEditSelectedProducts(true);
                     }}
                   >
-                    Editar produtos
+                    Editar projeto/contrato
                   </ButtonDefault>
                 </FinishButtons>
               </div>
@@ -1002,10 +1006,10 @@ export default function CreateProject() {
               </FinishModalMessage>
               <FinishModalButtons>
                 <ButtonDefault typeButton="dark" isOutline onClick={handleFinishWithoutFiles}>
-                  Cancelar
+                  Não enviar
                 </ButtonDefault>
                 <ButtonDefault typeButton="primary" onClick={() => setSendFiles(true)}>
-                  Confirmar
+                  Enviar
                 </ButtonDefault>
               </FinishModalButtons>
             </>
