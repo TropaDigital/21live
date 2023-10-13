@@ -29,10 +29,11 @@ import CountUp from 'react-countup';
 
 import PersonTest from '../../assets/person.jpg';
 import { useState } from 'react';
+import Loader from '../../components/LoaderSpin';
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const [dashType, setDashType] = useState<string>('manager');
+  const [dashType, setDashType] = useState<string>('');
 
   const dataStatusAll = [
     {
@@ -199,6 +200,9 @@ export default function Dashboard() {
 
   return (
     <Container>
+      <div>
+        <Loader />
+      </div>
       {/* Dash Gestor */}
       {dashType === 'manager' && (
         <SectionDefault style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
