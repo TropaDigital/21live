@@ -189,7 +189,7 @@ type HandleOnChange = (
 
 export default function CreateTasks() {
   const navigate = useNavigate();
-  const [createStep, setCreateStep] = useState<number>(1);
+  const [createStep, setCreateStep] = useState<number>(4);
   const { addToast } = useToast();
   const { user } = useAuth();
   const location = useLocation();
@@ -1701,6 +1701,7 @@ export default function CreateTasks() {
           title="Criar nova tarefa"
           backButton={createStep <= 1}
           stepSelected={createStep}
+          maxStep={tasksType !== 'livre' ? 4 : 5}
           backPage="/tarefas"
         />
 
