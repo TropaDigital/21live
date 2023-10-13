@@ -68,13 +68,16 @@ export default function InfoProducts({
 }: PropsProducts) {
   const { addToast } = useToast();
   const [search, setSearch] = useState<IServices[]>([]);
+  const [selected, setSelected] = useState(1);
   const { data, pages } = useFetch<ServicesProps[]>(
-    `services?tenant_id=${tenant_id}&search=${search}`
+    `services?tenant_id=${tenant_id}&search=${search}&page=${selected}`
   );
-  const { data: dataKit } = useFetch(`/pack-services?tenant_id=${tenant_id}&search=${search}`);
+  const { data: dataKit } = useFetch(
+    `/pack-services?tenant_id=${tenant_id}&search=${search}&page=${selected}`
+  );
   const [searchTerm, setSearchTerm] = useState('');
   const [typeList, setTypeList] = useState('produtos');
-  const [selected, setSelected] = useState(1);
+
   const [quantityProducts, setQuantityProducts] = useState<any>('');
   const [currentKitProducts, setCurrentKitProducts] = useState<ServicesProps[]>([]);
   const [productQuantity, setProductQuantity] = useState<{ [key: string]: number }>({});
@@ -210,9 +213,9 @@ export default function InfoProducts({
   }, [dataFilter]);
 
   const tableHeaders: { [key: string]: string[] } = {
-    produtos: ['ID', 'Produto', 'Categoria', 'Status', 'Quantidade'],
+    produtos: ['ID', 'Produto', 'Categoria', 'Produto listável', 'Quantidade'],
     ['kits-select']: ['ID', 'Kit', 'Qtd. Produtos', 'Descrição'],
-    ['kits-products']: ['ID', 'Produto', 'Categoria', 'Status', 'Quantidade']
+    ['kits-products']: ['ID', 'Produto', 'Categoria', 'Produto listável', 'Quantidade']
   };
 
   return (
