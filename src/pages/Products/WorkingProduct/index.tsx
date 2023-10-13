@@ -82,6 +82,7 @@ interface WorkingProductProps {
   stepToReturn?: string;
   sendToApprove?: boolean;
   toApprove?: () => void;
+  timelineData?: TimelineProps;
 }
 
 interface InputProps {
@@ -165,6 +166,29 @@ interface ModalApprovationInfos {
   disapprove: boolean;
 }
 
+interface TimelineProps {
+  steps: StepTimeline[];
+  currentStep: string;
+}
+
+interface StepTimeline {
+  step: string;
+  name: string;
+  card_id: string;
+  flow_id: string;
+  necessary_upload: string;
+  necessary_responsible: string;
+  email_alert: string;
+  tenant_approve: string;
+  manager_approve: string;
+  previous_step: string;
+  function_id: string;
+  final_card: string;
+  ticket_status: string;
+  ticket_status_id: string;
+  tenant_id: string;
+}
+
 export default function WorkingProduct({
   productInfos,
   taskInputs,
@@ -175,6 +199,7 @@ export default function WorkingProduct({
   uploadEnabled,
   stepToReturn,
   sendToApprove,
+  timelineData,
   toApprove,
   goBack
 }: WorkingProductProps) {
@@ -195,6 +220,7 @@ export default function WorkingProduct({
   const [productsInfo, setProductsInfo] = useState<ProductInfo>();
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
   const [modalUpload, setModalUpload] = useState<boolean>(false);
+  const [modalFinalFile, setModalFinalFile] = useState<boolean>(false);
   const [modalApproveDisapprove, setModalApproveDisapprove] = useState<ModalApprovationInfos>({
     isOpen: false,
     productId: '',
@@ -425,6 +451,92 @@ export default function WorkingProduct({
     }
   }
 
+  const actualStep = timelineData?.currentStep;
+  const isToApprove = timelineData
+    ? timelineData.steps.filter((obj) => obj.step === actualStep)
+    : '';
+
+  const finalCard = timelineData
+    ? timelineData.steps.filter((obj) => obj.final_card === 'true')
+    : '';
+
+  async function handleSaveUpload() {
+    try {
+      const uploadInfos = {
+        task_id: taskId,
+        file_name: uploadedFiles[0].file_name,
+        size: uploadedFiles[0].size,
+        key: uploadedFiles[0].key,
+        bucket: uploadedFiles[0].bucket,
+        products_delivery_id: productInfos?.products_delivery_id
+      };
+
+      const response = await api.put(`/task/upload-manager-approve`, uploadInfos);
+
+      if (response.data.status === 'success') {
+        setUploadedFiles([]);
+      }
+
+      console.log('log do response do saveUpload', response.data.result);
+    } catch (error: any) {
+      console.log('log save upload for product', error);
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
+    }
+  }
+
+  async function handleSaveUploadFinal() {
+    try {
+      const uploadInfos = {
+        task_id: taskId,
+        file_name: uploadedFiles[0].file_name,
+        size: uploadedFiles[0].size,
+        key: uploadedFiles[0].key,
+        bucket: uploadedFiles[0].bucket,
+        last_archive: 'true',
+        products_delivery_id: productInfos?.products_delivery_id
+      };
+
+      const response = await api.put(`/task/upload`, uploadInfos);
+
+      if (response.data.status === 'success') {
+        setUploadedFiles([]);
+      }
+
+      console.log('log do response do saveUpload', response.data.result);
+    } catch (error: any) {
+      console.log('log save upload final file', error);
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
+    }
+  }
+
   // async function downloadProposal() {
   //   try {
 
@@ -498,7 +610,7 @@ export default function WorkingProduct({
           </button>
         )}
         {/* productsInfo?.file_status === 'pass' && - Usava para checar se precisa enviar para aprovação */}
-        {selectedTab === 'Arquivos' && uploadEnabled && (
+        {selectedTab === 'Arquivos' && uploadEnabled && !finalCard && (
           <ButtonsWrapper>
             {sendToApprove && (
               <ButtonDefault typeButton="primary" onClick={toApprove}>
@@ -506,6 +618,19 @@ export default function WorkingProduct({
               </ButtonDefault>
             )}
             <ButtonDefault typeButton="primary" onClick={() => setModalUpload(true)}>
+              Adicionar arquivo
+            </ButtonDefault>
+          </ButtonsWrapper>
+        )}
+
+        {selectedTab === 'Arquivos' && uploadEnabled && finalCard && (
+          <ButtonsWrapper>
+            {/* {sendToApprove && (
+              <ButtonDefault typeButton="primary" onClick={toApprove}>
+                Enviar para aprovação
+              </ButtonDefault>
+            )} */}
+            <ButtonDefault typeButton="primary" onClick={() => setModalFinalFile(true)}>
               Adicionar arquivo
             </ButtonDefault>
           </ButtonsWrapper>
@@ -735,16 +860,17 @@ export default function WorkingProduct({
                                 {/* <DownloadIcon>
                                   <FaDownload />
                                 </DownloadIcon> */}
-                                <Alert
+                                {/* <Alert
                                   title="Atenção"
                                   subtitle="Certeza que gostaria de deletar este arquivo? Ao excluir esta ação não poderá ser desfeita."
                                   confirmButton={() => ''}
                                 >
                                   <ButtonTable typeButton="delete" />
-                                </Alert>
+                                </Alert> */}
                               </div>
                             )}
-                            {productsInfo?.file_status === 'await' && (
+                            {/* productsInfo?.file_status === 'await' && */}
+                            {isToApprove && isToApprove[0].manager_approve === 'true' && (
                               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                 {/* <DownloadIcon onClick={() => handleDownload(row)}>
                                   <FaDownload />
@@ -796,6 +922,7 @@ export default function WorkingProduct({
         )}
       </WorkSection>
 
+      {/* Modal upload to approve */}
       <ModalDefault
         isOpen={modalUpload}
         onOpenChange={() => setModalUpload(false)}
@@ -809,18 +936,23 @@ export default function WorkingProduct({
             isDisabed={!taskTenant}
             loading={loading}
             setLoading={setLoading}
-            folderInfo="meetings"
+            folderInfo="task"
           />
+
+          <div className="select-product">Para qual produto?</div>
 
           <div className="modal-buttons">
             <ButtonDefault typeButton="lightWhite" isOutline onClick={() => setModalUpload(false)}>
               Cancelar
             </ButtonDefault>
-            <ButtonDefault typeButton="primary">Salvar</ButtonDefault>
+            <ButtonDefault typeButton="primary" onClick={handleSaveUpload}>
+              Salvar
+            </ButtonDefault>
           </div>
         </ModalUploadWrapper>
       </ModalDefault>
 
+      {/* Modal to approve or disapprove */}
       <ModalDefault
         isOpen={modalApproveDisapprove.isOpen}
         onOpenChange={() =>
@@ -869,6 +1001,38 @@ export default function WorkingProduct({
             </ButtonDefault>
           )}
         </div>
+      </ModalDefault>
+
+      {/* Modal to upload last file */}
+      <ModalDefault
+        isOpen={modalFinalFile}
+        onOpenChange={() => setModalFinalFile(false)}
+        title="Upload para arquivo final"
+      >
+        <ModalUploadWrapper>
+          <UploadFiles
+            uploadedFiles={uploadedFiles}
+            setUploadedFiles={setUploadedFiles}
+            tenant={taskTenant}
+            isDisabed={!taskTenant}
+            loading={loading}
+            setLoading={setLoading}
+            folderInfo="task"
+          />
+
+          <div className="modal-buttons">
+            <ButtonDefault
+              typeButton="lightWhite"
+              isOutline
+              onClick={() => setModalFinalFile(false)}
+            >
+              Cancelar
+            </ButtonDefault>
+            <ButtonDefault typeButton="primary" onClick={handleSaveUploadFinal}>
+              Salvar
+            </ButtonDefault>
+          </div>
+        </ModalUploadWrapper>
       </ModalDefault>
     </ContainerDefault>
   );

@@ -178,7 +178,9 @@ export default function ProductTable({
                         restHours={convertToMilliseconds(timeData?.timeConsumed)}
                       />
                     </td>
-                    <td>{row?.minutes}</td>
+                    <td style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
+                      {row?.minutes}
+                    </td>
                   </>
                 )}
                 <td style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
@@ -215,14 +217,14 @@ export default function ProductTable({
                       className={
                         row.status === 'Em Andamento'
                           ? 'status progress'
-                          : row.status === 'Concluída'
+                          : row.status === 'Concluida'
                           ? 'status finished'
                           : 'status'
                       }
                     >
                       {row.status === 'Em Andamento'
                         ? 'Em Andamento'
-                        : row.status === 'Concluída'
+                        : row.status === 'Concluida'
                         ? 'Concluída'
                         : 'Pendente'}
                     </div>

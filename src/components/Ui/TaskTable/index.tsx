@@ -203,7 +203,7 @@ export default function TaskTable({
                       >
                         {task.status === 'Em Andamento'
                           ? 'Em Andamento'
-                          : task.status === 'Concluída'
+                          : task.status === 'Concluida'
                           ? 'Concluída'
                           : 'Pendente'}
                       </div>

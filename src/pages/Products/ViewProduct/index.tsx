@@ -143,6 +143,10 @@ export default function ViewProductsDeliveries() {
     ? timeLineData.steps.filter((obj) => Number(obj.step) === Number(actualStep) + 1)
     : '';
 
+  const finalCard = timeLineData
+    ? timeLineData.steps.filter((obj) => obj.final_card === 'true')
+    : '';
+
   useEffect(() => {
     async function getClockIsOpen() {
       try {
@@ -253,7 +257,6 @@ export default function ViewProductsDeliveries() {
 
   useEffect(() => {
     setDataTask(location.state.task);
-    console.log('log do dataTask', location.state.task);
 
     if (location.state.task.type_play === 'delivery') {
       setTypeOfPlay('schedule');
@@ -507,17 +510,39 @@ export default function ViewProductsDeliveries() {
         `/task/product-conclude/${selectedProduct?.productInfo.products_delivery_id}`
       );
 
-      console.log('log do response', response);
-      localStorage.removeItem('stopwatchState');
+      if (response.data.result === 1) {
+        addToast({
+          title: 'Sucesso',
+          type: 'success',
+          description: 'Entrega finalizada com sucesso'
+        });
+        navigate('/minhas-tarefas');
+        localStorage.removeItem('stopwatchState');
+      }
       setLoading(false);
     } catch (error: any) {
-      console.log('log error getting user', error);
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
       setLoading(false);
     }
   }
 
   const handleSendToNextUser = async (values: any) => {
     try {
+      setLoading(true);
       const next_user = {
         next_user: values.user_id,
         start_job: values.start_job,
@@ -534,8 +559,25 @@ export default function ViewProductsDeliveries() {
         navigate('/minhas-tarefas');
         localStorage.removeItem('stopwatchState');
       }
-    } catch (error) {
+      setLoading(false);
+    } catch (error: any) {
       console.log('log error next user', error);
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
+      setLoading(false);
     }
   };
 
@@ -561,8 +603,23 @@ export default function ViewProductsDeliveries() {
       }
 
       setLoading(false);
-    } catch (error) {
+    } catch (error: any) {
       console.log('log error send to manager', error);
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
       setLoading(false);
     }
   }
@@ -603,9 +660,28 @@ export default function ViewProductsDeliveries() {
 
       const response = await api.put(`/task/upload-manager-approve`, uploadInfos);
 
+      if (response.data.status === 'success') {
+        setUploadedFiles([]);
+      }
+
       console.log('log do response do saveUpload', response.data.result);
-    } catch (error) {
+    } catch (error: any) {
       console.log('log save upload for product', error);
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
     }
   }
 
@@ -627,121 +703,92 @@ export default function ViewProductsDeliveries() {
           />
         )}
 
-        {dataProducts?.status !== 'Concluida' && selectedProduct === '' && (
-          <HeaderOpenTask
-            title={titleInfos}
-            disableButton={false}
-            goBack
-            buttonType="send"
-            sendToNext={handleFinishDelivery}
-            nextStepInfo={timeLineData}
-          />
-        )}
-
-        {dataProducts?.status !== 'Concluida' && selectedProduct !== '' && (
-          <HeaderOpenTask
-            title={titleInfos}
-            disableButton={typeOfPlay === 'product' ? false : true}
-            goBack
-            buttonType="finish"
-            sendToNext={handleFinishProduct}
-            nextStepInfo={timeLineData}
-            backToDelivery={() => setSelectedProduct('')}
-            isInsideProduct={true}
-          />
-        )}
-
-        <CardsWrapper>
-          {dataProducts?.status === 'Concluida' && (
-            <CardTaskPlay
-              cardTitle="Atividade concluída"
-              dataTime={data ? data?.estimatedTime : ''}
-              blockPlay={true}
-              handlePlay={() => ''}
+        {dataProducts?.status !== 'Concluida' &&
+          selectedProduct === '' &&
+          typeOfPlay === 'schedule' && (
+            <HeaderOpenTask
+              title={titleInfos}
+              disableButton={false}
+              goBack
+              buttonType="send"
+              sendToNext={handleFinishDelivery}
+              nextStepInfo={timeLineData}
             />
           )}
 
-          {dataProducts?.status !== 'Concluida' && (
-            <CardTaskPlay
-              cardTitle={state.isRunning ? 'Atividade iniciada' : 'Iniciar atividade'}
-              dataTime={data ? data?.estimatedTime : '00:00:00'}
-              blockPlay={
-                typeOfPlay === 'product' && selectedProduct === ''
-                  ? true
-                  : typeOfPlay === 'schedule' && selectedProduct !== ''
-                  ? true
-                  : false
-              }
-              handlePlay={handlePlayingType}
+        {dataProducts?.status !== 'Concluida' &&
+          selectedProduct !== '' &&
+          typeOfPlay === 'schedule' && (
+            <HeaderOpenTask
+              title={titleInfos}
+              disableButton={false}
+              goBack
+              buttonType="send"
+              sendToNext={handleFinishDelivery}
+              nextStepInfo={timeLineData}
             />
           )}
 
-          {/* {dataProducts?.status !== 'Concluida' &&
-            typeOfPlay === 'schedule' &&
-            selectedProduct === '' && (
-              <CardTaskPlay
-                cardTitle="Iniciar atividade"
-                dataTime={data ? data?.estimatedTime : '00:00:00'}
-                blockPlay={blockPlayButton}
-              />
-            )}
+        {dataProducts?.status !== 'Concluida' &&
+          selectedProduct === '' &&
+          typeOfPlay === 'product' && (
+            <HeaderOpenTask
+              title={titleInfos}
+              disableButton={false}
+              goBack
+              buttonType="finish"
+              sendToNext={handleFinishDelivery}
+              nextStepInfo={timeLineData}
+            />
+          )}
 
-          {dataProducts?.status !== 'Concluida' &&
-            typeOfPlay === 'schedule' &&
-            selectedProduct !== '' && (
-              <CardTaskPlay
-                cardTitle="Iniciar atividade"
-                dataTime={data ? data?.estimatedTime : '00:00:00'}
-                blockPlay={true}
-              />
-            )}
+        {dataProducts?.status !== 'Concluida' &&
+          selectedProduct !== '' &&
+          typeOfPlay === 'product' &&
+          selectedProduct.status !== 'Concluida' && (
+            <HeaderOpenTask
+              title={titleInfos}
+              disableButton={typeOfPlay === 'product' ? false : true}
+              goBack
+              buttonType="finish"
+              sendToNext={handleFinishProduct}
+              nextStepInfo={timeLineData}
+              backToDelivery={() => setSelectedProduct('')}
+              isInsideProduct={true}
+            />
+          )}
 
-          {dataProducts?.status !== 'Concluida' &&
-            typeOfPlay === 'product' &&
-            selectedProduct === '' && (
-              <CardTaskPlay
-                cardTitle="Iniciar atividade"
-                dataTime={data ? data?.estimatedTime : '00:00:00'}
-                blockPlay={true}
-              />
-            )} */}
-          <CardTaskInfo
-            cardTitle="Contexto geral"
-            cardType="text"
-            dataText={dataTask?.description}
-            isPlayingTime={() => ''}
-          />
-        </CardsWrapper>
+        {dataProducts?.status !== 'Concluida' &&
+          selectedProduct !== '' &&
+          typeOfPlay === 'product' &&
+          selectedProduct.status === 'Concluida' && (
+            <HeaderOpenTask
+              title={titleInfos}
+              disableButton={true}
+              goBack
+              buttonType="finish"
+              sendToNext={handleFinishProduct}
+              nextStepInfo={timeLineData}
+              backToDelivery={() => setSelectedProduct('')}
+              isInsideProduct={true}
+            />
+          )}
 
-        {selectedProduct === '' && (
-          <ProductTable
-            data={dataProducts}
-            timeData={timeData}
-            workForProduct={handleSwitchPlayType}
-            isPlayingForSchedule={playingForSchedule}
-            productSelected={handleNavigateProduct}
-            isFinished={dataTask?.status === 'Concluida' ? true : false}
-            typeOfWorkFinished={dataTask?.type_play}
-            typeOfPlay={typeOfPlay}
-            uploadProduct={handleUploadForProduct}
-            uploadEnabled={enableUpload}
-          />
-        )}
-
-        {selectedProduct !== '' && (
-          <WorkingProduct
-            productDeliveryId={selectedProduct?.productInfo?.products_delivery_id}
-            productInfos={selectedProduct.productInfo}
-            taskInputs={InputsTask}
-            taskId={dataTask?.task_id}
-            taskFiles={dataTask?.files}
-            taskTenant={dataTask?.tenant_id}
-            uploadEnabled={enableUpload}
-            stepToReturn={uploadIsTrue !== '' ? uploadIsTrue[0].previous_step : ''}
-            sendToApprove={nextStep && nextStep[0].manager_approve === 'true' ? true : false}
-            toApprove={handleSendToManager}
-          />
-        )}
+        {dataProducts?.status !== 'Concluida' &&
+          selectedProduct !== '' &&
+          typeOfPlay === 'product' &&
+          selectedProduct.status !== 'Concluida' && (
+            <HeaderOpenTask
+              title={titleInfos}
+              disableButton={true}
+              goBack
+              buttonType="finish"
+              sendToNext={handleFinishProduct}
+              nextStepInfo={timeLineData}
+              backToDelivery={() => setSelectedProduct('')}
+              isInsideProduct={true}
+            />
+          )}
 
         <RightInfosCard hideCard={hideRightCard} ref={openRightRef}>
           <TimeLine>
@@ -839,6 +886,99 @@ export default function ViewProductsDeliveries() {
         <ShowInfosButton onClick={() => setHideRightCard('show')}>
           <FaArrowLeft />
         </ShowInfosButton>
+
+        <CardsWrapper>
+          {dataProducts?.status === 'Concluida' && (
+            <CardTaskPlay
+              cardTitle="Atividade concluída"
+              dataTime={data ? data?.estimatedTime : ''}
+              blockPlay={true}
+              handlePlay={() => ''}
+            />
+          )}
+
+          {dataProducts?.status !== 'Concluida' && (
+            <CardTaskPlay
+              cardTitle={state.isRunning ? 'Atividade iniciada' : 'Iniciar atividade'}
+              dataTime={data ? data?.estimatedTime : '00:00:00'}
+              blockPlay={
+                typeOfPlay === 'product' && selectedProduct === ''
+                  ? true
+                  : typeOfPlay === 'schedule' && selectedProduct !== ''
+                  ? true
+                  : false
+              }
+              handlePlay={handlePlayingType}
+            />
+          )}
+
+          {/* {dataProducts?.status !== 'Concluida' &&
+            typeOfPlay === 'schedule' &&
+            selectedProduct === '' && (
+              <CardTaskPlay
+                cardTitle="Iniciar atividade"
+                dataTime={data ? data?.estimatedTime : '00:00:00'}
+                blockPlay={blockPlayButton}
+              />
+            )}
+
+          {dataProducts?.status !== 'Concluida' &&
+            typeOfPlay === 'schedule' &&
+            selectedProduct !== '' && (
+              <CardTaskPlay
+                cardTitle="Iniciar atividade"
+                dataTime={data ? data?.estimatedTime : '00:00:00'}
+                blockPlay={true}
+              />
+            )}
+
+          {dataProducts?.status !== 'Concluida' &&
+            typeOfPlay === 'product' &&
+            selectedProduct === '' && (
+              <CardTaskPlay
+                cardTitle="Iniciar atividade"
+                dataTime={data ? data?.estimatedTime : '00:00:00'}
+                blockPlay={true}
+              />
+            )} */}
+          <CardTaskInfo
+            cardTitle="Contexto geral"
+            cardType="text"
+            dataText={dataTask?.description}
+            isPlayingTime={() => ''}
+          />
+        </CardsWrapper>
+
+        {selectedProduct === '' && (
+          <ProductTable
+            data={dataProducts}
+            timeData={timeData}
+            workForProduct={handleSwitchPlayType}
+            isPlayingForSchedule={playingForSchedule}
+            productSelected={handleNavigateProduct}
+            isFinished={dataTask?.status === 'Concluida' ? true : false}
+            typeOfWorkFinished={dataTask?.type_play}
+            typeOfPlay={typeOfPlay}
+            uploadProduct={handleUploadForProduct}
+            uploadEnabled={enableUpload}
+          />
+        )}
+
+        {selectedProduct !== '' && (
+          <WorkingProduct
+            productDeliveryId={selectedProduct?.productInfo?.products_delivery_id}
+            productInfos={selectedProduct.productInfo}
+            taskInputs={InputsTask}
+            taskId={dataTask?.task_id}
+            taskFiles={dataTask?.files}
+            taskTenant={dataTask?.tenant_id}
+            uploadEnabled={enableUpload}
+            stepToReturn={uploadIsTrue !== '' ? uploadIsTrue[0]?.previous_step : ''}
+            sendToApprove={nextStep && nextStep[0]?.manager_approve === 'true' ? true : false}
+            timelineData={timeLineData}
+            toApprove={handleSendToManager}
+          />
+        )}
       </DeliveryWrapper>
 
       {/* Modal Schedule user */}

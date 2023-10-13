@@ -22,9 +22,6 @@ import PageNotFound from '../pages/NotFound';
 import Board from '../pages/Board';
 
 // COMPONENTES
-import ComponentsForms from '../pages/components/ComponentsForms';
-import ComponentsPage from '../pages/components/ComponentsPage';
-import ComponentTable from '../pages/components/ComponentTable';
 import ListMeeting from '../pages/Meeting/ListMeeting';
 import TaskList from '../pages/Tasks/TaskList';
 import CreateProject from '../pages/Projects/CreateProject';
@@ -44,6 +41,7 @@ function RoutesAll() {
       <Route path="/login/:slug" element={<InstanceLogin />} />
 
       <Route path="/login" element={<SignIn />} />
+
       <Route path="/cadastrar" element={<SignUp />} />
 
       <Route
@@ -251,33 +249,6 @@ function RoutesAll() {
             </PrivateRoutes>
           }
         />
-
-        {/* <Route
-          path="/components"
-          element={
-            <PrivateRoutes>
-              <ComponentsPage />
-            </PrivateRoutes>
-          }
-        /> */}
-
-        {/* <Route
-          path="/form"
-          element={
-            <PrivateRoutes>
-              <ComponentsForms />
-            </PrivateRoutes>
-          }
-        /> */}
-
-        {/* <Route
-          path="/tabela"
-          element={
-            <PrivateRoutes>
-              <ComponentTable />
-            </PrivateRoutes>
-          }
-        /> */}
       </Route>
 
       <Route path="*" element={<PageNotFound />} />
