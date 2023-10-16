@@ -97,7 +97,7 @@ export default function CreateProject() {
   const { user } = useAuth();
   const location = useLocation();
 
-  const [createStep, setCreateStep] = useState<number>(3);
+  const [createStep, setCreateStep] = useState<number>(1);
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const { data: dataOrganizations } = useFetch<OrganizationsProps[]>('organization');
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
@@ -148,21 +148,9 @@ export default function CreateProject() {
     }
   }, [location]);
 
-  // Hours calculations
-  // const creatorHoursArray = productsArray?.filter(
-  //   (obj) => obj.service.toLowerCase() === 'hora de criação'
-  // );
-  // const totalCreateHours = creatorHoursArray.reduce(
-  //   (accumulator: any, currentValue: any) => accumulator + currentValue.minutes,
-  //   0
-  // );
   const productsHours = productsArray?.map((row) => {
     return multiplyTime(row?.minutes, row?.quantity);
   });
-
-  // const totalHoursProducts = sumTimes(productsHours) + totalCreateHours;
-  // const productsHoursWithoutCreateHours = totalHoursProducts - totalCreateHours;
-  // End Hours calculations
 
   const handleOnAddProducts = (items: IProduct) => {
     setProductsArray((prevState: any) => [...prevState, items]);
@@ -400,7 +388,9 @@ export default function CreateProject() {
 
         const totalTime = sumTimes(productsHours);
         if (editProject) {
-          const teamFiltered = DTOForm?.team.map((row: any) => ({ user_id: row.value }));
+          const teamFiltered = DTOForm?.team.map((row: any) => ({
+            user_id: row.user_id
+          }));
 
           const updateData = {
             title: DTOForm?.title,
@@ -887,7 +877,6 @@ export default function CreateProject() {
                 </TeamInput>
 
                 <FinishButtons>
-                  <ButtonDefault onClick={handleOnSubmit}>Salvar Projeto/Contrato</ButtonDefault>
                   <ButtonDefault
                     typeButton="primary"
                     isOutline
@@ -898,6 +887,7 @@ export default function CreateProject() {
                   >
                     Editar projeto/contrato
                   </ButtonDefault>
+                  <ButtonDefault onClick={handleOnSubmit}>Salvar Projeto/Contrato</ButtonDefault>
                 </FinishButtons>
               </div>
             </SummaryWrapper>
