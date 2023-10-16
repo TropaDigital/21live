@@ -502,7 +502,7 @@ export default function SummaryTasks({
 
           <SummaryButtons>
             <ButtonDefault typeButton="primary" isOutline onClick={() => editTasks()}>
-              Editar tarefa
+              Editar detalhes da tarefa
             </ButtonDefault>
             <ButtonDefault onClick={() => createTasks()}>
               {updateTask ? 'Atualizar tarefa' : 'Criar tarefa'}
