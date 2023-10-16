@@ -286,7 +286,7 @@ export default function ListProjects() {
   };
 
   const handleEditProject = (project: any) => {
-    console.log('log do projeto a editar', project);
+    // console.log('log do projeto a editar', project);
     navigate('/criar-projeto', { state: project });
   };
 
@@ -345,7 +345,9 @@ export default function ListProjects() {
             {dataProject?.map((row) => (
               <tr key={row.project_id}>
                 <td>#{String(row.project_id).padStart(5, '0')}</td>
-                <td>{row.title}</td>
+                <td style={{ cursor: 'pointer' }} onClick={() => handleOpenModal(row)}>
+                  {row.title}
+                </td>
                 <td style={{ textTransform: 'capitalize' }}>{row.client_name}</td>
                 <td
                   style={{
