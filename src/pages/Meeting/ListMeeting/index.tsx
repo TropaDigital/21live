@@ -127,7 +127,7 @@ export default function ListMeeting() {
     dateStart: '',
     dateEnd: ''
   });
-  const [filterOrder, setFilterOrder] = useState('');
+  const [filterOrder, setFilterOrder] = useState('desc');
 
   const { data, pages, fetchData } = useFetch<MeetingProps[]>(
     `meetings?search=${search}&date_start=${filterDate.dateStart}&date_end=${filterDate.dateEnd}&order=${filterOrder}`
@@ -441,9 +441,9 @@ export default function ListMeeting() {
                   <h2>
                     Registro de atas{' '}
                     <strong>
-                      {data && data?.length < 1
-                        ? `${data?.length} ata de reunião`
-                        : `${data?.length} atas de reunião`}{' '}
+                      {pages?.total === 1
+                        ? `${pages?.total} ata de reunião`
+                        : `${pages?.total} atas de reunião`}{' '}
                     </strong>
                   </h2>
                 </div>
@@ -460,7 +460,7 @@ export default function ListMeeting() {
                   <FilterButton
                     onClick={() => {
                       setSelectedFilter('all');
-                      setFilterOrder('');
+                      setFilterOrder('desc');
                     }}
                     className={selectedFilter === 'all' ? 'selected' : ''}
                   >
@@ -522,7 +522,9 @@ export default function ListMeeting() {
                   {data?.map((row) => (
                     <tr key={row.meeting_id}>
                       <td>#{String(row.meeting_id).padStart(5, '0')}</td>
-                      <td>{row.title}</td>
+                      <td style={{ cursor: 'pointer' }} onClick={() => handleOpenViewInfos(row)}>
+                        {row.title}
+                      </td>
                       <td>{row.cliente}</td>
                       <td>{row.responsavel}</td>
                       <td>{moment(row.date).format('DD/MM/YYYY')}</td>
