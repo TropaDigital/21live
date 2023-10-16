@@ -72,7 +72,7 @@ export default function InfoProducts({
   const { data, pages } = useFetch<ServicesProps[]>(
     `services?tenant_id=${tenant_id}&search=${search}&page=${selected}`
   );
-  const { data: dataKit } = useFetch(
+  const { data: dataKit, pages: pagesKit } = useFetch(
     `/pack-services?tenant_id=${tenant_id}&search=${search}&page=${selected}`
   );
   const [searchTerm, setSearchTerm] = useState('');
@@ -465,15 +465,28 @@ export default function InfoProducts({
 
           <tfoot>
             <tr>
-              <td colSpan={100}>
-                <Pagination
-                  total={pages.total}
-                  perPage={pages.perPage}
-                  currentPage={selected}
-                  lastPage={pages.lastPage}
-                  onClickPage={(e) => setSelected(e)}
-                />
-              </td>
+              {typeList === 'produtos' && !editProducts && (
+                <td colSpan={100}>
+                  <Pagination
+                    total={pages.total}
+                    perPage={pages.perPage}
+                    currentPage={selected}
+                    lastPage={pages.lastPage}
+                    onClickPage={(e) => setSelected(e)}
+                  />
+                </td>
+              )}
+              {typeList === 'kits-select' && !editProducts && (
+                <td colSpan={100}>
+                  <Pagination
+                    total={pagesKit.total}
+                    perPage={pagesKit.perPage}
+                    currentPage={selected}
+                    lastPage={pagesKit.lastPage}
+                    onClickPage={(e) => setSelected(e)}
+                  />
+                </td>
+              )}
             </tr>
           </tfoot>
         </table>
