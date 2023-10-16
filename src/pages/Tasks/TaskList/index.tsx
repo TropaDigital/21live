@@ -182,29 +182,8 @@ export default function TaskList() {
   async function getInfoTask(id: number) {
     try {
       const response = await api.get(`tasks/${id}`);
-      const task = {
-        title: response.data.result[0].title,
-        tenant_id: response.data.result[0].tenant_id,
-        tenant: response.data.result[0].tenant,
-        total_time: response.data.result[0].total_time,
-        product_id: response.data.result[0].product_id,
-        product_period: response.data.result[0].product_period,
-        project: response.data.result[0].project,
-        project_category: response.data.result[0].project_category,
-        project_id: id,
-        flow_id: response.data.result[0].flow_id,
-        flow: response.data.result[0].flow,
-        description: response.data.result[0].description,
-        creation_description: response.data.result[0].creation_description,
-        creation_date_end: response.data.result[0].creation_date_end,
-        copywriting_description: response.data.result[0].copywriting_description,
-        copywriting_date_end: response.data.result[0].copywriting_date_end,
-        deadlines: response.data.result[0].deliverys,
-        step: response.data.result[0].step,
-        type: response.data.result[0].type
-      };
       // console.log('log do response', response.data.result);
-      navigate('/criar-tarefa', { state: task });
+      navigate('/criar-tarefa', { state: response.data.result[0] });
     } catch (error: any) {
       addToast({
         type: 'danger',
@@ -342,9 +321,9 @@ export default function TaskList() {
           <div className="groupTable">
             <h2>
               Lista de tarefas{' '}
-              {data !== null && data?.length > 0 ? (
+              {pages !== null && pages?.total > 0 ? (
                 <strong>
-                  {data?.length < 1 ? `${data?.length} tarefa` : `${data?.length} tarefas`}{' '}
+                  {pages?.total <= 1 ? `${pages?.total} tarefa` : `${pages?.total} tarefas`}{' '}
                 </strong>
               ) : (
                 <strong>0 tarefa</strong>
@@ -406,7 +385,12 @@ export default function TaskList() {
               data?.map((row) => (
                 <tr key={row.task_id}>
                   <td>#{String(row.task_id).padStart(5, '0')}</td>
-                  <td style={{ textTransform: 'capitalize' }}>{row.title}</td>
+                  <td
+                    style={{ textTransform: 'capitalize', cursor: 'pointer' }}
+                    onClick={() => handleViewTask(row.task_id)}
+                  >
+                    {row.title}
+                  </td>
                   <td
                     style={{
                       width: '180px',
