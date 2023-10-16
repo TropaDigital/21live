@@ -189,7 +189,7 @@ type HandleOnChange = (
 
 export default function CreateTasks() {
   const navigate = useNavigate();
-  const [createStep, setCreateStep] = useState<number>(4);
+  const [createStep, setCreateStep] = useState<number>(1);
   const { addToast } = useToast();
   const { user } = useAuth();
   const location = useLocation();
@@ -357,9 +357,9 @@ export default function CreateTasks() {
       setProductsArray([]);
       setDTOForm(location.state);
       setSelectedProject(location.state.product_id);
-      setProductsArray(location.state.deadlines[0]?.products);
-      setDTODelivery(location.state.deadlines);
-      if (location.state.deadlines.length > 1) {
+      setProductsArray(location.state.deliverys[0]?.products);
+      setDTODelivery(location.state.deliverys);
+      if (location.state.deliverys.length > 1) {
         setDeliveriesSplit('split');
       }
     }
@@ -1698,7 +1698,11 @@ export default function CreateTasks() {
     <>
       <ContainerWrapper>
         <HeaderStepsPage
-          title="Criar nova tarefa"
+          title={
+            location.state !== null && location.state.task_id
+              ? 'Editar tarefa'
+              : 'Criar nova tarefa'
+          }
           backButton={createStep <= 1}
           stepSelected={createStep}
           maxStep={tasksType !== 'livre' ? 4 : 5}
@@ -1902,7 +1906,7 @@ export default function CreateTasks() {
                     selectedProducts={productsArray}
                     createTasks={handleSelectUserForTask}
                     editTasks={() => {
-                      setCreateStep(2);
+                      setCreateStep(1);
                       setTaskEdit(true);
                     }}
                     taskSummary={DTOForm}
@@ -1938,7 +1942,7 @@ export default function CreateTasks() {
                   selectedProducts={DTODelivery}
                   createTasks={handleSelectUserForTask}
                   editTasks={() => {
-                    setCreateStep(2);
+                    setCreateStep(1);
                     setTaskEdit(true);
                   }}
                   taskSummary={DTOForm}
@@ -1958,7 +1962,7 @@ export default function CreateTasks() {
                   selectedProducts={productsArray}
                   createTasks={handleSelectUserForTask}
                   editTasks={() => {
-                    setCreateStep(2);
+                    setCreateStep(1);
                     setTaskEdit(true);
                   }}
                   taskSummary={DTOForm}
