@@ -188,9 +188,8 @@ export default function CreateProject() {
   };
 
   const handleDeleteProducts = (id: any) => {
-    console.log('logo do delete product', id);
     if (editSelectedProducts) {
-      setProductsArray(productsArray.filter((obj: any) => obj.product_id !== id));
+      setProductsArray(productsArray.filter((obj: any) => obj.service_id !== id));
       if (productsArray.length <= 1) {
         setEditSelectedProducts(false);
       }
@@ -203,39 +202,34 @@ export default function CreateProject() {
   };
 
   const editProductQuantity = (product: any) => {
-    if (editSelectedProducts) {
-      setProductsArray((current) =>
-        current.map((obj: any) => {
-          if (obj.service_id === product.service_id) {
-            return { ...obj, quantity: product.quantity };
-          }
-          return obj;
-        })
-      );
-    } else {
-      setProductsArray((current) =>
-        current.map((obj) => {
-          if (obj.service_id === product.service_id) {
-            return { ...obj, quantity: product.quantity };
-          }
-          return obj;
-        })
-      );
-    }
+    setProductsArray((current) =>
+      current.map((obj) => {
+        if (obj.service_id === product.service_id) {
+          return { ...obj, quantity: product.quantity };
+        }
+        return obj;
+      })
+    );
+    // if (editSelectedProducts) {
+    //   setProductsArray((current) =>
+    //     current.map((obj) => {
+    //       if (obj.service_id === product.service_id) {
+    //         return { ...obj, quantity: product.quantity };
+    //       }
+    //       return obj;
+    //     })
+    //   );
+    // } else {
+    //   setProductsArray((current) =>
+    //     current.map((obj) => {
+    //       if (obj.service_id === product.service_id) {
+    //         return { ...obj, quantity: product.quantity };
+    //       }
+    //       return obj;
+    //     })
+    //   );
+    // }
   };
-
-  // const editProductHours = (values: any, product: IProduct) => {
-  //   console.log('log do produto a ser editado as horas', values, product);
-
-  //   // setProductsArray((current) =>
-  //   //   current.map((obj) => {
-  //   //     if (obj.service_id === product.service_id) {
-  //   //       return { ...obj, minutes: values.timeCounter, period: values.contractType };
-  //   //     }
-  //   //     return obj;
-  //   //   })
-  //   // );
-  // };
 
   function setErrorInput(value: any, message: any) {
     if (!message) {
@@ -696,7 +690,6 @@ export default function CreateProject() {
               handleOnDeleteProduct={(id) => handleDeleteProducts(id)}
               handleEditProductQuantity={(value) => editProductQuantity(value)}
               okToSave={setShowSave}
-              setSave={saveProducts}
               editProducts={editSelectedProducts}
               editProject={editProject}
               hideSwitch={DTOForm.category}
