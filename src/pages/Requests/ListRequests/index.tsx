@@ -90,60 +90,6 @@ export default function Requests() {
     setModalFilters(false);
   };
 
-  // FakeData
-  // const requests: RequestsProps[] = [
-  //   {
-  //     id: 1,
-  //     title: 'Request 1',
-  //     format: 'Type A',
-  //     status: 'Pending',
-  //     user: 'User A',
-  //     unit: 'Unit X',
-  //     startDate: '2023-08-07',
-  //     finishDate: '2023-08-12'
-  //   },
-  //   {
-  //     id: 2,
-  //     title: 'Request 2',
-  //     format: 'Type B',
-  //     status: 'finished',
-  //     user: 'User B',
-  //     unit: 'Unit Y',
-  //     startDate: '2023-08-08',
-  //     finishDate: '2023-08-15'
-  //   },
-  //   {
-  //     id: 3,
-  //     title: 'Request 3',
-  //     format: 'Type C',
-  //     status: 'progress',
-  //     user: 'User C',
-  //     unit: 'Unit Z',
-  //     startDate: '2023-08-09',
-  //     finishDate: '2023-08-14'
-  //   },
-  //   {
-  //     id: 4,
-  //     title: 'Request 4',
-  //     format: 'Type A',
-  //     status: 'Pending',
-  //     user: 'User D',
-  //     unit: 'Unit X',
-  //     startDate: '2023-08-10',
-  //     finishDate: '2023-08-17'
-  //   },
-  //   {
-  //     id: 5,
-  //     title: 'Request 5',
-  //     format: 'Type B',
-  //     status: 'finished',
-  //     user: 'User E',
-  //     unit: 'Unit Y',
-  //     startDate: '2023-08-11',
-  //     finishDate: '2023-08-16'
-  //   }
-  // ];
-
   return (
     <ContainerDefault>
       <HeaderPage title="Solicitações" />
@@ -195,7 +141,9 @@ export default function Requests() {
                 {data?.map((row: any, index: number) => (
                   <tr key={index}>
                     <td>#{String(row.ticket_id).padStart(5, '0')}</td>
-                    <td>{row.title}</td>
+                    <td onClick={() => handleViewRequest(row)} style={{ cursor: 'pointer' }}>
+                      {row.title}
+                    </td>
                     <td>{row.media_name}</td>
                     <td>
                       <div
