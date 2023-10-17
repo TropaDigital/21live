@@ -97,7 +97,7 @@ export default function CreateProject() {
   const { user } = useAuth();
   const location = useLocation();
 
-  const [createStep, setCreateStep] = useState<number>(3);
+  const [createStep, setCreateStep] = useState<number>(1);
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const { data: dataOrganizations } = useFetch<OrganizationsProps[]>('organization');
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
@@ -148,21 +148,9 @@ export default function CreateProject() {
     }
   }, [location]);
 
-  // Hours calculations
-  // const creatorHoursArray = productsArray?.filter(
-  //   (obj) => obj.service.toLowerCase() === 'hora de criação'
-  // );
-  // const totalCreateHours = creatorHoursArray.reduce(
-  //   (accumulator: any, currentValue: any) => accumulator + currentValue.minutes,
-  //   0
-  // );
   const productsHours = productsArray?.map((row) => {
     return multiplyTime(row?.minutes, row?.quantity);
   });
-
-  // const totalHoursProducts = sumTimes(productsHours) + totalCreateHours;
-  // const productsHoursWithoutCreateHours = totalHoursProducts - totalCreateHours;
-  // End Hours calculations
 
   const handleOnAddProducts = (items: IProduct) => {
     setProductsArray((prevState: any) => [...prevState, items]);
@@ -200,9 +188,8 @@ export default function CreateProject() {
   };
 
   const handleDeleteProducts = (id: any) => {
-    console.log('logo do delete product', id);
     if (editSelectedProducts) {
-      setProductsArray(productsArray.filter((obj: any) => obj.product_id !== id));
+      setProductsArray(productsArray.filter((obj: any) => obj.service_id !== id));
       if (productsArray.length <= 1) {
         setEditSelectedProducts(false);
       }
@@ -215,39 +202,34 @@ export default function CreateProject() {
   };
 
   const editProductQuantity = (product: any) => {
-    if (editSelectedProducts) {
-      setProductsArray((current) =>
-        current.map((obj: any) => {
-          if (obj.service_id === product.service_id) {
-            return { ...obj, quantity: product.quantity };
-          }
-          return obj;
-        })
-      );
-    } else {
-      setProductsArray((current) =>
-        current.map((obj) => {
-          if (obj.service_id === product.service_id) {
-            return { ...obj, quantity: product.quantity };
-          }
-          return obj;
-        })
-      );
-    }
+    setProductsArray((current) =>
+      current.map((obj) => {
+        if (obj.service_id === product.service_id) {
+          return { ...obj, quantity: product.quantity };
+        }
+        return obj;
+      })
+    );
+    // if (editSelectedProducts) {
+    //   setProductsArray((current) =>
+    //     current.map((obj) => {
+    //       if (obj.service_id === product.service_id) {
+    //         return { ...obj, quantity: product.quantity };
+    //       }
+    //       return obj;
+    //     })
+    //   );
+    // } else {
+    //   setProductsArray((current) =>
+    //     current.map((obj) => {
+    //       if (obj.service_id === product.service_id) {
+    //         return { ...obj, quantity: product.quantity };
+    //       }
+    //       return obj;
+    //     })
+    //   );
+    // }
   };
-
-  // const editProductHours = (values: any, product: IProduct) => {
-  //   console.log('log do produto a ser editado as horas', values, product);
-
-  //   // setProductsArray((current) =>
-  //   //   current.map((obj) => {
-  //   //     if (obj.service_id === product.service_id) {
-  //   //       return { ...obj, minutes: values.timeCounter, period: values.contractType };
-  //   //     }
-  //   //     return obj;
-  //   //   })
-  //   // );
-  // };
 
   function setErrorInput(value: any, message: any) {
     if (!message) {
@@ -400,7 +382,9 @@ export default function CreateProject() {
 
         const totalTime = sumTimes(productsHours);
         if (editProject) {
-          const teamFiltered = DTOForm?.team.map((row: any) => ({ user_id: row.value }));
+          const teamFiltered = DTOForm?.team.map((row: any) => ({
+            user_id: row.user_id
+          }));
 
           const updateData = {
             title: DTOForm?.title,
@@ -706,7 +690,6 @@ export default function CreateProject() {
               handleOnDeleteProduct={(id) => handleDeleteProducts(id)}
               handleEditProductQuantity={(value) => editProductQuantity(value)}
               okToSave={setShowSave}
-              setSave={saveProducts}
               editProducts={editSelectedProducts}
               editProject={editProject}
               hideSwitch={DTOForm.category}
@@ -887,7 +870,6 @@ export default function CreateProject() {
                 </TeamInput>
 
                 <FinishButtons>
-                  <ButtonDefault onClick={handleOnSubmit}>Salvar Projeto/Contrato</ButtonDefault>
                   <ButtonDefault
                     typeButton="primary"
                     isOutline
@@ -898,6 +880,7 @@ export default function CreateProject() {
                   >
                     Editar projeto/contrato
                   </ButtonDefault>
+                  <ButtonDefault onClick={handleOnSubmit}>Salvar Projeto/Contrato</ButtonDefault>
                 </FinishButtons>
               </div>
             </SummaryWrapper>

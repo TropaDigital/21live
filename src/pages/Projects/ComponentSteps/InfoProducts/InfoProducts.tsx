@@ -21,15 +21,17 @@ import QuantityCounter from '../../../../components/QuantityCounter';
 import CardProductsSelected from '../../../../components/CardProductsSelected';
 import { InputDefault } from '../../../../components/Inputs/InputDefault';
 import { Table } from '../../../../components/Table';
+import QuantityInput from '../../../../components/Inputs/QuantityInput';
 
 // Styles
 import { FieldTogleButton, TableHead } from '../../../../components/Table/styles';
 import { FieldGroup } from '../../../../components/UiElements/styles';
-import { ProductsWrapper, WrapperCard } from './styles';
+import { ModalButton, ProductsWrapper, WrapperCard } from './styles';
 
 // Libraries
 import Switch from 'react-switch';
-import QuantityInput from '../../../../components/Inputs/QuantityInput';
+import ModalDefault from '../../../../components/Ui/ModalDefault';
+import { MdClose } from 'react-icons/md';
 
 interface PropsProducts {
   dataFilter: any;
@@ -38,7 +40,6 @@ interface PropsProducts {
   handleOnDeleteProduct: (id: any) => void;
   handleEditProductQuantity: (value: any) => void;
   okToSave: any;
-  setSave: any;
   editProducts: boolean;
   editProject: boolean;
   hideSwitch: any;
@@ -60,7 +61,6 @@ export default function InfoProducts({
   handleOnDeleteProduct,
   handleEditProductQuantity,
   okToSave,
-  setSave,
   editProducts,
   editProject,
   hideSwitch,
@@ -72,20 +72,26 @@ export default function InfoProducts({
   const { data, pages } = useFetch<ServicesProps[]>(
     `services?tenant_id=${tenant_id}&search=${search}&page=${selected}`
   );
-  const { data: dataKit } = useFetch(
+  const { data: dataKit, pages: pagesKit } = useFetch(
     `/pack-services?tenant_id=${tenant_id}&search=${search}&page=${selected}`
   );
   const [searchTerm, setSearchTerm] = useState('');
   const [typeList, setTypeList] = useState('produtos');
-
   const [quantityProducts, setQuantityProducts] = useState<any>('');
   const [currentKitProducts, setCurrentKitProducts] = useState<ServicesProps[]>([]);
   const [productQuantity, setProductQuantity] = useState<{ [key: string]: number }>({});
-  // const [selectedProducts, setSelectedProducts] = useState<IProduct[]>([]);
+  const [productsModal, setProductsModal] = useState<boolean>(false);
   const { isLoading, debouncedCallback } = useDebouncedCallback(
     (search: any) => setSearch(search),
     700
   );
+
+  // useEffect(() => {
+  //   data?.forEach((obj) => {
+  //     obj.quantity = 0;
+  //   });
+  //   console.log('log do data with quantity', data);
+  // }, [data]);
 
   const handleOnTypeList = (type: string) => {
     setTypeList(type);
@@ -131,13 +137,8 @@ export default function InfoProducts({
   }
 
   function handleDeleteProducts(id: any) {
-    if (editProducts) {
-      handleOnDeleteProduct(id.product_id);
-      setQuantityProducts('');
-    } else {
-      handleOnDeleteProduct(id.service_id);
-      setQuantityProducts('');
-    }
+    handleOnDeleteProduct(id);
+    setQuantityProducts('');
   }
 
   function handleOnAddKit(row: IDataKit): void {
@@ -172,44 +173,18 @@ export default function InfoProducts({
       productsQuantities[item.service] = item?.quantity;
     });
 
-    addToast({
-      type: 'success',
-      title: 'Kit adicionado com sucesso!'
-    });
+    // addToast({
+    //   type: 'success',
+    //   title: 'Kit adicionado com sucesso!'
+    // });
 
     setProductQuantity({ ...productQuantity, ...productsQuantities });
   }
-
-  // function editProductQuantity(product: any) {
-  //   handleEditProductQuantity(product);
-  // }
-
-  // function editProductHours(value: any, product: IProduct) {
-  //   const updatedProduct = {
-  //     description: product.description,
-  //     minutes: product.minutes,
-  //     period: product.period,
-  //     project_id: product.service_id,
-  //     quantity: value.timeCounter,
-  //     service: product.service,
-  //     size: product.size,
-  //     type: product.type
-  //   };
-  //   handleEditProductQuantity(updatedProduct);
-  // }
-
-  // const deleteProducts = (value: any) => {
-  //   handleOnDeleteProduct(value.service_id);
-  // };
 
   useEffect(() => {
     if (dataFilter.length > 0) {
       okToSave(true);
     }
-    // console.log('log do dataFilter', dataFilter);
-    // if (selectedProducts.length <= 0) {
-    //   okToSave(false);
-    // }
   }, [dataFilter]);
 
   const tableHeaders: { [key: string]: string[] } = {
@@ -243,6 +218,11 @@ export default function InfoProducts({
                 Ver Kits
               </ButtonDefault>
             </FieldTogleButton>
+            {editProducts && (
+              <ButtonDefault typeButton="primary" onClick={() => setProductsModal(true)}>
+                {typeList === 'produtos' ? 'Adicionar mais produtos' : 'Adicionar mais kits'}
+              </ButtonDefault>
+            )}
 
             <InputDefault
               label=""
@@ -276,7 +256,7 @@ export default function InfoProducts({
                   <td>{row.description}</td>
                   <td>
                     <Switch
-                      onChange={() => console.log('log switch', row.service_id)}
+                      onChange={() => ''}
                       checked={row.flag === 'true' ? true : false}
                       uncheckedIcon={false}
                       checkedIcon={false}
@@ -284,30 +264,14 @@ export default function InfoProducts({
                     />
                   </td>
                   <td>
-                    {/* <QuantityInput
-                      receiveQuantity={row.quantity ? 1 : 0}
+                    <QuantityInput
+                      receiveQuantity={row.quantity ? row.quantity : 0}
                       infosReceived={row}
                       handleQuantity={(value: any) => handleOnQuantity(row, value)}
-                      clearQuantity={() => setQuantityProducts('')}
+                      clearQuantity={() => handleDeleteProducts(row.service_id)}
                       disabledInput={false}
-                    /> */}
-                    <QuantityCounter
-                      handleQuantity={setQuantityProducts}
-                      rowQuantity={row.quantity}
-                      clearQuantity={handleDeleteProducts}
-                      receiveQuantity={Number(row.quantity)}
-                      editProject={editProject}
                     />
                   </td>
-                  {/* <td
-                    style={{ cursor: 'pointer', textAlign: 'center' }}
-                    onClick={() => handleAddProducts(row)}
-                  >
-                    <div style={{ fontSize: '14px', fontWeight: '600', color: '#0045B5' }}>
-                      Adicionar
-                    </div>
-                  </td> */}
-
                   {quantityProducts && Object.values(quantityProducts).includes(row.service_id) ? (
                     <td
                       style={{ cursor: 'pointer', textAlign: 'center' }}
@@ -337,7 +301,7 @@ export default function InfoProducts({
                     <td>{row.category}</td>
                     <td>
                       <Switch
-                        onChange={() => console.log('log switch', row.service_id)}
+                        onChange={() => ''}
                         checked={row.flag === 'true' ? true : false}
                         uncheckedIcon={false}
                         checkedIcon={false}
@@ -346,12 +310,12 @@ export default function InfoProducts({
                     </td>
                     <td>
                       <QuantityInput
-                        receiveQuantity={row.quantity ? 1 : 0}
+                        receiveQuantity={row.quantity ? row.quantity : 0}
                         infosReceived={row}
                         handleQuantity={(value: any) => handleOnQuantity(row, value)}
                         clearQuantity={() => {
                           setQuantityProducts('');
-                          handleDeleteProducts(row);
+                          handleDeleteProducts(row.service_id);
                         }}
                         disabledInput={false}
                       />
@@ -417,7 +381,7 @@ export default function InfoProducts({
                     <td>{row.category}</td>
                     <td>
                       <Switch
-                        onChange={() => console.log('log switch', row.service_id)}
+                        onChange={() => ''}
                         checked={row.flag === 'true' ? true : false}
                         uncheckedIcon={false}
                         checkedIcon={false}
@@ -428,7 +392,7 @@ export default function InfoProducts({
                       <QuantityCounter
                         handleQuantity={setQuantityProducts}
                         rowQuantity={row}
-                        clearQuantity={handleDeleteProducts}
+                        clearQuantity={() => handleDeleteProducts(row.service_id)}
                         receiveQuantity={row?.quantity}
                       />
                     </td>
@@ -465,15 +429,28 @@ export default function InfoProducts({
 
           <tfoot>
             <tr>
-              <td colSpan={100}>
-                <Pagination
-                  total={pages.total}
-                  perPage={pages.perPage}
-                  currentPage={selected}
-                  lastPage={pages.lastPage}
-                  onClickPage={(e) => setSelected(e)}
-                />
-              </td>
+              {typeList === 'produtos' && !editProducts && (
+                <td colSpan={100}>
+                  <Pagination
+                    total={pages.total}
+                    perPage={pages.perPage}
+                    currentPage={selected}
+                    lastPage={pages.lastPage}
+                    onClickPage={(e) => setSelected(e)}
+                  />
+                </td>
+              )}
+              {typeList === 'kits-select' && !editProducts && (
+                <td colSpan={100}>
+                  <Pagination
+                    total={pagesKit.total}
+                    perPage={pagesKit.perPage}
+                    currentPage={selected}
+                    lastPage={pagesKit.lastPage}
+                    onClickPage={(e) => setSelected(e)}
+                  />
+                </td>
+              )}
             </tr>
           </tfoot>
         </table>
@@ -495,21 +472,109 @@ export default function InfoProducts({
         </WrapperCard>
       )}
 
-      {/* {dataFilter && editProducts && (
-        <WrapperCard>
-          {dataFilter.map((row: IProduct, index: number) => (
-            <CardProductsSelected
-              handleOnPeriod={handleOnPeriod}
-              id={index + 1}
-              title={row.service}
-              contract_type={(e: any) => editProductHours(e, row)}
-              key={index}
-              data={row}
-              showSwitch={hideSwitch}
-            />
-          ))}
-        </WrapperCard>
-      )} */}
+      <ModalDefault
+        isOpen={productsModal}
+        title="Adicionar produtos"
+        onOpenChange={() => setProductsModal(false)}
+        maxWidth="1150px"
+      >
+        <div style={{ width: '1050px', marginTop: '-24px' }}>
+          <ModalButton onClick={() => setProductsModal(false)}>
+            <MdClose />
+          </ModalButton>
+          <Table>
+            <table>
+              <thead>
+                <tr>
+                  {tableHeaders[typeList]?.map((item) => (
+                    <th key={item}>{item}</th>
+                  ))}
+                  <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
+                </tr>
+              </thead>
+              {typeList === 'produtos' &&
+                data?.map((row) => (
+                  <tr key={row.service_id}>
+                    <td>{row.service_id}</td>
+                    <td>{row.service}</td>
+                    <td>{row.category}</td>
+                    <td>
+                      <Switch
+                        onChange={() => ''}
+                        checked={row.flag === 'true' ? true : false}
+                        uncheckedIcon={false}
+                        checkedIcon={false}
+                        onColor="#0046B5"
+                      />
+                    </td>
+                    <td>
+                      <QuantityInput
+                        receiveQuantity={row.quantity ? row.quantity : 0}
+                        infosReceived={row}
+                        handleQuantity={(value: any) => handleOnQuantity(row, value)}
+                        clearQuantity={() => {
+                          setQuantityProducts('');
+                          handleDeleteProducts(row.service_id);
+                        }}
+                        disabledInput={false}
+                      />
+                      {/* <QuantityCounter
+                          handleQuantity={setQuantityProducts}
+                          rowQuantity={row}
+                          clearQuantity={handleDeleteProducts}
+                          receiveQuantity={row?.quantity}
+                        /> */}
+                    </td>
+                    {/* <td
+                      style={{ cursor: 'pointer', textAlign: 'center' }}
+                      onClick={() => handleAddProducts(row)}
+                    >
+                      <div style={{ fontSize: '14px', fontWeight: '600', color: '#0045B5' }}>
+                        Adicionar
+                      </div>
+                    </td> */}
+
+                    {quantityProducts &&
+                    Object.values(quantityProducts).includes(row.service_id) ? (
+                      <td
+                        style={{ cursor: 'pointer', textAlign: 'center' }}
+                        onClick={() => handleAddProducts(row)}
+                      >
+                        <div style={{ fontSize: '14px', fontWeight: '600', color: '#0045B5' }}>
+                          Adicionar
+                        </div>
+                      </td>
+                    ) : (
+                      <td style={{ textAlign: 'center' }}>
+                        <div style={{ fontSize: '14px', fontWeight: '600', color: '#D0D5DD' }}>
+                          Adicionar
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                ))}
+
+              {typeList === 'kits-select' &&
+                (dataKit as IDataKit[])?.map((row) => (
+                  <tr key={row?.pack_id}>
+                    <td>{row?.pack_id}</td>
+                    <td>{row?.title}</td>
+                    <td>{row?.services?.length}</td>
+                    <td>{row?.description}</td>
+                    <td
+                      style={{ cursor: 'pointer', textAlign: 'center' }}
+                      onClick={() => handleOnAddKit(row)}
+                    >
+                      <div style={{ fontSize: '14px', fontWeight: '600', color: '#0045B5' }}>
+                        Adicionar
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+            </table>
+          </Table>
+        </div>
+      </ModalDefault>
     </ProductsWrapper>
   );
 }

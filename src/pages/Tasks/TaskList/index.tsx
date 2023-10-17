@@ -19,7 +19,7 @@ import ButtonTable from '../../../components/Buttons/ButtonTable';
 import HeaderPage from '../../../components/HeaderPage';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { Table } from '../../../components/Table';
-import { FilterGroup, TableHead } from '../../../components/Table/styles';
+import { TableHead } from '../../../components/Table/styles';
 import Alert from '../../../components/Ui/Alert';
 import { ContainerDefault } from '../../../components/UiElements/styles';
 import Pagination from '../../../components/Pagination';
@@ -108,34 +108,34 @@ export default function TaskList() {
     }
   };
 
-  const handleOpenModalView = (task: any) => {
-    setModalViewTask({
-      isOpen: true,
-      type: `Resumo da tarefa: ${task.title}`,
-      task: {
-        task_id: task.task_id,
-        title: task.title,
-        tenant_id: task.tenant_id,
-        tenant: task.tenant,
-        total_time: task.total_time,
-        product_id: task.product_id,
-        product_period: task.product_period,
-        project: task.project,
-        project_category: task.project_category,
-        type: task.type,
-        flow_id: task.flow_id,
-        flow: task.flow,
-        description: task.description,
-        creation_description: task.creation_description,
-        creation_date_end: task.creation_date_end,
-        copywriting_description: task.copywriting_description,
-        copywriting_date_end: task.copywriting_date_end,
-        deadlines: task.deadlines,
-        step: task.step,
-        name: task.name
-      }
-    });
-  };
+  // const handleOpenModalView = (task: any) => {
+  //   setModalViewTask({
+  //     isOpen: true,
+  //     type: `Resumo da tarefa: ${task.title}`,
+  //     task: {
+  //       task_id: task.task_id,
+  //       title: task.title,
+  //       tenant_id: task.tenant_id,
+  //       tenant: task.tenant,
+  //       total_time: task.total_time,
+  //       product_id: task.product_id,
+  //       product_period: task.product_period,
+  //       project: task.project,
+  //       project_category: task.project_category,
+  //       type: task.type,
+  //       flow_id: task.flow_id,
+  //       flow: task.flow,
+  //       description: task.description,
+  //       creation_description: task.creation_description,
+  //       creation_date_end: task.creation_date_end,
+  //       copywriting_description: task.copywriting_description,
+  //       copywriting_date_end: task.copywriting_date_end,
+  //       deadlines: task.deadlines,
+  //       step: task.step,
+  //       name: task.name
+  //     }
+  //   });
+  // };
 
   const handleCloseModal = () => {
     setModalViewTask({
@@ -182,29 +182,8 @@ export default function TaskList() {
   async function getInfoTask(id: number) {
     try {
       const response = await api.get(`tasks/${id}`);
-      const task = {
-        title: response.data.result[0].title,
-        tenant_id: response.data.result[0].tenant_id,
-        tenant: response.data.result[0].tenant,
-        total_time: response.data.result[0].total_time,
-        product_id: response.data.result[0].product_id,
-        product_period: response.data.result[0].product_period,
-        project: response.data.result[0].project,
-        project_category: response.data.result[0].project_category,
-        project_id: id,
-        flow_id: response.data.result[0].flow_id,
-        flow: response.data.result[0].flow,
-        description: response.data.result[0].description,
-        creation_description: response.data.result[0].creation_description,
-        creation_date_end: response.data.result[0].creation_date_end,
-        copywriting_description: response.data.result[0].copywriting_description,
-        copywriting_date_end: response.data.result[0].copywriting_date_end,
-        deadlines: response.data.result[0].deliverys,
-        step: response.data.result[0].step,
-        type: response.data.result[0].type
-      };
       // console.log('log do response', response.data.result);
-      navigate('/criar-tarefa', { state: task });
+      navigate('/criar-tarefa', { state: response.data.result[0] });
     } catch (error: any) {
       addToast({
         type: 'danger',
@@ -342,9 +321,9 @@ export default function TaskList() {
           <div className="groupTable">
             <h2>
               Lista de tarefas{' '}
-              {data !== null && data?.length > 0 ? (
+              {pages !== null && pages?.total > 0 ? (
                 <strong>
-                  {data?.length < 1 ? `${data?.length} tarefa` : `${data?.length} tarefas`}{' '}
+                  {pages?.total <= 1 ? `${pages?.total} tarefa` : `${pages?.total} tarefas`}{' '}
                 </strong>
               ) : (
                 <strong>0 tarefa</strong>
@@ -406,7 +385,12 @@ export default function TaskList() {
               data?.map((row) => (
                 <tr key={row.task_id}>
                   <td>#{String(row.task_id).padStart(5, '0')}</td>
-                  <td style={{ textTransform: 'capitalize' }}>{row.title}</td>
+                  <td
+                    style={{ textTransform: 'capitalize', cursor: 'pointer' }}
+                    onClick={() => handleViewTask(row.task_id)}
+                  >
+                    {row.title}
+                  </td>
                   <td
                     style={{
                       width: '180px',

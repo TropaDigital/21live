@@ -732,12 +732,14 @@ export default function WorkingProduct({
                         <UserMessageInfo>
                           <div className="user-name">{message.name}</div>
                           <div className="date-message">{moment(message.created).fromNow()}</div>
-                          <div
-                            style={{ cursor: 'pointer' }}
-                            onClick={() => handleDeleteComment(message.comment_id)}
-                          >
-                            <BiTrash />
-                          </div>
+                          {message.name !== 'Sistema' && (
+                            <div
+                              style={{ cursor: 'pointer' }}
+                              onClick={() => handleDeleteComment(message.comment_id)}
+                            >
+                              <BiTrash />
+                            </div>
+                          )}
                         </UserMessageInfo>
 
                         <UserMessage>{message.comment}</UserMessage>
@@ -855,6 +857,9 @@ export default function WorkingProduct({
                             )}
                           </td>
                           <td>
+                            {/* <DownloadIcon>
+                              <FaDownload />
+                            </DownloadIcon> */}
                             {productsInfo?.file_status === 'pass' && (
                               <div className="fieldTableClients">
                                 {/* <DownloadIcon>
@@ -1034,6 +1039,8 @@ export default function WorkingProduct({
           </div>
         </ModalUploadWrapper>
       </ModalDefault>
+
+      {/* Modal to preview image */}
     </ContainerDefault>
   );
 }

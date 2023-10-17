@@ -102,7 +102,7 @@ export default function SummaryTasks({
       setDeliveryArrayHours(
         selectedProducts?.map((row: any) => {
           return sumTimes(
-            row?.produtos?.map((product: any) => {
+            row?.products?.map((product: any) => {
               return multiplyTime(product?.minutes, product?.quantity);
             })
           );
@@ -143,7 +143,7 @@ export default function SummaryTasks({
     }
     if (taskType === 'horas' && updateTask) {
       const productsAccumulator = selectedProducts?.reduce((accumulator: any, current: any) => {
-        return accumulator + current?.produtos?.length;
+        return accumulator + current?.products?.length;
       }, 0);
       setProductsTotal(productsAccumulator);
     }
@@ -163,12 +163,13 @@ export default function SummaryTasks({
     estimatedtotalTime(totalArrayHours);
   }, [totalArrayHours]);
 
-  // useEffect(() => {
-  //   console.log('log do deliveryArrayHours', deliveryArrayHours);
-  //   console.log('log do totalArrayHours', totalArrayHours);
-  //   console.log('log do selectedProducts', selectedProducts);
-  //   console.log('log do taskSummaries', taskSummary);
-  // }, [deliveryArrayHours, totalArrayHours, selectedProducts, taskSummary]);
+  useEffect(() => {
+    console.log('log do deliveryArrayHours', deliveryArrayHours);
+    console.log('log do totalArrayHours', totalArrayHours);
+    console.log('log do selectedProducts', selectedProducts);
+    console.log('log do taskSummaries', taskSummary);
+    console.log('log do projectInfos', projectInfos);
+  }, [deliveryArrayHours, totalArrayHours, selectedProducts, taskSummary, projectInfos]);
 
   return (
     <SummaryWrapper>
@@ -248,7 +249,7 @@ export default function SummaryTasks({
                 <DeliveriesTitle>
                   {row.deliveryTitle ? row.deliveryTitle : `${index + 1}ª Entrega`}
                 </DeliveriesTitle>
-                {row.produtos.map((products: any, index: number) => (
+                {row.products.map((products: any, index: number) => (
                   <SummaryCard key={index} style={{ height: 'fit-content' }}>
                     <SummaryCardTitle>
                       #{index + 1} - {products.service}
@@ -476,9 +477,17 @@ export default function SummaryTasks({
               <div className="item-hours">
                 Horas estimadas <span>{totalArrayHours}</span>
               </div>
-              <div className="item-hours">
-                Horas disponíveis <span>{subtractTime(projectInfos?.tempo, totalArrayHours)}</span>
-              </div>
+              {!updateTask && (
+                <div className="item-hours">
+                  Horas disponíveis{' '}
+                  <span>{subtractTime(projectInfos?.tempo, totalArrayHours)}</span>
+                </div>
+              )}
+              {updateTask && (
+                <div className="item-hours">
+                  Horas disponíveis <span>{subtractTime(taskSummary?.time, totalArrayHours)}</span>
+                </div>
+              )}
             </>
           )}
 
@@ -502,7 +511,7 @@ export default function SummaryTasks({
 
           <SummaryButtons>
             <ButtonDefault typeButton="primary" isOutline onClick={() => editTasks()}>
-              Editar tarefa
+              Editar detalhes da tarefa
             </ButtonDefault>
             <ButtonDefault onClick={() => createTasks()}>
               {updateTask ? 'Atualizar tarefa' : 'Criar tarefa'}
