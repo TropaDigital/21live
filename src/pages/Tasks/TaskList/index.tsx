@@ -19,7 +19,7 @@ import ButtonTable from '../../../components/Buttons/ButtonTable';
 import HeaderPage from '../../../components/HeaderPage';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { Table } from '../../../components/Table';
-import { FilterGroup, TableHead } from '../../../components/Table/styles';
+import { TableHead } from '../../../components/Table/styles';
 import Alert from '../../../components/Ui/Alert';
 import { ContainerDefault } from '../../../components/UiElements/styles';
 import Pagination from '../../../components/Pagination';
@@ -108,34 +108,34 @@ export default function TaskList() {
     }
   };
 
-  const handleOpenModalView = (task: any) => {
-    setModalViewTask({
-      isOpen: true,
-      type: `Resumo da tarefa: ${task.title}`,
-      task: {
-        task_id: task.task_id,
-        title: task.title,
-        tenant_id: task.tenant_id,
-        tenant: task.tenant,
-        total_time: task.total_time,
-        product_id: task.product_id,
-        product_period: task.product_period,
-        project: task.project,
-        project_category: task.project_category,
-        type: task.type,
-        flow_id: task.flow_id,
-        flow: task.flow,
-        description: task.description,
-        creation_description: task.creation_description,
-        creation_date_end: task.creation_date_end,
-        copywriting_description: task.copywriting_description,
-        copywriting_date_end: task.copywriting_date_end,
-        deadlines: task.deadlines,
-        step: task.step,
-        name: task.name
-      }
-    });
-  };
+  // const handleOpenModalView = (task: any) => {
+  //   setModalViewTask({
+  //     isOpen: true,
+  //     type: `Resumo da tarefa: ${task.title}`,
+  //     task: {
+  //       task_id: task.task_id,
+  //       title: task.title,
+  //       tenant_id: task.tenant_id,
+  //       tenant: task.tenant,
+  //       total_time: task.total_time,
+  //       product_id: task.product_id,
+  //       product_period: task.product_period,
+  //       project: task.project,
+  //       project_category: task.project_category,
+  //       type: task.type,
+  //       flow_id: task.flow_id,
+  //       flow: task.flow,
+  //       description: task.description,
+  //       creation_description: task.creation_description,
+  //       creation_date_end: task.creation_date_end,
+  //       copywriting_description: task.copywriting_description,
+  //       copywriting_date_end: task.copywriting_date_end,
+  //       deadlines: task.deadlines,
+  //       step: task.step,
+  //       name: task.name
+  //     }
+  //   });
+  // };
 
   const handleCloseModal = () => {
     setModalViewTask({
