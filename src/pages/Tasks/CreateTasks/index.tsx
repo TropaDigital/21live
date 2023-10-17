@@ -353,12 +353,17 @@ export default function CreateTasks() {
     }
 
     if (location.state !== null && location.state.task_id) {
+      const selectedInfos: any = dataProjects?.filter(
+        (obj: any) => obj.product_id === location.state.product_id
+      );
       fetchProjects();
       setProductsArray([]);
       setDTOForm(location.state);
-      setSelectedProject(location.state.product_id);
       setProductsArray(location.state.deliverys[0]?.products);
       setDTODelivery(location.state.deliverys);
+      if (dataProjects) {
+        setSelectedProject(selectedInfos[0]);
+      }
       if (location.state.deliverys.length > 1) {
         setDeliveriesSplit('split');
       }
@@ -1274,39 +1279,6 @@ export default function CreateTasks() {
         gen_ticket
       } = DTOForm;
 
-      // if (user_id === '') {
-      //   addToast({
-      //     title: 'Atenção',
-      //     description: 'Responsável é obrigatório!',
-      //     type: 'warning'
-      //   });
-      //   throw setErrorInput('user_id', 'Responsável inicial da tarefa é obrigatório!');
-      // } else {
-      //   setErrorInput('user_id', undefined);
-      // }
-
-      // if (start_job === '') {
-      //   addToast({
-      //     title: 'Atenção',
-      //     description: 'Hora inicial da tarefa é obrigatória!!',
-      //     type: 'warning'
-      //   });
-      //   throw setErrorInput('start_job', 'Hora inicial da tarefa é obrigatória!');
-      // } else {
-      //   setErrorInput('start_job', undefined);
-      // }
-
-      // if (end_job === '') {
-      //   addToast({
-      //     title: 'Atenção',
-      //     description: 'Hora final da tarefa é obrigatória!',
-      //     type: 'warning'
-      //   });
-      //   throw setErrorInput('end_job', 'Hora final da tarefa é obrigatória!!');
-      // } else {
-      //   setErrorInput('end_job', undefined);
-      // }
-
       if (tasksType === 'livre') {
         const createNewData = {
           title,
@@ -1495,10 +1467,8 @@ export default function CreateTasks() {
           description: e.response.data.message
         });
       }
-
-      // setErros(getValidationErrors(e.response.data.result))
     }
-  }, [DTOForm, addToast, productsArray, tasksType, user, DTODelivery]);
+  }, []);
 
   const selectedProjectInfos = (e: any) => {
     if (e.name === 'tenant_id') {
