@@ -143,7 +143,7 @@ export default function ViewTask() {
       }
     }
 
-    async function getTaskInfos(id: string) {
+    async function getTaskInfos(id: any) {
       try {
         setLoading(true);
         const response = await api.get(`/tasks/${id}`);
@@ -166,7 +166,12 @@ export default function ViewTask() {
     }
 
     getTimelineData();
-    getTaskInfos(location.state.id);
+    if (location.state !== null) {
+      getTaskInfos(location.state.id);
+    }
+    if (location.state === null) {
+      getTaskInfos(location.pathname.split('/').pop());
+    }
   }, [location]);
 
   const handleNavigateProduct = (infoProduct: any) => {
