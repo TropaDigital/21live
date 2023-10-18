@@ -19,7 +19,7 @@ function useColumn() {
         necessary_responsible: 'false',
         manager_approve: 'false',
         tenant_approve: 'false',
-        previous_step: 0
+        previous_step: '0'
         // tasks: [],
       };
 

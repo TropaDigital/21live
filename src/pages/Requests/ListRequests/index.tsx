@@ -69,7 +69,7 @@ export default function Requests() {
   const { data, pages, isFetching } = useFetch<any[]>(`ticket?search=${search}&page=${selected}`);
 
   const handleViewRequest = (request: any) => {
-    navigate(`/solicitacao/${request.ticket_id}`, { state: request });
+    navigate(`/solicitacao/${request.ticket_id}`, { state: request.ticket_id });
   };
 
   const handleApplyFilters = (filters: any) => {
@@ -114,14 +114,14 @@ export default function Requests() {
                 className="search-field"
               />
 
-              <ButtonDefault
+              {/* <ButtonDefault
                 typeButton="lightWhite"
                 isOutline
                 onClick={() => setModalFilters(true)}
               >
                 <BiFilter />
                 Filtros
-              </ButtonDefault>
+              </ButtonDefault> */}
             </FilterGroup>
             <table>
               <thead>
