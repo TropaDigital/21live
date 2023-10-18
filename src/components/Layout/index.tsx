@@ -7,7 +7,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import {
   IconClipboard,
   // IconDash,
-  // IconUsers,
+  IconUsers,
   IconProjects,
   IconMeeting,
   IconTeam,
@@ -47,12 +47,12 @@ export default function Layout() {
             //   icon: IconDash,
             //   identifier: ''
             // },
-            // {
-            //   to: '/clientes',
-            //   name: 'Clientes',
-            //   icon: IconUsers,
-            //   identifier: '21jobs_client_all'
-            // },
+            {
+              to: '/clientes',
+              name: 'Clientes',
+              icon: IconUsers,
+              identifier: '21jobs_task_manager'
+            },
             {
               to: '/projetos',
               name: 'Projetos',
