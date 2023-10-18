@@ -114,14 +114,14 @@ export default function Requests() {
                 className="search-field"
               />
 
-              <ButtonDefault
+              {/* <ButtonDefault
                 typeButton="lightWhite"
                 isOutline
                 onClick={() => setModalFilters(true)}
               >
                 <BiFilter />
                 Filtros
-              </ButtonDefault>
+              </ButtonDefault> */}
             </FilterGroup>
             <table>
               <thead>
