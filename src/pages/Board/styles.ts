@@ -1,24 +1,27 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 import { shade } from 'polished';
 
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 32px;
   height: 100%;
 `;
 
 export const ContentBoard = styled.div`
   display: flex;
   gap: 12px;
-  
+
   height: 100%;
   width: 100%;
+
+  padding-left: 30px;
 `;
 
 export const CardBord = styled.div`
   display: flex;
   flex-direction: column;
-  background-color: #E3E5EA;
+  background-color: #e3e5ea;
 
   width: 320px;
 
@@ -73,7 +76,7 @@ export const InfoBoard = styled.div`
 
     span {
       font-size: 14px;
-      color: #6C757D;
+      color: #6c757d;
       font-weight: 700;
     }
   }
