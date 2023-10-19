@@ -202,3 +202,9 @@ export const DeliveriesTitle = styled.div`
   font-size: var(--text-small-lg);
   font-weight: var(--weight-medium);
 `;
+
+export const CreateTicketOption = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;

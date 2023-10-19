@@ -17,7 +17,9 @@ function useColumn() {
         necessary_upload: 'false',
         email_alert: 'false',
         necessary_responsible: 'false',
-        previous_step: 0
+        manager_approve: 'false',
+        tenant_approve: 'false',
+        previous_step: '0'
         // tasks: [],
       };
 
@@ -42,8 +44,14 @@ function useColumn() {
 
   const updateParcialColumn = useCallback(
     (id: string, name: string, value: string) => {
-      column[id][name] = value;
-      setColumn([...column]);
+      if (name === 'previous_step') {
+        column[id][name] = value.replace(/[^\d.-]/g, '');
+        setColumn([...column]);
+      } else {
+        column[id][name] = value;
+        setColumn([...column]);
+      }
+      // column[id][name] = value.replace(/[^\d.-]/g, '');
     },
     [column, setColumn]
   );

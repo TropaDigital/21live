@@ -1,8 +1,10 @@
 // Libraries
 import CountUp from 'react-countup';
 // Icons
-import { BiGitBranch, BiGroup, BiPaint } from 'react-icons/bi';
-import { FiAlertOctagon, FiAlertTriangle } from 'react-icons/fi';
+import { BiPaint } from 'react-icons/bi';
+import { FiAlertTriangle } from 'react-icons/fi';
+import { BsExclamationSquare } from 'react-icons/bs';
+import { IconBranch, IconGroup } from '../../../assets/icons';
 
 // Styles
 import { Container } from './styles';
@@ -14,18 +16,18 @@ interface Props {
 }
 
 const icons = {
-  info: <FiAlertTriangle size={28} />,
-  success: <BiGroup size={28} />,
-  danger: <BiGitBranch size={28} />,
-  warning: <FiAlertOctagon size={28} />,
-  creation: <BiPaint size={28} />
+  info: <FiAlertTriangle size={24} />,
+  success: <IconGroup />,
+  danger: <BsExclamationSquare size={24} />,
+  warning: <IconBranch />,
+  creation: <BiPaint size={24} />
 };
 
 export function CardDataDash({ type, data, description }: Props) {
   return (
     <Container type={type}>
       <div className="info">
-        {icons[type || 'info']}
+        <span>{description}</span>
         <CountUp start={0} end={data} delay={0}>
           {({ countUpRef }) => (
             <div>
@@ -34,8 +36,7 @@ export function CardDataDash({ type, data, description }: Props) {
           )}
         </CountUp>
       </div>
-
-      <span>{description}</span>
+      <div className="info-icon">{icons[type || 'info']}</div>
     </Container>
   );
 }

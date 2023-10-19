@@ -217,7 +217,8 @@ export default function CreateTasks() {
     user_id: '',
     start_job: '',
     end_job: '',
-    step: ''
+    step: '',
+    gen_ticket: ''
   });
   const [search, setSearch] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -307,6 +308,7 @@ export default function CreateTasks() {
   const [selectUserModal, setSelectUserModal] = useState<boolean>(false);
   const [estimatedTime, setEstimatedTime] = useState<string>('');
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
+  const [ticketAsk, setTicketAsk] = useState<string | null>('');
 
   const DeliveryDefault: DeliveryProps = {
     deliveryId: 1,
@@ -318,6 +320,7 @@ export default function CreateTasks() {
   };
   const [DTODelivery, setDTODelivery] = useState<any[]>([DeliveryDefault]);
   // const [dataFlow, setDataFlow] = useState<any[]>();
+  const [submitState, setSubmitState] = useState<Date>(new Date());
 
   const addDelivery = () => {
     const newDelivery: DeliveryProps = {
@@ -350,16 +353,24 @@ export default function CreateTasks() {
     }
 
     if (location.state !== null && location.state.task_id) {
+      const selectedInfos: any = dataProjects?.filter(
+        (obj: any) => obj.product_id === location.state.product_id
+      );
       fetchProjects();
       setProductsArray([]);
       setDTOForm(location.state);
-      setSelectedProject(location.state.product_id);
-      setProductsArray(location.state.deadlines[0]?.products);
-      setDTODelivery(location.state.deadlines);
-      if (location.state.deadlines.length > 1) {
+      setProductsArray(location.state.deliverys[0]?.products);
+      setDTODelivery(location.state.deliverys);
+      if (dataProjects) {
+        setSelectedProject(selectedInfos[0]);
+      }
+      if (location.state.deliverys.length > 1) {
         setDeliveriesSplit('split');
       }
     }
+
+    const ticketInfo = localStorage.getItem('@live:ticket');
+    setTicketAsk(ticketInfo);
   }, [location]);
 
   // useEffect(() => {
@@ -1236,6 +1247,20 @@ export default function CreateTasks() {
         })
       );
 
+      if (DTOForm.gen_ticket === '' && ticketAsk === 'never') {
+        setDTOForm((prevState: any) => ({
+          ...prevState,
+          ['gen_ticket']: 'false'
+        }));
+      }
+
+      if (DTOForm.gen_ticket === '' && ticketAsk === 'always') {
+        setDTOForm((prevState: any) => ({
+          ...prevState,
+          ['gen_ticket']: 'true'
+        }));
+      }
+
       const {
         title,
         tenant_id,
@@ -1250,41 +1275,9 @@ export default function CreateTasks() {
         copywriting_date_end,
         start_job,
         end_job,
-        step
+        step,
+        gen_ticket
       } = DTOForm;
-
-      // if (user_id === '') {
-      //   addToast({
-      //     title: 'Atenção',
-      //     description: 'Responsável é obrigatório!',
-      //     type: 'warning'
-      //   });
-      //   throw setErrorInput('user_id', 'Responsável inicial da tarefa é obrigatório!');
-      // } else {
-      //   setErrorInput('user_id', undefined);
-      // }
-
-      // if (start_job === '') {
-      //   addToast({
-      //     title: 'Atenção',
-      //     description: 'Hora inicial da tarefa é obrigatória!!',
-      //     type: 'warning'
-      //   });
-      //   throw setErrorInput('start_job', 'Hora inicial da tarefa é obrigatória!');
-      // } else {
-      //   setErrorInput('start_job', undefined);
-      // }
-
-      // if (end_job === '') {
-      //   addToast({
-      //     title: 'Atenção',
-      //     description: 'Hora final da tarefa é obrigatória!',
-      //     type: 'warning'
-      //   });
-      //   throw setErrorInput('end_job', 'Hora final da tarefa é obrigatória!!');
-      // } else {
-      //   setErrorInput('end_job', undefined);
-      // }
 
       if (tasksType === 'livre') {
         const createNewData = {
@@ -1303,6 +1296,7 @@ export default function CreateTasks() {
           end_job,
           start_job,
           files: fileArray,
+          gen_ticket,
           deadlines: [
             {
               date_end: DTOForm?.creation_date_end,
@@ -1360,7 +1354,8 @@ export default function CreateTasks() {
           start_job,
           files: fileArray,
           deadlines: [deadline],
-          step
+          step,
+          gen_ticket
         };
 
         if (requester_id === '') {
@@ -1399,7 +1394,8 @@ export default function CreateTasks() {
             copywriting_date_end,
             copywriting_description,
             deadlines: deadlines,
-            step
+            step,
+            gen_ticket
           };
 
           if (requester_id === '') {
@@ -1430,13 +1426,14 @@ export default function CreateTasks() {
             start_job,
             flow_id,
             description,
-            // files: fileArray,
+            files: fileArray,
             creation_description,
             creation_date_end,
             copywriting_date_end,
             copywriting_description,
             deadlines: deadlines,
-            step
+            step,
+            gen_ticket
           };
 
           if (location.state !== null) {
@@ -1470,10 +1467,8 @@ export default function CreateTasks() {
           description: e.response.data.message
         });
       }
-
-      // setErros(getValidationErrors(e.response.data.result))
     }
-  }, [DTOForm, addToast, productsArray, tasksType, user, DTODelivery]);
+  }, []);
 
   const selectedProjectInfos = (e: any) => {
     if (e.name === 'tenant_id') {
@@ -1562,6 +1557,9 @@ export default function CreateTasks() {
   };
 
   const handleDeleteDelivery = (id: any) => {
+    if (DTODelivery.length === 1) {
+      setDeliveriesSplit('no-split');
+    }
     setDTODelivery(DTODelivery.filter((obj) => obj.deliveryId !== id));
   };
 
@@ -1614,21 +1612,27 @@ export default function CreateTasks() {
     setDTOForm((prevState: any) => ({ ...prevState, ['end_job']: values.end_job }));
 
     setSelectUserModal(false);
-    setTimeout(() => {
-      if (DTOForm.end_job !== '' && DTOForm.start_job !== '' && DTOForm.user_id !== '') {
-        handleOnSubmit();
-        console.log('log do submit', DTOForm);
-      } else {
-        handleCreateTask();
-        console.log('log do create task', DTOForm);
-      }
-    }, 1200);
+    setSubmitState(new Date());
   };
 
-  const handleCreateTask = () => {
-    console.log('log inside create task', DTOForm);
+  useEffect(() => {
     if (DTOForm.end_job !== '' && DTOForm.start_job !== '' && DTOForm.user_id !== '') {
       handleOnSubmit();
+    }
+  }, [submitState]);
+
+  const handleGenerateTicket = (value: boolean) => {
+    if (value) {
+      setDTOForm((prevState: any) => ({
+        ...prevState,
+        ['gen_ticket']: 'true'
+      }));
+    }
+    if (!value) {
+      setDTOForm((prevState: any) => ({
+        ...prevState,
+        ['gen_ticket']: 'false'
+      }));
     }
   };
 
@@ -1664,9 +1668,14 @@ export default function CreateTasks() {
     <>
       <ContainerWrapper>
         <HeaderStepsPage
-          title="Criar nova tarefa"
+          title={
+            location.state !== null && location.state.task_id
+              ? 'Editar tarefa'
+              : 'Criar nova tarefa'
+          }
           backButton={createStep <= 1}
           stepSelected={createStep}
+          maxStep={tasksType !== 'livre' ? 4 : 5}
           backPage="/tarefas"
         />
 
@@ -1742,6 +1751,7 @@ export default function CreateTasks() {
                     // placeholder="00/00/0000"
                     name="dateStart"
                     type="date"
+                    max={'9999-12-31'}
                     icon={BiCalendar}
                     onChange={(e) => handleTaskDeliveries('dateStart', e.target.value)}
                     value={DTOForm.copywriting_date_end}
@@ -1753,6 +1763,7 @@ export default function CreateTasks() {
                     placeholder="00/00/0000"
                     name="creationDate"
                     type="date"
+                    max={'9999-12-31'}
                     icon={BiCalendar}
                     onChange={(e) => handleTaskDeliveries('creationDate', e.target.value)}
                     value={DTOForm.creation_date_end}
@@ -1865,7 +1876,7 @@ export default function CreateTasks() {
                     selectedProducts={productsArray}
                     createTasks={handleSelectUserForTask}
                     editTasks={() => {
-                      setCreateStep(2);
+                      setCreateStep(1);
                       setTaskEdit(true);
                     }}
                     taskSummary={DTOForm}
@@ -1873,9 +1884,10 @@ export default function CreateTasks() {
                     summaryExtrainfos={selectedSummaryInfos}
                     taskType={tasksType}
                     updateTask={location.state !== null}
-                    handleInputChange={handleChangeInput}
+                    handleTicket={handleGenerateTicket}
                     estimatedtotalTime={() => ''}
                     taskFiles={uploadedFiles}
+                    ticketAsk={ticketAsk}
                     error={error}
                   />
                 </>
@@ -1900,7 +1912,7 @@ export default function CreateTasks() {
                   selectedProducts={DTODelivery}
                   createTasks={handleSelectUserForTask}
                   editTasks={() => {
-                    setCreateStep(2);
+                    setCreateStep(1);
                     setTaskEdit(true);
                   }}
                   taskSummary={DTOForm}
@@ -1908,9 +1920,10 @@ export default function CreateTasks() {
                   summaryExtrainfos={selectedSummaryInfos}
                   taskType={tasksType}
                   updateTask={location.state !== null}
-                  handleInputChange={handleChangeInput}
+                  handleTicket={handleGenerateTicket}
                   estimatedtotalTime={setEstimatedTime}
                   taskFiles={uploadedFiles}
+                  ticketAsk={ticketAsk}
                   error={error}
                 />
               )}
@@ -1919,7 +1932,7 @@ export default function CreateTasks() {
                   selectedProducts={productsArray}
                   createTasks={handleSelectUserForTask}
                   editTasks={() => {
-                    setCreateStep(2);
+                    setCreateStep(1);
                     setTaskEdit(true);
                   }}
                   taskSummary={DTOForm}
@@ -1927,9 +1940,10 @@ export default function CreateTasks() {
                   summaryExtrainfos={selectedSummaryInfos}
                   taskType={tasksType}
                   updateTask={location.state !== null}
-                  handleInputChange={handleChangeInput}
+                  handleTicket={handleGenerateTicket}
                   estimatedtotalTime={() => ''}
                   taskFiles={uploadedFiles}
+                  ticketAsk={ticketAsk}
                   error={error}
                 />
               )}

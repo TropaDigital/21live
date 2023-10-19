@@ -1,23 +1,24 @@
+// Icons
+import { FiClock, FiMoreHorizontal } from 'react-icons/fi';
+import { RiStackLine } from 'react-icons/ri';
 
-import { FiClock, FiMoreHorizontal } from "react-icons/fi";
-import { RiStackLine } from "react-icons/ri";
-
-import { 
-  Container, 
-  HeaderColumn, 
-  TitleColumn, 
-  ButtonHeaderColumn, 
+// Styles
+import {
+  Container,
+  HeaderColumn,
+  TitleColumn,
+  ButtonHeaderColumn,
   InfoColumn,
-  MainColumn,
-} from "./styles";
+  MainColumn
+} from './styles';
 
 interface ColumnProps {
   title: string;
+  taskLength: number;
   children: React.ReactNode;
 }
 
-export default function Column({ title, children }: ColumnProps) {
-
+export default function Column({ title, taskLength, children }: ColumnProps) {
   return (
     <Container>
       <HeaderColumn>
@@ -30,17 +31,15 @@ export default function Column({ title, children }: ColumnProps) {
       <InfoColumn>
         <div className="infoBoxIcon">
           <RiStackLine color="#6C757D" />
-          <span>5</span>
+          <span>{taskLength}</span>
         </div>
-        <div className="infoBoxIcon">
+        {/* <div className="infoBoxIcon">
           <FiClock color="#6C757D" />
           <span>45h</span>
-        </div>
+        </div> */}
       </InfoColumn>
 
-      <MainColumn>
-        {children}
-      </MainColumn>
+      <MainColumn>{children}</MainColumn>
     </Container>
-  )
+  );
 }

@@ -1,4 +1,3 @@
-import MascoteImage from '../../images/Mascote.png'
 import { CardWellcomeDash } from './styles';
 
 interface Props {
@@ -6,16 +5,11 @@ interface Props {
 }
 
 export function CardWelcomeDash({ user }: Props) {
- 
   return (
     <CardWellcomeDash>
       <div className="infoCardWellcome">
-        <h1>{`Ola. ${user}!`}</h1>
-        <span>Dashboard com os principais indicadores dos seus times e clientes.</span>
-      </div>
-
-      <div className="WellcomeImage">
-        <img src={MascoteImage} alt="wellcome" />
+        <h1>{`Bem-vindo, ${user}`}</h1>
+        <span>Acompanhe e gerencie seus projetos e tarefas</span>
       </div>
     </CardWellcomeDash>
   );

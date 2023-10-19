@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable import-helpers/order-imports */
 
 // React
@@ -144,7 +145,9 @@ export default function TaskTable({
                         {task.time_consumed}
                       </span>
                       <ProgressBar
-                        totalHours={convertToMilliseconds(task.total_time)}
+                        totalHours={convertToMilliseconds(
+                          task.total_time !== 'undefined' ? task.total_time : task.time_consumed
+                        )}
                         restHours={convertToMilliseconds(task.time_consumed)}
                       />
                     </td>
@@ -200,7 +203,7 @@ export default function TaskTable({
                       >
                         {task.status === 'Em Andamento'
                           ? 'Em Andamento'
-                          : task.status === 'Concluída'
+                          : task.status === 'Concluida'
                           ? 'Concluída'
                           : 'Pendente'}
                       </div>
@@ -245,15 +248,15 @@ export default function TaskTable({
 
             <tbody>
               <tr>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
+                <td>Sem tarefa</td>
+                <td>Sem tarefa</td>
+                <td>Sem tarefa</td>
+                <td>Sem tarefa</td>
+                <td>Sem tarefa</td>
+                <td>Sem tarefa</td>
+                <td>Sem tarefa</td>
+                <td>Sem tarefa</td>
+                <td>Sem tarefa</td>
               </tr>
             </tbody>
           </table>

@@ -2,6 +2,7 @@ import React from 'react';
 
 import { AuthProvider } from './AuthContext';
 import { ToastProvider } from './toast';
+import { StopwatchProvider } from './stopWatch';
 
 type BoxProps = {
   children: React.ReactNode; // 👈️ type children
@@ -10,7 +11,9 @@ type BoxProps = {
 const AppProvider: React.FC<BoxProps> = ({ children }) => {
   return (
     <AuthProvider>
-      <ToastProvider>{children}</ToastProvider>
+      <StopwatchProvider>
+        <ToastProvider>{children}</ToastProvider>
+      </StopwatchProvider>
     </AuthProvider>
   );
 };

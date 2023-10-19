@@ -22,20 +22,18 @@ import PageNotFound from '../pages/NotFound';
 import Board from '../pages/Board';
 
 // COMPONENTES
-import ComponentsForms from '../pages/components/ComponentsForms';
-import ComponentsPage from '../pages/components/ComponentsPage';
-import ComponentTable from '../pages/components/ComponentTable';
 import ListMeeting from '../pages/Meeting/ListMeeting';
 import TaskList from '../pages/Tasks/TaskList';
 import CreateProject from '../pages/Projects/CreateProject';
 import CreateTasks from '../pages/Tasks/CreateTasks';
-import ViewTaskList from '../pages/Tasks/ViewTasks';
+import ViewTaskList from '../pages/Tasks/ViewYourTasks';
 import WorkingProduct from '../pages/Products/WorkingProduct';
 import ViewDelivery from '../pages/Tasks/ViewDelivery';
 import ViewProductsDeliveries from '../pages/Products/ViewProduct';
 import Requests from '../pages/Requests/ListRequests';
 import ViewRequest from '../pages/Requests/ViewRequests';
 import InstanceLogin from '../pages/Login/InstanceLogin';
+import ViewTask from '../pages/Tasks/ViewTask';
 
 function RoutesAll() {
   return (
@@ -43,6 +41,7 @@ function RoutesAll() {
       <Route path="/login/:slug" element={<InstanceLogin />} />
 
       <Route path="/login" element={<SignIn />} />
+
       <Route path="/cadastrar" element={<SignUp />} />
 
       <Route
@@ -210,6 +209,15 @@ function RoutesAll() {
           path="/tarefa/:id"
           element={
             <PrivateRoutes>
+              <ViewTask />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/entregas/:id"
+          element={
+            <PrivateRoutes>
               <ViewDelivery />
             </PrivateRoutes>
           }
@@ -238,33 +246,6 @@ function RoutesAll() {
           element={
             <PrivateRoutes>
               <ListMeeting />
-            </PrivateRoutes>
-          }
-        />
-
-        {/* <Route
-          path="/components"
-          element={
-            <PrivateRoutes>
-              <ComponentsPage />
-            </PrivateRoutes>
-          }
-        /> */}
-
-        {/* <Route
-          path="/form"
-          element={
-            <PrivateRoutes>
-              <ComponentsForms />
-            </PrivateRoutes>
-          }
-        /> */}
-
-        <Route
-          path="/tabela"
-          element={
-            <PrivateRoutes>
-              <ComponentTable />
             </PrivateRoutes>
           }
         />

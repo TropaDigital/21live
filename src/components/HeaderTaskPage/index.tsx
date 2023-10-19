@@ -30,6 +30,7 @@ interface HeaderTaskProps {
   nextStepInfo?: any;
   isInsideProduct?: boolean;
   backToDelivery?: () => void;
+  hideButtonNext?: boolean;
 }
 
 interface TitleProps {
@@ -57,7 +58,8 @@ export default function HeaderOpenTask({
   sendToNext,
   nextStepInfo,
   isInsideProduct,
-  backToDelivery
+  backToDelivery,
+  hideButtonNext
 }: HeaderTaskProps) {
   const navigate = useNavigate();
   const [nextSteps, setNextSteps] = useState<StepProps>({
@@ -97,7 +99,8 @@ export default function HeaderOpenTask({
           <TitleTopInfos>
             <div className="id">#{String(title.idNumber).padStart(5, '0')}</div>
             <div className="task-name">
-              | {String(title.numberTask).padStart(2, '0')} - {title.titleTask}
+              | {title.numberTask !== '' ? `${String(title.numberTask).padStart(2, '0')} - ` : ''}
+              {title.titleTask}
               {/* - {title.monthTask} */}
             </div>
           </TitleTopInfos>
@@ -106,25 +109,25 @@ export default function HeaderOpenTask({
           </TitleBottomInfos>
         </HeaderTitleInfos>
 
-        {disableButton && buttonType === 'send' && (
+        {disableButton && buttonType === 'send' && !hideButtonNext && (
           <ButtonDefault typeButton="blocked">
             Enviar tarefa para {nextSteps?.name !== '' ? nextSteps?.name?.toLowerCase() : 'revisão'}
             <HiOutlineArrowRight />
           </ButtonDefault>
         )}
-        {!disableButton && buttonType === 'send' && (
+        {!disableButton && buttonType === 'send' && !hideButtonNext && (
           <ButtonDefault typeButton="secondary" onClick={sendToNext}>
             Enviar tarefa para {nextSteps?.name !== '' ? nextSteps?.name?.toLowerCase() : 'revisão'}
             <HiOutlineArrowRight />
           </ButtonDefault>
         )}
-        {disableButton && buttonType === 'finish' && (
+        {disableButton && buttonType === 'finish' && !hideButtonNext && (
           <ButtonDefault typeButton="blocked">
             Marcar entrega como concluída
             <HiOutlineArrowRight />
           </ButtonDefault>
         )}
-        {!disableButton && buttonType === 'finish' && (
+        {!disableButton && buttonType === 'finish' && !hideButtonNext && (
           <ButtonDefault typeButton="secondary" onClick={sendToNext}>
             Marcar entrega como concluída
             <HiOutlineArrowRight />

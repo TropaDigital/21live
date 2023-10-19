@@ -55,3 +55,27 @@ export const SaveButton = styled.div`
   width: 100%;
   height: 40px;
 `;
+
+export const ModalButton = styled.div`
+  width: 20px;
+  height: 20px;
+  transition: all 0.3s;
+  cursor: pointer;
+
+  position: absolute;
+  top: 20px;
+  right: 20px;
+
+  svg {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--gray-500);
+  }
+
+  &:hover {
+    transform: scale(1.3);
+    svg {
+      color: var(--Danger);
+    }
+  }
+`;

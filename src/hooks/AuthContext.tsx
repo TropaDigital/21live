@@ -28,6 +28,7 @@ interface AuthState {
   token: string;
   user: User;
   roles: any;
+  ticket_generate: string | any;
 }
 
 interface SignInCredentials {
@@ -53,12 +54,13 @@ function AuthProvider({ children }: TransactionsProviderProps) {
   const [data, setData] = useState<AuthState>(() => {
     const token = localStorage.getItem('@live:token');
     const user = localStorage.getItem('@live:user');
+    const ticket_generate = localStorage.getItem('@live:ticket');
     const roles = localStorage.getItem('@live:rules');
     const permissions = localStorage.getItem('@live:permissions');
 
     if (token && user) {
       api.defaults.headers.authorization = `Bearer ${token}`;
-      return { token, user: JSON.parse(user), roles, permissions };
+      return { token, user: JSON.parse(user), roles, permissions, ticket_generate };
     }
     return {} as AuthState;
   });
@@ -70,15 +72,16 @@ function AuthProvider({ children }: TransactionsProviderProps) {
       tenant_id
     });
 
-    const { token, user, roles } = response.data.result;
+    const { token, user, roles, ticket_generate } = response.data.result;
     api.defaults.headers.authorization = `Bearer ${token}`;
 
     localStorage.setItem('@live:token', token);
     localStorage.setItem('@live:user', JSON.stringify(user));
     localStorage.setItem('@live:rules', roles);
+    localStorage.setItem('@live:ticket', ticket_generate);
     localStorage.setItem('@live:permissions', JSON.stringify(user.permissions));
 
-    setData({ token, user, roles });
+    setData({ token, user, roles, ticket_generate });
   }, []);
 
   const signOut = useCallback(() => {
@@ -86,6 +89,7 @@ function AuthProvider({ children }: TransactionsProviderProps) {
     localStorage.removeItem('@live:user');
     localStorage.removeItem('@live:rules');
     localStorage.removeItem('@live:permissions');
+    localStorage.removeItem('@live:ticket');
     localStorage.removeItem('elapsedTime');
     sessionStorage.removeItem('tenant_id');
     sessionStorage.removeItem('bucket');
@@ -100,10 +104,11 @@ function AuthProvider({ children }: TransactionsProviderProps) {
       setData({
         token: data.token,
         user,
-        roles: data.roles
+        roles: data.roles,
+        ticket_generate: data.ticket_generate
       });
     },
-    [setData, data.token, data.roles]
+    [data.token, data.roles, data.ticket_generate]
   );
 
   return (

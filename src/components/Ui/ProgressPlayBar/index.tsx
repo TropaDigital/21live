@@ -1,22 +1,33 @@
+// Icons
+import { MdOutlineSubdirectoryArrowRight } from 'react-icons/md';
+import { FaPlay } from 'react-icons/fa';
 
-import { MdOutlineSubdirectoryArrowRight } from "react-icons/md";
-import { convertToMilliseconds } from "../../../utils/convertToMilliseconds";
-import ProgressBar from "../ProgressBar";
-import { Container, HeaderPlayBar } from "./styles";
-import { FaPlay } from "react-icons/fa";
+// Utils
+import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 
-export default function ProgressPlayBar() {
+// Components
+import ProgressBar from '../ProgressBar';
 
+// Styles
+import { Container, HeaderPlayBar } from './styles';
+
+interface TimeProps {
+  totalTime: string | undefined;
+  timeConsumed: string | undefined;
+}
+
+export default function ProgressPlayBar({ totalTime, timeConsumed }: TimeProps) {
   return (
     <Container>
       <HeaderPlayBar>
-
         <div className="sectionPlayHoursBars">
-          <button>
+          <div>
             <FaPlay color="#0046B5" />
-          </button>
+          </div>
 
-          <span className="timePlayBar">05:50:24</span>
+          <span className="timePlayBar">{timeConsumed} /</span>
+
+          <span className="timePlayBar">{totalTime !== 'undefined' ? totalTime : 'Livre'}</span>
         </div>
 
         <div className="qtdTaskPlayBar">
@@ -25,11 +36,11 @@ export default function ProgressPlayBar() {
         </div>
       </HeaderPlayBar>
 
-      <ProgressBar 
-        restHours={convertToMilliseconds('05:10:35')}
-        totalHours={convertToMilliseconds('10:00:00')}
+      <ProgressBar
+        restHours={convertToMilliseconds(timeConsumed)}
+        totalHours={convertToMilliseconds(totalTime !== 'undefined' ? totalTime : timeConsumed)}
         isRadius
       />
     </Container>
-  )
+  );
 }

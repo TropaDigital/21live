@@ -54,7 +54,8 @@ export default function InfoGeral({
     return {
       value: row.tenant_id,
       label: row.name,
-      image: row.bucket
+      image: row.bucket,
+      color: row.colormain
     };
   });
 
@@ -189,6 +190,7 @@ export default function InfoGeral({
           label="Data inicial"
           name="date_start"
           type="date"
+          max={'9999-12-31'}
           icon={BiCalendar}
           value={data.date_start}
           onChange={handleInputChange}
@@ -200,6 +202,7 @@ export default function InfoGeral({
           label="Data final"
           name="date_end"
           type="date"
+          max={'9999-12-31'}
           icon={BiCalendar}
           value={data.date_end}
           onChange={handleInputChange}

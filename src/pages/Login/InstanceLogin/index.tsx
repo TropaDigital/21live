@@ -15,7 +15,7 @@ export default function InstanceLogin() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const slug: string | undefined = location.pathname.split('/').pop();
+    const slug: string | undefined = location.pathname.split('/')[2];
 
     async function checkIfHaveAccess() {
       try {

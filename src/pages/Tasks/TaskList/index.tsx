@@ -19,7 +19,7 @@ import ButtonTable from '../../../components/Buttons/ButtonTable';
 import HeaderPage from '../../../components/HeaderPage';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { Table } from '../../../components/Table';
-import { FilterGroup, TableHead } from '../../../components/Table/styles';
+import { TableHead } from '../../../components/Table/styles';
 import Alert from '../../../components/Ui/Alert';
 import { ContainerDefault } from '../../../components/UiElements/styles';
 import Pagination from '../../../components/Pagination';
@@ -31,6 +31,7 @@ import {
   SummaryTaskInfo
 } from '../ComponentSteps/SummaryTasks/styles';
 import ProgressBar from '../../../components/Ui/ProgressBar';
+import Loader from '../../../components/LoaderSpin';
 
 // Utils
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
@@ -81,7 +82,9 @@ export default function TaskList() {
   // });
   const [selected, setSelected] = useState(1);
   const [search, setSearch] = useState('');
-  const { data, pages, fetchData } = useFetch<any[]>(`tasks?search=${search}&page=${selected}`);
+  const { data, pages, fetchData, isFetching } = useFetch<any[]>(
+    `tasks?search=${search}&page=${selected}`
+  );
   const [searchTerm, setSearchTerm] = useState('');
   const { isLoading, debouncedCallback } = useDebouncedCallback(
     (search: string) => setSearch(search),
@@ -108,34 +111,34 @@ export default function TaskList() {
     }
   };
 
-  const handleOpenModalView = (task: any) => {
-    setModalViewTask({
-      isOpen: true,
-      type: `Resumo da tarefa: ${task.title}`,
-      task: {
-        task_id: task.task_id,
-        title: task.title,
-        tenant_id: task.tenant_id,
-        tenant: task.tenant,
-        total_time: task.total_time,
-        product_id: task.product_id,
-        product_period: task.product_period,
-        project: task.project,
-        project_category: task.project_category,
-        type: task.type,
-        flow_id: task.flow_id,
-        flow: task.flow,
-        description: task.description,
-        creation_description: task.creation_description,
-        creation_date_end: task.creation_date_end,
-        copywriting_description: task.copywriting_description,
-        copywriting_date_end: task.copywriting_date_end,
-        deadlines: task.deadlines,
-        step: task.step,
-        name: task.name
-      }
-    });
-  };
+  // const handleOpenModalView = (task: any) => {
+  //   setModalViewTask({
+  //     isOpen: true,
+  //     type: `Resumo da tarefa: ${task.title}`,
+  //     task: {
+  //       task_id: task.task_id,
+  //       title: task.title,
+  //       tenant_id: task.tenant_id,
+  //       tenant: task.tenant,
+  //       total_time: task.total_time,
+  //       product_id: task.product_id,
+  //       product_period: task.product_period,
+  //       project: task.project,
+  //       project_category: task.project_category,
+  //       type: task.type,
+  //       flow_id: task.flow_id,
+  //       flow: task.flow,
+  //       description: task.description,
+  //       creation_description: task.creation_description,
+  //       creation_date_end: task.creation_date_end,
+  //       copywriting_description: task.copywriting_description,
+  //       copywriting_date_end: task.copywriting_date_end,
+  //       deadlines: task.deadlines,
+  //       step: task.step,
+  //       name: task.name
+  //     }
+  //   });
+  // };
 
   const handleCloseModal = () => {
     setModalViewTask({
@@ -182,29 +185,8 @@ export default function TaskList() {
   async function getInfoTask(id: number) {
     try {
       const response = await api.get(`tasks/${id}`);
-      const task = {
-        title: response.data.result[0].title,
-        tenant_id: response.data.result[0].tenant_id,
-        tenant: response.data.result[0].tenant,
-        total_time: response.data.result[0].total_time,
-        product_id: response.data.result[0].product_id,
-        product_period: response.data.result[0].product_period,
-        project: response.data.result[0].project,
-        project_category: response.data.result[0].project_category,
-        project_id: id,
-        flow_id: response.data.result[0].flow_id,
-        flow: response.data.result[0].flow,
-        description: response.data.result[0].description,
-        creation_description: response.data.result[0].creation_description,
-        creation_date_end: response.data.result[0].creation_date_end,
-        copywriting_description: response.data.result[0].copywriting_description,
-        copywriting_date_end: response.data.result[0].copywriting_date_end,
-        deadlines: response.data.result[0].deliverys,
-        step: response.data.result[0].step,
-        type: response.data.result[0].type
-      };
       // console.log('log do response', response.data.result);
-      navigate('/criar-tarefa', { state: task });
+      navigate('/criar-tarefa', { state: response.data.result[0] });
     } catch (error: any) {
       addToast({
         type: 'danger',
@@ -224,6 +206,14 @@ export default function TaskList() {
       console.log('log error change urgency of task', error);
     }
   }
+
+  const handleViewTask = (taskId: string) => {
+    console.log('log do id da task para ser visualizada', taskId);
+    const idTask = {
+      id: taskId
+    };
+    navigate(`/tarefa/${taskId}`, { state: idTask });
+  };
 
   // const { formData, handleOnChange } = useForm({
   //   tenant_id: '',
@@ -329,21 +319,40 @@ export default function TaskList() {
         </Link>
       </HeaderPage>
 
-      <Table>
-        <TableHead>
-          <div className="groupTable">
-            <h2>
-              Lista de tarefas{' '}
-              {data !== null && data?.length > 0 ? (
-                <strong>
-                  {data?.length < 1 ? `${data?.length} tarefa` : `${data?.length} tarefas`}{' '}
-                </strong>
-              ) : (
-                <strong>0 tarefa</strong>
-              )}
-            </h2>
-          </div>
-          <div>
+      {isFetching && <Loader />}
+
+      {!isFetching && (
+        <Table>
+          <TableHead>
+            <div className="groupTable">
+              <h2>
+                Lista de tarefas{' '}
+                {pages !== null && pages?.total > 0 ? (
+                  <strong>
+                    {pages?.total <= 1 ? `${pages?.total} tarefa` : `${pages?.total} tarefas`}{' '}
+                  </strong>
+                ) : (
+                  <strong>0 tarefa</strong>
+                )}
+              </h2>
+            </div>
+            <div>
+              <InputDefault
+                label=""
+                name="search"
+                placeholder="Buscar..."
+                onChange={(event) => {
+                  setSearchTerm(event.target.value);
+                  debouncedCallback(event.target.value);
+                }}
+                value={searchTerm}
+                icon={BiSearchAlt}
+                isLoading={isLoading}
+                className="search-field"
+              />
+            </div>
+          </TableHead>
+          {/* <FilterGroup>
             <InputDefault
               label=""
               name="search"
@@ -357,140 +366,136 @@ export default function TaskList() {
               isLoading={isLoading}
               className="search-field"
             />
-          </div>
-        </TableHead>
-        {/* <FilterGroup>
-          <InputDefault
-            label=""
-            name="search"
-            placeholder="Buscar..."
-            onChange={(event) => {
-              setSearchTerm(event.target.value);
-              debouncedCallback(event.target.value);
-            }}
-            value={searchTerm}
-            icon={BiSearchAlt}
-            isLoading={isLoading}
-            className="search-field"
-          />
 
-          <ButtonDefault typeButton="light">
-            <BiFilter />
-            Filtros
-          </ButtonDefault> 
-        </FilterGroup> */}
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Título</th>
-              <th>Tempo utilizado</th>
-              <th>Tempo estimado</th>
-              <th>Status</th>
-              <th>Cliente</th>
-              {/* <th>Equipe</th> */}
-              <th style={{ color: '#F9FAFB' }}>-</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data !== null &&
-              data?.length > 0 &&
-              data?.map((row) => (
-                <tr key={row.task_id}>
-                  <td>#{String(row.task_id).padStart(5, '0')}</td>
-                  <td style={{ textTransform: 'capitalize' }}>{row.title}</td>
-                  <td
-                    style={{
-                      width: '180px',
-                      textAlign: 'left'
-                    }}
-                  >
-                    <span style={{ marginBottom: '4px', display: 'block' }}>
-                      {row.time_consumed}
-                    </span>
-                    <ProgressBar
-                      totalHours={convertToMilliseconds(row?.total_time)}
-                      restHours={convertToMilliseconds(row.time_consumed)}
-                    />
-                  </td>
-                  <td>{row.total_time !== 'undefined' ? row.total_time : '00:00:00'}</td>
-                  <td>
-                    <StatusTable
-                      className={
-                        row.status === 'Em Andamento'
-                          ? 'status progress'
-                          : row.status === 'Concluida'
-                          ? 'status finished'
-                          : 'status'
-                      }
+            <ButtonDefault typeButton="light">
+              <BiFilter />
+              Filtros
+            </ButtonDefault> 
+          </FilterGroup> */}
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Tempo utilizado</th>
+                <th>Tempo estimado</th>
+                <th>Status</th>
+                <th>Cliente</th>
+                {/* <th>Equipe</th> */}
+                <th style={{ color: '#F9FAFB' }}>-</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data !== null &&
+                data?.length > 0 &&
+                data?.map((row) => (
+                  <tr key={row.task_id}>
+                    <td>#{String(row.task_id).padStart(5, '0')}</td>
+                    <td
+                      style={{ textTransform: 'capitalize', cursor: 'pointer' }}
+                      onClick={() => handleViewTask(row.task_id)}
                     >
-                      {row.status === 'Em Andamento'
-                        ? 'Em progresso'
-                        : row.status === 'Concluida'
-                        ? 'Concluída'
-                        : 'Pendente'}
-                    </StatusTable>
-                  </td>
-                  <td>{row.tenant}</td>
-                  {/* <td>
-                    <Avatar data={avatarAll} />
-                  </td> */}
-                  <td>
-                    <div className="fieldTableClients">
-                      <Flag
-                        style={{ textAlign: 'center' }}
-                        className={row.urgent === 'true' ? 'flagged' : ''}
-                        onClick={() => handleChangeUrgency(row.task_id)}
-                      >
-                        {row.urgent === 'true' ? (
-                          <IconContext.Provider
-                            value={{ color: '#F04438', className: 'global-class-name' }}
-                          >
-                            <FiFlag />
-                          </IconContext.Provider>
-                        ) : (
-                          <IconContext.Provider
-                            value={{ color: '#667085', className: 'global-class-name' }}
-                          >
-                            <FiFlag />
-                          </IconContext.Provider>
+                      {row.title}
+                    </td>
+                    <td
+                      style={{
+                        width: '180px',
+                        textAlign: 'left'
+                      }}
+                    >
+                      <span style={{ marginBottom: '4px', display: 'block' }}>
+                        {row.time_consumed}
+                      </span>
+                      <ProgressBar
+                        totalHours={convertToMilliseconds(
+                          row.total_time !== 'undefined' ? row.total_time : row.time_consumed
                         )}
-                      </Flag>
-                      <ButtonTable typeButton="view" onClick={() => handleOpenModalView(row)} />
-                      <ButtonTable
-                        typeButton="edit"
-                        onClick={() => {
-                          handleEditTask(row);
-                        }}
+                        restHours={convertToMilliseconds(row.time_consumed)}
                       />
-                      <Alert
-                        title="Atenção"
-                        subtitle="Certeza que gostaria de deletar esta Tarefa? Ao excluir esta ação não poderá ser desfeita."
-                        confirmButton={() => handleOnDelete(row.task_id)}
+                    </td>
+                    <td>{row.total_time !== 'undefined' ? row.total_time : '00:00:00'}</td>
+                    <td>
+                      <StatusTable
+                        className={
+                          row.status === 'Em Andamento'
+                            ? 'status progress'
+                            : row.status === 'Concluida'
+                            ? 'status finished'
+                            : 'status'
+                        }
                       >
-                        <ButtonTable typeButton="delete" />
-                      </Alert>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-          </tbody>
+                        {row.status === 'Em Andamento'
+                          ? 'Em progresso'
+                          : row.status === 'Concluida'
+                          ? 'Concluída'
+                          : 'Pendente'}
+                      </StatusTable>
+                    </td>
+                    <td>{row.tenant}</td>
+                    {/* <td>
+                      <Avatar data={avatarAll} />
+                    </td> */}
+                    <td>
+                      <div className="fieldTableClients">
+                        <Flag
+                          style={{ textAlign: 'center' }}
+                          className={row.urgent === 'true' ? 'flagged' : ''}
+                          onClick={() => handleChangeUrgency(row.task_id)}
+                        >
+                          {row.urgent === 'true' ? (
+                            <IconContext.Provider
+                              value={{ color: '#F04438', className: 'global-class-name' }}
+                            >
+                              <FiFlag />
+                            </IconContext.Provider>
+                          ) : (
+                            <IconContext.Provider
+                              value={{ color: '#667085', className: 'global-class-name' }}
+                            >
+                              <FiFlag />
+                            </IconContext.Provider>
+                          )}
+                        </Flag>
+                        {/* <ButtonTable typeButton="view" onClick={() => handleOpenModalView(row)} /> */}
+                        <ButtonTable
+                          typeButton="view"
+                          onClick={() => handleViewTask(row.task_id)}
+                        />
+                        <ButtonTable
+                          typeButton="edit"
+                          onClick={() => {
+                            handleEditTask(row);
+                          }}
+                        />
+                        <Alert
+                          title="Atenção"
+                          subtitle="Certeza que gostaria de deletar esta Tarefa? Ao excluir esta ação não poderá ser desfeita."
+                          confirmButton={() => handleOnDelete(row.task_id)}
+                        >
+                          <ButtonTable typeButton="delete" />
+                        </Alert>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
 
-          <tfoot>
-            <tr>
-              <td colSpan={100}>
-                <Pagination
-                  total={pages.total}
-                  perPage={pages.perPage}
-                  currentPage={selected}
-                  lastPage={pages.lastPage}
-                  onClickPage={(e) => setSelected(e)}
-                />
-              </td>
-            </tr>
-          </tfoot>
-        </table>
-      </Table>
+            <tfoot>
+              <tr>
+                <td colSpan={100}>
+                  <Pagination
+                    total={pages.total}
+                    perPage={pages.perPage}
+                    currentPage={selected}
+                    lastPage={pages.lastPage}
+                    onClickPage={(e) => setSelected(e)}
+                  />
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </Table>
+      )}
 
       {/* Modal view task */}
       <ModalDefault

@@ -37,6 +37,8 @@ import {
 import UploadFiles from '../../../components/Upload/UploadFiles';
 import WrapperEditor from '../../../components/WrapperEditor';
 import Pagination from '../../../components/Pagination';
+import SelectImage from '../../../components/Inputs/SelectWithImage';
+import Loader from '../../../components/LoaderSpin';
 
 // Styles
 import {
@@ -51,8 +53,9 @@ import {
 
 // Libraries
 import moment from 'moment';
+
+// Icons
 import { IconClose } from '../../../assets/icons';
-import SelectImage from '../../../components/Inputs/SelectWithImage';
 
 interface UploadedFilesProps {
   file?: File;
@@ -127,9 +130,9 @@ export default function ListMeeting() {
     dateStart: '',
     dateEnd: ''
   });
-  const [filterOrder, setFilterOrder] = useState('');
+  const [filterOrder, setFilterOrder] = useState('desc');
 
-  const { data, pages, fetchData } = useFetch<MeetingProps[]>(
+  const { data, pages, fetchData, isFetching } = useFetch<MeetingProps[]>(
     `meetings?search=${search}&date_start=${filterDate.dateStart}&date_end=${filterDate.dateEnd}&order=${filterOrder}`
   );
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
@@ -146,7 +149,7 @@ export default function ListMeeting() {
   const [loading, setLoading] = useState(false);
 
   const [text, setText] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState<any>('all');
+  const [selectedFilter, setSelectedFilter] = useState<any>('recent');
 
   const [modalView, setModalView] = useState({
     isOpen: false,
@@ -366,7 +369,8 @@ export default function ListMeeting() {
     return {
       value: row.tenant_id,
       label: row.name,
-      image: row.bucket
+      image: row.bucket,
+      color: row.colormain
     };
   });
 
@@ -382,192 +386,201 @@ export default function ListMeeting() {
         </ButtonDefault>
       </HeaderPage>
 
-      <SectionDefault>
-        {/* <ContentDefault>
-          <FieldGroupFormDefault>
+      {isFetching && <Loader />}
+
+      {!isFetching && (
+        <SectionDefault>
+          {/* <ContentDefault>
             <FieldGroupFormDefault>
-              <InputDefault
-                label="Data inicial"
-                placeholder="00/00/0000"
-                name="dateStart"
-                type="date"
-                icon={BiCalendar}
-                onChange={(e) => setFilterDate({ ...filterDate, ['dateStart']: e.target.value })}
-                value={filterDate.dateStart}
-              />
+              <FieldGroupFormDefault>
+                <InputDefault
+                  label="Data inicial"
+                  placeholder="00/00/0000"
+                  name="dateStart"
+                  type="date"
+                  icon={BiCalendar}
+                  onChange={(e) => setFilterDate({ ...filterDate, ['dateStart']: e.target.value })}
+                  value={filterDate.dateStart}
+                />
+
+                <InputDefault
+                  label="Data final"
+                  placeholder="00/00/0000"
+                  name="dateEnd"
+                  type="date"
+                  icon={BiCalendar}
+                  onChange={(e) => setFilterDate({ ...filterDate, ['dateEnd']: e.target.value })}
+                  value={filterDate.dateEnd}
+                />
+              </FieldGroupFormDefault>
+              <SelectDefault
+                label="Ordenar por"
+                name="order"
+                placeHolder="Ordenação"
+                onChange={(e) => setFilterOredr(e.target.value)}
+                value={filterOrder}
+              >
+                <option value="asc">Mais recente</option>
+                <option value="desc">Mais antigo</option>
+              </SelectDefault>
 
               <InputDefault
-                label="Data final"
-                placeholder="00/00/0000"
-                name="dateEnd"
-                type="date"
-                icon={BiCalendar}
-                onChange={(e) => setFilterDate({ ...filterDate, ['dateEnd']: e.target.value })}
-                value={filterDate.dateEnd}
+                label="Busca"
+                name="search"
+                placeholder="Busque pelo titulo..."
+                onChange={(event) => {
+                  setSearchTerm(event.target.value);
+                  debouncedCallback(event.target.value);
+                }}
+                icon={BiSearchAlt}
+                isLoading={isLoading}
+                value={searchTerm}
               />
             </FieldGroupFormDefault>
-            <SelectDefault
-              label="Ordenar por"
-              name="order"
-              placeHolder="Ordenação"
-              onChange={(e) => setFilterOredr(e.target.value)}
-              value={filterOrder}
-            >
-              <option value="asc">Mais recente</option>
-              <option value="desc">Mais antigo</option>
-            </SelectDefault>
+          </ContentDefault> */}
 
-            <InputDefault
-              label="Busca"
-              name="search"
-              placeholder="Busque pelo titulo..."
-              onChange={(event) => {
-                setSearchTerm(event.target.value);
-                debouncedCallback(event.target.value);
-              }}
-              icon={BiSearchAlt}
-              isLoading={isLoading}
-              value={searchTerm}
-            />
-          </FieldGroupFormDefault>
-        </ContentDefault> */}
+          <ContainerGroupTable>
+            <div style={{ margin: '-24px -30px' }}>
+              <Table>
+                <TableHead>
+                  <div className="groupTable">
+                    <h2>
+                      Registro de atas{' '}
+                      <strong>
+                        {pages?.total === 1
+                          ? `${pages?.total} ata de reunião`
+                          : `${pages?.total} atas de reunião`}{' '}
+                      </strong>
+                    </h2>
+                  </div>
+                </TableHead>
+                <FilterGroup
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    width: '100%'
+                  }}
+                >
+                  <ButtonsFilter>
+                    {/* <FilterButton
+                      onClick={() => {
+                        setSelectedFilter('all');
+                        setFilterOrder('desc');
+                      }}
+                      className={selectedFilter === 'all' ? 'selected' : ''}
+                    >
+                      Ver todos
+                    </FilterButton> */}
+                    <FilterButton
+                      onClick={() => {
+                        setSelectedFilter('recent');
+                        setFilterOrder('desc');
+                      }}
+                      className={selectedFilter === 'recent' ? 'selected' : ''}
+                    >
+                      Mais recente
+                    </FilterButton>
+                    <FilterButton
+                      onClick={() => {
+                        setSelectedFilter('older');
+                        setFilterOrder('asc');
+                      }}
+                      className={selectedFilter === 'older' ? 'selected' : ''}
+                    >
+                      Mais antigo
+                    </FilterButton>
+                  </ButtonsFilter>
+                  <div>
+                    <InputDefault
+                      label=""
+                      name="search"
+                      placeholder="Buscar..."
+                      onChange={(event) => {
+                        setSearchTerm(event.target.value);
+                        debouncedCallback(event.target.value);
+                      }}
+                      value={searchTerm}
+                      icon={BiSearchAlt}
+                      isLoading={isLoading}
+                      className="search-field"
+                    />
+                  </div>
 
-        <ContainerGroupTable>
-          <div style={{ margin: '-24px -30px' }}>
-            <Table>
-              <TableHead>
-                <div className="groupTable">
-                  <h2>
-                    Registro de atas{' '}
-                    <strong>
-                      {data && data?.length < 1
-                        ? `${data?.length} ata de reunião`
-                        : `${data?.length} atas de reunião`}{' '}
-                    </strong>
-                  </h2>
-                </div>
-              </TableHead>
-              <FilterGroup
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  width: '100%'
-                }}
-              >
-                <ButtonsFilter>
-                  <FilterButton
-                    onClick={() => {
-                      setSelectedFilter('all');
-                      setFilterOrder('');
-                    }}
-                    className={selectedFilter === 'all' ? 'selected' : ''}
-                  >
-                    Ver todos
-                  </FilterButton>
-                  <FilterButton
-                    onClick={() => {
-                      setSelectedFilter('recent');
-                      setFilterOrder('desc');
-                    }}
-                    className={selectedFilter === 'recent' ? 'borders selected' : 'borders'}
-                  >
-                    Mais recente
-                  </FilterButton>
-                  <FilterButton
-                    onClick={() => {
-                      setSelectedFilter('older');
-                      setFilterOrder('asc');
-                    }}
-                    className={selectedFilter === 'older' ? 'selected' : ''}
-                  >
-                    Mais antigo
-                  </FilterButton>
-                </ButtonsFilter>
-                <div>
-                  <InputDefault
-                    label=""
-                    name="search"
-                    placeholder="Buscar..."
-                    onChange={(event) => {
-                      setSearchTerm(event.target.value);
-                      debouncedCallback(event.target.value);
-                    }}
-                    value={searchTerm}
-                    icon={BiSearchAlt}
-                    isLoading={isLoading}
-                    className="search-field"
-                  />
-                </div>
+                  {/* <ButtonDefault typeButton="light">
+                    <BiFilter />
+                    Filtros
+                  </ButtonDefault> */}
+                </FilterGroup>
+                <table>
+                  <thead>
+                    <tr style={{ whiteSpace: 'nowrap' }}>
+                      <th>ID</th>
+                      <th>Titulo</th>
+                      <th>Cliente</th>
+                      <th>Responsável</th>
+                      <th>Data</th>
+                      <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
+                    </tr>
+                  </thead>
 
-                {/* <ButtonDefault typeButton="light">
-                  <BiFilter />
-                  Filtros
-                </ButtonDefault> */}
-              </FilterGroup>
-              <table>
-                <thead>
-                  <tr style={{ whiteSpace: 'nowrap' }}>
-                    <th>ID</th>
-                    <th>Titulo</th>
-                    <th>Cliente</th>
-                    <th>Responsável</th>
-                    <th>Data</th>
-                    <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
-                  </tr>
-                </thead>
+                  <tbody>
+                    {data?.map((row) => (
+                      <tr key={row.meeting_id}>
+                        <td>#{String(row.meeting_id).padStart(5, '0')}</td>
+                        <td style={{ cursor: 'pointer' }} onClick={() => handleOpenViewInfos(row)}>
+                          {row.title}
+                        </td>
+                        <td>{row.cliente}</td>
+                        <td>{row.responsavel}</td>
+                        <td>{moment(row.date).format('DD/MM/YYYY')}</td>
+                        <td>
+                          <div className="fieldTableClients">
+                            <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
+                            <ButtonTable
+                              typeButton="view"
+                              onClick={() => handleOpenViewInfos(row)}
+                            />
+                            <Alert
+                              title="Atenção"
+                              subtitle="Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita."
+                              confirmButton={() => handleOnDelete(row.meeting_id)}
+                            >
+                              <ButtonTable typeButton="delete" />
+                            </Alert>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
 
-                <tbody>
-                  {data?.map((row) => (
-                    <tr key={row.meeting_id}>
-                      <td>#{String(row.meeting_id).padStart(5, '0')}</td>
-                      <td>{row.title}</td>
-                      <td>{row.cliente}</td>
-                      <td>{row.responsavel}</td>
-                      <td>{moment(row.date).format('DD/MM/YYYY')}</td>
-                      <td>
-                        <div className="fieldTableClients">
-                          <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
-                          <ButtonTable typeButton="view" onClick={() => handleOpenViewInfos(row)} />
-                          <Alert
-                            title="Atenção"
-                            subtitle="Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita."
-                            confirmButton={() => handleOnDelete(row.meeting_id)}
-                          >
-                            <ButtonTable typeButton="delete" />
-                          </Alert>
-                        </div>
+                  <tfoot>
+                    <tr>
+                      <td colSpan={100}>
+                        <Pagination
+                          total={pages.total}
+                          perPage={pages.perPage}
+                          currentPage={selected}
+                          lastPage={pages.lastPage}
+                          onClickPage={(e) => setSelected(e)}
+                        />
                       </td>
                     </tr>
-                  ))}
-                </tbody>
+                  </tfoot>
+                </table>
+              </Table>
+            </div>
+          </ContainerGroupTable>
 
-                <tfoot>
-                  <tr>
-                    <td colSpan={100}>
-                      <Pagination
-                        total={pages.total}
-                        perPage={pages.perPage}
-                        currentPage={selected}
-                        lastPage={pages.lastPage}
-                        onClickPage={(e) => setSelected(e)}
-                      />
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
-            </Table>
-          </div>
-        </ContainerGroupTable>
-
-        {/* <Paginate
-          total={pages.total}
-          perPage={pages.perPage}
-          currentPage={selected}
-          lastPage={pages.lastPage}
-          onClickPage={(e) => setSelected(e)}
-        /> */}
-      </SectionDefault>
+          {/* <Paginate
+            total={pages.total}
+            perPage={pages.perPage}
+            currentPage={selected}
+            lastPage={pages.lastPage}
+            onClickPage={(e) => setSelected(e)}
+          /> */}
+        </SectionDefault>
+      )}
 
       <ModalDefault isOpen={modal.isOpen} onOpenChange={handleOnCancel} title={modal.type}>
         <form onSubmit={handleOnSubmit}>
@@ -657,6 +670,7 @@ export default function ListMeeting() {
               placeholder="00/00/0000"
               name="date"
               type="date"
+              max={'9999-12-31'}
               icon={BiCalendar}
               onChange={handleOnChange}
               value={formData.date}

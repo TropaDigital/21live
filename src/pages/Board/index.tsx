@@ -1,57 +1,70 @@
+// react
 import { useEffect } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-import useColumn from '../../hooks/useColumn';
-import useLocalStorage from '../../hooks/useLocalStorage';
-import useTask from '../../hooks/useTask';
+// Hooks
+import { useFetch } from '../../hooks/useFetch';
 
-import HeaderPage from '../../components/HeaderPage';
+// Components
+import HeaderFlow from '../../components/HeaderFlowPage';
 import Column from '../../components/Ui/Column';
 import ScrollAreas from '../../components/Ui/ScrollAreas';
 import Task from '../../components/Ui/Task';
+import Loader from '../../components/LoaderSpin';
 
+// Styles
 import { Container, ContentBoard } from './styles';
 
 interface ITask {
-  id: number;
-  column: string;
+  task_id: string;
   title: string;
-  users: any[];
-  date: string;
-  progress: {
-    hoursinvested: string;
-    hoursLeft: string;
-  };
-  completed: string;
+  tenant_id?: string;
+  product_id?: string;
+  flow_id?: string;
+  description: string;
+  creation_description?: string;
+  creation_date_end?: string;
+  copywriting_description?: string;
+  copywriting_date_end?: string;
+  created?: string;
+  updated?: string;
+  type: string;
+  total_time?: string;
+  status?: string;
+  time_consumed?: string;
+  type_play?: string;
+  user_id?: string;
+  urgent?: string;
+  ticket_id?: string;
+  start_job?: string;
+  end_job?: string;
+  organization_id?: string;
+  requester_id?: string;
 }
 
 interface ITaskColumn {
-  id: number;
-  title: string;
-  creatable: boolean;
-  column: string;
-  date: string;
-  projects: number;
+  card_id: string;
+  flow_id: string;
+  step: string;
+  name: string;
+  necessary_upload: string;
+  tenant_approve?: string;
+  manager_approve?: string;
+  necessary_responsible?: string;
+  email_alert: string;
+  previous_step: string;
+  function_id?: string;
+  idCreator: string;
+  nameCreator: string;
+  next_step: string;
   tasks: ITask[];
 }
 
 export default function Board() {
-  const [state] = useLocalStorage('COLUMN');
   const location = useLocation();
-  const { deleteTask } = useTask();
-  // const {id} = useParams();
+  const navigate = useNavigate();
 
-  // const { data, isFetching } = useFetch<ColumnModel[]>(`card/${id}`);
-  const { column, setColumn } = useColumn();
-  // const lengthCard = column.length
-
-  useEffect(() => {
-    if (state.length > 0) {
-      setColumn(state);
-    }
-  }, [state]);
-
-  // console.log('state', column);
+  const { data, isFetching } = useFetch<ITaskColumn[]>(`/card-task/${location.state.id}`);
 
   // const updateTask = (
   //   columns: ITaskColumn[],
@@ -106,80 +119,23 @@ export default function Board() {
 
   return (
     <Container>
-      <HeaderPage title={location.state.name}>
-        <>
-          {/* <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '5px'
+      <HeaderFlow title={location.state.name} backButton={() => navigate(-1)} />
 
-            }}
-          >
-          <button
-              style={{ padding: '4px', borderRadius: '4px' }}
-              onClick={() => handleCreateBoard('New Item')}
-            >
-              Create
-            </button>
-            <button
-              style={{ padding: '4px', borderRadius: '4px' }}
-              onClick={() => handleUpdateBoard(update)}
-            >
-              Update
-            </button>
-            <button
-              style={{ padding: '4px', borderRadius: '4px' }}
-              onClick={() => handleDeleteBoard(1)}
-            >
-              Delete
-            </button>
-          </div> */}
+      {isFetching && <Loader />}
 
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '5px'
-            }}
-          >
-            {/* <button
-              style={styleButtonTask}
-              onClick={() =>
-                console.log('UPDATETASK', updateTask(boards, 1, upTask))
-              }
-            >
-              UpdateT
-            </button>
-            <button
-              style={styleButtonTask}
-              onClick={() => handleCreateTask(state[0], createTask)}
-            >
-              CreateT
-            </button>
-            <button
-              style={styleButtonTask}
-              onClick={() => deleteTask(state[0], 2)}
-            >
-              DeleteT
-            </button> */}
-          </div>
-        </>
-      </HeaderPage>
-
-      <ScrollAreas>
-        <ContentBoard>
-          {column.map((row: any) => (
-            <Column key={row.card_id} title={row.name}>
-              {[0, 1].map((row: any) => (
-                <Task key={row.task_id} />
-              ))}
-            </Column>
-          ))}
-        </ContentBoard>
-      </ScrollAreas>
+      {!isFetching && (
+        <ScrollAreas>
+          <ContentBoard>
+            {data?.map((row) => (
+              <Column key={row.card_id} title={row.name} taskLength={row.tasks.length}>
+                {row.tasks.map((item) => (
+                  <Task key={item.task_id} data={item} />
+                ))}
+              </Column>
+            ))}
+          </ContentBoard>
+        </ScrollAreas>
+      )}
     </Container>
   );
 }

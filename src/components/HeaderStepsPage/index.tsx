@@ -9,13 +9,14 @@ interface HeaderProps {
   backButton?: boolean;
   stepSelected: number;
   backPage?: string;
-  // children?: JSX.Element;
+  maxStep: number;
 }
 
 export default function HeaderStepsPage({
   title,
   backButton,
   stepSelected,
+  maxStep,
   backPage
 }: HeaderProps) {
   return (
@@ -32,49 +33,153 @@ export default function HeaderStepsPage({
         <SectionTitleHeader>
           <TitleHeader>{title}</TitleHeader>
         </SectionTitleHeader>
+        {maxStep === 3 && (
+          <StepCounter
+            className={
+              stepSelected === 1
+                ? 'one'
+                : stepSelected === 2
+                ? 'two'
+                : stepSelected === 3
+                ? 'three'
+                : ''
+              // : stepSelected === 4
+              // ? 'four'
+              // : ''
+            }
+            maxStep={'small'}
+          >
+            <div className={stepSelected === 1 ? 'step active' : 'step'}>
+              {stepSelected > 1 && (
+                <div className="checked">
+                  <IconCheckedBlue />
+                </div>
+              )}
+            </div>
+            <div className={stepSelected === 2 ? 'step active' : 'step'}>
+              {stepSelected > 2 && (
+                <div className="checked">
+                  <IconCheckedBlue />
+                </div>
+              )}
+            </div>
+            <div className={stepSelected === 3 ? 'step active' : 'step'}>
+              {stepSelected > 3 && (
+                <div className="checked">
+                  <IconCheckedBlue />
+                </div>
+              )}
+            </div>
+            {/* <div className={stepSelected === 4 ? 'step active' : 'step'}>
+              {stepSelected > 4 && (
+                <div className="checked">
+                  <IconCheckedBlue />
+                </div>
+              )}
+            </div> */}
+          </StepCounter>
+        )}
 
-        <StepCounter
-          className={
-            stepSelected === 1
-              ? 'one'
-              : stepSelected === 2
-              ? 'two'
-              : stepSelected === 3
-              ? 'three'
-              : stepSelected === 4
-              ? 'four'
-              : ''
-          }
-        >
-          <div className={stepSelected === 1 ? 'step active' : 'step'}>
-            {stepSelected > 1 && (
-              <div className="checked">
-                <IconCheckedBlue />
-              </div>
-            )}
-          </div>
-          <div className={stepSelected === 2 ? 'step active' : 'step'}>
-            {stepSelected > 2 && (
-              <div className="checked">
-                <IconCheckedBlue />
-              </div>
-            )}
-          </div>
-          <div className={stepSelected === 3 ? 'step active' : 'step'}>
-            {stepSelected > 3 && (
-              <div className="checked">
-                <IconCheckedBlue />
-              </div>
-            )}
-          </div>
-          <div className={stepSelected === 4 ? 'step active' : 'step'}>
-            {stepSelected > 4 && (
-              <div className="checked">
-                <IconCheckedBlue />
-              </div>
-            )}
-          </div>
-        </StepCounter>
+        {maxStep === 4 && (
+          <StepCounter
+            className={
+              stepSelected === 1
+                ? 'one'
+                : stepSelected === 2
+                ? 'two'
+                : stepSelected === 3
+                ? 'three'
+                : stepSelected === 4
+                ? 'four'
+                : ''
+            }
+            maxStep={'med'}
+          >
+            <div className={stepSelected === 1 ? 'step active' : 'step'}>
+              {stepSelected > 1 && (
+                <div className="checked">
+                  <IconCheckedBlue />
+                </div>
+              )}
+            </div>
+            <div className={stepSelected === 2 ? 'step active' : 'step'}>
+              {stepSelected > 2 && (
+                <div className="checked">
+                  <IconCheckedBlue />
+                </div>
+              )}
+            </div>
+            <div className={stepSelected === 3 ? 'step active' : 'step'}>
+              {stepSelected > 3 && (
+                <div className="checked">
+                  <IconCheckedBlue />
+                </div>
+              )}
+            </div>
+            <div className={stepSelected === 4 ? 'step active' : 'step'}>
+              {stepSelected > 4 && (
+                <div className="checked">
+                  <IconCheckedBlue />
+                </div>
+              )}
+            </div>
+          </StepCounter>
+        )}
+
+        {maxStep === 5 && (
+          <StepCounter
+            className={
+              stepSelected === 1
+                ? 'one'
+                : stepSelected === 2
+                ? 'two'
+                : stepSelected === 3
+                ? 'three'
+                : stepSelected === 4
+                ? 'four'
+                : stepSelected === 5
+                ? 'five'
+                : ''
+            }
+            maxStep={'big'}
+          >
+            <div className={stepSelected === 1 ? 'step active' : 'step'}>
+              {stepSelected > 1 && (
+                <div className="checked">
+                  <IconCheckedBlue />
+                </div>
+              )}
+            </div>
+            <div className={stepSelected === 2 ? 'step active' : 'step'}>
+              {stepSelected > 2 && (
+                <div className="checked">
+                  <IconCheckedBlue />
+                </div>
+              )}
+            </div>
+            <div className={stepSelected === 3 ? 'step active' : 'step'}>
+              {stepSelected > 3 && (
+                <div className="checked">
+                  <IconCheckedBlue />
+                </div>
+              )}
+            </div>
+            <div className={stepSelected === 4 ? 'step active' : 'step'}>
+              {stepSelected > 4 && (
+                <div className="checked">
+                  <IconCheckedBlue />
+                </div>
+              )}
+            </div>
+            <div className={stepSelected === 5 ? 'step active' : 'step'}>
+              {stepSelected > 5 && (
+                <div className="checked">
+                  <IconCheckedBlue />
+                </div>
+              )}
+            </div>
+          </StepCounter>
+        )}
       </Container>
     </>
   );

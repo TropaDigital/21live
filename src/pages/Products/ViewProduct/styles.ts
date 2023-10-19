@@ -26,6 +26,7 @@ export const ShowInfosButton = styled.button`
   justify-content: center;
   width: 40px;
   height: 40px;
+  z-index: 4;
 
   position: absolute;
   top: 42%;
@@ -69,7 +70,7 @@ export const RightInfosCard = styled.div<HideCardProps>`
   top: 0;
   right: ${({ hideCard }) => (hideCard === 'show' ? '0' : '-352px')};
 
-  z-index: 2;
+  z-index: 5;
   box-shadow: -4px 5px 10px 1px rgba(0, 0, 0, 0.2);
 
   scrollbar-width: thin;
@@ -437,4 +438,18 @@ export const ModalButtons = styled.div`
   align-items: center;
   justify-content: flex-end;
   gap: 12px;
+`;
+
+export const ModalUploadWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 500px;
+
+  .modal-buttons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+  }
 `;

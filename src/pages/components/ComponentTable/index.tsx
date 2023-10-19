@@ -13,7 +13,7 @@ export default function ComponentTable() {
       fill: '#8269B2',
       currency: 120.0,
       isDonut: false,
-      isPadded: false,
+      isPadded: false
     },
     {
       id: 2,
@@ -22,7 +22,7 @@ export default function ComponentTable() {
       fill: '#37C3FF',
       currency: 80.0,
       isDonut: true,
-      isPadded: false,
+      isPadded: false
     },
     {
       id: 3,
@@ -31,14 +31,14 @@ export default function ComponentTable() {
       fill: '#93E088',
       currency: 20.0,
       isDonut: true,
-      isPadded: true,
-    },
+      isPadded: true
+    }
   ];
 
   return (
     <Container>
       <ContainerGroupTable>
-        <TableDefault title="titulo da tabela">
+        {/* <TableDefault title="titulo da tabela">
           <thead>
             <tr>
               <th>Titulo</th>
@@ -164,15 +164,15 @@ export default function ComponentTable() {
               </td>
             </tr>
           </tbody>
-        </TableDefault>
+        </TableDefault> */}
       </ContainerGroupTable>
 
       <ContainerGroupTable style={{ marginTop: '2rem' }}>
-        <BarChartGrafic /> 
-        <BarChartGrafic isVertical={true}/> 
+        {/* <BarChartGrafic /> 
+        <BarChartGrafic isVertical={true}/>  */}
       </ContainerGroupTable>
 
-      <ContainerGroupTable style={{ marginTop: '2rem' }}>
+      {/* <ContainerGroupTable style={{ marginTop: '2rem' }}>
         <ChartDonut data={data2} dataKey="value" />
 
         <ChartDonut data={data2} dataKey="value" isDonut />
@@ -180,8 +180,7 @@ export default function ComponentTable() {
         <ChartDonut data={data2} isDonut isPadded dataKey="value"/>
 
         <ChartDonut data={data2} dataKey="value" />
-      </ContainerGroupTable>
-
+      </ContainerGroupTable> */}
     </Container>
   );
 }

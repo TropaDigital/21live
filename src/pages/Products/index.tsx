@@ -44,6 +44,7 @@ import {
   SummaryInfoWrapper,
   SummaryTaskInfo
 } from '../Tasks/ComponentSteps/SummaryTasks/styles';
+import Loader from '../../components/LoaderSpin';
 
 // Styles
 import {
@@ -155,7 +156,7 @@ export default function Services() {
   );
   const [typeList, setTypeList] = useState('produtos');
   const [selected, setSelected] = useState(1);
-  const { data, pages, fetchData } = useFetch<ServicesProps[]>(
+  const { data, pages, fetchData, isFetching } = useFetch<ServicesProps[]>(
     `services?search=${search}&perPage=15&page=${selected}`
   );
   const { data: dataCategory, fetchData: getCategory } = useFetch<any[]>(
@@ -653,17 +654,17 @@ export default function Services() {
         </>
       </HeaderPage>
 
+      {isFetching && <Loader />}
+
       <Table>
         <TableHead>
           <div className="groupTable">
             {typeList === 'produtos' && (
               <h2>
                 Lista de produtos{' '}
-                {data ? (
+                {pages !== null && pages?.total > 0 ? (
                   <strong>
-                    {data?.length && data?.length > 1
-                      ? `${data?.length} produtos`
-                      : `${data?.length} produto`}
+                    {pages?.total <= 1 ? `${pages?.total} produto` : `${pages?.total} produtos`}
                   </strong>
                 ) : (
                   <strong>0 produto</strong>
@@ -674,7 +675,7 @@ export default function Services() {
               <h2>
                 Lista de kits{' '}
                 <strong>
-                  {dataKits?.length} {dataKits?.length === 1 ? 'kit' : 'kits'}
+                  {pageKits.total} {pageKits.total === 1 ? 'kit' : 'kits'}
                 </strong>
               </h2>
             )}
@@ -736,7 +737,9 @@ export default function Services() {
               {data?.map((row) => (
                 <tr key={row.service_id}>
                   <td>#{String(row.service_id).padStart(5, '0')}</td>
-                  <td>{row.service}</td>
+                  <td style={{ cursor: 'pointer' }} onClick={() => handleOnShowProduct(row)}>
+                    {row.service}
+                  </td>
                   <td style={{ textTransform: 'capitalize' }}>{row.category}</td>
                   <td>
                     <Switch

@@ -13,4 +13,12 @@ export const Container = styled.div`
   box-shadow: var(--shadow);
   border-radius: 1rem;
   color: var(--title-color);
+
+  .sectionInfo {
+    span {
+      color: var(--title-color);
+      font-size: var(--text-small-sm);
+      font-weight: var(--weight-bold);
+    }
+  }
 `;

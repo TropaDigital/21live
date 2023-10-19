@@ -1,5 +1,5 @@
-import { shade } from "polished";
-import styled from "styled-components";
+import { shade } from 'polished';
+import styled from 'styled-components';
 
 export const Container = styled.div`
   background: var(--background-primary);
@@ -23,14 +23,14 @@ export const HeaderTask = styled.div`
     gap: 4px;
 
     .colorTask:first-child {
-      background-color: #FFD66E;
+      background-color: #ffd66e;
     }
 
     .colorTask {
       width: 44px;
       height: 6px;
       border-radius: 5px;
-      background-color: #37C3FF;
+      background-color: #37c3ff;
     }
   }
 `;
@@ -87,9 +87,9 @@ export const FieldGroupTask = styled.div`
 export const DataSpan = styled.span`
   font-size: 0.875rem;
   font-weight: 700;
-  color: #0046B5;
+  color: #0046b5;
 `;
 
 export const FooterTask = styled.div`
-  weight: 100%;
+  width: 100%;
 `;

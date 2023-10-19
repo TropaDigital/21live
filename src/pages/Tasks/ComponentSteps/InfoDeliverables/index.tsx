@@ -456,6 +456,7 @@ export default function InfoDeliveries({
                       placeholder="00/00/0000"
                       name="deliveryDate"
                       type="date"
+                      max={'9999-12-31'}
                       icon={BiCalendar}
                       onChange={(e) => handleDeliveryDate(e.target.value, row.deliveryId)}
                       value={row?.deliveryDate}
@@ -725,6 +726,7 @@ export default function InfoDeliveries({
                       placeholder=""
                       name="dateStart"
                       type="date"
+                      max={'9999-12-31'}
                       icon={BiCalendar}
                       onChange={(e) => handleDeliveryDate(e.target.value, row.delivery_id)}
                       value={row?.date_end}

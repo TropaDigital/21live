@@ -1,4 +1,8 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+
+interface StepProps {
+  maxStep: string;
+}
 
 export const Container = styled.div`
   display: flex;
@@ -50,7 +54,7 @@ export const BackButton = styled.div`
   border-right: 2px solid var(--gray-200);
 `;
 
-export const StepCounter = styled.div`
+export const StepCounter = styled.div<StepProps>`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -59,74 +63,279 @@ export const StepCounter = styled.div`
   background: var(--gray-300);
   margin-left: auto;
 
-  &.one {
-    background: linear-gradient(to right, #0046b5 0%, #0046b5 0%, #d0d5dd 0%, #d0d5dd 100%);
-    background: -moz-linear-gradient(
-      left,
-      #0046b5 0%,
-      #0046b5 0%,
-      #d0d5dd 7%,
-      #d0d5dd 100%
-    ); /* FF3.6-15 */
-    background: -webkit-linear-gradient(
-      left,
-      #0046b5 0%,
-      #0046b5 0%,
-      #d0d5dd 0%,
-      #d0d5dd 100%
-    ); /* Chrome10-25,Safari5.1-6 */
-  }
-  &.two {
-    background: linear-gradient(to right, #0046b5 0%, #0046b5 25%, #d0d5dd 25%, #d0d5dd 100%);
-    background: -moz-linear-gradient(
-      left,
-      #0046b5 0%,
-      #0046b5 25%,
-      #d0d5dd 25%,
-      #d0d5dd 100%
-    ); /* FF3.6-15 */
-    background: -webkit-linear-gradient(
-      left,
-      #0046b5 0%,
-      #0046b5 25%,
-      #d0d5dd 25%,
-      #d0d5dd 100%
-    ); /* Chrome10-25,Safari5.1-6 */
-  }
-  &.three {
-    background: linear-gradient(to right, #0046b5 0%, #0046b5 68%, #d0d5dd 68%, #d0d5dd 100%);
-    background: -moz-linear-gradient(
-      left,
-      #0046b5 0%,
-      #0046b5 68%,
-      #d0d5dd 68%,
-      #d0d5dd 100%
-    ); /* FF3.6-15 */
-    background: -webkit-linear-gradient(
-      left,
-      #0046b5 0%,
-      #0046b5 68%,
-      #d0d5dd 68%,
-      #d0d5dd 100%
-    ); /* Chrome10-25,Safari5.1-6 */
-  }
-  &.four {
-    background: linear-gradient(to right, #0046b5 0%, #0046b5 99%, #d0d5dd 99%, #d0d5dd 100%);
-    background: -moz-linear-gradient(
-      left,
-      #0046b5 0%,
-      #0046b5 100%,
-      #d0d5dd 100%,
-      #d0d5dd 100%
-    ); /* FF3.6-15 */
-    background: -webkit-linear-gradient(
-      left,
-      #0046b5 0%,
-      #0046b5 100%,
-      #d0d5dd 100%,
-      #d0d5dd 100%
-    ); /* Chrome10-25,Safari5.1-6 */
-  }
+  ${(props) => {
+    switch (props.maxStep) {
+      case 'small':
+        return css`
+          &.one {
+            background: linear-gradient(to right, #0046b5 0%, #0046b5 0%, #d0d5dd 0%, #d0d5dd 100%);
+            background: -moz-linear-gradient(
+              left,
+              #0046b5 0%,
+              #0046b5 0%,
+              #d0d5dd 1%,
+              #d0d5dd 100%
+            ); /* FF3.6-15 */
+            background: -webkit-linear-gradient(
+              left,
+              #0046b5 0%,
+              #0046b5 0%,
+              #d0d5dd 0%,
+              #d0d5dd 100%
+            ); /* Chrome10-25,Safari5.1-6 */
+          }
+          &.two {
+            background: linear-gradient(
+              to right,
+              #0046b5 0%,
+              #0046b5 50%,
+              #d0d5dd 50%,
+              #d0d5dd 100%
+            );
+            background: -moz-linear-gradient(
+              left,
+              #0046b5 0%,
+              #0046b5 50%,
+              #d0d5dd 50%,
+              #d0d5dd 100%
+            ); /* FF3.6-15 */
+            background: -webkit-linear-gradient(
+              left,
+              #0046b5 0%,
+              #0046b5 50%,
+              #d0d5dd 50%,
+              #d0d5dd 100%
+            ); /* Chrome10-25,Safari5.1-6 */
+          }
+          &.three {
+            background: linear-gradient(
+              to right,
+              #0046b5 0%,
+              #0046b5 99%,
+              #d0d5dd 99%,
+              #d0d5dd 100%
+            );
+            background: -moz-linear-gradient(
+              left,
+              #0046b5 0%,
+              #0046b5 99%,
+              #d0d5dd 99%,
+              #d0d5dd 100%
+            ); /* FF3.6-15 */
+            background: -webkit-linear-gradient(
+              left,
+              #0046b5 0%,
+              #0046b5 99%,
+              #d0d5dd 99%,
+              #d0d5dd 100%
+            ); /* Chrome10-25,Safari5.1-6 */
+          }
+        `;
+
+      case 'med':
+        return css`
+          &.one {
+            background: linear-gradient(to right, #0046b5 0%, #0046b5 0%, #d0d5dd 0%, #d0d5dd 100%);
+            background: -moz-linear-gradient(
+              left,
+              #0046b5 0%,
+              #0046b5 0%,
+              #d0d5dd 0%,
+              #d0d5dd 100%
+            ); /* FF3.6-15 */
+            background: -webkit-linear-gradient(
+              left,
+              #0046b5 0%,
+              #0046b5 0%,
+              #d0d5dd 0%,
+              #d0d5dd 100%
+            ); /* Chrome10-25,Safari5.1-6 */
+          }
+          &.two {
+            background: linear-gradient(
+              to right,
+              #0046b5 0%,
+              #0046b5 35%,
+              #d0d5dd 35%,
+              #d0d5dd 100%
+            );
+            background: -moz-linear-gradient(
+              left,
+              #0046b5 0%,
+              #0046b5 35%,
+              #d0d5dd 35%,
+              #d0d5dd 100%
+            ); /* FF3.6-15 */
+            background: -webkit-linear-gradient(
+              left,
+              #0046b5 0%,
+              #0046b5 35%,
+              #d0d5dd 35%,
+              #d0d5dd 100%
+            ); /* Chrome10-25,Safari5.1-6 */
+          }
+          &.three {
+            background: linear-gradient(
+              to right,
+              #0046b5 0%,
+              #0046b5 67%,
+              #d0d5dd 67%,
+              #d0d5dd 100%
+            );
+            background: -moz-linear-gradient(
+              left,
+              #0046b5 0%,
+              #0046b5 67%,
+              #d0d5dd 67%,
+              #d0d5dd 100%
+            ); /* FF3.6-15 */
+            background: -webkit-linear-gradient(
+              left,
+              #0046b5 0%,
+              #0046b5 67%,
+              #d0d5dd 67%,
+              #d0d5dd 100%
+            ); /* Chrome10-25,Safari5.1-6 */
+          }
+          &.four {
+            background: linear-gradient(
+              to right,
+              #0046b5 0%,
+              #0046b5 99%,
+              #d0d5dd 99%,
+              #d0d5dd 100%
+            );
+            background: -moz-linear-gradient(
+              left,
+              #0046b5 0%,
+              #0046b5 99%,
+              #d0d5dd 99%,
+              #d0d5dd 100%
+            ); /* FF3.6-15 */
+            background: -webkit-linear-gradient(
+              left,
+              #0046b5 0%,
+              #0046b5 99%,
+              #d0d5dd 99%,
+              #d0d5dd 100%
+            ); /* Chrome10-25,Safari5.1-6 */
+          }
+        `;
+
+      case 'big':
+        return css`
+          &.one {
+            background: linear-gradient(to right, #0046b5 0%, #0046b5 0%, #d0d5dd 0%, #d0d5dd 100%);
+            background: -moz-linear-gradient(
+              left,
+              #0046b5 0%,
+              #0046b5 0%,
+              #d0d5dd 0%,
+              #d0d5dd 100%
+            ); /* FF3.6-15 */
+            background: -webkit-linear-gradient(
+              left,
+              #0046b5 0%,
+              #0046b5 0%,
+              #d0d5dd 0%,
+              #d0d5dd 100%
+            ); /* Chrome10-25,Safari5.1-6 */
+          }
+          &.two {
+            background: linear-gradient(
+              to right,
+              #0046b5 0%,
+              #0046b5 25%,
+              #d0d5dd 25%,
+              #d0d5dd 100%
+            );
+            background: -moz-linear-gradient(
+              left,
+              #0046b5 0%,
+              #0046b5 25%,
+              #d0d5dd 25%,
+              #d0d5dd 100%
+            ); /* FF3.6-15 */
+            background: -webkit-linear-gradient(
+              left,
+              #0046b5 0%,
+              #0046b5 25%,
+              #d0d5dd 25%,
+              #d0d5dd 100%
+            ); /* Chrome10-25,Safari5.1-6 */
+          }
+          &.three {
+            background: linear-gradient(
+              to right,
+              #0046b5 0%,
+              #0046b5 50%,
+              #d0d5dd 50%,
+              #d0d5dd 100%
+            );
+            background: -moz-linear-gradient(
+              left,
+              #0046b5 0%,
+              #0046b5 50%,
+              #d0d5dd 50%,
+              #d0d5dd 100%
+            ); /* FF3.6-15 */
+            background: -webkit-linear-gradient(
+              left,
+              #0046b5 0%,
+              #0046b5 50%,
+              #d0d5dd 50%,
+              #d0d5dd 100%
+            ); /* Chrome10-25,Safari5.1-6 */
+          }
+          &.four {
+            background: linear-gradient(
+              to right,
+              #0046b5 0%,
+              #0046b5 75%,
+              #d0d5dd 75%,
+              #d0d5dd 100%
+            );
+            background: -moz-linear-gradient(
+              left,
+              #0046b5 0%,
+              #0046b5 75%,
+              #d0d5dd 75%,
+              #d0d5dd 100%
+            ); /* FF3.6-15 */
+            background: -webkit-linear-gradient(
+              left,
+              #0046b5 0%,
+              #0046b5 75%,
+              #d0d5dd 75%,
+              #d0d5dd 100%
+            ); /* Chrome10-25,Safari5.1-6 */
+          }
+          &.five {
+            background: linear-gradient(
+              to right,
+              #0046b5 0%,
+              #0046b5 99%,
+              #d0d5dd 100%,
+              #d0d5dd 100%
+            );
+            background: -moz-linear-gradient(
+              left,
+              #0046b5 0%,
+              #0046b5 99%,
+              #d0d5dd 100%,
+              #d0d5dd 100%
+            ); /* FF3.6-15 */
+            background: -webkit-linear-gradient(
+              left,
+              #0046b5 0%,
+              #0046b5 99%,
+              #d0d5dd 100%,
+              #d0d5dd 100%
+            ); /* Chrome10-25,Safari5.1-6 */
+          }
+        `;
+    }
+  }}
 
   .step {
     width: 24px;

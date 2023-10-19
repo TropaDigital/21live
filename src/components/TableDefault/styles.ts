@@ -1,5 +1,11 @@
 import styled from 'styled-components';
 
+interface TitleProps {
+  titleSize?: string;
+  titleWeight?: string;
+  titleColor?: string;
+}
+
 export const Container = styled.div`
   background: #ffffff;
   box-shadow: var(--shadow);
@@ -56,10 +62,10 @@ export const Container = styled.div`
   }
 `;
 
-export const TitleTable = styled.h1`
-  font-size: var(--text-small-xl);
-  font-weight: var(--weight-semibold);
-  color: var(--title-color);
+export const TitleTable = styled.h1<TitleProps>`
+  font-size: ${({ titleSize }) => (titleSize ? titleSize : 'var(--text-small-xl)')};
+  font-weight: ${({ titleWeight }) => (titleWeight ? titleWeight : 'var(--weight-semibold)')};
+  color: ${({ titleColor }) => (titleColor ? titleColor : 'var(--title-color)')};
   text-transform: capitalize;
   margin-bottom: 1rem;
   margin-left: 5px;

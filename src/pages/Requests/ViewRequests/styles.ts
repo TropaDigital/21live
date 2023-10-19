@@ -181,7 +181,11 @@ export const InfoSideCard = styled.div`
     font-size: var(--text-small-md);
     font-weight: var(--weight-medium);
 
+    max-width: 600px;
     white-space: pre-wrap;
+    word-wrap: break-word;
+
+    overflow: hidden;
   }
 `;
 
@@ -236,7 +240,7 @@ export const PublicTopCard = styled.div`
 export const PublicBottomCard = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 12px;
   height: 100%;
 
   padding: 24px;
@@ -244,34 +248,49 @@ export const PublicBottomCard = styled.div`
 
 export const PublicMessageWrapper = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
   justify-content: space-between;
+  gap: 12px;
 
-  padding: 12px 0;
+  padding: 12px 0 18px 0;
+
+  border-bottom: 2px dashed var(--gray-200);
 `;
 
 export const PublicMessageImage = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
 
-  width: 55%;
+  width: 100%;
 
   #react-doc-viewer #header-bar {
     display: none;
   }
+
+  &.reverse {
+    flex-direction: row-reverse;
+  }
 `;
 
 export const PublicImageWrapper = styled.div`
-  width: 210px;
-  height: 130px;
+  min-width: 200px !important;
+  height: 120px;
 
   border-radius: 4px;
   overflow: hidden;
 
+  background: rgb(140, 203, 255);
+  background: linear-gradient(100deg, rgba(140, 203, 255, 1) 0%, rgba(0, 70, 181, 1) 57%);
+
+  cursor: pointer;
+
   .image-interaction {
+    width: 200px;
+    height: 120px;
     background-position: center;
-    background-size: contain;
+    background-size: cover;
     background-repeat: no-repeat;
   }
 `;
@@ -282,10 +301,20 @@ export const PublicMessage = styled.div`
   gap: 8px;
   width: 100%;
 
+  &.reverse {
+    align-items: flex-end;
+  }
+
   .message-user {
     color: var(--gray-900);
     font-weight: var(--weight-bold);
     font-size: var(--text-small-md);
+
+    span {
+      color: var(--text-color-light);
+      font-size: var(--text-small-sm);
+      font-weight: var(--weight-medium);
+    }
   }
 
   .message-body {
@@ -295,16 +324,54 @@ export const PublicMessage = styled.div`
   }
 `;
 
+export const MessageUserWrapper = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+
+  width: 100%;
+
+  &.reverse {
+    flex-direction: row-reverse;
+  }
+`;
+
 export const MessageUser = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 24px;
+
+  &.reverse {
+    flex-direction: row-reverse;
+  }
 `;
 
 export const MessageResponseDate = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
+`;
+
+export const MessageReplyInfos = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  width: 100%;
+  height: fit-content;
+
+  border-radius: 8px;
+
+  padding: 12px;
+
+  background-color: var(--gray-100);
+
+  .response-user {
+    color: var(--text-color-light);
+    font-size: var(--text-small-sm);
+    font-weight: var(--weight-medium);
+  }
 `;
 
 export const AvatarUser = styled.div`

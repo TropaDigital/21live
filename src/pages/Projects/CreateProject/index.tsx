@@ -148,22 +148,9 @@ export default function CreateProject() {
     }
   }, [location]);
 
-  // Hours calculations
-  // const creatorHoursArray = productsArray?.filter(
-  //   (obj) => obj.service.toLowerCase() === 'hora de criação'
-  // );
-  // const totalCreateHours = creatorHoursArray.reduce(
-  //   (accumulator: any, currentValue: any) => accumulator + currentValue.minutes,
-  //   0
-  // );
-  const newDate = new Date();
   const productsHours = productsArray?.map((row) => {
     return multiplyTime(row?.minutes, row?.quantity);
   });
-
-  // const totalHoursProducts = sumTimes(productsHours) + totalCreateHours;
-  // const productsHoursWithoutCreateHours = totalHoursProducts - totalCreateHours;
-  // End Hours calculations
 
   const handleOnAddProducts = (items: IProduct) => {
     setProductsArray((prevState: any) => [...prevState, items]);
@@ -201,9 +188,8 @@ export default function CreateProject() {
   };
 
   const handleDeleteProducts = (id: any) => {
-    console.log('logo do delete product', id);
     if (editSelectedProducts) {
-      setProductsArray(productsArray.filter((obj: any) => obj.product_id !== id));
+      setProductsArray(productsArray.filter((obj: any) => obj.service_id !== id));
       if (productsArray.length <= 1) {
         setEditSelectedProducts(false);
       }
@@ -216,39 +202,34 @@ export default function CreateProject() {
   };
 
   const editProductQuantity = (product: any) => {
-    if (editSelectedProducts) {
-      setProductsArray((current) =>
-        current.map((obj: any) => {
-          if (obj.service_id === product.service_id) {
-            return { ...obj, quantity: product.quantity };
-          }
-          return obj;
-        })
-      );
-    } else {
-      setProductsArray((current) =>
-        current.map((obj) => {
-          if (obj.service_id === product.service_id) {
-            return { ...obj, quantity: product.quantity };
-          }
-          return obj;
-        })
-      );
-    }
+    setProductsArray((current) =>
+      current.map((obj) => {
+        if (obj.service_id === product.service_id) {
+          return { ...obj, quantity: product.quantity };
+        }
+        return obj;
+      })
+    );
+    // if (editSelectedProducts) {
+    //   setProductsArray((current) =>
+    //     current.map((obj) => {
+    //       if (obj.service_id === product.service_id) {
+    //         return { ...obj, quantity: product.quantity };
+    //       }
+    //       return obj;
+    //     })
+    //   );
+    // } else {
+    //   setProductsArray((current) =>
+    //     current.map((obj) => {
+    //       if (obj.service_id === product.service_id) {
+    //         return { ...obj, quantity: product.quantity };
+    //       }
+    //       return obj;
+    //     })
+    //   );
+    // }
   };
-
-  // const editProductHours = (values: any, product: IProduct) => {
-  //   console.log('log do produto a ser editado as horas', values, product);
-
-  //   // setProductsArray((current) =>
-  //   //   current.map((obj) => {
-  //   //     if (obj.service_id === product.service_id) {
-  //   //       return { ...obj, minutes: values.timeCounter, period: values.contractType };
-  //   //     }
-  //   //     return obj;
-  //   //   })
-  //   // );
-  // };
 
   function setErrorInput(value: any, message: any) {
     if (!message) {
@@ -309,11 +290,11 @@ export default function CreateProject() {
         setErrorInput('date_start', undefined);
       }
 
-      if (moment(date_start).isSameOrBefore(newDate) && !editProject) {
-        throw setErrorInput('date_start', 'Data inicial igual ou menor que a atual');
-      } else {
-        setErrorInput('date_start', undefined);
-      }
+      // if (moment(date_start).isSameOrBefore(newDate) && !editProject) {
+      //   throw setErrorInput('date_start', 'Data inicial igual ou menor que a atual');
+      // } else {
+      //   setErrorInput('date_start', undefined);
+      // }
 
       if (date_end === '') {
         throw setErrorInput('date_end', 'Data final é obrigatório!');
@@ -384,6 +365,10 @@ export default function CreateProject() {
       try {
         event.preventDefault();
 
+        // if (DTOForm.team.length < 1) {
+        //   throw new Error();
+        // }
+
         // Inserir lógica
         // const files = uploadedFiles.map(
         //   (row: { bucket: any; file_name: any; key: any; size: any; }) => ({
@@ -397,7 +382,9 @@ export default function CreateProject() {
 
         const totalTime = sumTimes(productsHours);
         if (editProject) {
-          const teamFiltered = DTOForm?.team.map((row: any) => ({ user_id: row.value }));
+          const teamFiltered = DTOForm?.team.map((row: any) => ({
+            user_id: row.user_id
+          }));
 
           const updateData = {
             title: DTOForm?.title,
@@ -640,6 +627,7 @@ export default function CreateProject() {
         title="Criar novo projeto/contrato"
         backButton={createStep <= 1}
         stepSelected={createStep}
+        maxStep={3}
         backPage="/projetos"
       />
 
@@ -702,7 +690,6 @@ export default function CreateProject() {
               handleOnDeleteProduct={(id) => handleDeleteProducts(id)}
               handleEditProductQuantity={(value) => editProductQuantity(value)}
               okToSave={setShowSave}
-              setSave={saveProducts}
               editProducts={editSelectedProducts}
               editProject={editProject}
               hideSwitch={DTOForm.category}
@@ -871,19 +858,18 @@ export default function CreateProject() {
                 <TeamInput>
                   <InputMultipleSelect
                     name="members"
-                    options={dataTeam?.map((row) => ({ value: row.user_id, label: row.username }))}
+                    options={dataTeam?.map((row) => ({ value: row.user_id, label: row.name }))}
                     label="Membros"
                     onChange={(option) => onChange(option)}
                     defaultValue={defaultOptionsTeam?.map((row) => ({
                       value: row.user_id,
-                      label: row.username
+                      label: row.name
                     }))}
                     alert="Selecione pelo menos um Responsável"
                   />
                 </TeamInput>
 
                 <FinishButtons>
-                  <ButtonDefault onClick={handleOnSubmit}>Salvar Projeto/Contrato</ButtonDefault>
                   <ButtonDefault
                     typeButton="primary"
                     isOutline
@@ -892,8 +878,9 @@ export default function CreateProject() {
                       setEditSelectedProducts(true);
                     }}
                   >
-                    Editar produtos
+                    Editar projeto/contrato
                   </ButtonDefault>
+                  <ButtonDefault onClick={handleOnSubmit}>Salvar Projeto/Contrato</ButtonDefault>
                 </FinishButtons>
               </div>
             </SummaryWrapper>
@@ -1002,10 +989,10 @@ export default function CreateProject() {
               </FinishModalMessage>
               <FinishModalButtons>
                 <ButtonDefault typeButton="dark" isOutline onClick={handleFinishWithoutFiles}>
-                  Cancelar
+                  Não enviar
                 </ButtonDefault>
                 <ButtonDefault typeButton="primary" onClick={() => setSendFiles(true)}>
-                  Confirmar
+                  Enviar
                 </ButtonDefault>
               </FinishModalButtons>
             </>

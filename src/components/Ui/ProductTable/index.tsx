@@ -28,6 +28,7 @@ import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 
 // Hooks
 import { useAuth } from '../../../hooks/AuthContext';
+import { FaUpload } from 'react-icons/fa';
 
 interface Product {
   id: string;
@@ -51,6 +52,8 @@ interface ProductTableProps {
   isFinished?: boolean;
   typeOfWorkFinished?: string;
   typeOfPlay: string;
+  uploadEnabled: boolean;
+  uploadProduct: (value: any) => void;
 }
 
 export default function ProductTable({
@@ -61,7 +64,9 @@ export default function ProductTable({
   productSelected,
   isFinished,
   typeOfWorkFinished,
-  typeOfPlay
+  typeOfPlay,
+  uploadProduct,
+  uploadEnabled
 }: ProductTableProps) {
   const { user } = useAuth();
   const [workFor, setWorkFor] = useState<string>('schedule');
@@ -77,11 +82,9 @@ export default function ProductTable({
       workForProduct(true);
     }
     if (value === 'schedule') {
-      workForProduct(true);
+      workForProduct(false);
     }
   };
-
-  // console.log('log do user auth', user.permissions);
 
   return (
     <ProductContainer>
@@ -141,14 +144,17 @@ export default function ProductTable({
               <th>Formato</th>
               <th>I/D</th>
               <th>Tipo</th>
+              {uploadEnabled && <th>Upload</th>}
               {workFor === 'product' && <th>Status</th>}
             </tr>
           </thead>
           {data?.products.map((row: any, index: number) => (
             <tbody key={index}>
-              <tr style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
-                <td>#{String(index + 1).padStart(2, '0')}</td>
-                <td>
+              <tr>
+                <td style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
+                  #{String(index + 1).padStart(2, '0')}
+                </td>
+                <td style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
                   {user.permissions.includes('21jobs_task_essay') && (
                     <div className="flex info">
                       <IconText /> {row.service}
@@ -163,7 +169,7 @@ export default function ProductTable({
                 </td>
                 {workFor === 'product' && (
                   <>
-                    <td>
+                    <td style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
                       <span style={{ marginBottom: '4px', display: 'block' }}>
                         {timeData?.timeConsumed}
                       </span>
@@ -172,15 +178,24 @@ export default function ProductTable({
                         restHours={convertToMilliseconds(timeData?.timeConsumed)}
                       />
                     </td>
-                    <td>{row?.minutes}</td>
+                    <td style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
+                      {row?.minutes}
+                    </td>
                   </>
                 )}
-                <td>
+                <td style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
                   <div dangerouslySetInnerHTML={{ __html: row.description }} />
                 </td>
-                <td>{row.size}</td>
-                <td style={{ textTransform: 'capitalize' }}>{row.type}</td>
-                <td>
+                <td style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
+                  {row.size}
+                </td>
+                <td
+                  style={{ cursor: 'pointer', textTransform: 'capitalize' }}
+                  onClick={() => productSelected(row)}
+                >
+                  {row.type}
+                </td>
+                <td style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
                   {row.reason_change === '1'
                     ? 'Criação'
                     : row.reason_change === '2'
@@ -189,20 +204,27 @@ export default function ProductTable({
                     ? 'Alteração Interna'
                     : 'Alteração externa'}
                 </td>
+                {uploadEnabled && (
+                  <td onClick={() => uploadProduct(row)}>
+                    <div className="upload">
+                      <FaUpload />
+                    </div>
+                  </td>
+                )}
                 {workFor === 'product' && (
                   <td>
                     <div
                       className={
                         row.status === 'Em Andamento'
                           ? 'status progress'
-                          : row.status === 'Concluída'
+                          : row.status === 'Concluida'
                           ? 'status finished'
                           : 'status'
                       }
                     >
                       {row.status === 'Em Andamento'
                         ? 'Em Andamento'
-                        : row.status === 'Concluída'
+                        : row.status === 'Concluida'
                         ? 'Concluída'
                         : 'Pendente'}
                     </div>

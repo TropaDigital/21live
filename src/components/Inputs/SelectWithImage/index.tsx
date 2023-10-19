@@ -48,25 +48,25 @@ export default function SelectImage({
         onFocus={handleInputFocus}
         onBlur={handleInputBlur}
         ref={inputRef}
-        // formatOptionLabel={(obj) => (
-        //   <div className="client-option">
-        //     {obj.image !== '' && (
-        //       <div
-        //         className="client-image"
-        //         style={{
-        //           backgroundColor: `#${obj.color}`,
-        //           backgroundImage: `url(https://${obj.image}.s3.amazonaws.com/tenant/logo.png)`
-        //         }}
-        //       ></div>
-        //       // <img
-        //       //   src={`https://${obj.image}.s3.amazonaws.com/tenant/login_bg.jpg`}
-        //       //   alt="client-image"
-        //       //   className="client-image"
-        //       // />
-        //     )}
-        //     <span>{obj.label}</span>
-        //   </div>
-        // )}
+        formatOptionLabel={(obj) => (
+          <div className="client-option">
+            {obj.image !== '' && (
+              <div
+                className="client-image"
+                style={{
+                  backgroundColor: `#${obj.color}`,
+                  backgroundImage: `url(https://${obj.image}.s3.amazonaws.com/tenant/logo.png)`
+                }}
+              ></div>
+              // <img
+              //   src={`https://${obj.image}.s3.amazonaws.com/tenant/login_bg.jpg`}
+              //   alt="client-image"
+              //   className="client-image"
+              // />
+            )}
+            <span>{obj.label}</span>
+          </div>
+        )}
         styles={{
           control: (provided: Record<string, unknown>) => ({
             ...provided,
