@@ -1,9 +1,12 @@
 import styled from 'styled-components';
-import { shade } from "polished";
+import { shade } from 'polished';
 
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 32px;
+
+  padding: 0 30px;
 `;
 
 export const HeaderDefault = styled.div`
@@ -23,15 +26,15 @@ export const SectionTitleHeaderDefault = styled.div`
 `;
 
 export const TitleHeaderDefault = styled.h1`
-  font-size: 2.5rem;
-  font-weight: 700;
+  font-size: var(--text-headline-xl);
+  font-weight: var(--weight-bold);
   line-height: 60px;
   letter-spacing: -0.02em;
   color: var(--title-color);
 `;
 
 export const SubTitleHeaderDefault = styled.span`
-  font-size: .875rem;
+  font-size: var(--text-small-sm);
   line-height: 18px;
   color: var(--text-color-light);
 `;
@@ -43,7 +46,6 @@ export const ContentPerfil = styled.form`
   height: 100%;
 
   padding: 1.25rem;
-  margin-top: 1.87rem;
   background-color: #fff;
   border-radius: 10px;
   box-shadow: var(--shadow);
@@ -96,7 +98,7 @@ export const AvatarInput = styled.div`
       color: #312e28;
     }
     &:hover {
-      background: ${shade(0.1, "#ff9000")};
+      background: ${shade(0.1, '#ff9000')};
     }
   }
 `;
@@ -116,16 +118,15 @@ export const SectionCustHours = styled.div`
 
   width: 100%;
   padding: 20px;
-  background: #F6F7FB;
+  background: #f6f7fb;
   border-radius: 10px;
 
   .custPerHoursInfo {
-    font-size: 12px;
+    font-size: var(--text-small-xs);
     line-height: 16px;
-    color: #6C757D;
+    color: #6c757d;
     margin-top: 14px;
   }
-
 `;
 
 export const SectionActionForm = styled.div`
