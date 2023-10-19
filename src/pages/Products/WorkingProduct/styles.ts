@@ -228,7 +228,7 @@ export const InputChat = styled.div`
 
   padding: 10px 14px;
   position: absolute;
-  bottom: -25px;
+  bottom: -30px;
   left: 12px;
 
   height: 44px;
