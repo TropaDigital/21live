@@ -25,6 +25,7 @@ import ModalDefault from '../../../components/Ui/ModalDefault';
 import { Table } from '../../../components/Table';
 import { TableHead } from '../../../components/Table/styles';
 import Pagination from '../../../components/Pagination';
+import Loader from '../../../components/LoaderSpin';
 
 // Styles
 import {
@@ -53,7 +54,9 @@ export default function ListFluxo() {
     700
   );
 
-  const { data, pages, fetchData } = useFetch<any[]>(`flow?search=${search}&page=${selected}`);
+  const { data, pages, fetchData, isFetching } = useFetch<any[]>(
+    `flow?search=${search}&page=${selected}`
+  );
 
   const handleOnCancel = useCallback(() => {
     setModal(!modal);
@@ -136,94 +139,117 @@ export default function ListFluxo() {
         </ButtonDefault>
       </HeaderPage>
 
-      <SectionDefault>
-        <ContentDefault>
-          <FieldGroupFormDefault>
-            <InputDefault
-              label=""
-              name="search"
-              placeholder="Buscar..."
-              onChange={(event) => {
-                setSearchTerm(event.target.value);
-                debouncedCallback(event.target.value);
-              }}
-              icon={BiSearchAlt}
-              isLoading={isLoading}
-              value={searchTerm}
-            />
-          </FieldGroupFormDefault>
-        </ContentDefault>
-        <div style={{ margin: '-24px -30px' }}>
-          <Table>
-            <TableHead>
-              <div className="groupTable">
-                <h2>
-                  Lista de fluxos{' '}
-                  {/* <strong>
-                    {data && data?.length < 1 ? `${data?.length} tarefa` : `${data?.length} tarefas`}{' '}
-                  </strong> */}
-                </h2>
-              </div>
-            </TableHead>
-            <table>
-              <thead>
-                <tr style={{ whiteSpace: 'nowrap' }}>
-                  <th>ID</th>
-                  <th>Nome</th>
-                  <th>Etapas</th>
-                  {/* <th>Projetos</th> */}
-                  <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
-                </tr>
-              </thead>
+      {isFetching && <Loader />}
 
-              <tbody>
-                {data?.map((row) => (
-                  <tr key={row.flow_id}>
-                    <td>#{String(row.flow_id).padStart(5, '0')}</td>
-                    <td>{row.name}</td>
-                    <td>{row.steps}</td>
-                    {/* <td>5</td> */}
-                    <td>
-                      <div className="fieldTableClients">
-                        <ButtonTable
-                          typeButton="edit"
-                          onClick={() =>
-                            navigate(`/fluxo/editar/${row.name.replaceAll(' ', '_')}`, {
-                              state: { id: row.flow_id, name: row.name }
-                            })
-                          }
-                        />
-                        {/* <ButtonTable typeButton="view" onClick={() => ''} /> */}
-                        <Alert
-                          title="Atenção"
-                          subtitle="Certeza que gostaria de remover esse fluxo? Ao excluir a acão não poderá ser desfeita."
-                          confirmButton={() => handleOnDelete(row.flow_id)}
-                        >
-                          <ButtonTable typeButton="delete" />
-                        </Alert>
-                      </div>
+      {!isFetching && (
+        <SectionDefault>
+          {/* <ContentDefault>
+            <FieldGroupFormDefault>
+              <InputDefault
+                label=""
+                name="search"
+                placeholder="Buscar..."
+                onChange={(event) => {
+                  setSearchTerm(event.target.value);
+                  debouncedCallback(event.target.value);
+                }}
+                icon={BiSearchAlt}
+                isLoading={isLoading}
+                value={searchTerm}
+              />
+            </FieldGroupFormDefault>
+          </ContentDefault> */}
+          <div style={{ margin: '-24px -30px' }}>
+            <Table>
+              <TableHead>
+                <div className="groupTable">
+                  <h2>
+                    Lista de fluxos{' '}
+                    {pages !== null && pages?.total > 0 ? (
+                      <strong>
+                        {pages?.total <= 1 ? `${pages?.total} fluxo` : `${pages?.total} fluxos`}{' '}
+                      </strong>
+                    ) : (
+                      <strong>0 tarefa</strong>
+                    )}
+                  </h2>
+                </div>
+
+                <div>
+                  <InputDefault
+                    label=""
+                    name="search"
+                    placeholder="Buscar..."
+                    onChange={(event) => {
+                      setSearchTerm(event.target.value);
+                      debouncedCallback(event.target.value);
+                    }}
+                    icon={BiSearchAlt}
+                    isLoading={isLoading}
+                    value={searchTerm}
+                  />
+                </div>
+              </TableHead>
+              <table>
+                <thead>
+                  <tr style={{ whiteSpace: 'nowrap' }}>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Etapas</th>
+                    {/* <th>Projetos</th> */}
+                    <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {data?.map((row) => (
+                    <tr key={row.flow_id}>
+                      <td>#{String(row.flow_id).padStart(5, '0')}</td>
+                      <td>{row.name}</td>
+                      <td>{row.steps}</td>
+                      {/* <td>5</td> */}
+                      <td>
+                        <div className="fieldTableClients">
+                          <ButtonTable
+                            typeButton="edit"
+                            onClick={() =>
+                              navigate(`/fluxo/editar/${row.name.replaceAll(' ', '_')}`, {
+                                state: { id: row.flow_id, name: row.name }
+                              })
+                            }
+                          />
+                          {/* <ButtonTable typeButton="view" onClick={() => ''} /> */}
+                          <Alert
+                            title="Atenção"
+                            subtitle="Certeza que gostaria de remover esse fluxo? Ao excluir a acão não poderá ser desfeita."
+                            confirmButton={() => handleOnDelete(row.flow_id)}
+                          >
+                            <ButtonTable typeButton="delete" />
+                          </Alert>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+
+                <tfoot>
+                  <tr>
+                    <td colSpan={100}>
+                      <Pagination
+                        total={pages.total}
+                        perPage={pages.perPage}
+                        currentPage={selected}
+                        lastPage={pages.lastPage}
+                        onClickPage={(e) => setSelected(e)}
+                      />
                     </td>
                   </tr>
-                ))}
-              </tbody>
-
-              <tfoot>
-                <tr>
-                  <td colSpan={100}>
-                    <Pagination
-                      total={pages.total}
-                      perPage={pages.perPage}
-                      currentPage={selected}
-                      lastPage={pages.lastPage}
-                      onClickPage={(e) => setSelected(e)}
-                    />
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
-          </Table>
-        </div>
-      </SectionDefault>
+                </tfoot>
+              </table>
+            </Table>
+          </div>
+        </SectionDefault>
+      )}
 
       <ModalDefault isOpen={modal} title={'Novo Fluxo'} onOpenChange={handleOnCancel}>
         <form onSubmit={handleOnSubmit}>
