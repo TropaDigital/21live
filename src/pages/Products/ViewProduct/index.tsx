@@ -110,6 +110,7 @@ export default function ViewProductsDeliveries() {
   const [modalUpload, setModalUpload] = useState<boolean>(false);
   const [productForUpload, setProductForUpload] = useState<any>({});
   const [enableUpload, setEnableUpload] = useState<boolean>(false);
+  const [viewProduct, setViewProduct] = useState<boolean>(false);
 
   const deliveryId = location.state.task.deliverys.filter(
     (obj: any) => Number(obj.order) === location.state.task_index
@@ -433,6 +434,7 @@ export default function ViewProductsDeliveries() {
       taskInfos: dataTask
     };
     setSelectedProduct(taskCompleteInfo);
+    setViewProduct(true);
   };
 
   const handleAssignTask = (values: any) => {
@@ -949,7 +951,7 @@ export default function ViewProductsDeliveries() {
           />
         </CardsWrapper>
 
-        {selectedProduct === '' && (
+        {!viewProduct && (
           <ProductTable
             data={dataProducts}
             timeData={timeData}
@@ -964,7 +966,7 @@ export default function ViewProductsDeliveries() {
           />
         )}
 
-        {selectedProduct !== '' && (
+        {viewProduct && (
           <WorkingProduct
             productDeliveryId={selectedProduct?.productInfo?.products_delivery_id}
             productInfos={selectedProduct.productInfo}
@@ -977,6 +979,8 @@ export default function ViewProductsDeliveries() {
             sendToApprove={nextStep && nextStep[0]?.manager_approve === 'true' ? true : false}
             timelineData={timeLineData}
             toApprove={handleSendToManager}
+            backButtonTitle="Voltar para produtos"
+            goBack={() => setViewProduct(false)}
           />
         )}
       </DeliveryWrapper>
