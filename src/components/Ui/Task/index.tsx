@@ -1,10 +1,16 @@
+// Icons
+import { BiFlag } from 'react-icons/bi';
+import { FiMoreHorizontal } from 'react-icons/fi';
 
-import { BiFlag } from "react-icons/bi";
-import { FiMoreHorizontal } from "react-icons/fi";
-import { avatarAll } from "../../../utils/dataDefault";
-import Avatar from "../Avatar";
-import ProgressPlayBar from "../ProgressPlayBar";
-import { 
+// Utils
+import { avatarAll } from '../../../utils/dataDefault';
+
+// Components
+import Avatar from '../Avatar';
+import ProgressPlayBar from '../ProgressPlayBar';
+
+// Styles
+import {
   Container,
   ContentTask,
   HeaderTask,
@@ -14,10 +20,41 @@ import {
   FieldGroupTask,
   DataSpan,
   FooterTask
-} from "./styles";
+} from './styles';
+import moment from 'moment';
 
-export default function Task() {
+interface ITask {
+  task_id: string;
+  title: string;
+  tenant_id?: string;
+  product_id?: string;
+  flow_id?: string;
+  description: string;
+  creation_description?: string;
+  creation_date_end?: string;
+  copywriting_description?: string;
+  copywriting_date_end?: string;
+  created?: string;
+  updated?: string;
+  type: string;
+  total_time?: string;
+  status?: string;
+  time_consumed?: string;
+  type_play?: string;
+  user_id?: string;
+  urgent?: string;
+  ticket_id?: string;
+  start_job?: string;
+  end_job?: string;
+  organization_id?: string;
+  requester_id?: string;
+}
 
+interface DataTaskProps {
+  data: ITask;
+}
+
+export default function Task({ data }: DataTaskProps) {
   return (
     <Container>
       <ContentTask>
@@ -33,29 +70,29 @@ export default function Task() {
         </HeaderTask>
 
         <MainTask>
-          <TitleTask>Ação - Dia das Mães</TitleTask>
+          <TitleTask>{data.title}</TitleTask>
 
           <FieldGroupTask>
             <div className="sectionAvatarTask">
-              <Avatar 
-                data={avatarAll}
-              />
+              <Avatar data={avatarAll} />
             </div>
 
             <div className="sectionDataTask">
-              <DataSpan>09 mar</DataSpan>
-              <button className="buttonFlagTask">
-                <BiFlag color="#6C757D" size={18}/>
-              </button>
+              <DataSpan>
+                {data.end_job !== '' && moment(data.end_job).format('DD/MMM')}
+                {data.end_job === '' && 'Tarefa livre'}
+              </DataSpan>
+              {/* <button className="buttonFlagTask">
+                <BiFlag color="#6C757D" size={18} />
+              </button> */}
             </div>
           </FieldGroupTask>
         </MainTask>
       </ContentTask>
 
       <FooterTask>
-        <ProgressPlayBar />
+        <ProgressPlayBar timeConsumed={data.time_consumed} totalTime={data.total_time} />
       </FooterTask>
-
     </Container>
-  )
+  );
 }
