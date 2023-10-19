@@ -1,9 +1,9 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
-  background-color: #F6F7FB;
+  background-color: #f6f7fb;
 `;
 
 export const HeaderPlayBar = styled.div`
@@ -17,8 +17,8 @@ export const HeaderPlayBar = styled.div`
     display: flex;
     align-items: center;
     gap: 8px;
-    
-    >button {
+
+    > div {
       display: grid;
       place-items: center;
       background-color: transparent;
@@ -26,11 +26,9 @@ export const HeaderPlayBar = styled.div`
 
     .timePlayBar {
       font-size: 14px;
-      color: #6C757D;
+      color: #6c757d;
     }
-
   }
-
 
   .qtdTaskPlayBar {
     display: flex;
