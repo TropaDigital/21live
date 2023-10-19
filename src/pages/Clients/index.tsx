@@ -82,23 +82,25 @@ export default function Clients() {
             <div className="groupTable">
               <h2>Lista de clientes</h2>
             </div>
+
+            <div>
+              <InputDefault
+                label=""
+                name="search"
+                placeholder="Buscar..."
+                onChange={(event) => {
+                  setSearchTerm(event.target.value);
+                  debouncedCallback(event.target.value);
+                }}
+                value={searchTerm}
+                icon={BiSearchAlt}
+                isLoading={isLoading}
+                className="search-field"
+              />
+            </div>
           </TableHead>
 
-          <FilterGroup>
-            <InputDefault
-              label=""
-              name="search"
-              placeholder="Buscar..."
-              onChange={(event) => {
-                setSearchTerm(event.target.value);
-                debouncedCallback(event.target.value);
-              }}
-              value={searchTerm}
-              icon={BiSearchAlt}
-              isLoading={isLoading}
-              className="search-field"
-            />
-          </FilterGroup>
+          {/* <FilterGroup></FilterGroup> */}
 
           <table>
             <thead>
