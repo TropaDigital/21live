@@ -1,13 +1,9 @@
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useCallback, useEffect, useId, useState } from 'react';
+import { useState } from 'react';
 
 // Icons
-import { BiEdit, BiFilter, BiPlus, BiSearchAlt, BiX } from 'react-icons/bi';
-import { HiOutlineEye } from 'react-icons/hi';
-
-// Services
-import api from '../../services/api';
+import { BiPlus, BiSearchAlt } from 'react-icons/bi';
 
 // Components
 import ButtonDefault from '../../components/Buttons/ButtonDefault';
