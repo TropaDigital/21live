@@ -1,13 +1,9 @@
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useCallback, useEffect, useId, useState } from 'react';
+import { useState } from 'react';
 
 // Icons
-import { BiEdit, BiFilter, BiPlus, BiSearchAlt, BiX } from 'react-icons/bi';
-import { HiOutlineEye } from 'react-icons/hi';
-
-// Services
-import api from '../../services/api';
+import { BiPlus, BiSearchAlt } from 'react-icons/bi';
 
 // Components
 import ButtonDefault from '../../components/Buttons/ButtonDefault';
@@ -86,23 +82,25 @@ export default function Clients() {
             <div className="groupTable">
               <h2>Lista de clientes</h2>
             </div>
+
+            <div>
+              <InputDefault
+                label=""
+                name="search"
+                placeholder="Buscar..."
+                onChange={(event) => {
+                  setSearchTerm(event.target.value);
+                  debouncedCallback(event.target.value);
+                }}
+                value={searchTerm}
+                icon={BiSearchAlt}
+                isLoading={isLoading}
+                className="search-field"
+              />
+            </div>
           </TableHead>
 
-          <FilterGroup>
-            <InputDefault
-              label=""
-              name="search"
-              placeholder="Buscar..."
-              onChange={(event) => {
-                setSearchTerm(event.target.value);
-                debouncedCallback(event.target.value);
-              }}
-              value={searchTerm}
-              icon={BiSearchAlt}
-              isLoading={isLoading}
-              className="search-field"
-            />
-          </FilterGroup>
+          {/* <FilterGroup></FilterGroup> */}
 
           <table>
             <thead>

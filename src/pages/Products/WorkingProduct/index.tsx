@@ -358,7 +358,7 @@ export default function WorkingProduct({
   async function handleDeleteComment(id: any) {
     try {
       setLoading(true);
-      if (id !== '') {
+      if (id === '') {
         throw new Error('ID do comentário não identificado');
       }
       const response = await api.delete(`/tasks/comment/${id}`);
@@ -742,7 +742,7 @@ export default function WorkingProduct({
                           )}
                         </UserMessageInfo>
 
-                        <UserMessage>{message.comment}</UserMessage>
+                        <UserMessage>{message.comment.split('em')[0]}</UserMessage>
                       </MessageInfos>
                     </>
                   )}

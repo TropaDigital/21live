@@ -44,6 +44,7 @@ import {
   SummaryInfoWrapper,
   SummaryTaskInfo
 } from '../Tasks/ComponentSteps/SummaryTasks/styles';
+import Loader from '../../components/LoaderSpin';
 
 // Styles
 import {
@@ -155,7 +156,7 @@ export default function Services() {
   );
   const [typeList, setTypeList] = useState('produtos');
   const [selected, setSelected] = useState(1);
-  const { data, pages, fetchData } = useFetch<ServicesProps[]>(
+  const { data, pages, fetchData, isFetching } = useFetch<ServicesProps[]>(
     `services?search=${search}&perPage=15&page=${selected}`
   );
   const { data: dataCategory, fetchData: getCategory } = useFetch<any[]>(
@@ -652,6 +653,8 @@ export default function Services() {
           </ButtonDefault>
         </>
       </HeaderPage>
+
+      {isFetching && <Loader />}
 
       <Table>
         <TableHead>

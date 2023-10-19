@@ -1,5 +1,5 @@
 // Libraries
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
 import { Container } from './styles';
 
@@ -78,6 +78,7 @@ const ChartDonut = ({ data, dataKey, title }: DonutProps) => {
               <Cell key={entry.name} fill={entry.fill} />
             ))}
           </Pie>
+          <Tooltip />
         </PieChart>
       </ResponsiveContainer>
     </Container>

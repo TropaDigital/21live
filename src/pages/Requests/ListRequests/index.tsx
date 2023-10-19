@@ -9,7 +9,7 @@ import { BiFilter, BiSearchAlt } from 'react-icons/bi';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import HeaderPage from '../../../components/HeaderPage';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
-import { FilterGroup } from '../../../components/Table/styles';
+import { FilterGroup, TableHead } from '../../../components/Table/styles';
 import FilterModal from '../../../components/Ui/FilterModal';
 import { ContainerDefault } from '../../../components/UiElements/styles';
 import { Table } from '../../../components/Table';
@@ -99,6 +99,22 @@ export default function Requests() {
       {!isFetching && (
         <RequestsWrapper>
           <Table>
+            <TableHead>
+              <div className="groupTable">
+                <h2>
+                  Lista de solicitações{' '}
+                  {pages !== null && pages?.total > 0 ? (
+                    <strong>
+                      {pages?.total <= 1
+                        ? `${pages?.total} solicitação`
+                        : `${pages?.total} solicitações`}{' '}
+                    </strong>
+                  ) : (
+                    <strong>0 tarefa</strong>
+                  )}
+                </h2>
+              </div>
+            </TableHead>
             <FilterGroup>
               <InputDefault
                 label=""

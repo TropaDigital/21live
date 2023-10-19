@@ -153,6 +153,24 @@ export default function CardFluxo({
             />
           </FieldDefault>
 
+          {/* {data.manager_approve !== 'false' && (
+            <FieldDefault style={{ marginBottom: '8px' }}>
+              <SelectDefault
+                label="Selecione quem irá aprovar"
+                name="approve_responsible"
+                placeHolder="Selecione..."
+                onChange={handleOnChange}
+                value={data.status}
+              >
+                {responseUser?.map((row: any) => (
+                  <option key={Number(row.function_id)} value={row.function_id}>
+                    {row.function}
+                  </option>
+                ))}
+              </SelectDefault>
+            </FieldDefault>
+          )} */}
+
           <FieldDefault style={{ marginBottom: '8px' }}>
             <CheckboxDefault
               label="Responsavel obrigatório"

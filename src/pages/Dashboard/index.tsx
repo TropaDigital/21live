@@ -200,9 +200,12 @@ export default function Dashboard() {
 
   return (
     <Container>
-      <div>
-        <Loader />
-      </div>
+      {dashType === '' && (
+        <div>
+          <Loader />
+        </div>
+      )}
+
       {/* Dash Gestor */}
       {dashType === 'manager' && (
         <SectionDefault style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>

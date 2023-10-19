@@ -11,6 +11,8 @@ import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import ModalDefault from '../../../components/Ui/ModalDefault';
 import WrapperEditor from '../../../components/WrapperEditor';
 import UploadFiles, { UploadedFilesProps } from '../../../components/Upload/UploadFiles';
+import Loader from '../../../components/LoaderSpin';
+import AvatarDefault from '../../../components/Ui/Avatar/avatarDefault';
 
 // Icons
 import { BiInfoCircle, BiPlus, BiX } from 'react-icons/bi';
@@ -38,6 +40,7 @@ import {
   MessageReplyInfos,
   MessageResponseDate,
   MessageUser,
+  MessageUserWrapper,
   ModalImage,
   ModalInteractionHeader,
   ModalInteractionWrapper,
@@ -67,7 +70,7 @@ import api from '../../../services/api';
 
 // Hooks
 import { useToast } from '../../../hooks/toast';
-import Loader from '../../../components/LoaderSpin';
+import { useAuth } from '../../../hooks/AuthContext';
 
 interface TicketProps {
   ticket_id: string;
@@ -145,6 +148,7 @@ interface NewInteractionProps {
 
 export default function ViewRequest() {
   const location = useLocation();
+  const { user } = useAuth();
   const { addToast } = useToast();
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedCardInfo, setSelectedCardInfo] = useState<string>('');
@@ -290,6 +294,12 @@ export default function ViewRequest() {
     }
   }
 
+  const ticketInfos = {
+    tenant_id: requestData?.tenant_id,
+    ticket_id: requestData?.ticket_id,
+    title: requestData?.title
+  };
+
   // async function downloadProposal() {
   //   try {
 
@@ -316,7 +326,7 @@ export default function ViewRequest() {
 
       {!loading && (
         <>
-          <HeaderRequest title={titleData} />
+          <HeaderRequest title={titleData} ticketInfos={ticketInfos} />
 
           <ViewRequestWrapper>
             <RequestInfosCard>
@@ -579,19 +589,15 @@ export default function ViewRequest() {
                           </div>
                         </MessageReplyInfos>
                       )}
-                      <div
-                        style={{
-                          display: 'flex',
-                          width: '100%',
-                          gap: '20px',
-                          alignItems: 'flex-start',
-                          justifyContent: 'space-between'
-                        }}
+                      <MessageUserWrapper
+                        className={row.user_id !== String(user.user_id) ? 'reverse' : ''}
                       >
-                        <PublicMessageImage>
+                        <PublicMessageImage
+                          className={row.user_id !== String(user.user_id) ? 'reverse' : ''}
+                        >
                           {row.annex !== '' && row.annex.split('.')[1] !== 'pptx' && (
                             <PublicImageWrapper>
-                              <div
+                              <MessageUserWrapper
                                 style={{
                                   backgroundImage: `url(https://app.21live.com.br/public/files/tickets/${row.ticket_id}/${row.annex})`
                                 }}
@@ -610,7 +616,9 @@ export default function ViewRequest() {
                               ]}
                             />
                           )}
-                          <PublicMessage>
+                          <PublicMessage
+                            className={row.user_id !== String(user.user_id) ? 'reverse' : ''}
+                          >
                             <div className="message-user">
                               {row.user_name} <span>- Interação: #{row.ticket_interaction_id}</span>
                             </div>
@@ -620,7 +628,10 @@ export default function ViewRequest() {
                             />
                           </PublicMessage>
                         </PublicMessageImage>
-                        <MessageUser>
+
+                        <MessageUser
+                          className={row.user_id !== String(user.user_id) ? 'reverse' : ''}
+                        >
                           <MessageResponseDate>
                             <ResponseButton
                               onClick={() =>
@@ -641,13 +652,17 @@ export default function ViewRequest() {
                               {moment(row.created).fromNow()}
                             </ClockTimeInfo>
                           </MessageResponseDate>
-                          <AvatarUser
-                            style={{
-                              backgroundImage: `url(https://app.21live.com.br/public/files/user/${row.avatar})`
-                            }}
-                          />
+                          {row.avatar !== '' ? (
+                            <AvatarUser
+                              style={{
+                                backgroundImage: `url(https://app.21live.com.br/public/files/user/${row.avatar})`
+                              }}
+                            />
+                          ) : (
+                            <AvatarDefault url={row.avatar} name={row.user_name} />
+                          )}
                         </MessageUser>
-                      </div>
+                      </MessageUserWrapper>
                     </PublicMessageWrapper>
                   ))}
               </PublicBottomCard>

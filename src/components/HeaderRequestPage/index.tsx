@@ -13,6 +13,7 @@ import ButtonDefault from '../Buttons/ButtonDefault';
 
 interface HeaderRequestProps {
   title: TitleProps;
+  ticketInfos: TicketInfos;
 }
 
 interface TitleProps {
@@ -20,11 +21,14 @@ interface TitleProps {
   titleRequest: string;
 }
 
-export default function HeaderRequest({ title }: HeaderRequestProps) {
-  const navigate = useNavigate();
-  const location = useLocation();
+interface TicketInfos {
+  tenant_id: string | undefined;
+  ticket_id: string | undefined;
+  title: string | undefined;
+}
 
-  const ticketInfos = location.state;
+export default function HeaderRequest({ title, ticketInfos }: HeaderRequestProps) {
+  const navigate = useNavigate();
 
   const handleBaseTask = () => {
     navigate('/criar-tarefa', { state: ticketInfos });

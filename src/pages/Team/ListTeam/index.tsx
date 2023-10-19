@@ -48,6 +48,8 @@ import { Table } from '../../../components/Table';
 import { TableHead } from '../../../components/Table/styles';
 import Pagination from '../../../components/Pagination';
 import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
+import { ModalButtons } from '../../Products/ViewProduct/styles';
+import Loader from '../../../components/LoaderSpin';
 
 // Libraries
 import moment from 'moment';
@@ -69,7 +71,6 @@ import {
   SelectedTab,
   TabsWrapper
 } from './styles';
-import { ModalButtons } from '../../Products/ViewProduct/styles';
 
 interface UserProps {
   avatar: string;
@@ -146,7 +147,7 @@ export default function Team() {
     (search: string) => setSearch(search),
     700
   );
-  const { data, pages, fetchData } = useFetch<UserProps[]>(
+  const { data, pages, fetchData, isFetching } = useFetch<UserProps[]>(
     `team?page=${selected}&search=${search}&perPage=15`
   );
   const { data: dataOffice } = useFetch<OfficeProps[]>(`function`);
@@ -558,104 +559,123 @@ export default function Team() {
         </>
       </HeaderPage>
 
-      <SectionDefault>
-        <ContentDefault>
-          <FieldGroupFormDefault>
-            {/* <SelectDefault
-              name="filter"
-              label="Filtro"
-              placeholder="Selecione um cargo"
-              onChange={(event) => setFilter(Number(event.target.value))}
-            >
-              {dataOffice?.map((row) => (
-                <option key={row.function_id} value={row.function_id}>
-                  {row.function}
-                </option>
-              ))}
-            </SelectDefault> */}
+      {isFetching && <Loader />}
 
-            <InputDefault
-              label=""
-              name="search"
-              placeholder="Buscar..."
-              onChange={(event) => {
-                setSearchTerm(event.target.value);
-                debouncedCallback(event.target.value);
-              }}
-              value={searchTerm}
-              icon={BiSearchAlt}
-              isLoading={isLoading}
-            />
-          </FieldGroupFormDefault>
-        </ContentDefault>
+      {!isFetching && (
+        <SectionDefault>
+          {/* <ContentDefault>
+            <FieldGroupFormDefault>
+              <SelectDefault
+                name="filter"
+                label="Filtro"
+                placeholder="Selecione um cargo"
+                onChange={(event) => setFilter(Number(event.target.value))}
+              >
+                {dataOffice?.map((row) => (
+                  <option key={row.function_id} value={row.function_id}>
+                    {row.function}
+                  </option>
+                ))}
+              </SelectDefault>
 
-        <div style={{ margin: '-24px -30px' }}>
-          <Table>
-            <TableHead>
-              <div className="groupTable">
-                <h2>Equipes</h2>
-              </div>
-            </TableHead>
-            <table>
-              <thead>
-                <tr style={{ whiteSpace: 'nowrap' }}>
-                  <th>Avatar</th>
-                  <th>Nome</th>
-                  <th>E-mail</th>
-                  <th>Cargo</th>
-                  <th>Jornada</th>
-                  <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
-                </tr>
-              </thead>
+              <InputDefault
+                label=""
+                name="search"
+                placeholder="Buscar..."
+                onChange={(event) => {
+                  setSearchTerm(event.target.value);
+                  debouncedCallback(event.target.value);
+                }}
+                value={searchTerm}
+                icon={BiSearchAlt}
+                isLoading={isLoading}
+              />
+            </FieldGroupFormDefault>
+          </ContentDefault> */}
 
-              <tbody>
-                {data?.map((row) => (
-                  <tr key={row.user_id}>
-                    <td style={{ padding: '1rem' }}>
-                      <AvatarDefault url={row.avatar} name={row.name} />
-                    </td>
-                    <td>{row.name}</td>
-                    <td>{row.email}</td>
-                    <td>{row.function}</td>
-                    <td>
-                      {row.journey
-                        ? `${row.journey.split(':')[0]}h${row.journey.split(':')[1]}`
-                        : ''}
-                    </td>
-                    <td>
-                      <div className="fieldTableClients">
-                        <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
-                        <ButtonTable typeButton="work" onClick={() => handleEditWorkload(row)} />
-                        <Alert
-                          title="Atenção"
-                          subtitle="Certeza que gostaria de deletar esta Equipe? Ao excluir a acão não poderá ser desfeita."
-                          confirmButton={() => handleOnDelete(row.function_id)}
-                        >
-                          <ButtonTable typeButton="delete" />
-                        </Alert>
-                      </div>
+          <div style={{ margin: '-24px -30px' }}>
+            <Table>
+              <TableHead>
+                <div className="groupTable">
+                  <h2>Equipes</h2>
+                </div>
+
+                <div>
+                  <InputDefault
+                    label=""
+                    name="search"
+                    placeholder="Buscar..."
+                    onChange={(event) => {
+                      setSearchTerm(event.target.value);
+                      debouncedCallback(event.target.value);
+                    }}
+                    value={searchTerm}
+                    icon={BiSearchAlt}
+                    isLoading={isLoading}
+                  />
+                </div>
+              </TableHead>
+              <table>
+                <thead>
+                  <tr style={{ whiteSpace: 'nowrap' }}>
+                    <th>Avatar</th>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>Cargo</th>
+                    <th>Jornada</th>
+                    <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {data?.map((row) => (
+                    <tr key={row.user_id}>
+                      <td style={{ padding: '1rem' }}>
+                        <AvatarDefault url={row.avatar} name={row.name} />
+                      </td>
+                      <td>{row.name}</td>
+                      <td>{row.email}</td>
+                      <td>{row.function}</td>
+                      <td>
+                        {row.journey
+                          ? `${row.journey.split(':')[0]}h${row.journey.split(':')[1]}`
+                          : ''}
+                      </td>
+                      <td>
+                        <div className="fieldTableClients">
+                          <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
+                          <ButtonTable typeButton="work" onClick={() => handleEditWorkload(row)} />
+                          <Alert
+                            title="Atenção"
+                            subtitle="Certeza que gostaria de deletar esta Equipe? Ao excluir a acão não poderá ser desfeita."
+                            confirmButton={() => handleOnDelete(row.function_id)}
+                          >
+                            <ButtonTable typeButton="delete" />
+                          </Alert>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+
+                <tfoot>
+                  <tr>
+                    <td colSpan={100}>
+                      <Pagination
+                        total={pages.total}
+                        perPage={pages.perPage}
+                        currentPage={selected}
+                        lastPage={pages.lastPage}
+                        onClickPage={(e) => setSelected(e)}
+                      />
                     </td>
                   </tr>
-                ))}
-              </tbody>
-
-              <tfoot>
-                <tr>
-                  <td colSpan={100}>
-                    <Pagination
-                      total={pages.total}
-                      perPage={pages.perPage}
-                      currentPage={selected}
-                      lastPage={pages.lastPage}
-                      onClickPage={(e) => setSelected(e)}
-                    />
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
-          </Table>
-        </div>
-      </SectionDefault>
+                </tfoot>
+              </table>
+            </Table>
+          </div>
+        </SectionDefault>
+      )}
 
       <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
         <form onSubmit={handleOnSubmit}>

@@ -31,6 +31,7 @@ import {
   SummaryTaskInfo
 } from '../ComponentSteps/SummaryTasks/styles';
 import ProgressBar from '../../../components/Ui/ProgressBar';
+import Loader from '../../../components/LoaderSpin';
 
 // Utils
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
@@ -81,7 +82,9 @@ export default function TaskList() {
   // });
   const [selected, setSelected] = useState(1);
   const [search, setSearch] = useState('');
-  const { data, pages, fetchData } = useFetch<any[]>(`tasks?search=${search}&page=${selected}`);
+  const { data, pages, fetchData, isFetching } = useFetch<any[]>(
+    `tasks?search=${search}&page=${selected}`
+  );
   const [searchTerm, setSearchTerm] = useState('');
   const { isLoading, debouncedCallback } = useDebouncedCallback(
     (search: string) => setSearch(search),
@@ -316,21 +319,40 @@ export default function TaskList() {
         </Link>
       </HeaderPage>
 
-      <Table>
-        <TableHead>
-          <div className="groupTable">
-            <h2>
-              Lista de tarefas{' '}
-              {pages !== null && pages?.total > 0 ? (
-                <strong>
-                  {pages?.total <= 1 ? `${pages?.total} tarefa` : `${pages?.total} tarefas`}{' '}
-                </strong>
-              ) : (
-                <strong>0 tarefa</strong>
-              )}
-            </h2>
-          </div>
-          <div>
+      {isFetching && <Loader />}
+
+      {!isFetching && (
+        <Table>
+          <TableHead>
+            <div className="groupTable">
+              <h2>
+                Lista de tarefas{' '}
+                {pages !== null && pages?.total > 0 ? (
+                  <strong>
+                    {pages?.total <= 1 ? `${pages?.total} tarefa` : `${pages?.total} tarefas`}{' '}
+                  </strong>
+                ) : (
+                  <strong>0 tarefa</strong>
+                )}
+              </h2>
+            </div>
+            <div>
+              <InputDefault
+                label=""
+                name="search"
+                placeholder="Buscar..."
+                onChange={(event) => {
+                  setSearchTerm(event.target.value);
+                  debouncedCallback(event.target.value);
+                }}
+                value={searchTerm}
+                icon={BiSearchAlt}
+                isLoading={isLoading}
+                className="search-field"
+              />
+            </div>
+          </TableHead>
+          {/* <FilterGroup>
             <InputDefault
               label=""
               name="search"
@@ -344,148 +366,136 @@ export default function TaskList() {
               isLoading={isLoading}
               className="search-field"
             />
-          </div>
-        </TableHead>
-        {/* <FilterGroup>
-          <InputDefault
-            label=""
-            name="search"
-            placeholder="Buscar..."
-            onChange={(event) => {
-              setSearchTerm(event.target.value);
-              debouncedCallback(event.target.value);
-            }}
-            value={searchTerm}
-            icon={BiSearchAlt}
-            isLoading={isLoading}
-            className="search-field"
-          />
 
-          <ButtonDefault typeButton="light">
-            <BiFilter />
-            Filtros
-          </ButtonDefault> 
-        </FilterGroup> */}
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Título</th>
-              <th>Tempo utilizado</th>
-              <th>Tempo estimado</th>
-              <th>Status</th>
-              <th>Cliente</th>
-              {/* <th>Equipe</th> */}
-              <th style={{ color: '#F9FAFB' }}>-</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data !== null &&
-              data?.length > 0 &&
-              data?.map((row) => (
-                <tr key={row.task_id}>
-                  <td>#{String(row.task_id).padStart(5, '0')}</td>
-                  <td
-                    style={{ textTransform: 'capitalize', cursor: 'pointer' }}
-                    onClick={() => handleViewTask(row.task_id)}
-                  >
-                    {row.title}
-                  </td>
-                  <td
-                    style={{
-                      width: '180px',
-                      textAlign: 'left'
-                    }}
-                  >
-                    <span style={{ marginBottom: '4px', display: 'block' }}>
-                      {row.time_consumed}
-                    </span>
-                    <ProgressBar
-                      totalHours={convertToMilliseconds(
-                        row.total_time !== 'undefined' ? row.total_time : row.time_consumed
-                      )}
-                      restHours={convertToMilliseconds(row.time_consumed)}
-                    />
-                  </td>
-                  <td>{row.total_time !== 'undefined' ? row.total_time : '00:00:00'}</td>
-                  <td>
-                    <StatusTable
-                      className={
-                        row.status === 'Em Andamento'
-                          ? 'status progress'
-                          : row.status === 'Concluida'
-                          ? 'status finished'
-                          : 'status'
-                      }
+            <ButtonDefault typeButton="light">
+              <BiFilter />
+              Filtros
+            </ButtonDefault> 
+          </FilterGroup> */}
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Tempo utilizado</th>
+                <th>Tempo estimado</th>
+                <th>Status</th>
+                <th>Cliente</th>
+                {/* <th>Equipe</th> */}
+                <th style={{ color: '#F9FAFB' }}>-</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data !== null &&
+                data?.length > 0 &&
+                data?.map((row) => (
+                  <tr key={row.task_id}>
+                    <td>#{String(row.task_id).padStart(5, '0')}</td>
+                    <td
+                      style={{ textTransform: 'capitalize', cursor: 'pointer' }}
+                      onClick={() => handleViewTask(row.task_id)}
                     >
-                      {row.status === 'Em Andamento'
-                        ? 'Em progresso'
-                        : row.status === 'Concluida'
-                        ? 'Concluída'
-                        : 'Pendente'}
-                    </StatusTable>
-                  </td>
-                  <td>{row.tenant}</td>
-                  {/* <td>
-                    <Avatar data={avatarAll} />
-                  </td> */}
-                  <td>
-                    <div className="fieldTableClients">
-                      <Flag
-                        style={{ textAlign: 'center' }}
-                        className={row.urgent === 'true' ? 'flagged' : ''}
-                        onClick={() => handleChangeUrgency(row.task_id)}
-                      >
-                        {row.urgent === 'true' ? (
-                          <IconContext.Provider
-                            value={{ color: '#F04438', className: 'global-class-name' }}
-                          >
-                            <FiFlag />
-                          </IconContext.Provider>
-                        ) : (
-                          <IconContext.Provider
-                            value={{ color: '#667085', className: 'global-class-name' }}
-                          >
-                            <FiFlag />
-                          </IconContext.Provider>
+                      {row.title}
+                    </td>
+                    <td
+                      style={{
+                        width: '180px',
+                        textAlign: 'left'
+                      }}
+                    >
+                      <span style={{ marginBottom: '4px', display: 'block' }}>
+                        {row.time_consumed}
+                      </span>
+                      <ProgressBar
+                        totalHours={convertToMilliseconds(
+                          row.total_time !== 'undefined' ? row.total_time : row.time_consumed
                         )}
-                      </Flag>
-                      {/* <ButtonTable typeButton="view" onClick={() => handleOpenModalView(row)} /> */}
-                      <ButtonTable typeButton="view" onClick={() => handleViewTask(row.task_id)} />
-                      <ButtonTable
-                        typeButton="edit"
-                        onClick={() => {
-                          handleEditTask(row);
-                        }}
+                        restHours={convertToMilliseconds(row.time_consumed)}
                       />
-                      <Alert
-                        title="Atenção"
-                        subtitle="Certeza que gostaria de deletar esta Tarefa? Ao excluir esta ação não poderá ser desfeita."
-                        confirmButton={() => handleOnDelete(row.task_id)}
+                    </td>
+                    <td>{row.total_time !== 'undefined' ? row.total_time : '00:00:00'}</td>
+                    <td>
+                      <StatusTable
+                        className={
+                          row.status === 'Em Andamento'
+                            ? 'status progress'
+                            : row.status === 'Concluida'
+                            ? 'status finished'
+                            : 'status'
+                        }
                       >
-                        <ButtonTable typeButton="delete" />
-                      </Alert>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-          </tbody>
+                        {row.status === 'Em Andamento'
+                          ? 'Em progresso'
+                          : row.status === 'Concluida'
+                          ? 'Concluída'
+                          : 'Pendente'}
+                      </StatusTable>
+                    </td>
+                    <td>{row.tenant}</td>
+                    {/* <td>
+                      <Avatar data={avatarAll} />
+                    </td> */}
+                    <td>
+                      <div className="fieldTableClients">
+                        <Flag
+                          style={{ textAlign: 'center' }}
+                          className={row.urgent === 'true' ? 'flagged' : ''}
+                          onClick={() => handleChangeUrgency(row.task_id)}
+                        >
+                          {row.urgent === 'true' ? (
+                            <IconContext.Provider
+                              value={{ color: '#F04438', className: 'global-class-name' }}
+                            >
+                              <FiFlag />
+                            </IconContext.Provider>
+                          ) : (
+                            <IconContext.Provider
+                              value={{ color: '#667085', className: 'global-class-name' }}
+                            >
+                              <FiFlag />
+                            </IconContext.Provider>
+                          )}
+                        </Flag>
+                        {/* <ButtonTable typeButton="view" onClick={() => handleOpenModalView(row)} /> */}
+                        <ButtonTable
+                          typeButton="view"
+                          onClick={() => handleViewTask(row.task_id)}
+                        />
+                        <ButtonTable
+                          typeButton="edit"
+                          onClick={() => {
+                            handleEditTask(row);
+                          }}
+                        />
+                        <Alert
+                          title="Atenção"
+                          subtitle="Certeza que gostaria de deletar esta Tarefa? Ao excluir esta ação não poderá ser desfeita."
+                          confirmButton={() => handleOnDelete(row.task_id)}
+                        >
+                          <ButtonTable typeButton="delete" />
+                        </Alert>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
 
-          <tfoot>
-            <tr>
-              <td colSpan={100}>
-                <Pagination
-                  total={pages.total}
-                  perPage={pages.perPage}
-                  currentPage={selected}
-                  lastPage={pages.lastPage}
-                  onClickPage={(e) => setSelected(e)}
-                />
-              </td>
-            </tr>
-          </tfoot>
-        </table>
-      </Table>
+            <tfoot>
+              <tr>
+                <td colSpan={100}>
+                  <Pagination
+                    total={pages.total}
+                    perPage={pages.perPage}
+                    currentPage={selected}
+                    lastPage={pages.lastPage}
+                    onClickPage={(e) => setSelected(e)}
+                  />
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </Table>
+      )}
 
       {/* Modal view task */}
       <ModalDefault

@@ -39,6 +39,8 @@ import Alert from '../../../components/Ui/Alert';
 import ModalDefault from '../../../components/Ui/ModalDefault';
 import ProgressBar from '../../../components/Ui/ProgressBar';
 import { ContainerDefault } from '../../../components/UiElements/styles';
+import Avatar from '../../../components/Ui/Avatar';
+import Loader from '../../../components/LoaderSpin';
 
 // Styles
 import { Summary } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
@@ -49,8 +51,6 @@ import { SummaryCard } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 import { SummaryCardTitle } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 import { SummaryCardSubtitle } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 import { FileList, ModalShowProjectWrapper } from './styles';
-import Avatar from '../../../components/Ui/Avatar';
-import { tr } from 'date-fns/locale';
 
 interface StateProps {
   [key: string]: any;
@@ -110,6 +110,7 @@ export default function ListProjects() {
   const {
     data: dataProject,
     fetchData: fetchProject,
+    isFetching,
     pages
   } = useFetch<IProjectCreate[]>(`project?search=${search}&page=${selected}`);
   // const [listSelected, setListSelected] = useState<any[]>([]);
@@ -300,117 +301,129 @@ export default function ListProjects() {
           </ButtonDefault>
         </Link>
       </HeaderPage>
+      {isFetching && <Loader />}
 
-      <Table>
-        <TableHead>
-          <div className="groupTable">
-            <h2>Lista de projetos</h2>
-          </div>
-        </TableHead>
-        <FilterGroup>
-          <InputDefault
-            label=""
-            name="search"
-            placeholder="Buscar..."
-            onChange={(event) => {
-              setSearchTerm(event.target.value);
-              debouncedCallback(event.target.value);
-            }}
-            value={searchTerm}
-            icon={BiSearchAlt}
-            isLoading={isLoading}
-            className="search-field"
-          />
+      {!isFetching && (
+        <Table>
+          <TableHead>
+            <div className="groupTable">
+              <h2>
+                Lista de projetos
+                {pages !== null && pages?.total > 0 ? (
+                  <strong>
+                    {pages?.total <= 1 ? `${pages?.total} projeto` : `${pages?.total} projetos`}{' '}
+                  </strong>
+                ) : (
+                  <strong>0 tarefa</strong>
+                )}
+              </h2>
+            </div>
+          </TableHead>
+          <FilterGroup>
+            <InputDefault
+              label=""
+              name="search"
+              placeholder="Buscar..."
+              onChange={(event) => {
+                setSearchTerm(event.target.value);
+                debouncedCallback(event.target.value);
+              }}
+              value={searchTerm}
+              icon={BiSearchAlt}
+              isLoading={isLoading}
+              className="search-field"
+            />
 
-          {/* <ButtonDefault typeButton="light">
-            <BiFilter />
-            Filtros
-          </ButtonDefault> */}
-        </FilterGroup>
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Título</th>
-              <th>Cliente</th>
-              <th>Tempo</th>
-              <th>Status</th>
-              <th>Equipe</th>
-              <th>Data de criação</th>
-              <th>Entrega estimada</th>
-              <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
-            </tr>
-          </thead>
-          <tbody>
-            {dataProject?.map((row) => (
-              <tr key={row.project_id}>
-                <td>#{String(row.project_id).padStart(5, '0')}</td>
-                <td style={{ cursor: 'pointer' }} onClick={() => handleOpenModal(row)}>
-                  {row.title}
-                </td>
-                <td style={{ textTransform: 'capitalize' }}>{row.client_name}</td>
-                <td
-                  style={{
-                    padding: '14px',
-                    width: '140px',
-                    textAlign: 'left'
-                  }}
-                >
-                  <span style={{ marginBottom: '4px', display: 'block' }}>
-                    {row.time.startsWith('0') ? row.time?.replace('0', '') : row.time}
-                  </span>
-                  <ProgressBar
-                    totalHours={convertToMilliseconds(row.time)}
-                    restHours={convertToMilliseconds(row.time_consumed)}
+            {/* <ButtonDefault typeButton="light">
+              <BiFilter />
+              Filtros
+            </ButtonDefault> */}
+          </FilterGroup>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Cliente</th>
+                <th>Tempo</th>
+                <th>Status</th>
+                <th>Equipe</th>
+                <th>Data de criação</th>
+                <th>Entrega estimada</th>
+                <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
+              </tr>
+            </thead>
+            <tbody>
+              {dataProject?.map((row) => (
+                <tr key={row.project_id}>
+                  <td>#{String(row.project_id).padStart(5, '0')}</td>
+                  <td style={{ cursor: 'pointer' }} onClick={() => handleOpenModal(row)}>
+                    {row.title}
+                  </td>
+                  <td style={{ textTransform: 'capitalize' }}>{row.client_name}</td>
+                  <td
+                    style={{
+                      padding: '14px',
+                      width: '140px',
+                      textAlign: 'left'
+                    }}
+                  >
+                    <span style={{ marginBottom: '4px', display: 'block' }}>
+                      {row.time.startsWith('0') ? row.time?.replace('0', '') : row.time}
+                    </span>
+                    <ProgressBar
+                      totalHours={convertToMilliseconds(row.time)}
+                      restHours={convertToMilliseconds(row.time_consumed)}
+                    />
+                  </td>
+                  <td>
+                    <Switch
+                      onChange={() => handleStatus(row.project_id)}
+                      // onChange={() => console.log('log do switch button', row.project_id)}
+                      checked={row.status === 'true' ? true : false}
+                      uncheckedIcon={false}
+                      checkedIcon={false}
+                      onColor="#0046B5"
+                    />
+                  </td>
+                  <td>
+                    <Avatar data={row.team} />
+                  </td>
+                  <td>{moment(row.date_start).format('DD/MM/YYYY')}</td>
+                  <td>{moment(row.date_end).format('DD/MM/YYYY')}</td>
+                  <td>
+                    <div className="fieldTableClients">
+                      <ButtonTable typeButton="view" onClick={() => handleOpenModal(row)} />
+                      <ButtonTable typeButton="edit" onClick={() => handleEditProject(row)} />
+                      <Alert
+                        title="Atenção"
+                        subtitle="Certeza que gostaria de deletar este Projeto? Ao excluir a ação não poderá ser desfeita."
+                        confirmButton={() => handleOnDelete(row.project_id)}
+                      >
+                        <ButtonTable typeButton="delete" />
+                      </Alert>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+
+            <tfoot>
+              <tr>
+                <td colSpan={100}>
+                  <Pagination
+                    total={pages.total}
+                    perPage={pages.perPage}
+                    currentPage={selected}
+                    lastPage={pages.lastPage}
+                    onClickPage={(e) => setSelected(e)}
                   />
-                </td>
-                <td>
-                  <Switch
-                    onChange={() => handleStatus(row.project_id)}
-                    // onChange={() => console.log('log do switch button', row.project_id)}
-                    checked={row.status === 'true' ? true : false}
-                    uncheckedIcon={false}
-                    checkedIcon={false}
-                    onColor="#0046B5"
-                  />
-                </td>
-                <td>
-                  <Avatar data={row.team} />
-                </td>
-                <td>{moment(row.date_start).format('DD/MM/YYYY')}</td>
-                <td>{moment(row.date_end).format('DD/MM/YYYY')}</td>
-                <td>
-                  <div className="fieldTableClients">
-                    <ButtonTable typeButton="view" onClick={() => handleOpenModal(row)} />
-                    <ButtonTable typeButton="edit" onClick={() => handleEditProject(row)} />
-                    <Alert
-                      title="Atenção"
-                      subtitle="Certeza que gostaria de deletar este Projeto? Ao excluir a ação não poderá ser desfeita."
-                      confirmButton={() => handleOnDelete(row.project_id)}
-                    >
-                      <ButtonTable typeButton="delete" />
-                    </Alert>
-                  </div>
                 </td>
               </tr>
-            ))}
-          </tbody>
-
-          <tfoot>
-            <tr>
-              <td colSpan={100}>
-                <Pagination
-                  total={pages.total}
-                  perPage={pages.perPage}
-                  currentPage={selected}
-                  lastPage={pages.lastPage}
-                  onClickPage={(e) => setSelected(e)}
-                />
-              </td>
-            </tr>
-          </tfoot>
-        </table>
-      </Table>
+            </tfoot>
+          </table>
+        </Table>
+      )}
 
       <ModalDefault
         isOpen={modalShowProject.isOpen}

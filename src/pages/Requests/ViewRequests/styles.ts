@@ -268,6 +268,10 @@ export const PublicMessageImage = styled.div`
   #react-doc-viewer #header-bar {
     display: none;
   }
+
+  &.reverse {
+    flex-direction: row-reverse;
+  }
 `;
 
 export const PublicImageWrapper = styled.div`
@@ -297,6 +301,10 @@ export const PublicMessage = styled.div`
   gap: 8px;
   width: 100%;
 
+  &.reverse {
+    align-items: flex-end;
+  }
+
   .message-user {
     color: var(--gray-900);
     font-weight: var(--weight-bold);
@@ -316,10 +324,27 @@ export const PublicMessage = styled.div`
   }
 `;
 
+export const MessageUserWrapper = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+
+  width: 100%;
+
+  &.reverse {
+    flex-direction: row-reverse;
+  }
+`;
+
 export const MessageUser = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 24px;
+
+  &.reverse {
+    flex-direction: row-reverse;
+  }
 `;
 
 export const MessageResponseDate = styled.div`

@@ -282,11 +282,17 @@ export default function ViewTask() {
                             {row.time_consumed}
                           </span>
                           <ProgressBar
-                            totalHours={convertToMilliseconds(dataTask?.total_time)}
+                            totalHours={convertToMilliseconds(
+                              dataTask?.total_time !== 'undefined'
+                                ? dataTask?.total_time
+                                : row.time_consumed
+                            )}
                             restHours={convertToMilliseconds(row.time_consumed)}
                           />
                         </td>
-                        <td>{dataTask?.total_time}</td>
+                        <td>
+                          {dataTask?.total_time !== 'undefined' ? dataTask?.total_time : 'Livre'}
+                        </td>
                         <td>{moment(row.date_end).format('DD/MM/YYYY')}</td>
                         <td>
                           {dataTask?.end_job !== ''
