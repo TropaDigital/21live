@@ -6,6 +6,7 @@ import { useState } from 'react';
 import HeaderPage from '../../../components/HeaderPage';
 import { ContainerDefault } from '../../../components/UiElements/styles';
 import TaskTable from '../../../components/Ui/TaskTable';
+import Loader from '../../../components/LoaderSpin';
 
 // Hooks
 import useDebouncedCallback from '../../../hooks/useDebounced';
@@ -47,7 +48,7 @@ export default function ViewTaskList() {
     (search: string) => setSearch(search),
     700
   );
-  const { data, pages } = useFetch<any[]>(`my-tasks?search=${search}&page=${selected}`);
+  const { data, pages, isFetching } = useFetch<any[]>(`my-tasks?search=${search}&page=${selected}`);
 
   const handleFilters = () => {
     console.log('log do filters on task');
@@ -62,19 +63,23 @@ export default function ViewTaskList() {
     <ContainerDefault>
       <HeaderPage title="Minhas tarefas" />
 
-      <TaskTable
-        data={data ? data : []}
-        loading={isLoading}
-        searchInput={(value: any) => {
-          setSearchTerm(value);
-          debouncedCallback(value);
-        }}
-        searchInfo={searchTerm}
-        addFilter={handleFilters}
-        taskSelected={handleNavigateTask}
-        pages={pages}
-        pageSelected={setSelected}
-      />
+      {isFetching && <Loader />}
+
+      {!isFetching && (
+        <TaskTable
+          data={data ? data : []}
+          loading={isLoading}
+          searchInput={(value: any) => {
+            setSearchTerm(value);
+            debouncedCallback(value);
+          }}
+          searchInfo={searchTerm}
+          addFilter={handleFilters}
+          taskSelected={handleNavigateTask}
+          pages={pages}
+          pageSelected={setSelected}
+        />
+      )}
     </ContainerDefault>
   );
 }
