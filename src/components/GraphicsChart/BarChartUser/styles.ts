@@ -1,8 +1,12 @@
 import styled from 'styled-components';
 
-export const Container = styled.div`
+interface ChartProps {
+  height?: string;
+}
+
+export const Container = styled.div<ChartProps>`
   width: 100%;
-  height: 180px;
+  height: ${(props) => (props.height ? props.height : '180px')};
   padding: 1rem;
 
   display: flex;
