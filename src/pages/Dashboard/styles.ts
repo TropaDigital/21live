@@ -1,5 +1,9 @@
 import styled from 'styled-components';
 
+interface NumberCardProps {
+  height_size?: string;
+}
+
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -68,37 +72,6 @@ export const JobStatus = styled.div`
   }
 `;
 
-export const ServicePerformance = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-
-  background-color: var(--background-primary);
-  padding: 10px 20px 20px 20px;
-
-  border-radius: 10px;
-  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.05);
-
-  .title-service {
-    color: var(--title-color);
-    font-size: var(--text-small-sm);
-    font-weight: var(--weight-bold);
-  }
-`;
-
-export const UserCardService = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  height: 150px;
-
-  background-color: #f6f7fb;
-  border-radius: 10px;
-
-  padding: 12px;
-`;
-
 export const UserInfo = styled.div`
   display: flex;
   align-items: center;
@@ -134,32 +107,13 @@ export const UserInfo = styled.div`
   }
 `;
 
-export const MensalReport = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: 150px;
-
-  .report-bold {
-    color: var(--title-color);
-    font-size: var(--text-small-lg);
-    font-weight: var(--weight-bold);
-  }
-
-  .report-info {
-    color: var(--gray-500);
-    font-size: var(--text-small-md);
-    font-weight: var(--weight-regular);
-  }
-`;
-
-export const BlueCard = styled.div`
+export const NumberCard = styled.div<NumberCardProps>`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 215px;
-  height: 120px;
+  height: ${(props) => (props.height_size ? props.height_size : '120px')};
   border-radius: 10px;
   background-color: var(--primary-050);
 
@@ -169,14 +123,22 @@ export const BlueCard = styled.div`
     font-weight: var(--weight-bold);
   }
 
-  .blueCard-title {
+  .numberCard-title {
     color: var(--primary-900);
     font-size: var(--text-small-sm);
     font-weight: var(--weight-regular);
   }
 
-  &.small {
-    height: 76px;
+  &.white {
+    background-color: var(--gray-200);
+
+    .numberCard {
+      color: var(--gray-900);
+    }
+
+    .numberCard-title {
+      color: var(--gray-900);
+    }
   }
 `;
 
@@ -190,4 +152,92 @@ export const GridServiceWrapper = styled.div`
   border-radius: 10px;
 
   padding: 12px;
+`;
+
+export const BaseTableGrey = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  height: fit-content;
+  width: 100%;
+
+  border-radius: 12px;
+  border: 1px solid var(--gray-200);
+  overflow: hidden;
+
+  table {
+    width: 100%;
+    border-spacing: 0;
+
+    th {
+      background-color: var(--gray-100);
+      border-bottom: 1px solid #eaecf0;
+      text-transform: capitalize;
+      font-size: var(--text-small-xs);
+      font-weight: var(--weight-medium);
+      color: var(--gray-500);
+      padding: 10px 1.5rem;
+      text-align: left;
+    }
+
+    td {
+      max-height: 40px;
+
+      color: var(--gray-600);
+      font-size: var(--text-small-sm);
+      font-weight: var(--weight-medium);
+      text-align: left;
+
+      padding: 8px 1.5rem;
+
+      background: #ffffff;
+      border-bottom: 1px solid #eaecf0;
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 38ch;
+    }
+
+    tbody {
+      tr:nth-child(even) {
+        td {
+          background-color: var(--gray-50);
+        }
+      }
+    }
+
+    tfoot {
+      td {
+        padding: 0 1rem;
+        border-bottom: none;
+      }
+    }
+  }
+
+  .status {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+
+    width: fit-content;
+    height: 24px;
+
+    background-color: var(--warning-100);
+    border-radius: 35px;
+
+    padding: 2px 12px;
+
+    color: var(--warning-700);
+
+    &.progress {
+      background-color: var(--primary-050);
+      color: var(--primary-700);
+    }
+
+    &.finished {
+      background-color: var(--secundary-050);
+      color: var(--secundary-700);
+    }
+  }
 `;

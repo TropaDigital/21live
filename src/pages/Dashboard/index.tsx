@@ -1,35 +1,43 @@
+// React
+import { useState } from 'react';
+
 // Hooks
 import { useAuth } from '../../hooks/AuthContext';
 
 // Components
-import { CardDataDash } from '../../components/Cards/CardDataDash';
 import { CardWelcomeDash } from '../../components/Cards/CardWelcomeDash';
 import BarChartGrafic from '../../components/GraphicsChart/BarChartGrafic';
 import ChartDonut from '../../components/GraphicsChart/ChartDonut';
 import { TableDefault } from '../../components/TableDefault';
 import { ContainerGroupTable, SectionDefault } from '../../components/UiElements/styles';
-import BarChartUser from '../../components/GraphicsChart/BarChartUser';
+import TopCardsDash, { CardsData } from '../../components/Cards/DashboardTopCards';
+import Loader from '../../components/LoaderSpin';
 
 // Styles
 import {
-  BlueCard,
+  BaseTableGrey,
+  NumberCard,
   CardBase,
   Container,
   GraphicLine,
   GridServiceWrapper,
   JobStatus,
-  MensalReport,
-  ServicePerformance,
-  UserCardService,
   UserInfo
 } from './styles';
 
 // Libraries
 import CountUp from 'react-countup';
 
+// Images
 import PersonTest from '../../assets/person.jpg';
-import { useState } from 'react';
-import Loader from '../../components/LoaderSpin';
+import UserPerformanceCard, { UserCardProps } from '../../components/Cards/UserPerformanceCard';
+import PerformanceClientCard, {
+  ChartDataProps
+} from '../../components/Cards/PerformanceClientCard';
+
+// interface DashType {
+//   typeDash: 'manager' | 'executive' | 'traffic' | 'operator' | '';
+// }
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -147,34 +155,6 @@ export default function Dashboard() {
     }
   ];
 
-  const dataUser = [
-    {
-      name: 'Entregue',
-      pv: 28,
-      fill: '#00A063'
-    },
-    {
-      name: 'Aprovação',
-      pv: 16,
-      fill: '#0098FF'
-    },
-    {
-      name: 'Criação',
-      pv: 22,
-      fill: '#0045B5'
-    },
-    {
-      name: 'Cancelado',
-      pv: 15,
-      fill: '#D92D20'
-    },
-    {
-      name: 'Pendente',
-      pv: 5,
-      fill: '#FDB022'
-    }
-  ];
-
   const dataChanges = [
     {
       name: 'Metso',
@@ -198,6 +178,233 @@ export default function Dashboard() {
     }
   ];
 
+  const topCardsDataManager: CardsData[] = [
+    {
+      data: 42,
+      type: 'success',
+      title: 'Total de clientes'
+    },
+    {
+      data: 443,
+      type: 'creation',
+      title: 'Horas de criação'
+    },
+    {
+      data: 46,
+      type: 'info',
+      title: 'Alt. internas'
+    },
+    {
+      data: 56,
+      type: 'danger',
+      title: 'Alt. externas'
+    },
+    {
+      data: 52,
+      type: 'warning',
+      title: 'Equipes'
+    }
+  ];
+
+  const topCardsDataExecutive: CardsData[] = [
+    {
+      data: 42,
+      type: 'success',
+      title: 'Total de clientes'
+    },
+    {
+      data: 443,
+      type: 'creation',
+      title: 'Horas de criação'
+    },
+    {
+      data: 46,
+      type: 'info',
+      title: 'Alt. internas'
+    },
+    {
+      data: 56,
+      type: 'danger',
+      title: 'Alt. externas'
+    }
+  ];
+
+  const userCards: UserCardProps[] = [
+    {
+      userInfos: {
+        user_name: 'John Doe',
+        clientsNumber: 10,
+        avatar: 'avatar1.jpg'
+      },
+      chartData: [
+        {
+          name: 'Entregue',
+          pv: 25,
+          fill: '#00A063'
+        },
+        {
+          name: 'Aprovação',
+          pv: 15,
+          fill: '#0098FF'
+        },
+        {
+          name: 'Criação',
+          pv: 20,
+          fill: '#0045B5'
+        },
+        {
+          name: 'Cancelado',
+          pv: 13,
+          fill: '#D92D20'
+        },
+        {
+          name: 'Pendente',
+          pv: 5,
+          fill: '#FDB022'
+        }
+      ],
+      mensalReport: {
+        reunions: 5,
+        principalTask: 'Project report',
+        secondaryTask: 'Marketing strategy'
+      }
+    },
+    {
+      userInfos: {
+        user_name: 'Alice Smith',
+        clientsNumber: 15,
+        avatar: 'avatar2.jpg'
+      },
+      chartData: [
+        {
+          name: 'Entregue',
+          pv: 28,
+          fill: '#00A063'
+        },
+        {
+          name: 'Aprovação',
+          pv: 16,
+          fill: '#0098FF'
+        },
+        {
+          name: 'Criação',
+          pv: 22,
+          fill: '#0045B5'
+        },
+        {
+          name: 'Cancelado',
+          pv: 15,
+          fill: '#D92D20'
+        },
+        {
+          name: 'Pendente',
+          pv: 5,
+          fill: '#FDB022'
+        }
+      ],
+      mensalReport: {
+        reunions: 8,
+        principalTask: 'Presentation X',
+        secondaryTask: 'Brainstorm ideas'
+      }
+    },
+    {
+      userInfos: {
+        user_name: 'Bob Johnson',
+        clientsNumber: 8,
+        avatar: 'avatar3.jpg'
+      },
+      chartData: [
+        {
+          name: 'Entregue',
+          pv: 28,
+          fill: '#00A063'
+        },
+        {
+          name: 'Aprovação',
+          pv: 16,
+          fill: '#0098FF'
+        },
+        {
+          name: 'Criação',
+          pv: 22,
+          fill: '#0045B5'
+        },
+        {
+          name: 'Cancelado',
+          pv: 15,
+          fill: '#D92D20'
+        },
+        {
+          name: 'Pendente',
+          pv: 5,
+          fill: '#FDB022'
+        }
+      ],
+      mensalReport: {
+        reunions: 3,
+        principalTask: 'Attend client meetings',
+        secondaryTask: 'Update data'
+      }
+    }
+  ];
+
+  const mockDataPerformanceClient = {
+    client_name: 'Terex',
+    graphics: [
+      {
+        name: 'Entregue',
+        pv: 25,
+        fill: '#00A063'
+      },
+      {
+        name: 'Aprovação',
+        pv: 15,
+        fill: '#0098FF'
+      },
+      {
+        name: 'Criação',
+        pv: 20,
+        fill: '#0045B5'
+      },
+      {
+        name: 'Cancelado',
+        pv: 13,
+        fill: '#D92D20'
+      },
+      {
+        name: 'Pendente',
+        pv: 5,
+        fill: '#FDB022'
+      }
+    ]
+  };
+
+  const TablePerformanceData = [
+    {
+      job_name: 'Planejamento',
+      status_job: 'creation'
+    },
+    {
+      job_name: 'Planejamento',
+      status_job: 'pending'
+    },
+    {
+      job_name: 'Planejamento',
+      status_job: 'waiting'
+    },
+    {
+      job_name: 'Planejamento',
+      status_job: 'finished'
+    }
+  ];
+
+  const MensalReportPerfData = {
+    reunions: 3,
+    principalTask: 'Attend client meetings',
+    secondaryTask: 'Update data'
+  };
+
   return (
     <Container>
       {dashType === '' && (
@@ -212,17 +419,7 @@ export default function Dashboard() {
           <CardWelcomeDash user={user.name} />
 
           {/* Cards pequenos */}
-          <div className="contentData">
-            <CardDataDash data={42} type="success" description="Total de clientes" />
-
-            <CardDataDash data={443} type="creation" description="Horas de criação" />
-
-            <CardDataDash data={46} type="info" description="Alt. internas" />
-
-            <CardDataDash data={56} type="danger" description="Alt. externas" />
-
-            <CardDataDash data={52} type="warning" description="Equipes" />
-          </div>
+          <TopCardsDash typeCards="manager" cardsData={topCardsDataManager} />
 
           {/* Status geral dos jobs + Pizza top clientes */}
           <GraphicLine>
@@ -336,30 +533,18 @@ export default function Dashboard() {
           </ContainerGroupTable>
 
           {/* Performance de atendimento */}
-          <ServicePerformance>
-            <div className="title-service">Performance do Atendimento</div>
+          <CardBase>
+            <div className="card-title">Performance do Atendimento</div>
 
-            <UserCardService>
-              <UserInfo>
-                <div className="user-image" style={{ backgroundImage: `url(${PersonTest})` }} />
-                <div className="user-name">
-                  Amanda do Carmo
-                  <span>12 clientes</span>
-                </div>
-              </UserInfo>
-
-              <div style={{ width: '50%' }}>
-                <BarChartUser data={dataUser} />
-              </div>
-
-              <MensalReport>
-                <div className="report-bold">Report mensal</div>
-                <div className="report-info">Balanço de ações</div>
-                <div className="report-info">Mídias</div>
-                <div className="report-bold">12 reuniões</div>
-              </MensalReport>
-            </UserCardService>
-          </ServicePerformance>
+            {userCards.map((row: UserCardProps, index: any) => (
+              <UserPerformanceCard
+                key={index}
+                userInfos={row.userInfos}
+                chartData={row.chartData}
+                mensalReport={row.mensalReport}
+              />
+            ))}
+          </CardBase>
 
           {/* Detalhes dos clientes */}
           <ContainerGroupTable>
@@ -437,7 +622,7 @@ export default function Dashboard() {
               </ContainerGroupTable>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <BlueCard>
+                <NumberCard>
                   <CountUp start={0} end={87} delay={0}>
                     {({ countUpRef }) => (
                       <div>
@@ -445,9 +630,9 @@ export default function Dashboard() {
                       </div>
                     )}
                   </CountUp>
-                  <div className="blueCard-title">pautas</div>
-                </BlueCard>
-                <BlueCard>
+                  <div className="numberCard-title">pautas</div>
+                </NumberCard>
+                <NumberCard>
                   <CountUp start={0} end={290} delay={0}>
                     {({ countUpRef }) => (
                       <div>
@@ -455,8 +640,8 @@ export default function Dashboard() {
                       </div>
                     )}
                   </CountUp>
-                  <div className="blueCard-title">horas</div>
-                </BlueCard>
+                  <div className="numberCard-title">horas</div>
+                </NumberCard>
               </div>
             </div>
           </CardBase>
@@ -499,7 +684,7 @@ export default function Dashboard() {
               </ContainerGroupTable>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <BlueCard className="small">
+                <NumberCard height_size={'76px'}>
                   <CountUp start={0} end={87} delay={0}>
                     {({ countUpRef }) => (
                       <div>
@@ -507,10 +692,10 @@ export default function Dashboard() {
                       </div>
                     )}
                   </CountUp>
-                  <div className="blueCard-title">pautas</div>
-                </BlueCard>
+                  <div className="numberCard-title">pautas</div>
+                </NumberCard>
 
-                <BlueCard className="small">
+                <NumberCard height_size={'76px'}>
                   <CountUp start={0} end={290} delay={0}>
                     {({ countUpRef }) => (
                       <div>
@@ -518,8 +703,8 @@ export default function Dashboard() {
                       </div>
                     )}
                   </CountUp>
-                  <div className="blueCard-title">horas</div>
-                </BlueCard>
+                  <div className="numberCard-title">horas</div>
+                </NumberCard>
               </div>
             </GridServiceWrapper>
           </CardBase>
@@ -532,15 +717,7 @@ export default function Dashboard() {
           <CardWelcomeDash user={user.name} />
 
           {/* Cards pequenos */}
-          <div className="contentData">
-            <CardDataDash data={42} type="success" description="Total de clientes" />
-
-            <CardDataDash data={443} type="creation" description="Horas de criação" />
-
-            <CardDataDash data={46} type="info" description="Alt. internas" />
-
-            <CardDataDash data={56} type="danger" description="Alt. externas" />
-          </div>
+          <TopCardsDash typeCards="executive" cardsData={topCardsDataExecutive} />
 
           {/* Performance Cliente */}
           <CardBase>
@@ -591,16 +768,141 @@ export default function Dashboard() {
           {/* Performance por Cliente */}
           <CardBase>
             <div className="card-title">Performance por cliente</div>
+
+            {[0, 1, 2].map((row: any, index: number) => (
+              <PerformanceClientCard
+                key={index}
+                data_chart={mockDataPerformanceClient}
+                data_table={TablePerformanceData}
+                mensal_report={MensalReportPerfData}
+              />
+            ))}
           </CardBase>
+
+          {/* Status geral dos jobs + Pizza top clientes */}
+          <GraphicLine>
+            <BarChartGrafic data={dataStatusAll} title={'Status Geral Jobs'} />
+            <ChartDonut data={dataDahs} title={'Top Clientes'} dataKey="value" />
+          </GraphicLine>
         </SectionDefault>
       )}
 
       {/* Dash tráfego */}
       {dashType === 'traffic' && (
-        <div>
-          Tráfego
-          <div></div>
-        </div>
+        <SectionDefault style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          <CardWelcomeDash user={user.name} />
+
+          {/* Monitoramento do time */}
+          <CardBase>
+            <div className="card-title">Monitoramento do time</div>
+
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px' }}>
+              <BaseTableGrey>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>CLIENTE</th>
+                      <th>TIME</th>
+                      <th>JOB</th>
+                      <th>STATUS</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Metso</td>
+                      <td>Time 1</td>
+                      <td>Planejamento</td>
+                      <td>
+                        <div
+                          className="status"
+                          // row.status_job === 'creation'
+                          //     ? 'status progress'
+                          //     : row.status_job === 'waiting'
+                          //       ? 'status'
+                          //       : row.status_job === 'finished'
+                          //         ? 'status finished'
+                          //         : 'status'
+                        >
+                          Criação
+                          {
+                            // row.status_job === 'creation'
+                            //   ? 'Criação'
+                            //   : row.status_job === 'waiting'
+                            //   ? 'Aguardando aprovação'
+                            //   : row.status_job === 'finished'
+                            //   ? 'Concluída'
+                            //   : 'Pendente'
+                          }
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Metso</td>
+                      <td>Time 2</td>
+                      <td>Desenvolvimento</td>
+                      <td>
+                        <div
+                          className="status"
+                          // row.status_job === 'creation'
+                          //     ? 'status progress'
+                          //     : row.status_job === 'waiting'
+                          //       ? 'status'
+                          //       : row.status_job === 'finished'
+                          //         ? 'status finished'
+                          //         : 'status'
+                        >
+                          Criação
+                          {
+                            // row.status_job === 'creation'
+                            //   ? 'Criação'
+                            //   : row.status_job === 'waiting'
+                            //   ? 'Aguardando aprovação'
+                            //   : row.status_job === 'finished'
+                            //   ? 'Concluída'
+                            //   : 'Pendente'
+                          }
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </BaseTableGrey>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <NumberCard height_size={'110px'} className="white">
+                  <CountUp start={0} end={87} delay={0}>
+                    {({ countUpRef }) => (
+                      <div>
+                        <span className="numberCard" ref={countUpRef} />
+                      </div>
+                    )}
+                  </CountUp>
+                  <div className="numberCard-title">pautas</div>
+                </NumberCard>
+                <NumberCard height_size={'110px'} className="white">
+                  <CountUp start={0} end={290} delay={0}>
+                    {({ countUpRef }) => (
+                      <div>
+                        <span className="numberCard" ref={countUpRef} />
+                      </div>
+                    )}
+                  </CountUp>
+                  <div className="numberCard-title">horas</div>
+                </NumberCard>
+              </div>
+            </div>
+          </CardBase>
+
+          {/* Monitoramento do time por horas */}
+          <CardBase>
+            <div className="card-title">Monitoramento do time por horas disponíveis</div>
+          </CardBase>
+
+          {/* Monitoramento do time individual */}
+          <CardBase>
+            <div className="card-title">Monitoramento do time individual</div>
+          </CardBase>
+        </SectionDefault>
       )}
 
       {/* Dash operador */}

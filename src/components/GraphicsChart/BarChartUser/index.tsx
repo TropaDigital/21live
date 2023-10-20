@@ -15,9 +15,10 @@ interface BarProps {
   data: any;
   isVertical?: boolean;
   title?: string;
+  height?: string;
 }
 
-export default function BarChartUser({ data, title, isVertical }: BarProps) {
+export default function BarChartUser({ data, title, isVertical, height }: BarProps) {
   // const data = [
   //   {
   //     name: 'Entregue',
@@ -47,7 +48,7 @@ export default function BarChartUser({ data, title, isVertical }: BarProps) {
   // ];
 
   return (
-    <Container>
+    <Container height={height}>
       {title !== '' && (
         <div className="sectionInfo">
           <span>{title}</span>
