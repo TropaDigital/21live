@@ -81,7 +81,7 @@ interface TaskInfos {
 }
 
 interface ProductsProps {
-  service_id: number;
+  job_service_id: number;
   service: string;
   description: string;
   type: string;

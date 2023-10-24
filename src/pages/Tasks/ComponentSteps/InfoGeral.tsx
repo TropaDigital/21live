@@ -204,13 +204,13 @@ export default function InfoGeral({
       <FlexLine>
         <SelectDefault
           label="Projeto/Contrato"
-          name="product_id"
-          value={data.product_id}
+          name="project_product_id"
+          value={data.project_product_id}
           onChange={handleInputChange}
-          error={error?.product_id}
+          error={error?.project_product_id}
         >
           {dataProjects?.map((row: any) => (
-            <option key={row.product_id} value={row.product_id}>
+            <option key={row.project_product_id} value={row.project_product_id}>
               {row.select}
             </option>
           ))}

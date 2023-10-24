@@ -169,7 +169,7 @@ export default function CreateProject() {
     if (editSelectedProducts) {
       setProductsArray((current) =>
         current.map((obj) => {
-          if (obj.service_id === product.product_id) {
+          if (obj.job_service_id === product.project_product_id) {
             return { ...obj, period: value.contractType };
           }
           return obj;
@@ -178,7 +178,7 @@ export default function CreateProject() {
     } else {
       setProductsArray((current) =>
         current.map((obj) => {
-          if (obj.service_id === product.service_id) {
+          if (obj.job_service_id === product.job_service_id) {
             return { ...obj, period: value.contractType };
           }
           return obj;
@@ -189,12 +189,12 @@ export default function CreateProject() {
 
   const handleDeleteProducts = (id: any) => {
     if (editSelectedProducts) {
-      setProductsArray(productsArray.filter((obj: any) => obj.service_id !== id));
+      setProductsArray(productsArray.filter((obj: any) => obj.job_service_id !== id));
       if (productsArray.length <= 1) {
         setEditSelectedProducts(false);
       }
     } else {
-      setProductsArray(productsArray.filter((obj) => obj.service_id !== id));
+      setProductsArray(productsArray.filter((obj) => obj.job_service_id !== id));
       if (productsArray.length <= 1) {
         setEditSelectedProducts(false);
       }
@@ -204,7 +204,7 @@ export default function CreateProject() {
   const editProductQuantity = (product: any) => {
     setProductsArray((current) =>
       current.map((obj) => {
-        if (obj.service_id === product.service_id) {
+        if (obj.job_service_id === product.job_service_id) {
           return { ...obj, quantity: product.quantity };
         }
         return obj;
@@ -213,7 +213,7 @@ export default function CreateProject() {
     // if (editSelectedProducts) {
     //   setProductsArray((current) =>
     //     current.map((obj) => {
-    //       if (obj.service_id === product.service_id) {
+    //       if (obj.job_service_id === product.job_service_id) {
     //         return { ...obj, quantity: product.quantity };
     //       }
     //       return obj;
@@ -222,7 +222,7 @@ export default function CreateProject() {
     // } else {
     //   setProductsArray((current) =>
     //     current.map((obj) => {
-    //       if (obj.service_id === product.service_id) {
+    //       if (obj.job_service_id === product.job_service_id) {
     //         return { ...obj, quantity: product.quantity };
     //       }
     //       return obj;
@@ -407,7 +407,7 @@ export default function CreateProject() {
               organization_id: DTOForm.organization_id,
               products: [
                 {
-                  service_id: '1',
+                  job_service_id: '1',
                   service: 'LIVRE',
                   description: 'DESCRICAO',
                   type: 'livre',
@@ -442,7 +442,7 @@ export default function CreateProject() {
               tenant_id: DTOForm.tenant_id,
               products: [
                 {
-                  service_id: '1',
+                  job_service_id: '1',
                   service: 'LIVRE',
                   description: 'DESCRICAO',
                   type: 'livre',

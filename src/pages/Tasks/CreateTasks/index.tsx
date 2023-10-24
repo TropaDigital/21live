@@ -90,7 +90,7 @@ interface StateProps {
 interface ProjectProductProps {
   categoria: string;
   listavel: string;
-  product_id: string;
+  project_product_id: string;
   produto: string;
   projeto: string;
   quantidade: string;
@@ -203,7 +203,7 @@ export default function CreateTasks() {
     title: '',
     tenant_id: '',
     organization_id: '',
-    product_id: '',
+    project_product_id: '',
     flow_id: '',
     ticket_id: '',
     requester_id: '',
@@ -248,7 +248,7 @@ export default function CreateTasks() {
   const [selectedProject, setSelectedProject] = useState<ProjectProductProps>({
     categoria: '',
     listavel: '',
-    product_id: '',
+    project_product_id: '',
     produto: '',
     projeto: '',
     quantidade: '',
@@ -354,7 +354,7 @@ export default function CreateTasks() {
 
     if (location.state !== null && location.state.task_id) {
       const selectedInfos: any = dataProjects?.filter(
-        (obj: any) => obj.product_id === location.state.product_id
+        (obj: any) => obj.project_product_id === location.state.project_product_id
       );
       fetchProjects();
       setProductsArray([]);
@@ -624,11 +624,11 @@ export default function CreateTasks() {
   );
 
   const infoProjects: any = dataProjects?.filter(
-    (obj: any) => obj.product_id === DTOForm.product_id
+    (obj: any) => obj.project_product_id === DTOForm.project_product_id
   );
 
   const infoOrganizationsProjects: any = organizationProjects?.filter(
-    (obj: any) => obj.product_id === DTOForm.product_id
+    (obj: any) => obj.project_product_id === DTOForm.project_product_id
   );
 
   const handleSwitch = (value: any) => {
@@ -664,13 +664,13 @@ export default function CreateTasks() {
       minutes_creation: product.minutes_creation,
       minutes_essay: product.minutes_essay,
       service: product.service,
-      service_id: product.service_id,
+      job_service_id: product.job_service_id,
       size: product.size,
       type: product.type,
       quantity: 1
     };
-    if (productsArray.filter((obj) => obj.service_id === product.service_id).length > 0) {
-      const newArray = productsArray.filter((obj) => obj.service_id !== product.service_id);
+    if (productsArray.filter((obj) => obj.job_service_id === product.job_service_id).length > 0) {
+      const newArray = productsArray.filter((obj) => obj.job_service_id !== product.job_service_id);
       setProductsArray([]);
       setProductsArray(newArray);
     } else if (selectedProject?.tempo && product.minutes > selectedProject?.tempo) {
@@ -701,18 +701,18 @@ export default function CreateTasks() {
       minutes_creation: product.minutes_creation,
       minutes_essay: product.minutes_essay,
       service: product.service,
-      service_id: product.service_id,
+      job_service_id: product.job_service_id,
       size: product.size,
       type: product.type,
       quantity: 1
     };
     if (
       DTODelivery[deliveryIdCorrected]?.deliveryProducts.filter(
-        (obj: any) => obj.service_id === product.service_id
+        (obj: any) => obj.job_service_id === product.job_service_id
       ).length > 0
     ) {
       const newArray = DTODelivery[deliveryIdCorrected]?.deliveryProducts.filter(
-        (obj: any) => obj.service_id !== product.service_id
+        (obj: any) => obj.job_service_id !== product.job_service_id
       );
       setDTODelivery((current: any) =>
         current.map((obj: any) => {
@@ -778,7 +778,7 @@ export default function CreateTasks() {
       title,
       tenant_id,
       organization_id,
-      product_id,
+      project_product_id,
       flow_id,
       user_id,
       description,
@@ -821,10 +821,10 @@ export default function CreateTasks() {
         setErrorInput('flow_id', undefined);
       }
 
-      if (product_id === '') {
-        throw setErrorInput('product_id', 'Projeto / Contrato é obrigatório!');
+      if (project_product_id === '') {
+        throw setErrorInput('project_product_id', 'Projeto / Contrato é obrigatório!');
       } else {
-        setErrorInput('product_id', undefined);
+        setErrorInput('project_product_id', undefined);
       }
 
       // if (user_id === '') {
@@ -887,11 +887,11 @@ export default function CreateTasks() {
           DTODelivery.map((current: DeliveryUpdate) => {
             current.produtos.map((obj: any) => {
               if (obj.reason_change === '' || obj.reason_change === undefined) {
-                setErrorCategory((errorCategory: any) => [...errorCategory, obj.service_id]);
+                setErrorCategory((errorCategory: any) => [...errorCategory, obj.job_service_id]);
                 throw new Error('Existem produtos sem o "Tipo" selecionado!');
               } else if (obj.reason_change !== '' && obj.reason_change !== undefined) {
                 setErrorCategory((prevState) =>
-                  prevState.filter((product) => product !== obj.service_id)
+                  prevState.filter((product) => product !== obj.job_service_id)
                 );
                 if (errorCategory.length === 0) {
                   // setAddDeliveries(true);
@@ -917,11 +917,11 @@ export default function CreateTasks() {
             current.deliveryProducts.map((obj: any) => {
               if (obj.reason_change === '' || obj.reason_change === undefined) {
                 // console.log('log se tiver erro', DTODelivery);
-                setErrorCategory((errorCategory: any) => [...errorCategory, obj.service_id]);
+                setErrorCategory((errorCategory: any) => [...errorCategory, obj.job_service_id]);
                 throw new Error('Existem produtos sem o "Tipo" selecionado!');
               } else if (obj.reason_change !== '' && obj.reason_change !== undefined) {
                 setErrorCategory((prevState) =>
-                  prevState.filter((product) => product !== obj.service_id)
+                  prevState.filter((product) => product !== obj.job_service_id)
                 );
                 if (errorCategory.length === 0) {
                   // setAddDeliveries(true);
@@ -939,11 +939,11 @@ export default function CreateTasks() {
           let hasError = false;
           productsArray.forEach((obj: any) => {
             if (obj.reason_change === '' || obj.reason_change === undefined) {
-              setErrorCategory((errorCategory) => [...errorCategory, obj.service_id]);
+              setErrorCategory((errorCategory) => [...errorCategory, obj.job_service_id]);
               hasError = true;
             } else {
               setErrorCategory((prevState) =>
-                prevState.filter((product) => product !== obj.service_id)
+                prevState.filter((product) => product !== obj.job_service_id)
               );
             }
           });
@@ -964,11 +964,11 @@ export default function CreateTasks() {
           let hasError = false;
           productsArray.forEach((obj: any) => {
             if (obj.reason_change === '' || obj.reason_change === undefined) {
-              setErrorCategory((errorCategory) => [...errorCategory, obj.service_id]);
+              setErrorCategory((errorCategory) => [...errorCategory, obj.job_service_id]);
               hasError = true;
             } else {
               setErrorCategory((prevState) =>
-                prevState.filter((product) => product !== obj.service_id)
+                prevState.filter((product) => product !== obj.job_service_id)
               );
             }
           });
@@ -998,7 +998,7 @@ export default function CreateTasks() {
 
         productsArray.map((obj: any) => {
           if (obj.reason_change === '' || obj.reason_change === undefined) {
-            setErrorCategory((errorCategory: any) => [...errorCategory, obj.service_id]);
+            setErrorCategory((errorCategory: any) => [...errorCategory, obj.job_service_id]);
             return addToast({
               type: 'warning',
               title: 'Atenção',
@@ -1079,7 +1079,7 @@ export default function CreateTasks() {
     if (field === 'description') {
       setProductsArray((current) =>
         current.map((obj) => {
-          if (obj.service_id === productId) {
+          if (obj.job_service_id === productId) {
             return { ...obj, description: value };
           }
           return obj;
@@ -1090,7 +1090,7 @@ export default function CreateTasks() {
     if (field === 'size') {
       setProductsArray((current) =>
         current.map((obj) => {
-          if (obj.service_id === productId) {
+          if (obj.job_service_id === productId) {
             return { ...obj, size: value };
           }
           return obj;
@@ -1102,7 +1102,7 @@ export default function CreateTasks() {
       setErrorCategory([]);
       setProductsArray((current) =>
         current.map((obj) => {
-          if (obj.service_id === productId) {
+          if (obj.job_service_id === productId) {
             return { ...obj, reason_change: value };
           }
           return obj;
@@ -1113,7 +1113,7 @@ export default function CreateTasks() {
     if (field === 'type') {
       setProductsArray((current) =>
         current.map((obj) => {
-          if (obj.service_id === productId) {
+          if (obj.job_service_id === productId) {
             return { ...obj, type: value };
           }
           return obj;
@@ -1148,13 +1148,13 @@ export default function CreateTasks() {
     // console.log('log do modal number', productsDeliveriesModal.indexDelivery);
     if (
       DTODelivery[productsDeliveriesModal.indexDelivery - 1]?.deliveryProducts.filter(
-        (obj: any) => obj.service_id === product.service_id
+        (obj: any) => obj.job_service_id === product.job_service_id
       ).length > 0
     ) {
       const currentProducts =
         DTODelivery[productsDeliveriesModal.indexDelivery - 1].deliveryProducts;
       const productIndex = currentProducts.findIndex(
-        (obj: any) => obj.service_id === product.service_id
+        (obj: any) => obj.job_service_id === product.job_service_id
       );
       const productToUpdate = currentProducts[productIndex];
       const updatedProduct = {
@@ -1181,10 +1181,10 @@ export default function CreateTasks() {
 
   const handleProductQuantity = (value: any, product: any) => {
     // console.log('log do product adicionado', value, product);
-    if (productsArray.filter((obj) => obj.service_id === product.service_id).length > 0) {
+    if (productsArray.filter((obj) => obj.job_service_id === product.job_service_id).length > 0) {
       setProductsArray((current) =>
         current.map((obj) => {
-          if (obj.service_id === product.service_id) {
+          if (obj.job_service_id === product.job_service_id) {
             return { ...obj, quantity: value };
           }
           return obj;
@@ -1202,7 +1202,7 @@ export default function CreateTasks() {
   // const handleClearQuantity = (value: any) => {
   //   setQuantityProductsArray((current) =>
   //     current.map((obj) => {
-  //       if (obj.project_id === value.service_id) {
+  //       if (obj.project_id === value.job_service_id) {
   //         return { ...obj, quantity: 0 };
   //       }
   //       return obj;
@@ -1264,7 +1264,7 @@ export default function CreateTasks() {
       const {
         title,
         tenant_id,
-        product_id,
+        project_product_id,
         flow_id,
         user_id,
         requester_id,
@@ -1283,7 +1283,7 @@ export default function CreateTasks() {
         const createNewData = {
           title,
           tenant_id,
-          product_id,
+          project_product_id,
           flow_id,
           user_id,
           requester_id,
@@ -1304,7 +1304,7 @@ export default function CreateTasks() {
               title: '1ª entrega',
               products: [
                 {
-                  service_id: '1',
+                  job_service_id: '1',
                   service: 'LIVRE',
                   description: 'DESCRICAO',
                   reason_change: '1',
@@ -1341,7 +1341,7 @@ export default function CreateTasks() {
         const createNewData = {
           title,
           tenant_id,
-          product_id,
+          project_product_id,
           flow_id,
           user_id,
           requester_id,
@@ -1381,7 +1381,7 @@ export default function CreateTasks() {
           const createNewData = {
             title,
             tenant_id,
-            product_id,
+            project_product_id,
             flow_id,
             user_id,
             requester_id,
@@ -1420,7 +1420,7 @@ export default function CreateTasks() {
           const createNewData = {
             title,
             tenant_id,
-            product_id,
+            project_product_id,
             user_id,
             end_job,
             start_job,
@@ -1494,17 +1494,19 @@ export default function CreateTasks() {
       //   }));
       //   handleChangeInput(e);
       // }
-    } else if (e.target.name === 'product_id') {
+    } else if (e.target.name === 'project_product_id') {
       if (user?.organizations?.length > 0) {
         const id = e.target.value;
         const selectedInfos: any = organizationProjects?.filter(
-          (obj: any) => obj.product_id === id
+          (obj: any) => obj.project_product_id === id
         );
         setSelectedProject(selectedInfos[0]);
         handleChangeInput(e);
       } else {
         const id = e.target.value;
-        const selectedInfos: any = dataProjects?.filter((obj: any) => obj.product_id === id);
+        const selectedInfos: any = dataProjects?.filter(
+          (obj: any) => obj.project_product_id === id
+        );
         setSelectedProject(selectedInfos[0]);
         handleChangeInput(e);
       }
@@ -1539,7 +1541,7 @@ export default function CreateTasks() {
   };
 
   const handleDeleteProduct = (id: any, deliveryId: any) => {
-    const newArray = productsArray.filter((obj) => obj.service_id !== id);
+    const newArray = productsArray.filter((obj) => obj.job_service_id !== id);
     setProductsArray([]);
     setProductsArray(newArray);
     const updatedDeliveryArray = DTODelivery.map((delivery) => {
@@ -1547,7 +1549,7 @@ export default function CreateTasks() {
         return {
           ...delivery,
           deliveryProducts: delivery.deliveryProducts.filter(
-            (product: any) => product.service_id !== id
+            (product: any) => product.job_service_id !== id
           )
         };
       }
@@ -1568,7 +1570,7 @@ export default function CreateTasks() {
   };
 
   useEffect(() => {
-    if (DTOForm.product_id !== '' && location.state === null && !user?.organizations) {
+    if (DTOForm.project_product_id !== '' && location.state === null && !user?.organizations) {
       if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel === 'true') {
         setTasksType('horas');
       } else if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel !== 'true') {
@@ -1576,7 +1578,11 @@ export default function CreateTasks() {
       } else if (infoProjects[0]?.tipo !== 'product') {
         setTasksType('livre');
       }
-    } else if (DTOForm.product_id && location.state === null && user?.organizations?.length > 0) {
+    } else if (
+      DTOForm.project_product_id &&
+      location.state === null &&
+      user?.organizations?.length > 0
+    ) {
       if (
         infoOrganizationsProjects[0]?.tipo === 'product' &&
         infoOrganizationsProjects[0]?.listavel === 'true'
@@ -2083,10 +2089,11 @@ export default function CreateTasks() {
                   <div className="product">
                     <CheckboxDefault
                       label=""
-                      name={row.service_id}
+                      name={row.job_service_id}
                       onChange={() => handleOnChangeCheckbox(row)}
                       checked={
-                        productsArray?.filter((obj) => obj.service_id === row.service_id).length > 0
+                        productsArray?.filter((obj) => obj.job_service_id === row.job_service_id)
+                          .length > 0
                           ? true
                           : false
                       }
@@ -2098,7 +2105,8 @@ export default function CreateTasks() {
                   <div className="quantity">
                     <QuantityInput
                       receiveQuantity={
-                        productsArray?.filter((obj) => obj.service_id === row.service_id).length > 0
+                        productsArray?.filter((obj) => obj.job_service_id === row.job_service_id)
+                          .length > 0
                           ? row.quantity
                             ? row.quantity
                             : 1
@@ -2108,7 +2116,8 @@ export default function CreateTasks() {
                       handleQuantity={(value: any) => handleCheckQuantity(value, row)}
                       clearQuantity={() => ''}
                       disabledInput={
-                        productsArray?.filter((obj) => obj.service_id === row.service_id).length > 0
+                        productsArray?.filter((obj) => obj.job_service_id === row.job_service_id)
+                          .length > 0
                           ? false
                           : true
                       }
@@ -2118,7 +2127,7 @@ export default function CreateTasks() {
                       rowQuantity={row}
                       clearQuantity={handleClearQuantity}
                       receiveQuantity={
-                        productsArray?.filter((obj) => obj.service_id === row.service_id).length > 0
+                        productsArray?.filter((obj) => obj.job_service_id === row.job_service_id).length > 0
                           ? 1
                           : 0
                       }
@@ -2257,15 +2266,16 @@ export default function CreateTasks() {
                   <div className="product">
                     <CheckboxDefault
                       label=""
-                      name={row.service_id}
+                      name={row.job_service_id}
                       onChange={() =>
                         handleOnChangeCheckboxDeliveries(row, productsDeliveriesModal.indexDelivery)
                       }
                       checked={
                         DTODelivery[
                           productsDeliveriesModal.indexDelivery - 1
-                        ]?.deliveryProducts?.filter((obj: any) => obj.service_id === row.service_id)
-                          .length > 0
+                        ]?.deliveryProducts?.filter(
+                          (obj: any) => obj.job_service_id === row.job_service_id
+                        ).length > 0
                           ? true
                           : false
                       }
@@ -2279,8 +2289,9 @@ export default function CreateTasks() {
                       receiveQuantity={
                         DTODelivery[
                           productsDeliveriesModal.indexDelivery - 1
-                        ]?.deliveryProducts?.filter((obj: any) => obj.service_id === row.service_id)
-                          .length > 0
+                        ]?.deliveryProducts?.filter(
+                          (obj: any) => obj.job_service_id === row.job_service_id
+                        ).length > 0
                           ? 1
                           : 0
                       }
@@ -2321,7 +2332,7 @@ export default function CreateTasks() {
             task_title={DTOForm.title}
             estimated_time={tasksType === 'horas' ? estimatedTime : selectedProject.tempo}
             flow={DTOForm.flow_id}
-            product_id={DTOForm.product_id}
+            project_product_id={DTOForm.project_product_id}
             user_alocated={handleScheduleUser}
             closeModal={() => setSelectUserModal(false)}
           />

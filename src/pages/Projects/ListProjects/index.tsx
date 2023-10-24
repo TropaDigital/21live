@@ -123,7 +123,7 @@ export default function ListProjects() {
   //   console.log('ID', id);
   //   setFormValue(
   //     'products',
-  //     formData.products.filter((product: any) => product.service_id !== id)
+  //     formData.products.filter((product: any) => product.job_service_id !== id)
   //   );
   // };
 
@@ -131,7 +131,7 @@ export default function ListProjects() {
   //   (value: any) => {
   //     const updatedProducts = [...formData.products];
   //     const productIndex = updatedProducts.findIndex(
-  //       (product) => product.service_id === value.service_id
+  //       (product) => product.job_service_id === value.job_service_id
   //     );
   //     const updatedProductCopy = { ...updatedProducts[productIndex] };
   //     updatedProductCopy.quantity = Number(updatedProductCopy.quantity) + 1;
@@ -145,7 +145,7 @@ export default function ListProjects() {
   //   (value: any) => {
   //     const updatedProducts = [...formData.products];
   //     const productIndex = updatedProducts.findIndex(
-  //       (product) => product.service_id === value.service_id
+  //       (product) => product.job_service_id === value.job_service_id
   //     );
   //     const updatedProductCopy = { ...updatedProducts[productIndex] };
   //     updatedProductCopy.quantity = Number(updatedProductCopy.quantity) - 1;
@@ -164,7 +164,7 @@ export default function ListProjects() {
   //     const newValue = event.target.value;
   //     if (isNumber(newValue)) {
   //       const updatedProducts = [...formData.products];
-  //       const productIndex = updatedProducts.findIndex((product) => product.service_id === id);
+  //       const productIndex = updatedProducts.findIndex((product) => product.job_service_id === id);
   //       const updatedProductCopy = { ...updatedProducts[productIndex] };
   //       updatedProductCopy.quantity = newValue;
   //       updatedProducts[productIndex] = updatedProductCopy;
@@ -178,7 +178,7 @@ export default function ListProjects() {
   //   (value: any, id: any) => {
   //     const verifyPeriod = value ? 'anual' : 'mensal';
   //     const updatedProducts = [...formData.products];
-  //     const productIndex = updatedProducts.findIndex((product) => product.service_id === id);
+  //     const productIndex = updatedProducts.findIndex((product) => product.job_service_id === id);
   //     const updatedProductCopy = { ...updatedProducts[productIndex] };
   //     updatedProductCopy.period = verifyPeriod;
   //     updatedProducts[productIndex] = updatedProductCopy;
@@ -389,8 +389,10 @@ export default function ListProjects() {
                   <td>
                     <Avatar data={row.team} />
                   </td>
-                  <td>{moment(row.date_start).format('DD/MM/YYYY')}</td>
-                  <td>{moment(row.date_end).format('DD/MM/YYYY')}</td>
+                  <td style={{ minWidth: '150px' }}>
+                    {moment(row.date_start).format('DD/MM/YYYY')}
+                  </td>
+                  <td style={{ minWidth: '150px' }}>{moment(row.date_end).format('DD/MM/YYYY')}</td>
                   <td>
                     <div className="fieldTableClients">
                       <ButtonTable typeButton="view" onClick={() => handleOpenModal(row)} />
