@@ -56,7 +56,7 @@ export default function TaskList() {
       tenant_id: '',
       tenant: '',
       total_time: '',
-      product_id: '',
+      project_product_id: '',
       product_period: '',
       project: '',
       project_category: '',
@@ -121,7 +121,7 @@ export default function TaskList() {
   //       tenant_id: task.tenant_id,
   //       tenant: task.tenant,
   //       total_time: task.total_time,
-  //       product_id: task.product_id,
+  //       project_product_id: task.project_product_id,
   //       product_period: task.product_period,
   //       project: task.project,
   //       project_category: task.project_category,
@@ -150,7 +150,7 @@ export default function TaskList() {
         tenant_id: '',
         tenant: '',
         total_time: '',
-        product_id: '',
+        project_product_id: '',
         product_period: '',
         project: '',
         project_category: '',
@@ -428,6 +428,8 @@ export default function TaskList() {
                           ? 'Em progresso'
                           : row.status === 'Concluida'
                           ? 'Concluída'
+                          : row.status === 'Aguardando Aprovação'
+                          ? 'Aguardando Aprovação'
                           : 'Pendente'}
                       </StatusTable>
                     </td>
