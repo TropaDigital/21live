@@ -99,7 +99,7 @@ export default function InfoProducts({
 
   const handleOnQuantity = (product: any, counter: any) => {
     const productSelected: IProduct = {
-      service_id: product.service_id || product.project_id || product.product_id,
+      job_service_id: product.job_service_id || product.project_id || product.project_product_id,
       service: product.service,
       description: product.description,
       flag: product.flag,
@@ -116,7 +116,7 @@ export default function InfoProducts({
 
   function handleAddProducts(product: any) {
     // console.log('log do add product', product);
-    if (dataFilter.filter((obj: any) => obj.service_id === product.service_id).length > 0) {
+    if (dataFilter.filter((obj: any) => obj.job_service_id === product.job_service_id).length > 0) {
       handleEditProductQuantity(quantityProducts);
       setQuantityProducts('');
     } else {
@@ -127,7 +127,7 @@ export default function InfoProducts({
 
   function editAddedProducts(product: any) {
     // console.log('log do produto a ser editado', product);
-    if (dataFilter.filter((obj: any) => obj.service_id === product.service_id).length > 0) {
+    if (dataFilter.filter((obj: any) => obj.job_service_id === product.job_service_id).length > 0) {
       handleEditProductQuantity(quantityProducts);
       setQuantityProducts('');
     } else {
@@ -158,7 +158,7 @@ export default function InfoProducts({
 
     serviceWithoutTenantId.forEach((item: ServicesProps) => {
       const isServiceSelected = dataFilter?.filter(
-        (row: ServicesProps) => row?.service_id === item?.service_id
+        (row: ServicesProps) => row?.job_service_id === item?.job_service_id
       );
 
       if (isServiceSelected?.length && isServiceSelected[0].quantity >= 1) {
@@ -250,8 +250,8 @@ export default function InfoProducts({
           {dataFilter.length > 0 && editProducts ? (
             <tbody>
               {dataFilter?.map((row: any) => (
-                <tr key={row.service_id}>
-                  <td>{row.service_id}</td>
+                <tr key={row.job_service_id}>
+                  <td>{row.job_service_id}</td>
                   <td>{row.service}</td>
                   <td>{row.description}</td>
                   <td>
@@ -268,11 +268,12 @@ export default function InfoProducts({
                       receiveQuantity={row.quantity ? row.quantity : 0}
                       infosReceived={row}
                       handleQuantity={(value: any) => handleOnQuantity(row, value)}
-                      clearQuantity={() => handleDeleteProducts(row.service_id)}
+                      clearQuantity={() => handleDeleteProducts(row.job_service_id)}
                       disabledInput={false}
                     />
                   </td>
-                  {quantityProducts && Object.values(quantityProducts).includes(row.service_id) ? (
+                  {quantityProducts &&
+                  Object.values(quantityProducts).includes(row.job_service_id) ? (
                     <td
                       style={{ cursor: 'pointer', textAlign: 'center' }}
                       onClick={() => editAddedProducts(row)}
@@ -295,8 +296,8 @@ export default function InfoProducts({
             <tbody>
               {typeList === 'produtos' &&
                 data?.map((row) => (
-                  <tr key={row.service_id}>
-                    <td>{row.service_id}</td>
+                  <tr key={row.job_service_id}>
+                    <td>{row.job_service_id}</td>
                     <td>{row.service}</td>
                     <td>{row.category}</td>
                     <td>
@@ -315,7 +316,7 @@ export default function InfoProducts({
                         handleQuantity={(value: any) => handleOnQuantity(row, value)}
                         clearQuantity={() => {
                           setQuantityProducts('');
-                          handleDeleteProducts(row.service_id);
+                          handleDeleteProducts(row.job_service_id);
                         }}
                         disabledInput={false}
                       />
@@ -336,7 +337,7 @@ export default function InfoProducts({
                   </td> */}
 
                     {quantityProducts &&
-                    Object.values(quantityProducts).includes(row.service_id) ? (
+                    Object.values(quantityProducts).includes(row.job_service_id) ? (
                       <td
                         style={{ cursor: 'pointer', textAlign: 'center' }}
                         onClick={() => handleAddProducts(row)}
@@ -375,8 +376,8 @@ export default function InfoProducts({
 
               {typeList === 'kits-products' &&
                 currentKitProducts?.map((row) => (
-                  <tr key={row.service_id}>
-                    <td>{row.service_id}</td>
+                  <tr key={row.job_service_id}>
+                    <td>{row.job_service_id}</td>
                     <td>{row.service}</td>
                     <td>{row.category}</td>
                     <td>
@@ -392,7 +393,7 @@ export default function InfoProducts({
                       <QuantityCounter
                         handleQuantity={setQuantityProducts}
                         rowQuantity={row}
-                        clearQuantity={() => handleDeleteProducts(row.service_id)}
+                        clearQuantity={() => handleDeleteProducts(row.job_service_id)}
                         receiveQuantity={row?.quantity}
                       />
                     </td>
@@ -406,7 +407,7 @@ export default function InfoProducts({
                   </td> */}
 
                     {quantityProducts &&
-                    Object.values(quantityProducts).includes(row.service_id) ? (
+                    Object.values(quantityProducts).includes(row.job_service_id) ? (
                       <td
                         style={{ cursor: 'pointer', textAlign: 'center' }}
                         onClick={() => handleAddProducts(row)}
@@ -494,8 +495,8 @@ export default function InfoProducts({
               </thead>
               {typeList === 'produtos' &&
                 data?.map((row) => (
-                  <tr key={row.service_id}>
-                    <td>{row.service_id}</td>
+                  <tr key={row.job_service_id}>
+                    <td>{row.job_service_id}</td>
                     <td>{row.service}</td>
                     <td>{row.category}</td>
                     <td>
@@ -514,7 +515,7 @@ export default function InfoProducts({
                         handleQuantity={(value: any) => handleOnQuantity(row, value)}
                         clearQuantity={() => {
                           setQuantityProducts('');
-                          handleDeleteProducts(row.service_id);
+                          handleDeleteProducts(row.job_service_id);
                         }}
                         disabledInput={false}
                       />
@@ -535,7 +536,7 @@ export default function InfoProducts({
                     </td> */}
 
                     {quantityProducts &&
-                    Object.values(quantityProducts).includes(row.service_id) ? (
+                    Object.values(quantityProducts).includes(row.job_service_id) ? (
                       <td
                         style={{ cursor: 'pointer', textAlign: 'center' }}
                         onClick={() => handleAddProducts(row)}
