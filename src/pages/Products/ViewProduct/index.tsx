@@ -995,7 +995,7 @@ export default function ViewProductsDeliveries() {
           task_title={dataTask?.title}
           estimated_time={location.state.task.total_time}
           flow={location.state.task.flow_id}
-          product_id={location.state.task.product_id}
+          project_product_id={location.state.task.project_product_id}
           step={Number(location.state.task.step) + 1}
           user_alocated={handleAssignTask}
           closeModal={() => setModalSendToUser(false)}
