@@ -60,7 +60,7 @@ import {
 } from './styles';
 
 interface ServicesProps {
-  service_id?: number | string;
+  job_service_id?: number | string;
   service: string;
   description: string;
   type: string;
@@ -82,7 +82,7 @@ interface FormDataProps {
   minutes_creation: any;
   minutes_essay: any;
   minutes: any;
-  service_id?: number | string;
+  job_service_id?: number | string;
 }
 
 interface estimatedHoursPros {
@@ -117,7 +117,7 @@ export default function Services() {
       minutes_essay: '',
       category: '',
       flag: 'false',
-      service_id: ''
+      job_service_id: ''
     } as FormDataProps);
   const [modal, setModal] = useState({
     isOpen: false,
@@ -192,7 +192,7 @@ export default function Services() {
       type: '',
       size: '',
       minutes: '',
-      service_id: 0
+      job_service_id: 0
     } as FormDataProps);
     setEstimatedTimeCreation({
       hours: '00',
@@ -310,7 +310,7 @@ export default function Services() {
 
   const handleOnSelectAllServices = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (e?.currentTarget?.checked) {
-      const list = data?.map((item) => item.service_id);
+      const list = data?.map((item) => item.job_service_id);
       setSelectedServices(list as string[]);
       return;
     }
@@ -487,7 +487,7 @@ export default function Services() {
             description: 'Produto criado com sucesso!'
           });
         } else {
-          await api.put(`services/${formData.service_id}`, newFormData);
+          await api.put(`services/${formData.job_service_id}`, newFormData);
           addToast({
             type: 'success',
             title: 'Sucesso',
@@ -735,17 +735,17 @@ export default function Services() {
 
             <tbody>
               {data?.map((row) => (
-                <tr key={row.service_id}>
-                  <td>#{String(row.service_id).padStart(5, '0')}</td>
+                <tr key={row.job_service_id}>
+                  <td>#{String(row.job_service_id).padStart(5, '0')}</td>
                   <td style={{ cursor: 'pointer' }} onClick={() => handleOnShowProduct(row)}>
                     {row.service}
                   </td>
                   <td style={{ textTransform: 'capitalize' }}>{row.category}</td>
                   <td>
                     <Switch
-                      onChange={() => handleList(row.service_id)}
+                      onChange={() => handleList(row.job_service_id)}
                       // checked={
-                      //   listSelected.includes(row.service_id) || row.flag === 'true' ? true : false
+                      //   listSelected.includes(row.job_service_id) || row.flag === 'true' ? true : false
                       // }
                       checked={row.flag === 'true' ? true : false}
                       uncheckedIcon={false}
@@ -760,7 +760,7 @@ export default function Services() {
                       <Alert
                         title="Atenção"
                         subtitle="Certeza que gostaria de deletar este Produto? Ao excluir a ação não poderá ser desfeita."
-                        confirmButton={() => handleOnDelete(row.service_id)}
+                        confirmButton={() => handleOnDelete(row.job_service_id)}
                       >
                         <ButtonTable typeButton="delete" />
                       </Alert>
@@ -805,9 +805,9 @@ export default function Services() {
                   <td>{row?.services?.length}</td>
                   <td className="fieldLongText">
                     {/* <Switch
-                      onChange={() => handleList(row.service_id)}
+                      onChange={() => handleList(row.job_service_id)}
                       // checked={
-                      //   listSelected.includes(row.service_id) || row.flag === 'true' ? true : false
+                      //   listSelected.includes(row.job_service_id) || row.flag === 'true' ? true : false
                       // }
                       checked={row.flag === 'true' ? true : false}
                       uncheckedIcon={false}
@@ -1155,7 +1155,7 @@ export default function Services() {
               </ShowServiceData>
               <ShowServiceData>
                 {data?.map((row) => (
-                  <div className="service-show-row" key={row?.service_id}>
+                  <div className="service-show-row" key={row?.job_service_id}>
                     <p className="service-data service" title={row?.service}>
                       {row?.service}
                     </p>
@@ -1166,9 +1166,9 @@ export default function Services() {
                       <CheckboxDefault
                         label=""
                         checked={
-                          selectedServices?.includes(row?.service_id as string) ? true : false
+                          selectedServices?.includes(row?.job_service_id as string) ? true : false
                         }
-                        onChange={(e) => handleOnSelectService(e, row?.service_id as string)}
+                        onChange={(e) => handleOnSelectService(e, row?.job_service_id as string)}
                       />
                     </div>
                   </div>
@@ -1223,7 +1223,7 @@ export default function Services() {
                 </div>
               </ShowServiceData>
               {modalKit?.kit?.serviceslist?.map((row) => (
-                <ShowServiceData key={row?.service_id}>
+                <ShowServiceData key={row?.job_service_id}>
                   <div
                     className="service-show-row"
                     onClick={() => handleOnShowKitDetails(row?.service)}
