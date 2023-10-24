@@ -1,6 +1,6 @@
 // Types for Product
 export interface IProduct {
-  service_id?: number;
+  job_service_id?: number;
   service: string;
   description: string;
   flag: string;
@@ -23,12 +23,12 @@ export interface IProductBackend {
   minutes_creation: any;
   minutes_essay: any;
   period: string;
-  product_id: string;
+  project_product_id: string;
   project_id: string;
   quantity: string;
   quantity_initial: string;
   service: string;
-  service_id: string;
+  job_service_id: string;
   size: string;
   type: string;
   updated: string;
@@ -74,7 +74,7 @@ export interface IServices {
   description: string;
   minutes: string;
   service: string;
-  service_id: string;
+  job_service_id: string;
   size: string;
   type: string;
 }
@@ -87,7 +87,7 @@ export interface ITaskCreate {
   tenant_id: number | string | any;
   ticket_id?: string | any;
   organization_id?: number | string | any;
-  product_id: number | string | any; // produto principal, o produto pode ter uma flag que significa que ele lista outros produtos na criação da task
+  project_product_id: number | string | any; // produto principal, o produto pode ter uma flag que significa que ele lista outros produtos na criação da task
   type?: string | any; //type_id da tabela task_type
   flow_id?: number | any;
   description: string | any; //descricao geral
@@ -126,7 +126,7 @@ export interface IDocTask {
 export interface IProductTask {
   products_delivery_id?: number;
   task_id: number;
-  product_id: number;
+  project_product_id: number;
   service: string;
   description: string;
   reason_change: string; //CRIAÇÃO, DESMEMBRAMENTO, ALTERAÇÃO: INTERNA, EXTERNA - Alterar pelo ID.
@@ -159,7 +159,7 @@ export interface ICommentTask {
 }
 
 export interface ServicesProps {
-  service_id: number;
+  job_service_id: number;
   service: string;
   description: string;
   type: string;
