@@ -27,7 +27,7 @@ interface ITask {
   task_id: string;
   title: string;
   tenant_id?: string;
-  product_id?: string;
+  project_product_id?: string;
   flow_id?: string;
   description: string;
   creation_description?: string;
