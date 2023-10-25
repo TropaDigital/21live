@@ -49,9 +49,28 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, nam
 };
 
 const ChartDonut = ({ data, dataKey, title }: DonutProps) => {
-  // const [activePie, setActivePie] = useState(0);
-  // const handleOnMouseEnter = (_: any, index: any) => {
-  //   setActivePie(index);
+  // const percentage = (data: any) => {
+  //   console.log('log do data value', data[0].value);
+  //   let total = 0;
+  //   for (let i = 0; i < data.length; i++) {
+  //     total += data[0].value;
+  //   }
+  //   console.log('log do data total', total);
+  //   const calculation = (data[0].value / total) * 100;
+  //   return calculation;
+  // };
+  // const CustomTooltip = ({ active, payload, label }: any) => {
+  //   if (active && payload && payload.length) {
+  //     return (
+  //       <div className="custom-tooltip">
+  //         <p className="label">{`${label} : ${payload[0].value}`}</p>
+
+  //         <p> percentage : {percentage(payload)}</p>
+  //       </div>
+  //     );
+  //   }
+
+  //   return null;
   // };
 
   return (
