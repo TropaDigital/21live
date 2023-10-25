@@ -12,6 +12,12 @@ import { TableDefault } from '../../components/TableDefault';
 import { ContainerGroupTable, SectionDefault } from '../../components/UiElements/styles';
 import TopCardsDash, { CardsData } from '../../components/Cards/DashboardTopCards';
 import Loader from '../../components/LoaderSpin';
+import UserPerformanceCard, { UserCardProps } from '../../components/Cards/UserPerformanceCard';
+import PerformanceClientCard from '../../components/Cards/PerformanceClientCard';
+import ButtonTable from '../../components/Buttons/ButtonTable';
+import Alert from '../../components/Ui/Alert';
+import PieChartGraphic from '../../components/GraphicsChart/PieChart';
+import { StatusTable } from '../Tasks/TaskList/styles';
 
 // Styles
 import {
@@ -22,7 +28,15 @@ import {
   GraphicLine,
   GridServiceWrapper,
   JobStatus,
-  UserInfo
+  UserInfo,
+  WrapperTeamCards,
+  TeamTimeCard,
+  UserTeamCard,
+  UserJobs,
+  OperatorTopWrapper,
+  TimeChartsTopCard,
+  SmallCardsWrapper,
+  JobCellTable
 } from './styles';
 
 // Libraries
@@ -30,14 +44,19 @@ import CountUp from 'react-countup';
 
 // Images
 import PersonTest from '../../assets/person.jpg';
-import UserPerformanceCard, { UserCardProps } from '../../components/Cards/UserPerformanceCard';
-import PerformanceClientCard, {
-  ChartDataProps
-} from '../../components/Cards/PerformanceClientCard';
 
+// Icons
+import { FiClock } from 'react-icons/fi';
 // interface DashType {
 //   typeDash: 'manager' | 'executive' | 'traffic' | 'operator' | '';
 // }
+
+interface TeamDataProps {
+  user_name: string;
+  user_role: string;
+  avatar: string;
+  available_time: string;
+}
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -404,6 +423,32 @@ export default function Dashboard() {
     principalTask: 'Attend client meetings',
     secondaryTask: 'Update data'
   };
+
+  const teamTimeData: TeamDataProps[] = [
+    {
+      user_name: 'Daniela Silva Ferreira',
+      user_role: 'Criação',
+      avatar: 'foto.jpg',
+      available_time: '12:46:00'
+    },
+    {
+      user_name: 'Fernanda Melo Favero',
+      user_role: 'Redação',
+      avatar: 'picture.jpg',
+      available_time: '6:22:00'
+    },
+    {
+      user_name: 'Marina Chriguer',
+      user_role: 'Gestor',
+      avatar: 'avatar.jpeg',
+      available_time: '25:13:00'
+    }
+  ];
+
+  const dataPieGraphic = [
+    { name: 'Disponiveis', value: 800 },
+    { name: 'Utilizados', value: 200 }
+  ];
 
   return (
     <Container>
@@ -896,21 +941,252 @@ export default function Dashboard() {
           {/* Monitoramento do time por horas */}
           <CardBase>
             <div className="card-title">Monitoramento do time por horas disponíveis</div>
+            <WrapperTeamCards>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '18px', width: '100%' }}>
+                {teamTimeData.map((row: TeamDataProps, index: number) => (
+                  <TeamTimeCard key={index}>
+                    <div
+                      className="avatar-user"
+                      style={{ backgroundImage: `url(${PersonTest})` }}
+                    />
+                    <div className="user-name">
+                      {row.user_name.split(' ').slice(0, 2).join(' ')}
+                    </div>
+                    <div className="user-role">{row.user_role}</div>
+                    <div className="free-time">
+                      <FiClock color="#FFF" />
+                      {row.available_time} disponíveis
+                    </div>
+                  </TeamTimeCard>
+                ))}
+              </div>
+              <NumberCard height_size={'220px'}>
+                <CountUp start={0} end={290} delay={0}>
+                  {({ countUpRef }) => (
+                    <div>
+                      <span className="numberCard" ref={countUpRef} />
+                    </div>
+                  )}
+                </CountUp>
+                <div className="numberCard-title">horas disponíveis</div>
+              </NumberCard>
+            </WrapperTeamCards>
           </CardBase>
 
           {/* Monitoramento do time individual */}
           <CardBase>
             <div className="card-title">Monitoramento do time individual</div>
+            {[0, 1].map((row: any, index: number) => (
+              <UserTeamCard key={index}>
+                <div className="user-section">
+                  <div className="user-image" style={{ backgroundImage: `url(${PersonTest})` }} />
+                  <div className="user-infos">
+                    Marina Chriguer
+                    <span>12 Clientes</span>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px' }}>
+                  <BaseTableGrey>
+                    <table>
+                      <thead>
+                        <tr style={{ height: '48px' }}>
+                          <th>CLIENTE</th>
+                          <th>JOB</th>
+                          <th>STATUS</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {[0, 1, 2, 3].map((row, index: number) => (
+                          <tr key={index} style={{ height: '48px' }}>
+                            <td>Metso</td>
+                            <td>Time 1</td>
+                            <td>
+                              <div
+                                className="status"
+                                // row.status_job === 'creation'
+                                //     ? 'status progress'
+                                //     : row.status_job === 'waiting'
+                                //       ? 'status'
+                                //       : row.status_job === 'finished'
+                                //         ? 'status finished'
+                                //         : 'status'
+                              >
+                                Criação
+                                {
+                                  // row.status_job === 'creation'
+                                  //   ? 'Criação'
+                                  //   : row.status_job === 'waiting'
+                                  //   ? 'Aguardando aprovação'
+                                  //   : row.status_job === 'finished'
+                                  //   ? 'Concluída'
+                                  //   : 'Pendente'
+                                }
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </BaseTableGrey>
+                </div>
+
+                <UserJobs>
+                  <div className="job-card">
+                    22 <span>pautas alocadas</span>
+                  </div>
+                  <div className="job-card">
+                    2 <span>pautas na semana</span>
+                  </div>
+                  <div className="job-card">
+                    12 <span>pautas no mês</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div className="small-number-card worked">
+                      <CountUp start={0} end={290} delay={0}>
+                        {({ countUpRef }) => (
+                          <div>
+                            <span className="numberCard" ref={countUpRef} />
+                          </div>
+                        )}
+                      </CountUp>
+                      horas trabalhadas
+                    </div>
+                    <div className="small-number-card free">
+                      <CountUp start={0} end={12} delay={0}>
+                        {({ countUpRef }) => (
+                          <div>
+                            <span className="numberCard" ref={countUpRef} />
+                          </div>
+                        )}
+                      </CountUp>
+                      horas disponíveis
+                    </div>
+                  </div>
+                </UserJobs>
+              </UserTeamCard>
+            ))}
           </CardBase>
         </SectionDefault>
       )}
 
       {/* Dash operador */}
       {dashType === 'operator' && (
-        <div>
-          Operador
-          <div></div>
-        </div>
+        <SectionDefault style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          <CardWelcomeDash user={user.name} />
+
+          {/* Top cards */}
+          <OperatorTopWrapper>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
+              <TimeChartsTopCard>
+                <div className="card-title">
+                  Horas disponíveis
+                  <span>12</span>
+                </div>
+
+                <PieChartGraphic data={dataPieGraphic} />
+              </TimeChartsTopCard>
+
+              <TimeChartsTopCard>
+                <div className="card-title">
+                  Previsão de horas
+                  <span>43</span>
+                </div>
+
+                <PieChartGraphic data={dataPieGraphic} />
+              </TimeChartsTopCard>
+            </div>
+
+            <SmallCardsWrapper>
+              <div className="small-card">
+                Total de clientes
+                <div className="big-number">7</div>
+              </div>
+              <div className="small-card">
+                Horas de criação
+                <div className="big-number">112</div>
+              </div>
+              <div className="small-card">
+                Alt. Clientes
+                <div className="big-number">8</div>
+              </div>
+              <div className="small-card">
+                Alt. Internas <div className="big-number">6</div>
+              </div>
+              <div className="small-card">
+                Pautas <div className="big-number">32</div>
+              </div>
+              <div className="small-card">
+                Horas <div className="big-number">78</div>
+              </div>
+            </SmallCardsWrapper>
+          </OperatorTopWrapper>
+
+          {/* Clients & jobs table */}
+          <BaseTableGrey>
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Job</th>
+                  <th>Status</th>
+                  <th style={{ color: '#F9FAFB' }}>-</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {[0, 1, 2, 3].map((row, index: number) => (
+                  <tr key={index}>
+                    <td>Metso</td>
+                    <td>
+                      <JobCellTable>
+                        <div className="top-cell">Planejamento de Marketing</div>
+                        <div className="bottom-cell">001 - Cronograma - Julho 2023</div>
+                      </JobCellTable>
+                    </td>
+                    <td>
+                      <StatusTable
+                      // className={
+                      //   row.status === 'Em Andamento'
+                      //     ? 'status progress'
+                      //     : row.status === 'Concluida'
+                      //       ? 'status finished'
+                      //       : 'status'
+                      // }
+                      >
+                        {/* {row.status === 'Em Andamento'
+                          ? 'Em progresso'
+                          : row.status === 'Concluida'
+                            ? 'Concluída'
+                            : row.status === 'Aguardando Aprovação'
+                              ? 'Aguardando Aprovação'
+                              : 'Pendente'} */}
+                        Pendente
+                      </StatusTable>
+                    </td>
+                    <td>
+                      <div className="fieldTableClients">
+                        <ButtonTable typeButton="view" onClick={() => ''} />
+                        <ButtonTable typeButton="edit" onClick={() => ''} />
+                        <Alert
+                          title="Atenção"
+                          subtitle="Certeza que gostaria de deletar este Projeto? Ao excluir a ação não poderá ser desfeita."
+                          confirmButton={() => ''}
+                        >
+                          <ButtonTable typeButton="delete" />
+                        </Alert>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </BaseTableGrey>
+
+          {/* Status jobs overall */}
+          <BarChartGrafic data={dataStatusAll} title={'Status Geral Jobs'} />
+        </SectionDefault>
       )}
     </Container>
   );

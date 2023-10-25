@@ -167,7 +167,7 @@ export default function InfoDeliveries({
     indexDelivery: ''
   });
   const { data: dataSingleProduct } = useFetch<IProductBackend[]>(
-    `project-products-especific/${projectInfo.product_id}`
+    `project-products-especific/${projectInfo.project_product_id}`
   );
   const titleRef = useRef<any>();
   const dateRef = useRef<any>();
@@ -203,7 +203,7 @@ export default function InfoDeliveries({
         minutes_essay: dataSingleProduct[0].minutes_essay,
         quantity: '1',
         service: dataSingleProduct[0].service,
-        service_id: dataSingleProduct[0].service_id,
+        job_service_id: dataSingleProduct[0].job_service_id,
         size: dataSingleProduct[0].size,
         type: dataSingleProduct[0].type
       };
@@ -286,19 +286,19 @@ export default function InfoDeliveries({
                         value={row.description}
                         maxLength={40}
                         type={'text'}
-                        disabled={descriptionText.inputId !== row.service_id}
+                        disabled={descriptionText.inputId !== row.job_service_id}
                         onChange={(e: any) =>
                           setDescriptionText({
-                            inputId: row.service_id,
+                            inputId: row.job_service_id,
                             text: e.target.value.slice(0, 40)
                           })
                         }
                         error={errorCategory?.description}
                       />
                       <EditableFormat
-                        className={descriptionText.inputId === row.service_id ? 'edit' : ''}
+                        className={descriptionText.inputId === row.job_service_id ? 'edit' : ''}
                         onClick={() => {
-                          setDescriptionText({ inputId: row.service_id, text: '' });
+                          setDescriptionText({ inputId: row.job_service_id, text: '' });
                         }}
                       >
                         <BiPencil />
@@ -320,7 +320,7 @@ export default function InfoDeliveries({
                         placeholder="128x190"
                         value={row.size}
                         disabled={
-                          editFormat.productIndex === row.service_id && editFormat.editable
+                          editFormat.productIndex === row.job_service_id && editFormat.editable
                             ? false
                             : true
                         }
@@ -328,10 +328,10 @@ export default function InfoDeliveries({
                         error={errorCategory?.size}
                       />
                       <EditableFormat
-                        className={editFormat.productIndex === row.service_id ? 'edit' : ''}
+                        className={editFormat.productIndex === row.job_service_id ? 'edit' : ''}
                         onClick={() => {
                           setEditFormat({
-                            productIndex: row.service_id,
+                            productIndex: row.job_service_id,
                             editable: true
                           });
                           setFormatType('');
@@ -348,12 +348,12 @@ export default function InfoDeliveries({
                       value={row.reason_change}
                       onChange={(e: any) =>
                         setProductType({
-                          productIndex: row.service_id,
+                          productIndex: row.job_service_id,
                           productTypeValue: e.target.value
                         })
                       }
                       placeHolder="Selecione..."
-                      error={errorCategory.includes(row.service_id) ? 'Campo vazio' : ''}
+                      error={errorCategory.includes(row.job_service_id) ? 'Campo vazio' : ''}
                     >
                       {dataTypes?.map((row: TypeProps) => (
                         <option key={row.type_id} value={row.type_id}>
@@ -370,7 +370,7 @@ export default function InfoDeliveries({
                       value={row.type}
                       onChange={(e: any) =>
                         setProductDigitalPrinted({
-                          productIndex: row.service_id,
+                          productIndex: row.job_service_id,
                           productTypeSelected: e.target.value
                         })
                       }
@@ -380,7 +380,7 @@ export default function InfoDeliveries({
                       <option value="digital">Digital</option>
                     </SelectDefault>
                   </td>
-                  <td className="delete" onClick={() => deleteProduct(row.service_id, index)}>
+                  <td className="delete" onClick={() => deleteProduct(row.job_service_id, index)}>
                     <BsTrash />
                   </td>
                 </tr>
@@ -518,12 +518,12 @@ export default function InfoDeliveries({
                                 value={product.description}
                                 maxLength={40}
                                 type={'text'}
-                                disabled={descriptionText.inputId !== product.service_id}
+                                disabled={descriptionText.inputId !== product.job_service_id}
                                 onChange={(e: any) =>
                                   handleDescriptionProduct(
                                     index,
                                     indexProduct,
-                                    product.service_id,
+                                    product.job_service_id,
                                     e.target.value
                                   )
                                 }
@@ -531,10 +531,10 @@ export default function InfoDeliveries({
                               />
                               <EditableFormat
                                 className={
-                                  descriptionText.inputId === product.service_id ? 'edit' : ''
+                                  descriptionText.inputId === product.job_service_id ? 'edit' : ''
                                 }
                                 onClick={() => {
-                                  setDescriptionText({ inputId: product.service_id, text: '' });
+                                  setDescriptionText({ inputId: product.job_service_id, text: '' });
                                 }}
                               >
                                 <BiPencil />
@@ -556,7 +556,7 @@ export default function InfoDeliveries({
                                 placeholder="128x190"
                                 value={product.size}
                                 disabled={
-                                  editFormat.productIndex === product.service_id &&
+                                  editFormat.productIndex === product.job_service_id &&
                                   editFormat.editable
                                     ? false
                                     : true
@@ -565,7 +565,7 @@ export default function InfoDeliveries({
                                   handleFormatProduct(
                                     index,
                                     indexProduct,
-                                    product.service_id,
+                                    product.job_service_id,
                                     e.target.value
                                   )
                                 }
@@ -573,11 +573,11 @@ export default function InfoDeliveries({
                               />
                               <EditableFormat
                                 className={
-                                  editFormat.productIndex === product.service_id ? 'edit' : ''
+                                  editFormat.productIndex === product.job_service_id ? 'edit' : ''
                                 }
                                 onClick={() => {
                                   setEditFormat({
-                                    productIndex: product.service_id,
+                                    productIndex: product.job_service_id,
                                     editable: true
                                   });
                                   setFormatType('');
@@ -596,13 +596,13 @@ export default function InfoDeliveries({
                                 handleTaskType(
                                   index,
                                   indexProduct,
-                                  product.service_id,
+                                  product.job_service_id,
                                   e.target.value
                                 )
                               }
                               placeHolder="Selecione..."
                               error={
-                                errorCategory.includes(product.service_id) ? 'Campo vazio' : ''
+                                errorCategory.includes(product.job_service_id) ? 'Campo vazio' : ''
                               }
                             >
                               {dataTypes?.map((row: TypeProps) => (
@@ -622,7 +622,7 @@ export default function InfoDeliveries({
                                 handleTypeArt(
                                   index,
                                   indexProduct,
-                                  product.service_id,
+                                  product.job_service_id,
                                   e.target.value
                                 )
                               }
@@ -634,7 +634,7 @@ export default function InfoDeliveries({
                           </td>
                           <td
                             className="delete"
-                            onClick={() => deleteProduct(product.service_id, row.deliveryId)}
+                            onClick={() => deleteProduct(product.job_service_id, row.deliveryId)}
                           >
                             <BsTrash />
                           </td>
@@ -787,12 +787,12 @@ export default function InfoDeliveries({
                                 value={product.description}
                                 maxLength={40}
                                 type={'text'}
-                                disabled={descriptionText.inputId !== product.service_id}
+                                disabled={descriptionText.inputId !== product.job_service_id}
                                 onChange={(e: any) =>
                                   handleDescriptionProduct(
                                     index,
                                     indexProduct,
-                                    product.service_id,
+                                    product.job_service_id,
                                     e.target.value
                                   )
                                 }
@@ -800,10 +800,10 @@ export default function InfoDeliveries({
                               />
                               <EditableFormat
                                 className={
-                                  descriptionText.inputId === product.service_id ? 'edit' : ''
+                                  descriptionText.inputId === product.job_service_id ? 'edit' : ''
                                 }
                                 onClick={() => {
-                                  setDescriptionText({ inputId: product.service_id, text: '' });
+                                  setDescriptionText({ inputId: product.job_service_id, text: '' });
                                 }}
                               >
                                 <BiPencil />
@@ -825,7 +825,7 @@ export default function InfoDeliveries({
                                 placeholder="128x190"
                                 value={product.size}
                                 disabled={
-                                  editFormat.productIndex === product.service_id &&
+                                  editFormat.productIndex === product.job_service_id &&
                                   editFormat.editable
                                     ? false
                                     : true
@@ -834,7 +834,7 @@ export default function InfoDeliveries({
                                   handleFormatProduct(
                                     index,
                                     indexProduct,
-                                    product.service_id,
+                                    product.job_service_id,
                                     e.target.value
                                   )
                                 }
@@ -842,11 +842,11 @@ export default function InfoDeliveries({
                               />
                               <EditableFormat
                                 className={
-                                  editFormat.productIndex === product.service_id ? 'edit' : ''
+                                  editFormat.productIndex === product.job_service_id ? 'edit' : ''
                                 }
                                 onClick={() => {
                                   setEditFormat({
-                                    productIndex: product.service_id,
+                                    productIndex: product.job_service_id,
                                     editable: true
                                   });
                                   setFormatType('');
@@ -893,7 +893,7 @@ export default function InfoDeliveries({
                                 handleTypeArt(
                                   index,
                                   indexProduct,
-                                  product.service_id,
+                                  product.job_service_id,
                                   e.target.value
                                 )
                               }
@@ -905,7 +905,7 @@ export default function InfoDeliveries({
                           </td>
                           <td
                             className="delete"
-                            onClick={() => deleteProduct(product.service_id, row.delivery_id)}
+                            onClick={() => deleteProduct(product.job_service_id, row.delivery_id)}
                           >
                             <BsTrash />
                           </td>

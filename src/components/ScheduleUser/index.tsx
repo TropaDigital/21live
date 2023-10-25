@@ -77,7 +77,7 @@ interface TaskExchangeProps {
   task_title: string;
   estimated_time: string;
   flow: string;
-  product_id: string;
+  project_product_id: string;
   step?: string | number | any;
   user_alocated: (value: any) => void;
   closeModal: () => void;
@@ -95,7 +95,7 @@ export default function ScheduleUser({
   task_title,
   estimated_time,
   flow,
-  product_id,
+  project_product_id,
   step,
   user_alocated,
   closeModal
@@ -124,9 +124,9 @@ export default function ScheduleUser({
     try {
       setLoading(true);
       const response = await api.get(
-        `/task/next?flow=${flow}&product_id=${product_id}&step=${step ? step : 1}&date=${moment(
-          dinamicDate
-        ).format('YYYY-MM-DD')}`
+        `/task/next?flow=${flow}&project_product_id=${project_product_id}&step=${
+          step ? step : 1
+        }&date=${moment(dinamicDate).format('YYYY-MM-DD')}`
       );
 
       if (response.data.result.length > 0) {

@@ -39,7 +39,7 @@ export default function QuantityCounter({
     // }
     // if (counter > 0) {
     //   const productSelected: IProduct = {
-    //     project_id: rowQuantity.service_id || rowQuantity.project_id,
+    //     project_id: rowQuantity.job_service_id || rowQuantity.project_id,
     //     service: rowQuantity.service,
     //     description: rowQuantity.description,
     //     type: rowQuantity.type,
@@ -64,7 +64,8 @@ export default function QuantityCounter({
       setCounter(counter + 1);
 
       const productSelected: IProduct = {
-        service_id: rowQuantity.service_id || rowQuantity.project_id || rowQuantity.product_id,
+        job_service_id:
+          rowQuantity.job_service_id || rowQuantity.project_id || rowQuantity.project_product_id,
         service: rowQuantity.service,
         description: rowQuantity.description,
         flag: rowQuantity.flag,
@@ -84,7 +85,8 @@ export default function QuantityCounter({
     if (!editProject) {
       setCounter(counter - 1);
       const productSelected: IProduct = {
-        service_id: rowQuantity.service_id || rowQuantity.project_id || rowQuantity.product_id,
+        job_service_id:
+          rowQuantity.job_service_id || rowQuantity.project_id || rowQuantity.project_product_id,
         service: rowQuantity.service,
         description: rowQuantity.description,
         flag: rowQuantity.flag,

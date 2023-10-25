@@ -61,7 +61,8 @@ export default function InfoProducts({
         dataOffice
           .filter((obj: any) => obj.service.toLowerCase().includes(searchTerm.toLowerCase()))
           .filter(
-            (object: any) => !dataFilter.find((obj: any) => obj.service_id === object.service_id)
+            (object: any) =>
+              !dataFilter.find((obj: any) => obj.job_service_id === object.job_service_id)
           )
       );
       const handler = setTimeout(() => {
@@ -94,7 +95,7 @@ export default function InfoProducts({
         <SectionProductsProject>
           {search?.map((row) => (
             <BoxProductProject
-              key={row.service_id}
+              key={row.job_service_id}
               type="button"
               onClick={() => handleOnAddItems(row)}
             >
@@ -126,12 +127,12 @@ export default function InfoProducts({
       <ul>
         {dataFilter?.map((row: any) => (
           <Addproducts
-            key={row.service_id}
+            key={row.job_service_id}
             data={row}
             handleOnDecrementQtd={() => handleOnDecrementQtd(row)}
             handleOnIncrememtQtd={() => handleOnIncrememtQtd(row)}
-            handleOnPeriod={(e) => handleOnPeriod(e, row.service_id)}
-            handleOnDeleteProduct={() => handleOnDeleteProduct(row.service_id)}
+            handleOnPeriod={(e) => handleOnPeriod(e, row.job_service_id)}
+            handleOnDeleteProduct={() => handleOnDeleteProduct(row.job_service_id)}
             handleInputProduct={() => null}
           />
         ))}

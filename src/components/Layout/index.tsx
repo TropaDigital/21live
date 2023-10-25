@@ -51,62 +51,62 @@ export default function Layout() {
               to: '/clientes',
               name: 'Clientes',
               icon: IconUsers,
-              identifier: '21jobs_task_manager'
+              identifier: 'jobs_task_manager'
             },
             {
               to: '/projetos',
               name: 'Projetos',
               icon: IconProjects,
-              identifier: '21jobs_projects_all'
+              identifier: 'jobs_projects_all'
             },
             {
               to: '/tarefas',
               name: 'Tarefas',
               icon: ClipboardTask,
-              identifier: '21jobs_task_manager'
+              identifier: 'jobs_task_manager'
             },
             {
               to: '/minhas-tarefas',
               name: 'Minhas tarefas',
               icon: MyTasksIcon,
-              identifier: '21jobs_task_execute'
-            },
-            {
-              to: '/minhas-tarefas',
-              name: 'Minhas tarefas',
-              icon: MyTasksIcon,
-              identifier: '21jobs_task_essay'
+              identifier: 'jobs_task_execute'
             },
             {
               to: '/produtos',
               name: 'Produtos',
               icon: IconProducts,
-              identifier: '21jobs_products_all'
+              identifier: 'jobs_products_all'
             },
             {
               to: '/fluxo',
               name: 'Fluxos',
               icon: IconFlux,
-              identifier: '21jobs_flow_all'
+              identifier: 'jobs_flow_all'
             },
             {
               to: '/equipe',
               name: 'Equipe',
               icon: IconTeam,
-              identifier: '21jobs_team_view'
+              identifier: 'jobs_team_view'
             },
             {
               to: '/reuniao',
               name: 'Atas de Reunião',
               icon: IconMeeting,
-              identifier: '21jobs_meetings_view'
+              identifier: 'jobs_meetings_view'
             },
             {
               to: '/solicitacoes',
               name: 'Solicitações',
               icon: TicketsIcon,
-              identifier: '21jobs_meetings_view'
+              identifier: 'jobs_meetings_view'
             }
+            // {
+            //   to: '/minhas-tarefas',
+            //   name: 'Minhas tarefas',
+            //   icon: MyTasksIcon,
+            //   identifier: 'jobs_task_essay'
+            // },
             // {
             //   to: '/form',
             //   name: 'Form',

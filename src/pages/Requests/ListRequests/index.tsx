@@ -180,8 +180,10 @@ export default function Requests() {
                     </td>
                     <td>{row.user_name}</td>
                     <td>{row.organization_name}</td>
-                    <td>{moment(row.created).format('DD/MM/YYYY')}</td>
-                    <td>
+                    <td style={{ minWidth: '150px' }}>
+                      {moment(row.created).format('DD/MM/YYYY')}
+                    </td>
+                    <td style={{ minWidth: '150px' }}>
                       {row.finished ? moment(row.finished).format('DD/MM/YYYY') : 'A concluir'}
                     </td>
                     <td>

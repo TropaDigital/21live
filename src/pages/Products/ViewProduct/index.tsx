@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable import-helpers/order-imports */
 // React
@@ -144,9 +145,9 @@ export default function ViewProductsDeliveries() {
     ? timeLineData.steps.filter((obj) => Number(obj.step) === Number(actualStep) + 1)
     : '';
 
-  const finalCard = timeLineData
-    ? timeLineData.steps.filter((obj) => obj.final_card === 'true')
-    : '';
+  // const finalCard = timeLineData
+  //   ? timeLineData.steps.filter((obj) => obj.final_card === 'true')
+  //   : '';
 
   useEffect(() => {
     async function getClockIsOpen() {
@@ -447,21 +448,23 @@ export default function ViewProductsDeliveries() {
       setLoading(true);
 
       if (dataTask.type === 'Livre') {
+        const responseNextDate = await api.get(
+          `/task/nextdate=${moment(new Date()).format('YYYY-MM-DD')}&task_id=${dataTask?.task_id}`
+        );
+
         const response = await api.get(`/task/next-user/${dataTask?.task_id}`);
 
         if (response.data.result.length > 0) {
           const payload = {
-            next_user: response.data.result[0].user_id,
-            start_job: moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
-            end_job: null
+            user_id: response.data.result[0].user_id,
+            task_id: dataTask?.task_id
           };
 
-          const responseConclude = await api.put(
-            `/task/delivery-conclude/${dataTask?.task_id}`,
-            payload
-          );
+          const responseConclude = await api.put(`/task/send-for-evaluation`, payload);
 
           console.log('log do response conclude', responseConclude.data.result);
+          navigate('/minhas-tarefas');
+          localStorage.removeItem('stopwatchState');
         }
 
         setLoading(false);
@@ -587,23 +590,27 @@ export default function ViewProductsDeliveries() {
     try {
       setLoading(true);
 
+      const responseNextDate = await api.get(
+        `/task/nextdate=${moment(new Date()).format('YYYY-MM-DD')}&task_id=${dataTask?.task_id}`
+      );
+
       const response = await api.get(`/task/next-user/${dataTask?.task_id}`);
 
       if (response.data.result.length > 0) {
         const payload = {
-          next_user: response.data.result[0].user_id,
-          start_job: moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
-          end_job: null
+          user_id: response.data.result[0].user_id,
+          task_id: dataTask?.task_id
         };
 
-        const responseConclude = await api.put(
-          `/task/delivery-conclude/${dataTask?.task_id}`,
-          payload
-        );
+        const responseConclude = await api.put(`/task/send-for-evaluation`, payload);
+
+        navigate('/minhas-tarefas');
+        localStorage.removeItem('stopwatchState');
 
         console.log('log do response conclude', responseConclude.data.result);
       }
-
+      navigate('/minhas-tarefas');
+      localStorage.removeItem('stopwatchState');
       setLoading(false);
     } catch (error: any) {
       console.log('log error send to manager', error);
@@ -995,7 +1002,7 @@ export default function ViewProductsDeliveries() {
           task_title={dataTask?.title}
           estimated_time={location.state.task.total_time}
           flow={location.state.task.flow_id}
-          product_id={location.state.task.product_id}
+          project_product_id={location.state.task.project_product_id}
           step={Number(location.state.task.step) + 1}
           user_alocated={handleAssignTask}
           closeModal={() => setModalSendToUser(false)}

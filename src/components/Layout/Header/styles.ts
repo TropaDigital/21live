@@ -50,13 +50,15 @@ export const ButtonBurguer = styled.button<sidebarProps>`
 export const Profile = styled.button`
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   background-color: transparent;
+
   h2 {
     font-size: var(--text-small-sm);
-    font-weight: var(--font-bold);
+    font-weight: var(--weight-semibold);
     white-space: nowrap;
-    color: var(--background-primary);
+    color: var(--gray-25);
+    text-transform: capitalize;
   }
 `;
 
@@ -68,7 +70,7 @@ export const ButtonConfigProfile = styled.div`
 export const IconGear = styled(FiSettings)`
   width: 22px;
   height: 22px;
-  color: var(--background-primary);
+  color: #6c757d;
 `;
 
 export const ImageProfile = styled.div`
@@ -216,5 +218,19 @@ export const TaskInfoPlayer = styled.div`
     color: var(--gray-500);
     font-size: var(--text-small-sm);
     font-weight: var(--weight-medium);
+  }
+`;
+
+export const ProfileName = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+
+  .username {
+    font-size: var(--text-small-sm);
+    font-weight: var(--font-bold);
+    white-space: nowrap;
+    color: var(--gray-25);
   }
 `;

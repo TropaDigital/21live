@@ -131,7 +131,7 @@ interface ProductInfo {
   quantity: string;
   reason_change: string;
   service: string;
-  service_id: string;
+  job_service_id: string;
   size: string;
   status: string;
   task_file_id: string;
@@ -392,9 +392,9 @@ export default function WorkingProduct({
     }
   };
 
-  const handleDownload = (file: any) => {
-    console.log('log para fazer download do file', file);
-  };
+  // const handleDownload = (file: any) => {
+  //   console.log('log para fazer download do file', file);
+  // };
 
   async function approveFile(productId: string) {
     try {
