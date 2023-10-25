@@ -1,16 +1,22 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-  width: 120px;
-  height: 120px;
+  width: 220px;
+  height: 180px;
 
   display: flex;
   align-content: center;
   justify-content: center;
-  /* flex-direction: column; */
+  flex-direction: column;
 
-  background-color: #fff;
-  box-shadow: var(--shadow);
-  border-radius: 1rem;
-  color: var(--title-color);
+  position: absolute;
+  bottom: 0;
+  left: 35px;
+  margin-bottom: -20px;
+
+  .recharts-legend-item-text {
+    color: var(--gray-500) !important;
+    font-size: var(--text-small-xs);
+    font-weight: var(--weight-medium);
+  }
 `;
