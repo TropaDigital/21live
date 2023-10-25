@@ -6,7 +6,7 @@ export const Container = styled.div`
   flex-direction: column;
   gap: 32px;
 
-  padding: 0 30px;
+  /* padding: 0 30px; */
 `;
 
 export const HeaderDefault = styled.div`
@@ -23,6 +23,7 @@ export const SectionTitleHeaderDefault = styled.div`
 
   border-bottom: 1px solid #e3e5ea;
   padding-bottom: 10px;
+  padding-left: 30px;
 `;
 
 export const TitleHeaderDefault = styled.h1`
@@ -42,13 +43,15 @@ export const SubTitleHeaderDefault = styled.span`
 export const ContentPerfil = styled.form`
   display: flex;
   gap: 1rem;
-  width: 100%;
+  width: calc(100% - 80px);
   height: 100%;
 
   padding: 1.25rem;
   background-color: #fff;
   border-radius: 10px;
   box-shadow: var(--shadow);
+
+  margin-left: 30px;
 
   @media (max-width: 800px) {
     flex-direction: column;
