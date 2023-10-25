@@ -11,7 +11,6 @@ import Profile from '../pages/Profile';
 import SignIn from '../pages/Login/SignIn';
 import SignUp from '../pages/Login/SignUp';
 import Clients from '../pages/Clients';
-import Users from '../pages/Users';
 import Products from '../pages/Products';
 import Team from '../pages/Team/ListTeam';
 import ListOffice from '../pages/Team/ListOffice';
@@ -34,6 +33,7 @@ import Requests from '../pages/Requests/ListRequests';
 import ViewRequest from '../pages/Requests/ViewRequests';
 import InstanceLogin from '../pages/Login/InstanceLogin';
 import ViewTask from '../pages/Tasks/ViewTask';
+import Parameters from '../pages/Parameters';
 
 function RoutesAll() {
   return (
@@ -71,13 +71,22 @@ function RoutesAll() {
         />
 
         <Route
+          path="/parametros"
+          element={
+            <PrivateRoutes>
+              <Parameters />
+            </PrivateRoutes>
+          }
+        />
+
+        {/* <Route
           path="/usuarios"
           element={
             <PrivateRoutes>
               <Users />
             </PrivateRoutes>
           }
-        />
+        /> */}
 
         <Route
           path="/clientes"

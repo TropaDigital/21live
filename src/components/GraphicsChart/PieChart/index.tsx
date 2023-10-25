@@ -10,17 +10,33 @@ interface PieChartProps {
 
 export default function PieChartGraphic({ data }: PieChartProps) {
   const COLORS = ['#0046B5', '#BADFFF'];
+
   return (
     <Container>
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="99%" height="99%">
         <PieChart>
-          <Pie data={data} innerRadius={45} outerRadius={80} paddingAngle={5} dataKey="value">
+          <Pie
+            data={data}
+            cx={150}
+            innerRadius={'40%'}
+            outerRadius={'80%'}
+            paddingAngle={5}
+            dataKey="value"
+          >
             {data.map((entry: any, index: number) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>
-          {/* <Tooltip /> */}
-          {/* <Legend /> */}
+          <Tooltip />
+          <Legend
+            width={120}
+            align="left"
+            wrapperStyle={{
+              position: 'absolute',
+              top: 55,
+              left: -15
+            }}
+          />
         </PieChart>
       </ResponsiveContainer>
     </Container>

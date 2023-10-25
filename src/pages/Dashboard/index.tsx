@@ -14,6 +14,10 @@ import TopCardsDash, { CardsData } from '../../components/Cards/DashboardTopCard
 import Loader from '../../components/LoaderSpin';
 import UserPerformanceCard, { UserCardProps } from '../../components/Cards/UserPerformanceCard';
 import PerformanceClientCard from '../../components/Cards/PerformanceClientCard';
+import ButtonTable from '../../components/Buttons/ButtonTable';
+import Alert from '../../components/Ui/Alert';
+import PieChartGraphic from '../../components/GraphicsChart/PieChart';
+import { StatusTable } from '../Tasks/TaskList/styles';
 
 // Styles
 import {
@@ -30,7 +34,9 @@ import {
   UserTeamCard,
   UserJobs,
   OperatorTopWrapper,
-  TimeChartsTopCard
+  TimeChartsTopCard,
+  SmallCardsWrapper,
+  JobCellTable
 } from './styles';
 
 // Libraries
@@ -41,8 +47,6 @@ import PersonTest from '../../assets/person.jpg';
 
 // Icons
 import { FiClock } from 'react-icons/fi';
-import PieChartGraphic from '../../components/GraphicsChart/PieChart';
-
 // interface DashType {
 //   typeDash: 'manager' | 'executive' | 'traffic' | 'operator' | '';
 // }
@@ -442,8 +446,8 @@ export default function Dashboard() {
   ];
 
   const dataPieGraphic = [
-    { name: 'Group A', value: 800 },
-    { name: 'Group B', value: 200 }
+    { name: 'Disponiveis', value: 800 },
+    { name: 'Utilizados', value: 200 }
   ];
 
   return (
@@ -1072,25 +1076,116 @@ export default function Dashboard() {
         <SectionDefault style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
           <CardWelcomeDash user={user.name} />
 
+          {/* Top cards */}
           <OperatorTopWrapper>
-            <TimeChartsTopCard>
-              <div className="card-title">
-                Horas disponíveis
-                <span>12</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
+              <TimeChartsTopCard>
+                <div className="card-title">
+                  Horas disponíveis
+                  <span>12</span>
+                </div>
+
+                <PieChartGraphic data={dataPieGraphic} />
+              </TimeChartsTopCard>
+
+              <TimeChartsTopCard>
+                <div className="card-title">
+                  Previsão de horas
+                  <span>43</span>
+                </div>
+
+                <PieChartGraphic data={dataPieGraphic} />
+              </TimeChartsTopCard>
+            </div>
+
+            <SmallCardsWrapper>
+              <div className="small-card">
+                Total de clientes
+                <div className="big-number">7</div>
               </div>
-
-              <div>gráfico</div>
-            </TimeChartsTopCard>
-
-            <TimeChartsTopCard>
-              <div className="card-title">
-                Previsão de horas
-                <span>43</span>
+              <div className="small-card">
+                Horas de criação
+                <div className="big-number">112</div>
               </div>
-
-              <PieChartGraphic data={dataPieGraphic} />
-            </TimeChartsTopCard>
+              <div className="small-card">
+                Alt. Clientes
+                <div className="big-number">8</div>
+              </div>
+              <div className="small-card">
+                Alt. Internas <div className="big-number">6</div>
+              </div>
+              <div className="small-card">
+                Pautas <div className="big-number">32</div>
+              </div>
+              <div className="small-card">
+                Horas <div className="big-number">78</div>
+              </div>
+            </SmallCardsWrapper>
           </OperatorTopWrapper>
+
+          {/* Clients & jobs table */}
+          <BaseTableGrey>
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Job</th>
+                  <th>Status</th>
+                  <th style={{ color: '#F9FAFB' }}>-</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {[0, 1, 2, 3].map((row, index: number) => (
+                  <tr key={index}>
+                    <td>Metso</td>
+                    <td>
+                      <JobCellTable>
+                        <div className="top-cell">Planejamento de Marketing</div>
+                        <div className="bottom-cell">001 - Cronograma - Julho 2023</div>
+                      </JobCellTable>
+                    </td>
+                    <td>
+                      <StatusTable
+                      // className={
+                      //   row.status === 'Em Andamento'
+                      //     ? 'status progress'
+                      //     : row.status === 'Concluida'
+                      //       ? 'status finished'
+                      //       : 'status'
+                      // }
+                      >
+                        {/* {row.status === 'Em Andamento'
+                          ? 'Em progresso'
+                          : row.status === 'Concluida'
+                            ? 'Concluída'
+                            : row.status === 'Aguardando Aprovação'
+                              ? 'Aguardando Aprovação'
+                              : 'Pendente'} */}
+                        Pendente
+                      </StatusTable>
+                    </td>
+                    <td>
+                      <div className="fieldTableClients">
+                        <ButtonTable typeButton="view" onClick={() => ''} />
+                        <ButtonTable typeButton="edit" onClick={() => ''} />
+                        <Alert
+                          title="Atenção"
+                          subtitle="Certeza que gostaria de deletar este Projeto? Ao excluir a ação não poderá ser desfeita."
+                          confirmButton={() => ''}
+                        >
+                          <ButtonTable typeButton="delete" />
+                        </Alert>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </BaseTableGrey>
+
+          {/* Status jobs overall */}
+          <BarChartGrafic data={dataStatusAll} title={'Status Geral Jobs'} />
         </SectionDefault>
       )}
     </Container>

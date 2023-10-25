@@ -153,11 +153,11 @@ export default function CardFluxo({
             />
           </FieldDefault>
 
-          {/* {data.manager_approve !== 'false' && (
+          {data.manager_approve !== 'false' && (
             <FieldDefault style={{ marginBottom: '8px' }}>
               <SelectDefault
                 label="Selecione quem irá aprovar"
-                name="approve_responsible"
+                name="approver"
                 placeHolder="Selecione..."
                 onChange={handleOnChange}
                 value={data.status}
@@ -169,7 +169,7 @@ export default function CardFluxo({
                 ))}
               </SelectDefault>
             </FieldDefault>
-          )} */}
+          )}
 
           <FieldDefault style={{ marginBottom: '8px' }}>
             <CheckboxDefault

@@ -170,7 +170,7 @@ export default function ListFluxo() {
                         {pages?.total <= 1 ? `${pages?.total} fluxo` : `${pages?.total} fluxos`}{' '}
                       </strong>
                     ) : (
-                      <strong>0 tarefa</strong>
+                      <strong>0 fluxos</strong>
                     )}
                   </h2>
                 </div>

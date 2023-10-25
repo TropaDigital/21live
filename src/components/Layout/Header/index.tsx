@@ -24,6 +24,7 @@ import {
   Logo,
   PlayPauseButton,
   Profile,
+  ProfileName,
   SectionPopUpHeader,
   SectionProfile,
   StopWatchTimer,
@@ -212,10 +213,6 @@ export default function Header({ handleOnMenu, modalActive }: HeaderProps) {
         )}
 
         <Profile onClick={() => setMenuUser(!menuUser)}>
-          <ButtonConfigProfile>
-            <IconGear />
-          </ButtonConfigProfile>
-          <h2>{user.name}</h2>
           <ImageProfile onClick={() => setMenuUser(!menuUser)}>
             {user.avatar ? (
               <img src={user.avatar} alt="profile" />
@@ -223,6 +220,10 @@ export default function Header({ handleOnMenu, modalActive }: HeaderProps) {
               <BiUser size={26} color="#fff" />
             )}
           </ImageProfile>
+          <ProfileName>
+            <h2>{user.name}</h2>
+            <div className="username">{user.username}</div>
+          </ProfileName>
         </Profile>
       </SectionProfile>
       <SectionPopUpHeader menuUser={menuUser} ref={userMenuRef}>
@@ -238,9 +239,17 @@ export default function Header({ handleOnMenu, modalActive }: HeaderProps) {
               Meu perfil
             </button>
           </li>
-          {/* <li>
-            <button>Parâmetros</button>
-          </li> */}
+          <li>
+            <button
+              onClick={() => {
+                setMenuUser(false);
+                navigate('/parametros');
+              }}
+            >
+              <IconGear />
+              Parâmetros
+            </button>
+          </li>
           <li>
             <button onClick={signOut}>
               <BiLogOut size={24} color="#6C757D" />
