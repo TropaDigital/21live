@@ -196,6 +196,13 @@ export const BaseTableGrey = styled.div`
       overflow: hidden;
       text-overflow: ellipsis;
       max-width: 38ch;
+
+      .fieldTableClients {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+      }
     }
 
     tbody {
@@ -450,12 +457,15 @@ export const TimeChartsTopCard = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
+  width: 264px;
+  height: 264px;
 
   border-radius: 12px;
   border: 1px solid var(--gray-200);
   background: var(--background-primary);
 
   padding: 24px;
+  position: relative;
 
   .card-title {
     display: flex;
@@ -471,5 +481,54 @@ export const TimeChartsTopCard = styled.div`
       font-size: var(--text-headline-lg);
       font-weight: var(--weight-semibold);
     }
+  }
+`;
+
+export const SmallCardsWrapper = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  width: 100%;
+  height: 264px;
+  gap: 24px 30px;
+
+  .small-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+
+    padding: 24px;
+
+    border-radius: 12px;
+    border: 1px solid var(--gray-200);
+    background: var(--background-primary);
+
+    color: var(--gray-500);
+    font-size: var(--text-small-sm);
+    font-weight: var(--weight-medium);
+
+    .big-number {
+      color: var(--gray-800);
+      font-size: var(--text-headline-md);
+      font-weight: var(--weight-semibold);
+    }
+  }
+`;
+
+export const JobCellTable = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  .top-cell {
+    color: var(--gray-900);
+    font-size: var(--text-small-md);
+    font-weight: var(--weight-medium);
+  }
+
+  .bottom-cell {
+    color: var(--gray-500);
+    font-size: var(--text-small-sm);
+    font-weight: var(--weight-medium);
   }
 `;
