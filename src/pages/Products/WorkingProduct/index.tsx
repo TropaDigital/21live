@@ -875,47 +875,49 @@ export default function WorkingProduct({
                               </div>
                             )}
                             {/* productsInfo?.file_status === 'await' && */}
-                            {isToApprove && isToApprove[0].manager_approve === 'true' && (
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                {/* <DownloadIcon onClick={() => handleDownload(row)}>
+                            {isToApprove &&
+                              isToApprove[0].manager_approve === 'true' &&
+                              row.status === 'await' && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  {/* <DownloadIcon onClick={() => handleDownload(row)}>
                                   <FaDownload />
                                 </DownloadIcon> */}
 
-                                <ButtonApproveReject
-                                  className="reject"
-                                  // onClick={() => disapproveFile(row.products_delivery_id)}
-                                  onClick={() =>
-                                    setModalApproveDisapprove({
-                                      isOpen: true,
-                                      productId: row.products_delivery_id,
-                                      approve: false,
-                                      disapprove: true
-                                    })
-                                  }
-                                >
-                                  <IoIosCloseCircleOutline />
+                                  <ButtonApproveReject
+                                    className="reject"
+                                    // onClick={() => disapproveFile(row.products_delivery_id)}
+                                    onClick={() =>
+                                      setModalApproveDisapprove({
+                                        isOpen: true,
+                                        productId: row.products_delivery_id,
+                                        approve: false,
+                                        disapprove: true
+                                      })
+                                    }
+                                  >
+                                    <IoIosCloseCircleOutline />
 
-                                  {/* <div className="hover-text">Reprovar</div> */}
-                                </ButtonApproveReject>
+                                    {/* <div className="hover-text">Reprovar</div> */}
+                                  </ButtonApproveReject>
 
-                                <ButtonApproveReject
-                                  className="check"
-                                  // onClick={() => approveFile(row.products_delivery_id)}
-                                  onClick={() =>
-                                    setModalApproveDisapprove({
-                                      isOpen: true,
-                                      productId: row.products_delivery_id,
-                                      approve: true,
-                                      disapprove: false
-                                    })
-                                  }
-                                >
-                                  <BsCheckCircle />
+                                  <ButtonApproveReject
+                                    className="check"
+                                    // onClick={() => approveFile(row.products_delivery_id)}
+                                    onClick={() =>
+                                      setModalApproveDisapprove({
+                                        isOpen: true,
+                                        productId: row.products_delivery_id,
+                                        approve: true,
+                                        disapprove: false
+                                      })
+                                    }
+                                  >
+                                    <BsCheckCircle />
 
-                                  {/* <div className="hover-text">Aprovar</div> */}
-                                </ButtonApproveReject>
-                              </div>
-                            )}
+                                    {/* <div className="hover-text">Aprovar</div> */}
+                                  </ButtonApproveReject>
+                                </div>
+                              )}
                           </td>
                         </tr>
                       ))
