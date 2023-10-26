@@ -12,14 +12,15 @@ function useColumn() {
         flow_id: String(flowId),
         // card_id: String(column.length + 1),
         step: 0,
-        function_id: 0,
+        function_id: '0',
         name: 'Novo card',
         necessary_upload: 'false',
         email_alert: 'false',
         necessary_responsible: 'false',
         manager_approve: 'false',
         tenant_approve: 'false',
-        previous_step: '0'
+        previous_step: '0',
+        approver: '0'
         // tasks: [],
       };
 
@@ -46,6 +47,10 @@ function useColumn() {
     (id: string, name: string, value: string) => {
       if (name === 'previous_step') {
         column[id][name] = value.replace(/[^\d.-]/g, '');
+        setColumn([...column]);
+      } else if (name === 'manager_approve') {
+        column[id + 1]['previous_step'] = '0';
+        column[id][name] = value;
         setColumn([...column]);
       } else {
         column[id][name] = value;

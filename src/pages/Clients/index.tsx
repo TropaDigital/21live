@@ -10,7 +10,7 @@ import ButtonDefault from '../../components/Buttons/ButtonDefault';
 import HeaderPage from '../../components/HeaderPage';
 import Loader from '../../components/LoaderSpin';
 import { Table } from '../../components/Table';
-import { FilterGroup, TableHead } from '../../components/Table/styles';
+import { TableHead } from '../../components/Table/styles';
 
 // Styles
 import { Container, LogoContainer } from './styles';
@@ -62,13 +62,18 @@ export default function Clients() {
     // );
   };
 
+  const handleNewClient = () => {
+    const instance = sessionStorage.getItem('tenantName');
+    console.log('log do new client', instance);
+    if (instance) {
+      window.location.href = `https://app.21live.com.br/${instance}/Flow/newTenant`;
+    }
+  };
+
   return (
     <Container>
       <HeaderPage title="Clientes">
-        <ButtonDefault
-          typeButton="success"
-          onClick={() => alert('Falta decidir o caminho aqui!!!')}
-        >
+        <ButtonDefault typeButton="success" onClick={handleNewClient}>
           <BiPlus color="#fff" />
           Novo Cliente
         </ButtonDefault>
@@ -99,8 +104,6 @@ export default function Clients() {
               />
             </div>
           </TableHead>
-
-          {/* <FilterGroup></FilterGroup> */}
 
           <table>
             <thead>

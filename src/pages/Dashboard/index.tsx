@@ -94,7 +94,7 @@ export default function Dashboard() {
     {
       id: 1,
       name: 'Metso',
-      value: 45,
+      value: 50,
       fill: '#59B7FF',
       currency: 20.0,
       isDonut: false,

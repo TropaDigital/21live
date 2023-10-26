@@ -19,6 +19,9 @@ export default function InstanceLogin() {
 
     async function checkIfHaveAccess() {
       try {
+        if (slug) {
+          sessionStorage.setItem('tenantName', slug);
+        }
         const response = await api.get(`/have-acess?slug=${slug}`);
 
         if (response.data.result.length > 0) {

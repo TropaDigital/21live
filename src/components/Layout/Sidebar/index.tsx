@@ -139,7 +139,7 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
 
   return (
     <Container modalActive={modalActive}>
-      {user?.permissions?.includes('21jobs_task_execute') && (
+      {user?.permissions?.includes('jobs_task_execute') && (
         <Link to={'/criar-tarefa'}>
           <ButtonDefault typeButton="primary" style={{ marginTop: '20px', width: '100%' }}>
             <BiPlus />
