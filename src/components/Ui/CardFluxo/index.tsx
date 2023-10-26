@@ -32,6 +32,7 @@ interface CardProps {
   columnStep: any;
   responseUser: any;
   errorField: any;
+  previousManager: boolean;
 }
 
 export default function CardFluxo({
@@ -45,7 +46,8 @@ export default function CardFluxo({
   handleOnDelete,
   onUpdate,
   index,
-  errorField
+  errorField,
+  previousManager
 }: CardProps) {
   const [dataStatus, setDataStatus] = useState<any[]>([]);
 
@@ -123,6 +125,9 @@ export default function CardFluxo({
             placeHolder="Selecione a etapa"
             onChange={handleOnChange}
             value={data.previous_step}
+            error={
+              previousManager && data.previous_step === '0' ? 'Obrigatório etapa para retornar' : ''
+            }
           >
             {columnStep.map((row: any, index: any) => (
               <option key={index} value={row.card_id}>
@@ -153,14 +158,15 @@ export default function CardFluxo({
             />
           </FieldDefault>
 
-          {data.manager_approve !== 'false' && (
+          {previousManager && (
             <FieldDefault style={{ marginBottom: '8px' }}>
               <SelectDefault
                 label="Selecione quem irá aprovar"
                 name="approver"
                 placeHolder="Selecione..."
                 onChange={handleOnChange}
-                value={data.status}
+                value={data.approver}
+                // error={data.approver === '0' ? 'Escolha quem aprovará' : ''}
               >
                 {responseUser?.map((row: any) => (
                   <option key={Number(row.function_id)} value={row.function_id}>
