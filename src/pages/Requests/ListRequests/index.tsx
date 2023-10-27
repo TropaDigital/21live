@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable import-helpers/order-imports */
 // React
 import { useCallback, useEffect, useState } from 'react';
@@ -50,7 +51,7 @@ interface RequestsProps {
 
 export default function Requests() {
   const navigate = useNavigate();
-  const [modalFilters, setModalFilters] = useState<boolean>(false);
+  // const [modalFilters, setModalFilters] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState(1);
@@ -58,37 +59,37 @@ export default function Requests() {
     (search: string) => setSearch(search),
     700
   );
-  const [choosenFilters, setChoosenFilter] = useState<ChoosenFilters>({
-    code: '',
-    format: '',
-    status: '',
-    delivery: '',
-    fromDate: '',
-    toDate: ''
-  });
+  // const [choosenFilters, setChoosenFilter] = useState<ChoosenFilters>({
+  //   code: '',
+  //   format: '',
+  //   status: '',
+  //   delivery: '',
+  //   fromDate: '',
+  //   toDate: ''
+  // });
   const { data, pages, isFetching } = useFetch<any[]>(`ticket?search=${search}&page=${selected}`);
 
   const handleViewRequest = (request: any) => {
     navigate(`/solicitacao/${request.ticket_id}`, { state: request.ticket_id });
   };
 
-  const handleApplyFilters = (filters: any) => {
-    console.log('log apply filters', filters);
-    setChoosenFilter(filters);
-    setModalFilters(false);
-  };
+  // const handleApplyFilters = (filters: any) => {
+  //   console.log('log apply filters', filters);
+  //   setChoosenFilter(filters);
+  //   setModalFilters(false);
+  // };
 
-  const handleClearFilters = () => {
-    setChoosenFilter({
-      code: '',
-      format: '',
-      status: '',
-      delivery: '',
-      fromDate: '',
-      toDate: ''
-    });
-    setModalFilters(false);
-  };
+  // const handleClearFilters = () => {
+  //   setChoosenFilter({
+  //     code: '',
+  //     format: '',
+  //     status: '',
+  //     delivery: '',
+  //     fromDate: '',
+  //     toDate: ''
+  //   });
+  //   setModalFilters(false);
+  // };
 
   return (
     <ContainerDefault>
@@ -110,12 +111,29 @@ export default function Requests() {
                         : `${pages?.total} solicitações`}{' '}
                     </strong>
                   ) : (
-                    <strong>0 tarefa</strong>
+                    <strong>0 solicitações</strong>
                   )}
                 </h2>
               </div>
+
+              <div>
+                <InputDefault
+                  label=""
+                  name="search"
+                  placeholder="Buscar..."
+                  onChange={(event) => {
+                    setSearchTerm(event.target.value);
+                    debouncedCallback(event.target.value);
+                  }}
+                  value={searchTerm}
+                  icon={BiSearchAlt}
+                  isLoading={isLoading}
+                  className="search-field"
+                />
+              </div>
             </TableHead>
-            <FilterGroup>
+
+            {/* <FilterGroup>
               <InputDefault
                 label=""
                 name="search"
@@ -130,15 +148,16 @@ export default function Requests() {
                 className="search-field"
               />
 
-              {/* <ButtonDefault
+              <ButtonDefault
                 typeButton="lightWhite"
                 isOutline
                 onClick={() => setModalFilters(true)}
               >
                 <BiFilter />
                 Filtros
-              </ButtonDefault> */}
-            </FilterGroup>
+              </ButtonDefault>
+            </FilterGroup> */}
+
             <table>
               <thead>
                 <tr>
@@ -213,13 +232,13 @@ export default function Requests() {
         </RequestsWrapper>
       )}
 
-      <FilterModal
+      {/* <FilterModal
         isOpen={modalFilters}
         closeBtn={true}
         onOpenChange={() => setModalFilters(!modalFilters)}
         applyFilters={(filters: any) => handleApplyFilters(filters)}
         clearFilters={handleClearFilters}
-      />
+      /> */}
     </ContainerDefault>
   );
 }
