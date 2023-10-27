@@ -662,7 +662,9 @@ export default function WorkingProduct({
                 </FooterSection>
               </div>
             ) : (
-              <EssayInfo>{essayInfo}</EssayInfo>
+              <EssayInfo>
+                <div dangerouslySetInnerHTML={{ __html: essayInfo }} />
+              </EssayInfo>
             )}
           </>
         )}
