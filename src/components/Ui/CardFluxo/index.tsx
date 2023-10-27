@@ -201,7 +201,7 @@ export default function CardFluxo({
               name="ticket_status_id"
               placeHolder="Selecione o status"
               onChange={handleOnChange}
-              value={data.status}
+              value={data.ticket_status_id}
             >
               {dataStatus?.map((row: any, index: any) => (
                 <option key={index} value={row.ticket_status_id}>
