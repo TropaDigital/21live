@@ -314,12 +314,28 @@ export default function ListProjects() {
                     {pages?.total <= 1 ? `${pages?.total} projeto` : `${pages?.total} projetos`}{' '}
                   </strong>
                 ) : (
-                  <strong>0 tarefa</strong>
+                  <strong>0 projetos</strong>
                 )}
               </h2>
             </div>
+
+            <div>
+              <InputDefault
+                label=""
+                name="search"
+                placeholder="Buscar..."
+                onChange={(event) => {
+                  setSearchTerm(event.target.value);
+                  debouncedCallback(event.target.value);
+                }}
+                value={searchTerm}
+                icon={BiSearchAlt}
+                isLoading={isLoading}
+                className="search-field"
+              />
+            </div>
           </TableHead>
-          <FilterGroup>
+          {/* <FilterGroup>
             <InputDefault
               label=""
               name="search"
@@ -334,11 +350,11 @@ export default function ListProjects() {
               className="search-field"
             />
 
-            {/* <ButtonDefault typeButton="light">
+            <ButtonDefault typeButton="light">
               <BiFilter />
               Filtros
-            </ButtonDefault> */}
-          </FilterGroup>
+            </ButtonDefault>
+          </FilterGroup> */}
           <table>
             <thead>
               <tr>
