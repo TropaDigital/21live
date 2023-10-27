@@ -85,7 +85,16 @@ export default function Clients() {
         <Table>
           <TableHead>
             <div className="groupTable">
-              <h2>Lista de clientes</h2>
+              <h2>
+                Lista de clientes
+                {pages !== null && pages?.total > 0 ? (
+                  <strong>
+                    {pages?.total <= 1 ? `${pages?.total} cliente` : `${pages?.total} clientes`}{' '}
+                  </strong>
+                ) : (
+                  <strong>0 clientes</strong>
+                )}
+              </h2>
             </div>
 
             <div>
