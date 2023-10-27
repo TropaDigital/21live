@@ -20,6 +20,7 @@ function useColumn() {
         manager_approve: 'false',
         tenant_approve: 'false',
         previous_step: '0',
+        ticket_status_id: '0',
         approver: '0'
         // tasks: [],
       };
@@ -49,7 +50,7 @@ function useColumn() {
         column[id][name] = value.replace(/[^\d.-]/g, '');
         setColumn([...column]);
       } else if (name === 'manager_approve') {
-        column[id + 1]['previous_step'] = '0';
+        column[id]['previous_step'] = '0';
         column[id][name] = value;
         setColumn([...column]);
       } else {
