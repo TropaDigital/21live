@@ -68,11 +68,7 @@ export default function EditFluxo() {
           setErrorMissingResponsible((prevState) =>
             prevState.filter((error) => error !== row.card_id)
           );
-          const previousItem = index > 0 ? column[index - 1] : null;
-          const isPreviousManagerApproved = previousItem
-            ? previousItem.manager_approve === 'true'
-            : false;
-          if (isPreviousManagerApproved) {
+          if (row.manager_approve === 'true' && row.previous_step === '0') {
             throw new Error('Não é possível salvar um fluxo sem escolher para qual etapa retornar');
           }
         }
@@ -101,6 +97,7 @@ export default function EditFluxo() {
           description: 'Fluxos salvos com sucesso!',
           type: 'success'
         });
+        navigate('/fluxo');
       }
     } catch (err: any) {
       console.log('ERR =>', err);
@@ -186,11 +183,7 @@ export default function EditFluxo() {
 
         <ContentEditFluxo>
           {column.map((row: any, index: any) => {
-            const previousItem = index > 0 ? column[index - 1] : null;
-            const isPreviousManager = previousItem
-              ? previousItem.manager_approve === 'true'
-              : false;
-            if (isPreviousManager) {
+            if (row.manager_approve === 'true') {
               return (
                 <CardFluxo
                   key={index}
