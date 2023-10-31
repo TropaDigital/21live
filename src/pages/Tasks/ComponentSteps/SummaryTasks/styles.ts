@@ -118,6 +118,10 @@ export const SummaryTasksAbout = styled.div`
     color: var(--gray-700);
     font-size: var(--text-small-lg);
     font-weight: var(--weight-medium);
+
+    .negative {
+      color: var(--Danger);
+    }
   }
 
   .splitter {
