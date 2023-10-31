@@ -1681,7 +1681,7 @@ export default function CreateTasks() {
           }
           backButton={createStep <= 1}
           stepSelected={createStep}
-          maxStep={tasksType !== 'livre' ? 4 : 5}
+          maxStep={tasksType === 'livre' ? 4 : 5}
           backPage="/tarefas"
         />
 
@@ -2019,7 +2019,7 @@ export default function CreateTasks() {
         <ModalDefault
           isOpen={productsModal}
           onOpenChange={() => setProductsModal(false)}
-          maxWidth="848px"
+          maxWidth="900px"
         >
           <ProductsModalWrapper>
             <ProductsModalTop>

@@ -139,7 +139,7 @@ export const SearchProductsModal = styled.div`
 
 export const ProductListHeader = styled.div`
   display: grid;
-  grid-template-columns: 1fr 145px 145px 136px;
+  grid-template-columns: 1fr 1fr 145px 136px;
   height: 44px;
   background: var(--gray-50);
   border-bottom: 1px solid var(--gray-200);
@@ -162,7 +162,7 @@ export const ProductListHeader = styled.div`
 
 export const Product = styled.div`
   display: grid;
-  grid-template-columns: 1fr 145px 145px 136px;
+  grid-template-columns: 1fr 1fr 145px 136px;
   height: 72px;
   border-bottom: 1px solid var(--gray-200);
   padding: 26px 0;
