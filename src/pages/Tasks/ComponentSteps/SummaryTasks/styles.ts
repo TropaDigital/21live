@@ -147,7 +147,8 @@ export const SummaryTaskInfo = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-  height: 24px;
+  min-height: 24px;
+  height: fit-content;
 
   .title-info {
     color: var(--gray-600);
