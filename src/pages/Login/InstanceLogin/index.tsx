@@ -33,11 +33,10 @@ export default function InstanceLogin() {
           sessionStorage.setItem('tenant_id', response.data.result.tenant_id);
           sessionStorage.setItem('bucket', response.data.result.bucket);
           navigate('/login');
-        } else {
-          window.location.replace('https://app.21live.com.br/');
         }
       } catch (error: any) {
         console.log('log do error check access', error);
+        window.location.replace('https://app.21live.com.br/');
       }
     }
 
