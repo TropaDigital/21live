@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useCallback, useContext, useState } from 'react';
 
 import api from '../services/api';
+import { useNavigate } from 'react-router-dom';
 
 export interface User {
   user_id?: number;
@@ -51,6 +52,7 @@ interface TransactionsProviderProps {
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 function AuthProvider({ children }: TransactionsProviderProps) {
+  const navigate = useNavigate();
   const [data, setData] = useState<AuthState>(() => {
     const token = localStorage.getItem('@live:token');
     const user = localStorage.getItem('@live:user');
@@ -94,8 +96,14 @@ function AuthProvider({ children }: TransactionsProviderProps) {
     sessionStorage.removeItem('tenant_id');
     sessionStorage.removeItem('bucket');
 
+    const instanceName = sessionStorage.getItem('tenantName');
+
+    if (instanceName) {
+      navigate(`/login/${instanceName}`);
+    }
+
     setData({} as AuthState);
-  }, []);
+  }, [navigate]);
 
   const updateUser = useCallback(
     (user: User) => {

@@ -16,7 +16,7 @@ import SelectImage from '../../../components/Inputs/SelectWithImage';
 import api from '../../../services/api';
 
 // Hooks
-import { useToast } from '../../../hooks/toast';
+// import { useToast } from '../../../hooks/toast';
 import { useAuth } from '../../../hooks/AuthContext';
 
 interface FormProps {
@@ -57,7 +57,7 @@ export default function InfoGeral({
   error
 }: Props) {
   const { user } = useAuth();
-  const { addToast } = useToast();
+  // const { addToast } = useToast();
   const [initialValue, setInitialValue] = useState({
     value: '',
     label: '',
@@ -66,21 +66,21 @@ export default function InfoGeral({
   });
   const [requestersList, setRequestersList] = useState<RequesterProps[]>([]);
 
-  const handleGetFlowTask = async (id: any) => {
-    try {
-      const responseFlow = await api.get(`/task-next?flow=${id}`);
-      // setFlowManagers(responseFlow.data.result);
-      if (responseFlow.data.result.length === 0) {
-        addToast({
-          title: 'Atenção',
-          description: 'Escolha um fluxo com algum responsável pelo cargo',
-          type: 'warning'
-        });
-      }
-    } catch (error: any) {
-      console.log('log do error', error);
-    }
-  };
+  // const handleGetFlowTask = async (id: any) => {
+  //   try {
+  //     const responseFlow = await api.get(`/task-next?flow=${id}`);
+  //     // setFlowManagers(responseFlow.data.result);
+  //     if (responseFlow.data.result.length === 0) {
+  //       addToast({
+  //         title: 'Atenção',
+  //         description: 'Escolha um fluxo com algum responsável pelo cargo',
+  //         type: 'warning'
+  //       });
+  //     }
+  //   } catch (error: any) {
+  //     console.log('log do error', error);
+  //   }
+  // };
 
   const clientsOptions = clients?.map((row) => {
     return {
@@ -220,10 +220,7 @@ export default function InfoGeral({
           label="Fluxo"
           name="flow_id"
           value={data.flow_id}
-          onChange={(e) => {
-            handleInputChange(e);
-            handleGetFlowTask(e.target.value);
-          }}
+          onChange={(e) => handleInputChange(e)}
           error={error?.flow_id}
         >
           {dataFlow?.map((row: FlowProps) => (

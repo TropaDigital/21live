@@ -134,9 +134,9 @@ export default function ViewTask() {
   };
 
   useEffect(() => {
-    async function getTimelineData() {
+    async function getTimelineData(id: any) {
       try {
-        const response = await api.get(`task/timeline/${location.state.id}`);
+        const response = await api.get(`task/timeline/${id}`);
         setTimelineData(response.data.result);
       } catch (error: any) {
         console.log('log timeline error', error);
@@ -165,12 +165,13 @@ export default function ViewTask() {
       }
     }
 
-    getTimelineData();
     if (location.state !== null) {
+      getTimelineData(location.state.id);
       getTaskInfos(location.state.id);
     }
     if (location.state === null) {
       getTaskInfos(location.pathname.split('/').pop());
+      getTimelineData(location.pathname.split('/').pop());
     }
   }, [location]);
 

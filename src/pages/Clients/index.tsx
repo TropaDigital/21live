@@ -53,20 +53,13 @@ export default function Clients() {
       id: tenantInfo.tenant_id
     };
 
-    window.location.href = `https://app.21live.com.br/${linkEdit.slug}/tenants/edit/${linkEdit.id}`;
-
-    // console.log('log do navigate', tenantInfo);
-    // console.log(
-    //   'log do link para editar:',
-    //   `https://app.21live.com.br/${linkEdit.slug}/tenants/edit/${linkEdit.id}`
-    // );
+    window.open(`https://app.21live.com.br/${linkEdit.slug}/tenants/edit/${linkEdit.id}`);
   };
 
   const handleNewClient = () => {
     const instance = sessionStorage.getItem('tenantName');
-    console.log('log do new client', instance);
     if (instance) {
-      window.location.href = `https://app.21live.com.br/${instance}/Flow/newTenant`;
+      window.open(`https://app.21live.com.br/${instance}/Flow/newTenant`, '_blank');
     }
   };
 
