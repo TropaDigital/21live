@@ -1681,7 +1681,7 @@ export default function CreateTasks() {
           }
           backButton={createStep <= 1}
           stepSelected={createStep}
-          maxStep={tasksType !== 'livre' ? 4 : 5}
+          maxStep={tasksType === 'livre' ? 4 : 5}
           backPage="/tarefas"
         />
 
@@ -2019,7 +2019,7 @@ export default function CreateTasks() {
         <ModalDefault
           isOpen={productsModal}
           onOpenChange={() => setProductsModal(false)}
-          maxWidth="848px"
+          maxWidth="900px"
         >
           <ProductsModalWrapper>
             <ProductsModalTop>
@@ -2253,6 +2253,21 @@ export default function CreateTasks() {
                   isLoading={isLoading}
                   className="search-field"
                 />
+
+                {tasksType === 'horas' && (
+                  <ButtonDefault
+                    typeButton="primary"
+                    onClick={() => {
+                      setProductsDeliveriesModal({
+                        isOpen: false,
+                        title: '',
+                        indexDelivery: ''
+                      });
+                    }}
+                  >
+                    Adicionar Produto
+                  </ButtonDefault>
+                )}
               </SearchProductsModal>
               <ProductListHeader>
                 <div className="list-title">Produto</div>

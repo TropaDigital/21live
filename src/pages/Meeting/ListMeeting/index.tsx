@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable import-helpers/order-imports */
 // React
 import { useCallback, useState } from 'react';
@@ -166,12 +167,6 @@ export default function ListMeeting() {
       members: [],
       files: []
     }
-  });
-  const [initialValue, setInitialValue] = useState({
-    value: '',
-    label: '',
-    image: '',
-    color: ''
   });
 
   const handleChangeClient = (clientInfos: any) => {

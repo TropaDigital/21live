@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 
 // Components
-import { border } from 'polished';
 import HeaderPage from '../../components/HeaderPage';
 import { InputDefault } from '../../components/Inputs/InputDefault';
 import { ContainerDefault } from '../../components/UiElements/styles';

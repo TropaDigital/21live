@@ -8,7 +8,6 @@ import { BiSearchAlt } from 'react-icons/bi';
 
 // Hooks
 import { useFetch } from '../../../../hooks/useFetch';
-import { useToast } from '../../../../hooks/toast';
 import useDebouncedCallback from '../../../../hooks/useDebounced';
 
 // Types
@@ -62,11 +61,9 @@ export default function InfoProducts({
   handleEditProductQuantity,
   okToSave,
   editProducts,
-  editProject,
   hideSwitch,
   tenant_id
 }: PropsProducts) {
-  const { addToast } = useToast();
   const [search, setSearch] = useState<IServices[]>([]);
   const [selected, setSelected] = useState(1);
   const { data, pages } = useFetch<ServicesProps[]>(

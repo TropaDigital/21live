@@ -7,7 +7,6 @@ import {
   ArrowButton,
   EndTaskDate,
   HoursTable,
-  HoursTitle,
   ScheduleDate,
   ScheduleSelectUser,
   ScheduleSubtitle,
@@ -25,7 +24,6 @@ import { IconClose } from '../../assets/icons';
 import { BsArrowLeft, BsArrowRight } from 'react-icons/bs';
 
 // Components
-import { InputDefault } from '../Inputs/InputDefault';
 import ButtonDefault from '../Buttons/ButtonDefault';
 import { CheckboxDefault } from '../Inputs/CheckboxDefault';
 
@@ -83,13 +81,13 @@ interface TaskExchangeProps {
   closeModal: () => void;
 }
 
-interface NewTaskItem {
-  end: string;
-  start: string;
-  task_id: string;
-  title: string;
-  type: string;
-}
+// interface NewTaskItem {
+//   end: string;
+//   start: string;
+//   task_id: string;
+//   title: string;
+//   type: string;
+// }
 
 export default function ScheduleUser({
   task_title,
@@ -361,129 +359,135 @@ export default function ScheduleUser({
 
   return (
     <ScheduleWrapper>
-      <ScheduleSubtitle>
-        <SubtitleInfo>
-          <div className="title">Título da tarefa:</div>
-          <div className="info">{task_title ? task_title : 'Teste'}</div>
-        </SubtitleInfo>
-        <div>•</div>
-        <SubtitleInfo>
-          <div className="title">Tempo estimado:</div>
-          <div className="info">{estimated_time ? estimated_time : '--:--:--'}</div>
-        </SubtitleInfo>
+      {!loading && (
+        <>
+          <ScheduleSubtitle>
+            <SubtitleInfo>
+              <div className="title">Título da tarefa:</div>
+              <div className="info">{task_title ? task_title : 'Teste'}</div>
+            </SubtitleInfo>
+            <div>•</div>
+            <SubtitleInfo>
+              <div className="title">Tempo estimado:</div>
+              <div className="info">{estimated_time ? estimated_time : '--:--:--'}</div>
+            </SubtitleInfo>
 
-        <button className="close" onClick={closeModal}>
-          <IconClose />
-        </button>
-      </ScheduleSubtitle>
+            <button className="close" onClick={closeModal}>
+              <IconClose />
+            </button>
+          </ScheduleSubtitle>
 
-      <ScheduleDate>
-        <ArrowButton onClick={() => handleDayOfUSer(-1)}>
-          <BsArrowLeft />
-        </ArrowButton>
+          <ScheduleDate>
+            <ArrowButton onClick={() => handleDayOfUSer(-1)}>
+              <BsArrowLeft />
+            </ArrowButton>
 
-        <div className="date">
-          {moment(dinamicDate).format('DD')} <span>de</span> {moment(dinamicDate).format('MMMM')}
-        </div>
+            <div className="date">
+              {moment(dinamicDate).format('DD')} <span>de</span>{' '}
+              {moment(dinamicDate).format('MMMM')}
+            </div>
 
-        <ArrowButton onClick={() => handleDayOfUSer(1)}>
-          <BsArrowRight />
-        </ArrowButton>
-      </ScheduleDate>
+            <ArrowButton onClick={() => handleDayOfUSer(1)}>
+              <BsArrowRight />
+            </ArrowButton>
+          </ScheduleDate>
 
-      <ScheduleTable>
-        <UserTable>
-          <div className="user-title">Usuário</div>
-          {dataUserSchedule?.map((row: UserData) => (
-            <UserCard key={row.user_id}>
-              <CheckboxDefault
-                label=""
-                name="user_selected"
-                onChange={() => handleOnChange('user_selected', row.user_id)}
-                checked={DTOTaskSelect.user_selected === row.user_id ? true : false}
-              />
-              <UserInfosCard>
-                <div className="user-name">{row.name}</div>
-                <div className="working-hours">
-                  Jornada:{' '}
-                  <span>
-                    {row.work.start_work} - {row.work.end_work}
-                  </span>{' '}
-                </div>
-              </UserInfosCard>
-            </UserCard>
-          ))}
-        </UserTable>
+          <ScheduleTable>
+            <UserTable>
+              <div className="user-title">Usuário</div>
+              {dataUserSchedule?.map((row: UserData) => (
+                <UserCard key={row.user_id}>
+                  <CheckboxDefault
+                    label=""
+                    name="user_selected"
+                    onChange={() => handleOnChange('user_selected', row.user_id)}
+                    checked={DTOTaskSelect.user_selected === row.user_id ? true : false}
+                  />
+                  <UserInfosCard>
+                    <div className="user-name">{row.name}</div>
+                    <div className="working-hours">
+                      Jornada:{' '}
+                      <span>
+                        {row.work.start_work} - {row.work.end_work}
+                      </span>{' '}
+                    </div>
+                  </UserInfosCard>
+                </UserCard>
+              ))}
+            </UserTable>
 
-        <HoursTable>
-          <div style={{ backgroundColor: 'white' }}>
-            <Epg {...getEpgProps()}>
-              <Layout
-                {...getLayoutProps()}
-                renderTimeline={(props) => <Timeline {...props} />}
-                renderProgram={({ program, ...rest }) => (
-                  <Program key={program.data.id} program={program} {...rest} />
-                )}
-              />
-            </Epg>
-          </div>
-        </HoursTable>
-      </ScheduleTable>
-
-      <ScheduleSelectUser>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <UserFields className="hours">
-            <div className="hour-label">Hora inicial</div>
-            <TimePicker
-              onChange={(value: any) => handleOnChange('starterHour', value)}
-              // onChange={() => ''}
-              value={DTOTaskSelect?.starterHour}
-              clearIcon={null}
-              clockIcon={null}
-              locale="pt-BR"
-              disableClock={true}
-              maxDetail="second"
-            />
-          </UserFields>
-          {responseScheduleInfos.end_job !== '' && (
-            <EndTaskDate>
-              <div className="date-title">Data / Hora final</div>
-              <div className="end-date">
-                {moment(responseScheduleInfos.end_job).format('DD/MM/YYYY - HH:mm')}
+            <HoursTable>
+              <div style={{ backgroundColor: 'white' }}>
+                <Epg {...getEpgProps()}>
+                  <Layout
+                    {...getLayoutProps()}
+                    renderTimeline={(props) => <Timeline {...props} />}
+                    renderProgram={({ program, ...rest }) => (
+                      <Program key={program.data.id} program={program} {...rest} />
+                    )}
+                  />
+                </Epg>
               </div>
-            </EndTaskDate>
-          )}
-        </div>
+            </HoursTable>
+          </ScheduleTable>
 
-        <UserFields>
-          <div className="selectedUser">
-            Usuário selecionado: <strong>{userSelected ? userSelected[0]?.name : ''}</strong>
-          </div>
-          {!checkAvailability && (
-            <ButtonDefault
-              typeButton={DTOTaskSelect.user_selected ? 'primary' : 'blocked'}
-              onClick={() =>
-                checkIfIsAvaliable(
-                  DTOTaskSelect.user_selected,
-                  `${DTOTaskSelect.scheduleDay} ${DTOTaskSelect.starterHour}`,
-                  estimated_time
-                )
-              }
-            >
-              Verificar disponibilidade
-            </ButtonDefault>
-          )}
+          <ScheduleSelectUser>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <UserFields className="hours">
+                <div className="hour-label">Hora inicial</div>
+                <TimePicker
+                  onChange={(value: any) => handleOnChange('starterHour', value)}
+                  // onChange={() => ''}
+                  value={DTOTaskSelect?.starterHour}
+                  clearIcon={null}
+                  clockIcon={null}
+                  locale="pt-BR"
+                  disableClock={true}
+                  maxDetail="second"
+                />
+              </UserFields>
+              {responseScheduleInfos.end_job !== '' && (
+                <EndTaskDate>
+                  <div className="date-title">Data / Hora final</div>
+                  <div className="end-date">
+                    {moment(responseScheduleInfos.end_job).format('DD/MM/YYYY - HH:mm')}
+                  </div>
+                </EndTaskDate>
+              )}
+            </div>
 
-          {checkAvailability && (
-            <ButtonDefault
-              typeButton={DTOTaskSelect.user_selected ? 'primary' : 'blocked'}
-              onClick={() => user_alocated(responseScheduleInfos)}
-            >
-              Alocar usuário
-            </ButtonDefault>
-          )}
-        </UserFields>
-      </ScheduleSelectUser>
+            <UserFields>
+              <div className="selectedUser">
+                Usuário selecionado: <strong>{userSelected ? userSelected[0]?.name : ''}</strong>
+              </div>
+              {!checkAvailability && (
+                <ButtonDefault
+                  typeButton={DTOTaskSelect.user_selected ? 'primary' : 'blocked'}
+                  disabled={!DTOTaskSelect.user_selected ? true : false}
+                  onClick={() =>
+                    checkIfIsAvaliable(
+                      DTOTaskSelect.user_selected,
+                      `${DTOTaskSelect.scheduleDay} ${DTOTaskSelect.starterHour}`,
+                      estimated_time
+                    )
+                  }
+                >
+                  Verificar disponibilidade
+                </ButtonDefault>
+              )}
+
+              {checkAvailability && (
+                <ButtonDefault
+                  typeButton={DTOTaskSelect.user_selected ? 'primary' : 'blocked'}
+                  onClick={() => user_alocated(responseScheduleInfos)}
+                >
+                  Alocar usuário
+                </ButtonDefault>
+              )}
+            </UserFields>
+          </ScheduleSelectUser>
+        </>
+      )}
     </ScheduleWrapper>
   );
 }
