@@ -2253,6 +2253,21 @@ export default function CreateTasks() {
                   isLoading={isLoading}
                   className="search-field"
                 />
+
+                {tasksType === 'horas' && (
+                  <ButtonDefault
+                    typeButton="primary"
+                    onClick={() => {
+                      setProductsDeliveriesModal({
+                        isOpen: false,
+                        title: '',
+                        indexDelivery: ''
+                      });
+                    }}
+                  >
+                    Adicionar Produto
+                  </ButtonDefault>
+                )}
               </SearchProductsModal>
               <ProductListHeader>
                 <div className="list-title">Produto</div>
