@@ -65,6 +65,7 @@ export default function InfoGeral({
     color: ''
   });
   const [requestersList, setRequestersList] = useState<RequesterProps[]>([]);
+  const [projectList, setProjectList] = useState<any[]>([]);
 
   // const handleGetFlowTask = async (id: any) => {
   //   try {
@@ -110,6 +111,12 @@ export default function InfoGeral({
       console.log('log do get requesters', error);
     }
   }
+
+  useEffect(() => {
+    if (dataProjects) {
+      setProjectList(dataProjects);
+    }
+  }, [dataProjects]);
 
   useEffect(() => {
     const defaultValue = clients && clients.filter((obj) => obj.tenant_id === data.tenant_id);
@@ -209,7 +216,7 @@ export default function InfoGeral({
           onChange={handleInputChange}
           error={error?.project_product_id}
         >
-          {dataProjects?.map((row: any) => (
+          {projectList?.map((row: any) => (
             <option key={row.project_product_id} value={row.project_product_id}>
               {row.select}
             </option>
@@ -220,7 +227,7 @@ export default function InfoGeral({
           label="Fluxo"
           name="flow_id"
           value={data.flow_id}
-          onChange={(e) => handleInputChange(e)}
+          onChange={handleInputChange}
           error={error?.flow_id}
         >
           {dataFlow?.map((row: FlowProps) => (
