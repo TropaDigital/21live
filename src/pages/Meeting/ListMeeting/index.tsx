@@ -2,7 +2,7 @@
 /* eslint-disable import-helpers/order-imports */
 // React
 import { useCallback, useState } from 'react';
-import { BiCalendar, BiPlus, BiSearchAlt } from 'react-icons/bi';
+import { BiCalendar, BiPlus, BiSearchAlt, BiShow } from 'react-icons/bi';
 
 // Services
 import api from '../../../services/api';
@@ -45,6 +45,8 @@ import Loader from '../../../components/LoaderSpin';
 import {
   ButtonsFilter,
   Container,
+  FileInfo,
+  FilesWrapper,
   FilterButton,
   ModalField,
   ModalInfosWrapper,
@@ -57,6 +59,7 @@ import moment from 'moment';
 
 // Icons
 import { IconClose } from '../../../assets/icons';
+import { FaDownload } from 'react-icons/fa';
 
 interface UploadedFilesProps {
   file?: File;
@@ -737,6 +740,23 @@ export default function ListMeeting() {
           <ModalField>
             <div className="title-info">Data:</div>
             <div className="info">{moment(modalView.meetingInfos.date).format('DD/MM/YYYY')}</div>
+          </ModalField>
+
+          <ModalField className="info-description">
+            <div className="title-info">Anexos:</div>
+            <FilesWrapper>
+              <FileInfo>
+                <div className="name-file">Anexo nome.jpg</div>
+                <div className="file-icons">
+                  <div>
+                    <BiShow size={20} />
+                  </div>
+                  <div>
+                    <FaDownload />
+                  </div>
+                </div>
+              </FileInfo>
+            </FilesWrapper>
           </ModalField>
 
           <ModalField className="info-description">
