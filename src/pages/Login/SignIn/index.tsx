@@ -37,8 +37,8 @@ export default function SignIn() {
     password: '',
     tenant_id: ''
   });
-  const tenant_id = sessionStorage.getItem('tenant_id');
-  const bucketImage = sessionStorage.getItem('bucket');
+  const tenant_id = localStorage.getItem('tenant_id');
+  const bucketImage = localStorage.getItem('bucket');
   const URL = `https://${bucketImage}.s3.amazonaws.com/tenant/login_bg.jpg`;
 
   function handleInputChange(name: string, event: React.ChangeEvent<HTMLInputElement>) {
