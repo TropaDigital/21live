@@ -234,7 +234,7 @@ export default function CreateTasks() {
     `services?search=${search}&flag=false`
   );
   const { data: dataProjects, fetchData: fetchProjects } = useFetch<ServicesProps[]>(
-    `project-products/${DTOForm.tenant_id}`
+    `project-products/${DTOForm?.tenant_id}`
   );
   // /project-products/199?organization_id=28786
   const { data: organizationProjects } = useFetch<ServicesProps[]>(
@@ -335,9 +335,7 @@ export default function CreateTasks() {
   };
 
   useEffect(() => {
-    if (location.state !== null && location.state.ticket_id !== '') {
-      fetchProjects();
-      setProductsArray([]);
+    if (location.state !== null && location.state.ticket_id) {
       setDTOForm((prevState: any) => ({
         ...prevState,
         ['tenant_id']: location.state.tenant_id
@@ -1681,7 +1679,7 @@ export default function CreateTasks() {
           }
           backButton={createStep <= 1}
           stepSelected={createStep}
-          maxStep={tasksType !== 'livre' ? 4 : 5}
+          maxStep={tasksType === 'livre' ? 4 : 5}
           backPage="/tarefas"
         />
 
@@ -2019,7 +2017,7 @@ export default function CreateTasks() {
         <ModalDefault
           isOpen={productsModal}
           onOpenChange={() => setProductsModal(false)}
-          maxWidth="848px"
+          maxWidth="900px"
         >
           <ProductsModalWrapper>
             <ProductsModalTop>
@@ -2253,6 +2251,21 @@ export default function CreateTasks() {
                   isLoading={isLoading}
                   className="search-field"
                 />
+
+                {tasksType === 'horas' && (
+                  <ButtonDefault
+                    typeButton="primary"
+                    onClick={() => {
+                      setProductsDeliveriesModal({
+                        isOpen: false,
+                        title: '',
+                        indexDelivery: ''
+                      });
+                    }}
+                  >
+                    Adicionar Produto
+                  </ButtonDefault>
+                )}
               </SearchProductsModal>
               <ProductListHeader>
                 <div className="list-title">Produto</div>

@@ -32,6 +32,7 @@ import { useAuth } from '../../../../hooks/AuthContext';
 
 // Libraries
 import Switch from 'react-switch';
+import moment from 'moment';
 
 interface TasksProps {
   createTasks: () => void;
@@ -49,11 +50,11 @@ interface TasksProps {
   handleTicket: (value: any) => void;
 }
 
-interface FlowRole {
-  function: string;
-  name: string;
-  user_id: string;
-}
+// interface FlowRole {
+//   function: string;
+//   name: string;
+//   user_id: string;
+// }
 
 interface FormProps {
   [key: string]: any;
@@ -68,7 +69,6 @@ export default function SummaryTasks({
   summaryExtrainfos,
   taskType,
   updateTask,
-  error,
   estimatedtotalTime,
   handleTicket,
   taskFiles,
@@ -77,25 +77,6 @@ export default function SummaryTasks({
   const { user } = useAuth();
   const [deliveryArrayHours, setDeliveryArrayHours] = useState<any>('');
   const [totalArrayHours, setTotalArrayHours] = useState<any>('');
-  // const [flowsManagers, setFlowManagers] = useState<FlowRole[]>([]);
-
-  // useEffect(() => {
-  //   // console.log('log selected products on summary', selectedProducts);
-  //   // console.log('log tasks infos on summary', taskSummary);
-  //   // console.log('log tasks infos on project', projectInfos);
-  //   // console.log('log extra infos for summary tasks', summaryExtrainfos);
-
-  //   const handleGetFlowTask = async (id: any) => {
-  //     try {
-  //       const responseFlow = await api.get(`/task-function?flow=${id}`);
-  //       setFlowManagers(responseFlow.data.result);
-  //     } catch (error: any) {
-  //       console.log('log do error', error);
-  //     }
-  //   };
-
-  //   handleGetFlowTask(taskSummary.flow_id);
-  // }, [taskSummary, projectInfos, summaryExtrainfos, selectedProducts]);
 
   function setTotalHours() {
     if (updateTask) {
@@ -163,13 +144,13 @@ export default function SummaryTasks({
     estimatedtotalTime(totalArrayHours);
   }, [totalArrayHours]);
 
-  useEffect(() => {
-    console.log('log do deliveryArrayHours', deliveryArrayHours);
-    console.log('log do totalArrayHours', totalArrayHours);
-    console.log('log do selectedProducts', selectedProducts);
-    console.log('log do taskSummaries', taskSummary);
-    console.log('log do projectInfos', projectInfos);
-  }, [deliveryArrayHours, totalArrayHours, selectedProducts, taskSummary, projectInfos]);
+  // useEffect(() => {
+  //   console.log('log do deliveryArrayHours', deliveryArrayHours);
+  //   console.log('log do totalArrayHours', totalArrayHours);
+  //   console.log('log do selectedProducts', selectedProducts);
+  //   console.log('log do taskSummaries', taskSummary);
+  //   console.log('log do projectInfos', projectInfos);
+  // }, [deliveryArrayHours, totalArrayHours, selectedProducts, taskSummary, projectInfos]);
 
   return (
     <SummaryWrapper>
@@ -206,12 +187,7 @@ export default function SummaryTasks({
                   {taskSummary?.project_category} | {taskSummary?.product_period}
                 </div>
               )}
-              {!updateTask && (
-                <div className="info">
-                  {projectInfos?.categoria} | {projectInfos?.tempo?.split(':')[0]}H/
-                  {projectInfos?.categoria === 'fee' ? 'ANO' : 'MENSAL'}
-                </div>
-              )}
+              {!updateTask && <div className="info">{projectInfos?.select}</div>}
             </SummaryTaskInfo>
 
             {!user?.organizations && (
@@ -219,6 +195,15 @@ export default function SummaryTasks({
                 <div className="title-info">Fluxo:</div>
                 {updateTask && <div className="info">{taskSummary?.flow}</div>}
                 {!updateTask && <div className="info">{summaryExtrainfos?.flow.name}</div>}
+              </SummaryTaskInfo>
+            )}
+
+            {taskType === 'produto' && (
+              <SummaryTaskInfo>
+                <div className="title-info">Data de entrega:</div>
+                <div className="info">
+                  {moment(taskSummary.creation_date_end).format('DD/MM/YYYY')}
+                </div>
               </SummaryTaskInfo>
             )}
 
@@ -248,6 +233,13 @@ export default function SummaryTasks({
               <DeliveriesWrapper key={index}>
                 <DeliveriesTitle>
                   {row.deliveryTitle ? row.deliveryTitle : `${index + 1}ª Entrega`}
+
+                  {row.deliveryDate && (
+                    <span>- {moment(row.deliveryDate).format('DD/MM/YYYY')}</span>
+                  )}
+                  {!row.deliveryDate && (
+                    <span>- {moment(taskSummary.creation_date_end).format('DD/MM/YYYY')}</span>
+                  )}
                 </DeliveriesTitle>
                 {row.products.map((products: any, index: number) => (
                   <SummaryCard key={index} style={{ height: 'fit-content' }}>
@@ -311,6 +303,12 @@ export default function SummaryTasks({
               <DeliveriesWrapper key={index}>
                 <DeliveriesTitle>
                   {row.deliveryTitle ? row.deliveryTitle : `${index + 1}ª Entrega`}
+                  {row.deliveryDate && (
+                    <span>- {moment(row.deliveryDate).format('DD/MM/YYYY')}</span>
+                  )}
+                  {!row.deliveryDate && (
+                    <span>- {moment(taskSummary.creation_date_end).format('DD/MM/YYYY')}</span>
+                  )}
                 </DeliveriesTitle>
                 {row.deliveryProducts.map((products: any, index: number) => (
                   <SummaryCard key={index} style={{ height: 'fit-content' }}>
@@ -480,12 +478,25 @@ export default function SummaryTasks({
               {!updateTask && (
                 <div className="item-hours">
                   Horas disponíveis{' '}
-                  <span>{subtractTime(projectInfos?.tempo, totalArrayHours)}</span>
+                  {subtractTime(projectInfos?.tempo, totalArrayHours).includes('-') ? (
+                    <div className="negative">
+                      {subtractTime(projectInfos?.tempo, totalArrayHours)}
+                    </div>
+                  ) : (
+                    <span>{subtractTime(projectInfos?.tempo, totalArrayHours)}</span>
+                  )}
                 </div>
               )}
               {updateTask && (
                 <div className="item-hours">
-                  Horas disponíveis <span>{subtractTime(taskSummary?.time, totalArrayHours)}</span>
+                  Horas disponíveis
+                  {subtractTime(taskSummary?.time, totalArrayHours).includes('-') ? (
+                    <div className="negative">
+                      {subtractTime(taskSummary?.time, totalArrayHours)}
+                    </div>
+                  ) : (
+                    <span>{subtractTime(taskSummary?.time, totalArrayHours)}</span>
+                  )}
                 </div>
               )}
             </>

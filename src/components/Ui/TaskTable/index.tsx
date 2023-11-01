@@ -211,19 +211,6 @@ export default function TaskTable({
                   </tr>
                 ))}
               </tbody>
-              {/* <tfoot>
-                <tr>
-                  <td colSpan={100}>
-                    <Pagination
-                      total={pages.total}
-                      perPage={pages.perPage}
-                      currentPage={selectedPage}
-                      lastPage={pages.lastPage}
-                      onClickPage={(e: any) => setSelectedPage(e)}
-                    />
-                  </td>
-                </tr>
-              </tfoot> */}
             </table>
           </TasksTable>
         </TaskDateWrapper>
@@ -248,15 +235,7 @@ export default function TaskTable({
 
             <tbody>
               <tr>
-                <td>Sem tarefa</td>
-                <td>Sem tarefa</td>
-                <td>Sem tarefa</td>
-                <td>Sem tarefa</td>
-                <td>Sem tarefa</td>
-                <td>Sem tarefa</td>
-                <td>Sem tarefa</td>
-                <td>Sem tarefa</td>
-                <td>Sem tarefa</td>
+                <td colSpan={9}>Sem tarefa</td>
               </tr>
             </tbody>
           </table>

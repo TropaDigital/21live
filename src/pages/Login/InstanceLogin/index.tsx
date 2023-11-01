@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable import-helpers/order-imports */
 // React
 import { useEffect } from 'react';
@@ -20,23 +21,21 @@ export default function InstanceLogin() {
     async function checkIfHaveAccess() {
       try {
         if (slug) {
-          sessionStorage.setItem('tenantName', slug);
+          localStorage.setItem('tenantName', slug);
         }
         const response = await api.get(`/have-acess?slug=${slug}`);
 
-        if (response.data.result.length > 0) {
-          sessionStorage.setItem('tenant_id', response.data.result[0].tenant_id);
-          sessionStorage.setItem('bucket', response.data.result[0].bucket);
+        if (response.data.result.acess_jobs === 'true') {
+          localStorage.setItem('tenant_id', response.data.result.tenant_id);
+          localStorage.setItem('bucket', response.data.result.bucket);
           navigate('/login');
-        } else if (response.data.result !== '') {
-          sessionStorage.setItem('tenant_id', response.data.result.tenant_id);
-          sessionStorage.setItem('bucket', response.data.result.bucket);
-          navigate('/login');
+          // console.log('log do response = true', response.data.result);
         } else {
           window.location.replace('https://app.21live.com.br/');
         }
       } catch (error: any) {
         console.log('log do error check access', error);
+        window.location.replace('https://app.21live.com.br/');
       }
     }
 

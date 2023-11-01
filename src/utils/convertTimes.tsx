@@ -54,14 +54,16 @@ function subtractTime(timePassed: string, timeToSubtract: string): string {
 
   const remainingSeconds: number = passedSeconds - subtractSeconds;
 
-  const hours: number = Math.floor(remainingSeconds / 3600);
-  const minutes: number = Math.floor((remainingSeconds % 3600) / 60);
-  const seconds: number = remainingSeconds % 60;
+  const isNegative: boolean = remainingSeconds < 0;
+  const absoluteSeconds: number = Math.abs(remainingSeconds);
 
-  const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(
-    2,
-    '0'
-  )}:${String(seconds).padStart(2, '0')}`;
+  const hours: number = Math.floor(absoluteSeconds / 3600);
+  const minutes: number = Math.floor((absoluteSeconds % 3600) / 60);
+  const seconds: number = absoluteSeconds % 60;
+
+  const formattedTime = `${isNegative ? '-' : ''}${String(hours).padStart(2, '0')}:${String(
+    minutes
+  ).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
   return formattedTime;
 }

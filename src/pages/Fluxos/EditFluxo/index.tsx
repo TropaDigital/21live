@@ -60,7 +60,7 @@ export default function EditFluxo() {
 
   const checkCards = () => {
     try {
-      column.map((row: any, index: number) => {
+      column.map((row: any) => {
         if (row.function_id === '0' || row.function_id === 0) {
           setErrorMissingResponsible((prevState: any) => [...prevState, row.card_id]);
           throw new Error('Não é possível salvar um fluxo sem todos os responsáveis escolhidos');

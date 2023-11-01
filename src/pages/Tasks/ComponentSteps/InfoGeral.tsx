@@ -16,7 +16,7 @@ import SelectImage from '../../../components/Inputs/SelectWithImage';
 import api from '../../../services/api';
 
 // Hooks
-import { useToast } from '../../../hooks/toast';
+// import { useToast } from '../../../hooks/toast';
 import { useAuth } from '../../../hooks/AuthContext';
 
 interface FormProps {
@@ -57,7 +57,7 @@ export default function InfoGeral({
   error
 }: Props) {
   const { user } = useAuth();
-  const { addToast } = useToast();
+  // const { addToast } = useToast();
   const [initialValue, setInitialValue] = useState({
     value: '',
     label: '',
@@ -65,22 +65,23 @@ export default function InfoGeral({
     color: ''
   });
   const [requestersList, setRequestersList] = useState<RequesterProps[]>([]);
+  const [projectList, setProjectList] = useState<any[]>([]);
 
-  const handleGetFlowTask = async (id: any) => {
-    try {
-      const responseFlow = await api.get(`/task-next?flow=${id}`);
-      // setFlowManagers(responseFlow.data.result);
-      if (responseFlow.data.result.length === 0) {
-        addToast({
-          title: 'Atenção',
-          description: 'Escolha um fluxo com algum responsável pelo cargo',
-          type: 'warning'
-        });
-      }
-    } catch (error: any) {
-      console.log('log do error', error);
-    }
-  };
+  // const handleGetFlowTask = async (id: any) => {
+  //   try {
+  //     const responseFlow = await api.get(`/task-next?flow=${id}`);
+  //     // setFlowManagers(responseFlow.data.result);
+  //     if (responseFlow.data.result.length === 0) {
+  //       addToast({
+  //         title: 'Atenção',
+  //         description: 'Escolha um fluxo com algum responsável pelo cargo',
+  //         type: 'warning'
+  //       });
+  //     }
+  //   } catch (error: any) {
+  //     console.log('log do error', error);
+  //   }
+  // };
 
   const clientsOptions = clients?.map((row) => {
     return {
@@ -110,6 +111,12 @@ export default function InfoGeral({
       console.log('log do get requesters', error);
     }
   }
+
+  useEffect(() => {
+    if (dataProjects) {
+      setProjectList(dataProjects);
+    }
+  }, [dataProjects]);
 
   useEffect(() => {
     const defaultValue = clients && clients.filter((obj) => obj.tenant_id === data.tenant_id);
@@ -209,7 +216,7 @@ export default function InfoGeral({
           onChange={handleInputChange}
           error={error?.project_product_id}
         >
-          {dataProjects?.map((row: any) => (
+          {projectList?.map((row: any) => (
             <option key={row.project_product_id} value={row.project_product_id}>
               {row.select}
             </option>
@@ -220,10 +227,7 @@ export default function InfoGeral({
           label="Fluxo"
           name="flow_id"
           value={data.flow_id}
-          onChange={(e) => {
-            handleInputChange(e);
-            handleGetFlowTask(e.target.value);
-          }}
+          onChange={handleInputChange}
           error={error?.flow_id}
         >
           {dataFlow?.map((row: FlowProps) => (

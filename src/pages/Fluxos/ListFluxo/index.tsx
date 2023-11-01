@@ -30,9 +30,7 @@ import Loader from '../../../components/LoaderSpin';
 // Styles
 import {
   ContainerDefault,
-  ContentDefault,
   FieldDefault,
-  FieldGroupFormDefault,
   FooterModal,
   SectionDefault
 } from '../../../components/UiElements/styles';

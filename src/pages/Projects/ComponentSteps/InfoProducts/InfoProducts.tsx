@@ -8,7 +8,6 @@ import { BiSearchAlt } from 'react-icons/bi';
 
 // Hooks
 import { useFetch } from '../../../../hooks/useFetch';
-import { useToast } from '../../../../hooks/toast';
 import useDebouncedCallback from '../../../../hooks/useDebounced';
 
 // Types
@@ -62,11 +61,9 @@ export default function InfoProducts({
   handleEditProductQuantity,
   okToSave,
   editProducts,
-  editProject,
   hideSwitch,
   tenant_id
 }: PropsProducts) {
-  const { addToast } = useToast();
   const [search, setSearch] = useState<IServices[]>([]);
   const [selected, setSelected] = useState(1);
   const { data, pages } = useFetch<ServicesProps[]>(
@@ -86,13 +83,6 @@ export default function InfoProducts({
     700
   );
 
-  // useEffect(() => {
-  //   data?.forEach((obj) => {
-  //     obj.quantity = 0;
-  //   });
-  //   console.log('log do data with quantity', data);
-  // }, [data]);
-
   const handleOnTypeList = (type: string) => {
     setTypeList(type);
   };
@@ -100,6 +90,7 @@ export default function InfoProducts({
   const handleOnQuantity = (product: any, counter: any) => {
     const productSelected: IProduct = {
       job_service_id: product.job_service_id || product.project_id || product.project_product_id,
+      category: product.category,
       service: product.service,
       description: product.description,
       flag: product.flag,
@@ -244,7 +235,15 @@ export default function InfoProducts({
               {tableHeaders[typeList]?.map((item) => (
                 <th key={item}>{item}</th>
               ))}
-              <th style={{ display: 'grid', placeItems: 'center' }}>-</th>
+              <th
+                style={{
+                  display: 'grid',
+                  placeItems: 'center',
+                  fontSize: '18px'
+                }}
+              >
+                +
+              </th>
             </tr>
           </thead>
           {dataFilter.length > 0 && editProducts ? (
@@ -253,7 +252,7 @@ export default function InfoProducts({
                 <tr key={row.job_service_id}>
                   <td>{row.job_service_id}</td>
                   <td>{row.service}</td>
-                  <td>{row.description}</td>
+                  <td>{row.category}</td>
                   <td>
                     <Switch
                       onChange={() => ''}
@@ -320,21 +319,7 @@ export default function InfoProducts({
                         }}
                         disabledInput={false}
                       />
-                      {/* <QuantityCounter
-                        handleQuantity={setQuantityProducts}
-                        rowQuantity={row}
-                        clearQuantity={handleDeleteProducts}
-                        receiveQuantity={row?.quantity}
-                      /> */}
                     </td>
-                    {/* <td
-                    style={{ cursor: 'pointer', textAlign: 'center' }}
-                    onClick={() => handleAddProducts(row)}
-                  >
-                    <div style={{ fontSize: '14px', fontWeight: '600', color: '#0045B5' }}>
-                      Adicionar
-                    </div>
-                  </td> */}
 
                     {quantityProducts &&
                     Object.values(quantityProducts).includes(row.job_service_id) ? (

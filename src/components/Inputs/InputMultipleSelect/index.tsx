@@ -1,7 +1,5 @@
-import React, {
-  InputHTMLAttributes,
-} from 'react';
-import Select from 'react-select'
+import React, { InputHTMLAttributes } from 'react';
+import Select from 'react-select';
 import { IconBaseProps } from 'react-icons';
 import { FaAngleDown } from 'react-icons/fa';
 
@@ -14,40 +12,42 @@ interface ErrorInput {
   isError: boolean;
 }
 
-interface InputProps  {
+interface InputProps {
   label: string;
   error?: string;
   icon?: React.ComponentType<IconBaseProps>;
-  options: any
+  options: any;
   name: string;
-  isDisabled?: boolean
+  isDisabled?: boolean;
   onChange: (options: any, meta: any) => void;
-  defaultValue?: any
+  defaultValue?: any;
   alert?: string;
 }
 
-export default function InputMultipleSelect({ label, alert, options, name, defaultValue, onChange, error, icon: Icon, isDisabled }: InputProps) {
-
+export default function InputMultipleSelect({
+  label,
+  alert,
+  options,
+  name,
+  defaultValue,
+  onChange,
+  error,
+  icon: Icon,
+  isDisabled
+}: InputProps) {
   return (
     <Container>
-      <div className="containerAlert" style={{ display: 'flex', alignItems: 'center' }} >
+      <div className="containerAlert" style={{ display: 'flex', alignItems: 'center' }}>
         <label htmlFor={label}>{label}</label>
         {alert && (
           <Alert title={alert ?? 'Campo obrigatório'}>
-            <IoMdHelpCircle size={18} color='#CED4DA' />
+            <IoMdHelpCircle size={18} color="#CED4DA" />
           </Alert>
         )}
       </div>
 
-      <ContainerInput
-        isErrored={!!error}
-        isIcon={!!Icon}
-        isDisabled={isDisabled}
-      >
-
-        <div className="leftInputElement">
-          {Icon && <Icon color='#CCCCCC' />}
-        </div>
+      <ContainerInput isErrored={!!error} isIcon={!!Icon} isDisabled={isDisabled}>
+        <div className="leftInputElement">{Icon && <Icon color="#CCCCCC" />}</div>
 
         <Select
           isMulti
@@ -63,17 +63,17 @@ export default function InputMultipleSelect({ label, alert, options, name, defau
               primary25: '#039BE5',
               primary: 'rgb(49, 130, 206)',
               neutral10: '#EAECF0',
-              neutral20: '#e2e8f0',
-            },
+              neutral20: '#e2e8f0'
+            }
           })}
           isDisabled={isDisabled}
           onChange={(options, meta) => onChange(options, meta)}
           defaultValue={defaultValue}
+          placeholder={'Selecione...'}
         />
 
-
         <div className="rightInputElement">
-          <FaAngleDown color='rgba(204, 204, 204, 1)' />
+          <FaAngleDown color="rgba(204, 204, 204, 1)" />
         </div>
 
         {/* {error?.isError && (
@@ -84,10 +84,10 @@ export default function InputMultipleSelect({ label, alert, options, name, defau
       </ContainerInput>
 
       {error && (
-          <ErrorInputMessage title={error}>
-            <span>{error}</span>
-          </ErrorInputMessage>
-        )}
+        <ErrorInputMessage title={error}>
+          <span>{error}</span>
+        </ErrorInputMessage>
+      )}
     </Container>
   );
 }

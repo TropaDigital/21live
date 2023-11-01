@@ -176,3 +176,28 @@ export const NameField = styled.div`
   font-weight: var(--weight-medium);
   text-transform: uppercase;
 `;
+
+export const FilesWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+export const FileInfo = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+
+  background-color: var(--gray-100);
+  border-radius: 4px;
+  padding: 6px 8px;
+
+  color: var(--title-color);
+
+  .file-icons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+`;

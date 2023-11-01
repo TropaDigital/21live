@@ -36,33 +36,20 @@ import {
   TitleHeaderDefault
 } from './styles';
 
-interface FormDataProfile {
-  profiles: any;
-  avatar: string;
-  language: string;
-  name: string;
-  email: string;
-  birthday: string;
-  phone: string;
-  companySince: string;
-  office: string;
-  cost_per_hour: string;
-}
-
-interface Errors {
-  isError: boolean;
-  message: string;
-}
+// interface Errors {
+//   isError: boolean;
+//   message: string;
+// }
 
 export default function Profile() {
   const { updateUser, user } = useAuth();
   const navigate = useNavigate();
   const { addToast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState({
-    isError: false,
-    message: 'um bom texto de error'
-  } as Errors);
+  // const [error, setError] = useState({
+  //   isError: false,
+  //   message: 'um bom texto de error'
+  // } as Errors);
   const [formData, setFormData] = useState<User>(user);
 
   const optionsLanguage = [
@@ -90,21 +77,24 @@ export default function Profile() {
     setFormData({ ...formData, [name]: value });
   }
 
-  const handleAvatarChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const data = new FormData();
+  const handleAvatarChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files) {
+        const data = new FormData();
 
-      data.append('image', e.target.files[0]);
-      api.post('/images/upload', data).then((response) => {
-        updateUser(response.data.result);
-      });
+        data.append('image', e.target.files[0]);
+        api.post('/images/upload', data).then((response) => {
+          updateUser(response.data.result);
+        });
 
-      addToast({
-        type: 'success',
-        title: 'Avatar atualizado'
-      });
-    }
-  }, []);
+        addToast({
+          type: 'success',
+          title: 'Avatar atualizado'
+        });
+      }
+    },
+    [addToast, updateUser]
+  );
 
   const handleSubmit = useCallback(
     async (event: any) => {
@@ -123,7 +113,7 @@ export default function Profile() {
         // });
       }
     },
-    [formData]
+    [formData, updateUser]
   );
 
   return (
