@@ -170,8 +170,8 @@ export default function ViewTask() {
       getTaskInfos(location.state.id);
     }
     if (location.state === null) {
-      getTaskInfos(location.pathname.split('/').pop());
-      getTimelineData(location.pathname.split('/').pop());
+      getTaskInfos(location.pathname.split('/')[2]);
+      getTimelineData(location.pathname.split('/')[2]);
     }
   }, [location]);
 
@@ -365,7 +365,7 @@ export default function ViewTask() {
                   </thead>
 
                   <tbody>
-                    {deliveryProduct.map((row: ProductsProps) => (
+                    {deliveryProduct?.map((row: ProductsProps) => (
                       <tr
                         key={row.products_delivery_id}
                         onClick={() => {
