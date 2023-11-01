@@ -646,13 +646,13 @@ export default function ListMeeting() {
           <FieldDefault>
             <InputMultipleSelect
               name="members"
-              options={selectedTeam?.map((row) => ({ value: row.user_id, label: row.username }))}
-              label="Membros"
+              options={selectedTeam?.map((row) => ({ value: row.user_id, label: row.name }))}
+              label="Participantes"
               isDisabled={formData.user_id ? false : true}
               onChange={(option) => onChange(option)}
               defaultValue={defaultOptionsTeam?.map((row) => ({
                 value: row.user_id,
-                label: row.username
+                label: row.name
               }))}
               alert="Selecione pelo menos um Responsável"
               error={errors?.members}
