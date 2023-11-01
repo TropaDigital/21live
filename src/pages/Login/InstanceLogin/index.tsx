@@ -21,17 +21,17 @@ export default function InstanceLogin() {
     async function checkIfHaveAccess() {
       try {
         if (slug) {
-          sessionStorage.setItem('tenantName', slug);
+          localStorage.setItem('tenantName', slug);
         }
         const response = await api.get(`/have-acess?slug=${slug}`);
 
         if (response.data.result.length > 0) {
-          sessionStorage.setItem('tenant_id', response.data.result[0].tenant_id);
-          sessionStorage.setItem('bucket', response.data.result[0].bucket);
+          localStorage.setItem('tenant_id', response.data.result[0].tenant_id);
+          localStorage.setItem('bucket', response.data.result[0].bucket);
           navigate('/login');
         } else if (response.data.result !== '') {
-          sessionStorage.setItem('tenant_id', response.data.result.tenant_id);
-          sessionStorage.setItem('bucket', response.data.result.bucket);
+          localStorage.setItem('tenant_id', response.data.result.tenant_id);
+          localStorage.setItem('bucket', response.data.result.bucket);
           navigate('/login');
         }
       } catch (error: any) {
