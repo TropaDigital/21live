@@ -234,7 +234,7 @@ export default function CreateTasks() {
     `services?search=${search}&flag=false`
   );
   const { data: dataProjects, fetchData: fetchProjects } = useFetch<ServicesProps[]>(
-    `project-products/${DTOForm.tenant_id}`
+    `project-products/${DTOForm?.tenant_id}`
   );
   // /project-products/199?organization_id=28786
   const { data: organizationProjects } = useFetch<ServicesProps[]>(
@@ -335,9 +335,7 @@ export default function CreateTasks() {
   };
 
   useEffect(() => {
-    if (location.state !== null && location.state.ticket_id !== '') {
-      fetchProjects();
-      setProductsArray([]);
+    if (location.state !== null && location.state.ticket_id) {
       setDTOForm((prevState: any) => ({
         ...prevState,
         ['tenant_id']: location.state.tenant_id
