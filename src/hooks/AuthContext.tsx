@@ -93,10 +93,10 @@ function AuthProvider({ children }: TransactionsProviderProps) {
     localStorage.removeItem('@live:permissions');
     localStorage.removeItem('@live:ticket');
     localStorage.removeItem('elapsedTime');
-    sessionStorage.removeItem('tenant_id');
-    sessionStorage.removeItem('bucket');
+    localStorage.removeItem('tenant_id');
+    localStorage.removeItem('bucket');
 
-    const instanceName = sessionStorage.getItem('tenantName');
+    const instanceName = localStorage.getItem('tenantName');
 
     if (instanceName) {
       navigate(`/login/${instanceName}`);
