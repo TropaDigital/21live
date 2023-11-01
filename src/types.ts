@@ -1,6 +1,7 @@
 // Types for Product
 export interface IProduct {
   job_service_id?: number;
+  category?: string;
   service: string;
   description: string;
   flag: string;
