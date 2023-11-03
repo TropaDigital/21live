@@ -157,7 +157,7 @@ export default function Services() {
   const [typeList, setTypeList] = useState('produtos');
   const [selected, setSelected] = useState(1);
   const { data, pages, fetchData, isFetching } = useFetch<ServicesProps[]>(
-    `services?search=${search}&perPage=15&page=${selected}`
+    `services?search=${search.replace('#', '')}&perPage=15&page=${selected}`
   );
   const { data: dataCategory, fetchData: getCategory } = useFetch<any[]>(
     `category?search=${search}`
