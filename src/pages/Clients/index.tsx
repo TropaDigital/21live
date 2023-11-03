@@ -46,18 +46,15 @@ export default function Clients() {
   const { data, pages, isFetching } = useFetch<TenantProps[]>(
     `tenant?search=${search}&page=${pageSelected}&perPage=15`
   );
+  const instance = localStorage.getItem('tenantName');
 
   const handleNavigate = (tenantInfo: TenantProps) => {
-    const linkEdit = {
-      slug: tenantInfo.slug,
-      id: tenantInfo.tenant_id
-    };
-
-    window.open(`https://app.21live.com.br/${linkEdit.slug}/tenants/edit/${linkEdit.id}`);
+    if (instance) {
+      window.open(`https://app.21live.com.br/${instance}/tenants/edit/${tenantInfo.tenant_id}`);
+    }
   };
 
   const handleNewClient = () => {
-    const instance = localStorage.getItem('tenantName');
     if (instance) {
       window.open(`https://app.21live.com.br/${instance}/Flow/newTenant`, '_blank');
     }
