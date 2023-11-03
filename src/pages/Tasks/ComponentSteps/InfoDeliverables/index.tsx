@@ -44,7 +44,7 @@ interface FormProps {
 }
 
 interface TypeProps {
-  type_id: number | string;
+  task_type_id: number | string;
   name: string;
   percent: number | string;
 }
@@ -356,7 +356,7 @@ export default function InfoDeliveries({
                       error={errorCategory.includes(row.job_service_id) ? 'Campo vazio' : ''}
                     >
                       {dataTypes?.map((row: TypeProps) => (
-                        <option key={row.type_id} value={row.type_id}>
+                        <option key={row.task_type_id} value={row.task_type_id}>
                           {row.name}
                         </option>
                       ))}
@@ -606,7 +606,7 @@ export default function InfoDeliveries({
                               }
                             >
                               {dataTypes?.map((row: TypeProps) => (
-                                <option key={row.type_id} value={row.type_id}>
+                                <option key={row.task_type_id} value={row.task_type_id}>
                                   {row.name}
                                 </option>
                               ))}
@@ -877,7 +877,7 @@ export default function InfoDeliveries({
                               }
                             >
                               {dataTypes?.map((row: TypeProps) => (
-                                <option key={row.type_id} value={row.type_id}>
+                                <option key={row.task_type_id} value={row.task_type_id}>
                                   {row.name}
                                 </option>
                               ))}
