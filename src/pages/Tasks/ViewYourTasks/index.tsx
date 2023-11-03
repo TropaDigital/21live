@@ -48,7 +48,9 @@ export default function ViewTaskList() {
     (search: string) => setSearch(search),
     700
   );
-  const { data, pages, isFetching } = useFetch<any[]>(`my-tasks?search=${search}&page=${selected}`);
+  const { data, pages, isFetching } = useFetch<any[]>(
+    `my-tasks?search=${search.replace('#', '')}&page=${selected}`
+  );
 
   const handleFilters = () => {
     console.log('log do filters on task');
