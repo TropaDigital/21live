@@ -859,13 +859,13 @@ export default function CreateProject() {
                   <InputMultipleSelect
                     name="members"
                     options={dataTeam?.map((row) => ({ value: row.user_id, label: row.name }))}
-                    label="Membros"
+                    label="Equipe do projeto"
                     onChange={(option) => onChange(option)}
                     defaultValue={defaultOptionsTeam?.map((row) => ({
                       value: row.user_id,
                       label: row.name
                     }))}
-                    alert="Selecione pelo menos um Responsável"
+                    alert="Selecione pelo menos um membro para a equipe"
                   />
                 </TeamInput>
 
@@ -886,10 +886,6 @@ export default function CreateProject() {
             </SummaryWrapper>
           </>
         )}
-        {/* {createStep === 4 && (
-          <>
-          </>
-        )} */}
       </FormWrapper>
 
       {createStep !== 3 && (

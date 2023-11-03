@@ -57,7 +57,7 @@ export default function Clients() {
   };
 
   const handleNewClient = () => {
-    const instance = sessionStorage.getItem('tenantName');
+    const instance = localStorage.getItem('tenantName');
     if (instance) {
       window.open(`https://app.21live.com.br/${instance}/Flow/newTenant`, '_blank');
     }

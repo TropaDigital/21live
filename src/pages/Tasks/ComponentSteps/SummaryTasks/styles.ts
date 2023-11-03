@@ -199,6 +199,8 @@ export const DeliveriesTitle = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
+
   height: 60px;
   background-color: var(--gray-100);
   border: 1px solid var(--gray-400);

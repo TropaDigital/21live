@@ -234,13 +234,13 @@ export default function CreateTasks() {
     `services?search=${search}&flag=false`
   );
   const { data: dataProjects, fetchData: fetchProjects } = useFetch<ServicesProps[]>(
-    `project-products/${DTOForm.tenant_id}`
+    `project-products/${DTOForm?.tenant_id}`
   );
   // /project-products/199?organization_id=28786
   const { data: organizationProjects } = useFetch<ServicesProps[]>(
     `project-products/${user.principalTenant}?organization_id=${DTOForm.organization_id}`
   );
-  const { data: dataFlow, fetchData: fetchFlow } = useFetch<any[]>(`/flow`);
+  const { data: dataFlow, fetchData: fetchFlow } = useFetch<any[]>(`/flow?perPage=1000`);
   const { data: dataTypes } = useFetch<any[]>(`/task-type`);
   const { data: dataOrganizations } = useFetch<OrganizationsProps[]>('organization');
   const [productsArray, setProductsArray] = useState<ServicesProps[]>([]);
@@ -335,9 +335,7 @@ export default function CreateTasks() {
   };
 
   useEffect(() => {
-    if (location.state !== null && location.state.ticket_id !== '') {
-      fetchProjects();
-      setProductsArray([]);
+    if (location.state !== null && location.state.ticket_id) {
       setDTOForm((prevState: any) => ({
         ...prevState,
         ['tenant_id']: location.state.tenant_id
@@ -1247,20 +1245,6 @@ export default function CreateTasks() {
         })
       );
 
-      if (DTOForm.gen_ticket === '' && ticketAsk === 'never') {
-        setDTOForm((prevState: any) => ({
-          ...prevState,
-          ['gen_ticket']: 'false'
-        }));
-      }
-
-      if (DTOForm.gen_ticket === '' && ticketAsk === 'always') {
-        setDTOForm((prevState: any) => ({
-          ...prevState,
-          ['gen_ticket']: 'true'
-        }));
-      }
-
       const {
         title,
         tenant_id,
@@ -1371,8 +1355,8 @@ export default function CreateTasks() {
         if (!splitDeliveries) {
           const deadlines = [
             {
-              date_end: DTOForm?.creation_date_end,
-              description: DTOForm?.creation_description,
+              date_end: creation_date_end,
+              description: creation_description,
               title: '1ª entrega',
               products: productsArray
             }
@@ -1401,46 +1385,44 @@ export default function CreateTasks() {
           if (requester_id === '') {
             delete createNewData.requester_id;
           }
-
           if (location.state !== null) {
             await api.put(`tasks/${location.state.project_id}`, createNewData);
           } else {
             await api.post(`tasks`, createNewData);
           }
         } else {
-          const deadlines = DTODelivery.map((row: any, index: any) => {
-            return {
-              date_end: row.deliveryDate,
-              description: DTOForm?.creation_description,
-              title: row.deliveryTitle !== '' ? row.deliveryTitle : `${index + 1}ª entrega`,
-              products: row.deliveryProducts
-            };
-          });
-
-          const createNewData = {
-            title,
-            tenant_id,
-            project_product_id,
-            user_id,
-            end_job,
-            start_job,
-            flow_id,
-            description,
-            files: fileArray,
-            creation_description,
-            creation_date_end,
-            copywriting_date_end,
-            copywriting_description,
-            deadlines: deadlines,
-            step,
-            gen_ticket
-          };
-
-          if (location.state !== null) {
-            await api.put(`tasks/${location.state.project_id}`, createNewData);
-          } else {
-            await api.post(`tasks`, createNewData);
-          }
+          // const deadlines = DTODelivery.map((row: any, index: any) => {
+          //   return {
+          //     date_end: row.deliveryDate,
+          //     description: DTOForm?.creation_description,
+          //     title: row.deliveryTitle !== '' ? row.deliveryTitle : `${index + 1}ª entrega`,
+          //     products: row.deliveryProducts
+          //   };
+          // });
+          // const createNewData = {
+          //   title,
+          //   tenant_id,
+          //   project_product_id,
+          //   user_id,
+          //   end_job,
+          //   start_job,
+          //   flow_id,
+          //   description,
+          //   files: fileArray,
+          //   creation_description,
+          //   creation_date_end,
+          //   copywriting_date_end,
+          //   copywriting_description,
+          //   deadlines: deadlines,
+          //   step,
+          //   gen_ticket
+          // };
+          // if (location.state !== null) {
+          //   await api.put(`tasks/${location.state.project_id}`, createNewData);
+          // } else {
+          //   console.log('log do DTO on submit errado =>', createNewData);
+          //   await api.post(`tasks`, createNewData);
+          // }
         }
       }
 
@@ -1449,8 +1431,9 @@ export default function CreateTasks() {
         title: 'Sucesso',
         description: 'Tarefa criada com sucesso!'
       });
-      // setFinishModal(true);
       navigate('/tarefas');
+
+      // setFinishModal(true);
     } catch (e: any) {
       if (e.response.data.result.length !== 0) {
         e.response.data.result.map((row: any) => {
@@ -1468,7 +1451,7 @@ export default function CreateTasks() {
         });
       }
     }
-  }, []);
+  }, [DTOForm]);
 
   const selectedProjectInfos = (e: any) => {
     if (e.name === 'tenant_id') {
@@ -1616,6 +1599,20 @@ export default function CreateTasks() {
     setDTOForm((prevState: any) => ({ ...prevState, ['user_id']: values.user_id }));
     setDTOForm((prevState: any) => ({ ...prevState, ['start_job']: values.start_job }));
     setDTOForm((prevState: any) => ({ ...prevState, ['end_job']: values.end_job }));
+
+    if (DTOForm.gen_ticket === '' && ticketAsk === 'never') {
+      setDTOForm((prevState: any) => ({
+        ...prevState,
+        ['gen_ticket']: 'false'
+      }));
+    }
+
+    if (DTOForm.gen_ticket === '' && ticketAsk === 'always') {
+      setDTOForm((prevState: any) => ({
+        ...prevState,
+        ['gen_ticket']: 'true'
+      }));
+    }
 
     setSelectUserModal(false);
     setSubmitState(new Date());

@@ -32,6 +32,7 @@ import { useAuth } from '../../../../hooks/AuthContext';
 
 // Libraries
 import Switch from 'react-switch';
+import moment from 'moment';
 
 interface TasksProps {
   createTasks: () => void;
@@ -197,6 +198,15 @@ export default function SummaryTasks({
               </SummaryTaskInfo>
             )}
 
+            {taskType === 'produto' && (
+              <SummaryTaskInfo>
+                <div className="title-info">Data de entrega:</div>
+                <div className="info">
+                  {moment(taskSummary.creation_date_end).format('DD/MM/YYYY')}
+                </div>
+              </SummaryTaskInfo>
+            )}
+
             <SummaryTaskDescription>
               <div className="description-title">Contexto geral</div>
               <div
@@ -223,6 +233,13 @@ export default function SummaryTasks({
               <DeliveriesWrapper key={index}>
                 <DeliveriesTitle>
                   {row.deliveryTitle ? row.deliveryTitle : `${index + 1}ª Entrega`}
+
+                  {row.deliveryDate && (
+                    <span>- {moment(row.deliveryDate).format('DD/MM/YYYY')}</span>
+                  )}
+                  {!row.deliveryDate && (
+                    <span>- {moment(taskSummary.creation_date_end).format('DD/MM/YYYY')}</span>
+                  )}
                 </DeliveriesTitle>
                 {row.products.map((products: any, index: number) => (
                   <SummaryCard key={index} style={{ height: 'fit-content' }}>
@@ -286,6 +303,12 @@ export default function SummaryTasks({
               <DeliveriesWrapper key={index}>
                 <DeliveriesTitle>
                   {row.deliveryTitle ? row.deliveryTitle : `${index + 1}ª Entrega`}
+                  {row.deliveryDate && (
+                    <span>- {moment(row.deliveryDate).format('DD/MM/YYYY')}</span>
+                  )}
+                  {!row.deliveryDate && (
+                    <span>- {moment(taskSummary.creation_date_end).format('DD/MM/YYYY')}</span>
+                  )}
                 </DeliveriesTitle>
                 {row.deliveryProducts.map((products: any, index: number) => (
                   <SummaryCard key={index} style={{ height: 'fit-content' }}>
