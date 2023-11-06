@@ -155,13 +155,13 @@ export default function ProductTable({
                   #{String(index + 1).padStart(2, '0')}
                 </td>
                 <td style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
-                  {user.permissions.includes('21jobs_task_essay') && (
+                  {user.permissions.includes('jobs_tasks_essay') && (
                     <div className="flex info">
                       <IconText /> {row.service}
                     </div>
                   )}
 
-                  {user.permissions.includes('21jobs_task_execute') && (
+                  {user.permissions.includes('jobs_tasks_execute') && (
                     <div className="flex info">
                       <BiPencil /> {row.service}
                     </div>
