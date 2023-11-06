@@ -241,7 +241,7 @@ export default function SummaryTasks({
                     <span>- {moment(taskSummary.creation_date_end).format('DD/MM/YYYY')}</span>
                   )}
                 </DeliveriesTitle>
-                {row.products.map((products: any, index: number) => (
+                {row?.products.map((products: any, index: number) => (
                   <SummaryCard key={index} style={{ height: 'fit-content' }}>
                     <SummaryCardTitle>
                       #{index + 1} - {products.service}

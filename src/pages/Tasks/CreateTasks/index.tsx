@@ -866,7 +866,7 @@ export default function CreateTasks() {
         }
       }
 
-      if (createStep === 1 && tasksType === 'horas' && !location.state && !taskEdit) {
+      if (createStep === 1 && tasksType === 'horas' && !taskEdit) {
         setProductsModal(true);
       } else if (createStep === 2 && tasksType === 'horas') {
         if (DTOForm.copywriting_date_end === '') {
@@ -1309,7 +1309,8 @@ export default function CreateTasks() {
         if (requester_id === '') {
           delete createNewData.requester_id;
         }
-        if (location.state !== null) {
+
+        if (location.state !== null && location.state.task_id) {
           await api.put(`tasks/${location.state.task_id}`, createNewData);
         } else {
           await api.post(`tasks`, createNewData);
@@ -1346,7 +1347,7 @@ export default function CreateTasks() {
           delete createNewData.requester_id;
         }
 
-        if (location.state !== null) {
+        if (location.state !== null && location.state.task_id) {
           await api.put(`tasks/${location.state.task_id}`, createNewData);
         } else {
           await api.post(`tasks`, createNewData);
@@ -1385,44 +1386,44 @@ export default function CreateTasks() {
           if (requester_id === '') {
             delete createNewData.requester_id;
           }
-          if (location.state !== null) {
+          if (location.state !== null && location.state.task_id) {
             await api.put(`tasks/${location.state.task_id}`, createNewData);
           } else {
             await api.post(`tasks`, createNewData);
           }
         } else {
-          // const deadlines = DTODelivery.map((row: any, index: any) => {
-          //   return {
-          //     date_end: row.deliveryDate,
-          //     description: DTOForm?.creation_description,
-          //     title: row.deliveryTitle !== '' ? row.deliveryTitle : `${index + 1}ª entrega`,
-          //     products: row.deliveryProducts
-          //   };
-          // });
-          // const createNewData = {
-          //   title,
-          //   tenant_id,
-          //   project_product_id,
-          //   user_id,
-          //   end_job,
-          //   start_job,
-          //   flow_id,
-          //   description,
-          //   files: fileArray,
-          //   creation_description,
-          //   creation_date_end,
-          //   copywriting_date_end,
-          //   copywriting_description,
-          //   deadlines: deadlines,
-          //   step,
-          //   gen_ticket
-          // };
-          // if (location.state !== null) {
-          //   await api.put(`tasks/${location.state.project_id}`, createNewData);
-          // } else {
-          //   console.log('log do DTO on submit errado =>', createNewData);
-          //   await api.post(`tasks`, createNewData);
-          // }
+          const deadlines = DTODelivery.map((row: any, index: any) => {
+            return {
+              date_end: row.deliveryDate,
+              description: DTOForm?.creation_description,
+              title: row.deliveryTitle !== '' ? row.deliveryTitle : `${index + 1}ª entrega`,
+              products: row.deliveryProducts
+            };
+          });
+          const createNewData = {
+            title,
+            tenant_id,
+            project_product_id,
+            user_id,
+            end_job,
+            start_job,
+            flow_id,
+            description,
+            files: fileArray,
+            creation_description,
+            creation_date_end,
+            copywriting_date_end,
+            copywriting_description,
+            deadlines: deadlines,
+            step,
+            gen_ticket
+          };
+          if (location.state !== null && location.state.task_id) {
+            await api.put(`tasks/${location.state.task_id}`, createNewData);
+          } else {
+            console.log('log do DTO on submit errado =>', createNewData);
+            await api.post(`tasks`, createNewData);
+          }
         }
       }
 
@@ -1798,7 +1799,7 @@ export default function CreateTasks() {
                     handleDescriptionProduct={handleDescriptionProduct}
                     handleFormatProduct={handleFormatProduct}
                     passProductProps={handleAddProductFromDeliveries}
-                    updateTask={location.state !== null}
+                    updateTask={location.state !== null && location.state.task_id}
                     deleteDelivery={handleDeleteDelivery}
                     deleteProduct={handleDeleteProduct}
                     handleTitleOfDelivery={handleDeliveryTitle}
@@ -1886,7 +1887,7 @@ export default function CreateTasks() {
                     projectInfos={selectedProject}
                     summaryExtrainfos={selectedSummaryInfos}
                     taskType={tasksType}
-                    updateTask={location.state !== null}
+                    updateTask={location.state !== null && location.state.task_id}
                     handleTicket={handleGenerateTicket}
                     estimatedtotalTime={() => ''}
                     taskFiles={uploadedFiles}
@@ -1922,7 +1923,7 @@ export default function CreateTasks() {
                   projectInfos={selectedProject}
                   summaryExtrainfos={selectedSummaryInfos}
                   taskType={tasksType}
-                  updateTask={location.state !== null}
+                  updateTask={location.state !== null && location.state.task_id}
                   handleTicket={handleGenerateTicket}
                   estimatedtotalTime={setEstimatedTime}
                   taskFiles={uploadedFiles}
@@ -1942,7 +1943,7 @@ export default function CreateTasks() {
                   projectInfos={selectedProject}
                   summaryExtrainfos={selectedSummaryInfos}
                   taskType={tasksType}
-                  updateTask={location.state !== null}
+                  updateTask={location.state !== null && location.state.task_id}
                   handleTicket={handleGenerateTicket}
                   estimatedtotalTime={() => ''}
                   taskFiles={uploadedFiles}
