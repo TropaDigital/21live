@@ -69,6 +69,7 @@ import api from '../../../services/api';
 
 // Utils
 import { formatBytes } from '../../../utils/convertBytes';
+import axios from 'axios';
 
 interface WorkingProductProps {
   productDeliveryId?: any;
@@ -538,23 +539,25 @@ export default function WorkingProduct({
     }
   }
 
-  // async function downloadProposal() {
-  //   try {
+  async function downloadFile(file: any) {
+    try {
+      const url = `https://${file.bucket}.s3.amazonaws.com/tasks/${file.file_name}`;
 
-  //     const response = await api.get(`proposta-csv?${requestedPayload}`);
-  //     const url = window.URL.createObjectURL(new Blob([s2ab(response.data)]));
-  //     const link = document.createElement('a');
-  //     link.href = url;
-  //     link.setAttribute('download', 'demandas.csv');
-  //     document.body.appendChild(link);
-  //     link.click();
-
-  //   } catch (error: any) {
-
-  //     console.log('log error download csv', error)
-
-  //   }
-  // }
+      const response = await axios({
+        url,
+        method: 'GET',
+        responseType: 'blob'
+      });
+      const urlResponse = window.URL.createObjectURL(response.data);
+      const link = document.createElement('a');
+      link.href = urlResponse;
+      link.setAttribute('download', `${file.file_name}`);
+      document.body.appendChild(link);
+      link.click();
+    } catch (error: any) {
+      console.log('log error download file', error);
+    }
+  }
 
   return (
     <ContainerDefault>
@@ -641,7 +644,7 @@ export default function WorkingProduct({
       <WorkSection>
         {selectedTab === 'Redação' && (
           <>
-            {user.permissions.includes('21jobs_task_essay') ? (
+            {user.permissions.includes('jobs_tasks_essay') ? (
               <div>
                 <WrapperEditor
                   value={essayInfo}
@@ -860,9 +863,9 @@ export default function WorkingProduct({
                             )}
                           </td>
                           <td>
-                            {/* <DownloadIcon>
+                            <DownloadIcon onClick={() => downloadFile(row)}>
                               <FaDownload />
-                            </DownloadIcon> */}
+                            </DownloadIcon>
                             {productsInfo?.file_status === 'pass' && (
                               <div className="fieldTableClients">
                                 {/* <DownloadIcon>
