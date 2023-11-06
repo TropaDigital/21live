@@ -45,21 +45,26 @@ import Loader from '../../../components/LoaderSpin';
 import {
   ButtonsFilter,
   Container,
+  DownloadFileBtn,
   FileInfo,
   FilesWrapper,
   FilterButton,
   ModalField,
   ModalInfosWrapper,
   NameField,
-  NamesWrapper
+  NamesWrapper,
+  ViewFileBtn
 } from './styles';
+import { ModalImage } from '../../Requests/ViewRequests/styles';
 
 // Libraries
 import moment from 'moment';
+import axios from 'axios';
 
 // Icons
 import { IconClose } from '../../../assets/icons';
 import { FaDownload } from 'react-icons/fa';
+import { MdClose } from 'react-icons/md';
 
 interface UploadedFilesProps {
   file?: File;
@@ -103,6 +108,18 @@ interface MeetingInfoProps {
   tenant_id: any;
   email_alert: any;
   user_id: string;
+}
+
+interface DownloadFiles {
+  bucket: string;
+  created: string;
+  file_name: string;
+  key: string;
+  meeting_file_id: string;
+  meeting_id: string;
+  size: string;
+  updated: string;
+  url: string;
 }
 
 export default function ListMeeting() {
@@ -156,6 +173,21 @@ export default function ListMeeting() {
 
   const [text, setText] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<any>('recent');
+
+  const [previewImage, setPreviewImage] = useState({
+    isOpen: false,
+    imageInfos: {
+      bucket: '',
+      created: '',
+      file_name: '',
+      key: '',
+      meeting_file_id: '',
+      meeting_id: '',
+      size: '',
+      updated: '',
+      url: ''
+    }
+  });
 
   const [modalView, setModalView] = useState({
     isOpen: false,
@@ -373,6 +405,26 @@ export default function ListMeeting() {
       color: row.colormain
     };
   });
+
+  async function downloadFile(file: any) {
+    try {
+      const url = `https://${file.bucket}.s3.amazonaws.com/meetings/${file.file_name}`;
+
+      const response = await axios({
+        url,
+        method: 'GET',
+        responseType: 'blob'
+      });
+      const urlResponse = window.URL.createObjectURL(response.data);
+      const link = document.createElement('a');
+      link.href = urlResponse;
+      link.setAttribute('download', `${file.file_name}`);
+      document.body.appendChild(link);
+      link.click();
+    } catch (error: any) {
+      console.log('log error download file', error);
+    }
+  }
 
   return (
     <Container>
@@ -716,58 +768,113 @@ export default function ListMeeting() {
         title={modalView.meetingInfos.title}
       >
         <ModalInfosWrapper>
-          <button className="close" onClick={handleCloseModalInfos}>
-            <IconClose />
-          </button>
+          {!previewImage.isOpen && (
+            <>
+              <button className="close" onClick={handleCloseModalInfos}>
+                <IconClose />
+              </button>
 
-          <ModalField>
-            <div className="title-info">Cliente:</div>
-            <div className="info">{modalView.meetingInfos.cliente}</div>
-          </ModalField>
+              <ModalField>
+                <div className="title-info">Cliente:</div>
+                <div className="info">{modalView.meetingInfos.cliente}</div>
+              </ModalField>
 
-          <ModalField>
-            <div className="title-info">Responsável:</div>
-            <div className="info">{modalView.meetingInfos.responsavel}</div>
-          </ModalField>
+              <ModalField>
+                <div className="title-info">Responsável:</div>
+                <div className="info">{modalView.meetingInfos.responsavel}</div>
+              </ModalField>
 
-          <ModalField>
-            <div className="title-info">Membros:</div>
-            <NamesWrapper>
-              {modalView.meetingInfos.members.map((row: any, index: number) => {
-                return <NameField key={index}>{(index ? ', ' : '') + row.name}</NameField>;
-              })}
-            </NamesWrapper>
-          </ModalField>
+              <ModalField>
+                <div className="title-info">Membros:</div>
+                <NamesWrapper>
+                  {modalView.meetingInfos.members.map((row: any, index: number) => {
+                    return <NameField key={index}>{(index ? ', ' : '') + row.name}</NameField>;
+                  })}
+                </NamesWrapper>
+              </ModalField>
 
-          <ModalField>
-            <div className="title-info">Data:</div>
-            <div className="info">{moment(modalView.meetingInfos.date).format('DD/MM/YYYY')}</div>
-          </ModalField>
-
-          <ModalField className="info-description">
-            <div className="title-info">Anexos:</div>
-            <FilesWrapper>
-              <FileInfo>
-                <div className="name-file">Anexo nome.jpg</div>
-                <div className="file-icons">
-                  <div>
-                    <BiShow size={20} />
-                  </div>
-                  <div>
-                    <FaDownload />
-                  </div>
+              <ModalField>
+                <div className="title-info">Data:</div>
+                <div className="info">
+                  {moment(modalView.meetingInfos.date).format('DD/MM/YYYY')}
                 </div>
-              </FileInfo>
-            </FilesWrapper>
-          </ModalField>
+              </ModalField>
 
-          <ModalField className="info-description">
-            <div className="title-info">Descrição:</div>
-            <div
-              className="info"
-              dangerouslySetInnerHTML={{ __html: modalView.meetingInfos.description }}
-            ></div>
-          </ModalField>
+              <ModalField className="info-description">
+                <div className="title-info">Anexos:</div>
+                <FilesWrapper>
+                  {modalView.meetingInfos.files.map((row: DownloadFiles) => (
+                    <FileInfo key={row.meeting_file_id}>
+                      <div className="name-file">{row.file_name}</div>
+                      <div className="file-icons">
+                        <ViewFileBtn
+                          onClick={() =>
+                            setPreviewImage({
+                              isOpen: true,
+                              imageInfos: {
+                                bucket: row.bucket,
+                                created: row.created,
+                                file_name: row.file_name,
+                                key: row.key,
+                                meeting_file_id: row.meeting_file_id,
+                                meeting_id: row.meeting_id,
+                                size: row.size,
+                                updated: row.updated,
+                                url: row.url
+                              }
+                            })
+                          }
+                        >
+                          <BiShow size={20} />
+                        </ViewFileBtn>
+                        <DownloadFileBtn onClick={() => downloadFile(row)}>
+                          <FaDownload />
+                        </DownloadFileBtn>
+                      </div>
+                    </FileInfo>
+                  ))}
+                </FilesWrapper>
+              </ModalField>
+
+              <ModalField className="info-description">
+                <div className="title-info">Descrição:</div>
+                <div
+                  className="info"
+                  dangerouslySetInnerHTML={{ __html: modalView.meetingInfos.description }}
+                ></div>
+              </ModalField>
+            </>
+          )}
+
+          {previewImage.isOpen && (
+            <ModalImage
+              style={{
+                backgroundImage: `url(https://${previewImage.imageInfos.bucket}.s3.amazonaws.com/meetings/${previewImage.imageInfos.file_name})`
+              }}
+            >
+              <div
+                className="close-button"
+                onClick={() =>
+                  setPreviewImage({
+                    isOpen: false,
+                    imageInfos: {
+                      bucket: '',
+                      created: '',
+                      file_name: '',
+                      key: '',
+                      meeting_file_id: '',
+                      meeting_id: '',
+                      size: '',
+                      updated: '',
+                      url: ''
+                    }
+                  })
+                }
+              >
+                <MdClose />
+              </div>
+            </ModalImage>
+          )}
         </ModalInfosWrapper>
       </ModalDefault>
     </Container>
