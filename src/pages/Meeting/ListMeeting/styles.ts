@@ -201,3 +201,47 @@ export const FileInfo = styled.div`
     gap: 12px;
   }
 `;
+
+export const DownloadFileBtn = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+
+  background-color: transparent;
+  border-radius: 8px;
+
+  transition: all 0.3s;
+
+  &:hover {
+    background-color: var(--secundary-100);
+
+    svg {
+      color: var(--secundary-900);
+    }
+  }
+`;
+
+export const ViewFileBtn = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+
+  background-color: transparent;
+  border-radius: 8px;
+
+  transition: all 0.3s;
+
+  &:hover {
+    background-color: var(--primary-100);
+
+    svg {
+      color: var(--primary-900);
+    }
+  }
+`;

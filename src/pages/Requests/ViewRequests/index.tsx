@@ -659,7 +659,10 @@ export default function ViewRequest() {
                               }}
                             />
                           ) : (
-                            <AvatarDefault url={row.avatar} name={row.user_name} />
+                            <AvatarDefault
+                              url={row.avatar}
+                              name={row.user_name ? row.user_name : 'N U'}
+                            />
                           )}
                         </MessageUser>
                       </MessageUserWrapper>
