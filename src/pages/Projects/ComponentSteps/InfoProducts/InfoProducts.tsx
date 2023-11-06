@@ -61,6 +61,7 @@ export default function InfoProducts({
   handleEditProductQuantity,
   okToSave,
   editProducts,
+  editProject,
   hideSwitch,
   tenant_id
 }: PropsProducts) {
@@ -209,7 +210,7 @@ export default function InfoProducts({
                 Ver Kits
               </ButtonDefault>
             </FieldTogleButton>
-            {editProducts && (
+            {editProducts && !editProject && (
               <ButtonDefault typeButton="primary" onClick={() => setProductsModal(true)}>
                 {typeList === 'produtos' ? 'Adicionar mais produtos' : 'Adicionar mais kits'}
               </ButtonDefault>
@@ -268,7 +269,8 @@ export default function InfoProducts({
                       infosReceived={row}
                       handleQuantity={(value: any) => handleOnQuantity(row, value)}
                       clearQuantity={() => handleDeleteProducts(row.job_service_id)}
-                      disabledInput={false}
+                      disabledInput={editProject}
+                      isEditProject={editProject}
                     />
                   </td>
                   {quantityProducts &&
