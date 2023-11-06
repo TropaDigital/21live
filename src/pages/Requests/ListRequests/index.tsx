@@ -67,7 +67,9 @@ export default function Requests() {
   //   fromDate: '',
   //   toDate: ''
   // });
-  const { data, pages, isFetching } = useFetch<any[]>(`ticket?search=${search}&page=${selected}`);
+  const { data, pages, isFetching } = useFetch<any[]>(
+    `ticket?search=${search.replace('#', '')}&page=${selected}`
+  );
 
   const handleViewRequest = (request: any) => {
     navigate(`/solicitacao/${request.ticket_id}`, { state: request.ticket_id });

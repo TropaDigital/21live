@@ -19,13 +19,15 @@ interface InputProps {
   handleQuantity: (value: any) => void;
   clearQuantity: () => void;
   disabledInput: boolean;
+  isEditProject?: boolean;
 }
 
 export default function QuantityInput({
   receiveQuantity,
   handleQuantity,
   clearQuantity,
-  disabledInput
+  disabledInput,
+  isEditProject
 }: InputProps) {
   const [counter, setCounter] = useState<number>(0);
   const { addToast } = useToast();
@@ -40,11 +42,19 @@ export default function QuantityInput({
 
   const handleChangeCounter = (name: string) => {
     if (disabledInput) {
-      addToast({
-        type: 'warning',
-        title: 'ATENÇÃO',
-        description: 'Selecione o produto antes da quantidade'
-      });
+      if (isEditProject) {
+        addToast({
+          type: 'warning',
+          title: 'ATENÇÃO',
+          description: 'Não permitido alterar quantidade'
+        });
+      } else {
+        addToast({
+          type: 'warning',
+          title: 'ATENÇÃO',
+          description: 'Selecione o produto antes da quantidade'
+        });
+      }
     } else if (name === 'up') {
       setCounter(counter + 1);
       handleQuantity(counter + 1);

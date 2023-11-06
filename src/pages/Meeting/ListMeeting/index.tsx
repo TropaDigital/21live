@@ -137,7 +137,9 @@ export default function ListMeeting() {
   const [filterOrder, setFilterOrder] = useState('desc');
 
   const { data, pages, fetchData, isFetching } = useFetch<MeetingProps[]>(
-    `meetings?search=${search}&date_start=${filterDate.dateStart}&date_end=${filterDate.dateEnd}&order=${filterOrder}`
+    `meetings?search=${search.replace('#', '')}&date_start=${filterDate.dateStart}&date_end=${
+      filterDate.dateEnd
+    }&order=${filterOrder}`
   );
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const { data: dataTeam } = useFetch<TeamProps[]>('team');

@@ -1310,7 +1310,7 @@ export default function CreateTasks() {
           delete createNewData.requester_id;
         }
         if (location.state !== null) {
-          await api.put(`tasks/${location.state.project_id}`, createNewData);
+          await api.put(`tasks/${location.state.task_id}`, createNewData);
         } else {
           await api.post(`tasks`, createNewData);
         }
@@ -1347,7 +1347,7 @@ export default function CreateTasks() {
         }
 
         if (location.state !== null) {
-          await api.put(`tasks/${location.state.project_id}`, createNewData);
+          await api.put(`tasks/${location.state.task_id}`, createNewData);
         } else {
           await api.post(`tasks`, createNewData);
         }
@@ -1386,7 +1386,7 @@ export default function CreateTasks() {
             delete createNewData.requester_id;
           }
           if (location.state !== null) {
-            await api.put(`tasks/${location.state.project_id}`, createNewData);
+            await api.put(`tasks/${location.state.task_id}`, createNewData);
           } else {
             await api.post(`tasks`, createNewData);
           }
