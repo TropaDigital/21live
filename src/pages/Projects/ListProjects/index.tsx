@@ -14,6 +14,7 @@ import { MdClose } from 'react-icons/md';
 import Switch from 'react-switch';
 import moment from 'moment';
 import axios from 'axios';
+import DocViewer from '@cyntler/react-doc-viewer';
 
 // Services
 import api from '../../../services/api';
@@ -318,7 +319,7 @@ export default function ListProjects() {
 
   async function downloadFile(file: any) {
     try {
-      const url = `https://${file.bucket}.s3.amazonaws.com/projects/${file.file_name}`;
+      const url = `https://${file.bucket}.s3.amazonaws.com/${file.key}`;
 
       const response = await axios({
         url,
@@ -681,10 +682,10 @@ export default function ListProjects() {
               </Summary>
             </>
           )}
-          {previewImage.isOpen && (
+          {previewImage.isOpen && previewImage.imageInfos.file_name.split('.').pop() !== 'pdf' && (
             <ModalImage
               style={{
-                backgroundImage: `url(https://${previewImage.imageInfos.bucket}.s3.amazonaws.com/projects/${previewImage.imageInfos.file_name})`
+                backgroundImage: `url(https://${previewImage.imageInfos.bucket}.s3.amazonaws.com/${previewImage.imageInfos.key})`
               }}
             >
               <div
@@ -709,6 +710,17 @@ export default function ListProjects() {
                 <MdClose />
               </div>
             </ModalImage>
+          )}
+
+          {previewImage.isOpen && previewImage.imageInfos.file_name.split('.').pop() === 'pdf' && (
+            <DocViewer
+              documents={[
+                {
+                  uri: `url(https://${previewImage.imageInfos.bucket}.s3.amazonaws.com/${previewImage.imageInfos.key})`,
+                  fileType: 'pdf'
+                }
+              ]}
+            />
           )}
         </ModalShowProjectWrapper>
       </ModalDefault>
