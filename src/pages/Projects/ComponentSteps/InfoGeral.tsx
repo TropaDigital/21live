@@ -122,6 +122,7 @@ export default function InfoGeral({
               value={initialValue.value !== '' ? initialValue : null}
               onChange={handleClientSelected}
               placeholder={'Selecione o cliente...'}
+              disable={editProject}
               error={error?.tenant_id}
             />
           </div>

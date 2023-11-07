@@ -14,6 +14,7 @@ interface SelectProps {
   value: any;
   onChange: (value: any) => void;
   placeholder: string;
+  disable?: boolean;
   error?: any;
 }
 
@@ -23,6 +24,7 @@ export default function SelectImage({
   value,
   onChange,
   placeholder,
+  disable,
   error
 }: SelectProps) {
   const inputRef = useRef(null);
@@ -47,6 +49,7 @@ export default function SelectImage({
         onChange={onChange}
         onFocus={handleInputFocus}
         onBlur={handleInputBlur}
+        isDisabled={disable}
         ref={inputRef}
         formatOptionLabel={(obj) => (
           <div className="client-option">

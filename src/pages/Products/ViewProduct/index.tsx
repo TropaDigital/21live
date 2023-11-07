@@ -145,9 +145,7 @@ export default function ViewProductsDeliveries() {
     ? timeLineData.steps.filter((obj) => Number(obj.step) === Number(actualStep) + 1)
     : '';
 
-  // const finalCard = timeLineData
-  //   ? timeLineData.steps.filter((obj) => obj.final_card === 'true')
-  //   : '';
+  const finalCard = uploadIsTrue && uploadIsTrue[0].final_card === 'true';
 
   useEffect(() => {
     async function getClockIsOpen() {
@@ -288,7 +286,10 @@ export default function ViewProductsDeliveries() {
   }, [location]);
 
   useEffect(() => {
-    if (uploadIsTrue && uploadIsTrue[0].necessary_upload === 'true') {
+    if (
+      (uploadIsTrue && uploadIsTrue[0].necessary_upload === 'true') ||
+      (uploadIsTrue && uploadIsTrue[0].tenant_approve === 'true')
+    ) {
       setEnableUpload(true);
     }
   }, [timeLineData]);
@@ -694,10 +695,13 @@ export default function ViewProductsDeliveries() {
     }
   }
 
-  // useEffect(() => {
-  //   console.log('log do type of play', typeOfPlay);
-  //   console.log('log do selectedProducts', selectedProduct);
-  // }, [selectedProduct, typeOfPlay]);
+  useEffect(() => {
+    // console.log('log do type of play', typeOfPlay);
+    // console.log('log do selectedProducts', selectedProduct);
+    // console.log('log do next step', nextStep);
+    // console.log('log do upload', uploadIsTrue);
+    console.log('log do final card', finalCard);
+  }, [selectedProduct, typeOfPlay, nextStep, uploadIsTrue, finalCard]);
 
   return (
     <ContainerDefault>
@@ -714,20 +718,8 @@ export default function ViewProductsDeliveries() {
 
         {dataProducts?.status !== 'Concluida' &&
           selectedProduct === '' &&
-          typeOfPlay === 'schedule' && (
-            <HeaderOpenTask
-              title={titleInfos}
-              disableButton={false}
-              goBack
-              buttonType="send"
-              sendToNext={handleFinishDelivery}
-              nextStepInfo={timeLineData}
-            />
-          )}
-
-        {dataProducts?.status !== 'Concluida' &&
-          selectedProduct !== '' &&
-          typeOfPlay === 'schedule' && (
+          typeOfPlay === 'schedule' &&
+          !finalCard && (
             <HeaderOpenTask
               title={titleInfos}
               disableButton={false}
@@ -740,7 +732,36 @@ export default function ViewProductsDeliveries() {
 
         {dataProducts?.status !== 'Concluida' &&
           selectedProduct === '' &&
-          typeOfPlay === 'product' && (
+          typeOfPlay === 'schedule' &&
+          finalCard && (
+            <HeaderOpenTask
+              title={titleInfos}
+              disableButton={false}
+              goBack
+              buttonType="finish"
+              sendToNext={handleFinishDelivery}
+              nextStepInfo={timeLineData}
+            />
+          )}
+
+        {dataProducts?.status !== 'Concluida' &&
+          selectedProduct !== '' &&
+          typeOfPlay === 'schedule' &&
+          !finalCard && (
+            <HeaderOpenTask
+              title={titleInfos}
+              disableButton={false}
+              goBack
+              buttonType="send"
+              sendToNext={handleFinishDelivery}
+              nextStepInfo={timeLineData}
+            />
+          )}
+
+        {dataProducts?.status !== 'Concluida' &&
+          selectedProduct === '' &&
+          typeOfPlay === 'product' &&
+          finalCard && (
             <HeaderOpenTask
               title={titleInfos}
               disableButton={false}
@@ -754,7 +775,8 @@ export default function ViewProductsDeliveries() {
         {dataProducts?.status !== 'Concluida' &&
           selectedProduct !== '' &&
           typeOfPlay === 'product' &&
-          selectedProduct.status !== 'Concluida' && (
+          selectedProduct.status !== 'Concluida' &&
+          finalCard && (
             <HeaderOpenTask
               title={titleInfos}
               disableButton={typeOfPlay === 'product' ? false : true}
@@ -770,7 +792,8 @@ export default function ViewProductsDeliveries() {
         {dataProducts?.status !== 'Concluida' &&
           selectedProduct !== '' &&
           typeOfPlay === 'product' &&
-          selectedProduct.status === 'Concluida' && (
+          selectedProduct.status === 'Concluida' &&
+          finalCard && (
             <HeaderOpenTask
               title={titleInfos}
               disableButton={true}
@@ -786,7 +809,8 @@ export default function ViewProductsDeliveries() {
         {dataProducts?.status !== 'Concluida' &&
           selectedProduct !== '' &&
           typeOfPlay === 'product' &&
-          selectedProduct.status !== 'Concluida' && (
+          selectedProduct.status !== 'Concluida' &&
+          finalCard && (
             <HeaderOpenTask
               title={titleInfos}
               disableButton={true}

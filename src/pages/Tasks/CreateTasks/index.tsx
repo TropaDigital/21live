@@ -866,7 +866,7 @@ export default function CreateTasks() {
         }
       }
 
-      if (createStep === 1 && tasksType === 'horas' && !location.state && !taskEdit) {
+      if (createStep === 1 && tasksType === 'horas' && !taskEdit) {
         setProductsModal(true);
       } else if (createStep === 2 && tasksType === 'horas') {
         if (DTOForm.copywriting_date_end === '') {
@@ -1260,7 +1260,8 @@ export default function CreateTasks() {
         start_job,
         end_job,
         step,
-        gen_ticket
+        gen_ticket,
+        ticket_id
       } = DTOForm;
 
       if (tasksType === 'livre') {
@@ -1281,6 +1282,7 @@ export default function CreateTasks() {
           start_job,
           files: fileArray,
           gen_ticket,
+          ticket_id,
           deadlines: [
             {
               date_end: DTOForm?.creation_date_end,
@@ -1309,8 +1311,13 @@ export default function CreateTasks() {
         if (requester_id === '') {
           delete createNewData.requester_id;
         }
-        if (location.state !== null) {
-          await api.put(`tasks/${location.state.project_id}`, createNewData);
+
+        if (ticket_id === '') {
+          delete createNewData.ticket_id;
+        }
+
+        if (location.state !== null && location.state.task_id) {
+          await api.put(`tasks/${location.state.task_id}`, createNewData);
         } else {
           await api.post(`tasks`, createNewData);
         }
@@ -1339,15 +1346,20 @@ export default function CreateTasks() {
           files: fileArray,
           deadlines: [deadline],
           step,
-          gen_ticket
+          gen_ticket,
+          ticket_id
         };
 
         if (requester_id === '') {
           delete createNewData.requester_id;
         }
 
-        if (location.state !== null) {
-          await api.put(`tasks/${location.state.project_id}`, createNewData);
+        if (ticket_id === '') {
+          delete createNewData.ticket_id;
+        }
+
+        if (location.state !== null && location.state.task_id) {
+          await api.put(`tasks/${location.state.task_id}`, createNewData);
         } else {
           await api.post(`tasks`, createNewData);
         }
@@ -1379,50 +1391,68 @@ export default function CreateTasks() {
             copywriting_description,
             deadlines: deadlines,
             step,
-            gen_ticket
+            gen_ticket,
+            ticket_id
           };
 
           if (requester_id === '') {
             delete createNewData.requester_id;
           }
-          if (location.state !== null) {
-            await api.put(`tasks/${location.state.project_id}`, createNewData);
+
+          if (ticket_id === '') {
+            delete createNewData.requester_id;
+          }
+
+          if (location.state !== null && location.state.task_id) {
+            await api.put(`tasks/${location.state.task_id}`, createNewData);
           } else {
             await api.post(`tasks`, createNewData);
           }
         } else {
-          // const deadlines = DTODelivery.map((row: any, index: any) => {
-          //   return {
-          //     date_end: row.deliveryDate,
-          //     description: DTOForm?.creation_description,
-          //     title: row.deliveryTitle !== '' ? row.deliveryTitle : `${index + 1}ª entrega`,
-          //     products: row.deliveryProducts
-          //   };
-          // });
-          // const createNewData = {
-          //   title,
-          //   tenant_id,
-          //   project_product_id,
-          //   user_id,
-          //   end_job,
-          //   start_job,
-          //   flow_id,
-          //   description,
-          //   files: fileArray,
-          //   creation_description,
-          //   creation_date_end,
-          //   copywriting_date_end,
-          //   copywriting_description,
-          //   deadlines: deadlines,
-          //   step,
-          //   gen_ticket
-          // };
-          // if (location.state !== null) {
-          //   await api.put(`tasks/${location.state.project_id}`, createNewData);
-          // } else {
-          //   console.log('log do DTO on submit errado =>', createNewData);
-          //   await api.post(`tasks`, createNewData);
-          // }
+          const deadlines = DTODelivery.map((row: any, index: any) => {
+            return {
+              date_end: row.deliveryDate,
+              description: DTOForm?.creation_description,
+              title: row.deliveryTitle !== '' ? row.deliveryTitle : `${index + 1}ª entrega`,
+              products: row.deliveryProducts
+            };
+          });
+
+          const createNewData = {
+            title,
+            tenant_id,
+            project_product_id,
+            requester_id,
+            user_id,
+            end_job,
+            start_job,
+            flow_id,
+            description,
+            files: fileArray,
+            creation_description,
+            creation_date_end,
+            copywriting_date_end,
+            copywriting_description,
+            deadlines: deadlines,
+            step,
+            gen_ticket,
+            ticket_id
+          };
+
+          if (requester_id === '') {
+            delete createNewData.requester_id;
+          }
+
+          if (ticket_id === '') {
+            delete createNewData.ticket_id;
+          }
+
+          if (location.state !== null && location.state.task_id) {
+            await api.put(`tasks/${location.state.task_id}`, createNewData);
+          } else {
+            console.log('log do DTO on submit errado =>', createNewData);
+            await api.post(`tasks`, createNewData);
+          }
         }
       }
 
@@ -1585,7 +1615,9 @@ export default function CreateTasks() {
       } else if (location.state?.type === 'Livre') {
         setTasksType('livre');
       } else {
-        setTasksType('horas');
+        if (location.state.ticket_id === '') {
+          setTasksType('horas');
+        }
       }
     }
   }, [DTOForm, infoProjects, infoOrganizationsProjects, location]);
@@ -1666,6 +1698,14 @@ export default function CreateTasks() {
   // useEffect(() => {
   //   console.log('log dos erros', errorCategory);
   // }, [errorCategory]);
+
+  // useEffect(() => {
+  //   console.log('log do info projects', infoProjects);
+  // }, [infoProjects]);
+
+  // useEffect(() => {
+  //   console.log('log do location', location.state);
+  // }, [location]);
 
   return (
     <>
@@ -1798,7 +1838,7 @@ export default function CreateTasks() {
                     handleDescriptionProduct={handleDescriptionProduct}
                     handleFormatProduct={handleFormatProduct}
                     passProductProps={handleAddProductFromDeliveries}
-                    updateTask={location.state !== null}
+                    updateTask={location.state !== null && location.state.task_id}
                     deleteDelivery={handleDeleteDelivery}
                     deleteProduct={handleDeleteProduct}
                     handleTitleOfDelivery={handleDeliveryTitle}
@@ -1886,7 +1926,7 @@ export default function CreateTasks() {
                     projectInfos={selectedProject}
                     summaryExtrainfos={selectedSummaryInfos}
                     taskType={tasksType}
-                    updateTask={location.state !== null}
+                    updateTask={location.state !== null && location.state.task_id}
                     handleTicket={handleGenerateTicket}
                     estimatedtotalTime={() => ''}
                     taskFiles={uploadedFiles}
@@ -1922,7 +1962,7 @@ export default function CreateTasks() {
                   projectInfos={selectedProject}
                   summaryExtrainfos={selectedSummaryInfos}
                   taskType={tasksType}
-                  updateTask={location.state !== null}
+                  updateTask={location.state !== null && location.state.task_id}
                   handleTicket={handleGenerateTicket}
                   estimatedtotalTime={setEstimatedTime}
                   taskFiles={uploadedFiles}
@@ -1942,7 +1982,7 @@ export default function CreateTasks() {
                   projectInfos={selectedProject}
                   summaryExtrainfos={selectedSummaryInfos}
                   taskType={tasksType}
-                  updateTask={location.state !== null}
+                  updateTask={location.state !== null && location.state.task_id}
                   handleTicket={handleGenerateTicket}
                   estimatedtotalTime={() => ''}
                   taskFiles={uploadedFiles}

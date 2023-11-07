@@ -6,11 +6,15 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 // Icons
-import { BiPlus, BiSearchAlt } from 'react-icons/bi';
+import { BiPlus, BiSearchAlt, BiShow } from 'react-icons/bi';
+import { FaDownload } from 'react-icons/fa';
+import { MdClose } from 'react-icons/md';
 
 // Libraries
 import Switch from 'react-switch';
 import moment from 'moment';
+import axios from 'axios';
+import DocViewer from '@cyntler/react-doc-viewer';
 
 // Services
 import api from '../../../services/api';
@@ -23,8 +27,8 @@ import { useAuth } from '../../../hooks/AuthContext';
 
 // Utils
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
-import { avatarAll } from '../../../utils/dataDefault';
 
+// Types
 import { IProjectCreate } from '../../../types';
 
 // Components
@@ -50,7 +54,14 @@ import { SummaryTaskDescription } from '../../Tasks/ComponentSteps/SummaryTasks/
 import { SummaryCard } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 import { SummaryCardTitle } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 import { SummaryCardSubtitle } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
-import { FileList, ModalShowProjectWrapper } from './styles';
+import {
+  DownloadFileBtn,
+  FileInfo,
+  FileList,
+  ModalShowProjectWrapper,
+  ViewFileBtn
+} from './styles';
+import { ModalImage } from '../../Requests/ViewRequests/styles';
 
 interface StateProps {
   [key: string]: any;
@@ -112,7 +123,7 @@ export default function ListProjects() {
     fetchData: fetchProject,
     isFetching,
     pages
-  } = useFetch<IProjectCreate[]>(`project?search=${search}&page=${selected}`);
+  } = useFetch<IProjectCreate[]>(`project?search=${search.replace('#', '')}&page=${selected}`);
   // const [listSelected, setListSelected] = useState<any[]>([]);
 
   // const handleOnAddProducts = (items: any) => {
@@ -200,6 +211,21 @@ export default function ListProjects() {
   //     }
   //   });
   // };
+
+  const [previewImage, setPreviewImage] = useState({
+    isOpen: false,
+    imageInfos: {
+      bucket: '',
+      created: '',
+      file_name: '',
+      key: '',
+      project_file_id: '',
+      project_id: '',
+      size: '',
+      updated: '',
+      url: ''
+    }
+  });
 
   async function handleStatus(id: any) {
     try {
@@ -290,6 +316,26 @@ export default function ListProjects() {
     // console.log('log do projeto a editar', project);
     navigate('/criar-projeto', { state: project });
   };
+
+  async function downloadFile(file: any) {
+    try {
+      const url = `https://${file.bucket}.s3.amazonaws.com/${file.key}`;
+
+      const response = await axios({
+        url,
+        method: 'GET',
+        responseType: 'blob'
+      });
+      const urlResponse = window.URL.createObjectURL(response.data);
+      const link = document.createElement('a');
+      link.href = urlResponse;
+      link.setAttribute('download', `${file.file_name}`);
+      document.body.appendChild(link);
+      link.click();
+    } catch (error: any) {
+      console.log('log error download file', error);
+    }
+  }
 
   return (
     <ContainerDefault>
@@ -449,160 +495,233 @@ export default function ListProjects() {
         onOpenChange={handleCloseModal}
       >
         <ModalShowProjectWrapper>
-          <Summary>
-            <div className="title">Informações do projeto</div>
-            <SummaryInfoWrapper>
-              <SummaryTaskInfo>
-                <div className="title-info">Título do projeto:</div>
-                <div className="info">{modalShowProject.project.title}</div>
-              </SummaryTaskInfo>
+          {!previewImage.isOpen && (
+            <>
+              <Summary>
+                <div className="title">Informações do projeto</div>
+                <SummaryInfoWrapper>
+                  <SummaryTaskInfo>
+                    <div className="title-info">Título do projeto:</div>
+                    <div className="info">{modalShowProject.project.title}</div>
+                  </SummaryTaskInfo>
 
-              {!user?.organizations && (
-                <SummaryTaskInfo>
-                  <div className="title-info">Cliente:</div>
-                  <div className="info">{modalShowProject.project.client_name}</div>
-                </SummaryTaskInfo>
-              )}
+                  {!user?.organizations && (
+                    <SummaryTaskInfo>
+                      <div className="title-info">Cliente:</div>
+                      <div className="info">{modalShowProject.project.client_name}</div>
+                    </SummaryTaskInfo>
+                  )}
 
-              {user?.organizations?.length > 0 && (
-                <SummaryTaskInfo>
-                  <div className="title-info">Cliente:</div>
-                  <div className="info">{modalShowProject.project.organization_name}</div>
-                </SummaryTaskInfo>
-              )}
+                  {user?.organizations?.length > 0 && (
+                    <SummaryTaskInfo>
+                      <div className="title-info">Cliente:</div>
+                      <div className="info">{modalShowProject.project.organization_name}</div>
+                    </SummaryTaskInfo>
+                  )}
 
-              <SummaryTaskInfo>
-                <div className="title-info">FEE / SPOT:</div>
-                <div className="info">{modalShowProject.project.category}</div>
-              </SummaryTaskInfo>
+                  <SummaryTaskInfo>
+                    <div className="title-info">FEE / SPOT:</div>
+                    <div className="info">{modalShowProject.project.category}</div>
+                  </SummaryTaskInfo>
 
-              <SummaryTaskInfo>
-                <div className="title-info">Tipo do contrato:</div>
-                <div className="info">
-                  {modalShowProject.project.contract_type === 'product' ? 'Produto' : 'Livre'}
-                </div>
-              </SummaryTaskInfo>
-
-              <SummaryTaskInfo>
-                <div className="title-info">Tempo:</div>
-                <div className="info">{modalShowProject.project.time}</div>
-              </SummaryTaskInfo>
-
-              <SummaryTaskInfo>
-                <div className="title-info">Data De Criação:</div>
-                <div className="info">
-                  {moment(modalShowProject.project.date_start).format('DD/MM/YYYY')}
-                </div>
-              </SummaryTaskInfo>
-
-              <SummaryTaskInfo>
-                <div className="title-info">Entrega Estimada:</div>
-                <div className="info">
-                  {moment(modalShowProject.project.date_end).format('DD/MM/YYYY')}
-                </div>
-              </SummaryTaskInfo>
-
-              {modalShowProject.project.files.length > 0 && (
-                <SummaryTaskDescription>
-                  <div className="description-title">Arquivos:</div>
-                  {modalShowProject.project.files.map((row: any) => (
-                    <FileList key={row.file_id}>&#x2022; {row.file_name}</FileList>
-                  ))}
-                </SummaryTaskDescription>
-              )}
-
-              <SummaryTaskDescription>
-                <div className="description-title">Contexto geral</div>
-                <div
-                  className="description-info"
-                  dangerouslySetInnerHTML={{ __html: modalShowProject.project.description }}
-                ></div>
-              </SummaryTaskDescription>
-            </SummaryInfoWrapper>
-          </Summary>
-
-          <Summary style={{ width: '700px' }}>
-            <div className="title">Produtos selecionados</div>
-            {modalShowProject.project.products.map((row: any, index: number) => (
-              <SummaryCard key={index} style={{ height: 'fit-content' }}>
-                <SummaryCardTitle>
-                  #{index + 1} - {row.service}
-                </SummaryCardTitle>
-                <SummaryCardSubtitle
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: 'fit-content'
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'flex-start',
-                      width: '100%'
-                    }}
-                  >
-                    <div>
-                      Descrição: <span>{row.description}</span>
+                  <SummaryTaskInfo>
+                    <div className="title-info">Tipo do contrato:</div>
+                    <div className="info">
+                      {modalShowProject.project.contract_type === 'product' ? 'Produto' : 'Livre'}
                     </div>
-                  </div>
+                  </SummaryTaskInfo>
 
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      width: '100%'
-                    }}
-                  >
-                    <div>
-                      Periodo: <span>{row.period}</span>
-                    </div>
-                    <div>
-                      I/D: <span>{row.type}</span>
-                    </div>
-                    <div>
-                      Formato: <span>{row.size}</span>
-                    </div>
-                  </div>
+                  <SummaryTaskInfo>
+                    <div className="title-info">Tempo:</div>
+                    <div className="info">{modalShowProject.project.time}</div>
+                  </SummaryTaskInfo>
 
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      width: '100%'
-                    }}
-                  >
-                    <div>
-                      Quantidade contratada: <span>{row.quantity_initial}</span>
+                  <SummaryTaskInfo>
+                    <div className="title-info">Data De Criação:</div>
+                    <div className="info">
+                      {moment(modalShowProject.project.date_start).format('DD/MM/YYYY')}
                     </div>
-                    <div>
-                      Tempo contratado <span>{row.minutes_initial}</span>
+                  </SummaryTaskInfo>
+
+                  <SummaryTaskInfo>
+                    <div className="title-info">Entrega Estimada:</div>
+                    <div className="info">
+                      {moment(modalShowProject.project.date_end).format('DD/MM/YYYY')}
                     </div>
-                  </div>
-                  {/* {row.flag === 'true' && (
+                  </SummaryTaskInfo>
+
+                  {modalShowProject.project.files.length > 0 && (
+                    <SummaryTaskDescription>
+                      <div className="description-title">Arquivos:</div>
+                      {modalShowProject.project.files.map((row: any) => (
+                        <FileList key={row.file_id}>
+                          <FileInfo>
+                            <div className="file-name">{row.file_name}</div>
+                            <div className="file-icons">
+                              <ViewFileBtn
+                                onClick={() =>
+                                  setPreviewImage({
+                                    isOpen: true,
+                                    imageInfos: {
+                                      bucket: row.bucket,
+                                      created: row.created,
+                                      file_name: row.file_name,
+                                      key: row.key,
+                                      project_file_id: row.project_file_id,
+                                      project_id: row.project_id,
+                                      size: row.size,
+                                      updated: row.updated,
+                                      url: row.url
+                                    }
+                                  })
+                                }
+                              >
+                                <BiShow size={22} />
+                              </ViewFileBtn>
+                              <DownloadFileBtn onClick={() => downloadFile(row)}>
+                                <FaDownload />
+                              </DownloadFileBtn>
+                            </div>
+                          </FileInfo>
+                        </FileList>
+                      ))}
+                    </SummaryTaskDescription>
+                  )}
+
+                  <SummaryTaskDescription>
+                    <div className="description-title">Contexto geral</div>
                     <div
+                      className="description-info"
+                      dangerouslySetInnerHTML={{ __html: modalShowProject.project.description }}
+                    ></div>
+                  </SummaryTaskDescription>
+                </SummaryInfoWrapper>
+              </Summary>
+
+              <Summary style={{ width: '700px' }}>
+                <div className="title">Produtos selecionados</div>
+                {modalShowProject.project.products.map((row: any, index: number) => (
+                  <SummaryCard key={index} style={{ height: 'fit-content' }}>
+                    <SummaryCardTitle>
+                      #{index + 1} - {row.service}
+                    </SummaryCardTitle>
+                    <SummaryCardSubtitle
                       style={{
                         display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        width: '100%'
+                        flexDirection: 'column',
+                        height: 'fit-content'
                       }}
                     >
-                      <div>
-                        Quantidade disponível: <span>{row.quantity}</span>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'flex-start',
+                          width: '100%'
+                        }}
+                      >
+                        <div>
+                          Descrição: <span>{row.description}</span>
+                        </div>
                       </div>
-                      <div>
-                        Tempo restante <span>{row.minutes_total}</span>
+
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          width: '100%'
+                        }}
+                      >
+                        <div>
+                          Periodo: <span>{row.period}</span>
+                        </div>
+                        <div>
+                          I/D: <span>{row.type}</span>
+                        </div>
+                        <div>
+                          Formato: <span>{row.size}</span>
+                        </div>
                       </div>
-                    </div>
-                  )} */}
-                </SummaryCardSubtitle>
-              </SummaryCard>
-            ))}
-          </Summary>
+
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          width: '100%'
+                        }}
+                      >
+                        <div>
+                          Quantidade contratada: <span>{row.quantity_initial}</span>
+                        </div>
+                        <div>
+                          Tempo contratado <span>{row.minutes_initial}</span>
+                        </div>
+                      </div>
+                      {/* {row.flag === 'true' && (
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            width: '100%'
+                          }}
+                        >
+                          <div>
+                            Quantidade disponível: <span>{row.quantity}</span>
+                          </div>
+                          <div>
+                            Tempo restante <span>{row.minutes_total}</span>
+                          </div>
+                        </div>
+                      )} */}
+                    </SummaryCardSubtitle>
+                  </SummaryCard>
+                ))}
+              </Summary>
+            </>
+          )}
+          {previewImage.isOpen && previewImage.imageInfos.file_name.split('.').pop() !== 'pdf' && (
+            <ModalImage
+              style={{
+                backgroundImage: `url(https://${previewImage.imageInfos.bucket}.s3.amazonaws.com/${previewImage.imageInfos.key})`
+              }}
+            >
+              <div
+                className="close-button"
+                onClick={() =>
+                  setPreviewImage({
+                    isOpen: false,
+                    imageInfos: {
+                      bucket: '',
+                      created: '',
+                      file_name: '',
+                      key: '',
+                      project_file_id: '',
+                      project_id: '',
+                      size: '',
+                      updated: '',
+                      url: ''
+                    }
+                  })
+                }
+              >
+                <MdClose />
+              </div>
+            </ModalImage>
+          )}
+
+          {previewImage.isOpen && previewImage.imageInfos.file_name.split('.').pop() === 'pdf' && (
+            <DocViewer
+              documents={[
+                {
+                  uri: `url(https://${previewImage.imageInfos.bucket}.s3.amazonaws.com/${previewImage.imageInfos.key})`,
+                  fileType: 'pdf'
+                }
+              ]}
+            />
+          )}
         </ModalShowProjectWrapper>
       </ModalDefault>
     </ContainerDefault>

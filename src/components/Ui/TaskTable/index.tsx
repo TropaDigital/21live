@@ -124,13 +124,13 @@ export default function TaskTable({
                     </td>
                     <td>
                       <div className="column info">
-                        {user.permissions.includes('21jobs_task_essay') && (
+                        {user.permissions.includes('jobs_tasks_essay') && (
                           <div>
                             <IconText /> {task.title}
                           </div>
                         )}
 
-                        {user.permissions.includes('21jobs_task_execute') && (
+                        {user.permissions.includes('jobs_tasks_execute') && (
                           <div>
                             <BiPencil /> {task.title}
                           </div>

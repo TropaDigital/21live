@@ -14,7 +14,7 @@ import { useAuth } from '../../../hooks/AuthContext';
 
 // Icons
 import { IconText } from '../../../assets/icons';
-import { BiArrowBack, BiInfoCircle, BiTrash } from 'react-icons/bi';
+import { BiArrowBack, BiInfoCircle, BiShow, BiTrash } from 'react-icons/bi';
 import { HiOutlineArrowRight, HiOutlineChatAlt } from 'react-icons/hi';
 import { BsCheckCircle, BsFolder } from 'react-icons/bs';
 import { IoIosCloseCircleOutline } from 'react-icons/io';
@@ -57,18 +57,23 @@ import {
   TaskTab,
   UserMessage,
   UserMessageInfo,
+  ViewFile,
   WorkSection
 } from './styles';
 
 // Libraries
 import moment from 'moment';
 import 'moment/dist/locale/pt-br';
+import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
 
 // Services
 import api from '../../../services/api';
 
 // Utils
 import { formatBytes } from '../../../utils/convertBytes';
+import axios from 'axios';
+import { ModalImage } from '../../Requests/ViewRequests/styles';
+import { MdClose } from 'react-icons/md';
 
 interface WorkingProductProps {
   productDeliveryId?: any;
@@ -227,6 +232,21 @@ export default function WorkingProduct({
     productId: '',
     approve: false,
     disapprove: false
+  });
+
+  const [previewImage, setPreviewImage] = useState({
+    isOpen: false,
+    imageInfos: {
+      bucket: '',
+      created: '',
+      file_name: '',
+      key: '',
+      task_file_id: '',
+      task_id: '',
+      size: '',
+      updated: '',
+      url: ''
+    }
   });
 
   useEffect(() => {
@@ -453,13 +473,11 @@ export default function WorkingProduct({
   }
 
   const actualStep = timelineData?.currentStep;
-  const isToApprove = timelineData
-    ? timelineData.steps.filter((obj) => obj.step === actualStep)
-    : '';
+  const isToApprove: any = timelineData?.steps.filter((obj) => obj.step === actualStep);
 
-  const finalCard = timelineData
-    ? timelineData.steps.filter((obj) => obj.final_card === 'true')
-    : '';
+  const finalCard = isToApprove && isToApprove[0].final_card === 'true';
+
+  const uploadClient = isToApprove && isToApprove[0].tenant_approve === 'true';
 
   async function handleSaveUpload() {
     try {
@@ -515,6 +533,8 @@ export default function WorkingProduct({
 
       if (response.data.status === 'success') {
         setUploadedFiles([]);
+        setModalUpload(false);
+        setModalFinalFile(false);
       }
 
       console.log('log do response do saveUpload', response.data.result);
@@ -538,23 +558,64 @@ export default function WorkingProduct({
     }
   }
 
-  // async function downloadProposal() {
-  //   try {
+  async function handleSaveUploadClient() {
+    try {
+      const uploadInfos = {
+        task_id: taskId,
+        file_name: uploadedFiles[0].file_name,
+        size: uploadedFiles[0].size,
+        key: uploadedFiles[0].key,
+        bucket: uploadedFiles[0].bucket,
+        products_delivery_id: productInfos?.products_delivery_id
+      };
 
-  //     const response = await api.get(`proposta-csv?${requestedPayload}`);
-  //     const url = window.URL.createObjectURL(new Blob([s2ab(response.data)]));
-  //     const link = document.createElement('a');
-  //     link.href = url;
-  //     link.setAttribute('download', 'demandas.csv');
-  //     document.body.appendChild(link);
-  //     link.click();
+      const response = await api.put(`/task/upload-tenant-approve`, uploadInfos);
 
-  //   } catch (error: any) {
+      if (response.data.status === 'success') {
+        setUploadedFiles([]);
+        setModalFinalFile(false);
+      }
 
-  //     console.log('log error download csv', error)
+      console.log('log do response do saveUpload', response.data.result);
+    } catch (error: any) {
+      console.log('log save upload tenant file', error);
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
+    }
+  }
 
-  //   }
-  // }
+  async function downloadFile(file: any) {
+    try {
+      const url = `https://${file.bucket}.s3.amazonaws.com/${file.key}`;
+
+      const response = await axios({
+        url,
+        method: 'GET',
+        responseType: 'blob'
+      });
+      const urlResponse = window.URL.createObjectURL(response.data);
+      const link = document.createElement('a');
+      link.href = urlResponse;
+      link.setAttribute('download', `${file.file_name}`);
+      document.body.appendChild(link);
+      link.click();
+    } catch (error: any) {
+      console.log('log error download file', error);
+    }
+  }
 
   return (
     <ContainerDefault>
@@ -610,8 +671,8 @@ export default function WorkingProduct({
             {backButtonTitle}
           </button>
         )}
-        {/* productsInfo?.file_status === 'pass' && - Usava para checar se precisa enviar para aprovação */}
-        {selectedTab === 'Arquivos' && uploadEnabled && !finalCard && (
+
+        {selectedTab === 'Arquivos' && uploadEnabled && !finalCard && !uploadClient && (
           <ButtonsWrapper>
             {sendToApprove && (
               <ButtonDefault typeButton="primary" onClick={toApprove}>
@@ -636,12 +697,25 @@ export default function WorkingProduct({
             </ButtonDefault>
           </ButtonsWrapper>
         )}
+
+        {selectedTab === 'Arquivos' && uploadEnabled && uploadClient && (
+          <ButtonsWrapper>
+            {/* {sendToApprove && (
+              <ButtonDefault typeButton="primary" onClick={toApprove}>
+                Enviar para aprovação
+              </ButtonDefault>
+            )} */}
+            <ButtonDefault typeButton="primary" onClick={() => setModalFinalFile(true)}>
+              Adicionar arquivo
+            </ButtonDefault>
+          </ButtonsWrapper>
+        )}
       </TabsWrapper>
 
       <WorkSection>
         {selectedTab === 'Redação' && (
           <>
-            {user.permissions.includes('21jobs_task_essay') ? (
+            {user.permissions.includes('jobs_tasks_essay') ? (
               <div>
                 <WrapperEditor
                   value={essayInfo}
@@ -860,23 +934,36 @@ export default function WorkingProduct({
                             )}
                           </td>
                           <td>
-                            {/* <DownloadIcon>
-                              <FaDownload />
-                            </DownloadIcon> */}
-                            {productsInfo?.file_status === 'pass' && (
-                              <div className="fieldTableClients">
-                                {/* <DownloadIcon>
-                                  <FaDownload />
-                                </DownloadIcon> */}
-                                {/* <Alert
-                                  title="Atenção"
-                                  subtitle="Certeza que gostaria de deletar este arquivo? Ao excluir esta ação não poderá ser desfeita."
-                                  confirmButton={() => ''}
-                                >
-                                  <ButtonTable typeButton="delete" />
-                                </Alert> */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              <ViewFile
+                                onClick={() =>
+                                  setPreviewImage({
+                                    isOpen: true,
+                                    imageInfos: {
+                                      bucket: row.bucket,
+                                      created: row.created,
+                                      file_name: row.file_name,
+                                      key: row.key,
+                                      task_file_id: row.task_file_id,
+                                      task_id: row.task_id,
+                                      size: row.size,
+                                      updated: row.updated,
+                                      url: row.url
+                                    }
+                                  })
+                                }
+                              >
+                                <BiShow size={20} />
+                              </ViewFile>
+
+                              <DownloadIcon onClick={() => downloadFile(row)}>
+                                <FaDownload />
+                              </DownloadIcon>
+                            </div>
+                            {/* {productsInfo?.file_status === 'pass' && (
+                              <div className="fieldTableClients">                               
                               </div>
-                            )}
+                            )} */}
                             {/* productsInfo?.file_status === 'await' && */}
                             {isToApprove &&
                               isToApprove[0].manager_approve === 'true' &&
@@ -946,7 +1033,7 @@ export default function WorkingProduct({
             isDisabed={!taskTenant}
             loading={loading}
             setLoading={setLoading}
-            folderInfo="task"
+            folderInfo="tasks"
           />
 
           <div className="select-product">Para qual produto?</div>
@@ -1017,7 +1104,7 @@ export default function WorkingProduct({
       <ModalDefault
         isOpen={modalFinalFile}
         onOpenChange={() => setModalFinalFile(false)}
-        title="Upload para arquivo final"
+        title={finalCard ? 'Upload para arquivo final' : 'Upload de arquivo'}
       >
         <ModalUploadWrapper>
           <UploadFiles
@@ -1027,25 +1114,107 @@ export default function WorkingProduct({
             isDisabed={!taskTenant}
             loading={loading}
             setLoading={setLoading}
-            folderInfo="task"
+            folderInfo="tasks"
           />
 
-          <div className="modal-buttons">
-            <ButtonDefault
-              typeButton="lightWhite"
-              isOutline
-              onClick={() => setModalFinalFile(false)}
-            >
-              Cancelar
-            </ButtonDefault>
-            <ButtonDefault typeButton="primary" onClick={handleSaveUploadFinal}>
-              Salvar
-            </ButtonDefault>
-          </div>
+          {finalCard && (
+            <div className="modal-buttons">
+              <ButtonDefault
+                typeButton="lightWhite"
+                isOutline
+                onClick={() => setModalFinalFile(false)}
+              >
+                Cancelar
+              </ButtonDefault>
+
+              <ButtonDefault typeButton="primary" onClick={handleSaveUploadFinal}>
+                Salvar
+              </ButtonDefault>
+            </div>
+          )}
+
+          {uploadClient && (
+            <div className="modal-buttons">
+              <ButtonDefault
+                typeButton="lightWhite"
+                isOutline
+                onClick={() => setModalFinalFile(false)}
+              >
+                Cancelar
+              </ButtonDefault>
+
+              <ButtonDefault typeButton="primary" onClick={handleSaveUploadClient}>
+                Salvar
+              </ButtonDefault>
+            </div>
+          )}
         </ModalUploadWrapper>
       </ModalDefault>
 
       {/* Modal to preview image */}
+      <ModalDefault
+        isOpen={previewImage.isOpen}
+        title={previewImage.imageInfos.file_name}
+        onOpenChange={() =>
+          setPreviewImage({
+            isOpen: false,
+            imageInfos: {
+              bucket: '',
+              created: '',
+              file_name: '',
+              key: '',
+              task_file_id: '',
+              task_id: '',
+              size: '',
+              updated: '',
+              url: ''
+            }
+          })
+        }
+      >
+        <>
+          {previewImage.imageInfos.file_name.split('.').pop() !== 'pdf' && (
+            <ModalImage
+              style={{
+                backgroundImage: `url(https://${previewImage.imageInfos.bucket}.s3.amazonaws.com/${previewImage.imageInfos.key})`
+              }}
+            >
+              <div
+                className="close-button"
+                onClick={() =>
+                  setPreviewImage({
+                    isOpen: false,
+                    imageInfos: {
+                      bucket: '',
+                      created: '',
+                      file_name: '',
+                      key: '',
+                      task_file_id: '',
+                      task_id: '',
+                      size: '',
+                      updated: '',
+                      url: ''
+                    }
+                  })
+                }
+              >
+                <MdClose />
+              </div>
+            </ModalImage>
+          )}
+
+          {previewImage.imageInfos.file_name.split('.').pop() === 'pdf' && (
+            <DocViewer
+              documents={[
+                {
+                  uri: `url(https://${previewImage.imageInfos.bucket}.s3.amazonaws.com/${previewImage.imageInfos.key})`,
+                  fileType: 'pdf'
+                }
+              ]}
+            />
+          )}
+        </>
+      </ModalDefault>
     </ContainerDefault>
   );
 }

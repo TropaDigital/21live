@@ -145,11 +145,11 @@ export default function SummaryTasks({
   }, [totalArrayHours]);
 
   // useEffect(() => {
-  //   console.log('log do deliveryArrayHours', deliveryArrayHours);
-  //   console.log('log do totalArrayHours', totalArrayHours);
-  //   console.log('log do selectedProducts', selectedProducts);
-  //   console.log('log do taskSummaries', taskSummary);
-  //   console.log('log do projectInfos', projectInfos);
+  // console.log('log do deliveryArrayHours', deliveryArrayHours);
+  // console.log('log do totalArrayHours', totalArrayHours);
+  // console.log('log do selectedProducts', selectedProducts);
+  // console.log('log do taskSummaries', taskSummary);
+  // console.log('log do projectInfos', projectInfos);
   // }, [deliveryArrayHours, totalArrayHours, selectedProducts, taskSummary, projectInfos]);
 
   return (
@@ -241,7 +241,7 @@ export default function SummaryTasks({
                     <span>- {moment(taskSummary.creation_date_end).format('DD/MM/YYYY')}</span>
                   )}
                 </DeliveriesTitle>
-                {row.products.map((products: any, index: number) => (
+                {row?.products.map((products: any, index: number) => (
                   <SummaryCard key={index} style={{ height: 'fit-content' }}>
                     <SummaryCardTitle>
                       #{index + 1} - {products.service}
@@ -502,7 +502,7 @@ export default function SummaryTasks({
             </>
           )}
 
-          {ticketAsk === 'ask' && (
+          {ticketAsk === 'ask' && taskSummary.ticket_id === '' && (
             <>
               <div className="splitter" />
               <CreateTicketOption>

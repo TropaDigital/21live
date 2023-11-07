@@ -83,7 +83,7 @@ export default function TaskList() {
   const [selected, setSelected] = useState(1);
   const [search, setSearch] = useState('');
   const { data, pages, fetchData, isFetching } = useFetch<any[]>(
-    `tasks?search=${search}&page=${selected}`
+    `tasks?search=${search.replace('#', '')}&page=${selected}`
   );
   const [searchTerm, setSearchTerm] = useState('');
   const { isLoading, debouncedCallback } = useDebouncedCallback(

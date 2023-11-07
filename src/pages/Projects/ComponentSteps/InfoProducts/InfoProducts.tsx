@@ -61,6 +61,7 @@ export default function InfoProducts({
   handleEditProductQuantity,
   okToSave,
   editProducts,
+  editProject,
   hideSwitch,
   tenant_id
 }: PropsProducts) {
@@ -90,7 +91,7 @@ export default function InfoProducts({
   const handleOnQuantity = (product: any, counter: any) => {
     const productSelected: IProduct = {
       job_service_id: product.job_service_id || product.project_id || product.project_product_id,
-      category: product.category,
+      // category: product.category,
       service: product.service,
       description: product.description,
       flag: product.flag,
@@ -209,7 +210,7 @@ export default function InfoProducts({
                 Ver Kits
               </ButtonDefault>
             </FieldTogleButton>
-            {editProducts && (
+            {editProducts && !editProject && (
               <ButtonDefault typeButton="primary" onClick={() => setProductsModal(true)}>
                 {typeList === 'produtos' ? 'Adicionar mais produtos' : 'Adicionar mais kits'}
               </ButtonDefault>
@@ -268,7 +269,8 @@ export default function InfoProducts({
                       infosReceived={row}
                       handleQuantity={(value: any) => handleOnQuantity(row, value)}
                       clearQuantity={() => handleDeleteProducts(row.job_service_id)}
-                      disabledInput={false}
+                      disabledInput={editProject}
+                      isEditProject={editProject}
                     />
                   </td>
                   {quantityProducts &&
