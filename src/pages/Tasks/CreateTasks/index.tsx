@@ -1260,7 +1260,8 @@ export default function CreateTasks() {
         start_job,
         end_job,
         step,
-        gen_ticket
+        gen_ticket,
+        ticket_id
       } = DTOForm;
 
       if (tasksType === 'livre') {
@@ -1281,6 +1282,7 @@ export default function CreateTasks() {
           start_job,
           files: fileArray,
           gen_ticket,
+          ticket_id,
           deadlines: [
             {
               date_end: DTOForm?.creation_date_end,
@@ -1308,6 +1310,10 @@ export default function CreateTasks() {
 
         if (requester_id === '') {
           delete createNewData.requester_id;
+        }
+
+        if (ticket_id === '') {
+          delete createNewData.ticket_id;
         }
 
         if (location.state !== null && location.state.task_id) {
@@ -1340,11 +1346,16 @@ export default function CreateTasks() {
           files: fileArray,
           deadlines: [deadline],
           step,
-          gen_ticket
+          gen_ticket,
+          ticket_id
         };
 
         if (requester_id === '') {
           delete createNewData.requester_id;
+        }
+
+        if (ticket_id === '') {
+          delete createNewData.ticket_id;
         }
 
         if (location.state !== null && location.state.task_id) {
@@ -1380,12 +1391,18 @@ export default function CreateTasks() {
             copywriting_description,
             deadlines: deadlines,
             step,
-            gen_ticket
+            gen_ticket,
+            ticket_id
           };
 
           if (requester_id === '') {
             delete createNewData.requester_id;
           }
+
+          if (ticket_id === '') {
+            delete createNewData.requester_id;
+          }
+
           if (location.state !== null && location.state.task_id) {
             await api.put(`tasks/${location.state.task_id}`, createNewData);
           } else {
@@ -1400,10 +1417,12 @@ export default function CreateTasks() {
               products: row.deliveryProducts
             };
           });
+
           const createNewData = {
             title,
             tenant_id,
             project_product_id,
+            requester_id,
             user_id,
             end_job,
             start_job,
@@ -1416,8 +1435,18 @@ export default function CreateTasks() {
             copywriting_description,
             deadlines: deadlines,
             step,
-            gen_ticket
+            gen_ticket,
+            ticket_id
           };
+
+          if (requester_id === '') {
+            delete createNewData.requester_id;
+          }
+
+          if (ticket_id === '') {
+            delete createNewData.ticket_id;
+          }
+
           if (location.state !== null && location.state.task_id) {
             await api.put(`tasks/${location.state.task_id}`, createNewData);
           } else {
@@ -1586,7 +1615,9 @@ export default function CreateTasks() {
       } else if (location.state?.type === 'Livre') {
         setTasksType('livre');
       } else {
-        setTasksType('horas');
+        if (location.state.ticket_id === '') {
+          setTasksType('horas');
+        }
       }
     }
   }, [DTOForm, infoProjects, infoOrganizationsProjects, location]);
@@ -1667,6 +1698,14 @@ export default function CreateTasks() {
   // useEffect(() => {
   //   console.log('log dos erros', errorCategory);
   // }, [errorCategory]);
+
+  // useEffect(() => {
+  //   console.log('log do info projects', infoProjects);
+  // }, [infoProjects]);
+
+  // useEffect(() => {
+  //   console.log('log do location', location.state);
+  // }, [location]);
 
   return (
     <>
