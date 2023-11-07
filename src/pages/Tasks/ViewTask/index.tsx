@@ -434,11 +434,13 @@ export default function ViewTask() {
               timeLineData?.steps.map((row: StepTimeline, index: number) => (
                 <TimelineStep key={index}>
                   <TimeLineIcon className={row.step <= timeLineData.currentStep ? 'checked' : ''}>
-                    {Number(row.step) >= Number(timeLineData.currentStep) && (
-                      <div className="dot"></div>
-                    )}
+                    {Number(row.step) >= Number(timeLineData.currentStep) &&
+                      dataTask?.status !== 'Concluida' && <div className="dot"></div>}
 
-                    {Number(row.step) < Number(timeLineData.currentStep) && <IconBigCheck />}
+                    {Number(row.step) < Number(timeLineData.currentStep) &&
+                      dataTask?.status !== 'Concluida' && <IconBigCheck />}
+
+                    {dataTask?.status === 'Concluida' && <IconBigCheck />}
                   </TimeLineIcon>
                   <TimelineInfo>
                     {row.step < timeLineData.currentStep && (
