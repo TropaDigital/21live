@@ -408,6 +408,7 @@ export default function ListMeeting() {
 
   async function downloadFile(file: any) {
     try {
+      console.log('log file to download', file);
       const url = `https://${file.bucket}.s3.amazonaws.com/meetings/${file.file_name}`;
 
       const response = await axios({
@@ -800,41 +801,43 @@ export default function ListMeeting() {
                 </div>
               </ModalField>
 
-              <ModalField className="info-description">
-                <div className="title-info">Anexos:</div>
-                <FilesWrapper>
-                  {modalView.meetingInfos.files.map((row: DownloadFiles) => (
-                    <FileInfo key={row.meeting_file_id}>
-                      <div className="name-file">{row.file_name}</div>
-                      <div className="file-icons">
-                        <ViewFileBtn
-                          onClick={() =>
-                            setPreviewImage({
-                              isOpen: true,
-                              imageInfos: {
-                                bucket: row.bucket,
-                                created: row.created,
-                                file_name: row.file_name,
-                                key: row.key,
-                                meeting_file_id: row.meeting_file_id,
-                                meeting_id: row.meeting_id,
-                                size: row.size,
-                                updated: row.updated,
-                                url: row.url
-                              }
-                            })
-                          }
-                        >
-                          <BiShow size={20} />
-                        </ViewFileBtn>
-                        <DownloadFileBtn onClick={() => downloadFile(row)}>
-                          <FaDownload />
-                        </DownloadFileBtn>
-                      </div>
-                    </FileInfo>
-                  ))}
-                </FilesWrapper>
-              </ModalField>
+              {modalView.meetingInfos.files.length > 0 && (
+                <ModalField className="info-description">
+                  <div className="title-info">Anexos:</div>
+                  <FilesWrapper>
+                    {modalView.meetingInfos.files.map((row: DownloadFiles) => (
+                      <FileInfo key={row.meeting_file_id}>
+                        <div className="name-file">{row.file_name}</div>
+                        <div className="file-icons">
+                          <ViewFileBtn
+                            onClick={() =>
+                              setPreviewImage({
+                                isOpen: true,
+                                imageInfos: {
+                                  bucket: row.bucket,
+                                  created: row.created,
+                                  file_name: row.file_name,
+                                  key: row.key,
+                                  meeting_file_id: row.meeting_file_id,
+                                  meeting_id: row.meeting_id,
+                                  size: row.size,
+                                  updated: row.updated,
+                                  url: row.url
+                                }
+                              })
+                            }
+                          >
+                            <BiShow size={20} />
+                          </ViewFileBtn>
+                          <DownloadFileBtn onClick={() => downloadFile(row)}>
+                            <FaDownload />
+                          </DownloadFileBtn>
+                        </div>
+                      </FileInfo>
+                    ))}
+                  </FilesWrapper>
+                </ModalField>
+              )}
 
               <ModalField className="info-description">
                 <div className="title-info">Descrição:</div>
@@ -849,7 +852,7 @@ export default function ListMeeting() {
           {previewImage.isOpen && (
             <ModalImage
               style={{
-                backgroundImage: `url(https://${previewImage.imageInfos.bucket}.s3.amazonaws.com/meetings/${previewImage.imageInfos.file_name})`
+                backgroundImage: `url(https://${previewImage.imageInfos.bucket}.s3.amazonaws.com/${previewImage.imageInfos.key})`
               }}
             >
               <div

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable import-helpers/order-imports */
 //  React
@@ -424,12 +425,14 @@ export default function ViewRequest() {
                         />
                       </InfoSideCard>
 
-                      <InfoSideCard>
-                        <div className="side-title">
-                          Objetivo a ser atingido com essa solicitação:
-                        </div>
-                        <div className="side-info">{requestData?.target}</div>
-                      </InfoSideCard>
+                      {requestData?.target !== '' && (
+                        <InfoSideCard>
+                          <div className="side-title">
+                            Objetivo a ser atingido com essa solicitação:
+                          </div>
+                          <div className="side-info">{requestData?.target}</div>
+                        </InfoSideCard>
+                      )}
 
                       {requestData?.obs !== '' && (
                         <InfoSideCard>
