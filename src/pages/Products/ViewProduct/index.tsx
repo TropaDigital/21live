@@ -700,7 +700,7 @@ export default function ViewProductsDeliveries() {
     // console.log('log do selectedProducts', selectedProduct);
     // console.log('log do next step', nextStep);
     // console.log('log do upload', uploadIsTrue);
-    console.log('log do final card', finalCard);
+    // console.log('log do final card', finalCard);
   }, [selectedProduct, typeOfPlay, nextStep, uploadIsTrue, finalCard]);
 
   return (
@@ -1003,6 +1003,7 @@ export default function ViewProductsDeliveries() {
             productInfos={selectedProduct.productInfo}
             taskInputs={InputsTask}
             taskId={dataTask?.task_id}
+            ticket_id={dataTask?.ticket_id}
             taskFiles={dataTask?.files}
             taskTenant={dataTask?.tenant_id}
             uploadEnabled={enableUpload}
