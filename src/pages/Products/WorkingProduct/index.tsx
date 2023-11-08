@@ -74,12 +74,14 @@ import { formatBytes } from '../../../utils/convertBytes';
 import axios from 'axios';
 import { ModalImage } from '../../Requests/ViewRequests/styles';
 import { MdClose } from 'react-icons/md';
+import UploadFilesTicket from '../../../components/UploadTicket/UploadFilex';
 
 interface WorkingProductProps {
   productDeliveryId?: any;
   productInfos?: any;
   taskInputs?: InputProps;
   taskId?: string;
+  ticket_id?: string;
   taskFiles?: [];
   taskTenant?: string;
   goBack?: () => void;
@@ -206,6 +208,7 @@ export default function WorkingProduct({
   stepToReturn,
   sendToApprove,
   timelineData,
+  ticket_id,
   toApprove,
   goBack
 }: WorkingProductProps) {
@@ -616,6 +619,13 @@ export default function WorkingProduct({
       console.log('log error download file', error);
     }
   }
+
+  useEffect(() => {
+    console.log('log do ticket_id =>', ticket_id);
+    // console.log('log do final card =>', finalCard);
+    // console.log('log do upload client =>', uploadClient);
+    // console.log('log do isToApprove =>', isToApprove);
+  }, [finalCard, uploadClient, isToApprove, ticket_id]);
 
   return (
     <ContainerDefault>
@@ -1104,18 +1114,34 @@ export default function WorkingProduct({
       <ModalDefault
         isOpen={modalFinalFile}
         onOpenChange={() => setModalFinalFile(false)}
-        title={finalCard ? 'Upload para arquivo final' : 'Upload de arquivo'}
+        title={
+          finalCard ? 'Upload para arquivo final' : 'Upload de arquivo para aprovação do cliente'
+        }
       >
         <ModalUploadWrapper>
-          <UploadFiles
-            uploadedFiles={uploadedFiles}
-            setUploadedFiles={setUploadedFiles}
-            tenant={taskTenant}
-            isDisabed={!taskTenant}
-            loading={loading}
-            setLoading={setLoading}
-            folderInfo="tasks"
-          />
+          {finalCard && (
+            <UploadFiles
+              uploadedFiles={uploadedFiles}
+              setUploadedFiles={setUploadedFiles}
+              tenant={taskTenant}
+              isDisabed={!taskTenant}
+              loading={loading}
+              setLoading={setLoading}
+              folderInfo="tasks"
+            />
+          )}
+
+          {uploadClient && ticket_id && (
+            <UploadFilesTicket
+              uploadedFiles={uploadedFiles}
+              setUploadedFiles={setUploadedFiles}
+              ticket_id={ticket_id}
+              isDisabled={false}
+              loading={loading}
+              setLoading={setLoading}
+              folderInfo="tasks"
+            />
+          )}
 
           {finalCard && (
             <div className="modal-buttons">
