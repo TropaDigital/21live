@@ -152,6 +152,12 @@ export const GridServiceWrapper = styled.div`
   border-radius: 10px;
 
   padding: 12px;
+
+  table {
+    td {
+      padding: 6px 2px !important;
+    }
+  }
 `;
 
 export const BaseTableGrey = styled.div`
