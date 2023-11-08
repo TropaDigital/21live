@@ -8,8 +8,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 // Icons
 import { FaArrowLeft, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { BsChevronDoubleRight } from 'react-icons/bs';
-import { IconBigCheck, IconClose } from '../../../assets/icons';
-import { BiSearchAlt } from 'react-icons/bi';
+import { IconBigCheck } from '../../../assets/icons';
 
 // Components
 import HeaderOpenTask from '../../../components/HeaderTaskPage';
@@ -19,19 +18,17 @@ import { ContainerDefault } from '../../../components/UiElements/styles';
 import ModalDefault from '../../../components/Ui/ModalDefault';
 import CardTaskPlay from '../../../components/CardTaskPlay';
 import ScheduleUser from '../../../components/ScheduleUser';
+import WorkingProduct from '../WorkingProduct';
+import ButtonDefault from '../../../components/Buttons/ButtonDefault';
+import UploadFiles from '../../../components/Upload/UploadFiles';
+import UploadFilesTicket from '../../../components/UploadTicket/UploadFilex';
 
 // Styles
 import {
   ArrowSection,
   CardsWrapper,
   DeliveryWrapper,
-  ModalButtons,
-  ModalList,
-  ModalSearch,
-  ModalSubtitle,
-  ModalTable,
   ModalUploadWrapper,
-  ModalWrapperList,
   RightInfosCard,
   RightInfosTitle,
   ShowInfosButton,
@@ -52,12 +49,11 @@ import 'moment/dist/locale/pt-br';
 
 // Hooks
 import { useToast } from '../../../hooks/toast';
-import WorkingProduct from '../WorkingProduct';
 import { useAuth } from '../../../hooks/AuthContext';
 import { useStopWatch } from '../../../hooks/stopWatch';
+
+// Types
 import { UploadedFilesProps } from '../../../types';
-import ButtonDefault from '../../../components/Buttons/ButtonDefault';
-import UploadFiles from '../../../components/Upload/UploadFiles';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -109,6 +105,7 @@ export default function ViewProductsDeliveries() {
   const [typeOfPlay, setTypeOfPlay] = useState<string>('');
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
   const [modalUpload, setModalUpload] = useState<boolean>(false);
+  const [modalFinalFile, setModalFinalFile] = useState<boolean>(false);
   const [productForUpload, setProductForUpload] = useState<any>({});
   const [enableUpload, setEnableUpload] = useState<boolean>(false);
   const [viewProduct, setViewProduct] = useState<boolean>(false);
@@ -146,6 +143,8 @@ export default function ViewProductsDeliveries() {
     : '';
 
   const finalCard = uploadIsTrue && uploadIsTrue[0].final_card === 'true';
+
+  const uploadClient = uploadIsTrue && uploadIsTrue[0].tenant_approve === 'true';
 
   useEffect(() => {
     async function getClockIsOpen() {
@@ -654,7 +653,12 @@ export default function ViewProductsDeliveries() {
 
   const handleUploadForProduct = (value: any) => {
     setProductForUpload(value);
-    setModalUpload(true);
+    if (!finalCard && !uploadClient) {
+      setModalUpload(true);
+    }
+    if (finalCard || uploadClient) {
+      setModalFinalFile(true);
+    }
   };
 
   async function handleSaveUpload() {
@@ -677,6 +681,86 @@ export default function ViewProductsDeliveries() {
       console.log('log do response do saveUpload', response.data.result);
     } catch (error: any) {
       console.log('log save upload for product', error);
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
+    }
+  }
+
+  async function handleSaveUploadFinal() {
+    try {
+      const uploadInfos = {
+        task_id: dataTask?.task_id,
+        file_name: uploadedFiles[0].file_name,
+        size: uploadedFiles[0].size,
+        key: uploadedFiles[0].key,
+        bucket: uploadedFiles[0].bucket,
+        last_archive: 'true',
+        products_delivery_id: selectedProduct?.productInfo?.products_delivery_id
+      };
+
+      const response = await api.put(`/task/upload`, uploadInfos);
+
+      if (response.data.status === 'success') {
+        setUploadedFiles([]);
+        setModalUpload(false);
+        setModalFinalFile(false);
+      }
+
+      console.log('log do response do saveUpload', response.data.result);
+    } catch (error: any) {
+      console.log('log save upload final file', error);
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
+    }
+  }
+
+  async function handleSaveUploadClient() {
+    try {
+      const uploadInfos = {
+        task_id: dataTask?.task_id,
+        file_name: uploadedFiles[0].file_name,
+        size: uploadedFiles[0].size,
+        key: uploadedFiles[0].key,
+        bucket: uploadedFiles[0].bucket,
+        products_delivery_id: selectedProduct?.productInfo?.products_delivery_id
+      };
+
+      const response = await api.put(`/task/upload-tenant-approve`, uploadInfos);
+
+      if (response.data.status === 'success') {
+        setUploadedFiles([]);
+        setModalFinalFile(false);
+      }
+
+      console.log('log do response do saveUpload', response.data.result);
+    } catch (error: any) {
+      console.log('log save upload tenant file', error);
       if (error.response.data.result.length !== 0) {
         error.response.data.result.map((row: any) => {
           addToast({
@@ -1069,6 +1153,73 @@ export default function ViewProductsDeliveries() {
               Salvar
             </ButtonDefault>
           </div>
+        </ModalUploadWrapper>
+      </ModalDefault>
+
+      {/* Modal to upload last file or tenant approve */}
+      <ModalDefault
+        isOpen={modalFinalFile}
+        onOpenChange={() => setModalFinalFile(false)}
+        title={
+          finalCard ? 'Upload para arquivo final' : 'Upload de arquivo para aprovação do cliente'
+        }
+      >
+        <ModalUploadWrapper>
+          {finalCard && (
+            <UploadFiles
+              uploadedFiles={uploadedFiles}
+              setUploadedFiles={setUploadedFiles}
+              tenant={dataTask?.tenant_id}
+              isDisabed={!dataTask?.tenant_id}
+              loading={loading}
+              setLoading={setLoading}
+              folderInfo="tasks"
+            />
+          )}
+
+          {uploadClient && dataTask?.ticket_id && (
+            <UploadFilesTicket
+              uploadedFiles={uploadedFiles}
+              setUploadedFiles={setUploadedFiles}
+              ticket_id={dataTask?.ticket_id}
+              isDisabled={false}
+              loading={loading}
+              setLoading={setLoading}
+              folderInfo="tasks"
+            />
+          )}
+
+          {finalCard && (
+            <div className="modal-buttons">
+              <ButtonDefault
+                typeButton="lightWhite"
+                isOutline
+                onClick={() => setModalFinalFile(false)}
+              >
+                Cancelar
+              </ButtonDefault>
+
+              <ButtonDefault typeButton="primary" onClick={handleSaveUploadFinal}>
+                Salvar
+              </ButtonDefault>
+            </div>
+          )}
+
+          {uploadClient && (
+            <div className="modal-buttons">
+              <ButtonDefault
+                typeButton="lightWhite"
+                isOutline
+                onClick={() => setModalFinalFile(false)}
+              >
+                Cancelar
+              </ButtonDefault>
+
+              <ButtonDefault typeButton="primary" onClick={handleSaveUploadClient}>
+                Salvar
+              </ButtonDefault>
+            </div>
+          )}
         </ModalUploadWrapper>
       </ModalDefault>
     </ContainerDefault>
