@@ -1615,7 +1615,7 @@ export default function CreateTasks() {
       } else if (location.state?.type === 'Livre') {
         setTasksType('livre');
       } else {
-        if (location.state.ticket_id === '') {
+        if (location.state !== null && location.state.ticket_id) {
           setTasksType('horas');
         }
       }

@@ -1,0 +1,172 @@
+import { useEffect, useState } from 'react';
+
+import api from '../../services/api';
+
+import axios from 'axios';
+import { filesize } from 'filesize';
+import { v4 as uuidV4 } from 'uuid';
+
+import Upload from '.';
+import { Container } from '../../pages/Projects/ComponentSteps/styles';
+import FileList from './FileList';
+
+export interface UploadedFilesProps {
+  file?: File;
+  file_id: string;
+  // name: string;
+  readableSize: string;
+  preview: string;
+  progress?: number;
+  uploaded: boolean;
+  error?: boolean;
+  url: string | null;
+  bucket: string;
+  key: string;
+  size: number;
+  file_name: string;
+  isNew: boolean;
+  loading: boolean;
+}
+
+interface UpdateFileData {
+  progress?: number;
+  file_id?: string;
+  uploaded?: boolean;
+  error?: boolean;
+  url?: string;
+  bucket?: string;
+  key?: string;
+  loading?: boolean;
+  ETag?: string;
+  file_name?: string;
+  folder?: string;
+  size?: string;
+}
+
+interface UploadProps {
+  uploadedFiles: UploadedFilesProps[];
+  setUploadedFiles: (item: any) => void;
+  ticket_id: any;
+  isDisabled?: boolean;
+  loading?: boolean;
+  setLoading?: any;
+  folderInfo?: string;
+}
+
+export default function UploadFilesTicket({
+  uploadedFiles,
+  setUploadedFiles,
+  ticket_id,
+  isDisabled,
+  loading,
+  setLoading,
+  folderInfo
+}: UploadProps) {
+  useEffect(() => {
+    return () => {
+      uploadedFiles.forEach((file) => URL.revokeObjectURL(file.preview));
+    };
+  }, [uploadedFiles]);
+
+  function updateFile(id: string, data: UpdateFileData) {
+    setUploadedFiles((state: any) =>
+      state.map((uploadedFile: any) => {
+        if (id === uploadedFile.file_id) {
+          return { ...uploadedFile, ...data };
+        }
+
+        return uploadedFile;
+      })
+    );
+  }
+
+  const [cancelTokenSource, setCancelTokenSource] = useState<any>(null);
+
+  const handleCancelClick = () => {
+    if (cancelTokenSource) {
+      cancelTokenSource.cancel('Requisição cancelada pelo usuário.');
+    }
+  };
+
+  async function processUpload(uploadedFile: UploadedFilesProps) {
+    setLoading(true);
+    try {
+      const data = new FormData();
+
+      const source = axios.CancelToken.source();
+      setCancelTokenSource(source);
+
+      if (!uploadedFile.file) return;
+      data.append('archive', uploadedFile.file);
+      data.append('ticket_id', ticket_id);
+      // data.append('folder', folderInfo);
+
+      const response = await api.post('/archive/upload/ticket', data, {
+        onUploadProgress: (event: any) => {
+          const progress = Math.round((event.loaded * 100) / event.total);
+          updateFile(uploadedFile.file_id, { progress, loading });
+        },
+        cancelToken: source.token
+      });
+
+      updateFile(uploadedFile.file_id, {
+        uploaded: true,
+        ETag: response.data.result.ETag,
+        file_id: response.data.result.key.split('-')[0], // correto => response.data._id
+        url: response.data.result.url,
+        bucket: response.data.result.bucket,
+        key: response.data.result.key,
+        file_name: response.data.result.file_name,
+        size: response.data.result.size,
+        folder: response.data.result.folder,
+        loading: loading
+      });
+    } catch (err) {
+      updateFile(uploadedFile.file_id, {
+        error: true
+      });
+    } finally {
+      setLoading(false);
+      setCancelTokenSource(null);
+    }
+  }
+
+  function handleUpload(files: File[]) {
+    const formatedFiles = files.map((file) => ({
+      file,
+      file_id: uuidV4(),
+      file_name: file.name,
+      size: filesize(file.size),
+      preview: URL.createObjectURL(file),
+      progress: 0,
+      uploaded: false,
+      isNew: true,
+      error: false,
+      url: null,
+      loading: loading
+    }));
+
+    const newUploadedFiles = [...uploadedFiles, ...formatedFiles];
+
+    setUploadedFiles(newUploadedFiles as any);
+    formatedFiles.forEach(processUpload as any);
+  }
+
+  async function handleDelete(id: string) {
+    const filterFile = uploadedFiles.filter((obj: any) => obj.file_id === id)[0];
+
+    if (!filterFile.isNew) {
+      await api.delete(`archive/${id}`);
+    }
+
+    handleCancelClick();
+    setUploadedFiles((files: any) => files.filter((file: any) => file.file_id !== id));
+  }
+
+  return (
+    <Container isDisabed={isDisabled}>
+      <Upload onUpload={handleUpload} isDisabled={isDisabled} />
+      {!!uploadedFiles.length && <FileList files={uploadedFiles} onDelete={handleDelete} />}
+    </Container>
+  );
+}
