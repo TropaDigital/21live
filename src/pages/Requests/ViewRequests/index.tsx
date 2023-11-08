@@ -602,7 +602,7 @@ export default function ViewRequest() {
                             <PublicImageWrapper>
                               <MessageUserWrapper
                                 style={{
-                                  backgroundImage: `url(https://app.21live.com.br/public/files/tickets/${row.ticket_id}/${row.annex})`
+                                  backgroundImage: `url(https://app.21live.com.br/public/files/${row.annex})`
                                 }}
                                 className="image-interaction"
                                 onClick={() => setModalImage({ isOpen: true, path: row.annex })}
@@ -613,7 +613,7 @@ export default function ViewRequest() {
                             <DocViewer
                               documents={[
                                 {
-                                  uri: `https://app.21live.com.br/public/files/tickets/${location.state.ticket_id}/${row.annex}`,
+                                  uri: `https://app.21live.com.br/public/files/${row.annex}`,
                                   fileType: 'pptx'
                                 }
                               ]}

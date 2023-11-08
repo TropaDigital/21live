@@ -207,6 +207,28 @@ export default function SummaryTasks({
               </SummaryTaskInfo>
             )}
 
+            <SummaryTaskInfo>
+              <div className="title-info">Input Pré-requisito:</div>
+              <div className="info">
+                <div
+                  className="description-info"
+                  dangerouslySetInnerHTML={{ __html: taskSummary?.copywriting_description }}
+                />
+              </div>
+            </SummaryTaskInfo>
+
+            <SummaryTaskInfo>
+              <div className="title-info">Input Criação:</div>
+              <div className="info">
+                <div
+                  className="description-info"
+                  dangerouslySetInnerHTML={{
+                    __html: taskSummary?.creation_description
+                  }}
+                />
+              </div>
+            </SummaryTaskInfo>
+
             <SummaryTaskDescription>
               <div className="description-title">Contexto geral</div>
               <div

@@ -77,6 +77,7 @@ interface TaskExchangeProps {
   flow: string;
   project_product_id: string;
   step?: string | number | any;
+  limitDate?: string;
   user_alocated: (value: any) => void;
   closeModal: () => void;
 }
@@ -95,6 +96,7 @@ export default function ScheduleUser({
   flow,
   project_product_id,
   step,
+  limitDate,
   user_alocated,
   closeModal
 }: TaskExchangeProps) {
@@ -163,6 +165,23 @@ export default function ScheduleUser({
     getUserSchedule();
   }, [dayCounter]);
 
+  useEffect(() => {
+    if (moment(dinamicDate).isSame(limitDate)) {
+      addToast({
+        type: 'warning',
+        title: 'Aviso',
+        description: 'Data limite para a 1ª entrega!'
+      });
+    }
+    if (moment(dinamicDate).isAfter(limitDate)) {
+      addToast({
+        type: 'warning',
+        title: 'Aviso',
+        description: 'Data ultrapassa a data da 1ª entrega!'
+      });
+    }
+  }, [limitDate, dinamicDate]);
+
   const addNewObjectToAgenda = (userId: string, newTaskItem: any) => {
     const taskNewInfos = newTaskItem.map((item: any) => {
       let title = '';
@@ -187,93 +206,6 @@ export default function ScheduleUser({
       });
     });
   };
-
-  // const dataTest: UserData[] = [
-  //   {
-  //     user_id: '15853',
-  //     name: 'Robert Fox',
-  //     function: 'Gerente de Projeto',
-  //     work: {
-  //       start_work: '09:30',
-  //       end_work: '17:30'
-  //     },
-  //     agenda: [
-  //       {
-  //         task_id: '170',
-  //         start: '2023-09-05 09:30',
-  //         end: '2023-09-05 13:30',
-  //         type: 'job',
-  //         title: 'Tarefa 1'
-  //       },
-  //       {
-  //         start: '2023-09-05 13:30',
-  //         end: '2023-09-05 14:00',
-  //         type: 'pause'
-  //       },
-  //       {
-  //         task_id: '170',
-  //         start: '2023-09-05 14:00',
-  //         end: '2023-09-05 16:00',
-  //         type: 'job',
-  //         title: 'Tarefa 2'
-  //       },
-  //       {
-  //         start: '2023-09-05 16:00',
-  //         end: '2023-09-05 16:30',
-  //         type: 'pause'
-  //       },
-  //       {
-  //         task_id: '170',
-  //         start: '2023-09-05 16:30',
-  //         end: '2023-09-05 17:30',
-  //         type: 'job',
-  //         title: 'Tarefa 3'
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     user_id: '15854',
-  //     name: 'Darlene Robertson',
-  //     function: 'Gerente de Projeto',
-  //     work: {
-  //       start_work: '10:00',
-  //       end_work: '19:00'
-  //     },
-  //     agenda: [
-  //       {
-  //         task_id: '171',
-  //         start: '2023-09-05 10:30',
-  //         end: '2023-09-05 13:30',
-  //         type: 'job',
-  //         title: 'Tarefa 1'
-  //       },
-  //       {
-  //         start: '2023-09-05 13:30',
-  //         end: '2023-09-05 14:00',
-  //         type: 'pause'
-  //       },
-  //       {
-  //         task_id: '170',
-  //         start: '2023-09-05 14:00',
-  //         end: '2023-09-05 16:00',
-  //         type: 'job',
-  //         title: 'Tarefa 2'
-  //       },
-  //       {
-  //         start: '2023-09-05 16:00',
-  //         end: '2023-09-05 16:30',
-  //         type: 'pause'
-  //       },
-  //       {
-  //         task_id: '170',
-  //         start: '2023-09-05 16:30',
-  //         end: '2023-09-05 17:30',
-  //         type: 'job',
-  //         title: 'tarefa 3'
-  //       }
-  //     ]
-  //   }
-  // ];
 
   function handleOnChange(name: string, value: string) {
     const newDTO: any = DTOTaskSelect;

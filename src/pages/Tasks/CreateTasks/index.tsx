@@ -2385,6 +2385,7 @@ export default function CreateTasks() {
             estimated_time={tasksType === 'horas' ? estimatedTime : selectedProject?.tempo}
             flow={DTOForm.flow_id}
             project_product_id={DTOForm.project_product_id}
+            limitDate={DTOForm.copywriting_date_end}
             user_alocated={handleScheduleUser}
             closeModal={() => setSelectUserModal(false)}
           />

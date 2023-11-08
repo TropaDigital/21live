@@ -310,6 +310,20 @@ export default function ListProjects() {
         time: ''
       }
     });
+    setPreviewImage({
+      isOpen: false,
+      imageInfos: {
+        bucket: '',
+        created: '',
+        file_name: '',
+        key: '',
+        project_file_id: '',
+        project_id: '',
+        size: '',
+        updated: '',
+        url: ''
+      }
+    });
   };
 
   const handleEditProject = (project: any) => {
@@ -319,13 +333,10 @@ export default function ListProjects() {
 
   async function downloadFile(file: any) {
     try {
-      const url = `https://${file.bucket}.s3.amazonaws.com/${file.key}`;
+      const response = await api.post(
+        `https://app.21live.com.br:3000/archive?bucket=${file.bucket}&key=${file.key}`
+      );
 
-      const response = await axios({
-        url,
-        method: 'GET',
-        responseType: 'blob'
-      });
       const urlResponse = window.URL.createObjectURL(response.data);
       const link = document.createElement('a');
       link.href = urlResponse;
