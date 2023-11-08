@@ -1,6 +1,6 @@
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Icons
@@ -38,7 +38,6 @@ import ModalDefault from '../../../components/Ui/ModalDefault';
 import {
   ContainerDefault,
   // ContainerGroupTable,
-  ContentDefault,
   FieldDefault,
   FieldGroupFormDefault,
   FooterModal,
@@ -48,7 +47,6 @@ import { Table } from '../../../components/Table';
 import { TableHead } from '../../../components/Table/styles';
 import Pagination from '../../../components/Pagination';
 import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
-import { ModalButtons } from '../../Products/ViewProduct/styles';
 import Loader from '../../../components/LoaderSpin';
 
 // Libraries
@@ -66,6 +64,7 @@ import {
   CardsWrapper,
   ChangeNameField,
   DivHour,
+  ModalButtons,
   ModalSubtitle,
   ModalWrapper,
   SelectedTab,

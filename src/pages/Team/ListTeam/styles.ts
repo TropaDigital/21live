@@ -170,3 +170,10 @@ export const ChangeNameField = styled.div`
   width: 100%;
   margin-right: 12px;
 `;
+
+export const ModalButtons = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+`;
