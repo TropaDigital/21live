@@ -60,7 +60,7 @@ interface TeamDataProps {
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const [dashType, setDashType] = useState<string>('');
+  const [dashType, setDashType] = useState<string>('manager');
 
   const dataStatusAll = [
     {
@@ -251,9 +251,9 @@ export default function Dashboard() {
   const userCards: UserCardProps[] = [
     {
       userInfos: {
-        user_name: 'John Doe',
+        user_name: 'Amanda do Carmo',
         clientsNumber: 10,
-        avatar: 'avatar1.jpg'
+        avatar: PersonTest
       },
       chartData: [
         {
@@ -284,15 +284,15 @@ export default function Dashboard() {
       ],
       mensalReport: {
         reunions: 5,
-        principalTask: 'Project report',
-        secondaryTask: 'Marketing strategy'
+        principalTask: '2',
+        secondaryTask: ''
       }
     },
     {
       userInfos: {
-        user_name: 'Alice Smith',
+        user_name: 'Aline Smith',
         clientsNumber: 15,
-        avatar: 'avatar2.jpg'
+        avatar: PersonTest
       },
       chartData: [
         {
@@ -323,15 +323,15 @@ export default function Dashboard() {
       ],
       mensalReport: {
         reunions: 8,
-        principalTask: 'Presentation X',
-        secondaryTask: 'Brainstorm ideas'
+        principalTask: '4',
+        secondaryTask: ''
       }
     },
     {
       userInfos: {
-        user_name: 'Bob Johnson',
+        user_name: 'Fernanda Luvisão',
         clientsNumber: 8,
-        avatar: 'avatar3.jpg'
+        avatar: PersonTest
       },
       chartData: [
         {
@@ -362,8 +362,8 @@ export default function Dashboard() {
       ],
       mensalReport: {
         reunions: 3,
-        principalTask: 'Attend client meetings',
-        secondaryTask: 'Update data'
+        principalTask: '5',
+        secondaryTask: ''
       }
     }
   ];
@@ -621,6 +621,24 @@ export default function Dashboard() {
                   <td>1</td>
                   <td style={{ color: '#FFAB00' }}>3</td>
                 </tr>
+                <tr>
+                  <td>Metso</td>
+                  <td>Beatriz</td>
+                  <td style={{ color: '#00BFA5' }}>83</td>
+                  <td>8</td>
+                  <td>5</td>
+                  <td>3</td>
+                  <td style={{ color: '#FFAB00' }}>7</td>
+                </tr>
+                <tr>
+                  <td>Iveco</td>
+                  <td>Amanda</td>
+                  <td style={{ color: '#00BFA5' }}>135</td>
+                  <td>13</td>
+                  <td>1</td>
+                  <td>4</td>
+                  <td style={{ color: '#FFAB00' }}>9</td>
+                </tr>
               </tbody>
             </TableDefault>
           </ContainerGroupTable>
@@ -661,6 +679,28 @@ export default function Dashboard() {
                         Trabalhando agora
                       </td>
                       {/* <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>Na fila</td> */}
+                    </tr>
+                    <tr>
+                      <td>Metso</td>
+                      <td>Fernanda</td>
+                      <td>Job 5</td>
+                      {/* <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
+                        Trabalhando agora
+                      </td> */}
+                      <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
+                        Na fila
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Iveco</td>
+                      <td>Thiago</td>
+                      <td>Job 3</td>
+                      {/* <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
+                        Trabalhando agora
+                      </td> */}
+                      <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
+                        Na fila
+                      </td>
                     </tr>
                   </tbody>
                 </TableDefault>
@@ -715,8 +755,107 @@ export default function Dashboard() {
 
                   <tbody>
                     <tr>
-                      <td>Terex</td>
+                      <td style={{ color: '#6C757D', fontWeight: '700' }}>CNH</td>
+                      <td>Job 11</td>
+                      {/* <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
+                        Trabalhando agora
+                      </td> */}
+                      <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
+                        Na fila
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ color: '#6C757D', fontWeight: '700' }}>Terex</td>
+                      <td>Job 12</td>
+                      <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
+                        Trabalhando agora
+                      </td>
+                      {/* <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
+                        Na fila
+                      </td> */}
+                    </tr>
+                    <tr>
+                      <td style={{ color: '#6C757D', fontWeight: '700' }}>Metso</td>
+                      <td>Job 13</td>
+                      {/* <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
+                        Trabalhando agora
+                      </td> */}
+                      <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
+                        Na fila
+                      </td>
+                    </tr>
+                  </tbody>
+                </TableDefault>
+              </ContainerGroupTable>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <NumberCard height_size={'76px'}>
+                  <CountUp start={0} end={87} delay={0}>
+                    {({ countUpRef }) => (
+                      <div>
+                        <span className="numberCard" ref={countUpRef} />
+                      </div>
+                    )}
+                  </CountUp>
+                  <div className="numberCard-title">pautas</div>
+                </NumberCard>
+
+                <NumberCard height_size={'76px'}>
+                  <CountUp start={0} end={290} delay={0}>
+                    {({ countUpRef }) => (
+                      <div>
+                        <span className="numberCard" ref={countUpRef} />
+                      </div>
+                    )}
+                  </CountUp>
+                  <div className="numberCard-title">horas</div>
+                </NumberCard>
+              </div>
+            </GridServiceWrapper>
+
+            <GridServiceWrapper>
+              <UserInfo>
+                <div className="user-image" style={{ backgroundImage: `url(${PersonTest})` }} />
+                <div className="user-name">
+                  Derick Silveira
+                  <span>12 clientes</span>
+                </div>
+              </UserInfo>
+
+              <ContainerGroupTable style={{ width: '100%' }}>
+                <TableDefault title="">
+                  <thead>
+                    <tr>
+                      <th>Cliente</th>
+                      <th>Job</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr>
+                      <td style={{ color: '#6C757D', fontWeight: '700' }}>Terex</td>
                       <td>Job 1</td>
+                      <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
+                        Trabalhando agora
+                      </td>
+                      {/* <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
+                        Na fila
+                      </td> */}
+                    </tr>
+                    <tr>
+                      <td style={{ color: '#6C757D', fontWeight: '700' }}>Metso</td>
+                      <td>Job 2</td>
+                      {/* <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
+                        Trabalhando agora
+                      </td> */}
+                      <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
+                        Na fila
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ color: '#6C757D', fontWeight: '700' }}>Iveco</td>
+                      <td>Job 3</td>
                       {/* <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
                         Trabalhando agora
                       </td> */}
