@@ -395,6 +395,21 @@ export default function ListMeeting() {
         files: []
       }
     });
+
+    setPreviewImage({
+      isOpen: false,
+      imageInfos: {
+        bucket: '',
+        created: '',
+        file_name: '',
+        key: '',
+        meeting_file_id: '',
+        meeting_id: '',
+        size: '',
+        updated: '',
+        url: ''
+      }
+    });
   };
 
   const clientsOptions = dataClient?.map((row) => {
