@@ -602,7 +602,7 @@ export default function ViewRequest() {
                             <PublicImageWrapper>
                               <MessageUserWrapper
                                 style={{
-                                  backgroundImage: `url(https://app.21live.com.br/public/files/${row.annex})`
+                                  backgroundImage: `url(https://app.21live.com.br/public/files/tickets/${requestData?.ticket_id}/${row.annex})`
                                 }}
                                 className="image-interaction"
                                 onClick={() => setModalImage({ isOpen: true, path: row.annex })}
