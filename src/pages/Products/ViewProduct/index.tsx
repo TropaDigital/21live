@@ -708,7 +708,7 @@ export default function ViewProductsDeliveries() {
         key: uploadedFiles[0].key,
         bucket: uploadedFiles[0].bucket,
         last_archive: 'true',
-        products_delivery_id: selectedProduct?.productInfo?.products_delivery_id
+        products_delivery_id: productForUpload.products_delivery_id
       };
 
       const response = await api.put(`/task/upload`, uploadInfos);
@@ -748,9 +748,8 @@ export default function ViewProductsDeliveries() {
         size: uploadedFiles[0].size,
         key: uploadedFiles[0].key,
         bucket: uploadedFiles[0].bucket,
-        products_delivery_id: selectedProduct?.productInfo?.products_delivery_id
+        products_delivery_id: productForUpload.products_delivery_id
       };
-
       const response = await api.put(`/task/upload-tenant-approve`, uploadInfos);
 
       if (response.data.status === 'success') {
@@ -758,7 +757,7 @@ export default function ViewProductsDeliveries() {
         setModalFinalFile(false);
       }
 
-      console.log('log do response do saveUpload', response.data.result);
+      // console.log('log do response do saveUpload', response.data.result);
     } catch (error: any) {
       console.log('log save upload tenant file', error);
       if (error.response.data.result.length !== 0) {
