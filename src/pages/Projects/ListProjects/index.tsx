@@ -333,9 +333,12 @@ export default function ListProjects() {
 
   async function downloadFile(file: any) {
     try {
-      const response = await api.post(
-        `https://app.21live.com.br:3000/archive?bucket=${file.bucket}&key=${file.key}`
-      );
+      const params = {
+        bucket: file.bucket,
+        key: file.key
+      };
+
+      const response = await api.post(`https://app.21live.com.br:3000/archive`, params);
 
       const urlResponse = window.URL.createObjectURL(response.data);
       const link = document.createElement('a');
