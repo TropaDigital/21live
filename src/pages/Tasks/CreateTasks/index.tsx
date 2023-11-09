@@ -233,9 +233,20 @@ export default function CreateTasks() {
   const { data: dataProducts, fetchData: fetchProducts } = useFetch<any[]>(
     `services?search=${search}&flag=false`
   );
-  const { data: dataProjects, fetchData: fetchProjects } = useFetch<ServicesProps[]>(
-    `project-products/${DTOForm?.tenant_id}`
-  );
+  const [dataProjects, setDataProjects] = useState<ServicesProps[]>([]);
+
+  async function getProjects(tenantId: string) {
+    try {
+      const response = await api.get(`project-products/${tenantId}`);
+
+      if (response.data.status === 'success') {
+        setDataProjects(response.data.result);
+      }
+    } catch (error: any) {
+      console.log('log get projects', error);
+    }
+  }
+
   // /project-products/199?organization_id=28786
   const { data: organizationProjects } = useFetch<ServicesProps[]>(
     `project-products/${user.principalTenant}?organization_id=${DTOForm.organization_id}`
@@ -348,13 +359,15 @@ export default function CreateTasks() {
         ...prevState,
         ['title']: location.state.title
       }));
+
+      getProjects(DTOForm.tenant_id);
     }
 
     if (location.state !== null && location.state.task_id) {
       const selectedInfos: any = dataProjects?.filter(
         (obj: any) => obj.project_product_id === location.state.project_product_id
       );
-      fetchProjects();
+      getProjects(location.state.tenant_id);
       setProductsArray([]);
       setDTOForm(location.state);
       setProductsArray(location.state.deliverys[0]?.products);
@@ -370,6 +383,12 @@ export default function CreateTasks() {
     const ticketInfo = localStorage.getItem('@live:ticket');
     setTicketAsk(ticketInfo);
   }, [location]);
+
+  useEffect(() => {
+    if (DTOForm.tenant_id) {
+      getProjects(DTOForm.tenant_id);
+    }
+  }, [DTOForm]);
 
   // useEffect(() => {
   //   const getDataFlow = async () => {
@@ -1520,6 +1539,7 @@ export default function CreateTasks() {
         const selectedInfos: any = dataProjects?.filter(
           (obj: any) => obj.project_product_id === id
         );
+        console.log('log do selected infos', selectedInfos);
         setSelectedProject(selectedInfos[0]);
         handleChangeInput(e);
       }
