@@ -9,7 +9,17 @@ interface CardsInfoProps {
 
 export interface CardsData {
   data: number;
-  type: 'success' | 'creation' | 'info' | 'danger' | 'warning' | undefined;
+  type:
+    | 'success'
+    | 'creation'
+    | 'info'
+    | 'danger'
+    | 'warning'
+    | 'jobSpot'
+    | 'jobFee'
+    | 'newFee'
+    | 'newSpot'
+    | undefined;
   title: string;
 }
 
