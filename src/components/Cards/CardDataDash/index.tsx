@@ -1,17 +1,27 @@
 // Libraries
 import CountUp from 'react-countup';
 // Icons
-import { BiPaint } from 'react-icons/bi';
+import { BiCoffee, BiNews, BiPaint } from 'react-icons/bi';
 import { FiAlertTriangle } from 'react-icons/fi';
-import { BsExclamationSquare } from 'react-icons/bs';
+import { BsBox, BsExclamationSquare } from 'react-icons/bs';
 import { IconBranch, IconGroup } from '../../../assets/icons';
 
 // Styles
 import { Container } from './styles';
+import { MdPlace } from 'react-icons/md';
 
 interface Props {
   data: number;
-  type?: 'success' | 'danger' | 'warning' | 'info' | 'creation';
+  type?:
+    | 'success'
+    | 'danger'
+    | 'warning'
+    | 'info'
+    | 'creation'
+    | 'jobSpot'
+    | 'jobFee'
+    | 'newFee'
+    | 'newSpot';
   description: string;
 }
 
@@ -20,7 +30,11 @@ const icons = {
   success: <IconGroup />,
   danger: <BsExclamationSquare size={24} />,
   warning: <IconBranch />,
-  creation: <BiPaint size={24} />
+  creation: <BiPaint size={24} />,
+  newFee: <BiNews />,
+  newSpot: <BsBox />,
+  jobFee: <BiCoffee />,
+  jobSpot: <MdPlace />
 };
 
 export function CardDataDash({ type, data, description }: Props) {
