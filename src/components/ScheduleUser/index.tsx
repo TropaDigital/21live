@@ -166,14 +166,15 @@ export default function ScheduleUser({
   }, [dayCounter]);
 
   useEffect(() => {
-    if (moment(dinamicDate).isSame(limitDate)) {
+    const date = moment(dinamicDate).format('YYYY-MM-DD');
+    if (moment(date).isSame(limitDate)) {
       addToast({
         type: 'warning',
         title: 'Aviso',
         description: 'Data limite para a 1ª entrega!'
       });
     }
-    if (moment(dinamicDate).isAfter(limitDate)) {
+    if (moment(date).isAfter(limitDate)) {
       addToast({
         type: 'warning',
         title: 'Aviso',
