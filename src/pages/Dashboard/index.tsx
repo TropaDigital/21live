@@ -1,5 +1,6 @@
+/* eslint-disable no-prototype-builtins */
 // React
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // Hooks
 import { useAuth } from '../../hooks/AuthContext';
@@ -47,6 +48,7 @@ import PersonTest from '../../assets/person.jpg';
 
 // Icons
 import { FiClock } from 'react-icons/fi';
+import { useFetch } from '../../hooks/useFetch';
 // interface DashType {
 //   typeDash: 'manager' | 'executive' | 'traffic' | 'operator' | '';
 // }
@@ -61,33 +63,36 @@ interface TeamDataProps {
 export default function Dashboard() {
   const { user } = useAuth();
   const [dashType, setDashType] = useState<string>('manager');
+  const { data, fetchData, isFetching } = useFetch<any>(`/dashboard`);
+
+  console.log('log do data dashboard =>', data);
 
   const dataStatusAll = [
     {
       name: 'Entregue',
-      pv: 378,
+      Total: data ? data.tarefas_quantidade.por_status.concluido : 0,
       fill: '#00A063'
     },
     {
       name: 'Aprovação',
-      pv: 232,
+      Total: data ? data.tarefas_quantidade.por_status.concluido : 0,
       fill: '#0098FF'
     },
     {
       name: 'Criação',
-      pv: 262,
+      Total: data ? data.tarefas_quantidade.por_status.em_andamento : 0,
       fill: '#0045B5'
     },
     {
-      name: 'Cancelado',
-      pv: 105,
-      fill: '#D92D20'
-    },
-    {
       name: 'Pendente',
-      pv: 48,
+      Total: data ? data.tarefas_quantidade.por_status.pendente : 0,
       fill: '#FDB022'
     }
+    // {
+    //   name: 'Cancelado',
+    //   pv: data ? data.tarefas_quantidade.por_status.concluido : 0,
+    //   fill: '#D92D20'
+    // },
   ];
 
   const dataDahs = [
@@ -177,51 +182,71 @@ export default function Dashboard() {
   const dataChanges = [
     {
       name: 'Metso',
-      pv: 358,
+      Total: 358,
       fill: '#59B7FF'
     },
     {
       name: 'CNH',
-      pv: 209,
+      Total: 209,
       fill: '#0045B5'
     },
     {
       name: 'Emerson',
-      pv: 113,
+      Total: 113,
       fill: '#0077E6'
     },
     {
       name: 'Takao',
-      pv: 5,
+      Total: 5,
       fill: '#E2F2FF'
     }
   ];
 
   const topCardsDataManager: CardsData[] = [
     {
-      data: 42,
+      data: data ? data.total_clientes : 0,
       type: 'success',
       title: 'Total de clientes'
     },
     {
-      data: 443,
+      data: data ? Number(data.horas_criacao.split(':')[0]) : 0,
       type: 'creation',
       title: 'Horas de criação'
     },
     {
-      data: 46,
+      data: data ? data.alteracao_interna : 0,
       type: 'info',
       title: 'Alt. internas'
     },
     {
-      data: 56,
+      data: data ? data.alteracao_externa : 0,
       type: 'danger',
       title: 'Alt. externas'
     },
     {
-      data: 52,
+      data: data ? data.equipe : 0,
       type: 'warning',
       title: 'Equipes'
+    },
+    {
+      data: data ? data.contratos_fee : 0,
+      type: 'jobFee',
+      title: 'Jobs FEE contrato'
+    },
+    {
+      data: data ? data.contratos_spot : 0,
+      type: 'jobSpot',
+      title: 'Jobs SPOT'
+    },
+    {
+      data: data ? data.novos_contratos_fee : 0,
+      type: 'newFee',
+      title: 'Novos FEE contrato'
+    },
+    {
+      data: data ? data.novos_contratos_spot : 0,
+      type: 'newSpot',
+      title: 'Novos Jobs SPOT'
     }
   ];
 
@@ -469,7 +494,11 @@ export default function Dashboard() {
           {/* Status geral dos jobs + Pizza top clientes */}
           <GraphicLine>
             <BarChartGrafic data={dataStatusAll} title={'Status Geral Jobs'} />
-            <ChartDonut data={dataDahs} title={'Top Clientes'} dataKey="value" />
+            {/* <ChartDonut data={dataDahs} title={'Top Clientes'} dataKey="value" /> */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <BarChartGrafic data={dataChanges} isVertical={true} title="Top clientes (Jobs)" />
+              <BarChartGrafic data={dataChanges} isVertical={true} title="Top clientes (Horas)" />
+            </div>
           </GraphicLine>
 
           {/* Jobs entregues */}

@@ -1,7 +1,16 @@
 import styled from 'styled-components';
 
 interface ContainerProps {
-  type?: 'success' | 'danger' | 'warning' | 'info' | 'creation';
+  type?:
+    | 'success'
+    | 'danger'
+    | 'warning'
+    | 'info'
+    | 'creation'
+    | 'jobSpot'
+    | 'jobFee'
+    | 'newFee'
+    | 'newSpot';
 }
 
 // const cardTypeVariations = {

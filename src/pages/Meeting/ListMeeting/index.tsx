@@ -423,14 +423,10 @@ export default function ListMeeting() {
 
   async function downloadFile(file: any) {
     try {
-      console.log('log file to download', file);
-      const url = `https://${file.bucket}.s3.amazonaws.com/meetings/${file.file_name}`;
+      const response = await api.post(
+        `https://app.21live.com.br:3000/archive?bucket=${file.bucket}&key=${file.key}`
+      );
 
-      const response = await axios({
-        url,
-        method: 'GET',
-        responseType: 'blob'
-      });
       const urlResponse = window.URL.createObjectURL(response.data);
       const link = document.createElement('a');
       link.href = urlResponse;

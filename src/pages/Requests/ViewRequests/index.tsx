@@ -437,7 +437,12 @@ export default function ViewRequest() {
                       {requestData?.obs !== '' && (
                         <InfoSideCard>
                           <div className="side-title">Informações Extras e Observações:</div>
-                          <div className="side-info">{requestData?.obs}</div>
+                          <div
+                            className="side-info"
+                            dangerouslySetInnerHTML={{
+                              __html: requestData?.obs ? requestData?.obs : ''
+                            }}
+                          />
                         </InfoSideCard>
                       )}
 
