@@ -19,7 +19,7 @@ export const Container = styled.div`
 export const GraphicLine = styled.div`
   display: grid;
   align-items: center;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1fr 1fr;
   width: 100%;
   gap: 16px;
 `;

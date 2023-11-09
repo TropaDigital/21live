@@ -86,13 +86,13 @@ const BarChartGrafic = ({ data, isVertical, title }: Props) => {
           />
           <Tooltip />
           <Bar
-            dataKey="pv"
+            dataKey="Total"
             fill="#8884d8"
             radius={isVertical ? [0, 5, 5, 0] : [5, 5, 0, 0]}
-            barSize={isVertical ? 60 : 122}
+            barSize={isVertical ? 60 : 100}
           >
             <LabelList
-              dataKey="pv"
+              dataKey="Total"
               position={isVertical ? 'right' : 'top'}
               fontSize={12}
               fontWeight={700}
