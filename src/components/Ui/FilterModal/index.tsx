@@ -13,6 +13,7 @@ interface Props {
   filterProps?: SelectedFilters;
   applyFilters: any;
   clearFilters: any;
+  filterType: string;
 }
 
 interface SelectedFilters {
@@ -31,14 +32,23 @@ export default function FilterModal({
   maxWidth,
   filterProps,
   applyFilters,
-  clearFilters
+  clearFilters,
+  filterType
 }: Props) {
   return (
     <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="Overlay" />
         <Dialog.Content className="ModalContent" style={{ maxWidth: maxWidth }}>
-          <FilterMenu applyFilters={applyFilters} clearFilters={clearFilters} />
+          {filterType === 'ticket' && (
+            <FilterMenu applyFilters={applyFilters} clearFilters={clearFilters} />
+          )}
+          {filterType === 'task' && (
+            <div>
+              Filtro de task
+              <p>task</p>
+            </div>
+          )}
           {closeBtn && (
             <Dialog.Close asChild>
               <CloseButton>
