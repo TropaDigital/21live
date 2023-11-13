@@ -6,13 +6,13 @@ import { useEffect, useState } from 'react';
 import { ContainerFilter, FilterButtons, FilterHeader, FilterOptions, FilterTitle } from './styles';
 
 // Icons
-import { IconClose } from '../../assets/icons';
 import { BiCalendar, BiSearchAlt } from 'react-icons/bi';
 
 // Components
 import { InputDefault } from '../Inputs/InputDefault';
 import { SelectDefault } from '../Inputs/SelectDefault';
 import ButtonDefault from '../Buttons/ButtonDefault';
+import api from '../../services/api';
 
 type HandleOnChange = (
   event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>
@@ -34,7 +34,22 @@ interface SelectedFilters {
 }
 
 export default function FilterMenu({ filterProps, applyFilters, clearFilters }: FilterProps) {
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [dataStatus, setDataStatus] = useState<any[]>([]);
+  const tenantId = localStorage.getItem('tenant_id');
+
+  useEffect(() => {
+    const getDataTicketStatus = async () => {
+      try {
+        const response = await api.get(`ticket-status/${tenantId}`);
+        setDataStatus(response.data.result);
+      } catch (error: any) {
+        console.log('log do error', error);
+      }
+    };
+
+    getDataTicketStatus();
+  }, [tenantId]);
+
   const [choosenFilters, setChoosenFilter] = useState<SelectedFilters>({
     code: '',
     format: '',
@@ -75,17 +90,26 @@ export default function FilterMenu({ filterProps, applyFilters, clearFilters }: 
         <div style={{ maxHeight: '62px' }}>
           <InputDefault
             label="Código"
-            name="search"
+            name="code"
             placeholder="Busque pelo código..."
-            onChange={(event) => setSearchTerm(event.target.value)}
-            value={searchTerm}
+            onChange={handleAddFilters}
+            value={choosenFilters.code}
             icon={BiSearchAlt}
             className="search-field"
           />
         </div>
 
         <div style={{ maxHeight: '62px' }}>
-          <SelectDefault
+          <InputDefault
+            label="Formato"
+            name="format"
+            placeholder="JPG, PNG, PDF..."
+            onChange={handleAddFilters}
+            value={choosenFilters.format}
+            icon={BiSearchAlt}
+            className="search-field"
+          />
+          {/* <SelectDefault
             label="Formato"
             placeholder="Selecione"
             name="format"
@@ -99,7 +123,7 @@ export default function FilterMenu({ filterProps, applyFilters, clearFilters }: 
             <option key={'digital'} value={'digital'}>
               Digital
             </option>
-          </SelectDefault>
+          </SelectDefault> */}
         </div>
 
         <div style={{ maxHeight: '62px' }}>
@@ -111,14 +135,26 @@ export default function FilterMenu({ filterProps, applyFilters, clearFilters }: 
             value={choosenFilters.status}
             required
           >
-            <option key={'pendente'} value={'pendente'}>
-              Pendente
-            </option>
+            {dataStatus?.map((row: any, index: any) => (
+              <option key={index} value={row.ticket_status_id}>
+                {row.name}
+              </option>
+            ))}
           </SelectDefault>
         </div>
 
         <div style={{ maxHeight: '62px' }}>
-          <SelectDefault
+          <InputDefault
+            label="Entrega"
+            placeholder="dd/mm/aaaa"
+            name="delivery"
+            type="date"
+            max={'9999-12-31'}
+            icon={BiCalendar}
+            onChange={handleAddFilters}
+            value={choosenFilters.delivery}
+          />
+          {/* <SelectDefault
             label="Entrega"
             placeholder="Selecione"
             name="delivery"
@@ -129,7 +165,7 @@ export default function FilterMenu({ filterProps, applyFilters, clearFilters }: 
             <option key={'pendente'} value={'pendente'}>
               Pendente
             </option>
-          </SelectDefault>
+          </SelectDefault> */}
         </div>
 
         <div style={{ maxHeight: '62px' }}>
