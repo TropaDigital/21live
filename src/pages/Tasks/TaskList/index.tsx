@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 // Icons
-import { BiPlus, BiSearchAlt } from 'react-icons/bi';
+import { BiFilter, BiPlus, BiSearchAlt, BiX } from 'react-icons/bi';
 import { FiFlag } from 'react-icons/fi';
 import { IconContext } from 'react-icons';
 
@@ -43,7 +43,8 @@ import api from '../../../services/api';
 import moment from 'moment';
 
 // Styles
-import { ModalShowTaskWrapper, Flag, StatusTable } from './styles';
+import { ModalShowTaskWrapper, Flag, StatusTable, FilterTasks } from './styles';
+import FilterModal from '../../../components/Ui/FilterModal';
 
 export default function TaskList() {
   const { addToast } = useToast();
@@ -73,17 +74,18 @@ export default function TaskList() {
       name: ''
     }
   });
+  const [modalFilters, setModalFilters] = useState<boolean>(false);
   const navigate = useNavigate();
-  // const [filter, setFilter] = useState({
-  //   dateStart: '',
-  //   dateEnd: '',
-  //   order: '',
-  //   search: ''
-  // });
+  const [filter, setFilter] = useState({
+    status: '',
+    client: ''
+  });
   const [selected, setSelected] = useState(1);
   const [search, setSearch] = useState('');
   const { data, pages, fetchData, isFetching } = useFetch<any[]>(
-    `tasks?search=${search.replace('#', '')}&page=${selected}`
+    `tasks?search=${search.replace('#', '')}&page=${selected}&status=${filter.status}&client=${
+      filter.client
+    }`
   );
   const [searchTerm, setSearchTerm] = useState('');
   const { isLoading, debouncedCallback } = useDebouncedCallback(
@@ -215,6 +217,19 @@ export default function TaskList() {
     navigate(`/tarefa/${taskId}`, { state: idTask });
   };
 
+  const handleApplyFilters = (filters: any) => {
+    setFilter(filters);
+    setModalFilters(false);
+  };
+
+  const handleClearFilters = () => {
+    setFilter({
+      status: '',
+      client: ''
+    });
+    setModalFilters(false);
+  };
+
   // const { formData, handleOnChange } = useForm({
   //   tenant_id: '',
   //   title: '',
@@ -336,7 +351,7 @@ export default function TaskList() {
                 )}
               </h2>
             </div>
-            <div>
+            <FilterTasks>
               <InputDefault
                 label=""
                 name="search"
@@ -350,7 +365,23 @@ export default function TaskList() {
                 isLoading={isLoading}
                 className="search-field"
               />
-            </div>
+
+              <ButtonDefault typeButton="danger" isOutline onClick={handleClearFilters}>
+                <div className="close-icon">
+                  <BiX size={30} />
+                </div>
+                Limpar filtros
+              </ButtonDefault>
+
+              <ButtonDefault
+                typeButton="lightWhite"
+                isOutline
+                onClick={() => setModalFilters(true)}
+              >
+                <BiFilter />
+                Filtros
+              </ButtonDefault>
+            </FilterTasks>
           </TableHead>
           {/* <FilterGroup>
             <InputDefault
@@ -562,6 +593,16 @@ export default function TaskList() {
           </Summary>
         </ModalShowTaskWrapper>
       </ModalDefault>
+
+      {/* Modal filters */}
+      <FilterModal
+        isOpen={modalFilters}
+        closeBtn={true}
+        onOpenChange={() => setModalFilters(!modalFilters)}
+        applyFilters={handleApplyFilters}
+        clearFilters={handleClearFilters}
+        filterType="task"
+      />
     </ContainerDefault>
   );
 }
