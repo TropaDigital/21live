@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 // Icons
-import { BiFilter, BiSearchAlt } from 'react-icons/bi';
+import { BiFilter, BiSearchAlt, BiX } from 'react-icons/bi';
 
 // Components
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
@@ -25,7 +25,7 @@ import ButtonTable from '../../../components/Buttons/ButtonTable';
 import moment from 'moment';
 
 // Styles
-import { RequestsWrapper } from './styles';
+import { FiltersRequests, RequestsWrapper } from './styles';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../../../components/LoaderSpin';
 
@@ -51,7 +51,7 @@ interface RequestsProps {
 
 export default function Requests() {
   const navigate = useNavigate();
-  // const [modalFilters, setModalFilters] = useState<boolean>(false);
+  const [modalFilters, setModalFilters] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState(1);
@@ -59,39 +59,42 @@ export default function Requests() {
     (search: string) => setSearch(search),
     700
   );
-  // const [choosenFilters, setChoosenFilter] = useState<ChoosenFilters>({
-  //   code: '',
-  //   format: '',
-  //   status: '',
-  //   delivery: '',
-  //   fromDate: '',
-  //   toDate: ''
-  // });
+  const [choosenFilters, setChoosenFilter] = useState<ChoosenFilters>({
+    code: '',
+    format: '',
+    status: '',
+    delivery: '',
+    fromDate: '',
+    toDate: ''
+  });
   const { data, pages, isFetching } = useFetch<any[]>(
-    `ticket?search=${search.replace('#', '')}&page=${selected}`
+    `ticket?search=${search.replace('#', '')}&page=${selected}&id=${choosenFilters.code}&formato=${
+      choosenFilters.format
+    }&status=${choosenFilters.status}&entrega=${choosenFilters.delivery}&date_start=${
+      choosenFilters.fromDate
+    }&date_end=${choosenFilters.toDate}`
   );
 
   const handleViewRequest = (request: any) => {
     navigate(`/solicitacao/${request.ticket_id}`, { state: request.ticket_id });
   };
 
-  // const handleApplyFilters = (filters: any) => {
-  //   console.log('log apply filters', filters);
-  //   setChoosenFilter(filters);
-  //   setModalFilters(false);
-  // };
+  const handleApplyFilters = (filters: any) => {
+    setChoosenFilter(filters);
+    setModalFilters(false);
+  };
 
-  // const handleClearFilters = () => {
-  //   setChoosenFilter({
-  //     code: '',
-  //     format: '',
-  //     status: '',
-  //     delivery: '',
-  //     fromDate: '',
-  //     toDate: ''
-  //   });
-  //   setModalFilters(false);
-  // };
+  const handleClearFilters = () => {
+    setChoosenFilter({
+      code: '',
+      format: '',
+      status: '',
+      delivery: '',
+      fromDate: '',
+      toDate: ''
+    });
+    setModalFilters(false);
+  };
 
   return (
     <ContainerDefault>
@@ -118,7 +121,7 @@ export default function Requests() {
                 </h2>
               </div>
 
-              <div>
+              {/* <div>
                 <InputDefault
                   label=""
                   name="search"
@@ -132,10 +135,10 @@ export default function Requests() {
                   isLoading={isLoading}
                   className="search-field"
                 />
-              </div>
+              </div> */}
             </TableHead>
 
-            {/* <FilterGroup>
+            <FiltersRequests>
               <InputDefault
                 label=""
                 name="search"
@@ -150,6 +153,13 @@ export default function Requests() {
                 className="search-field"
               />
 
+              <ButtonDefault typeButton="danger" isOutline onClick={handleClearFilters}>
+                <div className="close-icon">
+                  <BiX size={30} />
+                </div>
+                Limpar filtros
+              </ButtonDefault>
+
               <ButtonDefault
                 typeButton="lightWhite"
                 isOutline
@@ -158,7 +168,7 @@ export default function Requests() {
                 <BiFilter />
                 Filtros
               </ButtonDefault>
-            </FilterGroup> */}
+            </FiltersRequests>
 
             <table>
               <thead>
@@ -189,6 +199,12 @@ export default function Requests() {
                             ? 'status progress'
                             : row.status === 'Entregue'
                             ? 'status finished'
+                            : row.status === 'Cancelado'
+                            ? 'status canceled'
+                            : row.status === 'Criação'
+                            ? 'status creation'
+                            : row.status === 'Aguardando Finalização'
+                            ? 'status awaiting'
                             : 'status'
                         }
                       >
@@ -196,6 +212,12 @@ export default function Requests() {
                           ? 'Em Análise'
                           : row.status === 'Entregue'
                           ? 'Entregue'
+                          : row.status === 'Cancelado'
+                          ? 'Cancelado'
+                          : row.status === 'Criação'
+                          ? 'Criação'
+                          : row.status === 'Aguardando Finalização'
+                          ? 'Aguardando Finalização'
                           : 'Aguardando Aprovação'}
                       </div>
                     </td>
@@ -234,13 +256,14 @@ export default function Requests() {
         </RequestsWrapper>
       )}
 
-      {/* <FilterModal
+      <FilterModal
         isOpen={modalFilters}
         closeBtn={true}
         onOpenChange={() => setModalFilters(!modalFilters)}
-        applyFilters={(filters: any) => handleApplyFilters(filters)}
+        applyFilters={handleApplyFilters}
         clearFilters={handleClearFilters}
-      /> */}
+        filterType="ticket"
+      />
     </ContainerDefault>
   );
 }
