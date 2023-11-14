@@ -1,9 +1,15 @@
+// Icons
 import { BiX } from 'react-icons/bi';
 
+// Libraries
 import * as Dialog from '@radix-ui/react-dialog';
 
 import FilterMenu from '../../Filter';
 import { CloseButton } from './styles';
+import FilterTask from '../../FilterTask';
+import FilterProduct from '../../FilterProduct';
+import FilterTeam from '../../FilterTeam';
+import FilterMeeting from '../../FilterMeeting';
 
 interface Props {
   isOpen: boolean;
@@ -14,6 +20,7 @@ interface Props {
   applyFilters: any;
   clearFilters: any;
   filterType: string;
+  clientSelected?: any;
 }
 
 interface SelectedFilters {
@@ -33,6 +40,7 @@ export default function FilterModal({
   filterProps,
   applyFilters,
   clearFilters,
+  clientSelected,
   filterType
 }: Props) {
   return (
@@ -44,10 +52,20 @@ export default function FilterModal({
             <FilterMenu applyFilters={applyFilters} clearFilters={clearFilters} />
           )}
           {filterType === 'task' && (
-            <div>
-              Filtro de task
-              <p>task</p>
-            </div>
+            <FilterTask
+              applyFilters={applyFilters}
+              clearFilters={clearFilters}
+              selectedClient={clientSelected}
+            />
+          )}
+          {filterType === 'product' && (
+            <FilterProduct applyFilters={applyFilters} clearFilters={clearFilters} />
+          )}
+          {filterType === 'team' && (
+            <FilterTeam applyFilters={applyFilters} clearFilters={clearFilters} />
+          )}
+          {filterType === 'meet' && (
+            <FilterMeeting applyFilters={applyFilters} clearFilters={clearFilters} />
           )}
           {closeBtn && (
             <Dialog.Close asChild>
