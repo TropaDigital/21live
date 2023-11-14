@@ -55,7 +55,7 @@ export const GraphicsCard = styled.div`
 export const MensalReport = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
   width: 180px;
 
   .report-bold {
@@ -75,21 +75,5 @@ export const MensalReport = styled.div`
     width: 160px;
 
     position: relative;
-
-    .overflow-text {
-      opacity: 0;
-      background-color: #f6f7fb;
-
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
-
-    :hover {
-      overflow: visible;
-      .overflow-text {
-        opacity: 1;
-      }
-    }
   }
 `;
