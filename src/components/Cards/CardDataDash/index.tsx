@@ -1,10 +1,11 @@
 // Libraries
 import CountUp from 'react-countup';
+
 // Icons
 import { BiCoffee, BiNews, BiPaint } from 'react-icons/bi';
 import { FiAlertTriangle } from 'react-icons/fi';
-import { BsBox, BsExclamationSquare } from 'react-icons/bs';
-import { IconBranch, IconGroup } from '../../../assets/icons';
+import { BsBox, BsClockHistory, BsExclamationSquare } from 'react-icons/bs';
+import { IconGroup } from '../../../assets/icons';
 
 // Styles
 import { Container } from './styles';
@@ -29,7 +30,7 @@ const icons = {
   info: <FiAlertTriangle size={24} />,
   success: <IconGroup />,
   danger: <BsExclamationSquare size={24} />,
-  warning: <IconBranch />,
+  warning: <BsClockHistory />,
   creation: <BiPaint size={24} />,
   newFee: <BiNews />,
   newSpot: <BsBox />,
