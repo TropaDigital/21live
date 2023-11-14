@@ -3,9 +3,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // React
 import React, { useCallback, useState, useEffect, useRef } from 'react';
+
 // Icons
 import { IconArrowDown } from '../../assets/icons';
-import { BiCode, BiPlus, BiSearchAlt, BiTime } from 'react-icons/bi';
+import { BiCode, BiFilter, BiPlus, BiSearchAlt, BiTime, BiX } from 'react-icons/bi';
 
 // Libraries
 import Switch from 'react-switch';
@@ -45,6 +46,7 @@ import {
   SummaryTaskInfo
 } from '../Tasks/ComponentSteps/SummaryTasks/styles';
 import Loader from '../../components/LoaderSpin';
+import FilterModal from '../../components/Ui/FilterModal';
 
 // Styles
 import {
@@ -154,10 +156,16 @@ export default function Services() {
     (search: string) => setSearch(search),
     700
   );
+  const [filter, setFilter] = useState({
+    category: '',
+    type: ''
+  });
   const [typeList, setTypeList] = useState('produtos');
   const [selected, setSelected] = useState(1);
   const { data, pages, fetchData, isFetching } = useFetch<ServicesProps[]>(
-    `services?search=${search.replace('#', '')}&perPage=15&page=${selected}`
+    `services?search=${search.replace('#', '')}&perPage=15&page=${selected}&category=${
+      filter.category
+    }&type=${filter.type}`
   );
   const { data: dataCategory, fetchData: getCategory } = useFetch<any[]>(
     `category?search=${search}`
@@ -180,6 +188,7 @@ export default function Services() {
   const [category, setCategory] = useState<string>('');
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const checkboxWrapperRef = useRef<HTMLDivElement>(null);
+  const [modalFilters, setModalFilters] = useState<boolean>(false);
 
   const handleOnCancel = useCallback(() => {
     setModal({
@@ -631,6 +640,19 @@ export default function Services() {
     [addToast, category]
   );
 
+  const handleApplyFilters = (filters: any) => {
+    setFilter(filters);
+    setModalFilters(false);
+  };
+
+  const handleClearFilters = () => {
+    setFilter({
+      category: '',
+      type: ''
+    });
+    setModalFilters(false);
+  };
+
   return (
     <ContainerDefault>
       <HeaderPage title="Produtos">
@@ -715,10 +737,17 @@ export default function Services() {
               />
             </div>
 
-            {/* <ButtonDefault typeButton="light">
+            <ButtonDefault typeButton="danger" isOutline onClick={handleClearFilters}>
+              <div className="close-icon">
+                <BiX size={30} />
+              </div>
+              Limpar filtros
+            </ButtonDefault>
+
+            <ButtonDefault typeButton="lightWhite" isOutline onClick={() => setModalFilters(true)}>
               <BiFilter />
               Filtros
-            </ButtonDefault> */}
+            </ButtonDefault>
           </FieldGroup>
         </TableHead>
         {typeList === 'produtos' && (
@@ -1307,6 +1336,16 @@ export default function Services() {
           </ModalCategoryButtons>
         </ModalProductWrapper>
       </ModalDefault>
+
+      {/* Modal filters */}
+      <FilterModal
+        isOpen={modalFilters}
+        closeBtn={true}
+        onOpenChange={() => setModalFilters(!modalFilters)}
+        applyFilters={handleApplyFilters}
+        clearFilters={handleClearFilters}
+        filterType="product"
+      />
     </ContainerDefault>
   );
 }
