@@ -29,8 +29,8 @@ export const RequestsWrapper = styled.div`
             }
 
             &.creation {
-              background-color: var(--secundary-050);
-              color: var(--secundary-700);
+              background-color: #cebbff;
+              color: #3f2289;
             }
 
             &.finished {
@@ -41,6 +41,11 @@ export const RequestsWrapper = styled.div`
             &.progress {
               background: var(--primary-050);
               color: var(--primary-700);
+            }
+
+            &.hold {
+              background-color: var(--gray-200);
+              color: var(--gray-800);
             }
           }
         }

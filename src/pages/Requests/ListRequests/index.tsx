@@ -205,6 +205,8 @@ export default function Requests() {
                             ? 'status creation'
                             : row.status === 'Aguardando Finalização'
                             ? 'status awaiting'
+                            : row.status === 'Stand by'
+                            ? 'status hold'
                             : 'status'
                         }
                       >
@@ -218,6 +220,8 @@ export default function Requests() {
                           ? 'Criação'
                           : row.status === 'Aguardando Finalização'
                           ? 'Aguardando Finalização'
+                          : row.status === 'Stand by'
+                          ? 'Stand by'
                           : 'Aguardando Aprovação'}
                       </div>
                     </td>
