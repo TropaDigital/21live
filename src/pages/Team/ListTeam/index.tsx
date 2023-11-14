@@ -8,13 +8,15 @@ import {
   BiCalendar,
   BiEdit,
   BiEnvelope,
+  BiFilter,
   BiKey,
   BiMoney,
   BiPhoneCall,
   BiPlus,
   BiSearchAlt,
   BiTrash,
-  BiUser
+  BiUser,
+  BiX
 } from 'react-icons/bi';
 
 // Services
@@ -64,12 +66,14 @@ import {
   CardsWrapper,
   ChangeNameField,
   DivHour,
+  FilterTeamWrapper,
   ModalButtons,
   ModalSubtitle,
   ModalWrapper,
   SelectedTab,
   TabsWrapper
 } from './styles';
+import FilterModal from '../../../components/Ui/FilterModal';
 
 interface UserProps {
   avatar: string;
@@ -97,7 +101,7 @@ interface UserProps {
   confirmPassword: string;
 }
 
-interface OfficeProps {
+export interface OfficeProps {
   function: string;
   function_id: number;
 }
@@ -133,6 +137,9 @@ export default function Team() {
     isOpen: false,
     type: 'Novo Usuário'
   });
+  const [filter, setFilter] = useState({
+    role: ''
+  });
   const weekdays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
   const [modalWorkDays, setModalWorkDays] = useState({
     isOpen: false,
@@ -147,7 +154,7 @@ export default function Team() {
     700
   );
   const { data, pages, fetchData, isFetching } = useFetch<UserProps[]>(
-    `team?page=${selected}&search=${search.replace('#', '')}&perPage=15`
+    `team?page=${selected}&search=${search.replace('#', '')}&perPage=15&role=${filter.role}`
   );
   const { data: dataOffice } = useFetch<OfficeProps[]>(`function`);
   const [selectedTab, setSelectedTab] = useState<string>('Jornada');
@@ -156,6 +163,7 @@ export default function Team() {
   const [selectedBreakDay, setSelectedBreakDay] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [changeBreakName, setChangeBreakName] = useState<string>('');
+  const [modalFilters, setModalFilters] = useState<boolean>(false);
 
   const handleOnCancel = useCallback(() => {
     setModal({
@@ -528,6 +536,18 @@ export default function Team() {
     setSelectedTab('Jornada');
   };
 
+  const handleApplyFilters = (filters: any) => {
+    setFilter(filters);
+    setModalFilters(false);
+  };
+
+  const handleClearFilters = () => {
+    setFilter({
+      role: ''
+    });
+    setModalFilters(false);
+  };
+
   // useEffect(() => {
   //   console.log('log das pausas', selectedBreaks);
   //   console.log('log dos workdays', workDays);
@@ -599,7 +619,7 @@ export default function Team() {
                   <h2>Equipes</h2>
                 </div>
 
-                <div>
+                <FilterTeamWrapper>
                   <InputDefault
                     label=""
                     name="search"
@@ -612,7 +632,23 @@ export default function Team() {
                     icon={BiSearchAlt}
                     isLoading={isLoading}
                   />
-                </div>
+
+                  <ButtonDefault typeButton="danger" isOutline onClick={handleClearFilters}>
+                    <div className="close-icon">
+                      <BiX size={30} />
+                    </div>
+                    Limpar filtros
+                  </ButtonDefault>
+
+                  <ButtonDefault
+                    typeButton="lightWhite"
+                    isOutline
+                    onClick={() => setModalFilters(true)}
+                  >
+                    <BiFilter />
+                    Filtros
+                  </ButtonDefault>
+                </FilterTeamWrapper>
               </TableHead>
               <table>
                 <thead>
@@ -1281,6 +1317,16 @@ export default function Team() {
           )}
         </ModalWrapper>
       </ModalDefault>
+
+      {/* Modal filters */}
+      <FilterModal
+        isOpen={modalFilters}
+        closeBtn={true}
+        onOpenChange={() => setModalFilters(!modalFilters)}
+        applyFilters={handleApplyFilters}
+        clearFilters={handleClearFilters}
+        filterType="team"
+      />
     </ContainerDefault>
   );
 }
