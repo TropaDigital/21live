@@ -37,7 +37,8 @@ import {
   OperatorTopWrapper,
   TimeChartsTopCard,
   SmallCardsWrapper,
-  JobCellTable
+  JobCellTable,
+  HoursTable
 } from './styles';
 
 // Libraries
@@ -69,14 +70,14 @@ export default function Dashboard() {
 
   const dataStatusAll = [
     {
-      name: 'Entregue',
-      Total: data ? data.tarefas_quantidade.por_status.concluido : 0,
-      fill: '#00A063'
+      name: 'Atrasada',
+      Total: data ? data.tarefas_quantidade.por_status.atrasada : 0,
+      fill: '#D92D20'
     },
     {
-      name: 'Aprovação',
-      Total: data ? data.tarefas_quantidade.por_status.concluido : 0,
-      fill: '#0098FF'
+      name: 'Pendente',
+      Total: data ? data.tarefas_quantidade.por_status.pendente : 0,
+      fill: '#FDB022'
     },
     {
       name: 'Criação',
@@ -84,9 +85,9 @@ export default function Dashboard() {
       fill: '#0045B5'
     },
     {
-      name: 'Pendente',
-      Total: data ? data.tarefas_quantidade.por_status.pendente : 0,
-      fill: '#FDB022'
+      name: 'Entregue',
+      Total: data ? data.tarefas_quantidade.por_status.concluido : 0,
+      fill: '#00A063'
     }
     // {
     //   name: 'Cancelado',
@@ -269,22 +270,32 @@ export default function Dashboard() {
     {
       data: 56,
       type: 'danger',
-      title: 'Alt. externas'
+      title: 'Alt. clientes'
+    },
+    {
+      data: 12,
+      type: 'warning',
+      title: 'Tick. pendentes'
     }
   ];
 
   const userCards: UserCardProps[] = [
     {
       userInfos: {
-        user_name: 'Amanda do Carmo',
+        user_name: data ? data.top_users[0].name : '',
         clientsNumber: 10,
         avatar: PersonTest
       },
       chartData: [
         {
-          name: 'Entregue',
-          pv: 25,
-          fill: '#00A063'
+          name: 'Total de Jobs',
+          pv: data ? data.top_users[0].task_count : 0,
+          fill: '#0045B5'
+        },
+        {
+          name: 'Pendente',
+          pv: 5,
+          fill: '#FDB022'
         },
         {
           name: 'Aprovação',
@@ -292,103 +303,80 @@ export default function Dashboard() {
           fill: '#0098FF'
         },
         {
-          name: 'Criação',
-          pv: 20,
-          fill: '#0045B5'
-        },
-        {
-          name: 'Cancelado',
-          pv: 13,
-          fill: '#D92D20'
-        },
-        {
-          name: 'Pendente',
-          pv: 5,
-          fill: '#FDB022'
+          name: 'Aprovados',
+          pv: 25,
+          fill: '#00A063'
         }
       ],
       mensalReport: {
         reunions: 5,
-        principalTask: '2',
-        secondaryTask: ''
+        principalTask: '2'
       }
     },
     {
       userInfos: {
-        user_name: 'Aline Smith',
+        user_name: data ? data.top_users[1].name : '',
         clientsNumber: 15,
         avatar: PersonTest
       },
       chartData: [
         {
-          name: 'Entregue',
-          pv: 28,
-          fill: '#00A063'
-        },
-        {
-          name: 'Aprovação',
-          pv: 16,
-          fill: '#0098FF'
-        },
-        {
-          name: 'Criação',
-          pv: 22,
+          name: 'Total de Jobs',
+          pv: data ? data.top_users[1].task_count : 0,
           fill: '#0045B5'
-        },
-        {
-          name: 'Cancelado',
-          pv: 15,
-          fill: '#D92D20'
         },
         {
           name: 'Pendente',
           pv: 5,
           fill: '#FDB022'
+        },
+        {
+          name: 'Aprovação',
+          pv: 15,
+          fill: '#0098FF'
+        },
+        {
+          name: 'Aprovados',
+          pv: 25,
+          fill: '#00A063'
         }
       ],
       mensalReport: {
         reunions: 8,
-        principalTask: '4',
-        secondaryTask: ''
+        principalTask: '4'
       }
     },
     {
       userInfos: {
-        user_name: 'Fernanda Luvisão',
+        user_name: data ? data.top_users[2].name : '',
         clientsNumber: 8,
         avatar: PersonTest
       },
       chartData: [
         {
-          name: 'Entregue',
-          pv: 28,
-          fill: '#00A063'
-        },
-        {
-          name: 'Aprovação',
-          pv: 16,
-          fill: '#0098FF'
-        },
-        {
-          name: 'Criação',
-          pv: 22,
+          name: 'Total de Jobs',
+          pv: data ? data.top_users[2].task_count : 0,
           fill: '#0045B5'
-        },
-        {
-          name: 'Cancelado',
-          pv: 15,
-          fill: '#D92D20'
         },
         {
           name: 'Pendente',
           pv: 5,
           fill: '#FDB022'
+        },
+        {
+          name: 'Aprovação',
+          pv: 15,
+          fill: '#0098FF'
+        },
+        {
+          name: 'Aprovados',
+          pv: 25,
+          fill: '#00A063'
         }
       ],
       mensalReport: {
         reunions: 3,
-        principalTask: '5',
-        secondaryTask: ''
+        principalTask: '5'
       }
     }
   ];
@@ -501,10 +489,10 @@ export default function Dashboard() {
             </div>
           </GraphicLine>
 
-          {/* Jobs entregues */}
+          {/* Jobs pendentes */}
           <ContainerGroupTable>
             <TableDefault
-              title="Jobs Entregues"
+              title="Jobs pendentes de envio"
               titleSize="14px"
               titleWeight="700"
               titleColor="#222"
@@ -512,8 +500,8 @@ export default function Dashboard() {
               <thead>
                 <tr>
                   <th>Cliente</th>
+                  <th>Atendimento</th>
                   <th>Job</th>
-                  <th>Status</th>
                 </tr>
               </thead>
 
@@ -555,7 +543,7 @@ export default function Dashboard() {
             </TableDefault>
 
             <TableDefault
-              title="Jobs Entregues"
+              title="Jobs pendentes de aprovação"
               titleSize="14px"
               titleWeight="700"
               titleColor="#222"
@@ -563,8 +551,8 @@ export default function Dashboard() {
               <thead>
                 <tr>
                   <th>Cliente</th>
+                  <th>Atendimento</th>
                   <th>Job</th>
-                  <th>Status</th>
                 </tr>
               </thead>
 
@@ -621,65 +609,111 @@ export default function Dashboard() {
           </CardBase>
 
           {/* Detalhes dos clientes */}
-          <ContainerGroupTable>
-            <TableDefault
-              title="Clientes detalhado"
-              titleSize="14px"
-              titleWeight="700"
-              titleColor="#222"
-            >
-              <thead>
-                <tr>
-                  <th>Cliente</th>
-                  <th>Atendimento</th>
-                  <th style={{ backgroundColor: '#00BFA5' }}>Entregue</th>
-                  <th>Aprovação</th>
-                  <th>Criação</th>
-                  <th>Cancelado</th>
-                  <th style={{ backgroundColor: '#FFAB00' }}>Pendente</th>
-                </tr>
-              </thead>
+          <TableDefault
+            title="Clientes detalhado - (Fee)"
+            titleSize="14px"
+            titleWeight="700"
+            titleColor="#222"
+          >
+            <thead>
+              <tr>
+                <th style={{ minWidth: '180px' }}>Cliente</th>
+                <th>Atendimento</th>
+                <th>Total de horas</th>
+                <th>Saldo de horas</th>
+              </tr>
+            </thead>
 
-              <tbody>
-                <tr>
-                  <td>Terex</td>
-                  <td>Amanda</td>
-                  <td style={{ color: '#00BFA5' }}>123</td>
-                  <td>3</td>
-                  <td>4</td>
-                  <td>1</td>
-                  <td style={{ color: '#FFAB00' }}>3</td>
-                </tr>
-                <tr>
-                  <td>Metso</td>
-                  <td>Beatriz</td>
-                  <td style={{ color: '#00BFA5' }}>83</td>
-                  <td>8</td>
-                  <td>5</td>
-                  <td>3</td>
-                  <td style={{ color: '#FFAB00' }}>7</td>
-                </tr>
-                <tr>
-                  <td>Iveco</td>
-                  <td>Amanda</td>
-                  <td style={{ color: '#00BFA5' }}>135</td>
-                  <td>13</td>
-                  <td>1</td>
-                  <td>4</td>
-                  <td style={{ color: '#FFAB00' }}>9</td>
-                </tr>
-              </tbody>
-            </TableDefault>
-          </ContainerGroupTable>
+            <tbody>
+              <tr>
+                <td>21 Live | Cliente</td>
+                <td>Amanda</td>
+                <td style={{ color: '#00BFA5', fontWeight: '700' }}>123H</td>
+                <td>
+                  <HoursTable>3H</HoursTable>
+                </td>
+              </tr>
+              <tr>
+                <td>Metso</td>
+                <td>Beatriz</td>
+                <td style={{ color: '#00BFA5', fontWeight: '700' }}>83H</td>
+                <td>
+                  <HoursTable>7H</HoursTable>
+                </td>
+              </tr>
+              <tr>
+                <td>Iveco</td>
+                <td>Amanda</td>
+                <td style={{ color: '#00BFA5', fontWeight: '700' }}>135H</td>
+                <td>
+                  <HoursTable className="minus">-5H</HoursTable>
+                </td>
+              </tr>
+            </tbody>
+          </TableDefault>
+
+          <TableDefault
+            title="Clientes detalhado - (Spot)"
+            titleSize="14px"
+            titleWeight="700"
+            titleColor="#222"
+          >
+            <thead>
+              <tr>
+                <th style={{ minWidth: '180px' }}>Cliente</th>
+                <th>Atendimento</th>
+                <th>Total de horas</th>
+                <th>Saldo de horas</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>21 Live | Cliente</td>
+                <td>Amanda</td>
+                <td style={{ color: '#00BFA5', fontWeight: '700' }}>123H</td>
+                <td>
+                  <HoursTable className="minus">-3H</HoursTable>
+                </td>
+              </tr>
+              <tr>
+                <td>Metso</td>
+                <td>Beatriz</td>
+                <td style={{ color: '#00BFA5', fontWeight: '700' }}>83H</td>
+                <td>
+                  <HoursTable>7H</HoursTable>
+                </td>
+              </tr>
+              <tr>
+                <td>Iveco</td>
+                <td>Amanda</td>
+                <td style={{ color: '#00BFA5', fontWeight: '700' }}>135H</td>
+                <td>
+                  <HoursTable>9H</HoursTable>
+                </td>
+              </tr>
+            </tbody>
+          </TableDefault>
 
           {/* Alterações interna e externa */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
             <CardBase>
-              <div className="card-title">Alterações Internas</div>
+              <div className="card-title">Alterações Internas (Jobs)</div>
               <BarChartGrafic data={dataChanges} isVertical={true} />
             </CardBase>
             <CardBase>
-              <div className="card-title">Alterações Externas</div>
+              <div className="card-title">Alterações Clientes (Jobs)</div>
+              <BarChartGrafic data={dataChanges} isVertical={true} />
+            </CardBase>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
+            <CardBase>
+              <div className="card-title">Alterações Internas (Horas)</div>
+              <BarChartGrafic data={dataChanges} isVertical={true} />
+            </CardBase>
+            <CardBase>
+              <div className="card-title">Alterações Clientes (Horas)</div>
               <BarChartGrafic data={dataChanges} isVertical={true} />
             </CardBase>
           </div>
@@ -921,6 +955,105 @@ export default function Dashboard() {
               </div>
             </GridServiceWrapper>
           </CardBase>
+
+          {/* Monitoramento criativo */}
+          <CardBase>
+            <div className="card-title">Monitoramento do time - Criativo</div>
+
+            <TableDefault title="" titleSize="14px" titleWeight="700" titleColor="#222">
+              <thead>
+                <tr>
+                  <th style={{ minWidth: '180px' }}>Ranking</th>
+                  <th>Criativo</th>
+                  <th>Jobs totais</th>
+                  <th>Horas totais</th>
+                  <th>Jobs sem alteração</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td>1º</td>
+                  <td>Amanda</td>
+                  <td>21</td>
+                  <td>123H</td>
+                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>18</td>
+                </tr>
+                <tr>
+                  <td>2º</td>
+                  <td>Beatriz</td>
+                  <td>19</td>
+                  <td>83H</td>
+                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>15</td>
+                </tr>
+                <tr>
+                  <td>3º</td>
+                  <td>Felipe</td>
+                  <td>15</td>
+                  <td>135H</td>
+                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>11</td>
+                </tr>
+              </tbody>
+            </TableDefault>
+          </CardBase>
+
+          {/* Monitoramento jobs entregues */}
+          <TableDefault
+            title="Clientes detalhado - (Fee)"
+            titleSize="14px"
+            titleWeight="700"
+            titleColor="#222"
+          >
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Criativo</th>
+                <th>Job</th>
+                <th>Status</th>
+                <th>Pausas</th>
+                <th>Hora - Plan</th>
+                <th>Hora - Real</th>
+                <th>Data início</th>
+                <th>Data final</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>21 Live | Cliente</td>
+                <td>Amanda</td>
+                <td>Teste</td>
+                <td>Entregue</td>
+                <td>3</td>
+                <td>5H</td>
+                <td>4H</td>
+                <td>15/10/2023</td>
+                <td>17/10/2023</td>
+              </tr>
+              <tr>
+                <td>Metso</td>
+                <td>Beatriz</td>
+                <td>Ticket teste</td>
+                <td>Entregue</td>
+                <td>2</td>
+                <td>3H</td>
+                <td>3H</td>
+                <td>15/10/2023</td>
+                <td>18/10/2023</td>
+              </tr>
+              <tr>
+                <td>Iveco</td>
+                <td>Luana</td>
+                <td>TS-TSK-02-TICKET</td>
+                <td>Entregue</td>
+                <td>5</td>
+                <td>1H</td>
+                <td style={{ color: '#ff8800', background: 'var(--warning-100)' }}>3H</td>
+                <td>12/10/2023</td>
+                <td>16/10/2023</td>
+              </tr>
+            </tbody>
+          </TableDefault>
         </SectionDefault>
       )}
 
@@ -933,50 +1066,52 @@ export default function Dashboard() {
           <TopCardsDash typeCards="executive" cardsData={topCardsDataExecutive} />
 
           {/* Performance Cliente */}
-          <CardBase>
-            <div className="card-title">Performance clientes</div>
-            <ContainerGroupTable>
-              <TableDefault title="" titleSize="14px" titleWeight="700" titleColor="#222">
-                <thead>
-                  <tr>
-                    <th>Cliente</th>
-                    <th>Job</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
+          <ContainerGroupTable>
+            <TableDefault
+              title="Jobs pendentes de envio"
+              titleSize="14px"
+              titleWeight="700"
+              titleColor="#222"
+            >
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Job</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
 
-                <tbody>
-                  {jobsData.map((row) => (
-                    <tr key={row.id_job}>
-                      <td>{row.client_name}</td>
-                      <td>{row.job_name}</td>
-                      <td
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          padding: '6px 12px',
-                          height: '49px'
-                        }}
+              <tbody>
+                {jobsData.map((row) => (
+                  <tr key={row.id_job}>
+                    <td>{row.client_name}</td>
+                    <td>{row.job_name}</td>
+                    <td
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '6px 12px',
+                        height: '49px'
+                      }}
+                    >
+                      <JobStatus
+                        className={
+                          row.job_status === 'fazendo'
+                            ? 'status progress'
+                            : row.job_status === 'na fila'
+                            ? 'status'
+                            : 'status finished'
+                        }
                       >
-                        <JobStatus
-                          className={
-                            row.job_status === 'fazendo'
-                              ? 'status progress'
-                              : row.job_status === 'na fila'
-                              ? 'status'
-                              : 'status finished'
-                          }
-                        >
-                          {row.job_status}
-                        </JobStatus>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </TableDefault>
-            </ContainerGroupTable>
-          </CardBase>
+                        {row.job_status}
+                      </JobStatus>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </TableDefault>
+          </ContainerGroupTable>
 
           {/* Performance por Cliente */}
           <CardBase>

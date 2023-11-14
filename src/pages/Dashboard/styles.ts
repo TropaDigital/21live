@@ -538,3 +538,18 @@ export const JobCellTable = styled.div`
     font-weight: var(--weight-medium);
   }
 `;
+
+export const HoursTable = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+
+  color: var(--text-color);
+  font-size: var(--text-small-sm);
+  font-weight: var(--weight-semibold);
+
+  &.minus {
+    color: var(--error-600);
+  }
+`;
