@@ -5,7 +5,8 @@ import CountUp from 'react-countup';
 import { BiCoffee, BiNews, BiPaint } from 'react-icons/bi';
 import { FiAlertTriangle } from 'react-icons/fi';
 import { BsBox, BsClockHistory, BsExclamationSquare } from 'react-icons/bs';
-import { IconGroup } from '../../../assets/icons';
+import { IconBranch, IconGroup } from '../../../assets/icons';
+import { IoHammerOutline } from 'react-icons/io5';
 
 // Styles
 import { Container } from './styles';
@@ -22,7 +23,9 @@ interface Props {
     | 'jobSpot'
     | 'jobFee'
     | 'newFee'
-    | 'newSpot';
+    | 'newSpot'
+    | 'jobs'
+    | 'team';
   description: string;
 }
 
@@ -35,7 +38,9 @@ const icons = {
   newFee: <BiNews />,
   newSpot: <BsBox />,
   jobFee: <BiCoffee />,
-  jobSpot: <MdPlace />
+  jobSpot: <MdPlace />,
+  jobs: <IoHammerOutline />,
+  team: <IconBranch />
 };
 
 export function CardDataDash({ type, data, description }: Props) {
