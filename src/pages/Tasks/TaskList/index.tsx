@@ -83,7 +83,7 @@ export default function TaskList() {
   const [selected, setSelected] = useState(1);
   const [search, setSearch] = useState('');
   const { data, pages, fetchData, isFetching } = useFetch<any[]>(
-    `tasks?search=${search.replace('#', '')}&page=${selected}&status=${filter.status}&client=${
+    `tasks?search=${search.replace('#', '')}&page=${selected}&status=${filter.status}&tenant=${
       filter.client
     }`
   );
