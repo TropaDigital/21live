@@ -149,10 +149,6 @@ export default function ListMeeting() {
     700
   );
 
-  const [filterDate, setFilterDate] = useState({
-    dateStart: '',
-    dateEnd: ''
-  });
   const [filterOrder, setFilterOrder] = useState('desc');
   const [filter, setFilter] = useState({
     client: '',
@@ -162,14 +158,12 @@ export default function ListMeeting() {
   });
 
   const { data, pages, fetchData, isFetching } = useFetch<MeetingProps[]>(
-    `meetings?search=${search.replace('#', '')}&date_start=${filterDate.dateStart}&date_end=${
-      filterDate.dateEnd
-    }&order=${filterOrder}`
+    `meetings?search=${search.replace('#', '')}&date_start=${filter.fromDate}&date_end=${
+      filter.toDate
+    }&order=${filterOrder}&tenant=${filter.client}&user=${filter.user_id}`
   );
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
-  const { data: dataTeam } = useFetch<TeamProps[]>(
-    `team?client=${filter.client}&date_start=${filter.fromDate}&date_end=${filter.toDate}&responsible=${filter.user_id}`
-  );
+  const { data: dataTeam } = useFetch<TeamProps[]>(`team`);
   const [modalFilters, setModalFilters] = useState<boolean>(false);
 
   const selectedTeam = dataTeam?.filter((obj) => obj.user_id !== formData.user_id);
