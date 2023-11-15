@@ -63,7 +63,7 @@ interface TeamDataProps {
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const [dashType, setDashType] = useState<string>('manager');
+  const [dashType, setDashType] = useState<string>('traffic');
   const { data, fetchData, isFetching } = useFetch<any>(`/dashboard`);
 
   console.log('log do data dashboard =>', data);
@@ -96,87 +96,36 @@ export default function Dashboard() {
     // },
   ];
 
-  const dataDahs = [
-    {
-      id: 1,
-      name: 'Metso',
-      value: 50,
-      fill: '#59B7FF',
-      currency: 20.0,
-      isDonut: false,
-      isPadded: false
-    },
-    {
-      id: 2,
-      name: 'CNH',
-      value: 28,
-      fill: '#0045B5',
-      currency: 20.0,
-      isDonut: true,
-      isPadded: false
-    },
-    {
-      id: 3,
-      name: 'Emerson',
-      value: 20,
-      fill: '#0077E6',
-      currency: 20.0,
-      isDonut: true,
-      isPadded: true
-    },
-    {
-      id: 4,
-      name: 'Takao',
-      value: 15,
-      fill: '#E2F2FF',
-      currency: 20.0,
-      isDonut: true,
-      isPadded: true
-    },
-    {
-      id: 5,
-      name: 'Tropa',
-      value: 13,
-      fill: '#0098FF',
-      currency: 20.0,
-      isDonut: true,
-      isPadded: true
-    },
-    {
-      id: 6,
-      name: 'Outros',
-      value: 5,
-      fill: '#8CCBFF',
-      currency: 20.0,
-      isDonut: true,
-      isPadded: true
-    }
-  ];
-
   const jobsData = [
     {
       id_job: 0,
       client_name: 'Metso',
       job_name: 'Planejamento',
-      job_status: 'fazendo'
+      job_status: 'Pendente de envio'
     },
     {
       id_job: 1,
       client_name: 'Tropa',
       job_name: 'Planejamento',
-      job_status: 'na fila'
+      job_status: 'Pendente de envio'
     },
     {
       id_job: 2,
       client_name: 'Takao',
       job_name: 'Planejamento',
-      job_status: 'na fila'
+      job_status: 'Pendente de envio'
     },
     {
       id_job: 3,
       client_name: 'Iveco',
       job_name: 'Planejamento',
-      job_status: 'na fila'
+      job_status: 'Pendente de envio'
+    },
+    {
+      id_job: 4,
+      client_name: 'Genie',
+      job_name: 'Job X',
+      job_status: 'Pendente de envio'
     }
   ];
 
@@ -226,7 +175,7 @@ export default function Dashboard() {
     },
     {
       data: data ? data.equipe : 0,
-      type: 'warning',
+      type: 'team',
       title: 'Equipes'
     },
     {
@@ -276,6 +225,24 @@ export default function Dashboard() {
       data: 12,
       type: 'warning',
       title: 'Tick. pendentes'
+    }
+  ];
+
+  const topCardsDataTrafic: CardsData[] = [
+    {
+      data: 554,
+      type: 'jobs',
+      title: 'Total de pautas'
+    },
+    {
+      data: 290,
+      type: 'warning',
+      title: 'Total de horas'
+    },
+    {
+      data: 130,
+      type: 'warning',
+      title: 'Total de horas disponíveis'
     }
   ];
 
@@ -433,8 +400,7 @@ export default function Dashboard() {
 
   const MensalReportPerfData = {
     reunions: 3,
-    principalTask: 'Attend client meetings',
-    secondaryTask: 'Update data'
+    principalTask: 'Update data'
   };
 
   const teamTimeData: TeamDataProps[] = [
@@ -527,7 +493,7 @@ export default function Dashboard() {
                     >
                       <JobStatus
                         className={
-                          row.job_status === 'fazendo'
+                          row.job_status === 'Pendente de envio'
                             ? 'status progress'
                             : row.job_status === 'na fila'
                             ? 'status'
@@ -578,7 +544,7 @@ export default function Dashboard() {
                     >
                       <JobStatus
                         className={
-                          row.job_status === 'fazendo'
+                          row.job_status === 'Pendente de envio'
                             ? 'status progress'
                             : row.job_status === 'na fila'
                             ? 'status'
@@ -1095,23 +1061,57 @@ export default function Dashboard() {
                         height: '49px'
                       }}
                     >
-                      <JobStatus
-                        className={
-                          row.job_status === 'fazendo'
-                            ? 'status progress'
-                            : row.job_status === 'na fila'
-                            ? 'status'
-                            : 'status finished'
-                        }
-                      >
-                        {row.job_status}
-                      </JobStatus>
+                      {row.job_status}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </TableDefault>
+
+            <TableDefault
+              title="Jobs aguardando aprovação do cliente"
+              titleSize="14px"
+              titleWeight="700"
+              titleColor="#222"
+            >
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Job</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {jobsData.map((row) => (
+                  <tr key={row.id_job}>
+                    <td>{row.client_name}</td>
+                    <td>{row.job_name}</td>
+                    <td
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '6px 12px',
+                        height: '49px'
+                      }}
+                    >
+                      {row.job_status}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </TableDefault>
           </ContainerGroupTable>
+
+          {/* Performance Geral Jobs */}
+          <BarChartGrafic data={dataStatusAll} title={'Status Geral Jobs'} />
+
+          {/* Top clientes */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <BarChartGrafic data={dataChanges} isVertical={true} title="Top clientes (Jobs)" />
+            <BarChartGrafic data={dataChanges} isVertical={true} title="Top clientes (Horas)" />
+          </div>
 
           {/* Performance por Cliente */}
           <CardBase>
@@ -1126,12 +1126,6 @@ export default function Dashboard() {
               />
             ))}
           </CardBase>
-
-          {/* Status geral dos jobs + Pizza top clientes */}
-          <GraphicLine>
-            <BarChartGrafic data={dataStatusAll} title={'Status Geral Jobs'} />
-            <ChartDonut data={dataDahs} title={'Top Clientes'} dataKey="value" />
-          </GraphicLine>
         </SectionDefault>
       )}
 
@@ -1139,6 +1133,9 @@ export default function Dashboard() {
       {dashType === 'traffic' && (
         <SectionDefault style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
           <CardWelcomeDash user={user.name} />
+
+          {/* Cards pequenos */}
+          <TopCardsDash typeCards="traffic" cardsData={topCardsDataTrafic} />
 
           {/* Monitoramento do time */}
           <CardBase>
