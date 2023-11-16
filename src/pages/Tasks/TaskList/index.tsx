@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 // Icons
-import { BiPlus, BiSearchAlt } from 'react-icons/bi';
+import { BiFilter, BiPlus, BiSearchAlt, BiX } from 'react-icons/bi';
 import { FiFlag } from 'react-icons/fi';
 import { IconContext } from 'react-icons';
 
@@ -19,7 +19,7 @@ import ButtonTable from '../../../components/Buttons/ButtonTable';
 import HeaderPage from '../../../components/HeaderPage';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { Table } from '../../../components/Table';
-import { TableHead } from '../../../components/Table/styles';
+import { FilterGroup, TableHead } from '../../../components/Table/styles';
 import Alert from '../../../components/Ui/Alert';
 import { ContainerDefault } from '../../../components/UiElements/styles';
 import Pagination from '../../../components/Pagination';
@@ -32,6 +32,7 @@ import {
 } from '../ComponentSteps/SummaryTasks/styles';
 import ProgressBar from '../../../components/Ui/ProgressBar';
 import Loader from '../../../components/LoaderSpin';
+import FilterModal from '../../../components/Ui/FilterModal';
 
 // Utils
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
@@ -43,7 +44,7 @@ import api from '../../../services/api';
 import moment from 'moment';
 
 // Styles
-import { ModalShowTaskWrapper, Flag, StatusTable } from './styles';
+import { ModalShowTaskWrapper, Flag, StatusTable, FilterTasks } from './styles';
 
 export default function TaskList() {
   const { addToast } = useToast();
@@ -73,23 +74,30 @@ export default function TaskList() {
       name: ''
     }
   });
+  const [modalFilters, setModalFilters] = useState<boolean>(false);
   const navigate = useNavigate();
-  // const [filter, setFilter] = useState({
-  //   dateStart: '',
-  //   dateEnd: '',
-  //   order: '',
-  //   search: ''
-  // });
+  const [filter, setFilter] = useState({
+    status: '',
+    client: ''
+  });
   const [selected, setSelected] = useState(1);
   const [search, setSearch] = useState('');
   const { data, pages, fetchData, isFetching } = useFetch<any[]>(
-    `tasks?search=${search.replace('#', '')}&page=${selected}`
+    `tasks?search=${search.replace('#', '')}&page=${selected}&status=${filter.status}&tenant=${
+      filter.client
+    }`
   );
   const [searchTerm, setSearchTerm] = useState('');
   const { isLoading, debouncedCallback } = useDebouncedCallback(
     (search: string) => setSearch(search),
     700
   );
+  const [clientFilter, setClientFilter] = useState({
+    value: '',
+    label: '',
+    image: '',
+    color: ''
+  });
 
   const handleOnDelete = async (id: any) => {
     try {
@@ -110,35 +118,6 @@ export default function TaskList() {
       });
     }
   };
-
-  // const handleOpenModalView = (task: any) => {
-  //   setModalViewTask({
-  //     isOpen: true,
-  //     type: `Resumo da tarefa: ${task.title}`,
-  //     task: {
-  //       task_id: task.task_id,
-  //       title: task.title,
-  //       tenant_id: task.tenant_id,
-  //       tenant: task.tenant,
-  //       total_time: task.total_time,
-  //       project_product_id: task.project_product_id,
-  //       product_period: task.product_period,
-  //       project: task.project,
-  //       project_category: task.project_category,
-  //       type: task.type,
-  //       flow_id: task.flow_id,
-  //       flow: task.flow,
-  //       description: task.description,
-  //       creation_description: task.creation_description,
-  //       creation_date_end: task.creation_date_end,
-  //       copywriting_description: task.copywriting_description,
-  //       copywriting_date_end: task.copywriting_date_end,
-  //       deadlines: task.deadlines,
-  //       step: task.step,
-  //       name: task.name
-  //     }
-  //   });
-  // };
 
   const handleCloseModal = () => {
     setModalViewTask({
@@ -168,7 +147,6 @@ export default function TaskList() {
       }
     });
   };
-  // const { data: dataTask, fetchData: fetchTask } = useFetch<any[]>(`tasks/${taskId}`);
 
   const handleEditTask = (task: any) => {
     if (task.status !== 'Pendente') {
@@ -215,98 +193,18 @@ export default function TaskList() {
     navigate(`/tarefa/${taskId}`, { state: idTask });
   };
 
-  // const { formData, handleOnChange } = useForm({
-  //   tenant_id: '',
-  //   title: '',
-  //   contract_type: '',
-  //   date_start: '',
-  //   date_end: ''
-  // } as any);
+  const handleApplyFilters = (filters: any) => {
+    setFilter(filters);
+    setModalFilters(false);
+  };
 
-  // const components = [
-  //   {
-  //     label: 'Geral',
-  //     success: false,
-  //     component: (
-  //       <InfoGeral data={formData} handleInputChange={handleOnChange} clients={[]} error={[]} />
-  //     )
-  //   },
-  //   {
-  //     label: 'Produto',
-  //     success: false,
-  //     component: (
-  //       <InfoGeral data={formData} handleInputChange={handleOnChange} clients={[]} error={[]} />
-  //     )
-  //   },
-  //   {
-  //     label: 'Anexo',
-  //     success: false,
-  //     component: (
-  //       <InfoGeral data={formData} handleInputChange={handleOnChange} clients={[]} error={[]} />
-  //     )
-  //   },
-  //   {
-  //     label: 'Conclusão',
-  //     success: false,
-  //     component: (
-  //       <InfoGeral data={formData} handleInputChange={handleOnChange} clients={[]} error={[]} />
-  //     )
-  //   }
-  // ];
-
-  // const [steps, setSteps] = useState(() =>
-  //   components.map((row) => ({
-  //     label: row.label,
-  //     success: false
-  //   }))
-  // );
-
-  // const fillComponents = components.map((row: any) => row.component);
-  // const { changeStep, currentComponent, currentStep, isFirstStep, isLastStep } =
-  //   useSteps(fillComponents);
-
-  // const handleOnCancel = () => {
-  //   setModal({
-  //     isOpen: false,
-  //     type: 'Criar nova Tarefa'
-  //   });
-  // };
-
-  // const handleOnNextStep = () => {
-  //   changeStep(currentStep + 1);
-
-  //   setSteps((prevComponents) =>
-  //     prevComponents.map((component, i) => ({
-  //       ...component,
-  //       success: i <= currentStep
-  //     }))
-  //   );
-  // };
-
-  // const handleOnPrevStep = () => {
-  //   changeStep(currentStep - 1);
-  //   setSteps((prevComponents) => {
-  //     return prevComponents.map((component, i) => {
-  //       if (i === currentStep - 1) {
-  //         return {
-  //           ...component,
-  //           success: false
-  //         };
-  //       }
-  //       return component;
-  //     });
-  //   });
-  // };
-
-  // const handleOnSubmit = useCallback(async (event: any) => {
-  //   try {
-  //     event.preventDefault();
-
-  //     console.log('SUBMIT');
-  //   } catch (error: any) {
-  //     console.log('ERROR', error);
-  //   }
-  // }, []);
+  const handleClearFilters = () => {
+    setFilter({
+      status: '',
+      client: ''
+    });
+    setModalFilters(false);
+  };
 
   return (
     <ContainerDefault>
@@ -336,7 +234,7 @@ export default function TaskList() {
                 )}
               </h2>
             </div>
-            <div>
+            <FilterTasks>
               <InputDefault
                 label=""
                 name="search"
@@ -350,27 +248,29 @@ export default function TaskList() {
                 isLoading={isLoading}
                 className="search-field"
               />
-            </div>
+
+              <ButtonDefault typeButton="danger" isOutline onClick={handleClearFilters}>
+                <div className="close-icon">
+                  <BiX size={30} />
+                </div>
+                Limpar filtros
+              </ButtonDefault>
+
+              <ButtonDefault
+                typeButton="lightWhite"
+                isOutline
+                onClick={() => setModalFilters(true)}
+              >
+                <BiFilter />
+                Filtros
+              </ButtonDefault>
+            </FilterTasks>
           </TableHead>
           {/* <FilterGroup>
-            <InputDefault
-              label=""
-              name="search"
-              placeholder="Buscar..."
-              onChange={(event) => {
-                setSearchTerm(event.target.value);
-                debouncedCallback(event.target.value);
-              }}
-              value={searchTerm}
-              icon={BiSearchAlt}
-              isLoading={isLoading}
-              className="search-field"
-            />
-
-            <ButtonDefault typeButton="light">
-              <BiFilter />
-              Filtros
-            </ButtonDefault> 
+            <div>
+              Filtros utilizados: {filter.client !== '' ? filter.client : ''}{' '}
+              {filter.status !== '' ? filter.status : ''}
+            </div>
           </FilterGroup> */}
           <table>
             <thead>
@@ -562,6 +462,17 @@ export default function TaskList() {
           </Summary>
         </ModalShowTaskWrapper>
       </ModalDefault>
+
+      {/* Modal filters */}
+      <FilterModal
+        isOpen={modalFilters}
+        closeBtn={true}
+        onOpenChange={() => setModalFilters(!modalFilters)}
+        applyFilters={handleApplyFilters}
+        clearFilters={handleClearFilters}
+        clientSelected={setClientFilter}
+        filterType="task"
+      />
     </ContainerDefault>
   );
 }

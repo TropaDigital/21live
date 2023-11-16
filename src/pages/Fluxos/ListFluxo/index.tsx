@@ -216,7 +216,14 @@ export default function ListFluxo() {
                               })
                             }
                           />
-                          {/* <ButtonTable typeButton="view" onClick={() => ''} /> */}
+                          <ButtonTable
+                            typeButton="view"
+                            onClick={() =>
+                              navigate(`/fluxo/${row.flow_id}`, {
+                                state: { id: row.flow_id, name: row.name }
+                              })
+                            }
+                          />
                           <Alert
                             title="Atenção"
                             subtitle="Certeza que gostaria de remover esse fluxo? Ao excluir a acão não poderá ser desfeita."

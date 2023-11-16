@@ -177,3 +177,9 @@ export const ModalButtons = styled.div`
   justify-content: flex-end;
   gap: 12px;
 `;
+
+export const FilterTeamWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;

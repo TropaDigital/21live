@@ -11,11 +11,13 @@ interface PropsPopup {
   handleOnPosition: (index: number) => void;
   index: any;
   length: number;
+  handleSave: () => void;
 }
 
 export default function ActionPopup({
   handleOnDelete,
   handleOnPosition,
+  handleSave,
   index,
   length
 }: PropsPopup) {
@@ -26,7 +28,7 @@ export default function ActionPopup({
     <ContainerPopupCard>
       <Popover.Root>
         <Popover.Trigger asChild>
-          <ButtonHeaderCardFluxo aria-label="Update dimensions">
+          <ButtonHeaderCardFluxo aria-label="Update dimensions" onClick={handleSave}>
             <FiMoreHorizontal />
           </ButtonHeaderCardFluxo>
         </Popover.Trigger>

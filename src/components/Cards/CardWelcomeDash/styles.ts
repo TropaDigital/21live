@@ -27,3 +27,9 @@ export const CardWellcomeDash = styled.div`
     }
   }
 `;
+
+export const FilterButtons = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;

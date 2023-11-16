@@ -245,3 +245,9 @@ export const ViewFileBtn = styled.button`
     }
   }
 `;
+
+export const FilterWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;

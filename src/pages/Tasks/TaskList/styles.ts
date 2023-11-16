@@ -54,3 +54,9 @@ export const StatusTable = styled.div`
     background: var(--secundary-100);
   }
 `;
+
+export const FilterTasks = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;

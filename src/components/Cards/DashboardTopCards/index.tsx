@@ -3,7 +3,7 @@ import { CardDataDash } from '../CardDataDash';
 import { WrapperCards } from './styles';
 
 interface CardsInfoProps {
-  typeCards: 'manager' | 'executive';
+  typeCards: 'manager' | 'executive' | 'traffic';
   cardsData: CardsData[];
 }
 
@@ -19,6 +19,8 @@ export interface CardsData {
     | 'jobFee'
     | 'newFee'
     | 'newSpot'
+    | 'jobs'
+    | 'team'
     | undefined;
   title: string;
 }
@@ -32,6 +34,11 @@ export default function TopCardsDash({ typeCards, cardsData }: CardsInfoProps) {
         ))}
 
       {typeCards === 'executive' &&
+        cardsData.map((row: CardsData) => (
+          <CardDataDash key={row.title} data={row.data} type={row.type} description={row.title} />
+        ))}
+
+      {typeCards === 'traffic' &&
         cardsData.map((row: CardsData) => (
           <CardDataDash key={row.title} data={row.data} type={row.type} description={row.title} />
         ))}

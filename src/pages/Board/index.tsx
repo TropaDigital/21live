@@ -31,6 +31,7 @@ interface ITask {
   total_time?: string;
   status?: string;
   time_consumed?: string;
+  team?: [];
   type_play?: string;
   user_id?: string;
   urgent?: string;

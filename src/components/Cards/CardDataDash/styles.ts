@@ -10,7 +10,9 @@ interface ContainerProps {
     | 'jobSpot'
     | 'jobFee'
     | 'newFee'
-    | 'newSpot';
+    | 'newSpot'
+    | 'team'
+    | 'jobs';
 }
 
 // const cardTypeVariations = {
