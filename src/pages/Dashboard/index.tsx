@@ -8,7 +8,6 @@ import { useAuth } from '../../hooks/AuthContext';
 // Components
 import { CardWelcomeDash } from '../../components/Cards/CardWelcomeDash';
 import BarChartGrafic from '../../components/GraphicsChart/BarChartGrafic';
-import ChartDonut from '../../components/GraphicsChart/ChartDonut';
 import { TableDefault } from '../../components/TableDefault';
 import { ContainerGroupTable, SectionDefault } from '../../components/UiElements/styles';
 import TopCardsDash, { CardsData } from '../../components/Cards/DashboardTopCards';
@@ -30,15 +29,17 @@ import {
   GridServiceWrapper,
   JobStatus,
   UserInfo,
-  WrapperTeamCards,
-  TeamTimeCard,
   UserTeamCard,
   UserJobs,
   OperatorTopWrapper,
   TimeChartsTopCard,
   SmallCardsWrapper,
   JobCellTable,
-  HoursTable
+  HoursTable,
+  TdColor,
+  ClientPerformanceTraffic,
+  BulletPointInfos,
+  BulletsWrapper
 } from './styles';
 
 // Libraries
@@ -48,25 +49,49 @@ import CountUp from 'react-countup';
 import PersonTest from '../../assets/person.jpg';
 
 // Icons
-import { FiClock } from 'react-icons/fi';
 import { useFetch } from '../../hooks/useFetch';
+import BarChartUser from '../../components/GraphicsChart/BarChartUser';
+import { CardDataDash } from '../../components/Cards/CardDataDash';
+import FilterModal from '../../components/Ui/FilterModal';
 // interface DashType {
 //   typeDash: 'manager' | 'executive' | 'traffic' | 'operator' | '';
 // }
 
-interface TeamDataProps {
-  user_name: string;
-  user_role: string;
-  avatar: string;
-  available_time: string;
+interface JobsList {
+  id_job: number;
+  client_name: string;
+  team: string;
+  job_name: string;
+  job_status: string;
+  job_type: string;
 }
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const [dashType, setDashType] = useState<string>('traffic');
-  const { data, fetchData, isFetching } = useFetch<any>(`/dashboard`);
+  const [filter, setFilter] = useState({
+    fromDate: '',
+    toDate: ''
+  });
+  const [dashType, setDashType] = useState<string>('');
+  const { data, fetchData, isFetching } = useFetch<any>(
+    `/dashboard?date_start=${filter.fromDate}&date_end=${filter.toDate}`
+  );
+  const [modalFilters, setModalFilters] = useState<boolean>(false);
 
-  console.log('log do data dashboard =>', data);
+  const handleApplyFilters = (filters: any) => {
+    setFilter(filters);
+    setModalFilters(false);
+  };
+
+  const handleClearFilters = () => {
+    setFilter({
+      fromDate: '',
+      toDate: ''
+    });
+    setModalFilters(false);
+  };
+
+  // console.log('log do data dashboard =>', data);
 
   const dataStatusAll = [
     {
@@ -160,8 +185,8 @@ export default function Dashboard() {
     },
     {
       data: data ? Number(data.horas_criacao.split(':')[0]) : 0,
-      type: 'creation',
-      title: 'Horas de criação'
+      type: 'jobs',
+      title: 'Total Jobs'
     },
     {
       data: data ? data.alteracao_interna : 0,
@@ -403,31 +428,133 @@ export default function Dashboard() {
     principalTask: 'Update data'
   };
 
-  const teamTimeData: TeamDataProps[] = [
-    {
-      user_name: 'Daniela Silva Ferreira',
-      user_role: 'Criação',
-      avatar: 'foto.jpg',
-      available_time: '12:46:00'
-    },
-    {
-      user_name: 'Fernanda Melo Favero',
-      user_role: 'Redação',
-      avatar: 'picture.jpg',
-      available_time: '6:22:00'
-    },
-    {
-      user_name: 'Marina Chriguer',
-      user_role: 'Gestor',
-      avatar: 'avatar.jpeg',
-      available_time: '25:13:00'
-    }
-  ];
-
   const dataPieGraphic = [
     { name: 'Disponiveis', value: 800 },
     { name: 'Utilizados', value: 200 }
   ];
+
+  const jobsDataList: JobsList[] = [
+    {
+      id_job: 0,
+      client_name: 'Terex',
+      team: 'Marina',
+      job_name: 'Post no Insta',
+      job_status: 'Em andamento',
+      job_type: 'Criação do zero'
+    },
+    {
+      id_job: 1,
+      client_name: 'Tropa',
+      team: 'Daniel',
+      job_name: 'Planejamento',
+      job_status: 'Em andamento',
+      job_type: 'Alteração cliente'
+    },
+    {
+      id_job: 2,
+      client_name: 'Takao',
+      team: 'Marcos',
+      job_name: 'Planejamento',
+      job_status: 'Em andamento',
+      job_type: 'Alteração interna'
+    },
+    {
+      id_job: 3,
+      client_name: 'Iveco',
+      team: 'Milena',
+      job_name: 'Projeto X',
+      job_status: 'Em andamento',
+      job_type: 'Criação do zero'
+    },
+    {
+      id_job: 4,
+      client_name: 'Emerson',
+      team: 'Derick',
+      job_name: 'Job X',
+      job_status: 'Em andamento',
+      job_type: 'Criação do zero'
+    },
+    {
+      id_job: 5,
+      client_name: 'Emerson',
+      team: 'Beatriz',
+      job_name: 'Post no Insta',
+      job_status: 'Em andamento',
+      job_type: 'Criação do zero'
+    },
+    {
+      id_job: 6,
+      client_name: 'Tropa',
+      team: 'Derick',
+      job_name: 'Planejamento',
+      job_status: 'Na fila',
+      job_type: 'Criação do zero'
+    },
+    {
+      id_job: 7,
+      client_name: 'Takao',
+      team: 'Milena',
+      job_name: 'Planejamento',
+      job_status: 'Na fila',
+      job_type: 'Alteração interna'
+    },
+    {
+      id_job: 8,
+      client_name: 'Iveco',
+      team: 'Daniel',
+      job_name: 'Planejamento',
+      job_status: 'Na fila',
+      job_type: 'Criação do zero'
+    },
+    {
+      id_job: 9,
+      client_name: 'Genie',
+      team: 'Marina',
+      job_name: 'Job Y',
+      job_status: 'Na fila',
+      job_type: 'Criação do zero'
+    }
+  ];
+
+  const jobsListIndividual = [
+    {
+      id_job: 0,
+      client_name: 'Terex',
+      job_name: 'Post no Insta',
+      job_status: 'Em andamento',
+      job_type: 'Criação do zero'
+    },
+    {
+      id_job: 1,
+      client_name: 'Tropa',
+      job_name: 'Planejamento',
+      job_status: 'Em andamento',
+      job_type: 'Alteração cliente'
+    },
+    {
+      id_job: 2,
+      client_name: 'Takao',
+      job_name: 'Planejamento',
+      job_status: 'Em andamento',
+      job_type: 'Alteração interna'
+    },
+    {
+      id_job: 3,
+      client_name: 'Iveco',
+      job_name: 'Projeto X',
+      job_status: 'Em andamento',
+      job_type: 'Criação do zero'
+    },
+    {
+      id_job: 4,
+      client_name: 'Emerson',
+      job_name: 'Job X',
+      job_status: 'Em andamento',
+      job_type: 'Criação do zero'
+    }
+  ];
+
+  const fiveJobs = jobsDataList.slice(0, 5);
 
   return (
     <Container>
@@ -437,21 +564,37 @@ export default function Dashboard() {
         </div>
       )}
 
+      {isFetching && <Loader />}
+
       {/* Dash Gestor */}
-      {dashType === 'manager' && (
+      {dashType === 'manager' && !isFetching && (
         <SectionDefault style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-          <CardWelcomeDash user={user.name} />
+          <CardWelcomeDash
+            user={user.name}
+            clearFilter={handleClearFilters}
+            openFilter={() => setModalFilters(true)}
+          />
 
           {/* Cards pequenos */}
           <TopCardsDash typeCards="manager" cardsData={topCardsDataManager} />
 
           {/* Status geral dos jobs + Pizza top clientes */}
           <GraphicLine>
-            <BarChartGrafic data={dataStatusAll} title={'Status Geral Jobs'} />
+            <BarChartGrafic data={dataStatusAll} title={'Status Geral Jobs'} height="" />
             {/* <ChartDonut data={dataDahs} title={'Top Clientes'} dataKey="value" /> */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <BarChartGrafic data={dataChanges} isVertical={true} title="Top clientes (Jobs)" />
-              <BarChartGrafic data={dataChanges} isVertical={true} title="Top clientes (Horas)" />
+              <BarChartGrafic
+                data={dataChanges}
+                isVertical={true}
+                title="Top clientes (Jobs)"
+                height=""
+              />
+              <BarChartGrafic
+                data={dataChanges}
+                isVertical={true}
+                title="Top clientes (Horas)"
+                height=""
+              />
             </div>
           </GraphicLine>
 
@@ -665,22 +808,22 @@ export default function Dashboard() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
             <CardBase>
               <div className="card-title">Alterações Internas (Jobs)</div>
-              <BarChartGrafic data={dataChanges} isVertical={true} />
+              <BarChartGrafic data={dataChanges} isVertical={true} height="" />
             </CardBase>
             <CardBase>
               <div className="card-title">Alterações Clientes (Jobs)</div>
-              <BarChartGrafic data={dataChanges} isVertical={true} />
+              <BarChartGrafic data={dataChanges} isVertical={true} height="" />
             </CardBase>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
             <CardBase>
               <div className="card-title">Alterações Internas (Horas)</div>
-              <BarChartGrafic data={dataChanges} isVertical={true} />
+              <BarChartGrafic data={dataChanges} isVertical={true} height="" />
             </CardBase>
             <CardBase>
               <div className="card-title">Alterações Clientes (Horas)</div>
-              <BarChartGrafic data={dataChanges} isVertical={true} />
+              <BarChartGrafic data={dataChanges} isVertical={true} height="" />
             </CardBase>
           </div>
 
@@ -924,7 +1067,7 @@ export default function Dashboard() {
 
           {/* Monitoramento criativo */}
           <CardBase>
-            <div className="card-title">Monitoramento do time - Criativo</div>
+            <div className="card-title">Monitoramento Do Time - Criativo</div>
 
             <TableDefault title="" titleSize="14px" titleWeight="700" titleColor="#222">
               <thead>
@@ -965,7 +1108,7 @@ export default function Dashboard() {
 
           {/* Monitoramento jobs entregues */}
           <TableDefault
-            title="Clientes detalhado - (Fee)"
+            title="Monitoramento jobs entregues"
             titleSize="14px"
             titleWeight="700"
             titleColor="#222"
@@ -1014,7 +1157,9 @@ export default function Dashboard() {
                 <td>Entregue</td>
                 <td>5</td>
                 <td>1H</td>
-                <td style={{ color: '#ff8800', background: 'var(--warning-100)' }}>3H</td>
+                <td>
+                  <TdColor>3H</TdColor>
+                </td>
                 <td>12/10/2023</td>
                 <td>16/10/2023</td>
               </tr>
@@ -1024,9 +1169,13 @@ export default function Dashboard() {
       )}
 
       {/* Dash executivo */}
-      {dashType === 'executive' && (
+      {dashType === 'executive' && !isFetching && (
         <SectionDefault style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-          <CardWelcomeDash user={user.name} />
+          <CardWelcomeDash
+            user={user.name}
+            clearFilter={handleClearFilters}
+            openFilter={() => setModalFilters(true)}
+          />
 
           {/* Cards pequenos */}
           <TopCardsDash typeCards="executive" cardsData={topCardsDataExecutive} />
@@ -1105,12 +1254,22 @@ export default function Dashboard() {
           </ContainerGroupTable>
 
           {/* Performance Geral Jobs */}
-          <BarChartGrafic data={dataStatusAll} title={'Status Geral Jobs'} />
+          <BarChartGrafic data={dataStatusAll} title={'Status Geral Jobs'} height="" />
 
           {/* Top clientes */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <BarChartGrafic data={dataChanges} isVertical={true} title="Top clientes (Jobs)" />
-            <BarChartGrafic data={dataChanges} isVertical={true} title="Top clientes (Horas)" />
+            <BarChartGrafic
+              data={dataChanges}
+              isVertical={true}
+              title="Top clientes (Jobs)"
+              height=""
+            />
+            <BarChartGrafic
+              data={dataChanges}
+              isVertical={true}
+              title="Top clientes (Horas)"
+              height=""
+            />
           </div>
 
           {/* Performance por Cliente */}
@@ -1130,148 +1289,68 @@ export default function Dashboard() {
       )}
 
       {/* Dash tráfego */}
-      {dashType === 'traffic' && (
+      {dashType === 'traffic' && !isFetching && (
         <SectionDefault style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-          <CardWelcomeDash user={user.name} />
+          <CardWelcomeDash
+            user={user.name}
+            clearFilter={handleClearFilters}
+            openFilter={() => setModalFilters(true)}
+          />
 
           {/* Cards pequenos */}
           <TopCardsDash typeCards="traffic" cardsData={topCardsDataTrafic} />
 
-          {/* Monitoramento do time */}
-          <CardBase>
-            <div className="card-title">Monitoramento do time</div>
+          {/* Listagem de jobs */}
+          <ContainerGroupTable>
+            <TableDefault
+              title="Lista de Jobs"
+              titleSize="14px"
+              titleWeight="700"
+              titleColor="#222"
+            >
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Time</th>
+                  <th>Job</th>
+                  <th>Status</th>
+                  <th>Natureza</th>
+                </tr>
+              </thead>
 
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px' }}>
-              <BaseTableGrey>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>CLIENTE</th>
-                      <th>TIME</th>
-                      <th>JOB</th>
-                      <th>STATUS</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Metso</td>
-                      <td>Time 1</td>
-                      <td>Planejamento</td>
-                      <td>
-                        <div
-                          className="status"
-                          // row.status_job === 'creation'
-                          //     ? 'status progress'
-                          //     : row.status_job === 'waiting'
-                          //       ? 'status'
-                          //       : row.status_job === 'finished'
-                          //         ? 'status finished'
-                          //         : 'status'
-                        >
-                          Criação
-                          {
-                            // row.status_job === 'creation'
-                            //   ? 'Criação'
-                            //   : row.status_job === 'waiting'
-                            //   ? 'Aguardando aprovação'
-                            //   : row.status_job === 'finished'
-                            //   ? 'Concluída'
-                            //   : 'Pendente'
-                          }
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>Metso</td>
-                      <td>Time 2</td>
-                      <td>Desenvolvimento</td>
-                      <td>
-                        <div
-                          className="status"
-                          // row.status_job === 'creation'
-                          //     ? 'status progress'
-                          //     : row.status_job === 'waiting'
-                          //       ? 'status'
-                          //       : row.status_job === 'finished'
-                          //         ? 'status finished'
-                          //         : 'status'
-                        >
-                          Criação
-                          {
-                            // row.status_job === 'creation'
-                            //   ? 'Criação'
-                            //   : row.status_job === 'waiting'
-                            //   ? 'Aguardando aprovação'
-                            //   : row.status_job === 'finished'
-                            //   ? 'Concluída'
-                            //   : 'Pendente'
-                          }
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </BaseTableGrey>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <NumberCard height_size={'110px'} className="white">
-                  <CountUp start={0} end={87} delay={0}>
-                    {({ countUpRef }) => (
-                      <div>
-                        <span className="numberCard" ref={countUpRef} />
-                      </div>
-                    )}
-                  </CountUp>
-                  <div className="numberCard-title">pautas</div>
-                </NumberCard>
-                <NumberCard height_size={'110px'} className="white">
-                  <CountUp start={0} end={290} delay={0}>
-                    {({ countUpRef }) => (
-                      <div>
-                        <span className="numberCard" ref={countUpRef} />
-                      </div>
-                    )}
-                  </CountUp>
-                  <div className="numberCard-title">horas</div>
-                </NumberCard>
-              </div>
-            </div>
-          </CardBase>
-
-          {/* Monitoramento do time por horas */}
-          <CardBase>
-            <div className="card-title">Monitoramento do time por horas disponíveis</div>
-            <WrapperTeamCards>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '18px', width: '100%' }}>
-                {teamTimeData.map((row: TeamDataProps, index: number) => (
-                  <TeamTimeCard key={index}>
-                    <div
-                      className="avatar-user"
-                      style={{ backgroundImage: `url(${PersonTest})` }}
-                    />
-                    <div className="user-name">
-                      {row.user_name.split(' ').slice(0, 2).join(' ')}
-                    </div>
-                    <div className="user-role">{row.user_role}</div>
-                    <div className="free-time">
-                      <FiClock color="#FFF" />
-                      {row.available_time} disponíveis
-                    </div>
-                  </TeamTimeCard>
+              <tbody>
+                {jobsDataList.map((row: JobsList) => (
+                  <tr key={row.id_job}>
+                    <td>{row.client_name}</td>
+                    <td>{row.team}</td>
+                    <td>{row.job_name}</td>
+                    <td
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '6px 12px',
+                        height: '49px'
+                      }}
+                    >
+                      <JobStatus
+                        className={
+                          row.job_status === 'Em andamento'
+                            ? 'status progress'
+                            : row.job_status === 'Na fila'
+                            ? 'status'
+                            : 'status finished'
+                        }
+                      >
+                        {row.job_status}
+                      </JobStatus>
+                    </td>
+                    <td>{row.job_type}</td>
+                  </tr>
                 ))}
-              </div>
-              <NumberCard height_size={'220px'}>
-                <CountUp start={0} end={290} delay={0}>
-                  {({ countUpRef }) => (
-                    <div>
-                      <span className="numberCard" ref={countUpRef} />
-                    </div>
-                  )}
-                </CountUp>
-                <div className="numberCard-title">horas disponíveis</div>
-              </NumberCard>
-            </WrapperTeamCards>
-          </CardBase>
+              </tbody>
+            </TableDefault>
+          </ContainerGroupTable>
 
           {/* Monitoramento do time individual */}
           <CardBase>
@@ -1282,99 +1361,203 @@ export default function Dashboard() {
                   <div className="user-image" style={{ backgroundImage: `url(${PersonTest})` }} />
                   <div className="user-infos">
                     Marina Chriguer
-                    <span>12 Clientes</span>
+                    <span>Clientes alocados: 12</span>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px' }}>
-                  <BaseTableGrey>
-                    <table>
-                      <thead>
-                        <tr style={{ height: '48px' }}>
-                          <th>CLIENTE</th>
-                          <th>JOB</th>
-                          <th>STATUS</th>
-                        </tr>
-                      </thead>
+                <ContainerGroupTable>
+                  <TableDefault title="" titleSize="14px" titleWeight="700" titleColor="#222">
+                    <thead>
+                      <tr>
+                        <th>Cliente</th>
+                        <th>Job</th>
+                        <th>Status</th>
+                        <th>Natureza</th>
+                      </tr>
+                    </thead>
 
-                      <tbody>
-                        {[0, 1, 2, 3].map((row, index: number) => (
-                          <tr key={index} style={{ height: '48px' }}>
-                            <td>Metso</td>
-                            <td>Time 1</td>
-                            <td>
-                              <div
-                                className="status"
-                                // row.status_job === 'creation'
-                                //     ? 'status progress'
-                                //     : row.status_job === 'waiting'
-                                //       ? 'status'
-                                //       : row.status_job === 'finished'
-                                //         ? 'status finished'
-                                //         : 'status'
-                              >
-                                Criação
-                                {
-                                  // row.status_job === 'creation'
-                                  //   ? 'Criação'
-                                  //   : row.status_job === 'waiting'
-                                  //   ? 'Aguardando aprovação'
-                                  //   : row.status_job === 'finished'
-                                  //   ? 'Concluída'
-                                  //   : 'Pendente'
-                                }
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </BaseTableGrey>
-                </div>
+                    <tbody>
+                      {jobsListIndividual.map((row) => (
+                        <tr key={row.id_job}>
+                          <td>{row.client_name}</td>
+                          <td>{row.job_name}</td>
+                          <td
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              padding: '6px 12px',
+                              height: '49px'
+                            }}
+                          >
+                            <JobStatus
+                              className={
+                                row.job_status === 'Em andamento'
+                                  ? 'status progress'
+                                  : row.job_status === 'Na fila'
+                                  ? 'status'
+                                  : 'status finished'
+                              }
+                            >
+                              {row.job_status}
+                            </JobStatus>
+                          </td>
+                          <td>{row.job_type}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </TableDefault>
+                </ContainerGroupTable>
 
                 <UserJobs>
-                  <div className="job-card">
-                    22 <span>pautas alocadas</span>
-                  </div>
-                  <div className="job-card">
-                    2 <span>pautas na semana</span>
-                  </div>
-                  <div className="job-card">
-                    12 <span>pautas no mês</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <div className="small-number-card worked">
-                      <CountUp start={0} end={290} delay={0}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <NumberCard height_size={'155px'}>
+                      <CountUp start={0} end={122} delay={0}>
                         {({ countUpRef }) => (
                           <div>
                             <span className="numberCard" ref={countUpRef} />
                           </div>
                         )}
                       </CountUp>
-                      horas trabalhadas
-                    </div>
-                    <div className="small-number-card free">
-                      <CountUp start={0} end={12} delay={0}>
+                      <div className="numberCard-title">Total horas trabalhadas</div>
+                    </NumberCard>
+
+                    <NumberCard height_size={'155px'}>
+                      <CountUp start={0} end={18} delay={0}>
                         {({ countUpRef }) => (
                           <div>
                             <span className="numberCard" ref={countUpRef} />
                           </div>
                         )}
                       </CountUp>
-                      horas disponíveis
-                    </div>
+                      <div className="numberCard-title">Total horas disponíveis</div>
+                    </NumberCard>
                   </div>
                 </UserJobs>
               </UserTeamCard>
             ))}
           </CardBase>
+
+          {/* Monitoramento jobs entregues */}
+          <TableDefault
+            title="Monitoramento jobs entregues"
+            titleSize="14px"
+            titleWeight="700"
+            titleColor="#222"
+          >
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Criativo</th>
+                <th>Job</th>
+                <th>Status</th>
+                <th>Pausas</th>
+                <th>Hora - Plan</th>
+                <th>Hora - Real</th>
+                <th>Data início</th>
+                <th>Data final</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>21 Live | Cliente</td>
+                <td>Amanda</td>
+                <td>Teste</td>
+                <td>Entregue</td>
+                <td>3</td>
+                <td>5H</td>
+                <td>4H</td>
+                <td>15/10/2023</td>
+                <td>17/10/2023</td>
+              </tr>
+              <tr>
+                <td>Metso</td>
+                <td>Beatriz</td>
+                <td>Ticket teste</td>
+                <td>Entregue</td>
+                <td>2</td>
+                <td>3H</td>
+                <td>3H</td>
+                <td>15/10/2023</td>
+                <td>18/10/2023</td>
+              </tr>
+              <tr>
+                <td>Iveco</td>
+                <td>Luana</td>
+                <td>TS-TSK-02-TICKET</td>
+                <td>Entregue</td>
+                <td>5</td>
+                <td>1H</td>
+                <td>
+                  <TdColor className="color">3H</TdColor>
+                </td>
+                <td>12/10/2023</td>
+                <td>16/10/2023</td>
+              </tr>
+            </tbody>
+          </TableDefault>
+
+          {/* Performance por cliente */}
+          <CardBase>
+            {/* <div className="card-title">Performance por cliente</div> */}
+
+            <ClientPerformanceTraffic>
+              <div>
+                <BarChartGrafic data={dataStatusAll} title={'CLIENTE: TEREX'} height="260px" />
+              </div>
+              <BulletsWrapper>
+                <BulletPointInfos>
+                  <div className="bullet">
+                    Total jobs: <span>32</span>
+                  </div>
+                  <div className="bullet">
+                    Total horas: <span>26h</span>
+                  </div>
+                  <div className="bullet">
+                    Jobs em andamento: <span>3</span>
+                  </div>
+                  <div className="bullet">
+                    Alteração interna: <span>12</span>
+                  </div>
+                  <div className="bullet">
+                    Alteração cliente: <span>11</span>
+                  </div>
+                </BulletPointInfos>
+
+                <BulletPointInfos>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div className="bullet">
+                      Contrato Fee: <span>40h</span>
+                    </div>
+                    <div className="bullet">
+                      Saldo Contrato: <span>14h</span>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div className="bullet">
+                      Contrato Spot: <span>4h</span>
+                    </div>
+                    <div className="bullet">
+                      Saldo Spot: <span>1h</span>
+                    </div>
+                  </div>
+                </BulletPointInfos>
+              </BulletsWrapper>
+            </ClientPerformanceTraffic>
+          </CardBase>
         </SectionDefault>
       )}
 
       {/* Dash operador */}
-      {dashType === 'operator' && (
+      {dashType === 'operator' && !isFetching && (
         <SectionDefault style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-          <CardWelcomeDash user={user.name} />
+          <CardWelcomeDash
+            user={user.name}
+            clearFilter={handleClearFilters}
+            openFilter={() => setModalFilters(true)}
+          />
 
           {/* Top cards */}
           <OperatorTopWrapper>
@@ -1399,95 +1582,75 @@ export default function Dashboard() {
             </div>
 
             <SmallCardsWrapper>
-              <div className="small-card">
-                Total de clientes
-                <div className="big-number">7</div>
-              </div>
-              <div className="small-card">
-                Horas de criação
-                <div className="big-number">112</div>
-              </div>
-              <div className="small-card">
-                Alt. Clientes
-                <div className="big-number">8</div>
-              </div>
-              <div className="small-card">
-                Alt. Internas <div className="big-number">6</div>
-              </div>
-              <div className="small-card">
-                Pautas <div className="big-number">32</div>
-              </div>
-              <div className="small-card">
-                Horas <div className="big-number">78</div>
-              </div>
+              <CardDataDash data={32} type="jobSpot" description="Pautas entregues" />
+              <CardDataDash data={112} type="creation" description="Horas de criação" />
+              <CardDataDash data={8} type="danger" description="Alt. Clientes" />
+              <CardDataDash data={6} type="info" description="Alt. Internas" />
+              <CardDataDash data={4} type="jobs" description="Jobs na fila" />
             </SmallCardsWrapper>
           </OperatorTopWrapper>
 
-          {/* Clients & jobs table */}
-          <BaseTableGrey>
-            <table>
+          {/* Listagem de jobs */}
+          <ContainerGroupTable>
+            <TableDefault
+              title="Lista de Jobs"
+              titleSize="14px"
+              titleWeight="700"
+              titleColor="#222"
+            >
               <thead>
                 <tr>
                   <th>Cliente</th>
                   <th>Job</th>
                   <th>Status</th>
-                  <th style={{ color: '#F9FAFB' }}>-</th>
+                  <th>Natureza</th>
                 </tr>
               </thead>
 
               <tbody>
-                {[0, 1, 2, 3].map((row, index: number) => (
-                  <tr key={index}>
-                    <td>Metso</td>
-                    <td>
-                      <JobCellTable>
-                        <div className="top-cell">Planejamento de Marketing</div>
-                        <div className="bottom-cell">001 - Cronograma - Julho 2023</div>
-                      </JobCellTable>
-                    </td>
-                    <td>
-                      <StatusTable
-                      // className={
-                      //   row.status === 'Em Andamento'
-                      //     ? 'status progress'
-                      //     : row.status === 'Concluida'
-                      //       ? 'status finished'
-                      //       : 'status'
-                      // }
+                {fiveJobs.map((row: JobsList) => (
+                  <tr key={row.id_job}>
+                    <td>{row.client_name}</td>
+                    <td>{row.job_name}</td>
+                    <td
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '6px 12px',
+                        height: '49px'
+                      }}
+                    >
+                      <JobStatus
+                        className={
+                          row.job_status === 'Em andamento'
+                            ? 'status progress'
+                            : row.job_status === 'Na fila'
+                            ? 'status'
+                            : 'status finished'
+                        }
                       >
-                        {/* {row.status === 'Em Andamento'
-                          ? 'Em progresso'
-                          : row.status === 'Concluida'
-                            ? 'Concluída'
-                            : row.status === 'Aguardando Aprovação'
-                              ? 'Aguardando Aprovação'
-                              : 'Pendente'} */}
-                        Pendente
-                      </StatusTable>
+                        {row.job_status}
+                      </JobStatus>
                     </td>
-                    <td>
-                      <div className="fieldTableClients">
-                        <ButtonTable typeButton="view" onClick={() => ''} />
-                        <ButtonTable typeButton="edit" onClick={() => ''} />
-                        <Alert
-                          title="Atenção"
-                          subtitle="Certeza que gostaria de deletar este Projeto? Ao excluir a ação não poderá ser desfeita."
-                          confirmButton={() => ''}
-                        >
-                          <ButtonTable typeButton="delete" />
-                        </Alert>
-                      </div>
-                    </td>
+                    <td>{row.job_type}</td>
                   </tr>
                 ))}
               </tbody>
-            </table>
-          </BaseTableGrey>
-
-          {/* Status jobs overall */}
-          <BarChartGrafic data={dataStatusAll} title={'Status Geral Jobs'} />
+            </TableDefault>
+          </ContainerGroupTable>
         </SectionDefault>
       )}
+
+      {/* Modal filters */}
+      <FilterModal
+        isOpen={modalFilters}
+        closeBtn={true}
+        onOpenChange={() => setModalFilters(!modalFilters)}
+        applyFilters={handleApplyFilters}
+        clearFilters={handleClearFilters}
+        filterType="dash"
+      />
     </Container>
   );
 }
