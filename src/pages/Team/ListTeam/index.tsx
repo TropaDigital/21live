@@ -1,6 +1,6 @@
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Icons
@@ -360,7 +360,7 @@ export default function Team() {
       workDays[dayIndex]?.pause?.forEach((obj: any) => {
         breaks.push({
           id: breaks.length + 1,
-          name: '',
+          name: obj.name,
           end_pause: obj.end_pause,
           start_pause: obj.start_pause
         });
@@ -548,11 +548,11 @@ export default function Team() {
     setModalFilters(false);
   };
 
-  // useEffect(() => {
-  //   console.log('log das pausas', selectedBreaks);
-  //   console.log('log dos workdays', workDays);
-  //   console.log('log do dia selecionado', selectedBreakDay);
-  // }, [selectedBreaks, workDays, selectedBreakDay]);
+  useEffect(() => {
+    console.log('log das pausas', selectedBreaks);
+    console.log('log dos workdays', workDays);
+    console.log('log do dia selecionado', selectedBreakDay);
+  }, [selectedBreaks, workDays, selectedBreakDay]);
 
   return (
     <ContainerDefault>
@@ -712,6 +712,7 @@ export default function Team() {
         </SectionDefault>
       )}
 
+      {/* Modal edit user */}
       <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
         <form onSubmit={handleOnSubmit}>
           <FieldDefault>
@@ -849,6 +850,7 @@ export default function Team() {
         </form>
       </ModalDefault>
 
+      {/* Modal weekly workload */}
       <ModalDefault
         isOpen={modalWorkDays.isOpen}
         title={modalWorkDays.title}
@@ -1227,7 +1229,7 @@ export default function Team() {
                           onClick={() => setChangeBreakName(changeBreakName === '' ? row.id : '')}
                         >
                           {changeBreakName !== row.id &&
-                            (row?.name !== '' ? row?.name : `Pausa ${index + 1}`)}
+                            (row.name !== '' ? row.name : `Pausa ${index + 1}`)}
                         </BreakName>
                         {changeBreakName === row.id && (
                           <ChangeNameField>
