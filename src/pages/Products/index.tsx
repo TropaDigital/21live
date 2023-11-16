@@ -293,6 +293,7 @@ export default function Services() {
       });
 
       fetchData();
+      getCategory();
     } catch (error: any) {
       addToast({
         type: 'danger',
