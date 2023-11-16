@@ -451,11 +451,25 @@ export default function Team() {
       const response = await api.put(`/team/${modalWorkDays.user}`, updateTeam);
       console.log('log do response', response.data);
 
-      setSelectedBreaks([]);
-      setWorkDays([]);
-      setSelectedBreakDay('');
-      setSelectedTab('Jornada');
-      fetchData();
+      if (response.data.status === 'success') {
+        addToast({
+          type: 'success',
+          title: 'Sucesso',
+          description: 'Pausas salvas com sucesso!'
+        });
+
+        setModalWorkDays({
+          isOpen: false,
+          title: 'Carga horária',
+          user: ''
+        });
+
+        setSelectedBreaks([]);
+        setWorkDays([]);
+        setSelectedBreakDay('');
+        setSelectedTab('Jornada');
+        fetchData();
+      }
 
       setLoading(false);
     } catch (error: any) {
@@ -548,11 +562,11 @@ export default function Team() {
     setModalFilters(false);
   };
 
-  useEffect(() => {
-    console.log('log das pausas', selectedBreaks);
-    console.log('log dos workdays', workDays);
-    console.log('log do dia selecionado', selectedBreakDay);
-  }, [selectedBreaks, workDays, selectedBreakDay]);
+  // useEffect(() => {
+  //   console.log('log das pausas', selectedBreaks);
+  //   console.log('log dos workdays', workDays);
+  //   console.log('log do dia selecionado', selectedBreakDay);
+  // }, [selectedBreaks, workDays, selectedBreakDay]);
 
   return (
     <ContainerDefault>
