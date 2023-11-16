@@ -154,7 +154,7 @@ export default function Team() {
     700
   );
   const { data, pages, fetchData, isFetching } = useFetch<UserProps[]>(
-    `team?page=${selected}&search=${search.replace('#', '')}&perPage=15&role=${filter.role}`
+    `team?page=${selected}&search=${search.replace('#', '')}&perPage=15&filter=${filter.role}`
   );
   const { data: dataOffice } = useFetch<OfficeProps[]>(`function`);
   const [selectedTab, setSelectedTab] = useState<string>('Jornada');
