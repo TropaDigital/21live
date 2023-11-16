@@ -38,6 +38,7 @@ interface ITask {
   updated?: string;
   type: string;
   total_time?: string;
+  team?: [];
   status?: string;
   time_consumed?: string;
   type_play?: string;
@@ -74,7 +75,7 @@ export default function Task({ data }: DataTaskProps) {
 
           <FieldGroupTask>
             <div className="sectionAvatarTask">
-              <Avatar data={avatarAll} />
+              <Avatar data={data.team ? data.team : avatarAll} />
             </div>
 
             <div className="sectionDataTask">
