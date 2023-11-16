@@ -1,8 +1,12 @@
 import styled from 'styled-components';
 
-export const Container = styled.div`
+interface SizeProps {
+  height: string;
+}
+
+export const Container = styled.div<SizeProps>`
   width: 100%;
-  height: 380px;
+  height: ${({ height }) => (height ? height : '380px')};
   padding: 1rem;
 
   display: flex;

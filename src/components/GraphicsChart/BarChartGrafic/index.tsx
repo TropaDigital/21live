@@ -15,9 +15,10 @@ interface Props {
   data: any;
   isVertical?: boolean;
   title?: string;
+  height: string;
 }
 
-const BarChartGrafic = ({ data, isVertical, title }: Props) => {
+const BarChartGrafic = ({ data, isVertical, title, height }: Props) => {
   // const data = [
   //   {
   //     name: 'Entregue',
@@ -47,7 +48,7 @@ const BarChartGrafic = ({ data, isVertical, title }: Props) => {
   // ];
 
   return (
-    <Container>
+    <Container height={height}>
       {title !== '' && (
         <div className="sectionInfo">
           <span>{title}</span>

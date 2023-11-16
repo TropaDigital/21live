@@ -25,6 +25,7 @@ interface CardProps {
   handleOnClick: () => void;
   handleOnPosition: (index: any) => void;
   handleOnDelete: (id: any) => void;
+  handleOnsave: () => void;
   onUpdate: (index: any, name: any, value: any) => void;
   index: any;
   length: number;
@@ -44,6 +45,7 @@ export default function CardFluxo({
   handleOnClick,
   handleOnPosition,
   handleOnDelete,
+  handleOnsave,
   onUpdate,
   index,
   errorField,
@@ -84,6 +86,7 @@ export default function CardFluxo({
             <ActionPopup
               handleOnDelete={handleOnDelete}
               handleOnPosition={(index) => handleOnPosition(index)}
+              handleSave={handleOnsave}
               index={index}
               length={length}
             />

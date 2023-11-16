@@ -26,7 +26,6 @@ interface TableDataProps {
 interface MensalReportProps {
   reunions: number;
   principalTask: string;
-  secondaryTask: string;
 }
 
 export default function PerformanceClientCard({
@@ -100,16 +99,10 @@ export default function PerformanceClientCard({
       </JobStatusTable>
 
       <MensalReport>
-        <div className="report-bold">Report mensal</div>
-        <div className="report-info">
-          {mensal_report?.principalTask}
-          <div className="overflow-text">{mensal_report?.principalTask}</div>
-        </div>
-        <div className="report-info">
-          {mensal_report?.secondaryTask}
-          <div className="overflow-text">{mensal_report?.secondaryTask}</div>
-        </div>
-        <div className="report-bold">{mensal_report?.reunions} reuniões</div>
+        <div className="report-bold">Reports enviados</div>
+        <div className="report-info">{mensal_report?.principalTask}</div>
+        <div className="report-bold">Reuniões</div>
+        <div className="report-info">{mensal_report?.reunions}</div>
       </MensalReport>
     </ContainerCard>
   );

@@ -2,7 +2,7 @@
 /* eslint-disable import-helpers/order-imports */
 // React
 import { useCallback, useState } from 'react';
-import { BiCalendar, BiPlus, BiSearchAlt, BiShow } from 'react-icons/bi';
+import { BiCalendar, BiFilter, BiPlus, BiSearchAlt, BiShow, BiX } from 'react-icons/bi';
 
 // Services
 import api from '../../../services/api';
@@ -40,6 +40,7 @@ import WrapperEditor from '../../../components/WrapperEditor';
 import Pagination from '../../../components/Pagination';
 import SelectImage from '../../../components/Inputs/SelectWithImage';
 import Loader from '../../../components/LoaderSpin';
+import FilterModal from '../../../components/Ui/FilterModal';
 
 // Styles
 import {
@@ -49,6 +50,7 @@ import {
   FileInfo,
   FilesWrapper,
   FilterButton,
+  FilterWrapper,
   ModalField,
   ModalInfosWrapper,
   NameField,
@@ -147,19 +149,22 @@ export default function ListMeeting() {
     700
   );
 
-  const [filterDate, setFilterDate] = useState({
-    dateStart: '',
-    dateEnd: ''
-  });
   const [filterOrder, setFilterOrder] = useState('desc');
+  const [filter, setFilter] = useState({
+    client: '',
+    fromDate: '',
+    toDate: '',
+    user_id: ''
+  });
 
   const { data, pages, fetchData, isFetching } = useFetch<MeetingProps[]>(
-    `meetings?search=${search.replace('#', '')}&date_start=${filterDate.dateStart}&date_end=${
-      filterDate.dateEnd
-    }&order=${filterOrder}`
+    `meetings?search=${search.replace('#', '')}&date_start=${filter.fromDate}&date_end=${
+      filter.toDate
+    }&order=${filterOrder}&tenant=${filter.client}&user=${filter.user_id}`
   );
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
-  const { data: dataTeam } = useFetch<TeamProps[]>('team');
+  const { data: dataTeam } = useFetch<TeamProps[]>(`team`);
+  const [modalFilters, setModalFilters] = useState<boolean>(false);
 
   const selectedTeam = dataTeam?.filter((obj) => obj.user_id !== formData.user_id);
   const defaultOptionsTeam = dataTeam?.filter((item) =>
@@ -423,20 +428,43 @@ export default function ListMeeting() {
 
   async function downloadFile(file: any) {
     try {
-      const response = await api.post(
-        `https://app.21live.com.br:3000/archive?bucket=${file.bucket}&key=${file.key}`
-      );
+      const params = {
+        bucket: file.bucket,
+        key: file.key
+      };
+
+      const response = await api.post(`https://app.21live.com.br:3000/archive`, params);
+
+      console.log('log do response download =>', file.key.split('-').pop());
 
       const urlResponse = window.URL.createObjectURL(response.data);
       const link = document.createElement('a');
       link.href = urlResponse;
-      link.setAttribute('download', `${file.file_name}`);
+      link.setAttribute('download', `${file.key.split('-').pop()}`);
       document.body.appendChild(link);
       link.click();
+
+      document.body.removeChild(link);
+      URL.revokeObjectURL(urlResponse);
     } catch (error: any) {
       console.log('log error download file', error);
     }
   }
+
+  const handleApplyFilters = (filters: any) => {
+    setFilter(filters);
+    setModalFilters(false);
+  };
+
+  const handleClearFilters = () => {
+    setFilter({
+      client: '',
+      fromDate: '',
+      toDate: '',
+      user_id: ''
+    });
+    setModalFilters(false);
+  };
 
   return (
     <Container>
@@ -454,55 +482,6 @@ export default function ListMeeting() {
 
       {!isFetching && (
         <SectionDefault>
-          {/* <ContentDefault>
-            <FieldGroupFormDefault>
-              <FieldGroupFormDefault>
-                <InputDefault
-                  label="Data inicial"
-                  placeholder="00/00/0000"
-                  name="dateStart"
-                  type="date"
-                  icon={BiCalendar}
-                  onChange={(e) => setFilterDate({ ...filterDate, ['dateStart']: e.target.value })}
-                  value={filterDate.dateStart}
-                />
-
-                <InputDefault
-                  label="Data final"
-                  placeholder="00/00/0000"
-                  name="dateEnd"
-                  type="date"
-                  icon={BiCalendar}
-                  onChange={(e) => setFilterDate({ ...filterDate, ['dateEnd']: e.target.value })}
-                  value={filterDate.dateEnd}
-                />
-              </FieldGroupFormDefault>
-              <SelectDefault
-                label="Ordenar por"
-                name="order"
-                placeHolder="Ordenação"
-                onChange={(e) => setFilterOredr(e.target.value)}
-                value={filterOrder}
-              >
-                <option value="asc">Mais recente</option>
-                <option value="desc">Mais antigo</option>
-              </SelectDefault>
-
-              <InputDefault
-                label="Busca"
-                name="search"
-                placeholder="Busque pelo titulo..."
-                onChange={(event) => {
-                  setSearchTerm(event.target.value);
-                  debouncedCallback(event.target.value);
-                }}
-                icon={BiSearchAlt}
-                isLoading={isLoading}
-                value={searchTerm}
-              />
-            </FieldGroupFormDefault>
-          </ContentDefault> */}
-
           <ContainerGroupTable>
             <div style={{ margin: '-24px -30px' }}>
               <Table>
@@ -555,7 +534,7 @@ export default function ListMeeting() {
                       Mais antigo
                     </FilterButton>
                   </ButtonsFilter>
-                  <div>
+                  <FilterWrapper>
                     <InputDefault
                       label=""
                       name="search"
@@ -569,12 +548,23 @@ export default function ListMeeting() {
                       isLoading={isLoading}
                       className="search-field"
                     />
-                  </div>
 
-                  {/* <ButtonDefault typeButton="light">
-                    <BiFilter />
-                    Filtros
-                  </ButtonDefault> */}
+                    <ButtonDefault typeButton="danger" isOutline onClick={handleClearFilters}>
+                      <div className="close-icon">
+                        <BiX size={30} />
+                      </div>
+                      Limpar filtros
+                    </ButtonDefault>
+
+                    <ButtonDefault
+                      typeButton="lightWhite"
+                      isOutline
+                      onClick={() => setModalFilters(true)}
+                    >
+                      <BiFilter />
+                      Filtros
+                    </ButtonDefault>
+                  </FilterWrapper>
                 </FilterGroup>
                 <table>
                   <thead>
@@ -646,6 +636,7 @@ export default function ListMeeting() {
         </SectionDefault>
       )}
 
+      {/* Modal add Meeting */}
       <ModalDefault isOpen={modal.isOpen} onOpenChange={handleOnCancel} title={modal.type}>
         <form onSubmit={handleOnSubmit}>
           <FieldDefault>
@@ -774,6 +765,7 @@ export default function ListMeeting() {
         </form>
       </ModalDefault>
 
+      {/* Modal View Meeting */}
       <ModalDefault
         isOpen={modalView.isOpen}
         onOpenChange={handleCloseModalInfos}
@@ -891,6 +883,16 @@ export default function ListMeeting() {
           )}
         </ModalInfosWrapper>
       </ModalDefault>
+
+      {/* Modal filters */}
+      <FilterModal
+        isOpen={modalFilters}
+        closeBtn={true}
+        onOpenChange={() => setModalFilters(!modalFilters)}
+        applyFilters={handleApplyFilters}
+        clearFilters={handleClearFilters}
+        filterType="meet"
+      />
     </Container>
   );
 }

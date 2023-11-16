@@ -26,7 +26,6 @@ interface ChartDataProps {
 interface MensalReportProps {
   reunions: number;
   principalTask: string;
-  secondaryTask: string;
 }
 
 export default function UserPerformanceCard({ userInfos, chartData, mensalReport }: UserCardProps) {
@@ -46,15 +45,9 @@ export default function UserPerformanceCard({ userInfos, chartData, mensalReport
 
       <MensalReport>
         <div className="report-bold">Report mensal</div>
-        <div className="report-info">
-          {mensalReport.principalTask}
-          <div className="overflow-text">{mensalReport.principalTask}</div>
-        </div>
-        <div className="report-info">
-          {mensalReport.secondaryTask}
-          <div className="overflow-text">{mensalReport.secondaryTask}</div>
-        </div>
-        <div className="report-bold">{mensalReport.reunions} reuniões</div>
+        <div className="report-info">{mensalReport.principalTask}</div>
+        <div className="report-bold">Reuniões</div>
+        <div className="report-info">{mensalReport.reunions}</div>
       </MensalReport>
     </ContainerCard>
   );

@@ -127,6 +127,7 @@ export const NumberCard = styled.div<NumberCardProps>`
     color: var(--primary-900);
     font-size: var(--text-small-sm);
     font-weight: var(--weight-regular);
+    margin-top: 8px;
   }
 
   &.white {
@@ -251,81 +252,6 @@ export const BaseTableGrey = styled.div`
     &.finished {
       background-color: var(--secundary-050);
       color: var(--secundary-700);
-    }
-  }
-`;
-
-export const WrapperTeamCards = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 18px;
-`;
-
-export const TeamTimeCard = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  min-width: 280px;
-  width: 100%;
-  height: 220px;
-
-  background: #f6f7fb;
-  border-radius: 12px;
-
-  padding: 10px;
-
-  .avatar-user {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    margin-bottom: 10px;
-
-    background: var(--degrade-blue);
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-
-    overflow: hidden;
-  }
-
-  .user-name {
-    color: var(--primary);
-    font-size: var(--text-small-md);
-    font-weight: var(--weight-semibold);
-  }
-
-  .user-role {
-    color: var(--title-color);
-    font-size: var(--text-small-sm);
-    font-weight: var(--weight-medium);
-
-    margin-bottom: 6px;
-  }
-
-  .free-time {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-
-    padding: 8px 10px;
-
-    background: var(--primary-600);
-    border-radius: 10px;
-
-    color: var(--light);
-    font-size: var(--text-small-sm);
-    font-weight: var(--weight-bold);
-
-    svg {
-      width: 24px;
-      height: 24px;
     }
   }
 `;
@@ -536,5 +462,72 @@ export const JobCellTable = styled.div`
     color: var(--gray-500);
     font-size: var(--text-small-sm);
     font-weight: var(--weight-medium);
+  }
+`;
+
+export const HoursTable = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+
+  color: var(--text-color);
+  font-size: var(--text-small-sm);
+  font-weight: var(--weight-semibold);
+
+  &.minus {
+    color: var(--error-600);
+  }
+`;
+
+export const TdColor = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--warning-600);
+  font-weight: var(--weight-bold);
+
+  &.color {
+    background-color: var(--warning-100);
+    border-radius: 4px;
+  }
+`;
+
+export const ClientPerformanceTraffic = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+`;
+
+export const BulletsWrapper = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 60px;
+
+  padding-top: 70px;
+`;
+
+export const BulletPointInfos = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+
+  .bullet {
+    color: var(--gray-900);
+    font-size: var(--text-small-md);
+    font-weight: var(--weight-semibold);
+
+    text-transform: uppercase;
+  }
+
+  span {
+    text-transform: none;
+  }
+
+  .bullet::before {
+    content: '▪';
+    margin-right: 12px;
   }
 `;

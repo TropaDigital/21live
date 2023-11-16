@@ -87,7 +87,6 @@ export default function EditFluxo() {
 
   async function saveFluxo() {
     try {
-      // console.log('log do column', column);
       const response = await api.post('/card', column);
       setState(response.data.result);
       setColumn(response.data.result);
@@ -97,7 +96,7 @@ export default function EditFluxo() {
           description: 'Fluxos salvos com sucesso!',
           type: 'success'
         });
-        navigate('/fluxo');
+        // navigate('/fluxo');
       }
     } catch (err: any) {
       console.log('ERR =>', err);
@@ -196,6 +195,7 @@ export default function EditFluxo() {
                   handleOnClick={() => addColumn(user.user_id, location.state.id)}
                   handleOnPosition={(newIndex) => moveObject(newIndex, index)}
                   handleOnDelete={() => deleteFluxo(row.card_id)}
+                  handleOnsave={saveFluxo}
                   onUpdate={(id, name, value) => updateParcialColumn(id, name, value)}
                   errorField={errorMissingResponsible}
                   previousManager={true}
@@ -214,6 +214,7 @@ export default function EditFluxo() {
                   handleOnClick={() => addColumn(user.user_id, location.state.id)}
                   handleOnPosition={(newIndex) => moveObject(newIndex, index)}
                   handleOnDelete={() => deleteFluxo(row.card_id)}
+                  handleOnsave={saveFluxo}
                   onUpdate={(id, name, value) => updateParcialColumn(id, name, value)}
                   errorField={errorMissingResponsible}
                   previousManager={false}

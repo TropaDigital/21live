@@ -3,9 +3,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // React
 import React, { useCallback, useState, useEffect, useRef } from 'react';
+
 // Icons
 import { IconArrowDown } from '../../assets/icons';
-import { BiCode, BiPlus, BiSearchAlt, BiTime } from 'react-icons/bi';
+import { BiCode, BiFilter, BiPlus, BiSearchAlt, BiTime, BiX } from 'react-icons/bi';
 
 // Libraries
 import Switch from 'react-switch';
@@ -45,6 +46,7 @@ import {
   SummaryTaskInfo
 } from '../Tasks/ComponentSteps/SummaryTasks/styles';
 import Loader from '../../components/LoaderSpin';
+import FilterModal from '../../components/Ui/FilterModal';
 
 // Styles
 import {
@@ -125,7 +127,8 @@ export default function Services() {
   });
   const [modalCategory, setModalCategory] = useState({
     isOpen: false,
-    title: ''
+    title: '',
+    category_id: ''
   });
   const [modalShowProduct, setModalShowProduct] = useState({
     isOpen: false,
@@ -154,14 +157,22 @@ export default function Services() {
     (search: string) => setSearch(search),
     700
   );
+  const [filter, setFilter] = useState({
+    category: '',
+    type: ''
+  });
   const [typeList, setTypeList] = useState('produtos');
   const [selected, setSelected] = useState(1);
   const { data, pages, fetchData, isFetching } = useFetch<ServicesProps[]>(
-    `services?search=${search.replace('#', '')}&perPage=15&page=${selected}`
+    `services?search=${search.replace('#', '')}&perPage=15&page=${selected}&category=${
+      filter.category
+    }&type=${filter.type}`
   );
-  const { data: dataCategory, fetchData: getCategory } = useFetch<any[]>(
-    `category?search=${search}`
-  );
+  const {
+    data: dataCategory,
+    pages: pageCategory,
+    fetchData: getCategory
+  } = useFetch<any[]>(`category?search=${search}`);
   const {
     data: dataKits,
     pages: pageKits,
@@ -180,6 +191,7 @@ export default function Services() {
   const [category, setCategory] = useState<string>('');
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const checkboxWrapperRef = useRef<HTMLDivElement>(null);
+  const [modalFilters, setModalFilters] = useState<boolean>(false);
 
   const handleOnCancel = useCallback(() => {
     setModal({
@@ -223,6 +235,15 @@ export default function Services() {
     });
   };
 
+  const handleEditCategory = (item: any) => {
+    setCategory(item.category);
+    setModalCategory({
+      isOpen: !modal.isOpen,
+      title: 'Editar categoria',
+      category_id: item.service_category_id
+    });
+  };
+
   const handleOnShowProduct = (item: FormDataProps) => {
     // console.log('log do row to show', item);
 
@@ -253,6 +274,26 @@ export default function Services() {
       });
 
       fetchData();
+    } catch (error: any) {
+      addToast({
+        type: 'danger',
+        title: 'ATENÇÃO',
+        description: error.response.data.message
+      });
+    }
+  };
+
+  const handleDeleteCategory = async (id: any) => {
+    try {
+      await api.delete(`category/${id}`);
+      addToast({
+        type: 'success',
+        title: 'Sucesso',
+        description: 'Categoria foi deletada!'
+      });
+
+      fetchData();
+      getCategory();
     } catch (error: any) {
       addToast({
         type: 'danger',
@@ -614,7 +655,8 @@ export default function Services() {
 
         setModalCategory({
           isOpen: false,
-          title: ''
+          title: '',
+          category_id: ''
         });
 
         setCategory('');
@@ -631,6 +673,56 @@ export default function Services() {
     [addToast, category]
   );
 
+  const editCategory = useCallback(
+    async (event: any) => {
+      try {
+        event.preventDefault();
+        const newCategory = {
+          service_category_id: modalCategory.category_id,
+          category: category
+        };
+
+        await api.put('category', newCategory);
+
+        addToast({
+          type: 'success',
+          title: 'Sucesso',
+          description: 'Categoria editada com sucesso!'
+        });
+
+        setModalCategory({
+          isOpen: false,
+          title: '',
+          category_id: ''
+        });
+
+        setCategory('');
+        fetchData();
+        getCategory();
+      } catch (e: any) {
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: e.response.data.message
+        });
+      }
+    },
+    [addToast, category]
+  );
+
+  const handleApplyFilters = (filters: any) => {
+    setFilter(filters);
+    setModalFilters(false);
+  };
+
+  const handleClearFilters = () => {
+    setFilter({
+      category: '',
+      type: ''
+    });
+    setModalFilters(false);
+  };
+
   return (
     <ContainerDefault>
       <HeaderPage title="Produtos">
@@ -640,7 +732,8 @@ export default function Services() {
             onClick={() =>
               setModalCategory({
                 isOpen: !modal.isOpen,
-                title: 'Cadastrar nova categoria'
+                title: 'Cadastrar nova categoria',
+                category_id: ''
               })
             }
           >
@@ -679,6 +772,14 @@ export default function Services() {
                 </strong>
               </h2>
             )}
+            {typeList === 'categories' && (
+              <h2>
+                Lista de categorias{' '}
+                <strong>
+                  {pageCategory.total} {pageCategory.total === 1 ? 'categoria' : 'categorias'}
+                </strong>
+              </h2>
+            )}
             {/* <span>Acompanhe seus produtos e serviços pré-cadastrados</span> */}
           </div>
 
@@ -698,6 +799,13 @@ export default function Services() {
               >
                 Kits
               </ButtonDefault>
+              <ButtonDefault
+                onClick={() => handleOnTypeList('categories')}
+                typeButton={typeList === 'categories' ? 'lightWhite' : 'light'}
+                style={{ height: '100%', fontSize: '12px' }}
+              >
+                Categorias
+              </ButtonDefault>
             </FieldTogleButton>
 
             <div style={{ maxWidth: '280px' }}>
@@ -715,10 +823,17 @@ export default function Services() {
               />
             </div>
 
-            {/* <ButtonDefault typeButton="light">
+            <ButtonDefault typeButton="danger" isOutline onClick={handleClearFilters}>
+              <div className="close-icon">
+                <BiX size={30} />
+              </div>
+              Limpar filtros
+            </ButtonDefault>
+
+            <ButtonDefault typeButton="lightWhite" isOutline onClick={() => setModalFilters(true)}>
               <BiFilter />
               Filtros
-            </ButtonDefault> */}
+            </ButtonDefault>
           </FieldGroup>
         </TableHead>
         {typeList === 'produtos' && (
@@ -847,6 +962,59 @@ export default function Services() {
               </tr>
             </tfoot>
           </TableKits>
+        )}
+        {typeList === 'categories' && (
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                {/* <th>Categoria</th>
+                <th>Listar produtos</th> */}
+                <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {dataCategory?.map((row) => (
+                <tr key={row.service_category_id}>
+                  <td>#{String(row.service_category_id).padStart(5, '0')}</td>
+                  <td style={{ cursor: 'pointer' }} onClick={() => ''}>
+                    {row.category}
+                  </td>
+                  {/* <td style={{ textTransform: 'capitalize' }}>{row.category}</td> */}
+                  {/* <td></td> */}
+                  <td>
+                    <div className="fieldTableClients">
+                      {/* <ButtonTable typeButton="view" onClick={() => handleOnShowProduct(row)} /> */}
+                      <ButtonTable typeButton="edit" onClick={() => handleEditCategory(row)} />
+                      <Alert
+                        title="Atenção"
+                        subtitle="Certeza que gostaria de deletar este Produto? Ao excluir a ação não poderá ser desfeita."
+                        confirmButton={() => handleDeleteCategory(row.service_category_id)}
+                      >
+                        <ButtonTable typeButton="delete" />
+                      </Alert>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+
+            <tfoot>
+              <tr>
+                <td colSpan={100}>
+                  <Pagination
+                    total={pageCategory.total}
+                    perPage={pageCategory.perPage}
+                    currentPage={selected}
+                    lastPage={pageCategory.lastPage}
+                    onClickPage={(e) => setSelected(e)}
+                  />
+                </td>
+              </tr>
+            </tfoot>
+          </table>
         )}
       </Table>
 
@@ -1269,7 +1437,8 @@ export default function Services() {
         onOpenChange={() =>
           setModalCategory({
             isOpen: false,
-            title: ''
+            title: '',
+            category_id: ''
           })
         }
       >
@@ -1289,24 +1458,49 @@ export default function Services() {
               onClick={() => {
                 setModalCategory({
                   isOpen: false,
-                  title: ''
+                  title: '',
+                  category_id: ''
                 });
                 setCategory('');
               }}
             >
               Descartar
             </ButtonDefault>
-            <ButtonDefault
-              typeButton="primary"
-              isOutline
-              type="button"
-              onClick={(e: any) => createCategory(e)}
-            >
-              Salvar
-            </ButtonDefault>
+
+            {modalCategory.title !== 'Editar categoria' && (
+              <ButtonDefault
+                typeButton="primary"
+                isOutline
+                type="button"
+                onClick={(e: any) => createCategory(e)}
+              >
+                Salvar
+              </ButtonDefault>
+            )}
+
+            {modalCategory.title === 'Editar categoria' && (
+              <ButtonDefault
+                typeButton="primary"
+                isOutline
+                type="button"
+                onClick={(e: any) => editCategory(e)}
+              >
+                Atualizar
+              </ButtonDefault>
+            )}
           </ModalCategoryButtons>
         </ModalProductWrapper>
       </ModalDefault>
+
+      {/* Modal filters */}
+      <FilterModal
+        isOpen={modalFilters}
+        closeBtn={true}
+        onOpenChange={() => setModalFilters(!modalFilters)}
+        applyFilters={handleApplyFilters}
+        clearFilters={handleClearFilters}
+        filterType="product"
+      />
     </ContainerDefault>
   );
 }
