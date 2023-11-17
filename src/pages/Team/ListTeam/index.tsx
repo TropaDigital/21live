@@ -66,7 +66,9 @@ import {
   CardsWrapper,
   ChangeNameField,
   DivHour,
+  FilterName,
   FilterTeamWrapper,
+  FiltersList,
   ModalButtons,
   ModalSubtitle,
   ModalWrapper,
@@ -562,6 +564,8 @@ export default function Team() {
     setModalFilters(false);
   };
 
+  const hasFilters = Object.values(filter).every((obj) => obj === null || obj === '');
+
   // useEffect(() => {
   //   console.log('log das pausas', selectedBreaks);
   //   console.log('log dos workdays', workDays);
@@ -596,36 +600,6 @@ export default function Team() {
 
       {!isFetching && (
         <SectionDefault>
-          {/* <ContentDefault>
-            <FieldGroupFormDefault>
-              <SelectDefault
-                name="filter"
-                label="Filtro"
-                placeholder="Selecione um cargo"
-                onChange={(event) => setFilter(Number(event.target.value))}
-              >
-                {dataOffice?.map((row) => (
-                  <option key={row.function_id} value={row.function_id}>
-                    {row.function}
-                  </option>
-                ))}
-              </SelectDefault>
-
-              <InputDefault
-                label=""
-                name="search"
-                placeholder="Buscar..."
-                onChange={(event) => {
-                  setSearchTerm(event.target.value);
-                  debouncedCallback(event.target.value);
-                }}
-                value={searchTerm}
-                icon={BiSearchAlt}
-                isLoading={isLoading}
-              />
-            </FieldGroupFormDefault>
-          </ContentDefault> */}
-
           <div style={{ margin: '-24px -30px' }}>
             <Table>
               <TableHead>
@@ -647,12 +621,14 @@ export default function Team() {
                     isLoading={isLoading}
                   />
 
-                  <ButtonDefault typeButton="danger" isOutline onClick={handleClearFilters}>
-                    <div className="close-icon">
-                      <BiX size={30} />
-                    </div>
-                    Limpar filtros
-                  </ButtonDefault>
+                  {!hasFilters && (
+                    <ButtonDefault typeButton="danger" isOutline onClick={handleClearFilters}>
+                      <div className="close-icon">
+                        <BiX size={30} />
+                      </div>
+                      Limpar filtros
+                    </ButtonDefault>
+                  )}
 
                   <ButtonDefault
                     typeButton="lightWhite"
@@ -664,6 +640,12 @@ export default function Team() {
                   </ButtonDefault>
                 </FilterTeamWrapper>
               </TableHead>
+              {/* {!hasFilters && (
+                <FiltersList>
+                  Filtros aplicados:
+                  <FilterName>Cargo</FilterName>
+                </FiltersList>
+              )} */}
               <table>
                 <thead>
                   <tr style={{ whiteSpace: 'nowrap' }}>

@@ -11,9 +11,10 @@ interface Props {
   user: string;
   clearFilter: () => void;
   openFilter: () => void;
+  hasFilters: boolean;
 }
 
-export function CardWelcomeDash({ user, clearFilter, openFilter }: Props) {
+export function CardWelcomeDash({ user, clearFilter, openFilter, hasFilters }: Props) {
   return (
     <CardWellcomeDash>
       <div className="infoCardWellcome">
@@ -22,12 +23,14 @@ export function CardWelcomeDash({ user, clearFilter, openFilter }: Props) {
       </div>
 
       <FilterButtons>
-        <ButtonDefault typeButton="danger" isOutline onClick={clearFilter}>
-          <div className="close-icon">
-            <BiX size={30} />
-          </div>
-          Limpar filtros
-        </ButtonDefault>
+        {!hasFilters && (
+          <ButtonDefault typeButton="danger" isOutline onClick={clearFilter}>
+            <div className="close-icon">
+              <BiX size={30} />
+            </div>
+            Limpar filtros
+          </ButtonDefault>
+        )}
 
         <ButtonDefault typeButton="lightWhite" isOutline onClick={openFilter}>
           <BiFilter />
