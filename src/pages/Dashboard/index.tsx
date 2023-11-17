@@ -53,6 +53,7 @@ import { useFetch } from '../../hooks/useFetch';
 import BarChartUser from '../../components/GraphicsChart/BarChartUser';
 import { CardDataDash } from '../../components/Cards/CardDataDash';
 import FilterModal from '../../components/Ui/FilterModal';
+import { da } from 'date-fns/locale';
 // interface DashType {
 //   typeDash: 'manager' | 'executive' | 'traffic' | 'operator' | '';
 // }
@@ -72,7 +73,7 @@ export default function Dashboard() {
     fromDate: '',
     toDate: ''
   });
-  const [dashType, setDashType] = useState<string>('');
+  const [dashType, setDashType] = useState<string>('manager');
   const { data, fetchData, isFetching } = useFetch<any>(
     `/dashboard?date_start=${filter.fromDate}&date_end=${filter.toDate}`
   );
@@ -177,6 +178,35 @@ export default function Dashboard() {
     }
   ];
 
+  const topTenantHours = [
+    {
+      name: data ? data.top_horas[0].name : '',
+      Total: data ? Number(data.top_horas[0].totalTimeSum.split(':')[0]) : 0,
+      fill: '#59B7FF'
+    },
+    {
+      name: data ? data.top_horas[1].name : '',
+      Total: data ? Number(data.top_horas[1].totalTimeSum.split(':')[0]) : 0,
+      fill: '#0045B5'
+    }
+    // ,
+    // {
+    //   name: data ? data.top_horas[2].name : '',
+    //   Total: data ? Number(data.top_horas[2].totalTimeSum) : 0,
+    //   fill: '#0077E6'
+    // },
+    // {
+    //   name: data ? data.top_horas[3].name : '',
+    //   Total: data ? Number(data.top_horas[3].totalTimeSum) : 0,
+    //   fill: '#E2F2FF'
+    // },
+    // {
+    //   name: data ? data.top_horas[4].name : '',
+    //   Total: data ? Number(data.top_horas[4].totalTimeSum) : 0,
+    //   fill: '#FF0000'
+    // }
+  ];
+
   const topCardsDataManager: CardsData[] = [
     {
       data: data ? data.total_clientes : 0,
@@ -184,7 +214,7 @@ export default function Dashboard() {
       title: 'Total de clientes'
     },
     {
-      data: data ? Number(data.horas_criacao.split(':')[0]) : 0,
+      data: data ? data.tarefas_quantidade.total : 0,
       type: 'jobs',
       title: 'Total Jobs'
     },
@@ -556,6 +586,8 @@ export default function Dashboard() {
 
   const fiveJobs = jobsDataList.slice(0, 5);
 
+  const hasFilters = Object.values(filter).every((obj) => obj === null || obj === '');
+
   return (
     <Container>
       {dashType === '' && (
@@ -573,6 +605,7 @@ export default function Dashboard() {
             user={user.name}
             clearFilter={handleClearFilters}
             openFilter={() => setModalFilters(true)}
+            hasFilters={hasFilters}
           />
 
           {/* Cards pequenos */}
@@ -590,7 +623,7 @@ export default function Dashboard() {
                 height=""
               />
               <BarChartGrafic
-                data={dataChanges}
+                data={topTenantHours}
                 isVertical={true}
                 title="Top clientes (Horas)"
                 height=""
@@ -1175,6 +1208,7 @@ export default function Dashboard() {
             user={user.name}
             clearFilter={handleClearFilters}
             openFilter={() => setModalFilters(true)}
+            hasFilters={hasFilters}
           />
 
           {/* Cards pequenos */}
@@ -1295,6 +1329,7 @@ export default function Dashboard() {
             user={user.name}
             clearFilter={handleClearFilters}
             openFilter={() => setModalFilters(true)}
+            hasFilters={hasFilters}
           />
 
           {/* Cards pequenos */}
@@ -1557,6 +1592,7 @@ export default function Dashboard() {
             user={user.name}
             clearFilter={handleClearFilters}
             openFilter={() => setModalFilters(true)}
+            hasFilters={hasFilters}
           />
 
           {/* Top cards */}
