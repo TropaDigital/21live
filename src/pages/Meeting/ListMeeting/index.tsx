@@ -466,6 +466,8 @@ export default function ListMeeting() {
     setModalFilters(false);
   };
 
+  const hasFilters = Object.values(filter).every((obj) => obj === null || obj === '');
+
   return (
     <Container>
       <HeaderPage title="Atas e Reuniões">
@@ -549,12 +551,14 @@ export default function ListMeeting() {
                       className="search-field"
                     />
 
-                    <ButtonDefault typeButton="danger" isOutline onClick={handleClearFilters}>
-                      <div className="close-icon">
-                        <BiX size={30} />
-                      </div>
-                      Limpar filtros
-                    </ButtonDefault>
+                    {!hasFilters && (
+                      <ButtonDefault typeButton="danger" isOutline onClick={handleClearFilters}>
+                        <div className="close-icon">
+                          <BiX size={30} />
+                        </div>
+                        Limpar filtros
+                      </ButtonDefault>
+                    )}
 
                     <ButtonDefault
                       typeButton="lightWhite"
