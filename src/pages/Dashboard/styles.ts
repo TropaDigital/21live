@@ -161,101 +161,6 @@ export const GridServiceWrapper = styled.div`
   }
 `;
 
-export const BaseTableGrey = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-  height: fit-content;
-  width: 100%;
-
-  border-radius: 12px;
-  border: 1px solid var(--gray-200);
-  overflow: hidden;
-
-  table {
-    width: 100%;
-    border-spacing: 0;
-
-    th {
-      background-color: var(--gray-100);
-      border-bottom: 1px solid #eaecf0;
-      text-transform: capitalize;
-      font-size: var(--text-small-xs);
-      font-weight: var(--weight-medium);
-      color: var(--gray-500);
-      padding: 10px 1.5rem;
-      text-align: left;
-    }
-
-    td {
-      max-height: 40px;
-
-      color: var(--gray-600);
-      font-size: var(--text-small-sm);
-      font-weight: var(--weight-medium);
-      text-align: left;
-
-      padding: 8px 1.5rem;
-
-      background: #ffffff;
-      border-bottom: 1px solid #eaecf0;
-
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 38ch;
-
-      .fieldTableClients {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 5px;
-      }
-    }
-
-    tbody {
-      tr:nth-child(even) {
-        td {
-          background-color: var(--gray-50);
-        }
-      }
-    }
-
-    tfoot {
-      td {
-        padding: 0 1rem;
-        border-bottom: none;
-      }
-    }
-  }
-
-  .status {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-
-    width: fit-content;
-    height: 24px;
-
-    background-color: var(--warning-100);
-    border-radius: 35px;
-
-    padding: 2px 12px;
-
-    color: var(--warning-700);
-
-    &.progress {
-      background-color: var(--primary-050);
-      color: var(--primary-700);
-    }
-
-    &.finished {
-      background-color: var(--secundary-050);
-      color: var(--secundary-700);
-    }
-  }
-`;
-
 export const UserTeamCard = styled.div`
   display: flex;
   align-items: center;
@@ -444,24 +349,6 @@ export const SmallCardsWrapper = styled.div`
       font-size: var(--text-headline-md);
       font-weight: var(--weight-semibold);
     }
-  }
-`;
-
-export const JobCellTable = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-
-  .top-cell {
-    color: var(--gray-900);
-    font-size: var(--text-small-md);
-    font-weight: var(--weight-medium);
-  }
-
-  .bottom-cell {
-    color: var(--gray-500);
-    font-size: var(--text-small-sm);
-    font-weight: var(--weight-medium);
   }
 `;
 
