@@ -67,9 +67,7 @@ export default function Dashboard() {
     toDate: ''
   });
   const [dashType, setDashType] = useState<string>('');
-  const { data, fetchData, isFetching } = useFetch<any>(
-    `/dashboard?date_start=${filter.fromDate}&date_end=${filter.toDate}&dash=executive`
-  );
+  const { data, fetchData, isFetching } = useFetch<any>(`/dashboard?date_start=${filter.fromDate}&date_end=${filter.toDate}&dash=admin`);
   const [modalFilters, setModalFilters] = useState<boolean>(false);
 
   const handleApplyFilters = (filters: any) => {

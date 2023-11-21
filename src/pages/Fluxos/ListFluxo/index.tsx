@@ -53,7 +53,7 @@ export default function ListFluxo() {
   );
 
   const { data, pages, fetchData, isFetching } = useFetch<any[]>(
-    `flow?search=${search.replace('#', '')}&page=${selected}`
+    `flow?search=${search.replace(/[^\w ]/g, '')}&page=${selected}`
   );
 
   const handleOnCancel = useCallback(() => {

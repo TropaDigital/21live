@@ -165,23 +165,23 @@ export default function ScheduleUser({
     getUserSchedule();
   }, [dayCounter]);
 
-  useEffect(() => {
-    const date = moment(dinamicDate).format('YYYY-MM-DD');
-    if (moment(date).isSame(limitDate)) {
-      addToast({
-        type: 'warning',
-        title: 'Aviso',
-        description: 'Data limite para a 1ª entrega!'
-      });
-    }
-    if (moment(date).isAfter(limitDate)) {
-      addToast({
-        type: 'warning',
-        title: 'Aviso',
-        description: 'Data ultrapassa a data da 1ª entrega!'
-      });
-    }
-  }, [limitDate, dinamicDate]);
+  // useEffect(() => {
+  //   const date = moment(dinamicDate).format('YYYY-MM-DD');
+  //   if (moment(date).isSame(limitDate)) {
+  //     addToast({
+  //       type: 'warning',
+  //       title: 'Aviso',
+  //       description: 'Data limite para a 1ª entrega!'
+  //     });
+  //   }
+  //   if (moment(date).isAfter(limitDate)) {
+  //     addToast({
+  //       type: 'warning',
+  //       title: 'Aviso',
+  //       description: 'Data ultrapassa a data da 1ª entrega!'
+  //     });
+  //   }
+  // }, [limitDate, dinamicDate]);
 
   const addNewObjectToAgenda = (userId: string, newTaskItem: any) => {
     const taskNewInfos = newTaskItem.map((item: any) => {

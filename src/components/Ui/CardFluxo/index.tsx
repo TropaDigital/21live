@@ -154,6 +154,15 @@ export default function CardFluxo({
 
           <FieldDefault style={{ marginBottom: '8px' }}>
             <CheckboxDefault
+              label="Upload obrigatório"
+              name="necessary_upload"
+              onChange={handleOnChangeCheckbox}
+              checked={data.necessary_upload === 'true' ? true : false}
+            />
+          </FieldDefault>
+
+          <FieldDefault style={{ marginBottom: '8px' }}>
+            <CheckboxDefault
               label="Aprovação do gestor"
               name="manager_approve"
               onChange={handleOnChangeCheckbox}
