@@ -14,14 +14,12 @@ import TopCardsDash, { CardsData } from '../../components/Cards/DashboardTopCard
 import Loader from '../../components/LoaderSpin';
 import UserPerformanceCard, { UserCardProps } from '../../components/Cards/UserPerformanceCard';
 import PerformanceClientCard from '../../components/Cards/PerformanceClientCard';
-import ButtonTable from '../../components/Buttons/ButtonTable';
-import Alert from '../../components/Ui/Alert';
 import PieChartGraphic from '../../components/GraphicsChart/PieChart';
-import { StatusTable } from '../Tasks/TaskList/styles';
+import { CardDataDash } from '../../components/Cards/CardDataDash';
+import FilterModal from '../../components/Ui/FilterModal';
 
 // Styles
 import {
-  BaseTableGrey,
   NumberCard,
   CardBase,
   Container,
@@ -34,7 +32,6 @@ import {
   OperatorTopWrapper,
   TimeChartsTopCard,
   SmallCardsWrapper,
-  JobCellTable,
   HoursTable,
   TdColor,
   ClientPerformanceTraffic,
@@ -48,12 +45,8 @@ import CountUp from 'react-countup';
 // Images
 import PersonTest from '../../assets/person.jpg';
 
-// Icons
+// Hooks
 import { useFetch } from '../../hooks/useFetch';
-import BarChartUser from '../../components/GraphicsChart/BarChartUser';
-import { CardDataDash } from '../../components/Cards/CardDataDash';
-import FilterModal from '../../components/Ui/FilterModal';
-import { da } from 'date-fns/locale';
 // interface DashType {
 //   typeDash: 'manager' | 'executive' | 'traffic' | 'operator' | '';
 // }
@@ -73,9 +66,9 @@ export default function Dashboard() {
     fromDate: '',
     toDate: ''
   });
-  const [dashType, setDashType] = useState<string>('manager');
+  const [dashType, setDashType] = useState<string>('');
   const { data, fetchData, isFetching } = useFetch<any>(
-    `/dashboard?date_start=${filter.fromDate}&date_end=${filter.toDate}`
+    `/dashboard?date_start=${filter.fromDate}&date_end=${filter.toDate}&dash=executive`
   );
   const [modalFilters, setModalFilters] = useState<boolean>(false);
 
@@ -151,6 +144,44 @@ export default function Dashboard() {
       id_job: 4,
       client_name: 'Genie',
       job_name: 'Job X',
+      job_status: 'Pendente de envio'
+    }
+  ];
+
+  const jobsAwaitingClient = [
+    {
+      id_job: 0,
+      client_name:
+        data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[0].name : '',
+      job_name: data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[0].title : '',
+      job_status: 'Pendente de envio'
+    },
+    {
+      id_job: 1,
+      client_name:
+        data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[1].name : '',
+      job_name: data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[1].title : '',
+      job_status: 'Pendente de envio'
+    },
+    {
+      id_job: 2,
+      client_name:
+        data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[2].name : '',
+      job_name: data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[2].title : '',
+      job_status: 'Pendente de envio'
+    },
+    {
+      id_job: 3,
+      client_name:
+        data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[3].name : '',
+      job_name: data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[3].title : '',
+      job_status: 'Pendente de envio'
+    },
+    {
+      id_job: 4,
+      client_name:
+        data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[4].name : '',
+      job_name: data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[4].title : '',
       job_status: 'Pendente de envio'
     }
   ];
@@ -304,14 +335,14 @@ export default function Dashboard() {
   const userCards: UserCardProps[] = [
     {
       userInfos: {
-        user_name: data ? data.top_users[0].name : '',
+        user_name: data && dashType === 'manager' ? data.top_users[0].name : '',
         clientsNumber: 10,
         avatar: PersonTest
       },
       chartData: [
         {
           name: 'Total de Jobs',
-          pv: data ? data.top_users[0].task_count : 0,
+          pv: data && dashType === 'manager' ? data.top_users[0].task_count : 0,
           fill: '#0045B5'
         },
         {
@@ -337,14 +368,14 @@ export default function Dashboard() {
     },
     {
       userInfos: {
-        user_name: data ? data.top_users[1].name : '',
+        user_name: data && dashType === 'manager' ? data.top_users[1].name : '',
         clientsNumber: 15,
         avatar: PersonTest
       },
       chartData: [
         {
           name: 'Total de Jobs',
-          pv: data ? data.top_users[1].task_count : 0,
+          pv: data && dashType === 'manager' ? data.top_users[1].task_count : 0,
           fill: '#0045B5'
         },
         {
@@ -370,14 +401,14 @@ export default function Dashboard() {
     },
     {
       userInfos: {
-        user_name: data ? data.top_users[2].name : '',
+        user_name: data && dashType === 'manager' ? data.top_users[2].name : '',
         clientsNumber: 8,
         avatar: PersonTest
       },
       chartData: [
         {
           name: 'Total de Jobs',
-          pv: data ? data.top_users[2].task_count : 0,
+          pv: data && dashType === 'manager' ? data.top_users[2].task_count : 0,
           fill: '#0045B5'
         },
         {
@@ -1214,7 +1245,7 @@ export default function Dashboard() {
           {/* Cards pequenos */}
           <TopCardsDash typeCards="executive" cardsData={topCardsDataExecutive} />
 
-          {/* Performance Cliente */}
+          {/* Jobs pendentes e aprovações */}
           <ContainerGroupTable>
             <TableDefault
               title="Jobs pendentes de envio"
@@ -1266,7 +1297,7 @@ export default function Dashboard() {
               </thead>
 
               <tbody>
-                {jobsData.map((row) => (
+                {jobsAwaitingClient.map((row) => (
                   <tr key={row.id_job}>
                     <td>{row.client_name}</td>
                     <td>{row.job_name}</td>
