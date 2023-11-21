@@ -68,11 +68,11 @@ export default function Requests() {
     toDate: ''
   });
   const { data, pages, isFetching } = useFetch<any[]>(
-    `ticket?search=${search.replace('#', '')}&page=${selected}&id=${choosenFilters.code}&formato=${
-      choosenFilters.format
-    }&status=${choosenFilters.status}&entrega=${choosenFilters.delivery}&date_start=${
-      choosenFilters.fromDate
-    }&date_end=${choosenFilters.toDate}`
+    `ticket?search=${search.replace(/[^\w ]/g, '')}&page=${selected}&id=${
+      choosenFilters.code
+    }&formato=${choosenFilters.format}&status=${choosenFilters.status}&entrega=${
+      choosenFilters.delivery
+    }&date_start=${choosenFilters.fromDate}&date_end=${choosenFilters.toDate}`
   );
 
   const handleViewRequest = (request: any) => {

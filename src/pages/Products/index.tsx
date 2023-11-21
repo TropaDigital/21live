@@ -164,7 +164,7 @@ export default function Services() {
   const [typeList, setTypeList] = useState('produtos');
   const [selected, setSelected] = useState(1);
   const { data, pages, fetchData, isFetching } = useFetch<ServicesProps[]>(
-    `services?search=${search.replace('#', '')}&perPage=15&page=${selected}&category=${
+    `services?search=${search.replace(/[^\w ]/g, '')}&perPage=15&page=${selected}&category=${
       filter.category
     }&type=${filter.type}`
   );
@@ -172,12 +172,12 @@ export default function Services() {
     data: dataCategory,
     pages: pageCategory,
     fetchData: getCategory
-  } = useFetch<any[]>(`category?search=${search}`);
+  } = useFetch<any[]>(`category?search=${search.replace(/[^\w ]/g, '')}`);
   const {
     data: dataKits,
     pages: pageKits,
     fetchData: getKitData
-  } = useFetch<any[]>(`pack-services?search=${search}`);
+  } = useFetch<any[]>(`pack-services?search=${search.replace(/[^\w ]/g, '')}`);
   const [selectedKitPage, setSelectedKitPage] = useState(1);
   const [listSelected, setListSelected] = useState<any[]>([]);
   const [estimatedTimeCreation, setEstimatedTimeCreation] = useState<estimatedHoursPros>({

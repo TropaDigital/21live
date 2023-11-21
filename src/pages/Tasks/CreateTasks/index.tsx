@@ -1216,43 +1216,6 @@ export default function CreateTasks() {
     }
   };
 
-  // const handleClearQuantity = (value: any) => {
-  //   setQuantityProductsArray((current) =>
-  //     current.map((obj) => {
-  //       if (obj.project_id === value.job_service_id) {
-  //         return { ...obj, quantity: 0 };
-  //       }
-  //       return obj;
-  //     })
-  //   );
-  // };
-
-  // const handleDeadlines = (newDeadlines: any) => {
-  //   // setProductsArray((prevState: any) => [...prevState, newDeadlines[0].deliveryProducts[0]]);
-
-  //   let deadline = {
-  //     date_end: DTOForm?.creation_date_end,
-  //     description: DTOForm?.creation_description,
-  //     products: newDeadlines.deliveryProducts
-  //   };
-
-  //   const deadlineArray = newDeadlines.map((row: any) => {
-  //     return (deadline = {
-  //       date_end: DTOForm?.creation_date_end,
-  //       description: DTOForm?.creation_description,
-  //       products: row.deliveryProducts
-  //     });
-  //   });
-
-  //   // console.log('log do deadline Array', deadlineArray);
-  //   setDTOForm({ ...DTOForm, ['deadlines']: deadlineArray });
-  //   // setDTOForm((prevDTOForm) => {
-  //   //   const updatedDTOForm = { ...prevDTOForm }; // Create a copy of the original object
-  //   //   updatedDTOForm.deadlines.push(deadline); // Push the new value(s) into the deadlines array
-  //   //   return updatedDTOForm; // Set the updated object as the new state
-  //   // });
-  // };
-
   const handleOnSubmit = useCallback(async () => {
     try {
       const fileArray = uploadedFiles.map(
@@ -1690,6 +1653,24 @@ export default function CreateTasks() {
       }));
     }
   };
+
+  useEffect(() => {
+    async function checkFlowAndProject() {
+      try {
+        const response = await api.get(
+          `/verify-flow?project_product_id=${DTOForm.project_product_id}&flow_id=${DTOForm.flow_id}`
+        );
+        console.log('log do response check flow and project', response.data);
+        // if (response.data.result )
+      } catch (error: any) {
+        console.log('log do error', error);
+      }
+    }
+
+    if (DTOForm.flow_id && DTOForm.project_product_id) {
+      checkFlowAndProject();
+    }
+  }, [DTOForm]);
 
   // useEffect(() => {
   //   console.log('log do tipo de task', tasksType);

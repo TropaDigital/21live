@@ -44,7 +44,7 @@ export default function Clients() {
     700
   );
   const { data, pages, isFetching } = useFetch<TenantProps[]>(
-    `tenant?search=${search.replace('#', '')}&page=${pageSelected}&perPage=15`
+    `tenant?search=${search.replace(/[^\w ]/g, '')}&page=${pageSelected}&perPage=15`
   );
   const instance = localStorage.getItem('tenantName');
 
