@@ -123,7 +123,9 @@ export default function ListProjects() {
     fetchData: fetchProject,
     isFetching,
     pages
-  } = useFetch<IProjectCreate[]>(`project?search=${search.replace('#', '')}&page=${selected}`);
+  } = useFetch<IProjectCreate[]>(
+    `project?search=${search.replace(/[^\w ]/g, '')}&page=${selected}`
+  );
   // const [listSelected, setListSelected] = useState<any[]>([]);
 
   // const handleOnAddProducts = (items: any) => {
