@@ -19,7 +19,7 @@ import ButtonTable from '../../../components/Buttons/ButtonTable';
 import HeaderPage from '../../../components/HeaderPage';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { Table } from '../../../components/Table';
-import { FilterGroup, TableHead } from '../../../components/Table/styles';
+import { TableHead } from '../../../components/Table/styles';
 import Alert from '../../../components/Ui/Alert';
 import { ContainerDefault } from '../../../components/UiElements/styles';
 import Pagination from '../../../components/Pagination';
@@ -83,9 +83,9 @@ export default function TaskList() {
   const [selected, setSelected] = useState(1);
   const [search, setSearch] = useState('');
   const { data, pages, fetchData, isFetching } = useFetch<any[]>(
-    `tasks?search=${search.replace('#', '')}&page=${selected}&status=${filter.status}&tenant=${
-      filter.client
-    }`
+    `tasks?search=${search.replace(/[^\w ]/g, '')}&page=${selected}&status=${
+      filter.status
+    }&tenant=${filter.client}`
   );
   const [searchTerm, setSearchTerm] = useState('');
   const { isLoading, debouncedCallback } = useDebouncedCallback(
