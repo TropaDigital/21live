@@ -158,7 +158,7 @@ export default function ListMeeting() {
   });
 
   const { data, pages, fetchData, isFetching } = useFetch<MeetingProps[]>(
-    `meetings?search=${search.replace('#', '')}&date_start=${filter.fromDate}&date_end=${
+    `meetings?search=${search.replace(/[^\w ]/g, '')}&date_start=${filter.fromDate}&date_end=${
       filter.toDate
     }&order=${filterOrder}&tenant=${filter.client}&user=${filter.user_id}`
   );
