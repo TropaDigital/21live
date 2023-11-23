@@ -255,6 +255,7 @@ export default function ViewProductsDeliveries() {
   }, [typeOfPlay, selectedProduct]);
 
   useEffect(() => {
+    console.log('log do location =>', location.state);
     setDataTask(location.state.task);
 
     if (location.state.task.type_play === 'delivery') {
@@ -778,6 +779,26 @@ export default function ViewProductsDeliveries() {
     }
   }
 
+  async function checkFlow(sendTo: string) {
+    try {
+      const whereToSend = sendTo;
+
+      console.log('log do where to send', whereToSend);
+      const response = await api.get(`/flow-function?step=1&flow_id=${dataTask?.flow_id}`);
+
+      if (response.data.result[0].show_hours === 'true') {
+        // setSelectUserModal(true);
+        console.log('log do checkFlow to show hours');
+      }
+      if (response.data.result[0].show_hours === 'false') {
+        // handleNextUser();
+        console.log('log do checkFlow to show schedule');
+      }
+    } catch (error: any) {
+      console.log('log do error check flow', error);
+    }
+  }
+
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
     // console.log('log do selectedProducts', selectedProduct);
@@ -808,7 +829,7 @@ export default function ViewProductsDeliveries() {
               disableButton={false}
               goBack
               buttonType="send"
-              sendToNext={handleFinishDelivery}
+              sendToNext={() => checkFlow(typeOfPlay)}
               nextStepInfo={timeLineData}
             />
           )}
@@ -1160,7 +1181,9 @@ export default function ViewProductsDeliveries() {
         isOpen={modalFinalFile}
         onOpenChange={() => setModalFinalFile(false)}
         title={
-          finalCard ? 'Upload para arquivo final' : 'Upload de arquivo para aprovação do cliente'
+          finalCard
+            ? 'Upload de arquivo final para o 21Clients'
+            : 'Upload de arquivo para aprovação do cliente no 21Clients'
         }
       >
         <ModalUploadWrapper>
