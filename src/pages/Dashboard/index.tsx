@@ -47,6 +47,7 @@ import PersonTest from '../../assets/person.jpg';
 
 // Hooks
 import { useFetch } from '../../hooks/useFetch';
+import moment from 'moment';
 // interface DashType {
 //   typeDash: 'manager' | 'executive' | 'traffic' | 'operator' | '';
 // }
@@ -58,6 +59,34 @@ interface JobsList {
   job_name: string;
   job_status: string;
   job_type: string;
+}
+
+interface TopFeeSpot {
+  client_name: string;
+  consumido: string;
+  tempo_total: string;
+  atendimento?: string;
+}
+
+interface TeamOverview {
+  cliente: string;
+  name: string;
+  tarefa: string;
+  trabalho: string;
+  user_id: string;
+}
+
+interface TaskConclude {
+  cliente: string;
+  data_final: string;
+  data_inicio: string;
+  hora_estimada: string;
+  hora_real: string;
+  qts_pausas: number;
+  status: string;
+  tarefa: string;
+  task_id: string;
+  ultimo_usuario: string;
 }
 
 export default function Dashboard() {
@@ -85,7 +114,7 @@ export default function Dashboard() {
     setModalFilters(false);
   };
 
-  // console.log('log do data dashboard =>', data);
+  console.log('log do data dashboard =>', data);
 
   const dataStatusAll = [
     {
@@ -186,25 +215,30 @@ export default function Dashboard() {
     }
   ];
 
-  const dataChanges = [
+  const topTenantJobs = [
     {
-      name: 'Metso',
-      Total: 358,
+      name: data ? data.top_tenant[0]?.name : '',
+      Total: data ? data.top_tenant[0]?.total : 0,
       fill: '#59B7FF'
     },
     {
-      name: 'CNH',
-      Total: 209,
+      name: data ? data.top_tenant[1]?.name : '',
+      Total: data ? data.top_tenant[1]?.total : 0,
       fill: '#0045B5'
     },
     {
-      name: 'Emerson',
-      Total: 113,
+      name: data ? data.top_tenant[2]?.name : '',
+      Total: data ? data.top_tenant[2]?.total : 0,
       fill: '#0077E6'
     },
     {
-      name: 'Takao',
-      Total: 5,
+      name: data ? data.top_tenant[3]?.name : '',
+      Total: data ? data.top_tenant[3]?.total : 0,
+      fill: '#E2F2FF'
+    },
+    {
+      name: data ? data.top_tenant[4]?.name : '',
+      Total: data ? data.top_tenant[4]?.total : 0,
       fill: '#E2F2FF'
     }
   ];
@@ -336,99 +370,99 @@ export default function Dashboard() {
     {
       userInfos: {
         user_name: data && dashType === 'manager' ? data.top_users[0].name : '',
-        clientsNumber: 10,
+        clientsNumber: data && dashType === 'manager' ? data.top_users[0].clientes : 0,
         avatar: PersonTest
       },
       chartData: [
         {
           name: 'Total de Jobs',
-          pv: data && dashType === 'manager' ? data.top_users[0].task_count : 0,
+          total: data && dashType === 'manager' ? data.top_users[0].tarefas_total : 0,
           fill: '#0045B5'
         },
         {
           name: 'Pendente',
-          pv: 5,
+          total: data && dashType === 'manager' ? data.top_users[0].pendente : 0,
           fill: '#FDB022'
         },
         {
           name: 'Aprovação',
-          pv: 15,
+          total: data && dashType === 'manager' ? data.top_users[0].aguardando_aprovacao : 0,
           fill: '#0098FF'
         },
         {
           name: 'Aprovados',
-          pv: 25,
+          total: data && dashType === 'manager' ? data.top_users[0].entregue : 0,
           fill: '#00A063'
         }
       ],
       mensalReport: {
-        reunions: 5,
+        reunions: data && dashType === 'manager' ? data.top_users[0].reuniao : 0,
         principalTask: '2'
       }
     },
     {
       userInfos: {
         user_name: data && dashType === 'manager' ? data.top_users[1].name : '',
-        clientsNumber: 15,
+        clientsNumber: data && dashType === 'manager' ? data.top_users[1].clientes : 0,
         avatar: PersonTest
       },
       chartData: [
         {
           name: 'Total de Jobs',
-          pv: data && dashType === 'manager' ? data.top_users[1].task_count : 0,
+          total: data && dashType === 'manager' ? data.top_users[1].tarefas_total : 0,
           fill: '#0045B5'
         },
         {
           name: 'Pendente',
-          pv: 5,
+          total: data && dashType === 'manager' ? data.top_users[1].pendente : 0,
           fill: '#FDB022'
         },
         {
           name: 'Aprovação',
-          pv: 15,
+          total: data && dashType === 'manager' ? data.top_users[1].aguardando_aprovacao : 0,
           fill: '#0098FF'
         },
         {
           name: 'Aprovados',
-          pv: 25,
+          total: data && dashType === 'manager' ? data.top_users[1].entregue : 0,
           fill: '#00A063'
         }
       ],
       mensalReport: {
-        reunions: 8,
+        reunions: data && dashType === 'manager' ? data.top_users[1].reuniao : 0,
         principalTask: '4'
       }
     },
     {
       userInfos: {
         user_name: data && dashType === 'manager' ? data.top_users[2].name : '',
-        clientsNumber: 8,
+        clientsNumber: data && dashType === 'manager' ? data.top_users[2].clientes : 0,
         avatar: PersonTest
       },
       chartData: [
         {
           name: 'Total de Jobs',
-          pv: data && dashType === 'manager' ? data.top_users[2].task_count : 0,
+          total: data && dashType === 'manager' ? data.top_users[2].tarefas_total : 0,
           fill: '#0045B5'
         },
         {
           name: 'Pendente',
-          pv: 5,
+          total: data && dashType === 'manager' ? data.top_users[2].pendente : 0,
           fill: '#FDB022'
         },
         {
           name: 'Aprovação',
-          pv: 15,
+          total: data && dashType === 'manager' ? data.top_users[2].aguardando_aprovacao : 0,
           fill: '#0098FF'
         },
         {
           name: 'Aprovados',
-          pv: 25,
+          total: data && dashType === 'manager' ? data.top_users[2].entregue : 0,
           fill: '#00A063'
         }
       ],
       mensalReport: {
-        reunions: 3,
+        reunions: data && dashType === 'manager' ? data.top_users[2].reuniao : 0,
         principalTask: '5'
       }
     }
@@ -648,7 +682,7 @@ export default function Dashboard() {
             {/* <ChartDonut data={dataDahs} title={'Top Clientes'} dataKey="value" /> */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <BarChartGrafic
-                data={dataChanges}
+                data={topTenantJobs}
                 isVertical={true}
                 title="Top clientes (Jobs)"
                 height=""
@@ -798,30 +832,20 @@ export default function Dashboard() {
             </thead>
 
             <tbody>
-              <tr>
-                <td>21 Live | Cliente</td>
-                <td>Amanda</td>
-                <td style={{ color: '#00BFA5', fontWeight: '700' }}>123H</td>
-                <td>
-                  <HoursTable>3H</HoursTable>
-                </td>
-              </tr>
-              <tr>
-                <td>Metso</td>
-                <td>Beatriz</td>
-                <td style={{ color: '#00BFA5', fontWeight: '700' }}>83H</td>
-                <td>
-                  <HoursTable>7H</HoursTable>
-                </td>
-              </tr>
-              <tr>
-                <td>Iveco</td>
-                <td>Amanda</td>
-                <td style={{ color: '#00BFA5', fontWeight: '700' }}>135H</td>
-                <td>
-                  <HoursTable className="minus">-5H</HoursTable>
-                </td>
-              </tr>
+              {data &&
+                dashType === 'manager' &&
+                data.top_fee_inverso.map((row: TopFeeSpot, index: number) => (
+                  <tr key={index}>
+                    <td>{row.client_name}</td>
+                    <td>{row.atendimento ? row.atendimento : '-----'}</td>
+                    <td style={{ color: '#00BFA5', fontWeight: '700' }}>
+                      {row.tempo_total.split(':')[0]}H
+                    </td>
+                    <td>
+                      <HoursTable>{row.consumido.split(':')[0]}H</HoursTable>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </TableDefault>
 
@@ -841,30 +865,20 @@ export default function Dashboard() {
             </thead>
 
             <tbody>
-              <tr>
-                <td>21 Live | Cliente</td>
-                <td>Amanda</td>
-                <td style={{ color: '#00BFA5', fontWeight: '700' }}>123H</td>
-                <td>
-                  <HoursTable className="minus">-3H</HoursTable>
-                </td>
-              </tr>
-              <tr>
-                <td>Metso</td>
-                <td>Beatriz</td>
-                <td style={{ color: '#00BFA5', fontWeight: '700' }}>83H</td>
-                <td>
-                  <HoursTable>7H</HoursTable>
-                </td>
-              </tr>
-              <tr>
-                <td>Iveco</td>
-                <td>Amanda</td>
-                <td style={{ color: '#00BFA5', fontWeight: '700' }}>135H</td>
-                <td>
-                  <HoursTable>9H</HoursTable>
-                </td>
-              </tr>
+              {data &&
+                dashType === 'manager' &&
+                data.top_spot_inverso.map((row: TopFeeSpot, index: number) => (
+                  <tr key={index}>
+                    <td>{row.client_name}</td>
+                    <td>{row.atendimento ? row.atendimento : '-----'}</td>
+                    <td style={{ color: '#00BFA5', fontWeight: '700' }}>
+                      {row.tempo_total.split(':')[0]}H
+                    </td>
+                    <td>
+                      <HoursTable>{row.consumido.split(':')[0]}H</HoursTable>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </TableDefault>
 
@@ -872,22 +886,22 @@ export default function Dashboard() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
             <CardBase>
               <div className="card-title">Alterações Internas (Jobs)</div>
-              <BarChartGrafic data={dataChanges} isVertical={true} height="" />
+              <BarChartGrafic data={topTenantJobs} isVertical={true} height="" />
             </CardBase>
             <CardBase>
               <div className="card-title">Alterações Clientes (Jobs)</div>
-              <BarChartGrafic data={dataChanges} isVertical={true} height="" />
+              <BarChartGrafic data={topTenantJobs} isVertical={true} height="" />
             </CardBase>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
             <CardBase>
               <div className="card-title">Alterações Internas (Horas)</div>
-              <BarChartGrafic data={dataChanges} isVertical={true} height="" />
+              <BarChartGrafic data={topTenantJobs} isVertical={true} height="" />
             </CardBase>
             <CardBase>
               <div className="card-title">Alterações Clientes (Horas)</div>
-              <BarChartGrafic data={dataChanges} isVertical={true} height="" />
+              <BarChartGrafic data={topTenantJobs} isVertical={true} height="" />
             </CardBase>
           </div>
 
@@ -907,44 +921,40 @@ export default function Dashboard() {
                   </thead>
 
                   <tbody>
-                    <tr>
-                      <td>Terex</td>
-                      <td>Marina</td>
-                      <td>Job 1</td>
-                      <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
-                        Trabalhando agora
-                      </td>
-                      {/* <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>Na fila</td> */}
-                    </tr>
-                    <tr>
-                      <td>Metso</td>
-                      <td>Fernanda</td>
-                      <td>Job 5</td>
-                      {/* <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
-                        Trabalhando agora
-                      </td> */}
-                      <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
-                        Na fila
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>Iveco</td>
-                      <td>Thiago</td>
-                      <td>Job 3</td>
-                      {/* <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
-                        Trabalhando agora
-                      </td> */}
-                      <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
-                        Na fila
-                      </td>
-                    </tr>
+                    {data &&
+                      dashType === 'manager' &&
+                      data?.top_team.usuarios.map((row: TeamOverview) => (
+                        <tr key={row.user_id}>
+                          <td>{row.cliente}</td>
+                          <td>{row.name}</td>
+                          <td>{row.tarefa}</td>
+                          {row.trabalho !== 'Na Fila' && (
+                            <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
+                              {row.trabalho}
+                            </td>
+                          )}
+                          {row.trabalho === 'Na Fila' && (
+                            <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
+                              {row.trabalho}
+                            </td>
+                          )}
+                        </tr>
+                      ))}
                   </tbody>
                 </TableDefault>
               </ContainerGroupTable>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <NumberCard>
-                  <CountUp start={0} end={87} delay={0}>
+                  <CountUp
+                    start={0}
+                    end={
+                      data && dashType === 'manager' && data?.top_team?.total?.total_tarefas !== 0
+                        ? data?.top_team?.total?.total_tarefas
+                        : 0
+                    }
+                    delay={0}
+                  >
                     {({ countUpRef }) => (
                       <div>
                         <span className="numberCard" ref={countUpRef} />
@@ -954,7 +964,15 @@ export default function Dashboard() {
                   <div className="numberCard-title">pautas</div>
                 </NumberCard>
                 <NumberCard>
-                  <CountUp start={0} end={290} delay={0}>
+                  <CountUp
+                    start={0}
+                    end={
+                      data && dashType === 'manager' && data?.top_team?.total?.total_horas !== 0
+                        ? data?.top_team?.total?.total_horas.split(':')[0]
+                        : 0
+                    }
+                    delay={0}
+                  >
                     {({ countUpRef }) => (
                       <div>
                         <span className="numberCard" ref={countUpRef} />
@@ -1131,7 +1149,7 @@ export default function Dashboard() {
 
           {/* Monitoramento criativo */}
           <CardBase>
-            <div className="card-title">Monitoramento Do Time - Criativo</div>
+            <div className="card-title">Monitoramento Do Time - Ranking Criativo</div>
 
             <TableDefault title="" titleSize="14px" titleWeight="700" titleColor="#222">
               <thead>
@@ -1192,41 +1210,29 @@ export default function Dashboard() {
             </thead>
 
             <tbody>
-              <tr>
-                <td>21 Live | Cliente</td>
-                <td>Amanda</td>
-                <td>Teste</td>
-                <td>Entregue</td>
-                <td>3</td>
-                <td>5H</td>
-                <td>4H</td>
-                <td>15/10/2023</td>
-                <td>17/10/2023</td>
-              </tr>
-              <tr>
-                <td>Metso</td>
-                <td>Beatriz</td>
-                <td>Ticket teste</td>
-                <td>Entregue</td>
-                <td>2</td>
-                <td>3H</td>
-                <td>3H</td>
-                <td>15/10/2023</td>
-                <td>18/10/2023</td>
-              </tr>
-              <tr>
-                <td>Iveco</td>
-                <td>Luana</td>
-                <td>TS-TSK-02-TICKET</td>
-                <td>Entregue</td>
-                <td>5</td>
-                <td>1H</td>
-                <td>
-                  <TdColor>3H</TdColor>
-                </td>
-                <td>12/10/2023</td>
-                <td>16/10/2023</td>
-              </tr>
+              {data &&
+                dashType === 'manager' &&
+                data?.task_conclude.map((row: TaskConclude) => (
+                  <tr key={row.task_id}>
+                    <td>{row.cliente}</td>
+                    <td>{row.ultimo_usuario}</td>
+                    <td>{row.tarefa}</td>
+                    <td>{row.status}</td>
+                    <td>{row.qts_pausas}</td>
+                    <td style={{ minWidth: '125px' }}>
+                      {row.hora_estimada.split(':')[0] === '00'
+                        ? 0
+                        : row.hora_estimada.split(':')[0]}
+                      H
+                    </td>
+                    <td style={{ minWidth: '125px' }}>
+                      {row.hora_real.split(':')[0] === '00' ? 0 : row.hora_real.split(':')[0]}H:
+                      {row.hora_real.split(':')[1]}m
+                    </td>
+                    <td>{moment(row.data_inicio).format('DD/MM/YYYY')}</td>
+                    <td>{moment(row.data_final).format('DD/MM/YYYY')}</td>
+                  </tr>
+                ))}
             </tbody>
           </TableDefault>
         </SectionDefault>
@@ -1324,13 +1330,13 @@ export default function Dashboard() {
           {/* Top clientes */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <BarChartGrafic
-              data={dataChanges}
+              data={topTenantJobs}
               isVertical={true}
               title="Top clientes (Jobs)"
               height=""
             />
             <BarChartGrafic
-              data={dataChanges}
+              data={topTenantJobs}
               isVertical={true}
               title="Top clientes (Horas)"
               height=""
