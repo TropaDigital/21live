@@ -618,7 +618,7 @@ export default function WorkingProduct({
   }
 
   useEffect(() => {
-    console.log('log do ticket_id =>', ticket_id);
+    // console.log('log do ticket_id =>', ticket_id);
     // console.log('log do final card =>', finalCard);
     // console.log('log do upload client =>', uploadClient);
     // console.log('log do isToApprove =>', isToApprove);
