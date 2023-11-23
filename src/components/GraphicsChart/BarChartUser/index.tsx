@@ -82,13 +82,13 @@ export default function BarChartUser({ data, title, isVertical, height }: BarPro
           <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#c7c7c7" />
           <Tooltip />
           <Bar
-            dataKey="pv"
+            dataKey="total"
             fill="#8884d8"
             radius={isVertical ? [0, 5, 5, 0] : [5, 5, 0, 0]}
             barSize={isVertical ? 300 : 122}
           >
             <LabelList
-              dataKey="pv"
+              dataKey="total"
               position={isVertical ? 'right' : 'top'}
               fontSize={12}
               fontWeight={700}
