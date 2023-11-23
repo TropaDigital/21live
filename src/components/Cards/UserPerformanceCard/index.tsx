@@ -19,7 +19,7 @@ interface UserInfos {
 
 interface ChartDataProps {
   name: string;
-  pv: number;
+  total: number;
   fill: string;
 }
 
