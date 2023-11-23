@@ -40,7 +40,8 @@ import {
   ProductsModalTop,
   ProductsModalWrapper,
   SearchProductsModal,
-  SplitDeliveries
+  SplitDeliveries,
+  UsersWrapper
 } from './styles';
 import {
   FinishModal,
@@ -82,6 +83,10 @@ import api from '../../../services/api';
 // Libraries
 import moment from 'moment';
 import InfoFiles from '../ComponentSteps/InfoFiles';
+import { Table } from '../../../components/Table';
+import { tr } from 'date-fns/locale';
+import { ProductsTable } from '../../../components/Ui/ProductTable/styles';
+import { ModalButtons } from '../ViewTask/styles';
 
 interface StateProps {
   [key: string]: any;
@@ -120,6 +125,13 @@ interface ModalDeliveryProps {
   isOpen: boolean;
   title: string;
   indexDelivery: number | any;
+}
+
+interface UsersNoSchedule {
+  function: string;
+  name: string;
+  tasks: number;
+  user_id: string;
 }
 
 interface ILocation {
@@ -332,6 +344,9 @@ export default function CreateTasks() {
   const [DTODelivery, setDTODelivery] = useState<any[]>([DeliveryDefault]);
   // const [dataFlow, setDataFlow] = useState<any[]>();
   const [submitState, setSubmitState] = useState<Date>(new Date());
+  const [modalWithoutSchedule, setModalWithoutSchedule] = useState<boolean>(false);
+  const [usersWithoutSchedule, setUsersWithoutSchedule] = useState<UsersNoSchedule[]>([]);
+  const [selectedInitialUser, setSelectedInitalUser] = useState<UsersNoSchedule>();
 
   const addDelivery = () => {
     const newDelivery: DeliveryProps = {
@@ -1561,8 +1576,53 @@ export default function CreateTasks() {
     setDTODelivery(DTODelivery.filter((obj) => obj.deliveryId !== id));
   };
 
-  const handleSelectUserForTask = () => {
-    setSelectUserModal(true);
+  async function checkFlow() {
+    try {
+      const response = await api.get(`/flow-function?step=1&flow_id=${DTOForm.flow_id}`);
+
+      if (response.data.result[0].show_hours === 'true') {
+        setSelectUserModal(true);
+      }
+      if (response.data.result[0].show_hours === 'false') {
+        handleNextUser();
+      }
+    } catch (error: any) {
+      console.log('log do error check flow', error);
+    }
+  }
+
+  async function handleNextUser() {
+    try {
+      const response = await api.get(
+        `/task/next-user?project_product_id=${DTOForm.project_product_id}&flow_id=${DTOForm.flow_id}&step=1`
+      );
+      setUsersWithoutSchedule(response.data.result);
+      setModalWithoutSchedule(true);
+    } catch (error: any) {
+      console.log('log error handleNextUser', error);
+    }
+  }
+
+  const handleSetUserWithoutSchedule = () => {
+    const actualDate = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+    setDTOForm((prevState: any) => ({ ...prevState, ['user_id']: selectedInitialUser?.user_id }));
+    setDTOForm((prevState: any) => ({ ...prevState, ['start_job']: actualDate }));
+
+    if (DTOForm.gen_ticket === '' && ticketAsk === 'never') {
+      setDTOForm((prevState: any) => ({
+        ...prevState,
+        ['gen_ticket']: 'false'
+      }));
+    }
+
+    if (DTOForm.gen_ticket === '' && ticketAsk === 'always') {
+      setDTOForm((prevState: any) => ({
+        ...prevState,
+        ['gen_ticket']: 'true'
+      }));
+    }
+
+    setSubmitState(new Date());
   };
 
   useEffect(() => {
@@ -1637,6 +1697,10 @@ export default function CreateTasks() {
     if (DTOForm.end_job !== '' && DTOForm.start_job !== '' && DTOForm.user_id !== '') {
       handleOnSubmit();
     }
+
+    if (selectedInitialUser?.user_id !== '' && DTOForm.start_job !== '' && DTOForm.user_id !== '') {
+      handleOnSubmit();
+    }
   }, [submitState]);
 
   const handleGenerateTicket = (value: boolean) => {
@@ -1661,16 +1725,32 @@ export default function CreateTasks() {
           `/verify-flow?project_product_id=${DTOForm.project_product_id}&flow_id=${DTOForm.flow_id}`
         );
         console.log('log do response check flow and project', response.data);
-        // if (response.data.result )
-      } catch (error: any) {
-        console.log('log do error', error);
+        // if (response.data.result !== 'Fluxo ok!') {
+        // }
+      } catch (e: any) {
+        console.log('log do error check flow', e);
+        if (e.response.data.result.length !== 0) {
+          e.response.data.result.map((row: any) => {
+            addToast({
+              type: 'danger',
+              title: 'ATENÇÃO',
+              description: row.error
+            });
+          });
+        } else {
+          addToast({
+            type: 'danger',
+            title: 'ATENÇÃO',
+            description: e.response.data.message
+          });
+        }
       }
     }
 
     if (DTOForm.flow_id && DTOForm.project_product_id) {
       checkFlowAndProject();
     }
-  }, [DTOForm]);
+  }, [DTOForm.flow_id && DTOForm.project_product_id]);
 
   // useEffect(() => {
   //   console.log('log do tipo de task', tasksType);
@@ -1918,7 +1998,7 @@ export default function CreateTasks() {
                   <FormTitle>Resumo da tarefa</FormTitle>
                   <SummaryTasks
                     selectedProducts={productsArray}
-                    createTasks={handleSelectUserForTask}
+                    createTasks={checkFlow}
                     editTasks={() => {
                       setCreateStep(1);
                       setTaskEdit(true);
@@ -1954,7 +2034,7 @@ export default function CreateTasks() {
               {tasksType === 'horas' && (
                 <SummaryTasks
                   selectedProducts={DTODelivery}
-                  createTasks={handleSelectUserForTask}
+                  createTasks={checkFlow}
                   editTasks={() => {
                     setCreateStep(1);
                     setTaskEdit(true);
@@ -1974,7 +2054,7 @@ export default function CreateTasks() {
               {tasksType !== 'horas' && (
                 <SummaryTasks
                   selectedProducts={productsArray}
-                  createTasks={handleSelectUserForTask}
+                  createTasks={checkFlow}
                   editTasks={() => {
                     setCreateStep(1);
                     setTaskEdit(true);
@@ -2390,6 +2470,71 @@ export default function CreateTasks() {
             user_alocated={handleScheduleUser}
             closeModal={() => setSelectUserModal(false)}
           />
+        </ModalDefault>
+
+        {/* Modal to select user without schedule */}
+        <ModalDefault
+          isOpen={modalWithoutSchedule}
+          onOpenChange={() => setModalWithoutSchedule(false)}
+          title="Escolha o usuário inicial"
+        >
+          <UsersWrapper>
+            <ProductsTable>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Selecionar</th>
+                    <th>Nome</th>
+                    <th>Tarefas</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {usersWithoutSchedule.map((row: UsersNoSchedule) => (
+                    <tr key={row.user_id}>
+                      <td>
+                        <CheckboxDefault
+                          label=""
+                          name={''}
+                          onChange={() => setSelectedInitalUser(row)}
+                          checked={selectedInitialUser?.user_id === row.user_id}
+                        />
+                      </td>
+                      <td>{row.name}</td>
+                      <td>{row.tasks}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </ProductsTable>
+
+            <ModalButtons>
+              <ButtonDefault
+                typeButton="dark"
+                isOutline
+                onClick={() => {
+                  setModalWithoutSchedule(false);
+                  setSelectedInitalUser({
+                    function: '',
+                    name: '',
+                    tasks: 0,
+                    user_id: ''
+                  });
+                }}
+              >
+                Cancelar
+              </ButtonDefault>
+              <ButtonDefault
+                typeButton="primary"
+                onClick={() => {
+                  handleSetUserWithoutSchedule();
+                  setModalWithoutSchedule(false);
+                }}
+              >
+                Escolher
+              </ButtonDefault>
+            </ModalButtons>
+          </UsersWrapper>
         </ModalDefault>
       </ContainerWrapper>
     </>
