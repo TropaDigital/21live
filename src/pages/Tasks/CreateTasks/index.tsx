@@ -1856,47 +1856,20 @@ export default function CreateTasks() {
           )}
           {createStep === 2 && (
             <>
-              <FormTitle>Entregáveis</FormTitle>
-              <SplitDeliveries>
-                {tasksType === 'horas' && (
-                  <SwitchSelector>
-                    <InputSwitchDefault
-                      onChange={(e) => {
-                        handleSwitch(e.target.checked);
-                      }}
-                      isChecked={splitDeliveries}
-                    />
-                    <span>Dividir entregas</span>
-                  </SwitchSelector>
-                )}
-                <Deliveries>
-                  <InputDefault
-                    label="Entrega - Pré-Requisitos"
-                    // placeholder="00/00/0000"
-                    name="dateStart"
-                    type="date"
-                    max={'9999-12-31'}
-                    icon={BiCalendar}
-                    onChange={(e) => handleTaskDeliveries('dateStart', e.target.value)}
-                    value={DTOForm.copywriting_date_end}
-                    error={error?.copywriting_date_end}
-                  />
-
-                  <InputDefault
-                    label="Entrega Criação"
-                    placeholder="00/00/0000"
-                    name="creationDate"
-                    type="date"
-                    max={'9999-12-31'}
-                    icon={BiCalendar}
-                    onChange={(e) => handleTaskDeliveries('creationDate', e.target.value)}
-                    value={DTOForm.creation_date_end}
-                    error={error?.creation_date_end}
-                  />
-                </Deliveries>
-              </SplitDeliveries>
               {tasksType !== 'livre' && (
                 <>
+                  <FormTitle>Entregáveis</FormTitle>
+                  {tasksType === 'horas' && (
+                    <SwitchSelector>
+                      <InputSwitchDefault
+                        onChange={(e) => {
+                          handleSwitch(e.target.checked);
+                        }}
+                        isChecked={splitDeliveries}
+                      />
+                      <span>Dividir entregas</span>
+                    </SwitchSelector>
+                  )}
                   <InfoDeliveries
                     data={productsArray}
                     dataTypes={dataTypes}
@@ -1925,7 +1898,12 @@ export default function CreateTasks() {
                     handleTitleOfDelivery={handleDeliveryTitle}
                   />
                   {!splitDeliveries && tasksType === 'horas' && (
-                    <AddTextButton title="Adicionar produto" click={() => setProductsModal(true)} />
+                    <div style={{ marginBottom: '38px' }}>
+                      <AddTextButton
+                        title="Adicionar produto"
+                        click={() => setProductsModal(true)}
+                      />
+                    </div>
                   )}
                 </>
               )}
@@ -1943,6 +1921,41 @@ export default function CreateTasks() {
                     inputsError={error}
                   />
                 </div>
+              )}
+
+              {!splitDeliveries && (
+                <>
+                  <FormTitle style={{ marginTop: '38px' }}>Data da entrega</FormTitle>
+                  <SplitDeliveries>
+                    <Deliveries>
+                      <InputDefault
+                        label="Entrega - Pré-Requisitos"
+                        // placeholder="00/00/0000"
+                        name="dateStart"
+                        type="date"
+                        max={'9999-12-31'}
+                        icon={BiCalendar}
+                        onChange={(e) => handleTaskDeliveries('dateStart', e.target.value)}
+                        value={DTOForm.copywriting_date_end}
+                        error={error?.copywriting_date_end}
+                      />
+
+                      <div style={{ width: !splitDeliveries ? '50%' : '180px' }}>
+                        <InputDefault
+                          label="Entrega Criação"
+                          placeholder="00/00/0000"
+                          name="creationDate"
+                          type="date"
+                          max={'9999-12-31'}
+                          icon={BiCalendar}
+                          onChange={(e) => handleTaskDeliveries('creationDate', e.target.value)}
+                          value={DTOForm.creation_date_end}
+                          error={error?.creation_date_end}
+                        />
+                      </div>
+                    </Deliveries>
+                  </SplitDeliveries>
+                </>
               )}
             </>
           )}
