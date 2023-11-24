@@ -573,15 +573,6 @@ export default function Services() {
     }
   }
 
-  // function handleViewMoreDescription(description: string): string {
-  //   const descriptionLength = description.length;
-  //   let newDescription: string = description;
-
-  //   if (descriptionLength >= 50) newDescription = description.substring(0, 50) + '...';
-
-  //   return newDescription;
-  // }
-
   const handleAddHours = (event: any) => {
     const { name, value } = event.target;
     if (name === 'hours_creation') {
@@ -1111,84 +1102,89 @@ export default function Services() {
             <InputSwitchDefault
               onChange={(e) => handleOnChangeSwitch({ name: 'flag', value: e.target.checked })}
               isChecked={formData.flag === 'true' ? true : false}
-              label="Listar produto"
+              label="Chamar produtos"
             />
           </FieldDefault>
 
-          {modal.type.includes('Editar produto') && (
-            <FieldDefault>
-              <EstimatedTime>
-                <span>Tempo total do produto</span>
-                <EstimatedTimeInputs>
-                  <div>{formData?.minutes}</div>
-                </EstimatedTimeInputs>
-              </EstimatedTime>
-            </FieldDefault>
+          {formData.flag !== 'true' && (
+            <div>
+              {modal.type.includes('Editar produto') && (
+                <FieldDefault>
+                  <EstimatedTime>
+                    <span>Tempo total do produto</span>
+                    <EstimatedTimeInputs>
+                      <div>{formData?.minutes}</div>
+                    </EstimatedTimeInputs>
+                  </EstimatedTime>
+                </FieldDefault>
+              )}
+
+              <FieldDefault>
+                <EstimatedTime>
+                  <span>Tempo estimado de atividade (Horas : Minutos)</span>
+                  <EstimatedTimeInputs>
+                    <InputDefault
+                      label=""
+                      name="hours_creation"
+                      onChange={handleAddHours}
+                      value={estimatedTimeCreation.hours}
+                      type="number"
+                      min="0"
+                      step="1"
+                      icon={BiTime}
+                      required
+                    />
+                    :
+                    <InputDefault
+                      label=""
+                      name="minutes_creation"
+                      onChange={handleAddHours}
+                      value={estimatedTimeCreation.minutes}
+                      type="number"
+                      min="0"
+                      max="59"
+                      step="1"
+                      icon={BiTime}
+                      required
+                    />
+                  </EstimatedTimeInputs>
+                </EstimatedTime>
+              </FieldDefault>
+
+              <FieldDefault>
+                <EstimatedTime>
+                  <span>Tempo estimado de redação (Horas : Minutos)</span>
+                  <EstimatedTimeInputs>
+                    <InputDefault
+                      label=""
+                      name="hours_essay"
+                      onChange={handleAddHours}
+                      value={estimatedTimeEssay.hours}
+                      type="number"
+                      min="0"
+                      step="1"
+                      icon={BiTime}
+                      required
+                    />
+                    :
+                    <InputDefault
+                      label=""
+                      name="minutes_essay"
+                      onChange={handleAddHours}
+                      value={estimatedTimeEssay.minutes}
+                      type="number"
+                      min="0"
+                      max="59"
+                      step="1"
+                      icon={BiTime}
+                      required
+                    />
+                  </EstimatedTimeInputs>
+                </EstimatedTime>
+              </FieldDefault>
+            </div>
           )}
 
-          <FieldDefault>
-            <EstimatedTime>
-              <span>Tempo estimado de criação (Horas : Minutos)</span>
-              <EstimatedTimeInputs>
-                <InputDefault
-                  label=""
-                  name="hours_creation"
-                  onChange={handleAddHours}
-                  value={estimatedTimeCreation.hours}
-                  type="number"
-                  min="0"
-                  step="1"
-                  icon={BiTime}
-                  required
-                />
-                :
-                <InputDefault
-                  label=""
-                  name="minutes_creation"
-                  onChange={handleAddHours}
-                  value={estimatedTimeCreation.minutes}
-                  type="number"
-                  min="0"
-                  max="59"
-                  step="1"
-                  icon={BiTime}
-                  required
-                />
-              </EstimatedTimeInputs>
-            </EstimatedTime>
-          </FieldDefault>
-
-          <FieldDefault>
-            <EstimatedTime>
-              <span>Tempo estimado de redação (Horas : Minutos)</span>
-              <EstimatedTimeInputs>
-                <InputDefault
-                  label=""
-                  name="hours_essay"
-                  onChange={handleAddHours}
-                  value={estimatedTimeEssay.hours}
-                  type="number"
-                  min="0"
-                  step="1"
-                  icon={BiTime}
-                  required
-                />
-                :
-                <InputDefault
-                  label=""
-                  name="minutes_essay"
-                  onChange={handleAddHours}
-                  value={estimatedTimeEssay.minutes}
-                  type="number"
-                  min="0"
-                  max="59"
-                  step="1"
-                  icon={BiTime}
-                  required
-                />
-              </EstimatedTimeInputs>
-            </EstimatedTime>
-          </FieldDefault>
           <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
             <ButtonDefault typeButton="dark" isOutline onClick={handleOnCancel}>
               Descartar
