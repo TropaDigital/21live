@@ -13,6 +13,12 @@ export const ParametersWrapper = styled.div`
   box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.05);
 `;
 
+export const ParametersTitle = styled.h2`
+  color: var(--title-color);
+  font-size: var(--text-small-lg);
+  font-weight: var(--weight-semibold);
+`;
+
 export const FieldsLine = styled.div`
   display: flex;
   align-items: center;

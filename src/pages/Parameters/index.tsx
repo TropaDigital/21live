@@ -9,7 +9,7 @@ import { ContainerDefault } from '../../components/UiElements/styles';
 import useForm from '../../hooks/useForm';
 
 // Styles
-import { FieldsLine, ParametersWrapper, SaveButtons } from './styles';
+import { FieldsLine, ParametersTitle, ParametersWrapper, SaveButtons } from './styles';
 import api from '../../services/api';
 import { useToast } from '../../hooks/toast';
 import Loader from '../../components/LoaderSpin';
@@ -18,12 +18,18 @@ import ButtonDefault from '../../components/Buttons/ButtonDefault';
 // Interfaces
 interface ParametersProps {
   input_name: string;
+  creation: string;
+  dismemberment: string;
+  change: string;
 }
 
 export default function Parameters() {
   const { addToast } = useToast();
   const { formData, setData, handleOnChange } = useForm({
-    input_name: ''
+    input_name: '',
+    creation: '100%',
+    dismemberment: '60%',
+    change: '20%'
   } as ParametersProps);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -32,7 +38,7 @@ export default function Parameters() {
       setLoading(true);
 
       const response = await api.get('/config/input');
-      console.log('log do response get input config =>', response.data.result);
+      // console.log('log do response get input config =>', response.data.result);
       setData(response.data.result);
 
       setLoading(false);
@@ -90,33 +96,77 @@ export default function Parameters() {
       {loading && <Loader />}
 
       {!loading && (
-        <ParametersWrapper>
-          <FieldsLine>
-            <InputDefault
-              label="Nome do input (Tela 'Entregáveis' ao criar tarefa)"
-              name="input_name"
-              placeholder="Digite aqui..."
-              onChange={handleOnChange}
-              value={formData.input_name}
-            />
-            {/* <InputDefault
-              label="Nome do input"
-              name="search"
-              placeholder="Digite aqui..."
-              onChange={() => ''}
-              value={''}
-            /> */}
-          </FieldsLine>
+        <>
+          <ParametersWrapper>
+            <ParametersTitle>Input</ParametersTitle>
+            <FieldsLine>
+              <InputDefault
+                label="Nome do input (Tela 'Entregáveis' ao criar tarefa)"
+                name="input_name"
+                placeholder="Digite aqui..."
+                onChange={handleOnChange}
+                value={formData.input_name}
+              />
+              {/* <InputDefault
+                label="Nome do input"
+                name="search"
+                placeholder="Digite aqui..."
+                onChange={() => ''}
+                value={''}
+              /> */}
+            </FieldsLine>
 
-          <SaveButtons>
-            <ButtonDefault typeButton="lightWhite" isOutline onClick={getInputConfigs}>
-              Cancelar
-            </ButtonDefault>
-            <ButtonDefault typeButton="primary" onClick={handleSubmit}>
-              Salvar
-            </ButtonDefault>
-          </SaveButtons>
-        </ParametersWrapper>
+            <SaveButtons>
+              <ButtonDefault typeButton="lightWhite" isOutline onClick={getInputConfigs}>
+                Cancelar
+              </ButtonDefault>
+              <ButtonDefault typeButton="primary" onClick={handleSubmit}>
+                Salvar
+              </ButtonDefault>
+            </SaveButtons>
+          </ParametersWrapper>
+
+          <ParametersWrapper>
+            <ParametersTitle>Porcentagens para os tipos</ParametersTitle>
+
+            <FieldsLine>
+              <InputDefault
+                label="Criação do zero"
+                name="creation"
+                disabled={true}
+                onChange={() => ''}
+                defaultValue={'100%'}
+              />
+            </FieldsLine>
+
+            <FieldsLine>
+              <InputDefault
+                label="Desmembramento"
+                name="dismemberment"
+                placeholder="Digite o valor..."
+                onChange={handleOnChange}
+                value={formData.dismemberment}
+              />
+
+              <InputDefault
+                label="Alteração"
+                name="change"
+                placeholder="Digite o valor..."
+                onChange={handleOnChange}
+                value={formData.change}
+              />
+            </FieldsLine>
+
+            <SaveButtons>
+              <ButtonDefault typeButton="lightWhite" isOutline onClick={getInputConfigs}>
+                Cancelar
+              </ButtonDefault>
+              <ButtonDefault typeButton="primary" onClick={handleSubmit}>
+                Salvar
+              </ButtonDefault>
+            </SaveButtons>
+          </ParametersWrapper>
+        </>
       )}
     </ContainerDefault>
   );
