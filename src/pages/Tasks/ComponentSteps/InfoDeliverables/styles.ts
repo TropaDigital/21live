@@ -9,6 +9,7 @@ export const ProductsTable = styled.div`
   flex-direction: column;
   gap: 16px;
   margin-top: 38px;
+  /* margin-bottom: 38px; */
   position: relative;
 
   table {
