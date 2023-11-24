@@ -55,7 +55,7 @@ interface OfficeProps {
 
 export default function ListOffice() {
   const { addToast } = useToast();
-  const { formData, setData, handleOnChange, handleOnChangeSwitch } = useForm({
+  const { formData, setData, handleOnChange } = useForm({
     function_id: 0,
     tenant_id: '',
     function: '',
@@ -75,8 +75,6 @@ export default function ListOffice() {
     700
   );
   const { data, fetchData } = useFetch<OfficeProps[]>(`function?=${search}`);
-  // const [permissionFor, setPermissionFor] = useState<any[]>([]);
-  // const [permissionsData, setPermissionsData] = useState<PermissionProps[]>([]);
   const [showHours, setShowHours] = useState<boolean>(false);
 
   useEffect(() => {
@@ -103,7 +101,7 @@ export default function ListOffice() {
 
     setModal({
       isOpen: true,
-      type: `Editar serviço: ${item.function}`
+      type: `Editar cargo: ${item.function}`
     });
   };
 
@@ -164,42 +162,6 @@ export default function ListOffice() {
     },
     [formData, addToast, fetchData, handleOnCancel, modal]
   );
-
-  // const handleSwitch = (value: any) => {
-  //   setShowHours(value);
-  // };
-
-  // const handlePermissions = (id: any) => {
-  //   if (permissionFor.includes(id)) {
-  //     setPermissionFor(permissionFor.filter((obj) => obj !== id));
-  //   } else {
-  //     setPermissionFor((prevState: any) => [...prevState, id]);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   const handleGetPermissions = async () => {
-  //     try {
-  //       const response = await api.get(`/permissions`);
-
-  //       const allPermissions: PermissionProps[] = [];
-
-  //       response.data.result.map((row: any) => {
-  //         allPermissions.push({
-  //           permission_id: row.permission_id,
-  //           name: row.name,
-  //           checked: false
-  //         });
-  //       });
-
-  //       setPermissionsData(allPermissions);
-  //     } catch (error) {
-  //       console.log('log do error getting permissions');
-  //     }
-  //   };
-
-  //   handleGetPermissions();
-  // }, []);
 
   return (
     <ContainerDefault>
