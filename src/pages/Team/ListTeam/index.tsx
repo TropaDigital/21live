@@ -244,7 +244,7 @@ export default function Team() {
         addToast({
           type: 'success',
           title: 'Sucesso',
-          description: 'Serviço cadastrado com sucesso!'
+          description: 'Usuário atualizado com sucesso!'
         });
         handleOnCancel();
         fetchData();
@@ -766,7 +766,6 @@ export default function Team() {
                 name="birthday"
                 onChange={handleOnChange}
                 value={formData.birthday}
-                required
                 type="date"
                 max={'9999-12-31'}
                 icon={BiCalendar}
@@ -778,7 +777,6 @@ export default function Team() {
                 name="hiring_date"
                 onChange={handleOnChange}
                 value={formData.hiring_date}
-                required
                 type="date"
                 max={'9999-12-31'}
                 icon={BiCalendar}
@@ -792,7 +790,6 @@ export default function Team() {
                 name="phone"
                 onChange={handleOnChange}
                 value={formData.phone}
-                required
                 placeholder="99 9999-9999"
                 icon={BiPhoneCall}
               />
@@ -804,7 +801,6 @@ export default function Team() {
                 placeholder="Ex: 10.00"
                 onChange={handleOnChange}
                 value={formData.cost_per_hour}
-                required
                 icon={BiMoney}
               />
             </FieldDefault>
