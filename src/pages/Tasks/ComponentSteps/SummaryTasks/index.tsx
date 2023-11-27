@@ -29,6 +29,7 @@ import { multiplyTime, subtractTime, sumTimes } from '../../../../utils/convertT
 
 // Hooks
 import { useAuth } from '../../../../hooks/AuthContext';
+import { useParamsHook } from '../../../../hooks/useParams';
 
 // Libraries
 import Switch from 'react-switch';
@@ -75,6 +76,7 @@ export default function SummaryTasks({
   ticketAsk
 }: TasksProps) {
   const { user } = useAuth();
+  const { parameters } = useParamsHook();
   const [deliveryArrayHours, setDeliveryArrayHours] = useState<any>('');
   const [totalArrayHours, setTotalArrayHours] = useState<any>('');
 
@@ -208,7 +210,9 @@ export default function SummaryTasks({
             )}
 
             <SummaryTaskInfo>
-              <div className="title-info">Input Pré-requisito:</div>
+              <div className="title-info">
+                Input {parameters.input !== '' ? parameters.input : 'Pré-requisito'}:
+              </div>
               <div className="info">
                 <div
                   className="description-info"
