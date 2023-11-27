@@ -1,11 +1,11 @@
-// React
-import { useEffect } from 'react';
-
 // Components
 import WrapperEditor from '../../../../components/WrapperEditor';
 
 // Styles
 import { InputField, InputFieldTitle, InputTaskWrapper } from './styles';
+
+// Hooks
+import { useParamsHook } from '../../../../hooks/useParams';
 
 interface InputsProps {
   valueFirst: string;
@@ -24,10 +24,13 @@ export default function TaskInputs({
   mentions,
   inputsError
 }: InputsProps) {
+  const { parameters } = useParamsHook();
   return (
     <InputTaskWrapper>
       <InputField className={inputsError?.copywriting_description ? 'error' : ''}>
-        <InputFieldTitle>Input Pré-Requisitos</InputFieldTitle>
+        <InputFieldTitle>
+          Input {parameters.input !== '' ? parameters.input : 'Pré-requisito'}
+        </InputFieldTitle>
         <WrapperEditor
           mentionData={mentions}
           value={valueFirst}
