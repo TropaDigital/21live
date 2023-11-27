@@ -22,6 +22,9 @@ import TaskInputs from '../ComponentSteps/InfoInputs';
 import SummaryTasks from '../ComponentSteps/SummaryTasks';
 import QuantityInput from '../../../components/Inputs/QuantityInput';
 import ScheduleUser from '../../../components/ScheduleUser';
+import InfoFiles from '../ComponentSteps/InfoFiles';
+import { ProductsTable } from '../../../components/Ui/ProductTable/styles';
+import { ModalButtons } from '../ViewTask/styles';
 
 // Styles
 import {
@@ -65,7 +68,7 @@ import {
 } from '../../../types';
 
 // Utils
-import { TenantProps } from '../../../utils/models';
+import { TenantProps, UsersNoSchedule } from '../../../utils/models';
 import {
   isTimeConsumedMoreThanPercent,
   multiplyTime,
@@ -82,11 +85,6 @@ import api from '../../../services/api';
 
 // Libraries
 import moment from 'moment';
-import InfoFiles from '../ComponentSteps/InfoFiles';
-import { Table } from '../../../components/Table';
-import { tr } from 'date-fns/locale';
-import { ProductsTable } from '../../../components/Ui/ProductTable/styles';
-import { ModalButtons } from '../ViewTask/styles';
 
 interface StateProps {
   [key: string]: any;
@@ -125,13 +123,6 @@ interface ModalDeliveryProps {
   isOpen: boolean;
   title: string;
   indexDelivery: number | any;
-}
-
-interface UsersNoSchedule {
-  function: string;
-  name: string;
-  tasks: number;
-  user_id: string;
 }
 
 interface ILocation {
@@ -1517,7 +1508,7 @@ export default function CreateTasks() {
         const selectedInfos: any = dataProjects?.filter(
           (obj: any) => obj.project_product_id === id
         );
-        console.log('log do selected infos', selectedInfos);
+        // console.log('log do selected infos', selectedInfos);
         setSelectedProject(selectedInfos[0]);
         handleChangeInput(e);
       }
