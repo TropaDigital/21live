@@ -54,6 +54,11 @@ import { useStopWatch } from '../../../hooks/stopWatch';
 
 // Types
 import { UploadedFilesProps } from '../../../types';
+import { UsersNoSchedule } from '../../../utils/models';
+import { UsersWrapper } from '../../Tasks/CreateTasks/styles';
+import { ProductsTable } from '../../Tasks/ComponentSteps/InfoDeliverables/styles';
+import { ModalButtons } from '../../Tasks/ViewTask/styles';
+import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -109,6 +114,9 @@ export default function ViewProductsDeliveries() {
   const [productForUpload, setProductForUpload] = useState<any>({});
   const [enableUpload, setEnableUpload] = useState<boolean>(false);
   const [viewProduct, setViewProduct] = useState<boolean>(false);
+  const [modalWithoutSchedule, setModalWithoutSchedule] = useState<boolean>(false);
+  const [usersWithoutSchedule, setUsersWithoutSchedule] = useState<UsersNoSchedule[]>([]);
+  const [selectedInitialUser, setSelectedInitalUser] = useState<UsersNoSchedule>();
 
   const deliveryId = location.state.task.deliverys.filter(
     (obj: any) => Number(obj.order) === location.state.task_index
@@ -781,23 +789,67 @@ export default function ViewProductsDeliveries() {
 
   async function checkFlow(sendTo: string) {
     try {
-      const whereToSend = sendTo;
+      // const whereToSend = sendTo;
 
-      console.log('log do where to send', whereToSend);
-      const response = await api.get(`/flow-function?step=1&flow_id=${dataTask?.flow_id}`);
+      // console.log('log do where to send', whereToSend);
+      const response = await api.get(
+        `/flow-function?step=${Number(actualStep) + 1}&flow_id=${dataTask?.flow_id}`
+      );
 
       if (response.data.result[0].show_hours === 'true') {
-        // setSelectUserModal(true);
+        setModalSendToUser(true);
         console.log('log do checkFlow to show hours');
       }
       if (response.data.result[0].show_hours === 'false') {
-        // handleNextUser();
+        handleNextUser();
         console.log('log do checkFlow to show schedule');
       }
     } catch (error: any) {
       console.log('log do error check flow', error);
     }
   }
+
+  async function handleNextUser() {
+    try {
+      const response = await api.get(
+        `/task/next-user?project_product_id=${dataTask?.project_product_id}&flow_id=${
+          dataTask?.flow_id
+        }&step=${Number(actualStep) + 1}`
+      );
+      setUsersWithoutSchedule(response.data.result);
+      setModalWithoutSchedule(true);
+    } catch (error: any) {
+      console.log('log error handleNextUser', error);
+    }
+  }
+
+  const handleSetUserWithoutSchedule = () => {
+    const actualDate = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+
+    addToast({
+      title: 'Atenção',
+      type: 'warning',
+      description: 'Fluxo passando por ajustes'
+    });
+    // setDTOForm((prevState: any) => ({ ...prevState, ['user_id']: selectedInitialUser?.user_id }));
+    // setDTOForm((prevState: any) => ({ ...prevState, ['start_job']: actualDate }));
+
+    // if (DTOForm.gen_ticket === '' && ticketAsk === 'never') {
+    //   setDTOForm((prevState: any) => ({
+    //     ...prevState,
+    //     ['gen_ticket']: 'false'
+    //   }));
+    // }
+
+    // if (DTOForm.gen_ticket === '' && ticketAsk === 'always') {
+    //   setDTOForm((prevState: any) => ({
+    //     ...prevState,
+    //     ['gen_ticket']: 'true'
+    //   }));
+    // }
+
+    // setSubmitState(new Date());
+  };
 
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
@@ -1136,6 +1188,77 @@ export default function ViewProductsDeliveries() {
           user_alocated={handleAssignTask}
           closeModal={() => setModalSendToUser(false)}
         />
+      </ModalDefault>
+
+      {/* Modal User without schedule */}
+      <ModalDefault
+        isOpen={modalWithoutSchedule}
+        onOpenChange={() => setModalWithoutSchedule(false)}
+        title="Escolha o usuário inicial"
+      >
+        <UsersWrapper>
+          <ProductsTable>
+            <table>
+              <thead>
+                <tr>
+                  <th>Selecionar</th>
+                  <th>Nome</th>
+                  <th>Tarefas</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {usersWithoutSchedule.map((row: UsersNoSchedule) => (
+                  <tr key={row.user_id}>
+                    <td>
+                      <CheckboxDefault
+                        label=""
+                        name={''}
+                        onChange={() => setSelectedInitalUser(row)}
+                        checked={selectedInitialUser?.user_id === row.user_id}
+                      />
+                    </td>
+                    <td>{row.name}</td>
+                    <td>{row.tasks}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </ProductsTable>
+
+          <ModalButtons>
+            <ButtonDefault
+              typeButton="dark"
+              isOutline
+              onClick={() => {
+                setModalWithoutSchedule(false);
+                setSelectedInitalUser({
+                  function: '',
+                  name: '',
+                  tasks: 0,
+                  user_id: ''
+                });
+              }}
+            >
+              Cancelar
+            </ButtonDefault>
+            <ButtonDefault
+              typeButton="primary"
+              onClick={() => {
+                handleSetUserWithoutSchedule();
+                setModalWithoutSchedule(false);
+                setSelectedInitalUser({
+                  function: '',
+                  name: '',
+                  tasks: 0,
+                  user_id: ''
+                });
+              }}
+            >
+              Escolher
+            </ButtonDefault>
+          </ModalButtons>
+        </UsersWrapper>
       </ModalDefault>
 
       {/* Modal upload files */}
