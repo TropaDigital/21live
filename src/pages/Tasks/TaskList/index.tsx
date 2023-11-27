@@ -12,6 +12,7 @@ import { IconContext } from 'react-icons';
 import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useFetch } from '../../../hooks/useFetch';
 import { useToast } from '../../../hooks/toast';
+import { useParamsHook } from '../../../hooks/useParams';
 
 // Components
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
@@ -48,6 +49,7 @@ import { ModalShowTaskWrapper, Flag, StatusTable, FilterTasks } from './styles';
 
 export default function TaskList() {
   const { addToast } = useToast();
+  const { parameters } = useParamsHook();
   const [modalViewTask, setModalViewTask] = useState({
     isOpen: false,
     type: '',
@@ -439,7 +441,9 @@ export default function TaskList() {
               </SummaryTaskInfo>
               {modalViewTask.task.copywriting_date_end !== '' && (
                 <SummaryTaskInfo>
-                  <div className="title-info">Data De Input Pré-requisitos:</div>
+                  <div className="title-info">
+                    Data De Input {parameters.input !== '' ? parameters.input : 'Pré-requisito'}:
+                  </div>
                   <div className="info">
                     {moment(modalViewTask.task.copywriting_date_end).format('DD/MM/YYYY')}
                   </div>
