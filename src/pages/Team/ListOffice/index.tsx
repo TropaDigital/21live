@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable import-helpers/order-imports */
 // react
 import { useCallback, useEffect, useState } from 'react';
@@ -29,22 +30,23 @@ import {
   FooterModal,
   SectionDefault
 } from '../../../components/UiElements/styles';
+import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
+import { SelectDefault } from '../../../components/Inputs/SelectDefault';
 
 // Styles
 // import { PermissionsList, PermissionsTitle, PermissionsWrapper } from './styles';
+import { SwitchField } from './styles';
 
 // Libraries
 import Switch from 'react-switch';
-import { SwitchSelector } from '../../../components/CardProductsSelected/styles';
-import InputSwitchDefault from '../../../components/Inputs/InputSwitchDefault';
-import { SwitchField } from './styles';
+import { useParamsHook } from '../../../hooks/useParams';
 
 interface OfficeProps {
   function_id: number;
   tenant_id: string;
   function: string;
   description: string;
-  show_hours: boolean;
+  show_hours: string;
 }
 
 // interface PermissionProps {
@@ -55,12 +57,13 @@ interface OfficeProps {
 
 export default function ListOffice() {
   const { addToast } = useToast();
+  const { parameters, getParams } = useParamsHook();
   const { formData, setData, handleOnChange } = useForm({
     function_id: 0,
     tenant_id: '',
     function: '',
     description: '',
-    show_hours: false
+    show_hours: 'false'
   } as OfficeProps);
 
   const [modal, setModal] = useState({
@@ -78,8 +81,14 @@ export default function ListOffice() {
   const [showHours, setShowHours] = useState<boolean>(false);
 
   useEffect(() => {
-    if (formData.show_hours) {
+    getParams();
+  }, []);
+
+  useEffect(() => {
+    if (formData.show_hours === 'true') {
       setShowHours(true);
+    } else {
+      setShowHours(false);
     }
   }, [formData]);
 
@@ -129,13 +138,11 @@ export default function ListOffice() {
       try {
         event.preventDefault();
 
-        const { function: AsFuncation, description } = formData;
+        const { function: AsFunction, description } = formData;
 
-        // Inserir lógica
         const newFormData = {
-          function: AsFuncation,
+          function: AsFunction,
           description
-          // permissions: permissionFor
         };
 
         if (modal.type === 'Novo Cargo') {
@@ -210,6 +217,7 @@ export default function ListOffice() {
                   <th>ID</th>
                   <th>Cargo</th>
                   <th>Descrição</th>
+                  <th>Exibe horas</th>
                   <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
                 </tr>
               </thead>
@@ -220,6 +228,16 @@ export default function ListOffice() {
                     <td>#{String(row.function_id).padStart(5, '0')}</td>
                     <td>{row.function}</td>
                     <td>{row.description}</td>
+                    <td>
+                      <div style={{ paddingLeft: '20px' }}>
+                        <CheckboxDefault
+                          label=""
+                          name=""
+                          onChange={() => ''}
+                          checked={row.show_hours === 'true' ? true : false}
+                        />
+                      </div>
+                    </td>
                     <td>
                       <div className="fieldTableClients">
                         <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
@@ -258,37 +276,41 @@ export default function ListOffice() {
               value={formData.description}
             />
           </FieldDefault>
-          <SwitchField>
-            <Switch
-              onChange={(value: any) => setShowHours(value)}
-              checked={showHours}
-              uncheckedIcon={false}
-              checkedIcon={false}
-              onColor="#0046B5"
-              width={40}
-              height={21}
-            />
-            Exibir horas
-          </SwitchField>
-          {/* <PermissionsWrapper>
-            <PermissionsTitle>Permissões</PermissionsTitle>
-            <PermissionsList>
-              {permissionsData.map((row: PermissionProps, index: number) => (
-                <div className="permission-field" key={index}>
-                  <Switch
-                    onChange={() => handlePermissions(row.permission_id)}
-                    checked={permissionFor.includes(row.permission_id) ? true : false}
-                    uncheckedIcon={false}
-                    checkedIcon={false}
-                    onColor="#0046B5"
-                    width={40}
-                    height={21}
-                  />
-                  {row.name.split('_')[1]} - {row.name.split('_')[2]}
-                </div>
-              ))}
-            </PermissionsList>
-          </PermissionsWrapper> */}
+
+          <FieldDefault>
+            <SwitchField>
+              <Switch
+                onChange={(value: any) => setShowHours(value)}
+                checked={showHours}
+                uncheckedIcon={false}
+                checkedIcon={false}
+                onColor="#0046B5"
+                width={40}
+                height={21}
+              />
+              Exibir horas
+            </SwitchField>
+          </FieldDefault>
+
+          {showHours && (
+            <FieldDefault>
+              <SelectDefault
+                label="Tipo de horas"
+                placeholder="Selecione"
+                name="hours_type"
+                onChange={(e) => console.log('log do select hours', e.target.value)}
+                value={''}
+              >
+                <option key={'hours_creation'} value={'hours_creation'}>
+                  Horas de atividade
+                </option>
+                <option key={'hours_essay'} value={'hours_essay'}>
+                  Horas de {parameters.input_name !== '' ? parameters.input_name : 'Pré-requisito'}
+                </option>
+              </SelectDefault>
+            </FieldDefault>
+          )}
+
           <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
             <ButtonDefault typeButton="dark" isOutline onClick={handleOnCancel}>
               Descartar
