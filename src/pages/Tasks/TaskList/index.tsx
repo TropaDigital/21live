@@ -1,6 +1,6 @@
 /* eslint-disable import-helpers/order-imports */
 //  React
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 // Icons
@@ -49,7 +49,7 @@ import { ModalShowTaskWrapper, Flag, StatusTable, FilterTasks } from './styles';
 
 export default function TaskList() {
   const { addToast } = useToast();
-  const { parameters } = useParamsHook();
+  const { parameters, getParams } = useParamsHook();
   const [modalViewTask, setModalViewTask] = useState({
     isOpen: false,
     type: '',
@@ -207,6 +207,11 @@ export default function TaskList() {
     });
     setModalFilters(false);
   };
+
+  useEffect(() => {
+    getParams();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const hasFilters = Object.values(filter).every((obj) => obj === null || obj === '');
 
@@ -442,7 +447,8 @@ export default function TaskList() {
               {modalViewTask.task.copywriting_date_end !== '' && (
                 <SummaryTaskInfo>
                   <div className="title-info">
-                    Data De Input {parameters.input !== '' ? parameters.input : 'Pré-requisito'}:
+                    Data De Input{' '}
+                    {parameters.input_name !== '' ? parameters.input_name : 'Pré-requisito'}:
                   </div>
                   <div className="info">
                     {moment(modalViewTask.task.copywriting_date_end).format('DD/MM/YYYY')}
