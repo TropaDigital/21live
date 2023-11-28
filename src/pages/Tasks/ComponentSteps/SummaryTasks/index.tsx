@@ -76,7 +76,7 @@ export default function SummaryTasks({
   ticketAsk
 }: TasksProps) {
   const { user } = useAuth();
-  const { parameters } = useParamsHook();
+  const { parameters, getParams } = useParamsHook();
   const [deliveryArrayHours, setDeliveryArrayHours] = useState<any>('');
   const [totalArrayHours, setTotalArrayHours] = useState<any>('');
 
@@ -105,6 +105,10 @@ export default function SummaryTasks({
       );
     }
   }
+
+  useEffect(() => {
+    getParams();
+  }, []);
 
   useEffect(() => {
     if (taskType === 'horas') {
@@ -211,7 +215,7 @@ export default function SummaryTasks({
 
             <SummaryTaskInfo>
               <div className="title-info">
-                Input {parameters.input !== '' ? parameters.input : 'Pré-requisito'}:
+                Input {parameters.input_name !== '' ? parameters.input_name : 'Pré-requisito'}:
               </div>
               <div className="info">
                 <div
