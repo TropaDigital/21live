@@ -1709,39 +1709,35 @@ export default function CreateTasks() {
     }
   };
 
-  useEffect(() => {
-    async function checkFlowAndProject() {
-      try {
-        const response = await api.get(
-          `/verify-flow?project_product_id=${DTOForm.project_product_id}&flow_id=${DTOForm.flow_id}`
-        );
-        console.log('log do response check flow and project', response.data);
-        // if (response.data.result !== 'Fluxo ok!') {
-        // }
-      } catch (e: any) {
-        console.log('log do error check flow', e);
-        if (e.response.data.result.length !== 0) {
-          e.response.data.result.map((row: any) => {
-            addToast({
-              type: 'danger',
-              title: 'ATENÇÃO',
-              description: row.error
-            });
-          });
-        } else {
+  const checkFlowAndProject = useCallback(async () => {
+    try {
+      const response = await api.get(
+        `/verify-flow?project_product_id=${DTOForm.project_product_id}&flow_id=${DTOForm.flow_id}`
+      );
+    } catch (e: any) {
+      if (e.response.data.result.length !== 0) {
+        e.response.data.result.map((row: any) => {
           addToast({
             type: 'danger',
             title: 'ATENÇÃO',
-            description: e.response.data.message
+            description: row.error
           });
-        }
+        });
+      } else {
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: e.response.data.message
+        });
       }
     }
+  }, [DTOForm]);
 
+  useEffect(() => {
     if (DTOForm.flow_id && DTOForm.project_product_id) {
       checkFlowAndProject();
     }
-  }, [DTOForm.flow_id && DTOForm.project_product_id]);
+  }, [DTOForm]);
 
   // useEffect(() => {
   //   console.log('log do tipo de task', tasksType);
