@@ -5,22 +5,19 @@ import { createContext, useState, useEffect, useContext } from 'react';
 import api from '../services/api';
 
 interface TenantParams {
-  input: string;
-  dismemberment: string;
-  change: string;
+  input_name: string;
 }
 
 interface ParamsContextData {
   parameters: TenantParams;
+  getParams: () => void;
 }
 
 const ParamsContext = createContext<ParamsContextData>({} as ParamsContextData);
 
 function ParamsProvider({ children }: any) {
   const [data, setData] = useState<TenantParams>({
-    input: '',
-    dismemberment: '',
-    change: ''
+    input_name: ''
   });
 
   async function getParams() {
@@ -37,7 +34,11 @@ function ParamsProvider({ children }: any) {
     getParams();
   }, []);
 
-  return <ParamsContext.Provider value={{ parameters: data }}>{children}</ParamsContext.Provider>;
+  return (
+    <ParamsContext.Provider value={{ parameters: data, getParams }}>
+      {children}
+    </ParamsContext.Provider>
+  );
 }
 
 function useParamsHook(): ParamsContextData {
