@@ -6,31 +6,44 @@ import { useState, useEffect } from 'react';
 import HeaderPage from '../../components/HeaderPage';
 import { InputDefault } from '../../components/Inputs/InputDefault';
 import { ContainerDefault } from '../../components/UiElements/styles';
-import useForm from '../../hooks/useForm';
-
-// Styles
-import { FieldsLine, ParametersTitle, ParametersWrapper, SaveButtons } from './styles';
-import api from '../../services/api';
-import { useToast } from '../../hooks/toast';
 import Loader from '../../components/LoaderSpin';
 import ButtonDefault from '../../components/Buttons/ButtonDefault';
 
+// Styles
+import { FieldsLine, ParametersTitle, ParametersWrapper, SaveButtons } from './styles';
+
+// Services
+import api from '../../services/api';
+
+// Hooks
+import { useToast } from '../../hooks/toast';
+
 // Interfaces
-interface ParametersProps {
+interface InputParametersProps {
   input_name: string;
-  creation: string;
-  dismemberment: string;
-  change: string;
+}
+
+interface PercentParams {
+  task_type: string;
+  percent: string;
 }
 
 export default function Parameters() {
   const { addToast } = useToast();
-  const { formData, setData, handleOnChange } = useForm({
-    input_name: '',
-    creation: '100%',
-    dismemberment: '60%',
-    change: '20%'
-  } as ParametersProps);
+  const [dataPercents, setDataPercents] = useState<PercentParams[]>([
+    {
+      task_type: '2',
+      percent: '80'
+    },
+    {
+      task_type: '3',
+      percent: '20'
+    }
+  ]);
+  const [DTOInput, setDTOInput] = useState<InputParametersProps>({
+    input_name: ''
+  });
+
   const [loading, setLoading] = useState<boolean>(false);
 
   async function getInputConfigs() {
@@ -39,7 +52,7 @@ export default function Parameters() {
 
       const response = await api.get('/config/input');
       // console.log('log do response get input config =>', response.data.result);
-      setData(response.data.result);
+      setDTOInput(response.data.result);
 
       setLoading(false);
     } catch (error) {
@@ -48,18 +61,101 @@ export default function Parameters() {
     }
   }
 
-  useEffect(() => {
-    getInputConfigs();
-  }, []);
-
-  async function handleSubmit() {
+  async function getPercents() {
     try {
       setLoading(true);
 
-      const response = await api.post('/config/input', formData);
+      const response = await api.get(`/config/percents`);
+
+      console.log('log do get percents', response.data.result);
+
+      // setDataPercents(response.data.result);
+      setDataPercents([
+        {
+          task_type: '2',
+          percent: '80'
+        },
+        {
+          task_type: '3',
+          percent: '20'
+        }
+      ]);
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log error get percents params', error);
+      setLoading(false);
+    }
+  }
+
+  const handleChange = (event: any) => {
+    const { name, value } = event.target;
+    if (name === 'input_name') {
+      setDTOInput({ ...DTOInput, [name]: value });
+    }
+
+    if (name === 'dismemberment') {
+      setDataPercents((current: PercentParams[]) =>
+        current.map((obj) => {
+          if (obj.task_type === '2') {
+            return { ...obj, percent: value };
+          }
+          return obj;
+        })
+      );
+    }
+  };
+
+  useEffect(() => {
+    getInputConfigs();
+    getPercents();
+  }, []);
+
+  async function handleSubmitInput() {
+    try {
+      setLoading(true);
+
+      const response = await api.post('/config/input', DTOInput);
 
       if (response.data.status === 'success') {
         getInputConfigs();
+
+        addToast({
+          type: 'success',
+          title: 'Sucesso',
+          description: 'Parâmetros atualizados com sucesso!'
+        });
+      }
+
+      setLoading(false);
+    } catch (e: any) {
+      if (e.response.data.result.length !== 0) {
+        e.response.data.result.map((row: any) => {
+          addToast({
+            type: 'danger',
+            title: 'ATENÇÃO',
+            description: row.error
+          });
+        });
+      } else {
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: e.response.data.message
+        });
+      }
+      setLoading(false);
+    }
+  }
+
+  async function handleSubmitPercents() {
+    try {
+      setLoading(true);
+
+      const response = await api.post('/config/percents', dataPercents);
+
+      if (response.data.status === 'success') {
+        getPercents();
 
         addToast({
           type: 'success',
@@ -97,6 +193,7 @@ export default function Parameters() {
 
       {!loading && (
         <>
+          {/* Input params */}
           <ParametersWrapper>
             <ParametersTitle>Input</ParametersTitle>
             <FieldsLine>
@@ -104,28 +201,22 @@ export default function Parameters() {
                 label="Nome do input (Tela 'Entregáveis' ao criar tarefa)"
                 name="input_name"
                 placeholder="Digite aqui..."
-                onChange={handleOnChange}
-                value={formData.input_name}
+                onChange={handleChange}
+                value={DTOInput.input_name}
               />
-              {/* <InputDefault
-                label="Nome do input"
-                name="search"
-                placeholder="Digite aqui..."
-                onChange={() => ''}
-                value={''}
-              /> */}
             </FieldsLine>
 
             <SaveButtons>
               <ButtonDefault typeButton="lightWhite" isOutline onClick={getInputConfigs}>
                 Cancelar
               </ButtonDefault>
-              <ButtonDefault typeButton="primary" onClick={handleSubmit}>
+              <ButtonDefault typeButton="primary" onClick={handleSubmitInput}>
                 Salvar
               </ButtonDefault>
             </SaveButtons>
           </ParametersWrapper>
 
+          {/* Percents params */}
           <ParametersWrapper>
             <ParametersTitle>Porcentagens para os tipos</ParametersTitle>
 
@@ -141,19 +232,19 @@ export default function Parameters() {
 
             <FieldsLine>
               <InputDefault
-                label="Desmembramento"
+                label="Desmembramento em %"
                 name="dismemberment"
                 placeholder="Digite o valor..."
-                onChange={handleOnChange}
-                value={formData.dismemberment}
+                onChange={handleChange}
+                value={dataPercents[0]?.percent}
               />
 
               <InputDefault
-                label="Alteração"
+                label="Alteração em %"
                 name="change"
                 placeholder="Digite o valor..."
-                onChange={handleOnChange}
-                value={formData.change}
+                onChange={handleChange}
+                value={dataPercents[1]?.percent}
               />
             </FieldsLine>
 
@@ -161,7 +252,7 @@ export default function Parameters() {
               <ButtonDefault typeButton="lightWhite" isOutline onClick={getInputConfigs}>
                 Cancelar
               </ButtonDefault>
-              <ButtonDefault typeButton="primary" onClick={handleSubmit}>
+              <ButtonDefault typeButton="primary" onClick={handleSubmitPercents}>
                 Salvar
               </ButtonDefault>
             </SaveButtons>
