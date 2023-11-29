@@ -60,6 +60,7 @@ import { useAuth } from '../../../hooks/AuthContext';
 
 // Types
 import {
+  DeliveryProps,
   IProduct,
   IProductBackend,
   ITaskCreate,
@@ -85,6 +86,7 @@ import api from '../../../services/api';
 
 // Libraries
 import moment from 'moment';
+import { useParamsHook } from '../../../hooks/useParams';
 
 interface StateProps {
   [key: string]: any;
@@ -100,15 +102,6 @@ interface ProjectProductProps {
   select: string;
   tempo: string;
   tipo: string;
-}
-
-interface DeliveryProps {
-  deliveryId: number | string;
-  deliveryDescription: string;
-  deliveryDate: string;
-  deliveryTitle?: string;
-  deliveryProducts: any[];
-  showInfo: boolean;
 }
 
 interface DeliveryUpdate {
@@ -196,6 +189,7 @@ export default function CreateTasks() {
   const { addToast } = useToast();
   const { user } = useAuth();
   const location = useLocation();
+  const { parameters, getParams } = useParamsHook();
 
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const [error, setError] = useState<StateProps>({});
@@ -327,7 +321,8 @@ export default function CreateTasks() {
   const DeliveryDefault: DeliveryProps = {
     deliveryId: 1,
     deliveryDescription: '',
-    deliveryDate: '',
+    deliveryCreationDate: '',
+    deliveryEssayDate: '',
     deliveryTitle: '',
     deliveryProducts: productsArray,
     showInfo: false
@@ -343,7 +338,9 @@ export default function CreateTasks() {
     const newDelivery: DeliveryProps = {
       deliveryId: DTODelivery.length + 1,
       deliveryDescription: '',
-      deliveryDate: '',
+      deliveryCreationDate: '',
+      deliveryEssayDate: '',
+      deliveryTitle: '',
       deliveryProducts: [],
       showInfo: false
     };
@@ -352,7 +349,17 @@ export default function CreateTasks() {
   };
 
   useEffect(() => {
+    getParams();
+  }, []);
+
+  const selectedInfos: any[] = dataProjects?.filter(
+    (obj: any) => obj.project_product_id === location?.state?.project_product_id
+  );
+
+  useEffect(() => {
     if (location.state !== null && location.state.ticket_id) {
+      getProjects(location.state.tenant_id);
+
       setDTOForm((prevState: any) => ({
         ...prevState,
         ['tenant_id']: location.state.tenant_id
@@ -365,20 +372,15 @@ export default function CreateTasks() {
         ...prevState,
         ['title']: location.state.title
       }));
-
-      getProjects(DTOForm.tenant_id);
     }
 
     if (location.state !== null && location.state.task_id) {
-      const selectedInfos: any = dataProjects?.filter(
-        (obj: any) => obj.project_product_id === location.state.project_product_id
-      );
       getProjects(location.state.tenant_id);
       setProductsArray([]);
       setDTOForm(location.state);
       setProductsArray(location.state.deliverys[0]?.products);
       setDTODelivery(location.state.deliverys);
-      if (dataProjects) {
+      if (dataProjects && selectedInfos.length > 0) {
         setSelectedProject(selectedInfos[0]);
       }
       if (location.state.deliverys.length > 1) {
@@ -430,12 +432,13 @@ export default function CreateTasks() {
     );
   };
 
-  const handleUpdateDeliveryDate = (value: any, id: any) => {
+  const handleUpdateDeliveryDate = (e: any, id: any) => {
+    const { name, value } = e.target;
     if (location.state !== null) {
       setDTODelivery((current: any) =>
         current.map((obj: { delivery_id: any }) => {
           if (obj.delivery_id === id) {
-            return { ...obj, date_end: value };
+            return { ...obj, [name]: value };
           }
           return obj;
         })
@@ -444,7 +447,7 @@ export default function CreateTasks() {
     setDTODelivery((current: any) =>
       current.map((obj: { deliveryId: any }) => {
         if (obj.deliveryId === id) {
-          return { ...obj, deliveryDate: value };
+          return { ...obj, [name]: value };
         }
         return obj;
       })
@@ -1916,7 +1919,9 @@ export default function CreateTasks() {
                   <SplitDeliveries>
                     <Deliveries>
                       <InputDefault
-                        label="Entrega - Pré-Requisitos"
+                        label={`Entrega ${
+                          parameters.input_name !== '' ? parameters.input_name : 'Pré-requisito'
+                        }`}
                         // placeholder="00/00/0000"
                         name="dateStart"
                         type="date"
