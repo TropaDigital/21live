@@ -258,3 +258,18 @@ export const ModalUploadWrapper = styled.div`
     margin-left: auto;
   }
 `;
+
+export const ModalReturnFlow = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 500px;
+  margin-top: 24px;
+
+  .modal-buttons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+  }
+`;

@@ -28,6 +28,7 @@ import {
   ArrowSection,
   CardsWrapper,
   DeliveryWrapper,
+  ModalReturnFlow,
   ModalUploadWrapper,
   RightInfosCard,
   RightInfosTitle,
@@ -59,6 +60,9 @@ import { UsersWrapper } from '../../Tasks/CreateTasks/styles';
 import { ProductsTable } from '../../Tasks/ComponentSteps/InfoDeliverables/styles';
 import { ModalButtons } from '../../Tasks/ViewTask/styles';
 import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
+import { SelectDefault } from '../../../components/Inputs/SelectDefault';
+import { TextAreaDefault } from '../../../components/Inputs/TextAreaDefault';
+import { info } from 'console';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -117,6 +121,11 @@ export default function ViewProductsDeliveries() {
   const [modalWithoutSchedule, setModalWithoutSchedule] = useState<boolean>(false);
   const [usersWithoutSchedule, setUsersWithoutSchedule] = useState<UsersNoSchedule[]>([]);
   const [selectedInitialUser, setSelectedInitalUser] = useState<UsersNoSchedule>();
+  const [modalReturnFlow, setModalReturnFlow] = useState<boolean>(false);
+  const [returnInfos, setReturnInfos] = useState({
+    chosenStep: '',
+    returnMotive: ''
+  });
 
   const deliveryId = location.state.task.deliverys.filter(
     (obj: any) => Number(obj.order) === location.state.task_index
@@ -263,7 +272,6 @@ export default function ViewProductsDeliveries() {
   }, [typeOfPlay, selectedProduct]);
 
   useEffect(() => {
-    console.log('log do location =>', location.state);
     setDataTask(location.state.task);
 
     if (location.state.task.type_play === 'delivery') {
@@ -798,11 +806,11 @@ export default function ViewProductsDeliveries() {
 
       if (response.data.result[0].show_hours === 'true') {
         setModalSendToUser(true);
-        console.log('log do checkFlow to show hours');
+        // console.log('log do checkFlow to show hours');
       }
       if (response.data.result[0].show_hours === 'false') {
         handleNextUser();
-        console.log('log do checkFlow to show schedule');
+        // console.log('log do checkFlow to show schedule');
       }
     } catch (error: any) {
       console.log('log do error check flow', error);
@@ -851,6 +859,26 @@ export default function ViewProductsDeliveries() {
     // setSubmitState(new Date());
   };
 
+  const handleChooseStepAndMotive = (e: any) => {
+    const { name, value } = e.target;
+
+    setReturnInfos((prevState: any) => ({ ...prevState, [name]: value }));
+  };
+
+  const handleBackFlow = () => {
+    const selectedStep = timeLineData?.steps.filter(
+      (obj) => obj.card_id === returnInfos.chosenStep
+    );
+
+    addToast({
+      title: 'Atenção',
+      type: 'warning',
+      description: 'Função ainda não implementada!'
+    });
+
+    console.log('log do selectedStep =>', selectedStep);
+  };
+
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
     // console.log('log do selectedProducts', selectedProduct);
@@ -869,6 +897,7 @@ export default function ViewProductsDeliveries() {
             goBack
             buttonType="send"
             nextStepInfo={timeLineData}
+            backFlow={() => setModalReturnFlow(true)}
           />
         )}
 
@@ -883,6 +912,7 @@ export default function ViewProductsDeliveries() {
               buttonType="send"
               sendToNext={() => checkFlow(typeOfPlay)}
               nextStepInfo={timeLineData}
+              backFlow={() => setModalReturnFlow(true)}
             />
           )}
 
@@ -897,6 +927,7 @@ export default function ViewProductsDeliveries() {
               buttonType="finish"
               sendToNext={handleFinishDelivery}
               nextStepInfo={timeLineData}
+              backFlow={() => setModalReturnFlow(true)}
             />
           )}
 
@@ -911,6 +942,7 @@ export default function ViewProductsDeliveries() {
               buttonType="send"
               sendToNext={handleFinishDelivery}
               nextStepInfo={timeLineData}
+              backFlow={() => setModalReturnFlow(true)}
             />
           )}
 
@@ -925,6 +957,7 @@ export default function ViewProductsDeliveries() {
               buttonType="finish"
               sendToNext={handleFinishDelivery}
               nextStepInfo={timeLineData}
+              backFlow={() => setModalReturnFlow(true)}
             />
           )}
 
@@ -942,6 +975,7 @@ export default function ViewProductsDeliveries() {
               nextStepInfo={timeLineData}
               backToDelivery={() => setSelectedProduct('')}
               isInsideProduct={true}
+              backFlow={() => setModalReturnFlow(true)}
             />
           )}
 
@@ -959,6 +993,7 @@ export default function ViewProductsDeliveries() {
               nextStepInfo={timeLineData}
               backToDelivery={() => setSelectedProduct('')}
               isInsideProduct={true}
+              backFlow={() => setModalReturnFlow(true)}
             />
           )}
 
@@ -976,6 +1011,7 @@ export default function ViewProductsDeliveries() {
               nextStepInfo={timeLineData}
               backToDelivery={() => setSelectedProduct('')}
               isInsideProduct={true}
+              backFlow={() => setModalReturnFlow(true)}
             />
           )}
 
@@ -1366,6 +1402,43 @@ export default function ViewProductsDeliveries() {
             </div>
           )}
         </ModalUploadWrapper>
+      </ModalDefault>
+
+      {/* Modal return flow */}
+      <ModalDefault
+        isOpen={modalReturnFlow}
+        onOpenChange={() => setModalReturnFlow(false)}
+        title="Para qual etapa deseja retornar?"
+      >
+        <ModalReturnFlow>
+          <SelectDefault
+            label="Escolha a etapa"
+            name="chosenStep"
+            onChange={handleChooseStepAndMotive}
+            value={returnInfos.chosenStep}
+          >
+            {timeLineData?.steps?.map((row: StepTimeline) => (
+              <option key={row.card_id} value={row.card_id}>
+                {row.name}
+              </option>
+            ))}
+          </SelectDefault>
+
+          <TextAreaDefault
+            label="Descreva o motivo para retornar"
+            placeholder="Digite o motivo..."
+            name="returnMotive"
+            onChange={handleChooseStepAndMotive}
+            value={returnInfos.returnMotive}
+            required
+          />
+
+          <div className="modal-buttons">
+            <ButtonDefault typeButton="primary" onClick={handleBackFlow}>
+              Retornar
+            </ButtonDefault>
+          </div>
+        </ModalReturnFlow>
       </ModalDefault>
     </ContainerDefault>
   );
