@@ -238,3 +238,13 @@ export interface UploadedFilesProps {
   loading: boolean;
   folder: string;
 }
+
+export interface DeliveryProps {
+  deliveryId: number | string;
+  deliveryDescription: string;
+  deliveryCreationDate: string;
+  deliveryEssayDate: string;
+  deliveryTitle?: string;
+  deliveryProducts: any[];
+  showInfo: boolean;
+}
