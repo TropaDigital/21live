@@ -251,6 +251,8 @@ export const DeliveryTitle = styled.div`
 
   .icon-arrow {
     cursor: pointer;
+    width: 40px;
+    text-align: right;
   }
 `;
 
@@ -310,26 +312,6 @@ export const TableDelivery = styled.div`
   }
 `;
 
-export const DateModal = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: 100%;
-  height: fit-content;
-`;
-
-export const DateModalTitle = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 40px;
-  background: var(--gray-200);
-  border-radius: 6px;
-  color: var(--gray-800);
-  font-size: var(--text-small-md);
-  font-weight: var(--weight-medium);
-`;
-
 export const TotalHours = styled.div`
   position: absolute;
   top: 2%;
@@ -342,5 +324,37 @@ export const TotalHours = styled.div`
   span {
     color: var(--gray-800);
     font-weight: var(--weight-semibold);
+  }
+`;
+
+export const DateContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  .container-title {
+    color: var(--title-color);
+    font-size: var(--text-small-xs);
+    font-weight: var(--weight-medium);
+  }
+
+  .date {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--success-600);
+    font-size: var(--text-small-sm);
+    font-weight: var(--weight-medium);
+    cursor: pointer;
+
+    &.add {
+      color: var(--primary);
+      cursor: pointer;
+      svg {
+        path {
+          stroke: var(--primary);
+        }
+      }
+    }
   }
 `;

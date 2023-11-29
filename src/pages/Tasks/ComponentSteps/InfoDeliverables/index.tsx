@@ -17,6 +17,7 @@ import AddTextButton from '../../../../components/Buttons/AddTextButton';
 import { FormTitle } from '../../../Projects/CreateProject/styles';
 import {
   AddNewDelivery,
+  DateContainer,
   Deliveries,
   DeliveryTitle,
   EditableFormat,
@@ -33,11 +34,12 @@ import { IconCalendar, IconPlus } from '../../../../assets/icons';
 import { useFetch } from '../../../../hooks/useFetch';
 
 // Utils
-import { IProductBackend } from '../../../../types';
+import { DeliveryProps, IProductBackend } from '../../../../types';
 import { BsTrash } from 'react-icons/bs';
 
 // Libraries
 import moment from 'moment';
+import { useParamsHook } from '../../../../hooks/useParams';
 
 interface FormProps {
   [key: string]: any;
@@ -96,15 +98,6 @@ interface OpenMenuProps {
   openInfo: boolean;
 }
 
-interface DeliveryProps {
-  deliveryId: number | string;
-  deliveryDescription: string;
-  deliveryDate: string;
-  deliveryTitle?: string;
-  deliveryProducts: [];
-  showInfo: boolean;
-}
-
 interface DeliveryUpdate {
   delivery_id: number | string;
   description: string;
@@ -114,9 +107,10 @@ interface DeliveryUpdate {
   order: string;
 }
 
-interface ModalDateDeliveryProps {
+interface DateDeliveryProps {
   isOpen: boolean;
   indexDelivery: number | any;
+  dateType: string;
 }
 
 export default function InfoDeliveries({
@@ -140,6 +134,7 @@ export default function InfoDeliveries({
   deliveriesArray,
   updateTask
 }: Props) {
+  const { parameters, getParams } = useParamsHook();
   const [descriptionText, setDescriptionText] = useState<any>({
     inputId: '',
     text: ''
@@ -162,15 +157,17 @@ export default function InfoDeliveries({
     productIndex: '',
     productTypeSelected: ''
   });
-  const [dateDelivery, setDateDelivery] = useState<ModalDateDeliveryProps>({
+  const [dateDelivery, setDateDelivery] = useState<DateDeliveryProps>({
     isOpen: false,
-    indexDelivery: ''
+    indexDelivery: '',
+    dateType: ''
   });
   const { data: dataSingleProduct } = useFetch<IProductBackend[]>(
-    `project-products-especific/${projectInfo.project_product_id}`
+    `project-products-especific/${projectInfo?.project_product_id}`
   );
   const titleRef = useRef<any>();
-  const dateRef = useRef<any>();
+  const creationDateRef = useRef<any>();
+  const essayDateRef = useRef<any>();
 
   useEffect(() => {
     handleProducts('description', descriptionText.text, descriptionText.inputId);
@@ -219,7 +216,8 @@ export default function InfoDeliveries({
     if (event.key === 'Enter') {
       setDateDelivery({
         isOpen: false,
-        indexDelivery: ''
+        indexDelivery: '',
+        dateType: ''
       });
     }
   };
@@ -230,10 +228,11 @@ export default function InfoDeliveries({
         setCreateDeliveryTitle('');
       }
 
-      if (dateDelivery && dateRef.current && !dateRef.current.contains(e.target)) {
+      if (dateDelivery && creationDateRef.current && !creationDateRef.current.contains(e.target)) {
         setDateDelivery({
           isOpen: false,
-          indexDelivery: ''
+          indexDelivery: '',
+          dateType: ''
         });
       }
     };
@@ -245,13 +244,16 @@ export default function InfoDeliveries({
     };
   }, [createDeliveryTitle, dateDelivery]);
 
+  useEffect(() => {
+    getParams();
+  }, []);
   return (
     <>
       {!deliveriesSplited && (
         <ProductsTable>
           <FormTitle>Produtos</FormTitle>
           <TotalHours>
-            Total de horas estimadas: <span>{projectInfo.tempo}</span>
+            Total de horas estimadas: <span>{projectInfo?.tempo}</span>
           </TotalHours>
           <table>
             <thead>
@@ -396,6 +398,12 @@ export default function InfoDeliveries({
             <Deliveries
               openInfos={showDeliveryInfos?.deliveryId === row?.deliveryId ? true : false}
               key={index}
+              onClick={() =>
+                setShowDeliveryInfos({
+                  deliveryId: row?.deliveryId,
+                  openInfo: !showDeliveryInfos?.openInfo
+                })
+              }
             >
               <DeliveryTitle>
                 <div className="title-flex">
@@ -423,58 +431,119 @@ export default function InfoDeliveries({
                     </div>
                   )}
                   <span>-</span>
-                  {row?.deliveryDate !== '' ? (
-                    <div
-                      className="date"
-                      onClick={() =>
-                        setDateDelivery({
-                          isOpen: true,
-                          indexDelivery: row?.deliveryId
-                        })
-                      }
-                    >
-                      <IconCalendar /> {moment(row?.deliveryDate).format('DD/MM/YYYY')}
-                    </div>
+                  {row?.deliveryCreationDate !== '' ? (
+                    <DateContainer>
+                      <div className="container-title">Entrega atividade</div>
+                      <div
+                        className="date"
+                        onClick={() =>
+                          setDateDelivery({
+                            isOpen: true,
+                            indexDelivery: row?.deliveryId,
+                            dateType: 'creation'
+                          })
+                        }
+                      >
+                        <IconCalendar /> {moment(row?.deliveryCreationDate).format('DD/MM/YYYY')}
+                      </div>
+                    </DateContainer>
                   ) : (
                     <div
                       className="date add"
                       onClick={() =>
                         setDateDelivery({
                           isOpen: true,
-                          indexDelivery: row?.deliveryId
+                          indexDelivery: row?.deliveryId,
+                          dateType: 'creation'
                         })
                       }
                     >
-                      <IconCalendar /> Adicionar vencimento
+                      <IconCalendar /> Adicionar data entrega da atividade
+                    </div>
+                  )}
+                  <span>-</span>
+                  {row?.deliveryEssayDate !== '' ? (
+                    <DateContainer>
+                      <div className="container-title">
+                        Entrega{' '}
+                        {parameters.input_name !== '' ? parameters.input_name : 'Pré-requisito'}
+                      </div>
+                      <div
+                        className="date"
+                        onClick={() =>
+                          setDateDelivery({
+                            isOpen: true,
+                            indexDelivery: row?.deliveryId,
+                            dateType: 'essay'
+                          })
+                        }
+                      >
+                        <IconCalendar /> {moment(row?.deliveryEssayDate).format('DD/MM/YYYY')}
+                      </div>
+                    </DateContainer>
+                  ) : (
+                    <div
+                      className="date add"
+                      onClick={() =>
+                        setDateDelivery({
+                          isOpen: true,
+                          indexDelivery: row?.deliveryId,
+                          dateType: 'essay'
+                        })
+                      }
+                    >
+                      <IconCalendar /> Adicionar data entrega{' '}
+                      {parameters.input_name !== '' ? parameters.input_name : 'Pré-requisito'}
                     </div>
                   )}
                 </div>
-                {dateDelivery.indexDelivery === row.deliveryId && dateDelivery.isOpen === true && (
-                  <div style={{ marginRight: 'auto', marginLeft: '16px' }} ref={dateRef}>
-                    <InputDefault
-                      label=""
-                      placeholder="00/00/0000"
-                      name="deliveryDate"
-                      type="date"
-                      max={'9999-12-31'}
-                      icon={BiCalendar}
-                      onChange={(e) => handleDeliveryDate(e.target.value, row.deliveryId)}
-                      value={row?.deliveryDate}
-                      onKeyDown={handleKeyDown}
-                    />
-                  </div>
-                )}
+                {/* creation date */}
+                {dateDelivery.indexDelivery === row.deliveryId &&
+                  dateDelivery.isOpen === true &&
+                  dateDelivery.dateType === 'creation' && (
+                    <div style={{ marginRight: 'auto', marginLeft: '16px' }} ref={creationDateRef}>
+                      <InputDefault
+                        label=""
+                        placeholder="00/00/0000"
+                        name="deliveryCreationDate"
+                        type="date"
+                        max={'9999-12-31'}
+                        icon={BiCalendar}
+                        onChange={(e) => handleDeliveryDate(e, row.deliveryId)}
+                        value={row?.deliveryCreationDate}
+                        onKeyDown={handleKeyDown}
+                      />
+                    </div>
+                  )}
+
+                {/* essay date */}
+                {dateDelivery.indexDelivery === row.deliveryId &&
+                  dateDelivery.isOpen === true &&
+                  dateDelivery.dateType === 'essay' && (
+                    <div style={{ marginRight: 'auto', marginLeft: '16px' }} ref={creationDateRef}>
+                      <InputDefault
+                        label=""
+                        placeholder="00/00/0000"
+                        name="deliveryEssayDate"
+                        type="date"
+                        max={'9999-12-31'}
+                        icon={BiCalendar}
+                        onChange={(e) => handleDeliveryDate(e, row.deliveryId)}
+                        value={row?.deliveryEssayDate}
+                        onKeyDown={handleKeyDown}
+                      />
+                    </div>
+                  )}
                 <div
                   className="icon-arrow"
-                  onClick={() =>
-                    setShowDeliveryInfos({
-                      deliveryId: row?.deliveryId,
-                      openInfo: !showDeliveryInfos?.openInfo
-                    })
-                  }
+                  // onClick={() =>
+                  //   setShowDeliveryInfos({
+                  //     deliveryId: row?.deliveryId,
+                  //     openInfo: !showDeliveryInfos?.openInfo
+                  //   })
+                  // }
                 >
-                  {showDeliveryInfos?.deliveryId === row?.deliveryId &&
-                  showDeliveryInfos.openInfo === true ? (
+                  {showDeliveryInfos?.deliveryId === row?.deliveryId ? (
                     <FiChevronUp />
                   ) : (
                     <FiChevronDown />
@@ -712,7 +781,8 @@ export default function InfoDeliveries({
                     onClick={() =>
                       setDateDelivery({
                         isOpen: true,
-                        indexDelivery: row.delivery_id
+                        indexDelivery: row.delivery_id,
+                        dateType: 'creation'
                       })
                     }
                   >
@@ -720,7 +790,7 @@ export default function InfoDeliveries({
                   </div>
                 </div>
                 {dateDelivery.indexDelivery === row.delivery_id && dateDelivery.isOpen === true && (
-                  <div style={{ marginRight: 'auto', marginLeft: '16px' }} ref={dateRef}>
+                  <div style={{ marginRight: 'auto', marginLeft: '16px' }} ref={creationDateRef}>
                     <InputDefault
                       label=""
                       placeholder=""
@@ -749,8 +819,6 @@ export default function InfoDeliveries({
                     <FiChevronDown />
                   )}
                 </div>
-
-                {/* <div className="delete-delivery">X</div> */}
               </DeliveryTitle>
               <div style={{ padding: '24px' }}>
                 <TableDelivery>
