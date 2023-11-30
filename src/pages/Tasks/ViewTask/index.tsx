@@ -147,7 +147,7 @@ export default function ViewTask() {
       try {
         setLoading(true);
         const response = await api.get(`/tasks/${id}`);
-        console.log('log do response get task', response.data.result);
+        // console.log('log do response get task', response.data.result);
 
         if (response.data.result.length > 0) {
           setDataTask(response.data.result[0]);
