@@ -188,7 +188,7 @@ export default function TaskList() {
   }
 
   const handleViewTask = (taskId: string) => {
-    console.log('log do id da task para ser visualizada', taskId);
+    // console.log('log do id da task para ser visualizada', taskId);
     const idTask = {
       id: taskId
     };
