@@ -211,6 +211,7 @@ export default function ViewTask() {
           buttonType="send"
           nextStepInfo={timeLineData}
           hideButtonNext={true}
+          backFlow={() => ''}
         />
 
         <CardsWrapper>
