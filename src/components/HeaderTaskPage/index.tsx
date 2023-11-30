@@ -113,9 +113,11 @@ export default function HeaderOpenTask({
         </HeaderTitleInfos>
 
         <RightButtons>
-          <ButtonDefault typeButton="warning" isOutline onClick={backFlow}>
-            Retornar etapa
-          </ButtonDefault>
+          {!hideButtonNext && (
+            <ButtonDefault typeButton="warning" isOutline onClick={backFlow}>
+              Retornar etapa
+            </ButtonDefault>
+          )}
 
           {disableButton && buttonType === 'send' && !hideButtonNext && (
             <ButtonDefault typeButton="blocked">
