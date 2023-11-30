@@ -5,7 +5,7 @@ export const ContainerCard = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  height: 150px;
+  height: fit-content;
 
   background-color: #f6f7fb;
   border-radius: 10px;
@@ -48,9 +48,7 @@ export const UserInfo = styled.div`
   }
 `;
 
-export const GraphicsCard = styled.div`
-  width: 50%;
-`;
+export const GraphicsCard = styled.div``;
 
 export const MensalReport = styled.div`
   display: flex;

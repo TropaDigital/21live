@@ -1,4 +1,5 @@
-import BarChartUser from '../../GraphicsChart/BarChartUser';
+// Styles
+import { TableDefault } from '../../TableDefault';
 import { ContainerCard, GraphicsCard, MensalReport, UserInfo } from './styles';
 
 // interface DataProps {
@@ -7,7 +8,7 @@ import { ContainerCard, GraphicsCard, MensalReport, UserInfo } from './styles';
 
 export interface UserCardProps {
   userInfos: UserInfos;
-  chartData: ChartDataProps[];
+  tableData: TableProps;
   mensalReport: MensalReportProps;
 }
 
@@ -17,18 +18,19 @@ interface UserInfos {
   avatar: string;
 }
 
-interface ChartDataProps {
-  name: string;
-  total: number;
-  fill: string;
+interface TableProps {
+  totalJobs: number;
+  pendingSend: number;
+  pendingApro: number;
+  approved: number;
 }
 
 interface MensalReportProps {
   reunions: number;
-  principalTask: string;
+  reports: string;
 }
 
-export default function UserPerformanceCard({ userInfos, chartData, mensalReport }: UserCardProps) {
+export default function UserPerformanceCard({ userInfos, tableData, mensalReport }: UserCardProps) {
   return (
     <ContainerCard>
       <UserInfo>
@@ -40,12 +42,30 @@ export default function UserPerformanceCard({ userInfos, chartData, mensalReport
       </UserInfo>
 
       <GraphicsCard>
-        <BarChartUser data={chartData} />
+        <TableDefault title="" titleSize="14px" titleWeight="700" titleColor="#222">
+          <thead>
+            <tr>
+              <th>Total de Jobs</th>
+              <th>Pendente (Envio)</th>
+              <th>Pendente (Aprovação)</th>
+              <th>Aprovados</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td>{tableData.totalJobs}</td>
+              <td>{tableData.pendingSend}</td>
+              <td>{tableData.pendingApro}</td>
+              <td>{tableData.approved}</td>
+            </tr>
+          </tbody>
+        </TableDefault>
       </GraphicsCard>
 
       <MensalReport>
         <div className="report-bold">Report mensal</div>
-        <div className="report-info">{mensalReport.principalTask}</div>
+        <div className="report-info">{mensalReport.reports}</div>
         <div className="report-bold">Reuniões</div>
         <div className="report-info">{mensalReport.reunions}</div>
       </MensalReport>
