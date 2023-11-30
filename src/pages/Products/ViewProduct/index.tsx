@@ -22,6 +22,12 @@ import WorkingProduct from '../WorkingProduct';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import UploadFiles from '../../../components/Upload/UploadFiles';
 import UploadFilesTicket from '../../../components/UploadTicket/UploadFilex';
+import { UsersWrapper } from '../../Tasks/CreateTasks/styles';
+import { ProductsTable } from '../../Tasks/ComponentSteps/InfoDeliverables/styles';
+import { ModalButtons } from '../../Tasks/ViewTask/styles';
+import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
+import { SelectDefault } from '../../../components/Inputs/SelectDefault';
+import { TextAreaDefault } from '../../../components/Inputs/TextAreaDefault';
 
 // Styles
 import {
@@ -50,19 +56,13 @@ import 'moment/dist/locale/pt-br';
 
 // Hooks
 import { useToast } from '../../../hooks/toast';
-import { useAuth } from '../../../hooks/AuthContext';
 import { useStopWatch } from '../../../hooks/stopWatch';
 
 // Types
 import { UploadedFilesProps } from '../../../types';
+
+// Utils
 import { UsersNoSchedule } from '../../../utils/models';
-import { UsersWrapper } from '../../Tasks/CreateTasks/styles';
-import { ProductsTable } from '../../Tasks/ComponentSteps/InfoDeliverables/styles';
-import { ModalButtons } from '../../Tasks/ViewTask/styles';
-import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
-import { SelectDefault } from '../../../components/Inputs/SelectDefault';
-import { TextAreaDefault } from '../../../components/Inputs/TextAreaDefault';
-import { info } from 'console';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -87,18 +87,15 @@ interface StepTimeline {
   tenant_id: string;
 }
 
-interface ModalUsersProps {
-  user_id: string;
-  name: string;
-  function: string;
-  tasks: string;
+interface ReturnProps {
+  chosenStep: string;
+  returnMotive: string;
 }
 
 export default function ViewProductsDeliveries() {
   const location = useLocation();
   const navigate = useNavigate();
   const { addToast } = useToast();
-  const { user } = useAuth();
   const { state, setInitialTime, setTaskInfo, handleClock } = useStopWatch();
   const openRightRef = useRef<any>();
   const [modalSendToUser, setModalSendToUser] = useState<boolean>(false);
@@ -122,7 +119,7 @@ export default function ViewProductsDeliveries() {
   const [usersWithoutSchedule, setUsersWithoutSchedule] = useState<UsersNoSchedule[]>([]);
   const [selectedInitialUser, setSelectedInitalUser] = useState<UsersNoSchedule>();
   const [modalReturnFlow, setModalReturnFlow] = useState<boolean>(false);
-  const [returnInfos, setReturnInfos] = useState({
+  const [returnInfos, setReturnInfos] = useState<ReturnProps>({
     chosenStep: '',
     returnMotive: ''
   });
@@ -795,11 +792,10 @@ export default function ViewProductsDeliveries() {
     }
   }
 
-  async function checkFlow(sendTo: string) {
+  async function checkFlow() {
     try {
-      // const whereToSend = sendTo;
+      setLoading(true);
 
-      // console.log('log do where to send', whereToSend);
       const response = await api.get(
         `/flow-function?step=${Number(actualStep) + 1}&flow_id=${dataTask?.flow_id}`
       );
@@ -812,8 +808,11 @@ export default function ViewProductsDeliveries() {
         handleNextUser();
         // console.log('log do checkFlow to show schedule');
       }
+
+      setLoading(false);
     } catch (error: any) {
       console.log('log do error check flow', error);
+      setLoading(false);
     }
   }
 
@@ -910,7 +909,7 @@ export default function ViewProductsDeliveries() {
               disableButton={false}
               goBack
               buttonType="send"
-              sendToNext={() => checkFlow(typeOfPlay)}
+              sendToNext={checkFlow}
               nextStepInfo={timeLineData}
               backFlow={() => setModalReturnFlow(true)}
             />
