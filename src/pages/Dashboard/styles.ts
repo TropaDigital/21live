@@ -43,6 +43,20 @@ export const CardBase = styled.div`
     font-size: var(--text-small-sm);
     font-weight: var(--weight-bold);
   }
+
+  .title-with-back {
+    display: flex;
+    align-items: center;
+
+    background: var(--gray-100);
+    border-radius: 8px;
+
+    padding: 8px;
+
+    color: var(--title-color);
+    font-size: var(--text-small-md);
+    font-weight: var(--weight-bold);
+  }
 `;
 
 export const JobStatus = styled.div`
@@ -156,7 +170,7 @@ export const GridServiceWrapper = styled.div`
 
   table {
     td {
-      padding: 6px 2px !important;
+      padding: 10px 4px !important;
     }
   }
 `;
@@ -364,6 +378,9 @@ export const HoursTable = styled.div`
 
   &.minus {
     color: var(--error-600);
+
+    background: var(--error-100);
+    border-radius: 16px;
   }
 `;
 
@@ -417,4 +434,14 @@ export const BulletPointInfos = styled.div`
     content: '▪';
     margin-right: 12px;
   }
+`;
+
+export const BulletsClientWrapper = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+
+  margin-top: 18px;
+
+  padding-left: 12px;
 `;
