@@ -242,8 +242,8 @@ export interface UploadedFilesProps {
 export interface DeliveryProps {
   deliveryId: number | string;
   deliveryDescription: string;
-  deliveryCreationDate: string;
-  deliveryEssayDate: string;
+  creation_date_end: string;
+  copywriting_date_end: string;
   deliveryTitle?: string;
   deliveryProducts: any[];
   showInfo: boolean;
