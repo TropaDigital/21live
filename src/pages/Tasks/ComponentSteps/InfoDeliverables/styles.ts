@@ -356,5 +356,15 @@ export const DateContainer = styled.div`
         }
       }
     }
+
+    &.error {
+      color: var(--Danger);
+      cursor: pointer;
+      svg {
+        path {
+          stroke: var(--Danger);
+        }
+      }
+    }
   }
 `;
