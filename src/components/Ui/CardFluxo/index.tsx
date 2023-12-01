@@ -33,7 +33,6 @@ interface CardProps {
   columnStep: any;
   responseUser: any;
   errorField: any;
-  previousManager: boolean;
 }
 
 export default function CardFluxo({
@@ -48,8 +47,7 @@ export default function CardFluxo({
   handleOnsave,
   onUpdate,
   index,
-  errorField,
-  previousManager
+  errorField
 }: CardProps) {
   const [dataStatus, setDataStatus] = useState<any[]>([]);
 
