@@ -198,7 +198,6 @@ export default function EditFluxo() {
                   handleOnsave={saveFluxo}
                   onUpdate={(id, name, value) => updateParcialColumn(id, name, value)}
                   errorField={errorMissingResponsible}
-                  previousManager={true}
                 />
               );
             } else {
@@ -217,7 +216,6 @@ export default function EditFluxo() {
                   handleOnsave={saveFluxo}
                   onUpdate={(id, name, value) => updateParcialColumn(id, name, value)}
                   errorField={errorMissingResponsible}
-                  previousManager={false}
                 />
               );
             }
