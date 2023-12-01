@@ -194,6 +194,7 @@ export default function CreateTasks() {
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const [error, setError] = useState<StateProps>({});
   const [errorCategory, setErrorCategory] = useState<any[]>([]);
+  const [errorDeliveryDate, setErrorDeliveryDate] = useState<any[]>([]);
   // const [addDeliveries, setAddDeliveries] = useState<boolean>(false);
   const newDate = new Date();
   const [DTOForm, setDTOForm] = useState<ITaskCreate>({
@@ -321,8 +322,8 @@ export default function CreateTasks() {
   const DeliveryDefault: DeliveryProps = {
     deliveryId: 1,
     deliveryDescription: '',
-    deliveryCreationDate: '',
-    deliveryEssayDate: '',
+    creation_date_end: '',
+    copywriting_date_end: '',
     deliveryTitle: '',
     deliveryProducts: productsArray,
     showInfo: false
@@ -338,8 +339,8 @@ export default function CreateTasks() {
     const newDelivery: DeliveryProps = {
       deliveryId: DTODelivery.length + 1,
       deliveryDescription: '',
-      deliveryCreationDate: '',
-      deliveryEssayDate: '',
+      creation_date_end: '',
+      copywriting_date_end: '',
       deliveryTitle: '',
       deliveryProducts: [],
       showInfo: false
@@ -897,18 +898,6 @@ export default function CreateTasks() {
       if (createStep === 1 && tasksType === 'horas' && !taskEdit) {
         setProductsModal(true);
       } else if (createStep === 2 && tasksType === 'horas') {
-        if (DTOForm.copywriting_date_end === '') {
-          throw setErrorInput('copywriting_date_end', 'Data de entrega inicial não informada!');
-        } else {
-          setErrorInput('copywriting_date_end', undefined);
-        }
-
-        if (creation_date_end === '') {
-          throw setErrorInput('creation_date_end', 'Data de Entrega Criação é obrigatória!');
-        } else {
-          setErrorInput('creation_date_end', undefined);
-        }
-
         if (splitDeliveries && location.state !== null) {
           DTODelivery.map((current: DeliveryUpdate) => {
             current.produtos.map((obj: any) => {
@@ -940,28 +929,94 @@ export default function CreateTasks() {
           });
 
           DTODelivery.map((current: DeliveryProps) => {
+            if (current.creation_date_end === '' || current.creation_date_end === undefined) {
+              setErrorDeliveryDate((errorDeliveryDate: any) => [
+                ...errorDeliveryDate,
+                {
+                  id: current.deliveryId,
+                  typeError: 'creation',
+                  error: 'Data da entrega não atribuida!'
+                }
+              ]);
+              throw new Error('Data da entrega não atribuida!');
+            } else {
+              setErrorDeliveryDate((prevState) =>
+                prevState.filter((delivery) => delivery.id !== current.deliveryId)
+              );
+            }
+          });
+
+          DTODelivery.map((current: DeliveryProps) => {
+            if (current.copywriting_date_end === '' || current.copywriting_date_end === undefined) {
+              setErrorDeliveryDate((errorDeliveryDate: any) => [
+                ...errorDeliveryDate,
+                {
+                  id: current.deliveryId,
+                  typeError: 'copywriting',
+                  error: 'Data da entrega não atribuida!'
+                }
+              ]);
+              throw new Error('Data da entrega não atribuida!');
+            } else {
+              setErrorDeliveryDate((prevState) =>
+                prevState.filter((delivery) => delivery.id !== current.deliveryId)
+              );
+            }
+          });
+
+          DTODelivery.map((current: DeliveryProps) => {
             current.deliveryProducts.map((obj: any) => {
               if (obj.reason_change === '' || obj.reason_change === undefined) {
-                // console.log('log se tiver erro', DTODelivery);
                 setErrorCategory((errorCategory: any) => [...errorCategory, obj.job_service_id]);
                 throw new Error('Existem produtos sem o "Tipo" selecionado!');
               } else if (obj.reason_change !== '' && obj.reason_change !== undefined) {
                 setErrorCategory((prevState) =>
                   prevState.filter((product) => product !== obj.job_service_id)
                 );
-                if (errorCategory.length === 0) {
-                  // setAddDeliveries(true);
-                  setTimeout(() => {
-                    setCreateStep(createStep + 1);
-                  }, 150);
-                }
               }
             });
           });
+
+          setCreateStep(createStep + 1);
+
+          // DTODelivery.map((obj: DeliveryProps) => {
+          //   if (obj.copywriting_date_end === '' || obj.copywriting_date_end === undefined) {
+          //     setErrorDeliveryDate((errorDeliveryDate: any) => [
+          //       ...errorDeliveryDate,
+          //       {
+          //         id: obj.deliveryId,
+          //         error: 'Data da entrega não atribuida!'
+          //       }
+          //     ]);
+          //     throw new Error('Data da entrega não atribuida!');
+          //   } else if (obj.copywriting_date_end !== '' && obj.copywriting_date_end !== undefined) {
+          //     setErrorDeliveryDate((prevState) =>
+          //       prevState.filter((delivery) => delivery.id !== obj.deliveryId)
+          //     );
+          //     if (errorDeliveryDate.length === 0) {
+          //       // setAddDeliveries(true);
+          //       setTimeout(() => {
+          //         setCreateStep(createStep + 1);
+          //       }, 150);
+          //     }
+          //   }
+          // });
         }
 
         if (!splitDeliveries && location.state !== null) {
           // console.log('log do DTODelivery', DTODelivery);
+          if (DTOForm.copywriting_date_end === '') {
+            throw setErrorInput('copywriting_date_end', 'Data de entrega inicial não informada!');
+          } else {
+            setErrorInput('copywriting_date_end', undefined);
+          }
+
+          if (creation_date_end === '') {
+            throw setErrorInput('creation_date_end', 'Data de Entrega Criação é obrigatória!');
+          } else {
+            setErrorInput('creation_date_end', undefined);
+          }
+
           let hasError = false;
           productsArray.forEach((obj: any) => {
             if (obj.reason_change === '' || obj.reason_change === undefined) {
@@ -987,6 +1042,19 @@ export default function CreateTasks() {
 
         if (!splitDeliveries && location.state === null) {
           // console.log('log do DTODelivery', DTODelivery);
+
+          if (DTOForm.copywriting_date_end === '') {
+            throw setErrorInput('copywriting_date_end', 'Data de entrega inicial não informada!');
+          } else {
+            setErrorInput('copywriting_date_end', undefined);
+          }
+
+          if (creation_date_end === '') {
+            throw setErrorInput('creation_date_end', 'Data de Entrega Criação é obrigatória!');
+          } else {
+            setErrorInput('creation_date_end', undefined);
+          }
+
           let hasError = false;
           productsArray.forEach((obj: any) => {
             if (obj.reason_change === '' || obj.reason_change === undefined) {
@@ -1400,9 +1468,10 @@ export default function CreateTasks() {
             await api.post(`tasks`, createNewData);
           }
         } else {
-          const deadlines = DTODelivery.map((row: any, index: any) => {
+          const deadlines = DTODelivery.map((row: DeliveryProps, index: any) => {
             return {
-              date_end: row.deliveryDate,
+              creation_date_end: row.creation_date_end,
+              copywriting_date_end: row.copywriting_date_end,
               description: DTOForm?.creation_description,
               title: row.deliveryTitle !== '' ? row.deliveryTitle : `${index + 1}ª entrega`,
               products: row.deliveryProducts
@@ -1421,8 +1490,6 @@ export default function CreateTasks() {
             description,
             files: fileArray,
             creation_description,
-            creation_date_end,
-            copywriting_date_end,
             copywriting_description,
             deadlines: deadlines,
             step,
@@ -1767,8 +1834,12 @@ export default function CreateTasks() {
   // }, [estimatedTime]);
 
   // useEffect(() => {
-  //   console.log('log dos erros', errorCategory);
+  //   console.log('log errorCategory =>', errorCategory);
   // }, [errorCategory]);
+
+  // useEffect(() => {
+  //   console.log('log errorDateDelivery =>', errorDeliveryDate);
+  // }, [errorDeliveryDate]);
 
   // useEffect(() => {
   //   console.log('log do info projects', infoProjects);
@@ -1868,6 +1939,7 @@ export default function CreateTasks() {
                     deliveriesSplited={splitDeliveries}
                     projectInfo={selectedProject}
                     errorCategory={errorCategory}
+                    errorDelivery={errorDeliveryDate}
                     addDelivery={addDelivery}
                     addProducts={(value: any, text: any, index: any) =>
                       setProductsDeliveriesModal({
@@ -1934,7 +2006,7 @@ export default function CreateTasks() {
 
                       <div style={{ width: !splitDeliveries ? '50%' : '180px' }}>
                         <InputDefault
-                          label="Entrega Criação"
+                          label="Entrega de Criação"
                           placeholder="00/00/0000"
                           name="creationDate"
                           type="date"
@@ -2018,6 +2090,7 @@ export default function CreateTasks() {
                     taskFiles={uploadedFiles}
                     ticketAsk={ticketAsk}
                     error={error}
+                    splitDeliveries={splitDeliveries}
                   />
                 </>
               )}
@@ -2053,6 +2126,7 @@ export default function CreateTasks() {
                   estimatedtotalTime={setEstimatedTime}
                   taskFiles={uploadedFiles}
                   ticketAsk={ticketAsk}
+                  splitDeliveries={splitDeliveries}
                   error={error}
                 />
               )}
@@ -2073,6 +2147,7 @@ export default function CreateTasks() {
                   estimatedtotalTime={() => ''}
                   taskFiles={uploadedFiles}
                   ticketAsk={ticketAsk}
+                  splitDeliveries={splitDeliveries}
                   error={error}
                 />
               )}
