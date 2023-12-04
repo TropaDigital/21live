@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 
 // Hooks
 import { useAuth } from '../../hooks/AuthContext';
+import { useFetch } from '../../hooks/useFetch';
 
 // Components
 import { CardWelcomeDash } from '../../components/Cards/CardWelcomeDash';
@@ -16,6 +17,9 @@ import Loader from '../../components/LoaderSpin';
 import UserPerformanceCard, { UserCardProps } from '../../components/Cards/UserPerformanceCard';
 import { CardDataDash } from '../../components/Cards/CardDataDash';
 import FilterModal from '../../components/Ui/FilterModal';
+import ModalDefault from '../../components/Ui/ModalDefault';
+import SelectImage from '../../components/Inputs/SelectWithImage';
+import { SelectDefault } from '../../components/Inputs/SelectDefault';
 
 // Styles
 import {
@@ -29,25 +33,34 @@ import {
   UserTeamCard,
   UserJobs,
   OperatorTopWrapper,
-  TimeChartsTopCard,
   SmallCardsWrapper,
   HoursTable,
   TdColor,
-  ClientPerformanceTraffic,
   BulletPointInfos,
-  BulletsWrapper,
-  BulletsClientWrapper
+  BulletsClientWrapper,
+  ModalReportWrapper,
+  ModalField
 } from './styles';
 
 // Libraries
 import CountUp from 'react-countup';
+import moment from 'moment';
 
 // Images
 import PersonTest from '../../assets/person.jpg';
 
-// Hooks
-import { useFetch } from '../../hooks/useFetch';
-import moment from 'moment';
+// Services
+import api from '../../services/api';
+
+// Utils
+import { TenantProps } from '../../utils/models';
+
+// Types
+import { ServicesProps } from '../../types';
+import useForm from '../../hooks/useForm';
+import { ModalButtons } from '../Tasks/ViewTask/styles';
+import ButtonDefault from '../../components/Buttons/ButtonDefault';
+
 // interface DashType {
 //   typeDash: 'admin' | 'executive' | 'traffic' | 'operator' | '';
 // }
@@ -89,17 +102,49 @@ interface TaskConclude {
   ultimo_usuario: string;
 }
 
+interface ReportForm {
+  client: string;
+  contract: string;
+  month: string;
+  year: string;
+}
+
 export default function Dashboard() {
   const { user } = useAuth();
   const [filter, setFilter] = useState({
     fromDate: '',
     toDate: ''
   });
+  const { formData, handleOnChange, setFormValue, setData } = useForm({
+    client: '',
+    contract: '',
+    month: '',
+    year: ''
+  } as ReportForm);
   const [dashType, setDashType] = useState<string>('admin');
   const { data, fetchData, isFetching } = useFetch<any>(
     `/dashboard?date_start=${filter.fromDate}&date_end=${filter.toDate}&dash=${dashType}`
   );
+  const { data: dataClient } = useFetch<TenantProps[]>('tenant');
+  const [dataProjects, setDataProjects] = useState<ServicesProps[]>([]);
   const [modalFilters, setModalFilters] = useState<boolean>(false);
+  const [modalReport, setModalReport] = useState<boolean>(false);
+
+  const clientsOptions = dataClient?.map((row) => {
+    return {
+      value: row.tenant_id,
+      label: row.name,
+      image: row.bucket,
+      color: row.colormain
+    };
+  });
+
+  const [initialValue, setInitialValue] = useState({
+    value: '',
+    label: '',
+    image: '',
+    color: ''
+  });
 
   const handleApplyFilters = (filters: any) => {
     setFilter(filters);
@@ -133,8 +178,61 @@ export default function Dashboard() {
     }
   }, [user]);
 
-  console.log('log do data dashboard =>', data);
+  // console.log('log do data dashboard =>', data);
   // console.log('log do user =>', user.permissions);
+
+  const monthsArray = [
+    {
+      id: '01',
+      month_name: 'Janeiro'
+    },
+    {
+      id: '02',
+      month_name: 'Fevereiro'
+    },
+    {
+      id: '03',
+      month_name: 'Março'
+    },
+    {
+      id: '04',
+      month_name: 'Abril'
+    },
+    {
+      id: '05',
+      month_name: 'Maio'
+    },
+    {
+      id: '06',
+      month_name: 'Junho'
+    },
+    {
+      id: '07',
+      month_name: 'Julho'
+    },
+    {
+      id: '08',
+      month_name: 'Agosto'
+    },
+    {
+      id: '09',
+      month_name: 'Setembro'
+    },
+    {
+      id: '10',
+      month_name: 'Outubro'
+    },
+    {
+      id: '11',
+      month_name: 'Novembro'
+    },
+    {
+      id: '12',
+      month_name: 'Dezembro'
+    }
+  ];
+
+  const ten_years = getTenYears();
 
   // const dataStatusAll = [
   //   {
@@ -595,7 +693,72 @@ export default function Dashboard() {
     }
   ];
 
+  async function getProjects(tenantId: string) {
+    try {
+      const response = await api.get(`project-products/${tenantId}`);
+
+      if (response.data.status === 'success') {
+        setDataProjects(response.data.result);
+      }
+    } catch (error: any) {
+      console.log('log get projects', error);
+    }
+  }
+
+  const handleClientSelected = (select: any) => {
+    getProjects(select.value);
+    setInitialValue(select);
+    setFormValue('client', select.value);
+  };
+
+  const handleGenerateReport = () => {
+    console.log('log para gerar relatório', formData);
+    setModalReport(false);
+    setData({
+      client: '',
+      contract: '',
+      month: '',
+      year: ''
+    });
+    setInitialValue({
+      value: '',
+      label: '',
+      image: '',
+      color: ''
+    });
+  };
+
+  const handleCancelReport = () => {
+    setModalReport(false);
+    setData({
+      client: '',
+      contract: '',
+      month: '',
+      year: ''
+    });
+    setInitialValue({
+      value: '',
+      label: '',
+      image: '',
+      color: ''
+    });
+  };
+
+  function getTenYears() {
+    const currentYear = new Date().getFullYear();
+    const lastTenYears = [];
+
+    for (let i = currentYear; i > currentYear - 10; i--) {
+      lastTenYears.push(i);
+    }
+    return lastTenYears;
+  }
+
   const hasFilters = Object.values(filter).every((obj) => obj === null || obj === '');
+
+  // useEffect(() => {
+  //   console.log('log do formData =>', formData);
+  // }, [formData]);
 
   return (
     <Container>
@@ -614,7 +777,9 @@ export default function Dashboard() {
             user={user.name}
             clearFilter={handleClearFilters}
             openFilter={() => setModalFilters(true)}
+            openReport={() => setModalReport(true)}
             hasFilters={hasFilters}
+            hasReport={true}
           />
 
           {/* Cards pequenos */}
@@ -1459,6 +1624,7 @@ export default function Dashboard() {
             clearFilter={handleClearFilters}
             openFilter={() => setModalFilters(true)}
             hasFilters={hasFilters}
+            hasReport={false}
           />
 
           {/* Cards pequenos */}
@@ -1674,6 +1840,7 @@ export default function Dashboard() {
             clearFilter={handleClearFilters}
             openFilter={() => setModalFilters(true)}
             hasFilters={hasFilters}
+            hasReport={false}
           />
 
           {/* Cards pequenos */}
@@ -1957,6 +2124,7 @@ export default function Dashboard() {
             clearFilter={handleClearFilters}
             openFilter={() => setModalFilters(true)}
             hasFilters={hasFilters}
+            hasReport={false}
           />
 
           {/* Top cards */}
@@ -1989,6 +2157,68 @@ export default function Dashboard() {
         clearFilters={handleClearFilters}
         filterType="dash"
       />
+
+      <ModalDefault isOpen={modalReport} onOpenChange={handleCancelReport} title="Gerar relatório">
+        <ModalReportWrapper>
+          <ModalField>
+            <SelectImage
+              label={'Cliente'}
+              dataOptions={clientsOptions}
+              value={initialValue.value !== '' ? initialValue : null}
+              onChange={handleClientSelected}
+              placeholder={'Selecione o cliente...'}
+            />
+          </ModalField>
+
+          <ModalField>
+            <SelectDefault
+              label="Projeto/Contrato"
+              name="contract"
+              value={formData.contract}
+              onChange={handleOnChange}
+            >
+              {dataProjects?.map((row: any) => (
+                <option key={row.project_product_id} value={row.project_product_id}>
+                  {row.select}
+                </option>
+              ))}
+            </SelectDefault>
+          </ModalField>
+
+          <ModalField>
+            <SelectDefault
+              label="Mês"
+              name="month"
+              value={formData.month}
+              onChange={handleOnChange}
+            >
+              {monthsArray?.map((row: any) => (
+                <option key={row.id} value={row.month_name}>
+                  {row.month_name}
+                </option>
+              ))}
+            </SelectDefault>
+
+            <SelectDefault label="Ano" name="year" value={formData.year} onChange={handleOnChange}>
+              {ten_years?.map((row: any) => (
+                <option key={row} value={row}>
+                  {row}
+                </option>
+              ))}
+            </SelectDefault>
+          </ModalField>
+
+          <ModalButtons>
+            <ButtonDefault typeButton="dark" isOutline onClick={handleCancelReport}>
+              Descartar
+            </ButtonDefault>
+
+            <ButtonDefault typeButton="primary" onClick={handleGenerateReport}>
+              Gerar
+            </ButtonDefault>
+          </ModalButtons>
+        </ModalReportWrapper>
+      </ModalDefault>
     </Container>
   );
 }

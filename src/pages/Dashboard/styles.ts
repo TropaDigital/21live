@@ -304,37 +304,6 @@ export const OperatorTopWrapper = styled.div`
   gap: 30px;
 `;
 
-export const TimeChartsTopCard = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: 264px;
-  height: 264px;
-
-  border-radius: 12px;
-  border: 1px solid var(--gray-200);
-  background: var(--background-primary);
-
-  padding: 24px;
-  position: relative;
-
-  .card-title {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-
-    color: var(--gray-500);
-    font-size: var(--text-small-sm);
-    font-weight: var(--weight-medium);
-
-    span {
-      color: var(--gray-800);
-      font-size: var(--text-headline-lg);
-      font-weight: var(--weight-semibold);
-    }
-  }
-`;
-
 export const SmallCardsWrapper = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
@@ -398,20 +367,6 @@ export const TdColor = styled.div`
   }
 `;
 
-export const ClientPerformanceTraffic = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-`;
-
-export const BulletsWrapper = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: 60px;
-
-  padding-top: 70px;
-`;
-
 export const BulletPointInfos = styled.div`
   display: flex;
   flex-direction: column;
@@ -444,4 +399,24 @@ export const BulletsClientWrapper = styled.div`
   margin-top: 18px;
 
   padding-left: 12px;
+`;
+
+export const ModalReportWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  margin-top: 40px;
+
+  padding: 0 12px;
+
+  padding-bottom: 40px;
+`;
+
+export const ModalField = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 600px;
+  height: fit-content;
 `;
