@@ -210,12 +210,12 @@ export default function Dashboard() {
   const topTenantHours = [
     {
       name: data ? data.top_horas[0]?.name : '',
-      Total: data ? Number(data.top_horas[0].totalTimeSum.split(':')[0]) : 0,
+      Total: data ? Number(data.top_horas[0]?.totalTimeSum.split(':')[0]) : 0,
       fill: '#59B7FF'
     },
     {
       name: data ? data.top_horas[1]?.name : '',
-      Total: data ? Number(data.top_horas[1].totalTimeSum.split(':')[0]) : 0,
+      Total: data ? Number(data.top_horas[1]?.totalTimeSum.split(':')[0]) : 0,
       fill: '#0045B5'
     }
     // ,
