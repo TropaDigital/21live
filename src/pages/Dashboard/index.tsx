@@ -150,36 +150,36 @@ export default function Dashboard() {
     {
       id_job: 0,
       client_name:
-        data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[0].name : '',
-      job_name: data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[0].title : '',
+        data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[0]?.name : '',
+      job_name: data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[0]?.title : '',
       job_status: 'Pendente de envio'
     },
     {
       id_job: 1,
       client_name:
-        data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[1].name : '',
-      job_name: data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[1].title : '',
+        data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[1]?.name : '',
+      job_name: data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[1]?.title : '',
       job_status: 'Pendente de envio'
     },
     {
       id_job: 2,
       client_name:
-        data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[2].name : '',
-      job_name: data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[2].title : '',
+        data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[2]?.name : '',
+      job_name: data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[2]?.title : '',
       job_status: 'Pendente de envio'
     },
     {
       id_job: 3,
       client_name:
-        data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[3].name : '',
-      job_name: data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[3].title : '',
+        data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[3]?.name : '',
+      job_name: data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[3]?.title : '',
       job_status: 'Pendente de envio'
     },
     {
       id_job: 4,
       client_name:
-        data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[4].name : '',
-      job_name: data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[4].title : '',
+        data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[4]?.name : '',
+      job_name: data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[4]?.title : '',
       job_status: 'Pendente de envio'
     }
   ];
@@ -209,12 +209,12 @@ export default function Dashboard() {
 
   const topTenantHours = [
     {
-      name: data ? data.top_horas[0].name : '',
+      name: data ? data.top_horas[0]?.name : '',
       Total: data ? Number(data.top_horas[0].totalTimeSum.split(':')[0]) : 0,
       fill: '#59B7FF'
     },
     {
-      name: data ? data.top_horas[1].name : '',
+      name: data ? data.top_horas[1]?.name : '',
       Total: data ? Number(data.top_horas[1].totalTimeSum.split(':')[0]) : 0,
       fill: '#0045B5'
     }
@@ -333,14 +333,14 @@ export default function Dashboard() {
   const userCards: UserCardProps[] = [
     {
       userInfos: {
-        user_name: data && dashType === 'manager' ? data.top_users[0].name : '',
+        user_name: data && dashType === 'manager' ? data.top_users[0]?.name : '',
         clientsNumber: 10,
         avatar: PersonTest
       },
       chartData: [
         {
           name: 'Total de Jobs',
-          pv: data && dashType === 'manager' ? data.top_users[0].task_count : 0,
+          pv: data && dashType === 'manager' ? data.top_users[0]?.task_count : 0,
           fill: '#0045B5'
         },
         {
@@ -366,14 +366,14 @@ export default function Dashboard() {
     },
     {
       userInfos: {
-        user_name: data && dashType === 'manager' ? data.top_users[1].name : '',
+        user_name: data && dashType === 'manager' ? data.top_users[1]?.name : '',
         clientsNumber: 15,
         avatar: PersonTest
       },
       chartData: [
         {
           name: 'Total de Jobs',
-          pv: data && dashType === 'manager' ? data.top_users[1].task_count : 0,
+          pv: data && dashType === 'manager' ? data.top_users[1]?.task_count : 0,
           fill: '#0045B5'
         },
         {
@@ -399,14 +399,14 @@ export default function Dashboard() {
     },
     {
       userInfos: {
-        user_name: data && dashType === 'manager' ? data.top_users[2].name : '',
+        user_name: data && dashType === 'manager' ? data.top_users[2]?.name : '',
         clientsNumber: 8,
         avatar: PersonTest
       },
       chartData: [
         {
           name: 'Total de Jobs',
-          pv: data && dashType === 'manager' ? data.top_users[2].task_count : 0,
+          pv: data && dashType === 'manager' ? data.top_users[2]?.task_count : 0,
           fill: '#0045B5'
         },
         {
