@@ -123,6 +123,7 @@ export default function ViewProductsDeliveries() {
     chosenStep: '',
     returnMotive: ''
   });
+  const [toClientConfirmation, setToClientConfirmation] = useState<boolean>(false);
 
   const deliveryId = location.state.task.deliverys.filter(
     (obj: any) => Number(obj.order) === location.state.task_index
@@ -728,6 +729,11 @@ export default function ViewProductsDeliveries() {
       const response = await api.put(`/task/upload`, uploadInfos);
 
       if (response.data.status === 'success') {
+        addToast({
+          title: 'Sucesso',
+          description: 'Sucesso, ',
+          type: 'success'
+        });
         setUploadedFiles([]);
         setModalUpload(false);
         setModalFinalFile(false);
@@ -884,12 +890,13 @@ export default function ViewProductsDeliveries() {
     // console.log('log do next step', nextStep);
     // console.log('log do upload', uploadIsTrue);
     // console.log('log do final card', finalCard);
-  }, [selectedProduct, typeOfPlay, nextStep, uploadIsTrue, finalCard]);
+    // console.log('log dataTask', dataTask);
+  }, [selectedProduct, typeOfPlay, nextStep, uploadIsTrue, finalCard, dataTask]);
 
   return (
     <ContainerDefault>
       <DeliveryWrapper>
-        {dataProducts?.status === 'Concluida' && (
+        {dataProducts?.status === 'Concluida' && dataTask?.status === 'Concluida' && (
           <HeaderOpenTask
             title={titleInfos}
             disableButton={true}
@@ -900,7 +907,38 @@ export default function ViewProductsDeliveries() {
           />
         )}
 
+        {dataProducts?.status === 'Concluida' &&
+          dataTask?.status !== 'Concluida' &&
+          typeOfPlay === 'schedule' &&
+          selectedProduct === '' && (
+            <HeaderOpenTask
+              title={titleInfos}
+              disableButton={false}
+              goBack
+              buttonType="send"
+              sendToNext={checkFlow}
+              nextStepInfo={timeLineData}
+              backFlow={() => setModalReturnFlow(true)}
+            />
+          )}
+
+        {dataProducts?.status === 'Concluida' &&
+          dataTask?.status !== 'Concluida' &&
+          typeOfPlay === 'schedule' &&
+          selectedProduct !== '' && (
+            <HeaderOpenTask
+              title={titleInfos}
+              disableButton={false}
+              goBack
+              buttonType="send"
+              sendToNext={checkFlow}
+              nextStepInfo={timeLineData}
+              backFlow={() => setModalReturnFlow(true)}
+            />
+          )}
+
         {dataProducts?.status !== 'Concluida' &&
+          dataTask?.status !== 'Concluida' &&
           selectedProduct === '' &&
           typeOfPlay === 'schedule' &&
           !finalCard && (
@@ -916,6 +954,7 @@ export default function ViewProductsDeliveries() {
           )}
 
         {dataProducts?.status !== 'Concluida' &&
+          dataTask?.status !== 'Concluida' &&
           selectedProduct === '' &&
           typeOfPlay === 'schedule' &&
           finalCard && (
@@ -931,6 +970,7 @@ export default function ViewProductsDeliveries() {
           )}
 
         {dataProducts?.status !== 'Concluida' &&
+          dataTask?.status !== 'Concluida' &&
           selectedProduct !== '' &&
           typeOfPlay === 'schedule' &&
           !finalCard && (
@@ -946,6 +986,7 @@ export default function ViewProductsDeliveries() {
           )}
 
         {dataProducts?.status !== 'Concluida' &&
+          dataTask?.status !== 'Concluida' &&
           selectedProduct === '' &&
           typeOfPlay === 'product' &&
           finalCard && (
@@ -961,6 +1002,7 @@ export default function ViewProductsDeliveries() {
           )}
 
         {dataProducts?.status !== 'Concluida' &&
+          dataTask?.status !== 'Concluida' &&
           selectedProduct !== '' &&
           typeOfPlay === 'product' &&
           selectedProduct.status !== 'Concluida' &&
@@ -979,6 +1021,7 @@ export default function ViewProductsDeliveries() {
           )}
 
         {dataProducts?.status !== 'Concluida' &&
+          dataTask?.status !== 'Concluida' &&
           selectedProduct !== '' &&
           typeOfPlay === 'product' &&
           selectedProduct.status === 'Concluida' &&
@@ -997,6 +1040,7 @@ export default function ViewProductsDeliveries() {
           )}
 
         {dataProducts?.status !== 'Concluida' &&
+          dataTask?.status !== 'Concluida' &&
           selectedProduct !== '' &&
           typeOfPlay === 'product' &&
           selectedProduct.status !== 'Concluida' &&
@@ -1222,6 +1266,7 @@ export default function ViewProductsDeliveries() {
           step={Number(location.state.task.step) + 1}
           user_alocated={handleAssignTask}
           closeModal={() => setModalSendToUser(false)}
+          manualOverrideDate={false}
         />
       </ModalDefault>
 
@@ -1345,7 +1390,7 @@ export default function ViewProductsDeliveries() {
         }
       >
         <ModalUploadWrapper>
-          {finalCard && (
+          {finalCard && !toClientConfirmation && (
             <UploadFiles
               uploadedFiles={uploadedFiles}
               setUploadedFiles={setUploadedFiles}
@@ -1355,6 +1400,14 @@ export default function ViewProductsDeliveries() {
               setLoading={setLoading}
               folderInfo="tasks"
             />
+          )}
+
+          {finalCard && toClientConfirmation && (
+            <div className="confirmation">
+              <span>Atenção:</span> <br />
+              Os arquivos serão enviados para a área do cliente. <br />
+              Essa ação não pode ser revertida.
+            </div>
           )}
 
           {uploadClient && dataTask?.ticket_id && (
@@ -1369,7 +1422,7 @@ export default function ViewProductsDeliveries() {
             />
           )}
 
-          {finalCard && (
+          {finalCard && !toClientConfirmation && (
             <div className="modal-buttons">
               <ButtonDefault
                 typeButton="lightWhite"
@@ -1379,8 +1432,28 @@ export default function ViewProductsDeliveries() {
                 Cancelar
               </ButtonDefault>
 
+              <ButtonDefault typeButton="primary" onClick={() => setToClientConfirmation(true)}>
+                Enviar para o cliente
+              </ButtonDefault>
+            </div>
+          )}
+
+          {finalCard && toClientConfirmation && (
+            <div className="modal-buttons">
+              <ButtonDefault
+                typeButton="lightWhite"
+                isOutline
+                onClick={() => {
+                  setModalFinalFile(false);
+                  setToClientConfirmation(false);
+                  setUploadedFiles([]);
+                }}
+              >
+                Cancelar
+              </ButtonDefault>
+
               <ButtonDefault typeButton="primary" onClick={handleSaveUploadFinal}>
-                Salvar
+                OK
               </ButtonDefault>
             </div>
           )}
