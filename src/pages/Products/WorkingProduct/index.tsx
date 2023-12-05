@@ -236,6 +236,7 @@ export default function WorkingProduct({
     approve: false,
     disapprove: false
   });
+  const [toClientConfirmation, setToClientConfirmation] = useState<boolean>(false);
 
   const [previewImage, setPreviewImage] = useState({
     isOpen: false,
@@ -1112,11 +1113,13 @@ export default function WorkingProduct({
         isOpen={modalFinalFile}
         onOpenChange={() => setModalFinalFile(false)}
         title={
-          finalCard ? 'Upload para arquivo final' : 'Upload de arquivo para aprovação do cliente'
+          uploadClient
+            ? 'Upload de arquivo para aprovação do cliente no 21Clients'
+            : 'Upload de arquivo final para o 21Clients'
         }
       >
         <ModalUploadWrapper>
-          {finalCard && (
+          {finalCard && !toClientConfirmation && (
             <UploadFiles
               uploadedFiles={uploadedFiles}
               setUploadedFiles={setUploadedFiles}
@@ -1126,6 +1129,14 @@ export default function WorkingProduct({
               setLoading={setLoading}
               folderInfo="tasks"
             />
+          )}
+
+          {finalCard && toClientConfirmation && (
+            <div className="confirmation">
+              <span>Atenção:</span> <br />
+              Os arquivos serão enviados para a área do cliente. <br />
+              Essa ação não pode ser revertida.
+            </div>
           )}
 
           {uploadClient && ticket_id && (
@@ -1140,7 +1151,7 @@ export default function WorkingProduct({
             />
           )}
 
-          {finalCard && (
+          {finalCard && !toClientConfirmation && (
             <div className="modal-buttons">
               <ButtonDefault
                 typeButton="lightWhite"
@@ -1150,8 +1161,28 @@ export default function WorkingProduct({
                 Cancelar
               </ButtonDefault>
 
+              <ButtonDefault typeButton="primary" onClick={() => setToClientConfirmation(true)}>
+                Enviar para o cliente
+              </ButtonDefault>
+            </div>
+          )}
+
+          {finalCard && toClientConfirmation && (
+            <div className="modal-buttons">
+              <ButtonDefault
+                typeButton="lightWhite"
+                isOutline
+                onClick={() => {
+                  setModalFinalFile(false);
+                  setToClientConfirmation(false);
+                  setUploadedFiles([]);
+                }}
+              >
+                Cancelar
+              </ButtonDefault>
+
               <ButtonDefault typeButton="primary" onClick={handleSaveUploadFinal}>
-                Salvar
+                OK
               </ButtonDefault>
             </div>
           )}

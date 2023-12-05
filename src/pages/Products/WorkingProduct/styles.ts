@@ -483,4 +483,14 @@ export const ModalUploadWrapper = styled.div`
     gap: 12px;
     margin-left: auto;
   }
+
+  .confirmation {
+    color: var(--title-color);
+    font-size: var(--text-small-lg);
+    font-weight: var(--weight-semibold);
+
+    span {
+      color: var(--Warning);
+    }
+  }
 `;
