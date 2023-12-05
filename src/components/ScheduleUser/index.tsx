@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import {
   ArrowButton,
   EndTaskDate,
+  EstimatedTimeSelector,
   HoursTable,
   ScheduleDate,
   ScheduleSelectUser,
@@ -80,6 +81,7 @@ interface TaskExchangeProps {
   limitDate?: string;
   user_alocated: (value: any) => void;
   closeModal: () => void;
+  manualOverrideDate?: boolean;
 }
 
 // interface NewTaskItem {
@@ -98,7 +100,8 @@ export default function ScheduleUser({
   step,
   limitDate,
   user_alocated,
-  closeModal
+  closeModal,
+  manualOverrideDate
 }: TaskExchangeProps) {
   const { addToast } = useToast();
   const [DTOTaskSelect, setDTOTaskSelect] = useState<ScheduleProps>({
@@ -115,6 +118,7 @@ export default function ScheduleUser({
     end_job: '',
     user_id: ''
   });
+  const [manualEstimatedTime, setManualEstimatedTime] = useState<string>('00:00:00');
 
   const dinamicDate = moment().startOf('day').add(dayCounter, 'days').format('YYYY-MM-DD HH:mm:ss');
   const starterDate = moment(dinamicDate).startOf('day').format('YYYY-MM-DD HH:mm:ss');
@@ -282,6 +286,11 @@ export default function ScheduleUser({
     }
   }
 
+  const handleSetEstimatedTime = (value: string) => {
+    console.log('log do estimated time', value);
+    setManualEstimatedTime(value);
+  };
+
   useEffect(() => {
     handleOnChange('scheduleDay', moment(dinamicDate).format('YYYY-MM-DD'));
   }, [dayCounter]);
@@ -300,10 +309,27 @@ export default function ScheduleUser({
               <div className="info">{task_title ? task_title : 'Teste'}</div>
             </SubtitleInfo>
             <div>•</div>
-            <SubtitleInfo>
-              <div className="title">Tempo estimado:</div>
-              <div className="info">{estimated_time ? estimated_time : '--:--:--'}</div>
-            </SubtitleInfo>
+            {!manualOverrideDate && (
+              <SubtitleInfo>
+                <div className="title">Tempo estimado:</div>
+                <div className="info">{estimated_time ? estimated_time : '--:--:--'}</div>
+              </SubtitleInfo>
+            )}
+            {manualOverrideDate && (
+              <EstimatedTimeSelector>
+                <div className="hour-label">Tempo estimado:</div>
+                <TimePicker
+                  onChange={(value: any) => handleSetEstimatedTime(value)}
+                  // onChange={() => ''}
+                  value={manualEstimatedTime}
+                  clearIcon={null}
+                  clockIcon={null}
+                  locale="pt-BR"
+                  disableClock={true}
+                  maxDetail="second"
+                />
+              </EstimatedTimeSelector>
+            )}
 
             <button className="close" onClick={closeModal}>
               <IconClose />
@@ -393,7 +419,7 @@ export default function ScheduleUser({
               <div className="selectedUser">
                 Usuário selecionado: <strong>{userSelected ? userSelected[0]?.name : ''}</strong>
               </div>
-              {!checkAvailability && (
+              {!checkAvailability && !manualOverrideDate && (
                 <ButtonDefault
                   typeButton={DTOTaskSelect.user_selected ? 'primary' : 'blocked'}
                   disabled={!DTOTaskSelect.user_selected ? true : false}
@@ -402,6 +428,22 @@ export default function ScheduleUser({
                       DTOTaskSelect.user_selected,
                       `${DTOTaskSelect.scheduleDay} ${DTOTaskSelect.starterHour}`,
                       estimated_time
+                    )
+                  }
+                >
+                  Verificar disponibilidade
+                </ButtonDefault>
+              )}
+
+              {!checkAvailability && manualOverrideDate && (
+                <ButtonDefault
+                  typeButton={manualEstimatedTime === '00:00:00' ? 'blocked' : 'primary'}
+                  disabled={manualEstimatedTime === '00:00:00' ? true : false}
+                  onClick={() =>
+                    checkIfIsAvaliable(
+                      DTOTaskSelect.user_selected,
+                      `${DTOTaskSelect.scheduleDay} ${DTOTaskSelect.starterHour}`,
+                      manualEstimatedTime
                     )
                   }
                 >

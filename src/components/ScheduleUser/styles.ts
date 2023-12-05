@@ -302,3 +302,31 @@ export const EndTaskDate = styled.div`
     border-radius: 4px;
   }
 `;
+
+export const EstimatedTimeSelector = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .hour-label {
+    width: 240px;
+  }
+
+  .react-time-picker {
+    width: 100%;
+    .react-time-picker__wrapper {
+      display: flex;
+      flex-grow: 1;
+      flex-shrink: 0;
+      border: 1px solid var(--gray-300);
+      border-radius: 4px;
+    }
+
+    .react-time-picker__inputGroup {
+      min-width: calc((4px * 3) + 0.54em * 6 + 0.217em * 2);
+      flex-grow: 1;
+      padding: 10px 14px;
+      box-sizing: content-box;
+    }
+  }
+`;
