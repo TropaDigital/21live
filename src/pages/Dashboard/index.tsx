@@ -60,6 +60,7 @@ import { ServicesProps } from '../../types';
 import useForm from '../../hooks/useForm';
 import { ModalButtons } from '../Tasks/ViewTask/styles';
 import ButtonDefault from '../../components/Buttons/ButtonDefault';
+import { useNavigate } from 'react-router-dom';
 
 // interface DashType {
 //   typeDash: 'admin' | 'executive' | 'traffic' | 'operator' | '';
@@ -111,6 +112,7 @@ interface ReportForm {
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [filter, setFilter] = useState({
     fromDate: '',
     toDate: ''
@@ -713,6 +715,7 @@ export default function Dashboard() {
 
   const handleGenerateReport = () => {
     console.log('log para gerar relatório', formData);
+    navigate('/relatorio', { state: formData });
     setModalReport(false);
     setData({
       client: '',
