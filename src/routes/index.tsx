@@ -34,6 +34,7 @@ import ViewRequest from '../pages/Requests/ViewRequests';
 import InstanceLogin from '../pages/Login/InstanceLogin';
 import ViewTask from '../pages/Tasks/ViewTask';
 import Parameters from '../pages/Parameters';
+import MonthlyReport from '../pages/Reports';
 
 function RoutesAll() {
   return (
@@ -255,6 +256,15 @@ function RoutesAll() {
           element={
             <PrivateRoutes>
               <ListMeeting />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/relatorio"
+          element={
+            <PrivateRoutes>
+              <MonthlyReport />
             </PrivateRoutes>
           }
         />
