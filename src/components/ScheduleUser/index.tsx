@@ -287,8 +287,15 @@ export default function ScheduleUser({
   }
 
   const handleSetEstimatedTime = (value: string) => {
-    console.log('log do estimated time', value);
-    setManualEstimatedTime(value);
+    if (value > estimated_time) {
+      addToast({
+        type: 'warning',
+        title: 'Aviso',
+        description: 'Tempo máximo para tarefa excedido!'
+      });
+    } else {
+      setManualEstimatedTime(value);
+    }
   };
 
   useEffect(() => {
