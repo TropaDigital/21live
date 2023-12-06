@@ -80,6 +80,8 @@ export default function FilterMenu({ filterProps, applyFilters, clearFilters }: 
     applyFilters(choosenFilters);
   };
 
+  // const filteredStatus = dataStatus.filter((obj) => obj.ticket_status_id === choosenFilters.status);
+
   return (
     <ContainerFilter>
       <FilterHeader>
