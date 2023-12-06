@@ -19,6 +19,7 @@ import { HiOutlineArrowRight, HiOutlineChatAlt } from 'react-icons/hi';
 import { BsCheckCircle, BsFolder } from 'react-icons/bs';
 import { IoIosCloseCircleOutline } from 'react-icons/io';
 import { FaDownload } from 'react-icons/fa';
+import { MdClose } from 'react-icons/md';
 
 // Components
 import { ContainerDefault } from '../../../components/UiElements/styles';
@@ -28,10 +29,10 @@ import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import AvatarDefault from '../../../components/Ui/Avatar/avatarDefault';
 import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
 import { Table } from '../../../components/Table';
-import Alert from '../../../components/Ui/Alert';
-import ButtonTable from '../../../components/Buttons/ButtonTable';
 import ModalDefault from '../../../components/Ui/ModalDefault';
 import UploadFiles from '../../../components/Upload/UploadFiles';
+import { ModalImage } from '../../Requests/ViewRequests/styles';
+import UploadFilesTicket from '../../../components/UploadTicket/UploadFilex';
 
 // Styles
 import {
@@ -71,10 +72,9 @@ import api from '../../../services/api';
 
 // Utils
 import { formatBytes } from '../../../utils/convertBytes';
-import axios from 'axios';
-import { ModalImage } from '../../Requests/ViewRequests/styles';
-import { MdClose } from 'react-icons/md';
-import UploadFilesTicket from '../../../components/UploadTicket/UploadFilex';
+
+// types
+import { UploadedFilesProps } from '../../../types';
 
 interface WorkingProductProps {
   productDeliveryId?: any;
@@ -146,25 +146,6 @@ interface ProductInfo {
   ticket_interaction_id: string;
   type: string;
   updated: string;
-}
-
-interface UploadedFilesProps {
-  file?: File;
-  file_id: string;
-  name: string;
-  readableSize: string;
-  preview: string;
-  progress?: number;
-  uploaded: boolean;
-  error?: boolean;
-  url: string | null;
-  bucket: string;
-  key: string;
-  size: number;
-  file_name: string;
-  isNew: boolean;
-  loading: boolean;
-  folder: string;
 }
 
 interface ModalApprovationInfos {
