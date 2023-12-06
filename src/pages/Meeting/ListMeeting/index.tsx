@@ -61,31 +61,14 @@ import { ModalImage } from '../../Requests/ViewRequests/styles';
 
 // Libraries
 import moment from 'moment';
-import axios from 'axios';
 
 // Icons
 import { IconClose } from '../../../assets/icons';
 import { FaDownload } from 'react-icons/fa';
 import { MdClose } from 'react-icons/md';
 
-interface UploadedFilesProps {
-  file?: File;
-  file_id: string;
-  name: string;
-  readableSize: string;
-  preview: string;
-  progress?: number;
-  uploaded: boolean;
-  error?: boolean;
-  url: string | null;
-  bucket: string;
-  key: string;
-  size: number;
-  file_name: string;
-  isNew: boolean;
-  loading: boolean;
-  folder: string;
-}
+// Types
+import { UploadedFilesProps } from '../../../types';
 
 interface FormProps {
   title: string;
