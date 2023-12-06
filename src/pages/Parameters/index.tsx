@@ -30,16 +30,7 @@ interface PercentParams {
 
 export default function Parameters() {
   const { addToast } = useToast();
-  const [dataPercents, setDataPercents] = useState<PercentParams[]>([
-    {
-      task_type: '2',
-      percent: '80'
-    },
-    {
-      task_type: '3',
-      percent: '20'
-    }
-  ]);
+  const [dataPercents, setDataPercents] = useState<PercentParams[]>([]);
   const [DTOInput, setDTOInput] = useState<InputParametersProps>({
     input_name: ''
   });
@@ -67,17 +58,14 @@ export default function Parameters() {
 
       const response = await api.get(`/config/percents`);
 
-      console.log('log do get percents', response.data.result);
-
-      // setDataPercents(response.data.result);
       setDataPercents([
         {
           task_type: '2',
-          percent: '80'
+          percent: response.data.result[0]?.Desmembramento?.percent
         },
         {
           task_type: '3',
-          percent: '20'
+          percent: response.data.result[0]?.Alteracao?.percent
         }
       ]);
 
@@ -98,6 +86,17 @@ export default function Parameters() {
       setDataPercents((current: PercentParams[]) =>
         current.map((obj) => {
           if (obj.task_type === '2') {
+            return { ...obj, percent: value };
+          }
+          return obj;
+        })
+      );
+    }
+
+    if (name === 'change') {
+      setDataPercents((current: PercentParams[]) =>
+        current.map((obj) => {
+          if (obj.task_type === '3') {
             return { ...obj, percent: value };
           }
           return obj;
