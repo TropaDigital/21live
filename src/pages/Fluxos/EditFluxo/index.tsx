@@ -93,7 +93,7 @@ export default function EditFluxo() {
       if (response.data.status === 'success') {
         addToast({
           title: 'Sucesso',
-          description: 'Fluxos salvos com sucesso!',
+          description: 'Fluxo salvo com sucesso!',
           type: 'success'
         });
         // navigate('/fluxo');
