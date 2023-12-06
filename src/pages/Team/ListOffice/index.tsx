@@ -12,6 +12,7 @@ import { useToast } from '../../../hooks/toast';
 import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useFetch } from '../../../hooks/useFetch';
 import useForm from '../../../hooks/useForm';
+import { useParamsHook } from '../../../hooks/useParams';
 
 // Components
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
@@ -39,7 +40,6 @@ import { SwitchField } from './styles';
 
 // Libraries
 import Switch from 'react-switch';
-import { useParamsHook } from '../../../hooks/useParams';
 
 interface OfficeProps {
   function_id: number;
@@ -47,6 +47,7 @@ interface OfficeProps {
   function: string;
   description: string;
   show_hours: string;
+  deduct_hours: string;
 }
 
 // interface PermissionProps {
@@ -58,12 +59,13 @@ interface OfficeProps {
 export default function ListOffice() {
   const { addToast } = useToast();
   const { parameters, getParams } = useParamsHook();
-  const { formData, setData, handleOnChange } = useForm({
+  const { formData, setData, handleOnChange, setFormValue } = useForm({
     function_id: 0,
     tenant_id: '',
     function: '',
     description: '',
-    show_hours: 'false'
+    show_hours: 'false',
+    deduct_hours: ''
   } as OfficeProps);
 
   const [modal, setModal] = useState({
@@ -77,7 +79,9 @@ export default function ListOffice() {
     (search: string) => setSearch(search),
     700
   );
-  const { data, fetchData } = useFetch<OfficeProps[]>(`function?=${search}`);
+  const { data, fetchData } = useFetch<OfficeProps[]>(
+    `function?search=${search.replace(/[^\w ]/g, '')}`
+  );
   const [showHours, setShowHours] = useState<boolean>(false);
 
   useEffect(() => {
@@ -101,7 +105,9 @@ export default function ListOffice() {
       function_id: 0,
       tenant_id: '',
       function: '',
-      description: ''
+      description: '',
+      show_hours: 'false',
+      deduct_hours: ''
     } as OfficeProps);
   }, [setData]);
 
@@ -138,37 +144,66 @@ export default function ListOffice() {
       try {
         event.preventDefault();
 
-        const { function: AsFunction, description } = formData;
+        const { function: asFunction, description, show_hours, deduct_hours } = formData;
 
         const newFormData = {
-          function: AsFunction,
-          description
+          function: asFunction,
+          description,
+          show_hours,
+          deduct_hours
         };
+
+        if (!showHours) {
+          delete newFormData.deduct_hours;
+        }
 
         if (modal.type === 'Novo Cargo') {
           await api.post('function', newFormData);
+          addToast({
+            type: 'success',
+            title: 'Sucesso',
+            description: 'Cargo cadastrado com sucesso!'
+          });
         } else {
           await api.put(`function/${formData.function_id}`, newFormData);
+          addToast({
+            type: 'success',
+            title: 'Sucesso',
+            description: 'Cargo editado com sucesso!'
+          });
         }
-
-        addToast({
-          type: 'success',
-          title: 'Sucesso',
-          description: 'Serviço cadastrado com sucesso!'
-        });
-
         handleOnCancel();
         fetchData();
       } catch (e: any) {
-        addToast({
-          type: 'danger',
-          title: 'ATENÇÃO',
-          description: e.response.data.message
-        });
+        if (e.response.data.result.length !== 0) {
+          e.response.data.result.map((row: any) => {
+            addToast({
+              type: 'danger',
+              title: 'ATENÇÃO',
+              description: row.error
+            });
+          });
+        } else {
+          addToast({
+            title: 'Atenção',
+            description: e.response.data.message,
+            type: 'danger'
+          });
+        }
       }
     },
     [formData, addToast, fetchData, handleOnCancel, modal]
   );
+
+  const handleShowHours = (value: any) => {
+    if (value) {
+      setFormValue('show_hours', 'true');
+    }
+
+    if (!value) {
+      setFormValue('show_hours', 'false');
+    }
+  };
 
   return (
     <ContainerDefault>
@@ -280,8 +315,8 @@ export default function ListOffice() {
           <FieldDefault>
             <SwitchField>
               <Switch
-                onChange={(value: any) => setShowHours(value)}
-                checked={showHours}
+                onChange={(e: any) => handleShowHours(e)}
+                checked={formData.show_hours === 'true' ? true : false}
                 uncheckedIcon={false}
                 checkedIcon={false}
                 onColor="#0046B5"
@@ -297,14 +332,14 @@ export default function ListOffice() {
               <SelectDefault
                 label="Tipo de horas"
                 placeholder="Selecione"
-                name="hours_type"
-                onChange={(e) => console.log('log do select hours', e.target.value)}
-                value={''}
+                name="deduct_hours"
+                onChange={handleOnChange}
+                value={formData.deduct_hours}
               >
-                <option key={'hours_creation'} value={'hours_creation'}>
+                <option key={'creation'} value={'creation'}>
                   Horas de atividade
                 </option>
-                <option key={'hours_essay'} value={'hours_essay'}>
+                <option key={'essay'} value={'essay'}>
                   Horas de {parameters.input_name !== '' ? parameters.input_name : 'Pré-requisito'}
                 </option>
               </SelectDefault>
