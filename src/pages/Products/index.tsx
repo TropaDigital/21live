@@ -520,7 +520,45 @@ export default function Services() {
           tenant_id
         };
 
-        if (modal.type === 'Novo produto') {
+        if (formData.flag === 'true' && modal.type === 'Novo produto') {
+          const newFormData = {
+            service,
+            description,
+            category,
+            flag,
+            type,
+            size,
+            minutes_creation: '00:00:00',
+            minutes_essay: '00:00:00',
+            tenant_id
+          };
+
+          await api.post('services', newFormData);
+          addToast({
+            type: 'success',
+            title: 'Sucesso',
+            description: 'Produto criado com sucesso!'
+          });
+        } else if (formData.flag === 'true' && modal.type !== 'Novo produto') {
+          const updateFormData = {
+            service,
+            description,
+            category,
+            flag,
+            type,
+            size,
+            minutes_creation: '00:00:00',
+            minutes_essay: '00:00:00',
+            tenant_id
+          };
+
+          await api.put(`services/${formData.job_service_id}`, updateFormData);
+          addToast({
+            type: 'success',
+            title: 'Sucesso',
+            description: 'Produto salvo com sucesso!'
+          });
+        } else if (formData.flag !== 'true' && modal.type === 'Novo produto') {
           await api.post('services', newFormData);
           addToast({
             type: 'success',
@@ -1083,7 +1121,7 @@ export default function Services() {
                 </option>
               )}
               {dataCategory?.map((row) => (
-                <option key={row.category_id} value={row.category}>
+                <option key={row.service_category_id} value={row.service_category_id}>
                   {row.category}
                 </option>
               ))}
