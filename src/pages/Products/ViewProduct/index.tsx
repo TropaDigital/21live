@@ -155,11 +155,15 @@ export default function ViewProductsDeliveries() {
     : '';
   const nextStep = timeLineData
     ? timeLineData.steps.filter((obj) => Number(obj.step) === Number(actualStep) + 1)
-    : '';
+    : [];
 
   const finalCard = uploadIsTrue && uploadIsTrue[0].final_card === 'true';
 
   const uploadClient = uploadIsTrue && uploadIsTrue[0].tenant_approve === 'true';
+
+  const stepsToReturn: any[] = timeLineData
+    ? timeLineData.steps.filter((obj) => Number(obj.step) <= Number(actualStep))
+    : [];
 
   useEffect(() => {
     async function getClockIsOpen() {
@@ -884,6 +888,14 @@ export default function ViewProductsDeliveries() {
     console.log('log do selectedStep =>', selectedStep);
   };
 
+  const handleCancelReturn = () => {
+    setReturnInfos({
+      chosenStep: '',
+      returnMotive: ''
+    });
+    setModalReturnFlow(false);
+  };
+
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
     // console.log('log do selectedProducts', selectedProduct);
@@ -1180,35 +1192,6 @@ export default function ViewProductsDeliveries() {
             />
           )}
 
-          {/* {dataProducts?.status !== 'Concluida' &&
-            typeOfPlay === 'schedule' &&
-            selectedProduct === '' && (
-              <CardTaskPlay
-                cardTitle="Iniciar atividade"
-                dataTime={data ? data?.estimatedTime : '00:00:00'}
-                blockPlay={blockPlayButton}
-              />
-            )}
-
-          {dataProducts?.status !== 'Concluida' &&
-            typeOfPlay === 'schedule' &&
-            selectedProduct !== '' && (
-              <CardTaskPlay
-                cardTitle="Iniciar atividade"
-                dataTime={data ? data?.estimatedTime : '00:00:00'}
-                blockPlay={true}
-              />
-            )}
-
-          {dataProducts?.status !== 'Concluida' &&
-            typeOfPlay === 'product' &&
-            selectedProduct === '' && (
-              <CardTaskPlay
-                cardTitle="Iniciar atividade"
-                dataTime={data ? data?.estimatedTime : '00:00:00'}
-                blockPlay={true}
-              />
-            )} */}
           <CardTaskInfo
             cardTitle="Contexto geral"
             cardType="text"
@@ -1479,7 +1462,7 @@ export default function ViewProductsDeliveries() {
       {/* Modal return flow */}
       <ModalDefault
         isOpen={modalReturnFlow}
-        onOpenChange={() => setModalReturnFlow(false)}
+        onOpenChange={handleCancelReturn}
         title="Para qual etapa deseja retornar?"
       >
         <ModalReturnFlow>
@@ -1489,7 +1472,7 @@ export default function ViewProductsDeliveries() {
             onChange={handleChooseStepAndMotive}
             value={returnInfos.chosenStep}
           >
-            {timeLineData?.steps?.map((row: StepTimeline) => (
+            {stepsToReturn?.map((row: StepTimeline) => (
               <option key={row.card_id} value={row.card_id}>
                 {row.name}
               </option>
@@ -1506,7 +1489,18 @@ export default function ViewProductsDeliveries() {
           />
 
           <div className="modal-buttons">
-            <ButtonDefault typeButton="primary" onClick={handleBackFlow}>
+            <ButtonDefault typeButton="dark" isOutline onClick={handleCancelReturn}>
+              Descartar
+            </ButtonDefault>
+            <ButtonDefault
+              typeButton={
+                returnInfos.chosenStep === '' || returnInfos.returnMotive === ''
+                  ? 'blocked'
+                  : 'primary'
+              }
+              onClick={handleBackFlow}
+              disabled={returnInfos.chosenStep === '' || returnInfos.returnMotive === ''}
+            >
               Retornar
             </ButtonDefault>
           </div>
