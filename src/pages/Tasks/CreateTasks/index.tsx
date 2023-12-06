@@ -14,7 +14,6 @@ import ModalDefault from '../../../components/Ui/ModalDefault';
 import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
 import { SwitchSelector } from '../../../components/CardProductsSelected/styles';
 import InputSwitchDefault from '../../../components/Inputs/InputSwitchDefault';
-import { UploadedFilesProps } from '../../../components/Upload/UploadFiles';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import InfoDeliveries from '../ComponentSteps/InfoDeliverables';
 import AddTextButton from '../../../components/Buttons/AddTextButton';
@@ -57,6 +56,7 @@ import { useToast } from '../../../hooks/toast';
 import { useFetch } from '../../../hooks/useFetch';
 import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useAuth } from '../../../hooks/AuthContext';
+import { useParamsHook } from '../../../hooks/useParams';
 
 // Types
 import {
@@ -65,7 +65,8 @@ import {
   IProductBackend,
   ITaskCreate,
   OrganizationsProps,
-  ServicesProps
+  ServicesProps,
+  UploadedFilesProps
 } from '../../../types';
 
 // Utils
@@ -86,7 +87,6 @@ import api from '../../../services/api';
 
 // Libraries
 import moment from 'moment';
-import { useParamsHook } from '../../../hooks/useParams';
 
 interface StateProps {
   [key: string]: any;
@@ -118,63 +118,63 @@ interface ModalDeliveryProps {
   indexDelivery: number | any;
 }
 
-interface ILocation {
-  hash: string;
-  key: string;
-  pathname: string;
-  search: string;
-  state: ITaskCreate;
-}
+// interface ILocation {
+//   hash: string;
+//   key: string;
+//   pathname: string;
+//   search: string;
+//   state: ITaskCreate;
+// }
 
-interface ITicketProps {
-  ticket_id: string;
-  tenant_id: string;
-  ticket_cat_id: string;
-  ticket_status_id: string;
-  user_id: string;
-  organization_id: string;
-  media_id: string;
-  title: string;
-  width: string;
-  height: string;
-  info: string;
-  target: string;
-  obs: string;
-  file_format: string;
-  workminutes: string;
-  deadline: string;
-  created: string;
-  updated: string;
-  finished: string;
-  tenant_name: string;
-  user_name: string;
-  status: string;
-  organization_name: string;
-  media_name: string;
-  measure: string;
-  value: string;
-  media_cat_id: string;
-  midia_cat_title: string;
-  files: [];
-  interactions: [
-    {
-      ticket_interaction_id: string;
-      ticket_id: string;
-      reply_id: string;
-      user_id: string;
-      message: string;
-      annex: string;
-      annex_title: string;
-      status: string;
-      access: string;
-      created: string;
-      updated: string;
-      user_name: string;
-      avatar: string;
-    }
-  ];
-  fields: [];
-}
+// interface ITicketProps {
+//   ticket_id: string;
+//   tenant_id: string;
+//   ticket_cat_id: string;
+//   ticket_status_id: string;
+//   user_id: string;
+//   organization_id: string;
+//   media_id: string;
+//   title: string;
+//   width: string;
+//   height: string;
+//   info: string;
+//   target: string;
+//   obs: string;
+//   file_format: string;
+//   workminutes: string;
+//   deadline: string;
+//   created: string;
+//   updated: string;
+//   finished: string;
+//   tenant_name: string;
+//   user_name: string;
+//   status: string;
+//   organization_name: string;
+//   media_name: string;
+//   measure: string;
+//   value: string;
+//   media_cat_id: string;
+//   midia_cat_title: string;
+//   files: [];
+//   interactions: [
+//     {
+//       ticket_interaction_id: string;
+//       ticket_id: string;
+//       reply_id: string;
+//       user_id: string;
+//       message: string;
+//       annex: string;
+//       annex_title: string;
+//       status: string;
+//       access: string;
+//       created: string;
+//       updated: string;
+//       user_name: string;
+//       avatar: string;
+//     }
+//   ];
+//   fields: [];
+// }
 
 type HandleOnChange = (
   event:
@@ -245,7 +245,6 @@ export default function CreateTasks() {
     }
   }
 
-  // /project-products/199?organization_id=28786
   const { data: organizationProjects } = useFetch<ServicesProps[]>(
     `project-products/${user.principalTenant}?organization_id=${DTOForm.organization_id}`
   );
@@ -253,7 +252,6 @@ export default function CreateTasks() {
   const { data: dataTypes } = useFetch<any[]>(`/task-type`);
   const { data: dataOrganizations } = useFetch<OrganizationsProps[]>('organization');
   const [productsArray, setProductsArray] = useState<ServicesProps[]>([]);
-  // const [quantityProductsArray, setQuantityProductsArray] = useState<any[]>([]);
   const [selectedProject, setSelectedProject] = useState<ProjectProductProps>({
     categoria: '',
     listavel: '',
@@ -329,7 +327,6 @@ export default function CreateTasks() {
     showInfo: false
   };
   const [DTODelivery, setDTODelivery] = useState<any[]>([DeliveryDefault]);
-  // const [dataFlow, setDataFlow] = useState<any[]>();
   const [submitState, setSubmitState] = useState<Date>(new Date());
   const [modalWithoutSchedule, setModalWithoutSchedule] = useState<boolean>(false);
   const [usersWithoutSchedule, setUsersWithoutSchedule] = useState<UsersNoSchedule[]>([]);
@@ -398,19 +395,6 @@ export default function CreateTasks() {
       getProjects(DTOForm.tenant_id);
     }
   }, [DTOForm]);
-
-  // useEffect(() => {
-  //   const getDataFlow = async () => {
-  //     try {
-  //       const response = await api.get(`/flow/${DTOForm.flow_id}`);
-  //       setDataFlow(response.data.result);
-  //     } catch (error) {
-  //       console.log('log Error Flow', error);
-  //     }
-  //   };
-
-  //   getDataFlow();
-  // }, [DTOForm]);
 
   const handleDeliveryTitle = (value: any, id: any) => {
     if (location.state !== null) {
@@ -1508,7 +1492,6 @@ export default function CreateTasks() {
           if (location.state !== null && location.state.task_id) {
             await api.put(`tasks/${location.state.task_id}`, createNewData);
           } else {
-            console.log('log do DTO on submit errado =>', createNewData);
             await api.post(`tasks`, createNewData);
           }
         }
@@ -1549,22 +1532,6 @@ export default function CreateTasks() {
         ...prevState,
         ['client']: selectedClient[0]
       }));
-
-      // if (DTOForm.tenant_id !== '' && DTOForm.ticket_id !== '') {
-      //   addToast({
-      //     type: 'warning',
-      //     title: 'ATENÇÃO',
-      //     description: 'Não é possivel alterar o cliente ao criar tarefa com base no ticket'
-      //   });
-      // } else {
-      //   const id = e.target.value;
-      //   const selectedClient: any = dataClient?.filter((obj: any) => obj.tenant_id === id);
-      //   setSelectedSummaryInfos((prevState: any) => ({
-      //     ...prevState,
-      //     ['client']: selectedClient[0]
-      //   }));
-      //   handleChangeInput(e);
-      // }
     } else if (e.target.name === 'project_product_id') {
       if (user?.organizations?.length > 0) {
         const id = e.target.value;
