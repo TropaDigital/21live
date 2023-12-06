@@ -9,24 +9,25 @@ import { v4 as uuidV4 } from 'uuid';
 import Upload from '.';
 import { Container } from '../../pages/Projects/ComponentSteps/styles';
 import FileList from './FileList';
+import { UploadedFilesProps } from '../../types';
 
-export interface UploadedFilesProps {
-  file?: File;
-  file_id: string;
-  // name: string;
-  readableSize: string;
-  preview: string;
-  progress?: number;
-  uploaded: boolean;
-  error?: boolean;
-  url: string | null;
-  bucket: string;
-  key: string;
-  size: number;
-  file_name: string;
-  isNew: boolean;
-  loading: boolean;
-}
+// export interface UploadedFilesProps {
+//   file?: File;
+//   file_id: string;
+//   // name: string;
+//   readableSize: string;
+//   preview: string;
+//   progress?: number;
+//   uploaded: boolean;
+//   error?: boolean;
+//   url: string | null;
+//   bucket: string;
+//   key: string;
+//   size: number;
+//   file_name: string;
+//   isNew: boolean;
+//   loading: boolean;
+// }
 
 interface UpdateFileData {
   progress?: number;
