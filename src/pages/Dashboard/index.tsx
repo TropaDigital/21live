@@ -523,52 +523,52 @@ export default function Dashboard() {
   const userCards: UserCardProps[] = [
     {
       userInfos: {
-        user_name: data && dashType === 'admin' ? data.top_users[0].name : '',
-        clientsNumber: data && dashType === 'admin' ? data.top_users[0].clientes : 0,
+        user_name: data && dashType === 'admin' ? data.top_users[0]?.name : '',
+        clientsNumber: data && dashType === 'admin' ? data.top_users[0]?.clientes : 0,
         avatar: PersonTest
       },
       tableData: {
-        totalJobs: data && dashType === 'admin' ? data.top_users[0].tarefas_total : 0,
-        pendingSend: data && dashType === 'admin' ? data.top_users[0].pendente : 0,
-        pendingApro: data && dashType === 'admin' ? data.top_users[0].aguardando_aprovacao : 0,
-        approved: data && dashType === 'admin' ? data.top_users[0].entregue : 0
+        totalJobs: data && dashType === 'admin' ? data.top_users[0]?.tarefas_total : 0,
+        pendingSend: data && dashType === 'admin' ? data.top_users[0]?.pendente : 0,
+        pendingApro: data && dashType === 'admin' ? data.top_users[0]?.aguardando_aprovacao : 0,
+        approved: data && dashType === 'admin' ? data.top_users[0]?.entregue : 0
       },
       mensalReport: {
-        reunions: data && dashType === 'admin' ? data.top_users[0].reuniao : 0,
+        reunions: data && dashType === 'admin' ? data.top_users[0]?.reuniao : 0,
         reports: '2'
       }
     },
     {
       userInfos: {
-        user_name: data && dashType === 'admin' ? data.top_users[1].name : '',
-        clientsNumber: data && dashType === 'admin' ? data.top_users[1].clientes : 0,
+        user_name: data && dashType === 'admin' ? data.top_users[1]?.name : '',
+        clientsNumber: data && dashType === 'admin' ? data.top_users[1]?.clientes : 0,
         avatar: PersonTest
       },
       tableData: {
-        totalJobs: data && dashType === 'admin' ? data.top_users[1].tarefas_total : 0,
-        pendingSend: data && dashType === 'admin' ? data.top_users[1].pendente : 0,
-        pendingApro: data && dashType === 'admin' ? data.top_users[1].aguardando_aprovacao : 0,
-        approved: data && dashType === 'admin' ? data.top_users[1].entregue : 0
+        totalJobs: data && dashType === 'admin' ? data.top_users[1]?.tarefas_total : 0,
+        pendingSend: data && dashType === 'admin' ? data.top_users[1]?.pendente : 0,
+        pendingApro: data && dashType === 'admin' ? data.top_users[1]?.aguardando_aprovacao : 0,
+        approved: data && dashType === 'admin' ? data.top_users[1]?.entregue : 0
       },
       mensalReport: {
-        reunions: data && dashType === 'admin' ? data.top_users[1].reuniao : 0,
+        reunions: data && dashType === 'admin' ? data.top_users[1]?.reuniao : 0,
         reports: '4'
       }
     },
     {
       userInfos: {
-        user_name: data && dashType === 'admin' ? data.top_users[2].name : '',
-        clientsNumber: data && dashType === 'admin' ? data.top_users[2].clientes : 0,
+        user_name: data && dashType === 'admin' ? data.top_users[2]?.name : '',
+        clientsNumber: data && dashType === 'admin' ? data.top_users[2]?.clientes : 0,
         avatar: PersonTest
       },
       tableData: {
-        totalJobs: data && dashType === 'admin' ? data.top_users[2].tarefas_total : 0,
-        pendingSend: data && dashType === 'admin' ? data.top_users[2].pendente : 0,
-        pendingApro: data && dashType === 'admin' ? data.top_users[2].aguardando_aprovacao : 0,
-        approved: data && dashType === 'admin' ? data.top_users[2].entregue : 0
+        totalJobs: data && dashType === 'admin' ? data.top_users[2]?.tarefas_total : 0,
+        pendingSend: data && dashType === 'admin' ? data.top_users[2]?.pendente : 0,
+        pendingApro: data && dashType === 'admin' ? data.top_users[2]?.aguardando_aprovacao : 0,
+        approved: data && dashType === 'admin' ? data.top_users[2]?.entregue : 0
       },
       mensalReport: {
-        reunions: data && dashType === 'admin' ? data.top_users[2].reuniao : 0,
+        reunions: data && dashType === 'admin' ? data.top_users[2]?.reuniao : 0,
         reports: '5'
       }
     }
