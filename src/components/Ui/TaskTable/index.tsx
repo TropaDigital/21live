@@ -205,6 +205,10 @@ export default function TaskTable({
                           ? 'Em Andamento'
                           : task.status === 'Concluida'
                           ? 'Concluída'
+                          : task.status === 'Alteração Interna'
+                          ? 'Alteração interna'
+                          : task.status === 'Alteração Externa'
+                          ? 'Alteração externa'
                           : 'Pendente'}
                       </div>
                     </td>
