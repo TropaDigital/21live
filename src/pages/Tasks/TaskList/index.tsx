@@ -20,9 +20,13 @@ import ButtonTable from '../../../components/Buttons/ButtonTable';
 import HeaderPage from '../../../components/HeaderPage';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { Table } from '../../../components/Table';
-import { TableHead } from '../../../components/Table/styles';
+import { FilterGroup, TableHead } from '../../../components/Table/styles';
 import Alert from '../../../components/Ui/Alert';
-import { ContainerDefault } from '../../../components/UiElements/styles';
+import {
+  AppliedFilter,
+  ContainerDefault,
+  FilterTotal
+} from '../../../components/UiElements/styles';
 import Pagination from '../../../components/Pagination';
 import ModalDefault from '../../../components/Ui/ModalDefault';
 import {
@@ -46,6 +50,12 @@ import moment from 'moment';
 
 // Styles
 import { ModalShowTaskWrapper, Flag, StatusTable, FilterTasks } from './styles';
+
+interface FilterProps {
+  status: string;
+  client: string;
+  [key: string]: string; // Index signature
+}
 
 export default function TaskList() {
   const { addToast } = useToast();
@@ -78,7 +88,7 @@ export default function TaskList() {
   });
   const [modalFilters, setModalFilters] = useState<boolean>(false);
   const navigate = useNavigate();
-  const [filter, setFilter] = useState({
+  const [filter, setFilter] = useState<FilterProps>({
     status: '',
     client: ''
   });
@@ -215,6 +225,19 @@ export default function TaskList() {
 
   const hasFilters = Object.values(filter).every((obj) => obj === null || obj === '');
 
+  const countNonEmptyProperties = () => {
+    let count = 0;
+    for (const key in filter) {
+      if (Object.prototype.hasOwnProperty.call(filter, key)) {
+        // Check if the property is not empty or null
+        if (filter[key] !== '' && filter[key] !== null) {
+          count++;
+        }
+      }
+    }
+    return count;
+  };
+
   return (
     <ContainerDefault>
       <HeaderPage title="Tarefas">
@@ -277,12 +300,33 @@ export default function TaskList() {
               </ButtonDefault>
             </FilterTasks>
           </TableHead>
-          {/* <FilterGroup>
-            <div>
-              Filtros utilizados: {filter.client !== '' ? filter.client : ''}{' '}
-              {filter.status !== '' ? filter.status : ''}
-            </div>
-          </FilterGroup> */}
+          {!hasFilters && (
+            <FilterGroup>
+              <FilterTotal>
+                <div className="filter-title">Filtros ({countNonEmptyProperties()}):</div>
+                {filter.client !== '' ? <span>Cliente</span> : ''}
+                {filter.status !== '' ? <span>Status</span> : ''}
+              </FilterTotal>
+
+              <AppliedFilter>
+                {filter.client !== '' ? (
+                  <div className="filter-title">
+                    Cliente: <span>{clientFilter.label}</span>
+                  </div>
+                ) : (
+                  ''
+                )}
+
+                {filter.status !== '' ? (
+                  <div className="filter-title">
+                    Status: <span>{filter.status}</span>
+                  </div>
+                ) : (
+                  ''
+                )}
+              </AppliedFilter>
+            </FilterGroup>
+          )}
           <table>
             <thead>
               <tr>
@@ -341,6 +385,10 @@ export default function TaskList() {
                           ? 'Concluída'
                           : row.status === 'Aguardando Aprovação'
                           ? 'Aguardando Aprovação'
+                          : row.status === 'Alteração Interna'
+                          ? 'Alteração interna'
+                          : row.status === 'Alteração Externa'
+                          ? 'Alteração externa'
                           : 'Pendente'}
                       </StatusTable>
                     </td>
