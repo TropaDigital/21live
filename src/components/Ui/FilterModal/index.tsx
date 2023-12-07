@@ -63,7 +63,11 @@ export default function FilterModal({
             <FilterProduct applyFilters={applyFilters} clearFilters={clearFilters} />
           )}
           {filterType === 'team' && (
-            <FilterTeam applyFilters={applyFilters} clearFilters={clearFilters} />
+            <FilterTeam
+              applyFilters={applyFilters}
+              clearFilters={clearFilters}
+              roleSelected={clientSelected}
+            />
           )}
           {filterType === 'meet' && (
             <FilterMeeting applyFilters={applyFilters} clearFilters={clearFilters} />
