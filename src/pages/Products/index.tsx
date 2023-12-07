@@ -30,13 +30,15 @@ import { SelectDefault } from '../../components/Inputs/SelectDefault';
 import { TextAreaDefault } from '../../components/Inputs/TextAreaDefault';
 import Pagination from '../../components/Pagination';
 import { Table } from '../../components/Table';
-import { FieldTogleButton, TableHead } from '../../components/Table/styles';
+import { FieldTogleButton, FilterGroup, TableHead } from '../../components/Table/styles';
 import Alert from '../../components/Ui/Alert';
 import ModalDefault from '../../components/Ui/ModalDefault';
 import {
+  AppliedFilter,
   ContainerDefault,
   FieldDefault,
   FieldGroup,
+  FilterTotal,
   FooterModal
 } from '../../components/UiElements/styles';
 import { CheckboxDefault } from '../../components/Inputs/CheckboxDefault';
@@ -106,6 +108,12 @@ interface IModalKit {
   kit: IDataKit;
 }
 
+interface FilterProps {
+  category: string;
+  type: string;
+  [key: string]: string; // Index signature
+}
+
 export default function Services() {
   const { addToast } = useToast();
   const { formData, setData, handleOnChange, handleOnChangeSwitch, handleOnChangeMinutes } =
@@ -157,7 +165,7 @@ export default function Services() {
     (search: string) => setSearch(search),
     700
   );
-  const [filter, setFilter] = useState({
+  const [filter, setFilter] = useState<FilterProps>({
     category: '',
     type: ''
   });
@@ -754,6 +762,19 @@ export default function Services() {
 
   const hasFilters = Object.values(filter).every((obj) => obj === null || obj === '');
 
+  const countNonEmptyProperties = () => {
+    let count = 0;
+    for (const key in filter) {
+      if (Object.prototype.hasOwnProperty.call(filter, key)) {
+        // Check if the property is not empty or null
+        if (filter[key] !== '' && filter[key] !== null) {
+          count++;
+        }
+      }
+    }
+    return count;
+  };
+
   return (
     <ContainerDefault>
       <HeaderPage title="Produtos">
@@ -869,6 +890,33 @@ export default function Services() {
             </ButtonDefault>
           </FieldGroup>
         </TableHead>
+        {!hasFilters && (
+          <FilterGroup>
+            <FilterTotal>
+              <div className="filter-title">Filtros ({countNonEmptyProperties()}):</div>
+              {filter.category !== '' ? <span>Categoria</span> : ''}
+              {filter.type !== '' ? <span>Tipo</span> : ''}
+            </FilterTotal>
+
+            <AppliedFilter>
+              {filter.category !== '' ? (
+                <div className="filter-title">
+                  Categoria: <span>{filter.category}</span>
+                </div>
+              ) : (
+                ''
+              )}
+
+              {filter.type !== '' ? (
+                <div className="filter-title">
+                  Tipo: <span>{filter.type}</span>
+                </div>
+              ) : (
+                ''
+              )}
+            </AppliedFilter>
+          </FilterGroup>
+        )}
         {typeList === 'produtos' && (
           <table>
             <thead>
