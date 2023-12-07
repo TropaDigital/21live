@@ -2,8 +2,8 @@ import styled from 'styled-components';
 
 export const CardWellcomeDash = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 24px;
 
   position: relative;
 
@@ -26,6 +26,12 @@ export const CardWellcomeDash = styled.div`
       color: var(--gray-500);
     }
   }
+`;
+
+export const CardWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `;
 
 export const FilterButtons = styled.div`
