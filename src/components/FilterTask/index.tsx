@@ -28,8 +28,8 @@ interface FilterProps {
 }
 
 interface SelectedFilters {
-  client: string;
-  status: string;
+  client: any;
+  status: any;
 }
 
 export default function FilterTask({ applyFilters, clearFilters, selectedClient }: FilterProps) {
@@ -120,6 +120,8 @@ export default function FilterTask({ applyFilters, clearFilters, selectedClient 
             <option value="Concluida">Concluída</option>
             <option value="Pendente">Pendente</option>
             <option value="Em Andamento">Em progresso</option>
+            <option value="Alteração Interna">Alteração interna</option>
+            <option value="Alteração Externa">Alteração externa</option>
           </SelectDefault>
         </div>
       </FilterOptions>
