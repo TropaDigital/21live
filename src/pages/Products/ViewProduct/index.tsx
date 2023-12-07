@@ -124,6 +124,7 @@ export default function ViewProductsDeliveries() {
     returnMotive: ''
   });
   const [toClientConfirmation, setToClientConfirmation] = useState<boolean>(false);
+  const [showHoursBack, setShowHoursBack] = useState<boolean>(false);
 
   const deliveryId = location.state.task.deliverys.filter(
     (obj: any) => Number(obj.order) === location.state.task_index
@@ -149,6 +150,7 @@ export default function ViewProductsDeliveries() {
     creation_description: location.state.task.creation_description
   };
 
+  const actualDate = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
   const actualStep = timeLineData?.currentStep;
   const uploadIsTrue = timeLineData
     ? timeLineData.steps.filter((obj) => obj.step === actualStep)
@@ -162,7 +164,7 @@ export default function ViewProductsDeliveries() {
   const uploadClient = uploadIsTrue && uploadIsTrue[0].tenant_approve === 'true';
 
   const stepsToReturn: any[] = timeLineData
-    ? timeLineData.steps.filter((obj) => Number(obj.step) <= Number(actualStep))
+    ? timeLineData.steps.filter((obj) => Number(obj.step) < Number(actualStep))
     : [];
 
   useEffect(() => {
@@ -458,8 +460,15 @@ export default function ViewProductsDeliveries() {
   };
 
   const handleAssignTask = (values: any) => {
-    setModalSendToUser(false);
-    handleSendToNextUser(values);
+    if (!showHoursBack) {
+      setModalSendToUser(false);
+      handleSendToNextUser(values);
+    }
+
+    if (showHoursBack) {
+      setModalSendToUser(false);
+      handleReturnTask(values);
+    }
   };
 
   const handleFinishDelivery = async () => {
@@ -802,21 +811,38 @@ export default function ViewProductsDeliveries() {
     }
   }
 
-  async function checkFlow() {
+  async function checkFlow(checkType: string) {
     try {
       setLoading(true);
 
-      const response = await api.get(
-        `/flow-function?step=${Number(actualStep) + 1}&flow_id=${dataTask?.flow_id}`
-      );
+      if (checkType === 'next') {
+        const response = await api.get(
+          `/flow-function?step=${Number(actualStep) + 1}&flow_id=${dataTask?.flow_id}`
+        );
 
-      if (response.data.result[0].show_hours === 'true') {
-        setModalSendToUser(true);
-        // console.log('log do checkFlow to show hours');
+        if (response.data.result[0].show_hours === 'true') {
+          setModalSendToUser(true);
+          // console.log('log do checkFlow to show hours');
+        }
+        if (response.data.result[0].show_hours === 'false') {
+          handleNextUser('next');
+          // console.log('log do checkFlow to show schedule');
+        }
       }
-      if (response.data.result[0].show_hours === 'false') {
-        handleNextUser();
-        // console.log('log do checkFlow to show schedule');
+
+      if (checkType === 'back') {
+        const response = await api.get(
+          `/flow-function?step=${returnInfos.chosenStep}&flow_id=${dataTask?.flow_id}`
+        );
+
+        if (response.data.result[0].show_hours === 'true') {
+          setModalSendToUser(true);
+          setShowHoursBack(true);
+        }
+        if (response.data.result[0].show_hours === 'false') {
+          handleNextUser('back');
+          setShowHoursBack(true);
+        }
       }
 
       setLoading(false);
@@ -826,46 +852,76 @@ export default function ViewProductsDeliveries() {
     }
   }
 
-  async function handleNextUser() {
+  async function handleNextUser(type: string) {
     try {
-      const response = await api.get(
-        `/task/next-user?project_product_id=${dataTask?.project_product_id}&flow_id=${
-          dataTask?.flow_id
-        }&step=${Number(actualStep) + 1}`
-      );
-      setUsersWithoutSchedule(response.data.result);
-      setModalWithoutSchedule(true);
+      setLoading(true);
+
+      if (type === 'next') {
+        const response = await api.get(
+          `/task/next-user?project_product_id=${dataTask?.project_product_id}&flow_id=${
+            dataTask?.flow_id
+          }&step=${Number(actualStep) + 1}`
+        );
+        setUsersWithoutSchedule(response.data.result);
+        setModalWithoutSchedule(true);
+      }
+
+      if (type === 'back') {
+        const response = await api.get(
+          `/task/next-user?project_product_id=${dataTask?.project_product_id}&flow_id=${dataTask?.flow_id}&step=${returnInfos.chosenStep}`
+        );
+        setUsersWithoutSchedule(response.data.result);
+        setModalWithoutSchedule(true);
+      }
+
+      setLoading(false);
     } catch (error: any) {
       console.log('log error handleNextUser', error);
+
+      setLoading(false);
     }
   }
 
-  const handleSetUserWithoutSchedule = () => {
-    const actualDate = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+  const handleSetUserWithoutSchedule = async () => {
+    try {
+      setLoading(true);
 
-    addToast({
-      title: 'Atenção',
-      type: 'warning',
-      description: 'Fluxo passando por ajustes'
-    });
-    // setDTOForm((prevState: any) => ({ ...prevState, ['user_id']: selectedInitialUser?.user_id }));
-    // setDTOForm((prevState: any) => ({ ...prevState, ['start_job']: actualDate }));
+      const next_user = {
+        next_user: selectedInitialUser?.user_id,
+        start_job: actualDate,
+        end_job: ''
+      };
 
-    // if (DTOForm.gen_ticket === '' && ticketAsk === 'never') {
-    //   setDTOForm((prevState: any) => ({
-    //     ...prevState,
-    //     ['gen_ticket']: 'false'
-    //   }));
-    // }
+      const response = await api.put(
+        `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
+        next_user
+      );
+      console.log('log do response', response.data.result);
 
-    // if (DTOForm.gen_ticket === '' && ticketAsk === 'always') {
-    //   setDTOForm((prevState: any) => ({
-    //     ...prevState,
-    //     ['gen_ticket']: 'true'
-    //   }));
-    // }
-
-    // setSubmitState(new Date());
+      if (response.data.result === 1) {
+        navigate('/minhas-tarefas');
+        localStorage.removeItem('stopwatchState');
+      }
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log error next user', error);
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
+      setLoading(false);
+    }
   };
 
   const handleChooseStepAndMotive = (e: any) => {
@@ -875,18 +931,41 @@ export default function ViewProductsDeliveries() {
   };
 
   const handleBackFlow = () => {
-    const selectedStep = timeLineData?.steps.filter(
-      (obj) => obj.card_id === returnInfos.chosenStep
-    );
+    const selectedStep = timeLineData?.steps.filter((obj) => obj.step === returnInfos.chosenStep);
 
-    addToast({
-      title: 'Atenção',
-      type: 'warning',
-      description: 'Função ainda não implementada!'
-    });
+    checkFlow('back');
 
     console.log('log do selectedStep =>', selectedStep);
   };
+
+  async function handleReturnTask(infos: any) {
+    try {
+      setLoading(true);
+
+      const returnParams = {
+        task_id: dataTask?.task_id,
+        reason: returnInfos.returnMotive,
+        step: returnInfos.chosenStep,
+        user_id: infos.user_id,
+        start_job: infos.start_job,
+        end_job: infos.end_job
+      };
+
+      console.log('log do returnParams =>', returnParams);
+      console.log('log do back or next =>', showHoursBack);
+
+      const response = await api.put(`/task/return-task`, returnParams);
+
+      if (response.data.status === 'success') {
+        navigate('/minhas-tarefas');
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.log('log return task error', error);
+      setLoading(false);
+    }
+  }
 
   const handleCancelReturn = () => {
     setReturnInfos({
@@ -928,7 +1007,7 @@ export default function ViewProductsDeliveries() {
               disableButton={false}
               goBack
               buttonType="send"
-              sendToNext={checkFlow}
+              sendToNext={() => checkFlow('next')}
               nextStepInfo={timeLineData}
               backFlow={() => setModalReturnFlow(true)}
             />
@@ -943,7 +1022,7 @@ export default function ViewProductsDeliveries() {
               disableButton={false}
               goBack
               buttonType="send"
-              sendToNext={checkFlow}
+              sendToNext={() => checkFlow('next')}
               nextStepInfo={timeLineData}
               backFlow={() => setModalReturnFlow(true)}
             />
@@ -959,7 +1038,7 @@ export default function ViewProductsDeliveries() {
               disableButton={false}
               goBack
               buttonType="send"
-              sendToNext={checkFlow}
+              sendToNext={() => checkFlow('next')}
               nextStepInfo={timeLineData}
               backFlow={() => setModalReturnFlow(true)}
             />
@@ -1249,7 +1328,7 @@ export default function ViewProductsDeliveries() {
           step={Number(location.state.task.step) + 1}
           user_alocated={handleAssignTask}
           closeModal={() => setModalSendToUser(false)}
-          manualOverrideDate={false}
+          manualOverrideDate={showHoursBack}
         />
       </ModalDefault>
 
@@ -1257,7 +1336,7 @@ export default function ViewProductsDeliveries() {
       <ModalDefault
         isOpen={modalWithoutSchedule}
         onOpenChange={() => setModalWithoutSchedule(false)}
-        title="Escolha o usuário inicial"
+        title="Escolha o usuário que receberá a tarefa"
       >
         <UsersWrapper>
           <ProductsTable>
@@ -1305,21 +1384,33 @@ export default function ViewProductsDeliveries() {
             >
               Cancelar
             </ButtonDefault>
-            <ButtonDefault
-              typeButton="primary"
-              onClick={() => {
-                handleSetUserWithoutSchedule();
-                setModalWithoutSchedule(false);
-                setSelectedInitalUser({
-                  function: '',
-                  name: '',
-                  tasks: 0,
-                  user_id: ''
-                });
-              }}
-            >
-              Escolher
-            </ButtonDefault>
+            {!showHoursBack && (
+              <ButtonDefault
+                typeButton="primary"
+                onClick={() => {
+                  handleSetUserWithoutSchedule();
+                  setModalWithoutSchedule(false);
+                }}
+              >
+                Escolher
+              </ButtonDefault>
+            )}
+
+            {showHoursBack && (
+              <ButtonDefault
+                typeButton="primary"
+                onClick={() => {
+                  handleReturnTask({
+                    user_id: selectedInitialUser?.user_id,
+                    start_job: actualDate,
+                    end_job: ''
+                  });
+                  setModalWithoutSchedule(false);
+                }}
+              >
+                Escolher
+              </ButtonDefault>
+            )}
           </ModalButtons>
         </UsersWrapper>
       </ModalDefault>
@@ -1473,7 +1564,7 @@ export default function ViewProductsDeliveries() {
             value={returnInfos.chosenStep}
           >
             {stepsToReturn?.map((row: StepTimeline) => (
-              <option key={row.card_id} value={row.card_id}>
+              <option key={row.card_id} value={row.step}>
                 {row.name}
               </option>
             ))}
