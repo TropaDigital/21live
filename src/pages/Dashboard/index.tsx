@@ -783,6 +783,7 @@ export default function Dashboard() {
             openReport={() => setModalReport(true)}
             hasFilters={hasFilters}
             hasReport={true}
+            filtersApplieds={filter}
           />
 
           {/* Cards pequenos */}
@@ -1628,6 +1629,7 @@ export default function Dashboard() {
             openFilter={() => setModalFilters(true)}
             hasFilters={hasFilters}
             hasReport={false}
+            filtersApplieds={filter}
           />
 
           {/* Cards pequenos */}
@@ -1844,6 +1846,7 @@ export default function Dashboard() {
             openFilter={() => setModalFilters(true)}
             hasFilters={hasFilters}
             hasReport={false}
+            filtersApplieds={filter}
           />
 
           {/* Cards pequenos */}
@@ -2128,6 +2131,7 @@ export default function Dashboard() {
             openFilter={() => setModalFilters(true)}
             hasFilters={hasFilters}
             hasReport={false}
+            filtersApplieds={filter}
           />
 
           {/* Top cards */}
