@@ -62,6 +62,7 @@ import {
   ShowServicesContainer,
   TableKits
 } from './styles';
+import { useParamsHook } from '../../hooks/useParams';
 
 interface ServicesProps {
   job_service_id?: number | string;
@@ -116,6 +117,7 @@ interface FilterProps {
 
 export default function Services() {
   const { addToast } = useToast();
+  const { parameters, getParams } = useParamsHook();
   const { formData, setData, handleOnChange, handleOnChangeSwitch, handleOnChangeMinutes } =
     useForm({
       service: '',
@@ -1318,12 +1320,15 @@ export default function Services() {
               </SummaryTaskInfo>
 
               <SummaryTaskInfo>
-                <div className="title-info">Total de horas de criação:</div>
+                <div className="title-info">Total de horas de atividade:</div>
                 <div className="info">{modalShowProduct.product.minutes_creation}</div>
               </SummaryTaskInfo>
 
               <SummaryTaskInfo>
-                <div className="title-info">Total de horas de redação:</div>
+                <div className="title-info">
+                  Total de horas de{' '}
+                  {parameters.input_name !== '' ? parameters.input_name : 'Pré-requisito'}:
+                </div>
                 <div className="info">{modalShowProduct.product.minutes_essay}</div>
               </SummaryTaskInfo>
 
