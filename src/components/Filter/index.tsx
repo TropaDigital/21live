@@ -19,9 +19,9 @@ type HandleOnChange = (
 ) => void;
 
 interface FilterProps {
-  filterProps?: SelectedFilters;
   applyFilters: any;
   clearFilters: any;
+  selectedStatus: any;
 }
 
 interface SelectedFilters {
@@ -33,7 +33,7 @@ interface SelectedFilters {
   toDate: string;
 }
 
-export default function FilterMenu({ filterProps, applyFilters, clearFilters }: FilterProps) {
+export default function FilterMenu({ applyFilters, clearFilters, selectedStatus }: FilterProps) {
   const [dataStatus, setDataStatus] = useState<any[]>([]);
   const tenantId = localStorage.getItem('tenant_id');
 
@@ -78,9 +78,12 @@ export default function FilterMenu({ filterProps, applyFilters, clearFilters }: 
 
   const handleApplyFilters = () => {
     applyFilters(choosenFilters);
+    if (choosenFilters.status !== '') {
+      selectedStatus(filteredStatus);
+    }
   };
 
-  // const filteredStatus = dataStatus.filter((obj) => obj.ticket_status_id === choosenFilters.status);
+  const filteredStatus = dataStatus.find((obj) => obj.ticket_status_id === choosenFilters.status);
 
   return (
     <ContainerFilter>
