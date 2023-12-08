@@ -478,7 +478,7 @@ export default function InfoDeliveries({
                   <span>-</span>
                   {row?.creation_date_end !== '' ? (
                     <DateContainer>
-                      <div className="container-title">Entrega criação</div>
+                      <div className="container-title">Entrega de atividade</div>
                       <div
                         className="date"
                         onClick={() =>
@@ -509,7 +509,7 @@ export default function InfoDeliveries({
                           })
                         }
                       >
-                        <IconCalendar /> Adicionar data entrega da criação
+                        <IconCalendar /> Adicionar data entrega da atividade
                       </div>
                     </DateContainer>
                   )}
