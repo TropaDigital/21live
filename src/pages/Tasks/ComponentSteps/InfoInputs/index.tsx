@@ -48,7 +48,7 @@ export default function TaskInputs({
       </InputField>
 
       <InputField className={inputsError?.creation_description ? 'error' : ''}>
-        <InputFieldTitle>Input criação</InputFieldTitle>
+        <InputFieldTitle>Input atividade</InputFieldTitle>
         <WrapperEditor
           mentionData={mentions}
           value={valueSecond}
