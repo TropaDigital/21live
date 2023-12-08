@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { BiCalendar, BiFilter, BiPlus, BiSearchAlt, BiShow, BiX } from 'react-icons/bi';
 
 // Services
@@ -30,8 +30,10 @@ import { FilterGroup, TableHead } from '../../../components/Table/styles';
 import Alert from '../../../components/Ui/Alert';
 import ModalDefault from '../../../components/Ui/ModalDefault';
 import {
+  AppliedFilter,
   ContainerGroupTable,
   FieldDefault,
+  FilterTotal,
   FooterModal,
   SectionDefault
 } from '../../../components/UiElements/styles';
@@ -107,6 +109,14 @@ interface DownloadFiles {
   url: string;
 }
 
+interface FilterProps {
+  client: string;
+  fromDate: string;
+  toDate: string;
+  user_id: string;
+  [key: string]: string; // Index signature
+}
+
 export default function ListMeeting() {
   const { addToast } = useToast();
   const { formData, setFormValue, setData, handleOnChange, handleOnChangeCheckbox } = useForm({
@@ -133,7 +143,7 @@ export default function ListMeeting() {
   );
 
   const [filterOrder, setFilterOrder] = useState('desc');
-  const [filter, setFilter] = useState({
+  const [filter, setFilter] = useState<FilterProps>({
     client: '',
     fromDate: '',
     toDate: '',
@@ -160,7 +170,13 @@ export default function ListMeeting() {
   const [loading, setLoading] = useState(false);
 
   const [text, setText] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState<any>('recent');
+  const [clientFilter, setClientFilter] = useState({
+    value: '',
+    label: '',
+    image: '',
+    color: ''
+  });
+  const [responsibleSelected, setResponsibleSelected] = useState<any>();
 
   const [previewImage, setPreviewImage] = useState({
     isOpen: false,
@@ -451,6 +467,23 @@ export default function ListMeeting() {
 
   const hasFilters = Object.values(filter).every((obj) => obj === null || obj === '');
 
+  const countNonEmptyProperties = () => {
+    let count = 0;
+    for (const key in filter) {
+      if (Object.prototype.hasOwnProperty.call(filter, key)) {
+        // Check if the property is not empty or null
+        if (filter[key] !== '' && filter[key] !== null) {
+          count++;
+        }
+      }
+    }
+    return count;
+  };
+
+  useEffect(() => {
+    console.log('log do filters =>', filter);
+  }, [filter]);
+
   return (
     <Container>
       <HeaderPage title="Atas e Reuniões">
@@ -481,44 +514,7 @@ export default function ListMeeting() {
                       </strong>
                     </h2>
                   </div>
-                </TableHead>
-                <FilterGroup
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    width: '100%'
-                  }}
-                >
-                  <ButtonsFilter>
-                    {/* <FilterButton
-                      onClick={() => {
-                        setSelectedFilter('all');
-                        setFilterOrder('desc');
-                      }}
-                      className={selectedFilter === 'all' ? 'selected' : ''}
-                    >
-                      Ver todos
-                    </FilterButton> */}
-                    <FilterButton
-                      onClick={() => {
-                        setSelectedFilter('recent');
-                        setFilterOrder('desc');
-                      }}
-                      className={selectedFilter === 'recent' ? 'selected' : ''}
-                    >
-                      Mais recente
-                    </FilterButton>
-                    <FilterButton
-                      onClick={() => {
-                        setSelectedFilter('older');
-                        setFilterOrder('asc');
-                      }}
-                      className={selectedFilter === 'older' ? 'selected' : ''}
-                    >
-                      Mais antigo
-                    </FilterButton>
-                  </ButtonsFilter>
+
                   <FilterWrapper>
                     <InputDefault
                       label=""
@@ -552,7 +548,75 @@ export default function ListMeeting() {
                       Filtros
                     </ButtonDefault>
                   </FilterWrapper>
-                </FilterGroup>
+                </TableHead>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <FilterGroup>
+                    <ButtonsFilter>
+                      <FilterButton
+                        onClick={() => {
+                          setFilterOrder('desc');
+                        }}
+                        className={filterOrder === 'desc' ? 'selected' : ''}
+                      >
+                        Mais recente
+                      </FilterButton>
+                      <FilterButton
+                        onClick={() => {
+                          setFilterOrder('asc');
+                        }}
+                        className={filterOrder === 'asc' ? 'selected' : ''}
+                      >
+                        Mais antigo
+                      </FilterButton>
+                    </ButtonsFilter>
+                    {!hasFilters && (
+                      <FilterTotal>
+                        <div className="filter-title">Filtros ({countNonEmptyProperties()}):</div>
+                        {filter.client !== '' ? <span>Cliente</span> : ''}
+                        {filter.user_id !== '' ? <span>Responsável</span> : ''}
+                        {filter.fromDate !== '' ? <span>Data</span> : ''}
+                      </FilterTotal>
+                    )}
+                  </FilterGroup>
+                  {!hasFilters && (
+                    <FilterGroup>
+                      <AppliedFilter>
+                        {filter.client !== '' ? (
+                          <div className="filter-title">
+                            Cliente: <span>{clientFilter.label}</span>
+                          </div>
+                        ) : (
+                          ''
+                        )}
+
+                        {filter.user_id !== '' ? (
+                          <div className="filter-title">
+                            Responsável: <span>{responsibleSelected?.name}</span>
+                          </div>
+                        ) : (
+                          ''
+                        )}
+
+                        {filter.fromDate !== '' ? (
+                          <div className="filter-title">
+                            Data inicial:{' '}
+                            <span>{moment(filter.fromDate).format('DD/MM/YYYY')}</span>
+                          </div>
+                        ) : (
+                          ''
+                        )}
+
+                        {filter.toDate !== '' ? (
+                          <div className="filter-title">
+                            Data final: <span>{moment(filter.toDate).format('DD/MM/YYYY')}</span>
+                          </div>
+                        ) : (
+                          ''
+                        )}
+                      </AppliedFilter>
+                    </FilterGroup>
+                  )}
+                </div>
                 <table>
                   <thead>
                     <tr style={{ whiteSpace: 'nowrap' }}>
@@ -878,6 +942,8 @@ export default function ListMeeting() {
         onOpenChange={() => setModalFilters(!modalFilters)}
         applyFilters={handleApplyFilters}
         clearFilters={handleClearFilters}
+        clientSelected={setClientFilter}
+        responsible={setResponsibleSelected}
         filterType="meet"
       />
     </Container>
