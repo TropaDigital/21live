@@ -505,7 +505,7 @@ export default function TaskList() {
               )}
 
               <SummaryTaskInfo>
-                <div className="title-info">Data De Input de Criação:</div>
+                <div className="title-info">Data De Input de atividade:</div>
                 <div className="info">
                   {moment(modalViewTask.task.creation_date_end).format('DD/MM/YYYY')}
                 </div>
