@@ -1,6 +1,6 @@
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // Styles
 import { ContainerFilter, FilterButtons, FilterHeader, FilterOptions, FilterTitle } from './styles';
@@ -9,7 +9,7 @@ import { ContainerFilter, FilterButtons, FilterHeader, FilterOptions, FilterTitl
 import { SelectDefault } from '../Inputs/SelectDefault';
 import ButtonDefault from '../Buttons/ButtonDefault';
 import { useFetch } from '../../hooks/useFetch';
-import { OfficeProps } from '../../pages/Team/ListTeam';
+// import { OfficeProps } from '../../pages/Team/ListTeam';
 import SelectImage from '../Inputs/SelectWithImage';
 import { TeamProps, TenantProps } from '../../utils/models';
 import { InputDefault } from '../Inputs/InputDefault';
@@ -22,6 +22,8 @@ type HandleOnChange = (
 interface FilterProps {
   applyFilters: any;
   clearFilters: any;
+  selectedClient: any;
+  selectedResponsible: any;
 }
 
 interface SelectedFilters {
@@ -31,8 +33,13 @@ interface SelectedFilters {
   user_id: string;
 }
 
-export default function FilterMeeting({ applyFilters, clearFilters }: FilterProps) {
-  const { data } = useFetch<OfficeProps[]>(`function`);
+export default function FilterMeeting({
+  applyFilters,
+  clearFilters,
+  selectedClient,
+  selectedResponsible
+}: FilterProps) {
+  // const { data } = useFetch<OfficeProps[]>(`function`);
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const { data: dataTeam } = useFetch<TeamProps[]>('team');
 
@@ -87,7 +94,15 @@ export default function FilterMeeting({ applyFilters, clearFilters }: FilterProp
 
   const handleApplyFilters = () => {
     applyFilters(choosenFilters);
+    if (initialValue.label !== '') {
+      selectedClient(initialValue);
+    }
+    if (choosenFilters.user_id !== '') {
+      selectedResponsible(userSelected);
+    }
   };
+
+  const userSelected = dataTeam?.find((obj) => obj.user_id === choosenFilters.user_id);
 
   return (
     <ContainerFilter>
