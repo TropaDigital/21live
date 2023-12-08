@@ -228,7 +228,7 @@ export default function SummaryTasks({
             </SummaryTaskInfo>
 
             <SummaryTaskInfo>
-              <div className="title-info">Input Criação:</div>
+              <div className="title-info">Input de atividade:</div>
               <div className="info">
                 <div
                   className="description-info"
