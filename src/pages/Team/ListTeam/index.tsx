@@ -573,7 +573,7 @@ export default function Team() {
     // console.log('log das pausas', selectedBreaks);
     // console.log('log dos workdays', workDays);
     // console.log('log do dia selecionado', selectedBreakDay);
-    console.log('log do selectedRole', selectedRole);
+    // console.log('log do selectedRole', selectedRole);
   }, [selectedBreaks, workDays, selectedBreakDay, selectedRole]);
 
   return (
