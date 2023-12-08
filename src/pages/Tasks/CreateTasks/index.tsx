@@ -852,19 +852,19 @@ export default function CreateTasks() {
 
       if (tasksType === 'livre' && createStep === 2) {
         if (DTOForm.copywriting_date_end === '') {
-          throw setErrorInput('copywriting_date_end', 'Data de entrega inicial não informada!');
+          throw setErrorInput('copywriting_date_end', 'Data de entrega não informada!');
         } else {
           setErrorInput('copywriting_date_end', undefined);
         }
 
         if (moment(DTOForm.copywriting_date_end).isSameOrBefore(newDate)) {
-          throw setErrorInput('copywriting_date_end', 'Data de entrega inicial menor que a atual!');
+          throw setErrorInput('copywriting_date_end', 'Data de entrega é menor que a atual!');
         } else {
           setErrorInput('copywriting_date_end', undefined);
         }
 
         if (DTOForm.creation_date_end === '') {
-          throw setErrorInput('creation_date_end', 'Data de entrega de criação não informada!');
+          throw setErrorInput('creation_date_end', 'Data de entrega de atividade não informada!');
         } else {
           setErrorInput('creation_date_end', undefined);
         }
@@ -872,7 +872,7 @@ export default function CreateTasks() {
         if (moment(DTOForm.creation_date_end).isSameOrBefore(DTOForm.copywriting_date_end)) {
           throw setErrorInput(
             'creation_date_end',
-            'Data de entrega de criação menor que a data de entrega inicial!'
+            'Data de entrega de atividade menor que a data de entrega inicial!'
           );
         } else {
           setErrorInput('creation_date_end', undefined);
@@ -990,13 +990,13 @@ export default function CreateTasks() {
         if (!splitDeliveries && location.state !== null) {
           // console.log('log do DTODelivery', DTODelivery);
           if (DTOForm.copywriting_date_end === '') {
-            throw setErrorInput('copywriting_date_end', 'Data de entrega inicial não informada!');
+            throw setErrorInput('copywriting_date_end', 'Data de entrega não informada!');
           } else {
             setErrorInput('copywriting_date_end', undefined);
           }
 
           if (creation_date_end === '') {
-            throw setErrorInput('creation_date_end', 'Data de Entrega Criação é obrigatória!');
+            throw setErrorInput('creation_date_end', 'Data de Entrega de atividade é obrigatória!');
           } else {
             setErrorInput('creation_date_end', undefined);
           }
@@ -1028,13 +1028,13 @@ export default function CreateTasks() {
           // console.log('log do DTODelivery', DTODelivery);
 
           if (DTOForm.copywriting_date_end === '') {
-            throw setErrorInput('copywriting_date_end', 'Data de entrega inicial não informada!');
+            throw setErrorInput('copywriting_date_end', 'Data de entrega não informada!');
           } else {
             setErrorInput('copywriting_date_end', undefined);
           }
 
           if (creation_date_end === '') {
-            throw setErrorInput('creation_date_end', 'Data de Entrega Criação é obrigatória!');
+            throw setErrorInput('creation_date_end', 'Data de Entrega de atividade é obrigatória!');
           } else {
             setErrorInput('creation_date_end', undefined);
           }
@@ -1063,13 +1063,13 @@ export default function CreateTasks() {
         }
       } else if (createStep === 2 && tasksType === 'produto') {
         if (DTOForm.copywriting_date_end === '') {
-          throw setErrorInput('copywriting_date_end', 'Data de entrega inicial não informada!');
+          throw setErrorInput('copywriting_date_end', 'Data de entrega não informada!');
         } else {
           setErrorInput('copywriting_date_end', undefined);
         }
 
         if (creation_date_end === '') {
-          throw setErrorInput('creation_date_end', 'Data de Entrega Criação é obrigatória!');
+          throw setErrorInput('creation_date_end', 'Data de Entrega de atividade é obrigatória!');
         } else {
           setErrorInput('creation_date_end', undefined);
         }
@@ -1094,7 +1094,9 @@ export default function CreateTasks() {
         if (copywriting_description === '') {
           throw setErrorInput(
             'copywriting_description',
-            'Descrição do Input de Pré-requisitos é obrigatória!'
+            `Descrição do Input de ${
+              parameters.input_name !== '' ? parameters.input_name : 'Pré-requisitos'
+            } é obrigatória!`
           );
         } else {
           setErrorInput('copywriting_description', undefined);
@@ -1103,7 +1105,7 @@ export default function CreateTasks() {
         if (creation_description === '') {
           throw setErrorInput(
             'creation_description',
-            'Descrição do Input de criação é obrigatória!'
+            'Descrição do Input de atividade é obrigatória!'
           );
         } else {
           setErrorInput('creation_description', undefined);
@@ -1973,7 +1975,7 @@ export default function CreateTasks() {
 
                       <div style={{ width: !splitDeliveries ? '50%' : '180px' }}>
                         <InputDefault
-                          label="Entrega de Criação"
+                          label="Entrega de atividade"
                           placeholder="00/00/0000"
                           name="creationDate"
                           type="date"
