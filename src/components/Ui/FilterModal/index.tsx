@@ -17,20 +17,11 @@ interface Props {
   onOpenChange?(open: boolean): void;
   closeBtn?: boolean;
   maxWidth?: string;
-  filterProps?: SelectedFilters;
   applyFilters: any;
   clearFilters: any;
   filterType: string;
   clientSelected?: any;
-}
-
-interface SelectedFilters {
-  code: string;
-  format: string;
-  status: string;
-  delivery: string;
-  fromDate: string;
-  toDate: string;
+  responsible?: any;
 }
 
 export default function FilterModal({
@@ -38,11 +29,11 @@ export default function FilterModal({
   isOpen,
   closeBtn,
   maxWidth,
-  filterProps,
   applyFilters,
   clearFilters,
   clientSelected,
-  filterType
+  filterType,
+  responsible
 }: Props) {
   return (
     <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
@@ -50,7 +41,11 @@ export default function FilterModal({
         <Dialog.Overlay className="Overlay" />
         <Dialog.Content className="ModalContent" style={{ maxWidth: maxWidth }}>
           {filterType === 'ticket' && (
-            <FilterMenu applyFilters={applyFilters} clearFilters={clearFilters} />
+            <FilterMenu
+              applyFilters={applyFilters}
+              clearFilters={clearFilters}
+              selectedStatus={clientSelected}
+            />
           )}
           {filterType === 'task' && (
             <FilterTask
@@ -70,7 +65,12 @@ export default function FilterModal({
             />
           )}
           {filterType === 'meet' && (
-            <FilterMeeting applyFilters={applyFilters} clearFilters={clearFilters} />
+            <FilterMeeting
+              applyFilters={applyFilters}
+              clearFilters={clearFilters}
+              selectedClient={clientSelected}
+              selectedResponsible={responsible}
+            />
           )}
           {filterType === 'dash' && (
             <FilterDash applyFilters={applyFilters} clearFilters={clearFilters} />
