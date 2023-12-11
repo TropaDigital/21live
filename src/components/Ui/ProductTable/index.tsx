@@ -150,7 +150,7 @@ export default function ProductTable({
           </thead>
           {data?.products.map((row: any, index: number) => (
             <tbody key={index}>
-              <tr>
+              <tr className={row.status === 'reject' ? 'reject' : ''}>
                 <td style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
                   #{String(index + 1).padStart(2, '0')}
                 </td>
