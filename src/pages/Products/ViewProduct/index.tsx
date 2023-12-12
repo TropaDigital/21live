@@ -987,6 +987,19 @@ export default function ViewProductsDeliveries() {
   return (
     <ContainerDefault>
       <DeliveryWrapper>
+        {uploadClient && (
+          <HeaderOpenTask
+            title={titleInfos}
+            disableButton={true}
+            goBack
+            buttonType="client"
+            nextStepInfo={timeLineData}
+            hideButtonNext={true}
+            sendToNext={() => setModalFinalFile(true)}
+            backFlow={() => ''}
+          />
+        )}
+
         {dataProducts?.status === 'Concluida' && dataTask?.status === 'Concluida' && (
           <HeaderOpenTask
             title={titleInfos}
