@@ -35,6 +35,7 @@ import InstanceLogin from '../pages/Login/InstanceLogin';
 import ViewTask from '../pages/Tasks/ViewTask';
 import Parameters from '../pages/Parameters';
 import MonthlyReport from '../pages/Reports';
+import CreateTaksWithRefused from '../pages/Tasks/RefusedTask';
 
 function RoutesAll() {
   return (
@@ -54,42 +55,6 @@ function RoutesAll() {
         }
       >
         <Route
-          path="/dashboard"
-          element={
-            <PrivateRoutes>
-              <Dashboard />
-            </PrivateRoutes>
-          }
-        />
-
-        <Route
-          path="/perfil"
-          element={
-            <PrivateRoutes>
-              <Profile />
-            </PrivateRoutes>
-          }
-        />
-
-        <Route
-          path="/parametros"
-          element={
-            <PrivateRoutes>
-              <Parameters />
-            </PrivateRoutes>
-          }
-        />
-
-        {/* <Route
-          path="/usuarios"
-          element={
-            <PrivateRoutes>
-              <Users />
-            </PrivateRoutes>
-          }
-        /> */}
-
-        <Route
           path="/clientes"
           element={
             <PrivateRoutes>
@@ -99,28 +64,46 @@ function RoutesAll() {
         />
 
         <Route
-          path="/fluxo"
+          path="/criar-projeto"
           element={
             <PrivateRoutes>
-              <ListFluxo />
+              <CreateProject />
             </PrivateRoutes>
           }
         />
 
         <Route
-          path="/fluxo/editar/:id"
+          path="/criar-tarefa"
           element={
             <PrivateRoutes>
-              <EditFluxo />
+              <CreateTasks />
             </PrivateRoutes>
           }
         />
 
         <Route
-          path="/fluxo/:id"
+          path="/dashboard"
           element={
             <PrivateRoutes>
-              <Board />
+              <Dashboard />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/entrega/:id"
+          element={
+            <PrivateRoutes>
+              <ViewProductsDeliveries />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/entregas/:id"
+          element={
+            <PrivateRoutes>
+              <ViewDelivery />
             </PrivateRoutes>
           }
         />
@@ -144,10 +127,64 @@ function RoutesAll() {
         />
 
         <Route
-          path="/entrega/:id"
+          path="/fluxo"
           element={
             <PrivateRoutes>
-              <ViewProductsDeliveries />
+              <ListFluxo />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/fluxo/:id"
+          element={
+            <PrivateRoutes>
+              <Board />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/fluxo/editar/:id"
+          element={
+            <PrivateRoutes>
+              <EditFluxo />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/minhas-tarefas"
+          element={
+            <PrivateRoutes>
+              <ViewTaskList />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/nova-tarefa"
+          element={
+            <PrivateRoutes>
+              <CreateTaksWithRefused />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/parametros"
+          element={
+            <PrivateRoutes>
+              <Parameters />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/perfil"
+          element={
+            <PrivateRoutes>
+              <Profile />
             </PrivateRoutes>
           }
         />
@@ -180,10 +217,19 @@ function RoutesAll() {
         />
 
         <Route
-          path="/criar-projeto"
+          path="/relatorio"
           element={
             <PrivateRoutes>
-              <CreateProject />
+              <MonthlyReport />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/reuniao"
+          element={
+            <PrivateRoutes>
+              <ListMeeting />
             </PrivateRoutes>
           }
         />
@@ -224,50 +270,14 @@ function RoutesAll() {
           }
         />
 
-        <Route
-          path="/entregas/:id"
+        {/* <Route
+          path="/usuarios"
           element={
             <PrivateRoutes>
-              <ViewDelivery />
+              <Users />
             </PrivateRoutes>
           }
-        />
-
-        <Route
-          path="/minhas-tarefas"
-          element={
-            <PrivateRoutes>
-              <ViewTaskList />
-            </PrivateRoutes>
-          }
-        />
-
-        <Route
-          path="/criar-tarefa"
-          element={
-            <PrivateRoutes>
-              <CreateTasks />
-            </PrivateRoutes>
-          }
-        />
-
-        <Route
-          path="/reuniao"
-          element={
-            <PrivateRoutes>
-              <ListMeeting />
-            </PrivateRoutes>
-          }
-        />
-
-        <Route
-          path="/relatorio"
-          element={
-            <PrivateRoutes>
-              <MonthlyReport />
-            </PrivateRoutes>
-          }
-        />
+        /> */}
       </Route>
 
       <Route path="*" element={<PageNotFound />} />
