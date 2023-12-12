@@ -25,7 +25,7 @@ interface HeaderTaskProps {
   title: TitleProps;
   backPage?: string;
   goBack?: boolean;
-  buttonType?: 'finish' | 'send';
+  buttonType?: 'finish' | 'send' | 'client';
   disableButton?: boolean;
   sendToNext?: () => void;
   nextStepInfo?: any;
@@ -142,6 +142,12 @@ export default function HeaderOpenTask({
           {!disableButton && buttonType === 'finish' && !hideButtonNext && (
             <ButtonDefault typeButton="secondary" onClick={sendToNext}>
               Marcar entrega como concluída
+              <HiOutlineArrowRight />
+            </ButtonDefault>
+          )}
+          {buttonType === 'client' && (
+            <ButtonDefault typeButton="secondary" onClick={sendToNext}>
+              Enviar para cliente
               <HiOutlineArrowRight />
             </ButtonDefault>
           )}
