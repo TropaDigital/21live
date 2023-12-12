@@ -155,8 +155,8 @@ export default function SummaryTasks({
   useEffect(() => {
     // console.log('log do deliveryArrayHours', deliveryArrayHours);
     // console.log('log do totalArrayHours', totalArrayHours);
-    console.log('log do selectedProducts', selectedProducts);
-    console.log('log do taskSummaries', taskSummary);
+    // console.log('log do selectedProducts', selectedProducts);
+    // console.log('log do taskSummaries', taskSummary);
     // console.log('log do projectInfos', projectInfos);
   }, [deliveryArrayHours, totalArrayHours, selectedProducts, taskSummary, projectInfos]);
 
