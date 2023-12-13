@@ -34,10 +34,12 @@ import {
   ArrowSection,
   CardsWrapper,
   DeliveryWrapper,
+  ModalProductsWrapper,
   ModalReturnFlow,
   ModalUploadWrapper,
   RightInfosCard,
   RightInfosTitle,
+  SelectProductField,
   ShowInfosButton,
   TaskInfoField,
   TasksInfos,
@@ -125,6 +127,13 @@ export default function ViewProductsDeliveries() {
   });
   const [toClientConfirmation, setToClientConfirmation] = useState<boolean>(false);
   const [showHoursBack, setShowHoursBack] = useState<boolean>(false);
+  const [modalProducts, setModalProducts] = useState<boolean>(false);
+
+  let userInfos = {
+    next_user: '',
+    start_job: '',
+    end_job: ''
+  };
 
   const deliveryId = location.state.task.deliverys.filter(
     (obj: any) => Number(obj.order) === location.state.task_index
@@ -166,6 +175,12 @@ export default function ViewProductsDeliveries() {
   const stepsToReturn: any[] = timeLineData
     ? timeLineData.steps.filter((obj) => Number(obj.step) < Number(actualStep))
     : [];
+
+  const hasDismemberedProduct = (delivery: any): boolean => {
+    return delivery.products.some((product: any) => product.status === 'dismembered');
+  };
+
+  const hasDismemberedProductInDeliveries = dataTask.deliverys.some(hasDismemberedProduct);
 
   useEffect(() => {
     async function getClockIsOpen() {
@@ -450,13 +465,23 @@ export default function ViewProductsDeliveries() {
     }
   };
 
-  const handleNavigateProduct = (infoProduct: any) => {
-    const taskCompleteInfo = {
-      productInfo: infoProduct,
-      taskInfos: dataTask
-    };
-    setSelectedProduct(taskCompleteInfo);
-    setViewProduct(true);
+  const handleNavigateProduct = (type: string, infoProduct: any) => {
+    if (type === 'view') {
+      const taskCompleteInfo = {
+        productInfo: infoProduct,
+        taskInfos: dataTask
+      };
+      setSelectedProduct(taskCompleteInfo);
+      setViewProduct(true);
+    }
+
+    if (type === 'select') {
+      const taskCompleteInfo = {
+        productInfo: JSON.parse(infoProduct.target.value),
+        taskInfos: dataTask
+      };
+      setSelectedProduct(taskCompleteInfo);
+    }
   };
 
   const handleAssignTask = (values: any) => {
@@ -471,70 +496,70 @@ export default function ViewProductsDeliveries() {
     }
   };
 
-  const handleFinishDelivery = async () => {
-    try {
-      setLoading(true);
+  // const handleFinishDelivery = async () => {
+  //   try {
+  //     setLoading(true);
 
-      if (dataTask.type === 'Livre') {
-        const responseNextDate = await api.get(
-          `/task/nextdate=${moment(new Date()).format('YYYY-MM-DD')}&task_id=${dataTask?.task_id}`
-        );
+  //     if (dataTask.type === 'Livre') {
+  //       const responseNextDate = await api.get(
+  //         `/task/nextdate=${moment(new Date()).format('YYYY-MM-DD')}&task_id=${dataTask?.task_id}`
+  //       );
 
-        const response = await api.get(`/task/next-user/${dataTask?.task_id}`);
+  //       const response = await api.get(`/task/next-user/${dataTask?.task_id}`);
 
-        if (response.data.result.length > 0) {
-          const payload = {
-            user_id: response.data.result[0].user_id,
-            task_id: dataTask?.task_id
-          };
+  //       if (response.data.result.length > 0) {
+  //         const payload = {
+  //           user_id: response.data.result[0].user_id,
+  //           task_id: dataTask?.task_id
+  //         };
 
-          const responseConclude = await api.put(`/task/send-for-evaluation`, payload);
+  //         const responseConclude = await api.put(`/task/send-for-evaluation`, payload);
 
-          console.log('log do response conclude', responseConclude.data.result);
-          navigate('/minhas-tarefas');
-          localStorage.removeItem('stopwatchState');
-        }
+  //         console.log('log do response conclude', responseConclude.data.result);
+  //         navigate('/minhas-tarefas');
+  //         localStorage.removeItem('stopwatchState');
+  //       }
 
-        setLoading(false);
+  //       setLoading(false);
 
-        console.log('log do response for free task', response.data);
-      } else {
-        const response = await api.put(`/task/delivery-conclude/${deliveryId[0].delivery_id}`);
-        if (response.data.result === 1) {
-          addToast({
-            title: 'Sucesso',
-            type: 'success',
-            description: 'Entrega finalizada com sucesso'
-          });
-          navigate('/minhas-tarefas');
-          localStorage.removeItem('stopwatchState');
-        }
-        if (response.data.result.last_delivery) {
-          setModalSendToUser(true);
-        }
-        setLoading(false);
-      }
-    } catch (error: any) {
-      console.log('log error finish delivery', error);
-      setLoading(false);
+  //       console.log('log do response for free task', response.data);
+  //     } else {
+  //       const response = await api.put(`/task/delivery-conclude/${deliveryId[0].delivery_id}`);
+  //       if (response.data.result === 1) {
+  //         addToast({
+  //           title: 'Sucesso',
+  //           type: 'success',
+  //           description: 'Entrega finalizada com sucesso'
+  //         });
+  //         navigate('/minhas-tarefas');
+  //         localStorage.removeItem('stopwatchState');
+  //       }
+  //       if (response.data.result.last_delivery) {
+  //         setModalSendToUser(true);
+  //       }
+  //       setLoading(false);
+  //     }
+  //   } catch (error: any) {
+  //     console.log('log error finish delivery', error);
+  //     setLoading(false);
 
-      if (error.response.data.result.length !== 0) {
-        error.response.data.result.map((row: any) => {
-          addToast({
-            title: 'Atenção',
-            description: row.error,
-            type: 'warning'
-          });
-        });
-      } else {
-        addToast({
-          title: 'Atenção',
-          description: error.response.data.message,
-          type: 'danger'
-        });
-      }
-    }
-  };
+  //     if (error.response.data.result.length !== 0) {
+  //       error.response.data.result.map((row: any) => {
+  //         addToast({
+  //           title: 'Atenção',
+  //           description: row.error,
+  //           type: 'warning'
+  //         });
+  //       });
+  //     } else {
+  //       addToast({
+  //         title: 'Atenção',
+  //         description: error.response.data.message,
+  //         type: 'danger'
+  //       });
+  //     }
+  //   }
+  // };
 
   async function handleFinishProduct() {
     try {
@@ -582,16 +607,88 @@ export default function ViewProductsDeliveries() {
         end_job: values.end_job
       };
 
-      const response = await api.put(
-        `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
-        next_user
-      );
-      console.log('log do response', response.data.result);
+      if (dataTask.type === 'Livre') {
+        const responseNextDate = await api.get(
+          `/task/nextdate=${moment(new Date()).format('YYYY-MM-DD')}&task_id=${dataTask?.task_id}`
+        );
 
-      if (response.data.result === 1) {
-        navigate('/minhas-tarefas');
-        localStorage.removeItem('stopwatchState');
+        const response = await api.get(`/task/next-user/${dataTask?.task_id}`);
+
+        if (response.data.result.length > 0) {
+          const payload = {
+            user_id: response.data.result[0].user_id,
+            task_id: dataTask?.task_id
+          };
+
+          const responseConclude = await api.put(`/task/send-for-evaluation`, payload);
+
+          console.log('log do response conclude', responseConclude.data.result);
+          navigate('/minhas-tarefas');
+          localStorage.removeItem('stopwatchState');
+        }
       }
+
+      if (dataTask?.status !== 'Concluida' && typeOfPlay === 'schedule') {
+        const response = await api.put(
+          `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
+          next_user
+        );
+        console.log('log do response', response.data.result);
+
+        if (response.data.result === 1) {
+          navigate('/minhas-tarefas');
+          localStorage.removeItem('stopwatchState');
+        }
+      }
+
+      if (
+        dataProducts?.status !== 'Concluida' &&
+        selectedProduct !== '' &&
+        typeOfPlay === 'product'
+      ) {
+        const response = await api.put(
+          `/task/product-conclude/${selectedProduct?.productInfo.products_delivery_id}`
+        );
+
+        if (response.data.result === 1) {
+          addToast({
+            title: 'Sucesso',
+            type: 'success',
+            description: 'Entrega finalizada com sucesso'
+          });
+          navigate('/minhas-tarefas');
+          localStorage.removeItem('stopwatchState');
+        }
+      }
+
+      if (
+        dataProducts?.status !== 'Concluida' &&
+        selectedProduct !== '' &&
+        typeOfPlay === 'product'
+      ) {
+        if (location.state.delivery.products.length === 1) {
+          const response = await api.put(
+            `/task/product-conclude/${location.state.delivery.products[0].products_delivery_id}`
+          );
+
+          if (response.data.result === 1) {
+            addToast({
+              title: 'Sucesso',
+              type: 'success',
+              description: 'Entrega finalizada com sucesso'
+            });
+            navigate('/minhas-tarefas');
+            localStorage.removeItem('stopwatchState');
+          }
+        }
+
+        if (location.state.delivery.products.length > 1) {
+          userInfos = next_user;
+          setModalProducts(true);
+          setHideRightCard('hide');
+        }
+      }
+
       setLoading(false);
     } catch (error: any) {
       console.log('log error next user', error);
@@ -814,6 +911,13 @@ export default function ViewProductsDeliveries() {
   async function checkFlow(checkType: string) {
     try {
       setLoading(true);
+      // Abrir um modal informando que vai desmembrar com botão OK
+      if (hasDismemberedProductInDeliveries) {
+        const response = await api.put(`/task/dismember/${dataTask?.task_id}`);
+        if (response.data.result) {
+          navigate('/nova-tarefa', { state: { id: dataTask?.task_id } });
+        }
+      }
 
       if (checkType === 'next') {
         const response = await api.get(
@@ -951,8 +1055,8 @@ export default function ViewProductsDeliveries() {
         end_job: infos.end_job
       };
 
-      console.log('log do returnParams =>', returnParams);
-      console.log('log do back or next =>', showHoursBack);
+      // console.log('log do returnParams =>', returnParams);
+      // console.log('log do back or next =>', showHoursBack);
 
       const response = await api.put(`/task/return-task`, returnParams);
 
@@ -975,6 +1079,17 @@ export default function ViewProductsDeliveries() {
     setModalReturnFlow(false);
   };
 
+  const handleSelectProduct = () => {
+    const user_info = {
+      start_job: userInfos.start_job,
+      end_job: userInfos.end_job,
+      user_id: userInfos.next_user
+    };
+
+    setModalProducts(false);
+    handleSendToNextUser(user_info);
+  };
+
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
     // console.log('log do selectedProducts', selectedProduct);
@@ -982,12 +1097,22 @@ export default function ViewProductsDeliveries() {
     // console.log('log do upload', uploadIsTrue);
     // console.log('log do final card', finalCard);
     // console.log('log dataTask', dataTask);
-  }, [selectedProduct, typeOfPlay, nextStep, uploadIsTrue, finalCard, dataTask]);
+    // console.log('log deliveries =>', location.state.delivery);
+    console.log('log dismembered =>', hasDismemberedProductInDeliveries);
+  }, [
+    selectedProduct,
+    typeOfPlay,
+    nextStep,
+    uploadIsTrue,
+    finalCard,
+    dataTask,
+    hasDismemberedProductInDeliveries
+  ]);
 
   return (
     <ContainerDefault>
       <DeliveryWrapper>
-        {uploadClient && (
+        {/* {uploadClient && (
           <HeaderOpenTask
             title={titleInfos}
             disableButton={true}
@@ -998,7 +1123,7 @@ export default function ViewProductsDeliveries() {
             sendToNext={() => setModalFinalFile(true)}
             backFlow={() => ''}
           />
-        )}
+        )} */}
 
         {dataProducts?.status === 'Concluida' && dataTask?.status === 'Concluida' && (
           <HeaderOpenTask
@@ -1067,7 +1192,7 @@ export default function ViewProductsDeliveries() {
               disableButton={false}
               goBack
               buttonType="finish"
-              sendToNext={handleFinishDelivery}
+              sendToNext={() => checkFlow('next')}
               nextStepInfo={timeLineData}
               backFlow={() => setModalReturnFlow(true)}
             />
@@ -1083,7 +1208,7 @@ export default function ViewProductsDeliveries() {
               disableButton={false}
               goBack
               buttonType="send"
-              sendToNext={handleFinishDelivery}
+              sendToNext={() => checkFlow('next')}
               nextStepInfo={timeLineData}
               backFlow={() => setModalReturnFlow(true)}
             />
@@ -1099,7 +1224,7 @@ export default function ViewProductsDeliveries() {
               disableButton={false}
               goBack
               buttonType="finish"
-              sendToNext={handleFinishDelivery}
+              sendToNext={() => checkFlow('next')}
               nextStepInfo={timeLineData}
               backFlow={() => setModalReturnFlow(true)}
             />
@@ -1116,7 +1241,7 @@ export default function ViewProductsDeliveries() {
               disableButton={typeOfPlay === 'product' ? false : true}
               goBack
               buttonType="finish"
-              sendToNext={handleFinishProduct}
+              sendToNext={() => checkFlow('next')}
               nextStepInfo={timeLineData}
               backToDelivery={() => setSelectedProduct('')}
               isInsideProduct={true}
@@ -1135,7 +1260,7 @@ export default function ViewProductsDeliveries() {
               disableButton={true}
               goBack
               buttonType="finish"
-              sendToNext={handleFinishProduct}
+              sendToNext={() => checkFlow('next')}
               nextStepInfo={timeLineData}
               backToDelivery={() => setSelectedProduct('')}
               isInsideProduct={true}
@@ -1154,7 +1279,7 @@ export default function ViewProductsDeliveries() {
               disableButton={true}
               goBack
               buttonType="finish"
-              sendToNext={handleFinishProduct}
+              sendToNext={() => checkFlow('next')}
               nextStepInfo={timeLineData}
               backToDelivery={() => setSelectedProduct('')}
               isInsideProduct={true}
@@ -1298,7 +1423,7 @@ export default function ViewProductsDeliveries() {
             timeData={timeData}
             workForProduct={handleSwitchPlayType}
             isPlayingForSchedule={playingForSchedule}
-            productSelected={handleNavigateProduct}
+            productSelected={(value: any) => handleNavigateProduct('view', value)}
             isFinished={dataTask?.status === 'Concluida' ? true : false}
             typeOfWorkFinished={dataTask?.type_play}
             typeOfPlay={typeOfPlay}
@@ -1335,6 +1460,7 @@ export default function ViewProductsDeliveries() {
       >
         <ScheduleUser
           task_title={dataTask?.title}
+          // task_id={dataTask?.task_id}
           estimated_time={location.state.task.total_time}
           flow={location.state.task.flow_id}
           project_product_id={location.state.task.project_product_id}
@@ -1609,6 +1735,50 @@ export default function ViewProductsDeliveries() {
             </ButtonDefault>
           </div>
         </ModalReturnFlow>
+      </ModalDefault>
+
+      {/* Modal select product to conclude */}
+      <ModalDefault
+        isOpen={modalProducts}
+        title="Qual produto deseja finalizar?"
+        onOpenChange={() => setModalProducts(false)}
+      >
+        <ModalProductsWrapper>
+          <SelectProductField>
+            <SelectDefault
+              label="Produtos dessa entrega"
+              placeholder="Selecione..."
+              name="product"
+              onChange={(value) => handleNavigateProduct('select', value)}
+              value={selectedProduct.products_delivery_id}
+              required
+            >
+              {dataProducts?.products.map((row: any, index: number) => (
+                <option key={row.products_delivery_id} value={JSON.stringify(row)}>
+                  ID: {String(index + 1).padStart(2, '0')} - Nome: {row.service} - Descrição:
+                  {row.description}
+                </option>
+              ))}
+            </SelectDefault>
+          </SelectProductField>
+
+          <ModalButtons>
+            <ButtonDefault
+              typeButton="dark"
+              isOutline
+              onClick={() => {
+                setSelectedProduct('');
+                setModalProducts(false);
+              }}
+            >
+              Descartar
+            </ButtonDefault>
+
+            <ButtonDefault typeButton="primary" onClick={handleSelectProduct}>
+              Escolher
+            </ButtonDefault>
+          </ModalButtons>
+        </ModalProductsWrapper>
       </ModalDefault>
     </ContainerDefault>
   );
