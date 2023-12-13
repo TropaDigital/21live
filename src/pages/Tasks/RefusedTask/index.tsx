@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 // react
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 // Icons
 import { BsQuestionOctagon } from 'react-icons/bs';
@@ -15,6 +16,7 @@ import ModalDefault from '../../../components/Ui/ModalDefault';
 import { ModalButtons } from '../ViewTask/styles';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { SelectDefault } from '../../../components/Inputs/SelectDefault';
+import Loader from '../../../components/LoaderSpin';
 
 // Styles
 import {
@@ -46,6 +48,10 @@ import moment from 'moment';
 // Hooks
 import useForm from '../../../hooks/useForm';
 import { useFetch } from '../../../hooks/useFetch';
+import { useToast } from '../../../hooks/toast';
+
+// Services
+import api from '../../../services/api';
 
 interface ModalProps {
   isOpen: boolean;
@@ -94,8 +100,10 @@ interface TaskProps {
 }
 
 export default function CreateTaksWithRefused() {
+  const location = useLocation();
   const { parameters, getParams } = useParamsHook();
-  const { formData, handleOnChange } = useForm({
+  const { addToast } = useToast();
+  const { formData, handleOnChange, setData } = useForm({
     card_name: '',
     copywriting_date_end: '',
     copywriting_description: '',
@@ -139,6 +147,7 @@ export default function CreateTaksWithRefused() {
     isOpen: false,
     typeOfField: undefined
   });
+  const [loading, setLoading] = useState<boolean>(false);
 
   const { data: dataFlow } = useFetch<any[]>(`/flow?perPage=1000`);
   const selectedProducts: any[] = [];
@@ -176,8 +185,33 @@ export default function CreateTaksWithRefused() {
   //   }
   // }
 
+  async function getTaskInfos(id: any) {
+    try {
+      setLoading(true);
+      const response = await api.get(`/tasks/${id}`);
+      // console.log('log do response get task', response.data.result);
+
+      if (response.data.result.length > 0) {
+        setData(response.data.result[0]);
+      }
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log do error getting task', error);
+      addToast({
+        title: 'Atenção',
+        description: error.message,
+        type: 'warning'
+      });
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
     getParams();
+    if (location.state.id) {
+      getTaskInfos(location.state.id);
+    }
   }, []);
 
   // useEffect(() => {
@@ -188,222 +222,229 @@ export default function CreateTaksWithRefused() {
     <RefusedWrapper>
       <HeaderPage title="Criar tarefa (com produtos recusados)" />
 
-      <FormWrapper>
-        <FormTitle>Resumo da tarefa</FormTitle>
+      {loading && <Loader />}
 
-        <SummaryWrapper>
-          <SummaryLeft>
-            <SummaryDefault className="big">
-              <div className="title">Informações da tarefa</div>
+      {!loading && (
+        <FormWrapper>
+          <FormTitle>Resumo da tarefa</FormTitle>
 
-              <SummaryInfoWrapper>
-                {/* Edit title */}
-                <SummaryTaskInfo>
-                  <SummaryTaskTitleWithIcon
-                    onClick={() =>
-                      setModalEdit({
-                        isOpen: true,
-                        typeOfField: 'title'
-                      })
-                    }
-                  >
-                    Título da tarefa
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <BsQuestionOctagon />:
+          <SummaryWrapper>
+            <SummaryLeft>
+              <SummaryDefault className="big">
+                <div className="title">Informações da tarefa</div>
+
+                <SummaryInfoWrapper>
+                  {/* Edit title */}
+                  <SummaryTaskInfo>
+                    <SummaryTaskTitleWithIcon
+                      onClick={() =>
+                        setModalEdit({
+                          isOpen: true,
+                          typeOfField: 'title'
+                        })
+                      }
+                    >
+                      Título da tarefa
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <BsQuestionOctagon />:
+                      </div>
+                      <SummaryHoverInfo>Clique para editar o título</SummaryHoverInfo>
+                    </SummaryTaskTitleWithIcon>
+                    <div className="info">{formData.title}</div>
+                  </SummaryTaskInfo>
+
+                  <SummaryTaskInfo>
+                    <div className="title-info">Cliente:</div>
+                    <div className="info">
+                      {formData.tenant_id ? formData.tenant_id : 'Cliente'}
                     </div>
-                    <SummaryHoverInfo>Clique para editar o título</SummaryHoverInfo>
-                  </SummaryTaskTitleWithIcon>
-                  <div className="info">{formData.title}</div>
-                </SummaryTaskInfo>
+                  </SummaryTaskInfo>
 
-                <SummaryTaskInfo>
-                  <div className="title-info">Cliente:</div>
-                  <div className="info">{formData.tenant_id ? formData.tenant_id : 'Cliente'}</div>
-                </SummaryTaskInfo>
+                  <SummaryTaskInfo>
+                    <div className="title-info">Projeto/Contrato:</div>
+                    <div className="info">{formData.project}</div>
+                  </SummaryTaskInfo>
 
-                <SummaryTaskInfo>
-                  <div className="title-info">Projeto/Contrato:</div>
-                  <div className="info">{formData.project}</div>
-                </SummaryTaskInfo>
+                  {/* Edit flow */}
+                  <SummaryTaskInfo>
+                    <SummaryTaskTitleWithIcon
+                      onClick={() =>
+                        setModalEdit({
+                          isOpen: true,
+                          typeOfField: 'flow'
+                        })
+                      }
+                    >
+                      Fluxo
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <BsQuestionOctagon />:
+                      </div>
+                      <SummaryHoverInfo>Clique para editar o fluxo</SummaryHoverInfo>
+                    </SummaryTaskTitleWithIcon>
+                    <div className="info">{formData.flow_id}</div>
+                  </SummaryTaskInfo>
 
-                {/* Edit flow */}
-                <SummaryTaskInfo>
-                  <SummaryTaskTitleWithIcon
-                    onClick={() =>
-                      setModalEdit({
-                        isOpen: true,
-                        typeOfField: 'flow'
-                      })
-                    }
-                  >
-                    Fluxo
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <BsQuestionOctagon />:
+                  {/* Edit flow step */}
+                  <SummaryTaskInfo>
+                    <SummaryTaskTitleWithIcon
+                      onClick={() =>
+                        setModalEdit({
+                          isOpen: true,
+                          typeOfField: 'flowStep'
+                        })
+                      }
+                    >
+                      Etapa do fluxo
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <BsQuestionOctagon />:
+                      </div>
+                      <SummaryHoverInfo>Clique para editar a etapa do fluxo</SummaryHoverInfo>
+                    </SummaryTaskTitleWithIcon>
+                    <div className="info">{formData.step}</div>
+                  </SummaryTaskInfo>
+
+                  <SummaryTaskInfo>
+                    <div className="title-info">
+                      Input {parameters.input_name !== '' ? parameters.input_name : 'Pré-requisito'}
+                      :
                     </div>
-                    <SummaryHoverInfo>Clique para editar o fluxo</SummaryHoverInfo>
-                  </SummaryTaskTitleWithIcon>
-                  <div className="info">{formData.flow_id}</div>
-                </SummaryTaskInfo>
-
-                {/* Edit flow step */}
-                <SummaryTaskInfo>
-                  <SummaryTaskTitleWithIcon
-                    onClick={() =>
-                      setModalEdit({
-                        isOpen: true,
-                        typeOfField: 'flowStep'
-                      })
-                    }
-                  >
-                    Etapa do fluxo
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <BsQuestionOctagon />:
+                    <div className="info">
+                      {/* <div
+                                  className="description-info"
+                                  dangerouslySetInnerHTML={{ __html: taskSummary?.copywriting_description }}
+                              /> */}
+                      {formData.copywriting_description}
                     </div>
-                    <SummaryHoverInfo>Clique para editar a etapa do fluxo</SummaryHoverInfo>
-                  </SummaryTaskTitleWithIcon>
-                  <div className="info">{formData.step}</div>
-                </SummaryTaskInfo>
+                  </SummaryTaskInfo>
 
-                <SummaryTaskInfo>
-                  <div className="title-info">
-                    Input {parameters.input_name !== '' ? parameters.input_name : 'Pré-requisito'}:
-                  </div>
-                  <div className="info">
-                    {/* <div
-                                className="description-info"
-                                dangerouslySetInnerHTML={{ __html: taskSummary?.copywriting_description }}
-                            /> */}
-                    {formData.copywriting_description}
-                  </div>
-                </SummaryTaskInfo>
+                  <SummaryTaskInfo>
+                    <div className="title-info">Input de atividade:</div>
+                    <div className="info">
+                      {/* <div
+                                  className="description-info"
+                                  dangerouslySetInnerHTML={{
+                                      __html: taskSummary?.creation_description
+                                  }}
+                              /> */}
+                      {formData.creation_description}
+                    </div>
+                  </SummaryTaskInfo>
 
-                <SummaryTaskInfo>
-                  <div className="title-info">Input de atividade:</div>
-                  <div className="info">
-                    {/* <div
-                                className="description-info"
-                                dangerouslySetInnerHTML={{
-                                    __html: taskSummary?.creation_description
-                                }}
-                            /> */}
-                    {formData.creation_description}
-                  </div>
-                </SummaryTaskInfo>
+                  <SummaryTaskDescription>
+                    <div className="description-title">Contexto geral</div>
+                    <div
+                      className="description-info"
+                      // dangerouslySetInnerHTML={{ __html: taskSummary?.description }}
+                    >
+                      {formData.description}
+                    </div>
+                  </SummaryTaskDescription>
 
-                <SummaryTaskDescription>
-                  <div className="description-title">Contexto geral</div>
-                  <div
-                    className="description-info"
-                    // dangerouslySetInnerHTML={{ __html: taskSummary?.description }}
-                  >
-                    {formData.description}
-                  </div>
-                </SummaryTaskDescription>
+                  <SummaryTaskDescription>
+                    <div className="description-title">Arquivos:</div>
+                    <FileList>&#x2022; arquivo-1.png</FileList>
+                    {/* {taskFiles.map((row: any) => (
+                              <FileList key={row.file_id}>&#x2022; {row.file_name}</FileList>
+                          ))} */}
+                  </SummaryTaskDescription>
+                </SummaryInfoWrapper>
+              </SummaryDefault>
 
-                <SummaryTaskDescription>
-                  <div className="description-title">Arquivos:</div>
-                  <FileList>&#x2022; arquivo-1.png</FileList>
-                  {/* {taskFiles.map((row: any) => (
-                            <FileList key={row.file_id}>&#x2022; {row.file_name}</FileList>
-                        ))} */}
-                </SummaryTaskDescription>
-              </SummaryInfoWrapper>
-            </SummaryDefault>
+              <SummaryDefault className="big">
+                <div className="title">Produtos selecionados</div>
 
-            <SummaryDefault className="big">
-              <div className="title">Produtos selecionados</div>
+                {selectedProducts?.map((row: any, index: any) => (
+                  <DeliveriesWrapper key={index}>
+                    <DeliveriesTitle>
+                      {row.deliveryTitle ? row.deliveryTitle : `${index + 1}ª Entrega`}
 
-              {selectedProducts?.map((row: any, index: any) => (
-                <DeliveriesWrapper key={index}>
-                  <DeliveriesTitle>
-                    {row.deliveryTitle ? row.deliveryTitle : `${index + 1}ª Entrega`}
-
-                    {row.deliveryDate && (
-                      <span>- {moment(row.deliveryDate).format('DD/MM/YYYY')}</span>
-                    )}
-                  </DeliveriesTitle>
-                  {row?.products.map((products: any, index: number) => (
-                    <SummaryCard key={index} style={{ height: 'fit-content' }}>
-                      <SummaryCardTitle>
-                        #{index + 1} - {products.service}
-                      </SummaryCardTitle>
-                      <SummaryCardSubtitle
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          height: 'fit-content'
-                        }}
-                      >
-                        <div
+                      {row.deliveryDate && (
+                        <span>- {moment(row.deliveryDate).format('DD/MM/YYYY')}</span>
+                      )}
+                    </DeliveriesTitle>
+                    {row?.products.map((products: any, index: number) => (
+                      <SummaryCard key={index} style={{ height: 'fit-content' }}>
+                        <SummaryCardTitle>
+                          #{index + 1} - {products.service}
+                        </SummaryCardTitle>
+                        <SummaryCardSubtitle
                           style={{
                             display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            width: '100%'
+                            flexDirection: 'column',
+                            height: 'fit-content'
                           }}
                         >
-                          <div className="description-wrap">
-                            Descrição: <span>{products.description}</span>
+                          <div
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              width: '100%'
+                            }}
+                          >
+                            <div className="description-wrap">
+                              Descrição: <span>{products.description}</span>
+                            </div>
+                            <div>
+                              Tipo: <span>{products.category}</span>
+                            </div>
+                            <div>
+                              Horas: <span>{products.minutes}</span>
+                            </div>
                           </div>
-                          <div>
-                            Tipo: <span>{products.category}</span>
+                          <div
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              width: '100%'
+                            }}
+                          >
+                            <div>
+                              I/D: <span>{products.type}</span>
+                            </div>
+                            <div>
+                              Formato: <span>{products.size}</span>
+                            </div>
+                            <div>
+                              Quantidade: <span>{products.quantity}</span>
+                            </div>
                           </div>
-                          <div>
-                            Horas: <span>{products.minutes}</span>
-                          </div>
-                        </div>
-                        <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            width: '100%'
-                          }}
-                        >
-                          <div>
-                            I/D: <span>{products.type}</span>
-                          </div>
-                          <div>
-                            Formato: <span>{products.size}</span>
-                          </div>
-                          <div>
-                            Quantidade: <span>{products.quantity}</span>
-                          </div>
-                        </div>
-                      </SummaryCardSubtitle>
-                    </SummaryCard>
-                  ))}
-                </DeliveriesWrapper>
-              ))}
-            </SummaryDefault>
-          </SummaryLeft>
+                        </SummaryCardSubtitle>
+                      </SummaryCard>
+                    ))}
+                  </DeliveriesWrapper>
+                ))}
+              </SummaryDefault>
+            </SummaryLeft>
 
-          <SummaryTasksAbout>
-            <div className="title">Sobre a tarefa</div>
-            <div className="item-hours">
-              Total de itens: <span>1</span>
-            </div>
-            <div className="splitter"></div>
-            <div className="item-hours">
-              Horas estimadas: <span>12:00:00</span>
-            </div>
-            <div className="item-hours">
-              Horas disponíveis: <span>4:00:00</span>
-              {/* {subtractTime(projectInfos?.tempo, totalArrayHours).includes('-') ? (
-                <div className="negative">
-                  {subtractTime(projectInfos?.tempo, totalArrayHours)}
-                </div>
-              ) : (
-                <span>{subtractTime(projectInfos?.tempo, totalArrayHours)}</span>
-              )} */}
-            </div>
+            <SummaryTasksAbout>
+              <div className="title">Sobre a tarefa</div>
+              <div className="item-hours">
+                Total de itens: <span>1</span>
+              </div>
+              <div className="splitter"></div>
+              <div className="item-hours">
+                Horas estimadas: <span>12:00:00</span>
+              </div>
+              <div className="item-hours">
+                Horas disponíveis: <span>4:00:00</span>
+                {/* {subtractTime(projectInfos?.tempo, totalArrayHours).includes('-') ? (
+                  <div className="negative">
+                    {subtractTime(projectInfos?.tempo, totalArrayHours)}
+                  </div>
+                ) : (
+                  <span>{subtractTime(projectInfos?.tempo, totalArrayHours)}</span>
+                )} */}
+              </div>
 
-            <SummaryButtons>
-              <ButtonDefault onClick={() => ''}>Criar tarefa</ButtonDefault>
-            </SummaryButtons>
-          </SummaryTasksAbout>
-        </SummaryWrapper>
-      </FormWrapper>
+              <SummaryButtons>
+                <ButtonDefault onClick={() => ''}>Criar tarefa</ButtonDefault>
+              </SummaryButtons>
+            </SummaryTasksAbout>
+          </SummaryWrapper>
+        </FormWrapper>
+      )}
 
       {/* Modal edit fields */}
       <ModalDefault
