@@ -294,3 +294,13 @@ export const SelectProductField = styled.div`
   align-items: center;
   width: fit-content;
 `;
+
+export const TextInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  color: var(--title-color);
+  font-size: var(--text-small-md);
+  font-weight: var(--weight-semibold);
+`;

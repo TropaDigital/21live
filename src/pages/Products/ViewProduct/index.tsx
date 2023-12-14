@@ -43,6 +43,7 @@ import {
   ShowInfosButton,
   TaskInfoField,
   TasksInfos,
+  TextInfo,
   TimeLine,
   TimeLineIcon,
   TimelineInfo,
@@ -128,6 +129,7 @@ export default function ViewProductsDeliveries() {
   const [toClientConfirmation, setToClientConfirmation] = useState<boolean>(false);
   const [showHoursBack, setShowHoursBack] = useState<boolean>(false);
   const [modalProducts, setModalProducts] = useState<boolean>(false);
+  const [modalDismemberment, setModalDismemberment] = useState<boolean>(false);
 
   let userInfos = {
     next_user: '',
@@ -561,42 +563,42 @@ export default function ViewProductsDeliveries() {
   //   }
   // };
 
-  async function handleFinishProduct() {
-    try {
-      setLoading(true);
-      const response = await api.put(
-        `/task/product-conclude/${selectedProduct?.productInfo.products_delivery_id}`
-      );
+  // async function handleFinishProduct() {
+  //   try {
+  //     setLoading(true);
+  //     const response = await api.put(
+  //       `/task/product-conclude/${selectedProduct?.productInfo.products_delivery_id}`
+  //     );
 
-      if (response.data.result === 1) {
-        addToast({
-          title: 'Sucesso',
-          type: 'success',
-          description: 'Entrega finalizada com sucesso'
-        });
-        navigate('/minhas-tarefas');
-        localStorage.removeItem('stopwatchState');
-      }
-      setLoading(false);
-    } catch (error: any) {
-      if (error.response.data.result.length !== 0) {
-        error.response.data.result.map((row: any) => {
-          addToast({
-            title: 'Atenção',
-            description: row.error,
-            type: 'warning'
-          });
-        });
-      } else {
-        addToast({
-          title: 'Atenção',
-          description: error.response.data.message,
-          type: 'danger'
-        });
-      }
-      setLoading(false);
-    }
-  }
+  //     if (response.data.result === 1) {
+  //       addToast({
+  //         title: 'Sucesso',
+  //         type: 'success',
+  //         description: 'Entrega finalizada com sucesso'
+  //       });
+  //       navigate('/minhas-tarefas');
+  //       localStorage.removeItem('stopwatchState');
+  //     }
+  //     setLoading(false);
+  //   } catch (error: any) {
+  //     if (error.response.data.result.length !== 0) {
+  //       error.response.data.result.map((row: any) => {
+  //         addToast({
+  //           title: 'Atenção',
+  //           description: row.error,
+  //           type: 'warning'
+  //         });
+  //       });
+  //     } else {
+  //       addToast({
+  //         title: 'Atenção',
+  //         description: error.response.data.message,
+  //         type: 'danger'
+  //       });
+  //     }
+  //     setLoading(false);
+  //   }
+  // }
 
   const handleSendToNextUser = async (values: any) => {
     try {
@@ -911,12 +913,8 @@ export default function ViewProductsDeliveries() {
   async function checkFlow(checkType: string) {
     try {
       setLoading(true);
-      // Abrir um modal informando que vai desmembrar com botão OK
       if (hasDismemberedProductInDeliveries) {
-        const response = await api.put(`/task/dismember/${dataTask?.task_id}`);
-        if (response.data.result) {
-          navigate('/nova-tarefa', { state: { id: dataTask?.task_id } });
-        }
+        setModalDismemberment(true);
       }
 
       if (checkType === 'next') {
@@ -1090,6 +1088,37 @@ export default function ViewProductsDeliveries() {
     handleSendToNextUser(user_info);
   };
 
+  async function handleDismemberment() {
+    try {
+      setLoading(true);
+
+      const response = await api.put(`/task/dismember/${dataTask?.task_id}`);
+      if (response.data.result) {
+        setModalDismemberment(false);
+        navigate('/nova-tarefa', { state: { id: dataTask?.task_id } });
+      }
+
+      setLoading(false);
+    } catch (error: any) {
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
     // console.log('log do selectedProducts', selectedProduct);
@@ -1098,16 +1127,7 @@ export default function ViewProductsDeliveries() {
     // console.log('log do final card', finalCard);
     // console.log('log dataTask', dataTask);
     // console.log('log deliveries =>', location.state.delivery);
-    console.log('log dismembered =>', hasDismemberedProductInDeliveries);
-  }, [
-    selectedProduct,
-    typeOfPlay,
-    nextStep,
-    uploadIsTrue,
-    finalCard,
-    dataTask,
-    hasDismemberedProductInDeliveries
-  ]);
+  }, [selectedProduct, typeOfPlay, nextStep, uploadIsTrue, finalCard, dataTask]);
 
   return (
     <ContainerDefault>
@@ -1460,7 +1480,7 @@ export default function ViewProductsDeliveries() {
       >
         <ScheduleUser
           task_title={dataTask?.title}
-          // task_id={dataTask?.task_id}
+          taskId={dataTask?.task_id}
           estimated_time={location.state.task.total_time}
           flow={location.state.task.flow_id}
           project_product_id={location.state.task.project_product_id}
@@ -1776,6 +1796,27 @@ export default function ViewProductsDeliveries() {
 
             <ButtonDefault typeButton="primary" onClick={handleSelectProduct}>
               Escolher
+            </ButtonDefault>
+          </ModalButtons>
+        </ModalProductsWrapper>
+      </ModalDefault>
+
+      {/* Modal inform dismemberment */}
+      <ModalDefault
+        isOpen={modalDismemberment}
+        title="Desmembramento"
+        onOpenChange={() => setModalDismemberment(false)}
+      >
+        <ModalProductsWrapper>
+          <TextInfo>
+            <span>Atenção!</span>
+            <span>Existem produtos reprovados.</span>
+            <span>Para continuar, a entrega será dividida!</span>
+          </TextInfo>
+
+          <ModalButtons>
+            <ButtonDefault typeButton="warning" onClick={handleDismemberment}>
+              OK
             </ButtonDefault>
           </ModalButtons>
         </ModalProductsWrapper>
