@@ -180,7 +180,7 @@ export default function ViewProductsDeliveries() {
     return delivery.products.some((product: any) => product.status === 'dismembered');
   };
 
-  const hasDismemberedProductInDeliveries = dataTask.deliverys.some(hasDismemberedProduct);
+  const hasDismemberedProductInDeliveries = dataTask?.deliverys?.some(hasDismemberedProduct);
 
   useEffect(() => {
     async function getClockIsOpen() {
