@@ -360,11 +360,14 @@ export default function InfoDeliveries({
                       placeHolder="Selecione..."
                       error={errorCategory.includes(row.job_service_id) ? 'Campo vazio' : ''}
                     >
-                      {dataTypes?.map((row: TypeProps) => (
+                      <option value={'1'}>Criação do zero</option>
+                      <option value={'2'}>Desmembramento</option>
+                      <option value={'3'}>Alteração</option>
+                      {/* {dataTypes?.map((row: TypeProps) => (
                         <option key={row.task_type_id} value={row.task_type_id}>
                           {row.name}
                         </option>
-                      ))}
+                      ))} */}
                     </SelectDefault>
                   </td>
                   <td style={{ minWidth: '220px' }}>
@@ -693,11 +696,14 @@ export default function InfoDeliveries({
                                 errorCategory.includes(product.job_service_id) ? 'Campo vazio' : ''
                               }
                             >
-                              {dataTypes?.map((row: TypeProps) => (
+                              <option value={'1'}>Criação do zero</option>
+                              <option value={'2'}>Desmembramento</option>
+                              <option value={'3'}>Alteração</option>
+                              {/* {dataTypes?.map((row: TypeProps) => (
                                 <option key={row.task_type_id} value={row.task_type_id}>
                                   {row.name}
                                 </option>
-                              ))}
+                              ))} */}
                             </SelectDefault>
                           </td>
                           <td style={{ minWidth: '220px' }}>
@@ -963,11 +969,14 @@ export default function InfoDeliveries({
                                   : ''
                               }
                             >
-                              {dataTypes?.map((row: TypeProps) => (
+                              <option value={'1'}>Criação do zero</option>
+                              <option value={'2'}>Desmembramento</option>
+                              <option value={'3'}>Alteração</option>
+                              {/* {dataTypes?.map((row: TypeProps) => (
                                 <option key={row.task_type_id} value={row.task_type_id}>
                                   {row.name}
                                 </option>
-                              ))}
+                              ))} */}
                             </SelectDefault>
                           </td>
                           <td style={{ minWidth: '220px' }}>
