@@ -1456,6 +1456,7 @@ export default function CreateTasks() {
         } else {
           const deadlines = DTODelivery.map((row: DeliveryProps, index: any) => {
             return {
+              date_end: row.creation_date_end,
               creation_date_end: row.creation_date_end,
               copywriting_date_end: row.copywriting_date_end,
               description: DTOForm?.creation_description,
@@ -2512,6 +2513,7 @@ export default function CreateTasks() {
         >
           <ScheduleUser
             task_title={DTOForm.title}
+            taskId={DTOForm.task_id}
             estimated_time={tasksType === 'horas' ? estimatedTime : selectedProject?.tempo}
             flow={DTOForm.flow_id}
             project_product_id={DTOForm.project_product_id}
