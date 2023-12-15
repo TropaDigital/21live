@@ -2513,7 +2513,6 @@ export default function CreateTasks() {
         >
           <ScheduleUser
             task_title={DTOForm.title}
-            taskId={DTOForm.task_id}
             estimated_time={tasksType === 'horas' ? estimatedTime : selectedProject?.tempo}
             flow={DTOForm.flow_id}
             project_product_id={DTOForm.project_product_id}
