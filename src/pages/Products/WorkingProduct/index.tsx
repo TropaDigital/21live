@@ -20,6 +20,7 @@ import { BsCheckCircle, BsFolder } from 'react-icons/bs';
 import { IoIosCloseCircleOutline } from 'react-icons/io';
 import { FaDownload } from 'react-icons/fa';
 import { MdClose } from 'react-icons/md';
+import { AiOutlineInteraction } from 'react-icons/ai';
 
 // Components
 import { ContainerDefault } from '../../../components/UiElements/styles';
@@ -38,6 +39,8 @@ import UploadFilesTicket from '../../../components/UploadTicket/UploadFilex';
 import {
   ButtonApproveReject,
   ButtonsWrapper,
+  CardChangeInfos,
+  CardChangesWrapper,
   ChatMessage,
   ChatSendButton,
   ChatUserImg,
@@ -91,6 +94,18 @@ interface WorkingProductProps {
   sendToApprove?: boolean;
   toApprove?: () => void;
   timelineData?: TimelineProps;
+  returnReasons: ReturnReasons[];
+}
+
+interface ReturnReasons {
+  current_step: string;
+  reason: string;
+  returner_id: string;
+  step: string;
+  task_id: string;
+  task_return_id: string;
+  updated: string;
+  user_id: string;
 }
 
 interface InputProps {
@@ -190,6 +205,7 @@ export default function WorkingProduct({
   sendToApprove,
   timelineData,
   ticket_id,
+  returnReasons,
   toApprove,
   goBack
 }: WorkingProductProps) {
@@ -654,6 +670,17 @@ export default function WorkingProduct({
           Arquivos
         </TaskTab>
 
+        <TaskTab
+          onClick={(e: any) => {
+            setSelectedTab(e.target.innerText);
+            getComments();
+          }}
+          className={selectedTab === 'Alterações' ? 'active' : ''}
+        >
+          <AiOutlineInteraction />
+          Alterações
+        </TaskTab>
+
         {backButtonTitle && (
           <button className="go-back" onClick={goBack}>
             <BiArrowBack />
@@ -1005,6 +1032,35 @@ export default function WorkingProduct({
               </table>
             </Table>
           </FilesTableWrapper>
+        )}
+        {selectedTab === 'Alterações' && (
+          <CardChangesWrapper>
+            <div className="title-card">
+              Alterações:{' '}
+              <div className="change-number">
+                {returnReasons?.length > 0 ? returnReasons?.length : 0}
+              </div>
+            </div>
+
+            {returnReasons?.map((row: ReturnReasons) => (
+              <CardChangeInfos key={row.task_return_id}>
+                <div className="top-infos">
+                  <div className="field-names">
+                    Quem solicitou: <span>{row.returner_id}</span>
+                  </div>
+                  <div className="field-names">
+                    Etapa que retornou: <span>{row.step}</span>
+                  </div>
+                  <div className="field-names">
+                    Etapa que estava: <span>{row.current_step}</span>
+                  </div>
+                </div>
+                <div className="field-names">
+                  Motivo: <span>{row.reason}</span>
+                </div>
+              </CardChangeInfos>
+            ))}
+          </CardChangesWrapper>
         )}
       </WorkSection>
 

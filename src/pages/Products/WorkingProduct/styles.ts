@@ -494,3 +494,71 @@ export const ModalUploadWrapper = styled.div`
     }
   }
 `;
+
+export const CardChangesWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  background: var(--background-primary);
+
+  border-radius: 12px;
+
+  padding: 12px;
+
+  .title-card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    color: var(--title-color);
+    font-size: var(--text-small-lg);
+    font-weight: var(--weight-semibold);
+
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--gray-200);
+
+    .change-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 6px;
+      height: 6px;
+      border-radius: 100%;
+      border: 1px solid black;
+
+      background-clip: content-box;
+      padding: 12px;
+
+      font-size: var(--text-small-xs);
+    }
+  }
+`;
+
+export const CardChangeInfos = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  border: 1px solid var(--gray-200);
+  border-radius: 12px;
+
+  padding: 16px;
+
+  .top-infos {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .field-names {
+    color: var(--gray-500);
+    font-size: var(--text-small-md);
+    font-weight: var(--weight-semibold);
+
+    span {
+      color: var(--title-color);
+      font-weight: var(--weight-semibold);
+    }
+  }
+`;
