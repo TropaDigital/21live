@@ -1119,6 +1119,23 @@ export default function ViewProductsDeliveries() {
     }
   }
 
+  async function handleConcludeTask() {
+    try {
+      setLoading(true);
+
+      const response = await api.put(`/task/task-conclude/${dataTask?.task_id}`);
+
+      if (response.data.result) {
+        navigate('/minhas-tarefas');
+      }
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log error conclude task', error);
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
     // console.log('log do selectedProducts', selectedProduct);
@@ -1212,7 +1229,23 @@ export default function ViewProductsDeliveries() {
               disableButton={false}
               goBack
               buttonType="finish"
-              sendToNext={() => checkFlow('next')}
+              sendToNext={handleConcludeTask}
+              nextStepInfo={timeLineData}
+              backFlow={() => setModalReturnFlow(true)}
+            />
+          )}
+
+        {dataProducts?.status !== 'Concluida' &&
+          dataTask?.status !== 'Concluida' &&
+          selectedProduct !== '' &&
+          typeOfPlay === 'schedule' &&
+          finalCard && (
+            <HeaderOpenTask
+              title={titleInfos}
+              disableButton={false}
+              goBack
+              buttonType="finish"
+              sendToNext={handleConcludeTask}
               nextStepInfo={timeLineData}
               backFlow={() => setModalReturnFlow(true)}
             />
@@ -1244,7 +1277,7 @@ export default function ViewProductsDeliveries() {
               disableButton={false}
               goBack
               buttonType="finish"
-              sendToNext={() => checkFlow('next')}
+              sendToNext={handleConcludeTask}
               nextStepInfo={timeLineData}
               backFlow={() => setModalReturnFlow(true)}
             />
@@ -1280,7 +1313,7 @@ export default function ViewProductsDeliveries() {
               disableButton={true}
               goBack
               buttonType="finish"
-              sendToNext={() => checkFlow('next')}
+              sendToNext={handleConcludeTask}
               nextStepInfo={timeLineData}
               backToDelivery={() => setSelectedProduct('')}
               isInsideProduct={true}
@@ -1468,6 +1501,7 @@ export default function ViewProductsDeliveries() {
             toApprove={handleSendToManager}
             backButtonTitle="Voltar para produtos"
             goBack={() => setViewProduct(false)}
+            returnReasons={dataTask?.reason_return}
           />
         )}
       </DeliveryWrapper>
@@ -1480,7 +1514,6 @@ export default function ViewProductsDeliveries() {
       >
         <ScheduleUser
           task_title={dataTask?.title}
-          taskId={dataTask?.task_id}
           estimated_time={location.state.task.total_time}
           flow={location.state.task.flow_id}
           project_product_id={location.state.task.project_product_id}
