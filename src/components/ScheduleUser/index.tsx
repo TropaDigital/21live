@@ -74,7 +74,6 @@ interface ScheduleProps {
 
 interface TaskExchangeProps {
   task_title: string;
-  taskId: string;
   estimated_time: string;
   flow: string;
   project_product_id: string;
@@ -95,7 +94,6 @@ interface TaskExchangeProps {
 
 export default function ScheduleUser({
   task_title,
-  taskId,
   estimated_time,
   flow,
   project_product_id,
@@ -129,40 +127,20 @@ export default function ScheduleUser({
     try {
       setLoading(true);
 
-      if (taskId) {
-        const response = await api.get(
-          `/task/next?flow=${flow}&project_product_id=${project_product_id}&step=${
-            step ? step : 1
-          }&date=${moment(dinamicDate).format('YYYY-MM-DD')}&task_id=${taskId}`
-        );
+      const response = await api.get(
+        `/task/next?flow=${flow}&project_product_id=${project_product_id}&step=${
+          step ? step : 1
+        }&date=${moment(dinamicDate).format('YYYY-MM-DD')}`
+      );
 
-        if (response.data.result.length > 0) {
-          setDataUserSchedule(response.data.result);
-        } else {
-          addToast({
-            type: 'warning',
-            title: 'Aviso',
-            description: 'Sem usuários disponíveis para a data escolhida'
-          });
-        }
-      }
-
-      if (!taskId) {
-        const response = await api.get(
-          `/task/next-user?project_product_id=${project_product_id}&flow_id=${flow}&step=${
-            step ? step : 1
-          }`
-        );
-
-        if (response.data.result.length > 0) {
-          setDataUserSchedule(response.data.result);
-        } else {
-          addToast({
-            type: 'warning',
-            title: 'Aviso',
-            description: 'Sem usuários disponíveis para a data escolhida'
-          });
-        }
+      if (response.data.result.length > 0) {
+        setDataUserSchedule(response.data.result);
+      } else {
+        addToast({
+          type: 'warning',
+          title: 'Aviso',
+          description: 'Sem usuários disponíveis para a data escolhida'
+        });
       }
 
       setLoading(false);
