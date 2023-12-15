@@ -94,7 +94,7 @@ interface WorkingProductProps {
   sendToApprove?: boolean;
   toApprove?: () => void;
   timelineData?: TimelineProps;
-  returnReasons: ReturnReasons[];
+  returnReasons?: ReturnReasons[];
 }
 
 interface ReturnReasons {
@@ -1038,7 +1038,7 @@ export default function WorkingProduct({
             <div className="title-card">
               Alterações:{' '}
               <div className="change-number">
-                {returnReasons?.length > 0 ? returnReasons?.length : 0}
+                {returnReasons && returnReasons?.length > 0 ? returnReasons?.length : 0}
               </div>
             </div>
 
