@@ -420,6 +420,7 @@ export default function ViewTask() {
             taskFiles={dataTask?.files}
             goBack={() => setVisualizationType('delivery-products')}
             backButtonTitle={'Voltar para produtos'}
+            returnReasons={[]}
           />
         )}
 
