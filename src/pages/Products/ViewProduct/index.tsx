@@ -179,7 +179,7 @@ export default function ViewProductsDeliveries() {
     : [];
 
   const hasDismemberedProduct = (delivery: any): boolean => {
-    return delivery.products.some((product: any) => product.status === 'dismembered');
+    return delivery.products.some((product: any) => product.status === 'recusado');
   };
 
   const hasDismemberedProductInDeliveries = dataTask?.deliverys?.some(hasDismemberedProduct);
@@ -1095,7 +1095,7 @@ export default function ViewProductsDeliveries() {
       const response = await api.put(`/task/dismember/${dataTask?.task_id}`);
       if (response.data.result) {
         setModalDismemberment(false);
-        navigate('/nova-tarefa', { state: { id: dataTask?.task_id } });
+        navigate('/nova-tarefa', { state: { id: response.data.result } });
       }
 
       setLoading(false);
