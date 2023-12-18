@@ -117,6 +117,7 @@ export default function Dashboard() {
     fromDate: '',
     toDate: ''
   });
+
   const { formData, handleOnChange, setFormValue, setData } = useForm({
     client: '',
     contract: '',
