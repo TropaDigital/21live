@@ -62,3 +62,10 @@ export interface TeamProps {
   user_id: string;
   username: string;
 }
+
+export interface UsersNoSchedule {
+  function: string;
+  name: string;
+  tasks: number;
+  user_id: string;
+}

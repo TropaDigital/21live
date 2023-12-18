@@ -7,6 +7,9 @@ import WrapperEditor from '../../../../components/WrapperEditor';
 // Styles
 import { InputField, InputFieldTitle, InputTaskWrapper } from './styles';
 
+// Hooks
+import { useParamsHook } from '../../../../hooks/useParams';
+
 interface InputsProps {
   valueFirst: string;
   valueSecond: string;
@@ -24,10 +27,19 @@ export default function TaskInputs({
   mentions,
   inputsError
 }: InputsProps) {
+  const { parameters, getParams } = useParamsHook();
+
+  useEffect(() => {
+    getParams();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <InputTaskWrapper>
       <InputField className={inputsError?.copywriting_description ? 'error' : ''}>
-        <InputFieldTitle>Input Pré-Requisitos</InputFieldTitle>
+        <InputFieldTitle>
+          Input {parameters.input_name !== '' ? parameters.input_name : 'Pré-requisito'}
+        </InputFieldTitle>
         <WrapperEditor
           mentionData={mentions}
           value={valueFirst}
@@ -36,7 +48,7 @@ export default function TaskInputs({
       </InputField>
 
       <InputField className={inputsError?.creation_description ? 'error' : ''}>
-        <InputFieldTitle>Input criação</InputFieldTitle>
+        <InputFieldTitle>Input atividade</InputFieldTitle>
         <WrapperEditor
           mentionData={mentions}
           value={valueSecond}

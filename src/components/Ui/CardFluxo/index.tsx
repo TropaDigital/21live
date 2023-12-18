@@ -33,7 +33,6 @@ interface CardProps {
   columnStep: any;
   responseUser: any;
   errorField: any;
-  previousManager: boolean;
 }
 
 export default function CardFluxo({
@@ -48,8 +47,7 @@ export default function CardFluxo({
   handleOnsave,
   onUpdate,
   index,
-  errorField,
-  previousManager
+  errorField
 }: CardProps) {
   const [dataStatus, setDataStatus] = useState<any[]>([]);
 
@@ -121,7 +119,7 @@ export default function CardFluxo({
           </SelectDefault>
         </FieldDefault>
 
-        <FieldDefault style={{ marginBottom: '12px' }}>
+        {/* <FieldDefault style={{ marginBottom: '12px' }}>
           <SelectDefault
             label="Retorna para etapa"
             name="previous_step"
@@ -138,7 +136,7 @@ export default function CardFluxo({
               </option>
             ))}
           </SelectDefault>
-        </FieldDefault>
+        </FieldDefault> */}
 
         <fieldset>
           <legend>Ações</legend>
@@ -161,16 +159,16 @@ export default function CardFluxo({
             />
           </FieldDefault>
 
-          <FieldDefault style={{ marginBottom: '8px' }}>
+          {/* <FieldDefault style={{ marginBottom: '8px' }}>
             <CheckboxDefault
               label="Aprovação do gestor"
               name="manager_approve"
               onChange={handleOnChangeCheckbox}
               checked={data.manager_approve === 'true' ? true : false}
             />
-          </FieldDefault>
+          </FieldDefault> */}
 
-          {previousManager && (
+          {/* {previousManager && (
             <FieldDefault style={{ marginBottom: '8px' }}>
               <SelectDefault
                 label="Selecione quem irá aprovar"
@@ -187,11 +185,11 @@ export default function CardFluxo({
                 ))}
               </SelectDefault>
             </FieldDefault>
-          )}
+          )} */}
 
           <FieldDefault style={{ marginBottom: '8px' }}>
             <CheckboxDefault
-              label="Responsavel obrigatório"
+              label="Responsável obrigatório"
               name="necessary_responsible"
               onChange={handleOnChangeCheckbox}
               checked={data.necessary_responsible === 'true' ? true : false}

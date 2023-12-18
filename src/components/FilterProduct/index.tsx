@@ -79,7 +79,7 @@ export default function FilterProduct({ applyFilters, clearFilters }: FilterProp
             required
           >
             {category?.map((row: any, index: any) => (
-              <option key={index} value={row.service_category_id}>
+              <option key={index} value={row.category}>
                 {row.category}
               </option>
             ))}

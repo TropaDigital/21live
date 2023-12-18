@@ -1,6 +1,6 @@
 /* eslint-disable import-helpers/order-imports */
 //  React
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 // Icons
@@ -12,6 +12,7 @@ import { IconContext } from 'react-icons';
 import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useFetch } from '../../../hooks/useFetch';
 import { useToast } from '../../../hooks/toast';
+import { useParamsHook } from '../../../hooks/useParams';
 
 // Components
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
@@ -19,9 +20,13 @@ import ButtonTable from '../../../components/Buttons/ButtonTable';
 import HeaderPage from '../../../components/HeaderPage';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { Table } from '../../../components/Table';
-import { TableHead } from '../../../components/Table/styles';
+import { FilterGroup, TableHead } from '../../../components/Table/styles';
 import Alert from '../../../components/Ui/Alert';
-import { ContainerDefault } from '../../../components/UiElements/styles';
+import {
+  AppliedFilter,
+  ContainerDefault,
+  FilterTotal
+} from '../../../components/UiElements/styles';
 import Pagination from '../../../components/Pagination';
 import ModalDefault from '../../../components/Ui/ModalDefault';
 import {
@@ -46,8 +51,15 @@ import moment from 'moment';
 // Styles
 import { ModalShowTaskWrapper, Flag, StatusTable, FilterTasks } from './styles';
 
+interface FilterProps {
+  status: string;
+  client: string;
+  [key: string]: string; // Index signature
+}
+
 export default function TaskList() {
   const { addToast } = useToast();
+  const { parameters, getParams } = useParamsHook();
   const [modalViewTask, setModalViewTask] = useState({
     isOpen: false,
     type: '',
@@ -76,7 +88,7 @@ export default function TaskList() {
   });
   const [modalFilters, setModalFilters] = useState<boolean>(false);
   const navigate = useNavigate();
-  const [filter, setFilter] = useState({
+  const [filter, setFilter] = useState<FilterProps>({
     status: '',
     client: ''
   });
@@ -186,7 +198,7 @@ export default function TaskList() {
   }
 
   const handleViewTask = (taskId: string) => {
-    console.log('log do id da task para ser visualizada', taskId);
+    // console.log('log do id da task para ser visualizada', taskId);
     const idTask = {
       id: taskId
     };
@@ -206,7 +218,25 @@ export default function TaskList() {
     setModalFilters(false);
   };
 
+  useEffect(() => {
+    getParams();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const hasFilters = Object.values(filter).every((obj) => obj === null || obj === '');
+
+  const countNonEmptyProperties = () => {
+    let count = 0;
+    for (const key in filter) {
+      if (Object.prototype.hasOwnProperty.call(filter, key)) {
+        // Check if the property is not empty or null
+        if (filter[key] !== '' && filter[key] !== null) {
+          count++;
+        }
+      }
+    }
+    return count;
+  };
 
   return (
     <ContainerDefault>
@@ -270,12 +300,33 @@ export default function TaskList() {
               </ButtonDefault>
             </FilterTasks>
           </TableHead>
-          {/* <FilterGroup>
-            <div>
-              Filtros utilizados: {filter.client !== '' ? filter.client : ''}{' '}
-              {filter.status !== '' ? filter.status : ''}
-            </div>
-          </FilterGroup> */}
+          {!hasFilters && (
+            <FilterGroup>
+              <FilterTotal>
+                <div className="filter-title">Filtros ({countNonEmptyProperties()}):</div>
+                {filter.client !== '' ? <span>Cliente</span> : ''}
+                {filter.status !== '' ? <span>Status</span> : ''}
+              </FilterTotal>
+
+              <AppliedFilter>
+                {filter.client !== '' ? (
+                  <div className="filter-title">
+                    Cliente: <span>{clientFilter.label}</span>
+                  </div>
+                ) : (
+                  ''
+                )}
+
+                {filter.status !== '' ? (
+                  <div className="filter-title">
+                    Status: <span>{filter.status}</span>
+                  </div>
+                ) : (
+                  ''
+                )}
+              </AppliedFilter>
+            </FilterGroup>
+          )}
           <table>
             <thead>
               <tr>
@@ -334,6 +385,10 @@ export default function TaskList() {
                           ? 'Concluída'
                           : row.status === 'Aguardando Aprovação'
                           ? 'Aguardando Aprovação'
+                          : row.status === 'Alteração Interna'
+                          ? 'Alteração interna'
+                          : row.status === 'Alteração Externa'
+                          ? 'Alteração externa'
                           : 'Pendente'}
                       </StatusTable>
                     </td>
@@ -439,7 +494,10 @@ export default function TaskList() {
               </SummaryTaskInfo>
               {modalViewTask.task.copywriting_date_end !== '' && (
                 <SummaryTaskInfo>
-                  <div className="title-info">Data De Input Pré-requisitos:</div>
+                  <div className="title-info">
+                    Data De Input{' '}
+                    {parameters.input_name !== '' ? parameters.input_name : 'Pré-requisito'}:
+                  </div>
                   <div className="info">
                     {moment(modalViewTask.task.copywriting_date_end).format('DD/MM/YYYY')}
                   </div>
@@ -447,7 +505,7 @@ export default function TaskList() {
               )}
 
               <SummaryTaskInfo>
-                <div className="title-info">Data De Input de Criação:</div>
+                <div className="title-info">Data De Input de atividade:</div>
                 <div className="info">
                   {moment(modalViewTask.task.creation_date_end).format('DD/MM/YYYY')}
                 </div>

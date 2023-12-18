@@ -249,7 +249,6 @@ export const ModalUploadWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
-  width: 500px;
 
   .modal-buttons {
     display: flex;
@@ -257,4 +256,51 @@ export const ModalUploadWrapper = styled.div`
     gap: 12px;
     margin-left: auto;
   }
+
+  .confirmation {
+    color: var(--title-color);
+    font-size: var(--text-small-lg);
+    font-weight: var(--weight-semibold);
+
+    span {
+      color: var(--Warning);
+    }
+  }
+`;
+
+export const ModalReturnFlow = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 500px;
+  margin-top: 24px;
+
+  .modal-buttons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+  }
+`;
+
+export const ModalProductsWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+`;
+
+export const SelectProductField = styled.div`
+  display: flex;
+  align-items: center;
+  width: fit-content;
+`;
+
+export const TextInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  color: var(--title-color);
+  font-size: var(--text-small-md);
+  font-weight: var(--weight-semibold);
 `;

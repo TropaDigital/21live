@@ -29,6 +29,7 @@ import { multiplyTime, subtractTime, sumTimes } from '../../../../utils/convertT
 
 // Hooks
 import { useAuth } from '../../../../hooks/AuthContext';
+import { useParamsHook } from '../../../../hooks/useParams';
 
 // Libraries
 import Switch from 'react-switch';
@@ -48,6 +49,7 @@ interface TasksProps {
   taskFiles: any[];
   ticketAsk: string | null;
   handleTicket: (value: any) => void;
+  splitDeliveries: boolean;
 }
 
 // interface FlowRole {
@@ -72,9 +74,11 @@ export default function SummaryTasks({
   estimatedtotalTime,
   handleTicket,
   taskFiles,
-  ticketAsk
+  ticketAsk,
+  splitDeliveries
 }: TasksProps) {
   const { user } = useAuth();
+  const { parameters, getParams } = useParamsHook();
   const [deliveryArrayHours, setDeliveryArrayHours] = useState<any>('');
   const [totalArrayHours, setTotalArrayHours] = useState<any>('');
 
@@ -103,6 +107,10 @@ export default function SummaryTasks({
       );
     }
   }
+
+  useEffect(() => {
+    getParams();
+  }, []);
 
   useEffect(() => {
     if (taskType === 'horas') {
@@ -144,13 +152,13 @@ export default function SummaryTasks({
     estimatedtotalTime(totalArrayHours);
   }, [totalArrayHours]);
 
-  // useEffect(() => {
-  // console.log('log do deliveryArrayHours', deliveryArrayHours);
-  // console.log('log do totalArrayHours', totalArrayHours);
-  // console.log('log do selectedProducts', selectedProducts);
-  // console.log('log do taskSummaries', taskSummary);
-  // console.log('log do projectInfos', projectInfos);
-  // }, [deliveryArrayHours, totalArrayHours, selectedProducts, taskSummary, projectInfos]);
+  useEffect(() => {
+    // console.log('log do deliveryArrayHours', deliveryArrayHours);
+    // console.log('log do totalArrayHours', totalArrayHours);
+    // console.log('log do selectedProducts', selectedProducts);
+    // console.log('log do taskSummaries', taskSummary);
+    // console.log('log do projectInfos', projectInfos);
+  }, [deliveryArrayHours, totalArrayHours, selectedProducts, taskSummary, projectInfos]);
 
   return (
     <SummaryWrapper>
@@ -208,7 +216,9 @@ export default function SummaryTasks({
             )}
 
             <SummaryTaskInfo>
-              <div className="title-info">Input Pré-requisito:</div>
+              <div className="title-info">
+                Input {parameters.input_name !== '' ? parameters.input_name : 'Pré-requisito'}:
+              </div>
               <div className="info">
                 <div
                   className="description-info"
@@ -218,7 +228,7 @@ export default function SummaryTasks({
             </SummaryTaskInfo>
 
             <SummaryTaskInfo>
-              <div className="title-info">Input Criação:</div>
+              <div className="title-info">Input de atividade:</div>
               <div className="info">
                 <div
                   className="description-info"
@@ -325,11 +335,11 @@ export default function SummaryTasks({
               <DeliveriesWrapper key={index}>
                 <DeliveriesTitle>
                   {row.deliveryTitle ? row.deliveryTitle : `${index + 1}ª Entrega`}
-                  {row.deliveryDate && (
-                    <span>- {moment(row.deliveryDate).format('DD/MM/YYYY')}</span>
-                  )}
-                  {!row.deliveryDate && (
+                  {!splitDeliveries && (
                     <span>- {moment(taskSummary.creation_date_end).format('DD/MM/YYYY')}</span>
+                  )}
+                  {splitDeliveries && (
+                    <span>- {moment(row.creation_date_end).format('DD/MM/YYYY')}</span>
                   )}
                 </DeliveriesTitle>
                 {row.deliveryProducts.map((products: any, index: number) => (

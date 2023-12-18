@@ -18,13 +18,14 @@ type HandleOnChange = (
 interface FilterProps {
   applyFilters: any;
   clearFilters: any;
+  roleSelected: any;
 }
 
 interface SelectedFilters {
-  role: string;
+  role: any;
 }
 
-export default function FilterTeam({ applyFilters, clearFilters }: FilterProps) {
+export default function FilterTeam({ applyFilters, clearFilters, roleSelected }: FilterProps) {
   const { data } = useFetch<OfficeProps[]>(`function`);
 
   const [choosenFilters, setChoosenFilter] = useState<SelectedFilters>({
@@ -43,8 +44,11 @@ export default function FilterTeam({ applyFilters, clearFilters }: FilterProps) 
     clearFilters();
   };
 
+  const filteredRole = data?.filter((obj) => obj.function_id === choosenFilters.role);
+
   const handleApplyFilters = () => {
     applyFilters(choosenFilters);
+    roleSelected(filteredRole);
   };
 
   return (

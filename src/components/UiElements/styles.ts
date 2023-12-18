@@ -4,9 +4,7 @@ interface Props {
   bottom?: number;
 }
 
-export const ContainerDefault = styled.div`
-
-`;
+export const ContainerDefault = styled.div``;
 
 export const SectionDefault = styled.div`
   padding: 24px 30px;
@@ -78,4 +76,43 @@ export const ContentDefault = styled.div`
   background-color: #fff;
   border-radius: 10px;
   box-shadow: var(--shadow);
+`;
+
+export const FilterTotal = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .filter-title {
+    color: var(--title-color);
+    font-size: var(--text-small-sm);
+    font-weight: var(--weight-medium);
+  }
+
+  span {
+    background-color: var(--gray-300);
+    border-radius: 12px;
+
+    color: var(--title-color);
+    font-size: var(--text-small-sm);
+    font-weight: var(--weight-semibold);
+
+    padding: 6px;
+  }
+`;
+
+export const AppliedFilter = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .filter-title {
+    color: var(--title-color);
+    font-size: var(--text-small-sm);
+    font-weight: var(--weight-medium);
+
+    span {
+      font-weight: var(--weight-semibold);
+    }
+  }
 `;

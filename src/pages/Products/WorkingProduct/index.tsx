@@ -19,6 +19,8 @@ import { HiOutlineArrowRight, HiOutlineChatAlt } from 'react-icons/hi';
 import { BsCheckCircle, BsFolder } from 'react-icons/bs';
 import { IoIosCloseCircleOutline } from 'react-icons/io';
 import { FaDownload } from 'react-icons/fa';
+import { MdClose } from 'react-icons/md';
+import { AiOutlineInteraction } from 'react-icons/ai';
 
 // Components
 import { ContainerDefault } from '../../../components/UiElements/styles';
@@ -28,15 +30,17 @@ import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import AvatarDefault from '../../../components/Ui/Avatar/avatarDefault';
 import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
 import { Table } from '../../../components/Table';
-import Alert from '../../../components/Ui/Alert';
-import ButtonTable from '../../../components/Buttons/ButtonTable';
 import ModalDefault from '../../../components/Ui/ModalDefault';
 import UploadFiles from '../../../components/Upload/UploadFiles';
+import { ModalImage } from '../../Requests/ViewRequests/styles';
+import UploadFilesTicket from '../../../components/UploadTicket/UploadFilex';
 
 // Styles
 import {
   ButtonApproveReject,
   ButtonsWrapper,
+  CardChangeInfos,
+  CardChangesWrapper,
   ChatMessage,
   ChatSendButton,
   ChatUserImg,
@@ -71,10 +75,9 @@ import api from '../../../services/api';
 
 // Utils
 import { formatBytes } from '../../../utils/convertBytes';
-import axios from 'axios';
-import { ModalImage } from '../../Requests/ViewRequests/styles';
-import { MdClose } from 'react-icons/md';
-import UploadFilesTicket from '../../../components/UploadTicket/UploadFilex';
+
+// types
+import { UploadedFilesProps } from '../../../types';
 
 interface WorkingProductProps {
   productDeliveryId?: any;
@@ -91,6 +94,18 @@ interface WorkingProductProps {
   sendToApprove?: boolean;
   toApprove?: () => void;
   timelineData?: TimelineProps;
+  returnReasons?: ReturnReasons[];
+}
+
+interface ReturnReasons {
+  current_step: string;
+  reason: string;
+  returner_id: string;
+  step: string;
+  task_id: string;
+  task_return_id: string;
+  updated: string;
+  user_id: string;
 }
 
 interface InputProps {
@@ -148,25 +163,6 @@ interface ProductInfo {
   updated: string;
 }
 
-interface UploadedFilesProps {
-  file?: File;
-  file_id: string;
-  name: string;
-  readableSize: string;
-  preview: string;
-  progress?: number;
-  uploaded: boolean;
-  error?: boolean;
-  url: string | null;
-  bucket: string;
-  key: string;
-  size: number;
-  file_name: string;
-  isNew: boolean;
-  loading: boolean;
-  folder: string;
-}
-
 interface ModalApprovationInfos {
   isOpen: boolean;
   productId: string;
@@ -209,6 +205,7 @@ export default function WorkingProduct({
   sendToApprove,
   timelineData,
   ticket_id,
+  returnReasons,
   toApprove,
   goBack
 }: WorkingProductProps) {
@@ -236,6 +233,7 @@ export default function WorkingProduct({
     approve: false,
     disapprove: false
   });
+  const [toClientConfirmation, setToClientConfirmation] = useState<boolean>(false);
 
   const [previewImage, setPreviewImage] = useState({
     isOpen: false,
@@ -618,7 +616,7 @@ export default function WorkingProduct({
   }
 
   useEffect(() => {
-    console.log('log do ticket_id =>', ticket_id);
+    // console.log('log do ticket_id =>', ticket_id);
     // console.log('log do final card =>', finalCard);
     // console.log('log do upload client =>', uploadClient);
     // console.log('log do isToApprove =>', isToApprove);
@@ -670,6 +668,17 @@ export default function WorkingProduct({
         >
           <BsFolder />
           Arquivos
+        </TaskTab>
+
+        <TaskTab
+          onClick={(e: any) => {
+            setSelectedTab(e.target.innerText);
+            getComments();
+          }}
+          className={selectedTab === 'Alterações' ? 'active' : ''}
+        >
+          <AiOutlineInteraction />
+          Alterações
         </TaskTab>
 
         {backButtonTitle && (
@@ -1024,6 +1033,35 @@ export default function WorkingProduct({
             </Table>
           </FilesTableWrapper>
         )}
+        {selectedTab === 'Alterações' && (
+          <CardChangesWrapper>
+            <div className="title-card">
+              Alterações:{' '}
+              <div className="change-number">
+                {returnReasons && returnReasons?.length > 0 ? returnReasons?.length : 0}
+              </div>
+            </div>
+
+            {returnReasons?.map((row: ReturnReasons) => (
+              <CardChangeInfos key={row.task_return_id}>
+                <div className="top-infos">
+                  <div className="field-names">
+                    Quem solicitou: <span>{row.returner_id}</span>
+                  </div>
+                  <div className="field-names">
+                    Etapa que retornou: <span>{row.step}</span>
+                  </div>
+                  <div className="field-names">
+                    Etapa que estava: <span>{row.current_step}</span>
+                  </div>
+                </div>
+                <div className="field-names">
+                  Motivo: <span>{row.reason}</span>
+                </div>
+              </CardChangeInfos>
+            ))}
+          </CardChangesWrapper>
+        )}
       </WorkSection>
 
       {/* Modal upload to approve */}
@@ -1112,11 +1150,13 @@ export default function WorkingProduct({
         isOpen={modalFinalFile}
         onOpenChange={() => setModalFinalFile(false)}
         title={
-          finalCard ? 'Upload para arquivo final' : 'Upload de arquivo para aprovação do cliente'
+          uploadClient
+            ? 'Upload de arquivo para aprovação do cliente no 21Clients'
+            : 'Upload de arquivo final para o 21Clients'
         }
       >
         <ModalUploadWrapper>
-          {finalCard && (
+          {finalCard && !toClientConfirmation && (
             <UploadFiles
               uploadedFiles={uploadedFiles}
               setUploadedFiles={setUploadedFiles}
@@ -1126,6 +1166,14 @@ export default function WorkingProduct({
               setLoading={setLoading}
               folderInfo="tasks"
             />
+          )}
+
+          {finalCard && toClientConfirmation && (
+            <div className="confirmation">
+              <span>Atenção:</span> <br />
+              Os arquivos serão enviados para a área do cliente. <br />
+              Essa ação não pode ser revertida.
+            </div>
           )}
 
           {uploadClient && ticket_id && (
@@ -1140,7 +1188,7 @@ export default function WorkingProduct({
             />
           )}
 
-          {finalCard && (
+          {finalCard && !toClientConfirmation && (
             <div className="modal-buttons">
               <ButtonDefault
                 typeButton="lightWhite"
@@ -1150,8 +1198,28 @@ export default function WorkingProduct({
                 Cancelar
               </ButtonDefault>
 
+              <ButtonDefault typeButton="primary" onClick={() => setToClientConfirmation(true)}>
+                Enviar para o cliente
+              </ButtonDefault>
+            </div>
+          )}
+
+          {finalCard && toClientConfirmation && (
+            <div className="modal-buttons">
+              <ButtonDefault
+                typeButton="lightWhite"
+                isOutline
+                onClick={() => {
+                  setModalFinalFile(false);
+                  setToClientConfirmation(false);
+                  setUploadedFiles([]);
+                }}
+              >
+                Cancelar
+              </ButtonDefault>
+
               <ButtonDefault typeButton="primary" onClick={handleSaveUploadFinal}>
-                Salvar
+                OK
               </ButtonDefault>
             </div>
           )}

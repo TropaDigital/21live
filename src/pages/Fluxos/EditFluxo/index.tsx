@@ -68,9 +68,9 @@ export default function EditFluxo() {
           setErrorMissingResponsible((prevState) =>
             prevState.filter((error) => error !== row.card_id)
           );
-          if (row.manager_approve === 'true' && row.previous_step === '0') {
-            throw new Error('Não é possível salvar um fluxo sem escolher para qual etapa retornar');
-          }
+          // if (row.manager_approve === 'true' && row.previous_step === '0') {
+          //   throw new Error('Não é possível salvar um fluxo sem escolher para qual etapa retornar');
+          // }
         }
       });
       if (errorMissingResponsible.length <= 0) {
@@ -93,7 +93,7 @@ export default function EditFluxo() {
       if (response.data.status === 'success') {
         addToast({
           title: 'Sucesso',
-          description: 'Fluxos salvos com sucesso!',
+          description: 'Fluxo salvo com sucesso!',
           type: 'success'
         });
         // navigate('/fluxo');
@@ -198,7 +198,6 @@ export default function EditFluxo() {
                   handleOnsave={saveFluxo}
                   onUpdate={(id, name, value) => updateParcialColumn(id, name, value)}
                   errorField={errorMissingResponsible}
-                  previousManager={true}
                 />
               );
             } else {
@@ -217,7 +216,6 @@ export default function EditFluxo() {
                   handleOnsave={saveFluxo}
                   onUpdate={(id, name, value) => updateParcialColumn(id, name, value)}
                   errorField={errorMissingResponsible}
-                  previousManager={false}
                 />
               );
             }

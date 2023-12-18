@@ -57,7 +57,8 @@ export const Container = styled.div`
   }
 
   &.last {
-    border: 1px solid var(--primary);
+    border: 2px solid var(--primary);
+    background-color: var(--primary-050);
   }
 `;
 

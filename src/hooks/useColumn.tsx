@@ -17,11 +17,11 @@ function useColumn() {
         necessary_upload: 'false',
         email_alert: 'false',
         necessary_responsible: 'true',
-        manager_approve: 'false',
+        // manager_approve: 'false',
         tenant_approve: 'false',
-        previous_step: '0',
-        ticket_status_id: '0',
-        approver: '0'
+        // previous_step: '0',
+        ticket_status_id: '0'
+        // approver: '0'
         // tasks: [],
       };
 
