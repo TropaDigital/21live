@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 // react
-import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 // Icons
 import { BsQuestionOctagon } from 'react-icons/bs';
@@ -53,6 +53,9 @@ import { useToast } from '../../../hooks/toast';
 // Services
 import api from '../../../services/api';
 
+// Utils
+import { subtractTime } from '../../../utils/convertTimes';
+
 interface ModalProps {
   isOpen: boolean;
   typeOfField: 'title' | 'flow' | 'flowStep' | 'date' | undefined;
@@ -101,6 +104,7 @@ interface TaskProps {
 
 export default function CreateTaksWithRefused() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { parameters, getParams } = useParamsHook();
   const { addToast } = useToast();
   const { formData, handleOnChange, setData } = useForm({
@@ -214,6 +218,117 @@ export default function CreateTaksWithRefused() {
     }
   }, []);
 
+  const handleOnSubmit = useCallback(async () => {
+    try {
+      const {
+        card_name,
+        copywriting_date_end,
+        copywriting_description,
+        creation_date_end,
+        creation_description,
+        deliverys,
+        description,
+        end_job,
+        files,
+        flow,
+        flow_id,
+        organization_id,
+        parent_id,
+        paret_type,
+        product_period,
+        project,
+        project_category,
+        project_product_id,
+        project_type,
+        requester_id,
+        start_job,
+        status,
+        step,
+        task_id,
+        tenant,
+        tenant_id,
+        ticket_id,
+        time,
+        time_consumed,
+        title,
+        total_time,
+        type,
+        type_play,
+        urgent,
+        user_id,
+        name,
+        project_id,
+        gen_ticket
+      } = formData;
+
+      const createNewData = {
+        card_name,
+        copywriting_date_end,
+        copywriting_description,
+        creation_date_end,
+        creation_description,
+        deliverys,
+        description,
+        end_job,
+        files,
+        flow,
+        flow_id,
+        organization_id,
+        parent_id,
+        paret_type,
+        product_period,
+        project,
+        project_category,
+        project_product_id,
+        project_type,
+        requester_id,
+        start_job,
+        status,
+        step,
+        task_id,
+        tenant,
+        tenant_id,
+        ticket_id,
+        time,
+        time_consumed,
+        title,
+        total_time,
+        type,
+        type_play,
+        urgent,
+        user_id,
+        name,
+        project_id,
+        gen_ticket
+      };
+
+      await api.put(`tasks/${location.state.task_id}`, createNewData);
+
+      addToast({
+        type: 'success',
+        title: 'Sucesso',
+        description: 'Tarefa criada com sucesso!'
+      });
+      navigate('/tarefas');
+    } catch (e: any) {
+      if (e.response.data.result.length !== 0) {
+        e.response.data.result.map((row: any) => {
+          addToast({
+            type: 'danger',
+            title: 'ATENÇÃO',
+            description: row.error
+          });
+        });
+      } else {
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: e.response.data.message
+        });
+      }
+    }
+  }, [formData]);
+
   // useEffect(() => {
   //   console.log('log do formData =>', formData);
   // }, [formData]);
@@ -309,24 +424,22 @@ export default function CreateTaksWithRefused() {
                       :
                     </div>
                     <div className="info">
-                      {/* <div
-                                  className="description-info"
-                                  dangerouslySetInnerHTML={{ __html: taskSummary?.copywriting_description }}
-                              /> */}
-                      {formData.copywriting_description}
+                      <div
+                        className="description-info"
+                        dangerouslySetInnerHTML={{ __html: formData.copywriting_description }}
+                      />
                     </div>
                   </SummaryTaskInfo>
 
                   <SummaryTaskInfo>
                     <div className="title-info">Input de atividade:</div>
                     <div className="info">
-                      {/* <div
-                                  className="description-info"
-                                  dangerouslySetInnerHTML={{
-                                      __html: taskSummary?.creation_description
-                                  }}
-                              /> */}
-                      {formData.creation_description}
+                      <div
+                        className="description-info"
+                        dangerouslySetInnerHTML={{
+                          __html: formData.creation_description
+                        }}
+                      />
                     </div>
                   </SummaryTaskInfo>
 
@@ -334,19 +447,21 @@ export default function CreateTaksWithRefused() {
                     <div className="description-title">Contexto geral</div>
                     <div
                       className="description-info"
-                      // dangerouslySetInnerHTML={{ __html: taskSummary?.description }}
-                    >
-                      {formData.description}
-                    </div>
+                      dangerouslySetInnerHTML={{ __html: formData.description }}
+                    ></div>
                   </SummaryTaskDescription>
 
-                  <SummaryTaskDescription>
-                    <div className="description-title">Arquivos:</div>
-                    <FileList>&#x2022; arquivo-1.png</FileList>
-                    {/* {taskFiles.map((row: any) => (
-                              <FileList key={row.file_id}>&#x2022; {row.file_name}</FileList>
-                          ))} */}
-                  </SummaryTaskDescription>
+                  {formData.files.length > 0 && (
+                    <SummaryTaskDescription>
+                      <div className="description-title">Arquivos:</div>
+                      {formData.files.map((row: any) => (
+                        <FileList key={row.task_file_id}>&#x2022; {row.file_name}</FileList>
+                      ))}
+                      {/* {taskFiles.map((row: any) => (
+                                <FileList key={row.file_id}>&#x2022; {row.file_name}</FileList>
+                            ))} */}
+                    </SummaryTaskDescription>
+                  )}
                 </SummaryInfoWrapper>
               </SummaryDefault>
 
@@ -356,11 +471,9 @@ export default function CreateTaksWithRefused() {
                 {selectedProducts?.map((row: any, index: any) => (
                   <DeliveriesWrapper key={index}>
                     <DeliveriesTitle>
-                      {row.deliveryTitle ? row.deliveryTitle : `${index + 1}ª Entrega`}
+                      {row.title ? row.title : `${index + 1}ª Entrega`}
 
-                      {row.deliveryDate && (
-                        <span>- {moment(row.deliveryDate).format('DD/MM/YYYY')}</span>
-                      )}
+                      {row.date_end && <span>- {moment(row.date_end).format('DD/MM/YYYY')}</span>}
                     </DeliveriesTitle>
                     {row?.products.map((products: any, index: number) => (
                       <SummaryCard key={index} style={{ height: 'fit-content' }}>
@@ -425,21 +538,21 @@ export default function CreateTaksWithRefused() {
               </div>
               <div className="splitter"></div>
               <div className="item-hours">
-                Horas estimadas: <span>12:00:00</span>
+                Horas estimadas: <span>{formData.total_time}</span>
               </div>
               <div className="item-hours">
-                Horas disponíveis: <span>4:00:00</span>
-                {/* {subtractTime(projectInfos?.tempo, totalArrayHours).includes('-') ? (
+                Horas disponíveis:
+                {subtractTime(formData.tempo, formData.total_time).includes('-') ? (
                   <div className="negative">
-                    {subtractTime(projectInfos?.tempo, totalArrayHours)}
+                    {subtractTime(formData.tempo, formData.total_time)}
                   </div>
                 ) : (
-                  <span>{subtractTime(projectInfos?.tempo, totalArrayHours)}</span>
-                )} */}
+                  <span>{subtractTime(formData.tempo, formData.total_time)}</span>
+                )}
               </div>
 
               <SummaryButtons>
-                <ButtonDefault onClick={() => ''}>Criar tarefa</ButtonDefault>
+                <ButtonDefault onClick={handleOnSubmit}>Criar tarefa</ButtonDefault>
               </SummaryButtons>
             </SummaryTasksAbout>
           </SummaryWrapper>
