@@ -73,6 +73,7 @@ interface ServicesProps {
   minutes: string;
   minutes_creation: any;
   minutes_essay: any;
+  service_category_id: string;
   category: string;
   flag: string;
 }
@@ -82,6 +83,7 @@ interface FormDataProps {
   description: string;
   type: string;
   size: string;
+  service_category_id: string;
   category: string;
   flag: string;
   minutes_creation: any;
@@ -127,7 +129,7 @@ export default function Services() {
       minutes: '',
       minutes_creation: '',
       minutes_essay: '',
-      category: '',
+      service_category_id: '',
       flag: 'false',
       job_service_id: ''
     } as FormDataProps);
@@ -1160,13 +1162,13 @@ export default function Services() {
             <SelectDefault
               label="Categoria"
               placeholder="Selecione aqui..."
-              name="category"
+              name="service_category_id"
               onChange={handleOnChange}
-              value={formData.category}
+              value={formData.service_category_id}
               required
             >
               {modal.type.includes('Editar servico') && (
-                <option selected={true} value={formData.category}>
+                <option selected={true} value={formData.service_category_id}>
                   {formData.category}
                 </option>
               )}
@@ -1418,7 +1420,7 @@ export default function Services() {
                     <p className="service-data service" title={row?.service}>
                       {row?.service}
                     </p>
-                    <p className="service-data">{row?.category}</p>
+                    <p className="service-data">{row?.service_category_id}</p>
                     <p className="service-data">{row?.flag === 'true' ? 'Sim' : 'Não'}</p>
                     <p className="service-data">{row?.minutes}</p>
                     <div className="service-data center">
@@ -1488,7 +1490,7 @@ export default function Services() {
                     onClick={() => handleOnShowKitDetails(row?.service)}
                   >
                     <p className="service-data center">{row?.service}</p>
-                    <p className="service-data center">{row?.category}</p>
+                    <p className="service-data center">{row?.service_category_id}</p>
                     <p className="service-data center">{row?.type}</p>
                     <p
                       className={`service-data center chevron ${
