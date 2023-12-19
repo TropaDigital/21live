@@ -615,6 +615,12 @@ export default function WorkingProduct({
     }
   }
 
+  function findCardNameByStep(data: any[], targetStep: string): string | null {
+    const foundCard = data.find((obj: any) => obj.step === targetStep);
+
+    return foundCard ? foundCard.name : null;
+  }
+
   useEffect(() => {
     // console.log('log do ticket_id =>', ticket_id);
     // console.log('log do final card =>', finalCard);
@@ -1048,11 +1054,17 @@ export default function WorkingProduct({
                   <div className="field-names">
                     Quem solicitou: <span>{row.returner_id}</span>
                   </div>
-                  <div className="field-names">
+                  {/* <div className="field-names">
                     Etapa que retornou: <span>{row.step}</span>
-                  </div>
+                  </div> */}
                   <div className="field-names">
-                    Etapa que estava: <span>{row.current_step}</span>
+                    Etapa que estava:{' '}
+                    <span>
+                      {findCardNameByStep(
+                        timelineData ? timelineData?.steps : [],
+                        row.current_step
+                      )}
+                    </span>
                   </div>
                 </div>
                 <div className="field-names">
