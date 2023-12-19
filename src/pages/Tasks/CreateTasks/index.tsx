@@ -882,6 +882,9 @@ export default function CreateTasks() {
       if (createStep === 1 && tasksType === 'horas' && !taskEdit) {
         setProductsModal(true);
       } else if (createStep === 2 && tasksType === 'horas') {
+        if (splitDeliveries && DTODelivery.length <= 1) {
+          throw new Error('Entregas dívidas não podem ter somente uma entrega');
+        }
         if (splitDeliveries && location.state !== null) {
           DTODelivery.map((current: DeliveryUpdate) => {
             current.produtos.map((obj: any) => {
@@ -1729,9 +1732,9 @@ export default function CreateTasks() {
       handleOnSubmit();
     }
 
-    if (selectedInitialUser?.user_id !== '' && DTOForm.start_job !== '' && DTOForm.user_id !== '') {
-      handleOnSubmit();
-    }
+    // if (selectedInitialUser?.user_id !== '' && DTOForm.start_job !== '' && DTOForm.user_id !== '') {
+    //   handleOnSubmit();
+    // }
   }, [submitState]);
 
   const handleGenerateTicket = (value: boolean) => {
@@ -1754,8 +1757,25 @@ export default function CreateTasks() {
       const response = await api.get(
         `/verify-flow?project_product_id=${DTOForm.project_product_id}&flow_id=${DTOForm.flow_id}`
       );
+      if (response.data.result === 'Existem divergencias entre o projeto e o fluxo alocado') {
+        throw new Error('Existem divergencias entre o projeto e o fluxo alocado');
+      }
+
+      if (response.data.result === 'Fluxo ok!') {
+        addToast({
+          type: 'success',
+          title: 'Sucesso',
+          description: 'Fluxo compativel com o projeto'
+        });
+      }
     } catch (e: any) {
-      if (e.response.data.result.length !== 0) {
+      if (e.message === 'Existem divergencias entre o projeto e o fluxo alocado') {
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: e.message
+        });
+      } else if (e.response.data.result.length !== 0) {
         e.response.data.result.map((row: any) => {
           addToast({
             type: 'danger',
@@ -1771,13 +1791,13 @@ export default function CreateTasks() {
         });
       }
     }
-  }, [DTOForm]);
+  }, [DTOForm.flow_id, DTOForm.project_product_id]);
 
   useEffect(() => {
     if (DTOForm.flow_id && DTOForm.project_product_id) {
       checkFlowAndProject();
     }
-  }, [DTOForm]);
+  }, [DTOForm.flow_id, DTOForm.project_product_id]);
 
   // useEffect(() => {
   //   console.log('log do tipo de task', tasksType);
