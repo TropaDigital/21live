@@ -118,13 +118,23 @@ interface ModalDeliveryProps {
   indexDelivery: number | any;
 }
 
-// interface ILocation {
-//   hash: string;
-//   key: string;
-//   pathname: string;
-//   search: string;
-//   state: ITaskCreate;
-// }
+interface StepCards {
+  card_id: string;
+  flow_id: string;
+  step: string;
+  name: string;
+  necessary_upload: string;
+  necessary_responsible: string;
+  email_alert: string;
+  tenant_approve: string;
+  manager_approve: string;
+  function_id: string;
+  final_card: string;
+  ticket_status: string;
+  ticket_status_id: string;
+  tenant_id: string;
+  approver: string;
+}
 
 // interface ITicketProps {
 //   ticket_id: string;
@@ -331,6 +341,7 @@ export default function CreateTasks() {
   const [modalWithoutSchedule, setModalWithoutSchedule] = useState<boolean>(false);
   const [usersWithoutSchedule, setUsersWithoutSchedule] = useState<UsersNoSchedule[]>([]);
   const [selectedInitialUser, setSelectedInitalUser] = useState<UsersNoSchedule>();
+  const [warningModal, setWarningModal] = useState<boolean>(false);
 
   const addDelivery = () => {
     const newDelivery: DeliveryProps = {
@@ -791,12 +802,12 @@ export default function CreateTasks() {
       organization_id,
       project_product_id,
       flow_id,
-      user_id,
       description,
-      copywriting_date_end,
       creation_date_end,
       creation_description,
-      copywriting_description
+      copywriting_description,
+      requester_id,
+      gen_ticket
     } = DTOForm;
 
     try {
@@ -836,6 +847,12 @@ export default function CreateTasks() {
         throw setErrorInput('project_product_id', 'Projeto / Contrato é obrigatório!');
       } else {
         setErrorInput('project_product_id', undefined);
+      }
+
+      if (gen_ticket === 'true' && requester_id === '') {
+        throw setErrorInput('requester_id', 'Solicitante é obrigatório!');
+      } else {
+        setErrorInput('requester_id', undefined);
       }
 
       // if (user_id === '') {
@@ -1356,6 +1373,10 @@ export default function CreateTasks() {
           ]
         };
 
+        if (ticket_id === '0') {
+          delete createNewData.ticket_id;
+        }
+
         if (requester_id === '') {
           delete createNewData.requester_id;
         }
@@ -1397,6 +1418,10 @@ export default function CreateTasks() {
           gen_ticket,
           ticket_id
         };
+
+        if (ticket_id === '0') {
+          delete createNewData.ticket_id;
+        }
 
         if (requester_id === '') {
           delete createNewData.requester_id;
@@ -1443,6 +1468,10 @@ export default function CreateTasks() {
             ticket_id
           };
 
+          if (ticket_id === '0') {
+            delete createNewData.ticket_id;
+          }
+
           if (requester_id === '') {
             delete createNewData.requester_id;
           }
@@ -1486,6 +1515,10 @@ export default function CreateTasks() {
             gen_ticket,
             ticket_id
           };
+
+          if (ticket_id === '0') {
+            delete createNewData.ticket_id;
+          }
 
           if (requester_id === '') {
             delete createNewData.requester_id;
@@ -1759,6 +1792,18 @@ export default function CreateTasks() {
       );
       if (response.data.result === 'Existem divergencias entre o projeto e o fluxo alocado') {
         throw new Error('Existem divergencias entre o projeto e o fluxo alocado');
+      }
+
+      if (response.data.result.gen_ticket) {
+        setWarningModal(true);
+        setDTOForm((prevState: any) => ({
+          ...prevState,
+          ['gen_ticket']: 'true'
+        }));
+        setDTOForm((prevState: any) => ({
+          ...prevState,
+          ['ticket_id']: '0'
+        }));
       }
 
       if (response.data.result === 'Fluxo ok!') {
@@ -2605,6 +2650,24 @@ export default function CreateTasks() {
               </ButtonDefault>
             </ModalButtons>
           </UsersWrapper>
+        </ModalDefault>
+
+        <ModalDefault
+          isOpen={warningModal}
+          title="Aviso"
+          onOpenChange={() => setWarningModal(false)}
+        >
+          <ProductsModalWrapper>
+            <div>No fluxo escolhido é obrigatório gerar o ticket.</div>
+            <div>Essa tarefa ficará visivel também para o seu cliente no 21Clients.</div>
+            <div>Os campos disponíveis para visualização por ele serão: TÍTULO e DATAS.</div>
+
+            <ModalButtons>
+              <ButtonDefault typeButton="warning" onClick={() => setWarningModal(false)}>
+                OK
+              </ButtonDefault>
+            </ModalButtons>
+          </ProductsModalWrapper>
         </ModalDefault>
       </ContainerWrapper>
     </>
