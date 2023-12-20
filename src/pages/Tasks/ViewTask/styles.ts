@@ -11,6 +11,8 @@ export const TaskInfoWrapper = styled.div`
   position: relative;
   min-height: 100vh;
   overflow: hidden;
+
+  padding-bottom: 60px;
 `;
 
 export const CardsWrapper = styled.div`
@@ -53,6 +55,18 @@ export const DeliveriesWrapper = styled.div`
       }
     }
   }
+
+  .sub {
+    margin-right: 8px;
+  }
+`;
+
+export const DeliveriesTopWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 12px;
 `;
 
 export const TableWrapper = styled.div`
@@ -125,7 +139,7 @@ export const RightInfosCard = styled.div<HideCardProps>`
   display: flex;
   flex-direction: column;
   width: 352px;
-  height: 100vh;
+  height: 100%;
   background: var(--background-primary);
   overflow-y: auto;
   padding: 24px;
@@ -558,5 +572,30 @@ export const EstimatedTime = styled.div`
   span {
     color: var(--gray-900);
     font-weight: var(--weight-bold);
+  }
+`;
+
+export const StatusTask = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 4px 8px;
+  width: fit-content;
+  border-radius: 35px;
+  background: var(--warning-100);
+
+  color: var(--warning-700);
+  font-size: var(--text-small-sm);
+  font-weight: var(--weight-medium);
+
+  &.progress {
+    color: var(--primary-700);
+    background: var(--primary-050);
+  }
+
+  &.finished {
+    color: var(--secundary-700);
+    background: var(--secundary-100);
   }
 `;
