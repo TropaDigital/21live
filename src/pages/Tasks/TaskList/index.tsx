@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { BiFilter, BiPlus, BiSearchAlt, BiX } from 'react-icons/bi';
 import { FiFlag } from 'react-icons/fi';
 import { IconContext } from 'react-icons';
+import { FiCornerDownRight } from 'react-icons/fi';
 
 // Hooks
 import useDebouncedCallback from '../../../hooks/useDebounced';
@@ -358,8 +359,20 @@ export default function TaskList() {
               {data !== null &&
                 data?.length > 0 &&
                 data?.map((row) => (
-                  <tr key={row.task_id}>
-                    <td>#{String(row.task_id).padStart(5, '0')}</td>
+                  <tr key={row.task_id} className={row.parent_id !== '' ? 'parent' : ''}>
+                    {row.parent_id !== '' ? (
+                      <td
+                        style={{
+                          display: 'table-cell',
+                          paddingRight: '0.5rem'
+                        }}
+                      >
+                        <FiCornerDownRight color="var(--primary)" size={'1rem'} /> #
+                        {String(row.task_id).padStart(5, '0')}
+                      </td>
+                    ) : (
+                      <td>#{String(row.task_id).padStart(5, '0')}</td>
+                    )}
                     <td
                       style={{ textTransform: 'capitalize', cursor: 'pointer' }}
                       onClick={() => handleViewTask(row.task_id)}
