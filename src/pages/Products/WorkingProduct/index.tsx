@@ -99,6 +99,7 @@ interface WorkingProductProps {
 
 interface ReturnReasons {
   current_step: string;
+  name: string;
   reason: string;
   returner_id: string;
   step: string;
@@ -914,126 +915,129 @@ export default function WorkingProduct({
                 </thead>
 
                 <tbody>
-                  {taskFiles
-                    ? taskFiles?.length > 0 &&
-                      taskFiles?.map((row: FilesMap) => (
-                        <tr key={row.task_file_id}>
-                          <td>
-                            <div className="id-column">
-                              #{String(row.task_file_id).padStart(2, '0')}
-                            </div>
-                          </td>
-                          <td>
-                            {row.products_delivery_id !== '' ? row.products_delivery_id : '-----'}
-                          </td>
-                          <td>{row.file_name}</td>
-                          <td>{formatBytes(row.size)}</td>
-                          <td style={{ textTransform: 'capitalize' }}>Criação</td>
-                          <td style={{ textTransform: 'capitalize' }}>
-                            {moment('2023/11/31').format('DD/MM/YYYY')}
-                          </td>
-                          <td>
-                            {row.products_delivery_id !== '' ? (
-                              <StatusTable
-                                className={
-                                  row.status === 'fail'
-                                    ? 'status reject'
-                                    : row.status === 'pass'
-                                    ? 'status accept'
-                                    : 'status'
-                                }
-                              >
-                                {row.status === 'fail'
-                                  ? 'Reprovado'
+                  {taskFiles && taskFiles?.length > 0 ? (
+                    taskFiles?.map((row: FilesMap) => (
+                      <tr key={row.task_file_id}>
+                        <td>
+                          <div className="id-column">
+                            #{String(row.task_file_id).padStart(2, '0')}
+                          </div>
+                        </td>
+                        <td>
+                          {row.products_delivery_id !== '' ? row.products_delivery_id : '-----'}
+                        </td>
+                        <td>{row.file_name}</td>
+                        <td>{formatBytes(row.size)}</td>
+                        <td style={{ textTransform: 'capitalize' }}>Criação</td>
+                        <td style={{ textTransform: 'capitalize' }}>
+                          {moment('2023/11/31').format('DD/MM/YYYY')}
+                        </td>
+                        <td>
+                          {row.products_delivery_id !== '' ? (
+                            <StatusTable
+                              className={
+                                row.status === 'fail'
+                                  ? 'status reject'
                                   : row.status === 'pass'
-                                  ? 'Aprovado'
-                                  : row.status === 'await'
-                                  ? 'Aguardando aprovação'
-                                  : ''}
-                              </StatusTable>
-                            ) : (
-                              '-----'
-                            )}
-                          </td>
-                          <td>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                              <ViewFile
-                                onClick={() =>
-                                  setPreviewImage({
-                                    isOpen: true,
-                                    imageInfos: {
-                                      bucket: row.bucket,
-                                      created: row.created,
-                                      file_name: row.file_name,
-                                      key: row.key,
-                                      task_file_id: row.task_file_id,
-                                      task_id: row.task_id,
-                                      size: row.size,
-                                      updated: row.updated,
-                                      url: row.url
-                                    }
-                                  })
-                                }
-                              >
-                                <BiShow size={20} />
-                              </ViewFile>
+                                  ? 'status accept'
+                                  : 'status'
+                              }
+                            >
+                              {row.status === 'fail'
+                                ? 'Reprovado'
+                                : row.status === 'pass'
+                                ? 'Aprovado'
+                                : row.status === 'await'
+                                ? 'Aguardando aprovação'
+                                : ''}
+                            </StatusTable>
+                          ) : (
+                            '-----'
+                          )}
+                        </td>
+                        <td>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <ViewFile
+                              onClick={() =>
+                                setPreviewImage({
+                                  isOpen: true,
+                                  imageInfos: {
+                                    bucket: row.bucket,
+                                    created: row.created,
+                                    file_name: row.file_name,
+                                    key: row.key,
+                                    task_file_id: row.task_file_id,
+                                    task_id: row.task_id,
+                                    size: row.size,
+                                    updated: row.updated,
+                                    url: row.url
+                                  }
+                                })
+                              }
+                            >
+                              <BiShow size={20} />
+                            </ViewFile>
 
-                              <DownloadIcon onClick={() => downloadFile(row)}>
-                                <FaDownload />
-                              </DownloadIcon>
-                            </div>
-                            {/* {productsInfo?.file_status === 'pass' && (
+                            <DownloadIcon onClick={() => downloadFile(row)}>
+                              <FaDownload />
+                            </DownloadIcon>
+                          </div>
+                          {/* {productsInfo?.file_status === 'pass' && (
                               <div className="fieldTableClients">                               
                               </div>
                             )} */}
-                            {/* productsInfo?.file_status === 'await' && */}
-                            {isToApprove &&
-                              isToApprove[0].manager_approve === 'true' &&
-                              row.status === 'await' && (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                  {/* <DownloadIcon onClick={() => handleDownload(row)}>
+                          {/* productsInfo?.file_status === 'await' && */}
+                          {isToApprove &&
+                            isToApprove[0].manager_approve === 'true' &&
+                            row.status === 'await' && (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                {/* <DownloadIcon onClick={() => handleDownload(row)}>
                                   <FaDownload />
                                 </DownloadIcon> */}
 
-                                  <ButtonApproveReject
-                                    className="reject"
-                                    // onClick={() => disapproveFile(row.products_delivery_id)}
-                                    onClick={() =>
-                                      setModalApproveDisapprove({
-                                        isOpen: true,
-                                        productId: row.products_delivery_id,
-                                        approve: false,
-                                        disapprove: true
-                                      })
-                                    }
-                                  >
-                                    <IoIosCloseCircleOutline />
+                                <ButtonApproveReject
+                                  className="reject"
+                                  // onClick={() => disapproveFile(row.products_delivery_id)}
+                                  onClick={() =>
+                                    setModalApproveDisapprove({
+                                      isOpen: true,
+                                      productId: row.products_delivery_id,
+                                      approve: false,
+                                      disapprove: true
+                                    })
+                                  }
+                                >
+                                  <IoIosCloseCircleOutline />
 
-                                    {/* <div className="hover-text">Reprovar</div> */}
-                                  </ButtonApproveReject>
+                                  {/* <div className="hover-text">Reprovar</div> */}
+                                </ButtonApproveReject>
 
-                                  <ButtonApproveReject
-                                    className="check"
-                                    // onClick={() => approveFile(row.products_delivery_id)}
-                                    onClick={() =>
-                                      setModalApproveDisapprove({
-                                        isOpen: true,
-                                        productId: row.products_delivery_id,
-                                        approve: true,
-                                        disapprove: false
-                                      })
-                                    }
-                                  >
-                                    <BsCheckCircle />
+                                <ButtonApproveReject
+                                  className="check"
+                                  // onClick={() => approveFile(row.products_delivery_id)}
+                                  onClick={() =>
+                                    setModalApproveDisapprove({
+                                      isOpen: true,
+                                      productId: row.products_delivery_id,
+                                      approve: true,
+                                      disapprove: false
+                                    })
+                                  }
+                                >
+                                  <BsCheckCircle />
 
-                                    {/* <div className="hover-text">Aprovar</div> */}
-                                  </ButtonApproveReject>
-                                </div>
-                              )}
-                          </td>
-                        </tr>
-                      ))
-                    : ''}
+                                  {/* <div className="hover-text">Aprovar</div> */}
+                                </ButtonApproveReject>
+                              </div>
+                            )}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={8}>Sem arquivos</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </Table>
@@ -1052,7 +1056,7 @@ export default function WorkingProduct({
               <CardChangeInfos key={row.task_return_id}>
                 <div className="top-infos">
                   <div className="field-names">
-                    Quem solicitou: <span>{row.returner_id}</span>
+                    Quem solicitou: <span>{row.name}</span>
                   </div>
                   {/* <div className="field-names">
                     Etapa que retornou: <span>{row.step}</span>
