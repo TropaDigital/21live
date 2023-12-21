@@ -62,7 +62,7 @@ import { useToast } from '../../../hooks/toast';
 import { useStopWatch } from '../../../hooks/stopWatch';
 
 // Types
-import { UploadedFilesProps } from '../../../types';
+import { StepTimeline, UploadedFilesProps } from '../../../types';
 
 // Utils
 import { UsersNoSchedule } from '../../../utils/models';
@@ -70,24 +70,6 @@ import { UsersNoSchedule } from '../../../utils/models';
 interface TimelineProps {
   steps: StepTimeline[];
   currentStep: string;
-}
-
-interface StepTimeline {
-  step: string;
-  name: string;
-  card_id: string;
-  flow_id: string;
-  necessary_upload: string;
-  necessary_responsible: string;
-  email_alert: string;
-  tenant_approve: string;
-  manager_approve: string;
-  previous_step: string;
-  function_id: string;
-  final_card: string;
-  ticket_status: string;
-  ticket_status_id: string;
-  tenant_id: string;
 }
 
 interface ReturnProps {
