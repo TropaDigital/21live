@@ -268,38 +268,38 @@ export default function Dashboard() {
   const jobsData = [
     {
       id_job: 0,
-      client_name: 'Metso',
-      job_name: 'Planejamento',
-      job_flow: 'Criação',
-      job_status: 'Pendente de envio'
+      client_name: '?????',
+      job_name: '?????',
+      job_flow: '?????',
+      job_status: '?????'
     },
     {
       id_job: 1,
-      client_name: 'Tropa',
-      job_name: 'Planejamento',
-      job_flow: 'Produção',
-      job_status: 'Pendente de envio'
+      client_name: '?????',
+      job_name: '?????',
+      job_flow: '?????',
+      job_status: '?????'
     },
     {
       id_job: 2,
-      client_name: 'Takao',
-      job_name: 'Planejamento',
+      client_name: '?????',
+      job_name: '?????',
       job_flow: 'Mídia',
-      job_status: 'Pendente de envio'
+      job_status: '?????'
     },
     {
       id_job: 3,
-      client_name: 'Iveco',
-      job_name: 'Planejamento',
-      job_flow: 'Mídia',
-      job_status: 'Pendente de envio'
+      client_name: '?????',
+      job_name: '?????',
+      job_flow: '?????',
+      job_status: '?????'
     },
     {
       id_job: 4,
-      client_name: 'Genie',
-      job_name: 'Job X',
-      job_flow: 'Criação',
-      job_status: 'Pendente de envio'
+      client_name: '?????',
+      job_name: '?????',
+      job_flow: '?????',
+      job_status: '?????'
     },
     {
       id_job: 7,
@@ -536,7 +536,7 @@ export default function Dashboard() {
       },
       mensalReport: {
         reunions: data && dashType === 'admin' ? data.top_users[0]?.reuniao : 0,
-        reports: '2'
+        reports: '???'
       }
     },
     {
@@ -553,7 +553,7 @@ export default function Dashboard() {
       },
       mensalReport: {
         reunions: data && dashType === 'admin' ? data.top_users[1]?.reuniao : 0,
-        reports: '4'
+        reports: '???'
       }
     },
     {
@@ -570,7 +570,7 @@ export default function Dashboard() {
       },
       mensalReport: {
         reunions: data && dashType === 'admin' ? data.top_users[2]?.reuniao : 0,
-        reports: '5'
+        reports: '???'
       }
     }
   ];
@@ -973,7 +973,7 @@ export default function Dashboard() {
                 data.top_fee_inverso.map((row: TopFeeSpot, index: number) => (
                   <tr key={index}>
                     <td>{row.client_name}</td>
-                    <td>{row.atendimento ? row.atendimento : '-----'}</td>
+                    <td>{row.atendimento ? row.atendimento : '?????'}</td>
                     <td style={{ color: '#00BFA5', fontWeight: '700' }}>
                       {row.tempo_total.split(':')[0]}H
                     </td>
@@ -981,7 +981,7 @@ export default function Dashboard() {
                       <HoursTable>{row.consumido.split(':')[0]}H</HoursTable>
                     </td>
                     <td>
-                      <HoursTable className="minus">-12h</HoursTable>
+                      <HoursTable className="minus">?????</HoursTable>
                     </td>
                   </tr>
                 ))}
@@ -1010,7 +1010,7 @@ export default function Dashboard() {
                 data.top_spot_inverso.map((row: TopFeeSpot, index: number) => (
                   <tr key={index}>
                     <td>{row.client_name}</td>
-                    <td>{row.atendimento ? row.atendimento : '-----'}</td>
+                    <td>{row.atendimento ? row.atendimento : '?????'}</td>
                     <td style={{ color: '#00BFA5', fontWeight: '700' }}>
                       {row.tempo_total.split(':')[0]}H
                     </td>
@@ -1018,7 +1018,7 @@ export default function Dashboard() {
                       <HoursTable>{row.consumido.split(':')[0]}H</HoursTable>
                     </td>
                     <td>
-                      <HoursTable className="minus">-2H</HoursTable>
+                      <HoursTable className="minus">?????</HoursTable>
                     </td>
                   </tr>
                 ))}
@@ -1135,8 +1135,8 @@ export default function Dashboard() {
               <UserInfo>
                 <div className="user-image" style={{ backgroundImage: `url(${PersonTest})` }} />
                 <div className="user-name">
-                  Amanda do Carmo
-                  <span>12 clientes</span>
+                  ?????
+                  <span>?? clientes</span>
                 </div>
               </UserInfo>
 
@@ -1153,52 +1153,52 @@ export default function Dashboard() {
                   <tbody>
                     <tr>
                       <td style={{ color: '#6C757D', fontWeight: '700' }}>CNH</td>
-                      <td>Job 11</td>
+                      <td>?????</td>
                       {/* <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
                         Trabalhando agora
                       </td> */}
                       <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
-                        Na fila
+                        ?????
                       </td>
                     </tr>
                     <tr>
                       <td style={{ color: '#6C757D', fontWeight: '700' }}>Terex</td>
-                      <td>Job 12</td>
+                      <td>?????</td>
                       <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
-                        Trabalhando agora
+                        ?????
                       </td>
                       {/* <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
-                        Na fila
+                        ?????
                       </td> */}
                     </tr>
                     <tr>
                       <td style={{ color: '#6C757D', fontWeight: '700' }}>Metso</td>
-                      <td>Job 13</td>
+                      <td>?????</td>
                       {/* <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
                         Trabalhando agora
                       </td> */}
                       <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
-                        Na fila
+                        ?????
                       </td>
                     </tr>
                     <tr>
                       <td style={{ color: '#6C757D', fontWeight: '700' }}>Metso</td>
-                      <td>Job 13</td>
+                      <td>?????</td>
                       {/* <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
                         Trabalhando agora
                       </td> */}
                       <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
-                        Na fila
+                        ?????
                       </td>
                     </tr>
                     <tr>
                       <td style={{ color: '#6C757D', fontWeight: '700' }}>Metso</td>
-                      <td>Job 13</td>
+                      <td>?????</td>
                       {/* <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
                         Trabalhando agora
                       </td> */}
                       <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
-                        Na fila
+                        ?????
                       </td>
                     </tr>
                   </tbody>
@@ -1245,8 +1245,8 @@ export default function Dashboard() {
               <UserInfo>
                 <div className="user-image" style={{ backgroundImage: `url(${PersonTest})` }} />
                 <div className="user-name">
-                  Derick Silveira
-                  <span>12 clientes</span>
+                  ?????
+                  <span>?? clientes</span>
                 </div>
               </UserInfo>
 
@@ -1262,53 +1262,53 @@ export default function Dashboard() {
 
                   <tbody>
                     <tr>
-                      <td style={{ color: '#6C757D', fontWeight: '700' }}>Terex</td>
-                      <td>Job 1</td>
+                      <td style={{ color: '#6C757D', fontWeight: '700' }}>?????</td>
+                      <td>?????</td>
                       <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
-                        Trabalhando agora
+                        ?????
                       </td>
                       {/* <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
                         Na fila
                       </td> */}
                     </tr>
                     <tr>
-                      <td style={{ color: '#6C757D', fontWeight: '700' }}>Metso</td>
-                      <td>Job 2</td>
+                      <td style={{ color: '#6C757D', fontWeight: '700' }}>?????</td>
+                      <td>?????</td>
                       {/* <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
                         Trabalhando agora
                       </td> */}
                       <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
-                        Na fila
+                        ?????
                       </td>
                     </tr>
                     <tr>
-                      <td style={{ color: '#6C757D', fontWeight: '700' }}>Iveco</td>
-                      <td>Job 4</td>
+                      <td style={{ color: '#6C757D', fontWeight: '700' }}>?????</td>
+                      <td>?????</td>
                       {/* <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
                         Trabalhando agora
                       </td> */}
                       <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
-                        Na fila
+                        ?????
                       </td>
                     </tr>
                     <tr>
-                      <td style={{ color: '#6C757D', fontWeight: '700' }}>Iveco</td>
-                      <td>Job 5</td>
+                      <td style={{ color: '#6C757D', fontWeight: '700' }}>?????</td>
+                      <td>?????</td>
                       <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
-                        Trabalhando agora
+                        ?????
                       </td>
                       {/* <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
                         Na fila
                       </td> */}
                     </tr>
                     <tr>
-                      <td style={{ color: '#6C757D', fontWeight: '700' }}>Iveco</td>
-                      <td>Job 3</td>
+                      <td style={{ color: '#6C757D', fontWeight: '700' }}>?????</td>
+                      <td>?????</td>
                       {/* <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
                         Trabalhando agora
                       </td> */}
                       <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
-                        Na fila
+                        ?????
                       </td>
                     </tr>
                   </tbody>
@@ -1359,38 +1359,38 @@ export default function Dashboard() {
               <tbody>
                 <tr>
                   <td>1º</td>
-                  <td>Caio</td>
-                  <td>38</td>
-                  <td>135H</td>
-                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>21</td>
+                  <td>?????</td>
+                  <td>?????</td>
+                  <td>?????H</td>
+                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
                 </tr>
                 <tr>
                   <td>2º</td>
-                  <td>Larissa</td>
-                  <td>32</td>
-                  <td>132H</td>
-                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>19</td>
+                  <td>?????</td>
+                  <td>??</td>
+                  <td>??H</td>
+                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
                 </tr>
                 <tr>
                   <td>3º</td>
-                  <td>Michele</td>
-                  <td>28</td>
-                  <td>129H</td>
-                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>12</td>
+                  <td>?????</td>
+                  <td>??</td>
+                  <td>???H</td>
+                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
                 </tr>
                 <tr>
                   <td>4º</td>
-                  <td>Camila</td>
-                  <td>21</td>
-                  <td>122H</td>
-                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>11</td>
+                  <td>?????</td>
+                  <td>??</td>
+                  <td>???H</td>
+                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
                 </tr>
                 <tr>
                   <td>5º</td>
-                  <td>Paula</td>
-                  <td>19</td>
-                  <td>110H</td>
-                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>10</td>
+                  <td>?????</td>
+                  <td>??</td>
+                  <td>???H</td>
+                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
                 </tr>
               </tbody>
             </TableDefault>
@@ -1414,38 +1414,38 @@ export default function Dashboard() {
               <tbody>
                 <tr>
                   <td>1º</td>
-                  <td>Felipe</td>
-                  <td>21</td>
-                  <td>135H</td>
-                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>21</td>
+                  <td>?????</td>
+                  <td>??</td>
+                  <td>???H</td>
+                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
                 </tr>
                 <tr>
                   <td>2º</td>
-                  <td>Luis</td>
-                  <td>19</td>
-                  <td>132H</td>
-                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>19</td>
+                  <td>?????</td>
+                  <td>??</td>
+                  <td>???H</td>
+                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
                 </tr>
                 <tr>
                   <td>3º</td>
-                  <td>André</td>
-                  <td>15</td>
-                  <td>129H</td>
-                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>12</td>
+                  <td>?????</td>
+                  <td>??</td>
+                  <td>???H</td>
+                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
                 </tr>
                 <tr>
                   <td>4º</td>
-                  <td>Milena</td>
-                  <td>13</td>
-                  <td>122H</td>
-                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>11</td>
+                  <td>?????</td>
+                  <td>??</td>
+                  <td>???H</td>
+                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
                 </tr>
                 <tr>
                   <td>5º</td>
-                  <td>Camila</td>
-                  <td>11</td>
-                  <td>110H</td>
-                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>10</td>
+                  <td>?????</td>
+                  <td>??</td>
+                  <td>???H</td>
+                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
                 </tr>
               </tbody>
             </TableDefault>
@@ -1523,28 +1523,28 @@ export default function Dashboard() {
 
             <tbody>
               <tr>
-                <td>Terex</td>
-                <td>Mike</td>
-                <td>12</td>
-                <td>21</td>
-                <td>10</td>
-                <td>2</td>
-                <td>1</td>
-                <td>1</td>
-                <td>3</td>
-                <td>8</td>
+                <td>?????</td>
+                <td>?????</td>
+                <td>?????</td>
+                <td>?????</td>
+                <td>?????</td>
+                <td>?????</td>
+                <td>?????</td>
+                <td>?????</td>
+                <td>?????</td>
+                <td>?????</td>
               </tr>
               <tr>
-                <td>Genie</td>
-                <td>Larissa</td>
-                <td>420</td>
-                <td>67</td>
-                <td>413</td>
-                <td>7</td>
-                <td>4</td>
-                <td>4</td>
-                <td>6</td>
-                <td>12</td>
+                <td>?????</td>
+                <td>?????</td>
+                <td>?????</td>
+                <td>?????</td>
+                <td>?????</td>
+                <td>?????</td>
+                <td>?????</td>
+                <td>?????</td>
+                <td>?????</td>
+                <td>?????</td>
               </tr>
             </tbody>
           </TableDefault>
@@ -1556,37 +1556,37 @@ export default function Dashboard() {
             <BulletsClientWrapper>
               <BulletPointInfos>
                 <div className="bullet">
-                  Total jobs: <span>32</span>
+                  Total jobs: <span>??</span>
                 </div>
                 <div className="bullet">
-                  Total horas: <span>26h</span>
+                  Total horas: <span>??h</span>
                 </div>
                 <div className="bullet">
-                  Alteração interna: <span>12</span>
+                  Alteração interna: <span>??</span>
                 </div>
                 <div className="bullet">
-                  Alteração cliente: <span>11</span>
+                  Alteração cliente: <span>??</span>
                 </div>
                 <div className="bullet">
-                  Reuniões: <span>3</span>
+                  Reuniões: <span>??</span>
                 </div>
                 <div className="bullet">
-                  Reposts enviados: <span>3</span>
+                  Reposts enviados: <span>??</span>
                 </div>
               </BulletPointInfos>
 
               <BulletPointInfos>
                 <div className="bullet">
-                  Jobs em andamento: <span>3</span>
+                  Jobs em andamento: <span>??</span>
                 </div>
                 <div className="bullet">
-                  Pendente de aprovação: <span>21</span>
+                  Pendente de aprovação: <span>??</span>
                 </div>
                 <div className="bullet">
-                  Pendente de envio: <span>11</span>
+                  Pendente de envio: <span>??</span>
                 </div>
                 <div className="bullet">
-                  Tempo médio de aprovação: <span>3 dias</span>
+                  Tempo médio de aprovação: <span>?? dias</span>
                 </div>
               </BulletPointInfos>
 
@@ -1600,19 +1600,19 @@ export default function Dashboard() {
                   }}
                 >
                   <div className="bullet">
-                    Contrato Fee: <span>40h</span>
+                    Contrato Fee: <span>??h</span>
                   </div>
                   <div className="bullet">
-                    Saldo Contrato: <span>14h</span>
+                    Saldo Contrato: <span>??h</span>
                   </div>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <div className="bullet">
-                    Contrato Spot: <span>4h</span>
+                    Contrato Spot: <span>?h</span>
                   </div>
                   <div className="bullet">
-                    Saldo Spot: <span>1h</span>
+                    Saldo Spot: <span>?h</span>
                   </div>
                 </div>
               </BulletPointInfos>
@@ -2166,6 +2166,7 @@ export default function Dashboard() {
         filterType="dash"
       />
 
+      {/* Modal report */}
       <ModalDefault isOpen={modalReport} onOpenChange={handleCancelReport} title="Gerar relatório">
         <ModalReportWrapper>
           <ModalField>
