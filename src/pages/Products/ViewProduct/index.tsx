@@ -843,7 +843,7 @@ export default function ViewProductsDeliveries() {
       if (response.data.status === 'success') {
         addToast({
           title: 'Sucesso',
-          description: 'Sucesso, ',
+          description: 'Sucesso, upload concluído.',
           type: 'success'
         });
         setUploadedFiles([]);
@@ -885,8 +885,16 @@ export default function ViewProductsDeliveries() {
       const response = await api.put(`/task/upload-tenant-approve`, uploadInfos);
 
       if (response.data.status === 'success') {
+        addToast({
+          title: 'Sucesso',
+          description: 'Arquivo enviado, aguarde a aprovação do cliente.',
+          type: 'success'
+        });
         setUploadedFiles([]);
         setModalFinalFile(false);
+        setTimeout(() => {
+          navigate('/minhas-tarefas');
+        }, 1500);
       }
 
       // console.log('log do response do saveUpload', response.data.result);
