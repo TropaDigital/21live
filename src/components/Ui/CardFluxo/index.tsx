@@ -39,7 +39,6 @@ export default function CardFluxo({
   data,
   responseUser,
   length,
-  columnStep,
   isLastItem,
   handleOnClick,
   handleOnPosition,
