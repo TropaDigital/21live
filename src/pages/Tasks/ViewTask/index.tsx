@@ -56,15 +56,11 @@ import { useToast } from '../../../hooks/toast';
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import { FiCornerDownRight } from 'react-icons/fi';
+import { StepTimeline } from '../../../types';
 
 interface TimelineProps {
   steps: StepTimeline[];
   currentStep: string;
-}
-
-interface StepTimeline {
-  step: string;
-  name: string;
 }
 
 interface TaskInfos {
@@ -654,6 +650,7 @@ export default function ViewTask() {
             goBack={() => setVisualizationType('delivery-products')}
             backButtonTitle={'Voltar para produtos'}
             returnReasons={dataTask?.reason_return}
+            timelineData={timeLineData}
           />
         )}
 
