@@ -77,7 +77,7 @@ import api from '../../../services/api';
 import { formatBytes } from '../../../utils/convertBytes';
 
 // types
-import { UploadedFilesProps } from '../../../types';
+import { StepTimeline, UploadedFilesProps } from '../../../types';
 
 interface WorkingProductProps {
   productDeliveryId?: any;
@@ -174,24 +174,6 @@ interface ModalApprovationInfos {
 interface TimelineProps {
   steps: StepTimeline[];
   currentStep: string;
-}
-
-interface StepTimeline {
-  step: string;
-  name: string;
-  card_id: string;
-  flow_id: string;
-  necessary_upload: string;
-  necessary_responsible: string;
-  email_alert: string;
-  tenant_approve: string;
-  manager_approve: string;
-  previous_step: string;
-  function_id: string;
-  final_card: string;
-  ticket_status: string;
-  ticket_status_id: string;
-  tenant_id: string;
 }
 
 export default function WorkingProduct({
@@ -1080,7 +1062,7 @@ export default function WorkingProduct({
                     <span>
                       {findCardNameByStep(
                         timelineData ? timelineData?.steps : [],
-                        row.current_step
+                        row?.current_step
                       )}
                     </span>
                   </div>
