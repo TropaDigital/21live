@@ -11,6 +11,9 @@ import HeaderPage from '../../components/HeaderPage';
 import Loader from '../../components/LoaderSpin';
 import { Table } from '../../components/Table';
 import { TableHead } from '../../components/Table/styles';
+import { InputDefault } from '../../components/Inputs/InputDefault';
+import Pagination from '../../components/Pagination';
+import ButtonTable from '../../components/Buttons/ButtonTable';
 
 // Styles
 import { Container, LogoContainer } from './styles';
@@ -18,9 +21,6 @@ import { Container, LogoContainer } from './styles';
 // Hooks
 import { useFetch } from '../../hooks/useFetch';
 import useDebouncedCallback from '../../hooks/useDebounced';
-import { InputDefault } from '../../components/Inputs/InputDefault';
-import Pagination from '../../components/Pagination';
-import ButtonTable from '../../components/Buttons/ButtonTable';
 
 interface TenantProps {
   bucket: string;
