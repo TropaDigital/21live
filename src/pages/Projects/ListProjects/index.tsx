@@ -45,6 +45,7 @@ import ProgressBar from '../../../components/Ui/ProgressBar';
 import { ContainerDefault } from '../../../components/UiElements/styles';
 import Avatar from '../../../components/Ui/Avatar';
 import Loader from '../../../components/LoaderSpin';
+import { ModalImage } from '../../Requests/ViewRequests/styles';
 
 // Styles
 import { Summary } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
@@ -61,7 +62,6 @@ import {
   ModalShowProjectWrapper,
   ViewFileBtn
 } from './styles';
-import { ModalImage } from '../../Requests/ViewRequests/styles';
 
 interface StateProps {
   [key: string]: any;
