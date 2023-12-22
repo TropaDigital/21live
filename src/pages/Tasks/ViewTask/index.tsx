@@ -9,6 +9,7 @@ import { FaArrowLeft, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { BsChevronDoubleRight } from 'react-icons/bs';
 import { IconBigCheck } from '../../../assets/icons';
 import { BiArrowBack } from 'react-icons/bi';
+import { FiCornerDownRight } from 'react-icons/fi';
 
 // Components
 import HeaderOpenTask from '../../../components/HeaderTaskPage';
@@ -17,6 +18,7 @@ import { ContainerDefault } from '../../../components/UiElements/styles';
 import { TasksTable } from '../../../components/Ui/TaskTable/styles';
 import ProgressBar from '../../../components/Ui/ProgressBar';
 import WorkingProduct from '../../Products/WorkingProduct';
+import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 
 // Styles
 import {
@@ -54,8 +56,6 @@ import { useToast } from '../../../hooks/toast';
 
 // Utils
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
-import ButtonDefault from '../../../components/Buttons/ButtonDefault';
-import { FiCornerDownRight } from 'react-icons/fi';
 import { StepTimeline } from '../../../types';
 
 interface TimelineProps {
