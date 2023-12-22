@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 
 // Icons
 import { BiSearchAlt } from 'react-icons/bi';
+import { MdClose } from 'react-icons/md';
 
 // Hooks
 import { useFetch } from '../../../../hooks/useFetch';
@@ -21,6 +22,7 @@ import CardProductsSelected from '../../../../components/CardProductsSelected';
 import { InputDefault } from '../../../../components/Inputs/InputDefault';
 import { Table } from '../../../../components/Table';
 import QuantityInput from '../../../../components/Inputs/QuantityInput';
+import ModalDefault from '../../../../components/Ui/ModalDefault';
 
 // Styles
 import { FieldTogleButton, TableHead } from '../../../../components/Table/styles';
@@ -29,8 +31,6 @@ import { ModalButton, ProductsWrapper, WrapperCard } from './styles';
 
 // Libraries
 import Switch from 'react-switch';
-import ModalDefault from '../../../../components/Ui/ModalDefault';
-import { MdClose } from 'react-icons/md';
 
 interface PropsProducts {
   dataFilter: any;
