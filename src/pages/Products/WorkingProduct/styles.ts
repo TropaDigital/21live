@@ -279,7 +279,8 @@ export const FooterSection = styled.div`
   justify-content: flex-end;
   gap: 12px;
 
-  padding-top: 16px;
+  padding-top: 24px;
+  margin-top: 24px;
 `;
 
 export const EssayInfo = styled.div`

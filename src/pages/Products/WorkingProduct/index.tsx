@@ -764,7 +764,14 @@ export default function WorkingProduct({
         )}
         {selectedTab === 'Inputs' && (
           <>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px',
+                marginBottom: '16px'
+              }}
+            >
               <InputField>
                 <InputFieldTitle>Input - Pré-requisitos</InputFieldTitle>
                 <WrapperEditor
@@ -776,7 +783,7 @@ export default function WorkingProduct({
                 />
               </InputField>
 
-              <InputField>
+              <InputField style={{ marginBottom: '16px' }}>
                 <InputFieldTitle>Input Criação</InputFieldTitle>
                 <WrapperEditor
                   value={taskInputs?.creation_description}
