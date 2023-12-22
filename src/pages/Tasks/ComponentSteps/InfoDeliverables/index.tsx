@@ -6,7 +6,8 @@ import { useEffect, useRef, useState } from 'react';
 
 // Icons
 import { BiCalendar, BiPencil } from 'react-icons/bi';
-import { FiChevronDown, FiChevronUp, FiMenu } from 'react-icons/fi';
+import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { BsTrash } from 'react-icons/bs';
 
 // Components
 import { InputDefault } from '../../../../components/Inputs/InputDefault';
@@ -32,14 +33,13 @@ import { IconCalendar, IconPlus } from '../../../../assets/icons';
 
 // Hooks
 import { useFetch } from '../../../../hooks/useFetch';
+import { useParamsHook } from '../../../../hooks/useParams';
 
 // Utils
 import { DeliveryProps, IProductBackend } from '../../../../types';
-import { BsTrash } from 'react-icons/bs';
 
 // Libraries
 import moment from 'moment';
-import { useParamsHook } from '../../../../hooks/useParams';
 
 interface FormProps {
   [key: string]: any;
