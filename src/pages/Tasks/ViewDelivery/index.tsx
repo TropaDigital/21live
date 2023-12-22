@@ -5,6 +5,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 // Components
 import { ContainerDefault } from '../../../components/UiElements/styles';
+import HeaderPage from '../../../components/HeaderPage';
+import DeliveryTable from '../../../components/DeliveryTable';
 
 // Styles
 import { DeliveryWrapper } from './styles';
@@ -12,8 +14,6 @@ import { DeliveryWrapper } from './styles';
 // Hooks
 import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useFetch } from '../../../hooks/useFetch';
-import HeaderPage from '../../../components/HeaderPage';
-import DeliveryTable from '../../../components/DeliveryTable';
 
 export default function ViewDelivery() {
   const location = useLocation();
