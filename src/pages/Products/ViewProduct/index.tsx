@@ -1330,6 +1330,42 @@ export default function ViewProductsDeliveries() {
             />
           )}
 
+        {dataProducts?.status !== 'Concluida' &&
+          dataTask?.status !== 'Concluida' &&
+          selectedProduct === '' &&
+          typeOfPlay === 'product' &&
+          !finalCard && (
+            <HeaderOpenTask
+              title={titleInfos}
+              disableButton={false}
+              goBack
+              buttonType="finish"
+              sendToNext={() => checkFlow('next')}
+              nextStepInfo={timeLineData}
+              backToDelivery={() => setSelectedProduct('')}
+              isInsideProduct={true}
+              backFlow={() => setModalReturnFlow(true)}
+            />
+          )}
+
+        {dataProducts?.status !== 'Concluida' &&
+          dataTask?.status !== 'Concluida' &&
+          selectedProduct !== '' &&
+          typeOfPlay === 'product' &&
+          !finalCard && (
+            <HeaderOpenTask
+              title={titleInfos}
+              disableButton={false}
+              goBack
+              buttonType="finish"
+              sendToNext={() => checkFlow('next')}
+              nextStepInfo={timeLineData}
+              backToDelivery={() => setSelectedProduct('')}
+              isInsideProduct={true}
+              backFlow={() => setModalReturnFlow(true)}
+            />
+          )}
+
         <RightInfosCard hideCard={hideRightCard} ref={openRightRef}>
           <TimeLine>
             <div className="hide-menu" onClick={() => setHideTimeLine(!hideTimeLine)}>
