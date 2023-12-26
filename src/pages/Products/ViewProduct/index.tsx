@@ -647,7 +647,7 @@ export default function ViewProductsDeliveries() {
 
       if (
         dataProducts?.status !== 'Concluida' &&
-        selectedProduct !== '' &&
+        selectedProduct === '' &&
         typeOfPlay === 'product'
       ) {
         if (location.state.delivery.products.length === 1) {
