@@ -160,6 +160,10 @@ export default function ViewProductsDeliveries() {
     ? timeLineData.steps.filter((obj) => Number(obj.step) < Number(actualStep))
     : [];
 
+  // const checkAllFinished: any[] = dataProducts.products.every(
+  //   (product: any) => product.status === 'Concluida'
+  // );
+
   const hasDismemberedProduct = (delivery: any): boolean => {
     return delivery.products.some((product: any) => product.status === 'recusado');
   };
@@ -1187,7 +1191,7 @@ export default function ViewProductsDeliveries() {
           />
         )} */}
 
-        {dataProducts?.status === 'Concluida' && dataTask?.status === 'Concluida' && (
+        {dataTask?.status === 'Concluida' && (
           <HeaderOpenTask
             title={titleInfos}
             disableButton={true}
@@ -1198,8 +1202,7 @@ export default function ViewProductsDeliveries() {
           />
         )}
 
-        {dataProducts?.status === 'Concluida' &&
-          dataTask?.status !== 'Concluida' &&
+        {dataTask?.status !== 'Concluida' &&
           typeOfPlay === 'schedule' &&
           selectedProduct === '' && (
             <HeaderOpenTask
@@ -1392,7 +1395,10 @@ export default function ViewProductsDeliveries() {
               buttonType="finish"
               sendToNext={() => checkFlow('next')}
               nextStepInfo={timeLineData}
-              backToDelivery={() => setViewProduct(false)}
+              backToDelivery={() => {
+                setViewProduct(false);
+                setSelectedProduct('');
+              }}
               isInsideProduct={true}
               backFlow={() => setModalReturnFlow(true)}
             />
