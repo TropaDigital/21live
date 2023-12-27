@@ -1243,7 +1243,11 @@ export default function Services() {
 
               <FieldDefault>
                 <EstimatedTime>
-                  <span>Tempo estimado de redação (Horas : Minutos)</span>
+                  <span>
+                    Tempo estimado de{' '}
+                    {parameters.input_name !== '' ? parameters.input_name : 'redação'} (Horas :
+                    Minutos)
+                  </span>
                   <EstimatedTimeInputs>
                     <InputDefault
                       label=""

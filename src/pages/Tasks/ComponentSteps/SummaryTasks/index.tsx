@@ -52,12 +52,6 @@ interface TasksProps {
   splitDeliveries: boolean;
 }
 
-// interface FlowRole {
-//   function: string;
-//   name: string;
-//   user_id: string;
-// }
-
 interface FormProps {
   [key: string]: any;
 }
@@ -465,24 +459,6 @@ export default function SummaryTasks({
       </div>
 
       <div>
-        {/* Select responsável flow */}
-        {/* {flowsManagers?.length > 0 && (
-          <FlexLine>
-            <SelectDefault
-              label="Selecione o responsável inicial da tarefa"
-              name="user_id"
-              value={taskSummary.user_id}
-              onChange={(e) => handleInputChange(e)}
-              error={error?.user_id}
-            >
-              {flowsManagers?.map((row: FlowRole) => (
-                <option key={row.user_id} value={row.user_id}>
-                  {row.function} - {row.name}
-                </option>
-              ))}
-            </SelectDefault>
-          </FlexLine>
-        )} */}
         <SummaryTasksAbout>
           <div className="title">Sobre a tarefa</div>
           {taskType !== 'horas' && (
@@ -538,7 +514,6 @@ export default function SummaryTasks({
             <>
               <div className="splitter" />
               <CreateTicketOption>
-                {/* <div>Aqui vai o switch</div> */}
                 <Switch
                   onChange={handleTicket}
                   checked={taskSummary.gen_ticket === 'true' ? true : false}

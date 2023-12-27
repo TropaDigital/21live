@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { BiFilter, BiPlus, BiSearchAlt, BiX } from 'react-icons/bi';
 import { FiFlag } from 'react-icons/fi';
 import { IconContext } from 'react-icons';
+import { FiCornerDownRight } from 'react-icons/fi';
 
 // Hooks
 import useDebouncedCallback from '../../../hooks/useDebounced';
@@ -54,7 +55,8 @@ import { ModalShowTaskWrapper, Flag, StatusTable, FilterTasks } from './styles';
 interface FilterProps {
   status: string;
   client: string;
-  [key: string]: string; // Index signature
+  sub_tasks: boolean;
+  [key: string]: string | any; // Index signature
 }
 
 export default function TaskList() {
@@ -90,14 +92,15 @@ export default function TaskList() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState<FilterProps>({
     status: '',
-    client: ''
+    client: '',
+    sub_tasks: false
   });
   const [selected, setSelected] = useState(1);
   const [search, setSearch] = useState('');
   const { data, pages, fetchData, isFetching } = useFetch<any[]>(
     `tasks?search=${search.replace(/[^\w ]/g, '')}&page=${selected}&status=${
       filter.status
-    }&tenant=${filter.client}`
+    }&tenant=${filter.client}&sub_tasks=${filter.sub_tasks}`
   );
   const [searchTerm, setSearchTerm] = useState('');
   const { isLoading, debouncedCallback } = useDebouncedCallback(
@@ -213,7 +216,8 @@ export default function TaskList() {
   const handleClearFilters = () => {
     setFilter({
       status: '',
-      client: ''
+      client: '',
+      sub_tasks: false
     });
     setModalFilters(false);
   };
@@ -223,7 +227,9 @@ export default function TaskList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const hasFilters = Object.values(filter).every((obj) => obj === null || obj === '');
+  const hasFilters = Object.values(filter).every(
+    (obj) => obj === null || obj === '' || obj === false
+  );
 
   const countNonEmptyProperties = () => {
     let count = 0;
@@ -306,6 +312,7 @@ export default function TaskList() {
                 <div className="filter-title">Filtros ({countNonEmptyProperties()}):</div>
                 {filter.client !== '' ? <span>Cliente</span> : ''}
                 {filter.status !== '' ? <span>Status</span> : ''}
+                {filter.sub_tasks ? <span>Subtarefas</span> : ''}
               </FilterTotal>
 
               <AppliedFilter>
@@ -320,6 +327,14 @@ export default function TaskList() {
                 {filter.status !== '' ? (
                   <div className="filter-title">
                     Status: <span>{filter.status}</span>
+                  </div>
+                ) : (
+                  ''
+                )}
+
+                {filter.sub_tasks ? (
+                  <div className="filter-title">
+                    Subtarefas: <span>Sim</span>
                   </div>
                 ) : (
                   ''
@@ -344,8 +359,20 @@ export default function TaskList() {
               {data !== null &&
                 data?.length > 0 &&
                 data?.map((row) => (
-                  <tr key={row.task_id}>
-                    <td>#{String(row.task_id).padStart(5, '0')}</td>
+                  <tr key={row.task_id} className={row.parent_id !== '' ? 'parent' : ''}>
+                    {row.parent_id !== '' ? (
+                      <td
+                        style={{
+                          display: 'table-cell',
+                          paddingRight: '0.5rem'
+                        }}
+                      >
+                        <FiCornerDownRight color="var(--primary)" size={'1rem'} /> #
+                        {String(row.task_id).padStart(5, '0')}
+                      </td>
+                    ) : (
+                      <td>#{String(row.task_id).padStart(5, '0')}</td>
+                    )}
                     <td
                       style={{ textTransform: 'capitalize', cursor: 'pointer' }}
                       onClick={() => handleViewTask(row.task_id)}

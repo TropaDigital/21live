@@ -10,17 +10,17 @@ function useColumn() {
     (userId: any, flowId: any) => {
       const newItem = {
         flow_id: String(flowId),
-        // card_id: String(column.length + 1),
         step: 0,
         function_id: '0',
         name: 'Novo card',
         necessary_upload: 'false',
         email_alert: 'false',
         necessary_responsible: 'true',
-        // manager_approve: 'false',
         tenant_approve: 'false',
-        // previous_step: '0',
         ticket_status_id: '0'
+        // card_id: String(column.length + 1),
+        // manager_approve: 'false',
+        // previous_step: '0',
         // approver: '0'
         // tasks: [],
       };

@@ -181,46 +181,62 @@ export default function EditFluxo() {
         </HeaderEditPlus>
 
         <ContentEditFluxo>
-          {column.map((row: any, index: any) => {
-            if (row.manager_approve === 'true') {
-              return (
-                <CardFluxo
-                  key={index}
-                  data={row}
-                  index={index}
-                  length={lengthCard}
-                  isLastItem={lengthCard === index + 1}
-                  columnStep={column.filter((obj: any) => obj.card_id !== row.card_id)}
-                  responseUser={latesTeam}
-                  handleOnClick={() => addColumn(user.user_id, location.state.id)}
-                  handleOnPosition={(newIndex) => moveObject(newIndex, index)}
-                  handleOnDelete={() => deleteFluxo(row.card_id)}
-                  handleOnsave={saveFluxo}
-                  onUpdate={(id, name, value) => updateParcialColumn(id, name, value)}
-                  errorField={errorMissingResponsible}
-                />
-              );
-            } else {
-              return (
-                <CardFluxo
-                  key={index}
-                  data={row}
-                  index={index}
-                  length={lengthCard}
-                  isLastItem={lengthCard === index + 1}
-                  columnStep={column.filter((obj: any) => obj.card_id !== row.card_id)}
-                  responseUser={latesTeam}
-                  handleOnClick={() => addColumn(user.user_id, location.state.id)}
-                  handleOnPosition={(newIndex) => moveObject(newIndex, index)}
-                  handleOnDelete={() => deleteFluxo(row.card_id)}
-                  handleOnsave={saveFluxo}
-                  onUpdate={(id, name, value) => updateParcialColumn(id, name, value)}
-                  errorField={errorMissingResponsible}
-                />
-              );
-            }
-          })}
+          {column.map((row: any, index: any) => (
+            <CardFluxo
+              key={index}
+              data={row}
+              index={index}
+              length={lengthCard}
+              isLastItem={lengthCard === index + 1}
+              columnStep={column.filter((obj: any) => obj.card_id !== row.card_id)}
+              responseUser={latesTeam}
+              handleOnClick={() => addColumn(user.user_id, location.state.id)}
+              handleOnPosition={(newIndex) => moveObject(newIndex, index)}
+              handleOnDelete={() => deleteFluxo(row.card_id)}
+              handleOnsave={saveFluxo}
+              onUpdate={(id, name, value) => updateParcialColumn(id, name, value)}
+              errorField={errorMissingResponsible}
+            />
+          ))}
         </ContentEditFluxo>
+
+        {/* if (row.manager_approve === 'true') {
+           return (
+             <CardFluxo
+               key={index}
+               data={row}
+               index={index}
+               length={lengthCard}
+               isLastItem={lengthCard === index + 1}
+               columnStep={column.filter((obj: any) => obj.card_id !== row.card_id)}
+               responseUser={latesTeam}
+               handleOnClick={() => addColumn(user.user_id, location.state.id)}
+               handleOnPosition={(newIndex) => moveObject(newIndex, index)}
+               handleOnDelete={() => deleteFluxo(row.card_id)}
+               handleOnsave={saveFluxo}
+               onUpdate={(id, name, value) => updateParcialColumn(id, name, value)}
+               errorField={errorMissingResponsible}
+             />
+           );
+         } else {
+           return (
+             <CardFluxo
+               key={index}
+               data={row}
+               index={index}
+               length={lengthCard}
+               isLastItem={lengthCard === index + 1}
+               columnStep={column.filter((obj: any) => obj.card_id !== row.card_id)}
+               responseUser={latesTeam}
+               handleOnClick={() => addColumn(user.user_id, location.state.id)}
+               handleOnPosition={(newIndex) => moveObject(newIndex, index)}
+               handleOnDelete={() => deleteFluxo(row.card_id)}
+               handleOnsave={saveFluxo}
+               onUpdate={(id, name, value) => updateParcialColumn(id, name, value)}
+               errorField={errorMissingResponsible}
+             />
+           );
+         } */}
       </SectionDefault>
     </Container>
   );

@@ -35,6 +35,7 @@ import {
   SummaryTaskDescription,
   SummaryTaskInfo
 } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
+import InputMultipleSelect from '../../../components/Inputs/InputMultipleSelect';
 
 // Styles
 import {
@@ -62,7 +63,6 @@ import api from '../../../services/api';
 
 // Libraries
 import moment from 'moment';
-import InputMultipleSelect from '../../../components/Inputs/InputMultipleSelect';
 
 interface StateProps {
   [key: string]: any;

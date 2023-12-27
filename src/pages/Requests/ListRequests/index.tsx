@@ -2,6 +2,7 @@
 /* eslint-disable import-helpers/order-imports */
 // React
 import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // Icons
 import { BiFilter, BiSearchAlt, BiX } from 'react-icons/bi';
@@ -19,6 +20,7 @@ import {
 } from '../../../components/UiElements/styles';
 import { Table } from '../../../components/Table';
 import Pagination from '../../../components/Pagination';
+import Loader from '../../../components/LoaderSpin';
 
 // Hooks
 import useDebouncedCallback from '../../../hooks/useDebounced';
@@ -30,8 +32,6 @@ import moment from 'moment';
 
 // Styles
 import { FiltersRequests, RequestsWrapper } from './styles';
-import { useNavigate } from 'react-router-dom';
-import Loader from '../../../components/LoaderSpin';
 
 interface ChoosenFilters {
   code: string;

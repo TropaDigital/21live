@@ -62,7 +62,7 @@ import { useToast } from '../../../hooks/toast';
 import { useStopWatch } from '../../../hooks/stopWatch';
 
 // Types
-import { UploadedFilesProps } from '../../../types';
+import { StepTimeline, UploadedFilesProps } from '../../../types';
 
 // Utils
 import { UsersNoSchedule } from '../../../utils/models';
@@ -70,24 +70,6 @@ import { UsersNoSchedule } from '../../../utils/models';
 interface TimelineProps {
   steps: StepTimeline[];
   currentStep: string;
-}
-
-interface StepTimeline {
-  step: string;
-  name: string;
-  card_id: string;
-  flow_id: string;
-  necessary_upload: string;
-  necessary_responsible: string;
-  email_alert: string;
-  tenant_approve: string;
-  manager_approve: string;
-  previous_step: string;
-  function_id: string;
-  final_card: string;
-  ticket_status: string;
-  ticket_status_id: string;
-  tenant_id: string;
 }
 
 interface ReturnProps {
@@ -643,34 +625,10 @@ export default function ViewProductsDeliveries() {
         }
       }
 
-      if (
-        dataProducts?.status !== 'Concluida' &&
-        selectedProduct !== '' &&
-        typeOfPlay === 'product'
-      ) {
-        const response = await api.put(
-          `/task/product-conclude/${selectedProduct?.productInfo.products_delivery_id}`
-        );
-
-        if (response.data.result === 1) {
-          addToast({
-            title: 'Sucesso',
-            type: 'success',
-            description: 'Entrega finalizada com sucesso'
-          });
-          navigate('/minhas-tarefas');
-          localStorage.removeItem('stopwatchState');
-        }
-      }
-
-      if (
-        dataProducts?.status !== 'Concluida' &&
-        selectedProduct !== '' &&
-        typeOfPlay === 'product'
-      ) {
-        if (location.state.delivery.products.length === 1) {
+      if (dataTask?.status !== 'Concluida' && selectedProduct !== '' && typeOfPlay === 'product') {
+        if (selectedProduct.status !== 'Concluida') {
           const response = await api.put(
-            `/task/product-conclude/${location.state.delivery.products[0].products_delivery_id}`
+            `/task/product-conclude/${selectedProduct?.productInfo.products_delivery_id}`
           );
 
           if (response.data.result === 1) {
@@ -682,14 +640,73 @@ export default function ViewProductsDeliveries() {
             navigate('/minhas-tarefas');
             localStorage.removeItem('stopwatchState');
           }
+        } else {
+          const response = await api.put(
+            `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
+            next_user
+          );
+          console.log('log do response', response.data.result);
+
+          if (response.data.result === 1) {
+            navigate('/minhas-tarefas');
+            localStorage.removeItem('stopwatchState');
+          }
         }
+      }
+
+      if (dataTask?.status !== 'Concluida' && selectedProduct === '' && typeOfPlay === 'product') {
+        const response = await api.put(
+          `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
+          next_user
+        );
+        console.log('log do response', response.data.result);
+
+        if (response.data.result === 1) {
+          navigate('/minhas-tarefas');
+          localStorage.removeItem('stopwatchState');
+        }
+        // if (location.state.delivery.products.length === 1) {
+        //   if (location.state.delivery.products.status === 'Concluida') {
+        //   } else {
+        //     const response = await api.put(
+        //       `/task/product-conclude/${location.state.delivery.products[0].products_delivery_id}`
+        //     );
+
+        //     if (response.data.result === 1) {
+        //       addToast({
+        //         title: 'Sucesso',
+        //         type: 'success',
+        //         description: 'Entrega finalizada com sucesso'
+        //       });
+        //       navigate('/minhas-tarefas');
+        //       localStorage.removeItem('stopwatchState');
+        //     }
+        //   }
+        // }
 
         if (location.state.delivery.products.length > 1) {
           userInfos = next_user;
-          setModalProducts(true);
-          setHideRightCard('hide');
+          // setModalProducts(true);
+          // setHideRightCard('hide');
         }
       }
+
+      // if (
+      //   dataProducts?.status === 'Concluida' &&
+      //   selectedProduct === '' &&
+      //   typeOfPlay === 'product'
+      // ) {
+      //   const response = await api.put(
+      //     `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
+      //     next_user
+      //   );
+      //   console.log('log do response', response.data.result);
+
+      //   if (response.data.result === 1) {
+      //     navigate('/minhas-tarefas');
+      //     localStorage.removeItem('stopwatchState');
+      //   }
+      // }
 
       setLoading(false);
     } catch (error: any) {
@@ -838,12 +855,12 @@ export default function ViewProductsDeliveries() {
         products_delivery_id: productForUpload.products_delivery_id
       };
 
-      const response = await api.put(`/task/upload`, uploadInfos);
+      const response = await api.put(`/archive/upload/final/${dataTask?.task_id}`, uploadInfos);
 
       if (response.data.status === 'success') {
         addToast({
           title: 'Sucesso',
-          description: 'Sucesso, ',
+          description: 'Sucesso, upload concluído.',
           type: 'success'
         });
         setUploadedFiles([]);
@@ -885,8 +902,16 @@ export default function ViewProductsDeliveries() {
       const response = await api.put(`/task/upload-tenant-approve`, uploadInfos);
 
       if (response.data.status === 'success') {
+        addToast({
+          title: 'Sucesso',
+          description: 'Arquivo enviado, aguarde a aprovação do cliente.',
+          type: 'success'
+        });
         setUploadedFiles([]);
         setModalFinalFile(false);
+        setTimeout(() => {
+          navigate('/minhas-tarefas');
+        }, 1500);
       }
 
       // console.log('log do response do saveUpload', response.data.result);
@@ -1143,8 +1168,8 @@ export default function ViewProductsDeliveries() {
     // console.log('log do upload', uploadIsTrue);
     // console.log('log do final card', finalCard);
     // console.log('log dataTask', dataTask);
-    // console.log('log deliveries =>', location.state.delivery);
-  }, [selectedProduct, typeOfPlay, nextStep, uploadIsTrue, finalCard, dataTask]);
+    // console.log('log dataProducts =>', dataProducts);
+  }, [selectedProduct, typeOfPlay, nextStep, uploadIsTrue, finalCard, dataTask, dataProducts]);
 
   return (
     <ContainerDefault>
@@ -1296,7 +1321,7 @@ export default function ViewProductsDeliveries() {
               buttonType="finish"
               sendToNext={() => checkFlow('next')}
               nextStepInfo={timeLineData}
-              backToDelivery={() => setSelectedProduct('')}
+              backToDelivery={() => setViewProduct(false)}
               isInsideProduct={true}
               backFlow={() => setModalReturnFlow(true)}
             />
@@ -1315,7 +1340,7 @@ export default function ViewProductsDeliveries() {
               buttonType="finish"
               sendToNext={handleConcludeTask}
               nextStepInfo={timeLineData}
-              backToDelivery={() => setSelectedProduct('')}
+              backToDelivery={() => setViewProduct(false)}
               isInsideProduct={true}
               backFlow={() => setModalReturnFlow(true)}
             />
@@ -1334,7 +1359,40 @@ export default function ViewProductsDeliveries() {
               buttonType="finish"
               sendToNext={() => checkFlow('next')}
               nextStepInfo={timeLineData}
-              backToDelivery={() => setSelectedProduct('')}
+              backToDelivery={() => setViewProduct(false)}
+              isInsideProduct={true}
+              backFlow={() => setModalReturnFlow(true)}
+            />
+          )}
+
+        {dataProducts?.status !== 'Concluida' &&
+          dataTask?.status !== 'Concluida' &&
+          selectedProduct === '' &&
+          typeOfPlay === 'product' &&
+          !finalCard && (
+            <HeaderOpenTask
+              title={titleInfos}
+              disableButton={false}
+              goBack
+              buttonType="finish"
+              sendToNext={() => checkFlow('next')}
+              nextStepInfo={timeLineData}
+              backFlow={() => setModalReturnFlow(true)}
+            />
+          )}
+
+        {dataTask?.status !== 'Concluida' &&
+          selectedProduct !== '' &&
+          typeOfPlay === 'product' &&
+          !finalCard && (
+            <HeaderOpenTask
+              title={titleInfos}
+              disableButton={false}
+              goBack
+              buttonType="finish"
+              sendToNext={() => checkFlow('next')}
+              nextStepInfo={timeLineData}
+              backToDelivery={() => setViewProduct(false)}
               isInsideProduct={true}
               backFlow={() => setModalReturnFlow(true)}
             />
