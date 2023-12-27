@@ -116,7 +116,7 @@ interface InputProps {
 
 interface ChatMessages {
   comment: string;
-  user_id: number;
+  user_id: string;
   name: string;
   avatar: string;
   created: string;
@@ -238,37 +238,43 @@ export default function WorkingProduct({
     setProductsInfo(productInfos);
   }, [productInfos]);
 
-  async function getComments() {
+  async function getComments(filter: string) {
     try {
       setLoading(true);
-      const response = await api.get(`/tasks/comment/${taskId}`);
-      // console.log('log do response do comment', response.data.result);
-      setDataComments(response.data.result);
+      if (filter === '') {
+        const response = await api.get(`/tasks/comment/${taskId}`);
+        setDataComments(response.data.result);
+      }
+
+      if (filter === 'system') {
+        const response = await api.get(`/tasks/comment/${taskId}?filter=system`);
+        setDataComments(response.data.result);
+      }
 
       setLoading(false);
-    } catch (error) {
-      console.log('log error send comment', error);
-      setLoading(false);
-    }
-  }
-
-  async function getCommentSystem() {
-    try {
-      setLoading(true);
-      const response = await api.get(`/tasks/comment/${taskId}?filter=system`);
-      // console.log('log do response do comment', response.data.result);
-      setDataComments(response.data.result);
-
-      setLoading(false);
-    } catch (error) {
-      console.log('log error send comment', error);
+    } catch (error: any) {
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
       setLoading(false);
     }
   }
 
   useEffect(() => {
     if (selectedTab === 'Comentários') {
-      getComments();
+      getComments('system');
       setInputschanges({
         copywriting_description: taskInputs?.copywriting_description,
         creation_description: taskInputs?.creation_description
@@ -345,7 +351,7 @@ export default function WorkingProduct({
         type: 'success',
         description: 'Mensagem enviada.'
       });
-      getComments();
+      getComments('');
       setChatMessage('');
       setLoading(false);
     } catch (error) {
@@ -373,7 +379,7 @@ export default function WorkingProduct({
         type: 'success',
         description: 'Comentário excluido com sucesso.'
       });
-      getComments();
+      getComments('');
       setLoading(false);
     } catch (error: any) {
       console.log('log error delete comment', error);
@@ -390,10 +396,10 @@ export default function WorkingProduct({
   const handleShowLogs = () => {
     if (logIsOn) {
       setLogIsOn(false);
-      getComments();
+      getComments('system');
     } else {
+      getComments('');
       setLogIsOn(true);
-      getCommentSystem();
     }
   };
 
@@ -653,7 +659,7 @@ export default function WorkingProduct({
         <TaskTab
           onClick={(e: any) => {
             setSelectedTab(e.target.innerText);
-            getComments();
+            getComments('system');
           }}
           className={selectedTab === 'Comentários' ? 'active' : ''}
         >
@@ -665,7 +671,7 @@ export default function WorkingProduct({
         <TaskTab
           onClick={(e: any) => {
             setSelectedTab(e.target.innerText);
-            getComments();
+            setLogIsOn(false);
           }}
           className={selectedTab === 'Arquivos' ? 'active' : ''}
         >
@@ -676,7 +682,7 @@ export default function WorkingProduct({
         <TaskTab
           onClick={(e: any) => {
             setSelectedTab(e.target.innerText);
-            getComments();
+            setLogIsOn(false);
           }}
           className={selectedTab === 'Alterações' ? 'active' : ''}
         >
@@ -816,7 +822,7 @@ export default function WorkingProduct({
             <MessageList>
               {dataComments?.map((message: ChatMessages, index: number) => (
                 <ChatMessage key={index}>
-                  {message.user_id !== user.user_id && (
+                  {Number(message.user_id) !== user.user_id && (
                     <>
                       {message.avatar !== '' ? (
                         <ChatUserImg>
@@ -835,7 +841,7 @@ export default function WorkingProduct({
                         <UserMessageInfo>
                           <div className="user-name">{message.name}</div>
                           <div className="date-message">{moment(message.created).fromNow()}</div>
-                          {message.name !== 'Sistema' && (
+                          {message.user_id !== '1' && (
                             <div
                               style={{ cursor: 'pointer' }}
                               onClick={() => handleDeleteComment(message.comment_id)}
@@ -849,9 +855,11 @@ export default function WorkingProduct({
                       </MessageInfos>
                     </>
                   )}
-                  {message.user_id === user.user_id && (
+                  {Number(message.user_id) === user.user_id && (
                     <>
-                      <MessageInfos className={message.user_id === user.user_id ? 'left' : ''}>
+                      <MessageInfos
+                        className={Number(message.user_id) === user.user_id ? 'left' : ''}
+                      >
                         <UserMessageInfo>
                           <div className="user-name">{message.name}</div>
                           <div className="date-message">{moment(message.created).fromNow()}</div>
