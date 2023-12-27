@@ -625,34 +625,10 @@ export default function ViewProductsDeliveries() {
         }
       }
 
-      if (
-        dataProducts?.status !== 'Concluida' &&
-        selectedProduct !== '' &&
-        typeOfPlay === 'product'
-      ) {
-        const response = await api.put(
-          `/task/product-conclude/${selectedProduct?.productInfo.products_delivery_id}`
-        );
-
-        if (response.data.result === 1) {
-          addToast({
-            title: 'Sucesso',
-            type: 'success',
-            description: 'Entrega finalizada com sucesso'
-          });
-          navigate('/minhas-tarefas');
-          localStorage.removeItem('stopwatchState');
-        }
-      }
-
-      if (
-        dataProducts?.status !== 'Concluida' &&
-        selectedProduct === '' &&
-        typeOfPlay === 'product'
-      ) {
-        if (location.state.delivery.products.length === 1) {
+      if (dataTask?.status !== 'Concluida' && selectedProduct !== '' && typeOfPlay === 'product') {
+        if (selectedProduct.status !== 'Concluida') {
           const response = await api.put(
-            `/task/product-conclude/${location.state.delivery.products[0].products_delivery_id}`
+            `/task/product-conclude/${selectedProduct?.productInfo.products_delivery_id}`
           );
 
           if (response.data.result === 1) {
@@ -664,14 +640,73 @@ export default function ViewProductsDeliveries() {
             navigate('/minhas-tarefas');
             localStorage.removeItem('stopwatchState');
           }
+        } else {
+          const response = await api.put(
+            `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
+            next_user
+          );
+          console.log('log do response', response.data.result);
+
+          if (response.data.result === 1) {
+            navigate('/minhas-tarefas');
+            localStorage.removeItem('stopwatchState');
+          }
         }
+      }
+
+      if (dataTask?.status !== 'Concluida' && selectedProduct === '' && typeOfPlay === 'product') {
+        const response = await api.put(
+          `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
+          next_user
+        );
+        console.log('log do response', response.data.result);
+
+        if (response.data.result === 1) {
+          navigate('/minhas-tarefas');
+          localStorage.removeItem('stopwatchState');
+        }
+        // if (location.state.delivery.products.length === 1) {
+        //   if (location.state.delivery.products.status === 'Concluida') {
+        //   } else {
+        //     const response = await api.put(
+        //       `/task/product-conclude/${location.state.delivery.products[0].products_delivery_id}`
+        //     );
+
+        //     if (response.data.result === 1) {
+        //       addToast({
+        //         title: 'Sucesso',
+        //         type: 'success',
+        //         description: 'Entrega finalizada com sucesso'
+        //       });
+        //       navigate('/minhas-tarefas');
+        //       localStorage.removeItem('stopwatchState');
+        //     }
+        //   }
+        // }
 
         if (location.state.delivery.products.length > 1) {
           userInfos = next_user;
-          setModalProducts(true);
-          setHideRightCard('hide');
+          // setModalProducts(true);
+          // setHideRightCard('hide');
         }
       }
+
+      // if (
+      //   dataProducts?.status === 'Concluida' &&
+      //   selectedProduct === '' &&
+      //   typeOfPlay === 'product'
+      // ) {
+      //   const response = await api.put(
+      //     `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
+      //     next_user
+      //   );
+      //   console.log('log do response', response.data.result);
+
+      //   if (response.data.result === 1) {
+      //     navigate('/minhas-tarefas');
+      //     localStorage.removeItem('stopwatchState');
+      //   }
+      // }
 
       setLoading(false);
     } catch (error: any) {
@@ -820,7 +855,7 @@ export default function ViewProductsDeliveries() {
         products_delivery_id: productForUpload.products_delivery_id
       };
 
-      const response = await api.put(`/task/upload`, uploadInfos);
+      const response = await api.put(`/archive/upload/final/${dataTask?.task_id}`, uploadInfos);
 
       if (response.data.status === 'success') {
         addToast({
@@ -1133,8 +1168,8 @@ export default function ViewProductsDeliveries() {
     // console.log('log do upload', uploadIsTrue);
     // console.log('log do final card', finalCard);
     // console.log('log dataTask', dataTask);
-    // console.log('log deliveries =>', location.state.delivery);
-  }, [selectedProduct, typeOfPlay, nextStep, uploadIsTrue, finalCard, dataTask]);
+    // console.log('log dataProducts =>', dataProducts);
+  }, [selectedProduct, typeOfPlay, nextStep, uploadIsTrue, finalCard, dataTask, dataProducts]);
 
   return (
     <ContainerDefault>
@@ -1286,7 +1321,7 @@ export default function ViewProductsDeliveries() {
               buttonType="finish"
               sendToNext={() => checkFlow('next')}
               nextStepInfo={timeLineData}
-              backToDelivery={() => setSelectedProduct('')}
+              backToDelivery={() => setViewProduct(false)}
               isInsideProduct={true}
               backFlow={() => setModalReturnFlow(true)}
             />
@@ -1305,7 +1340,7 @@ export default function ViewProductsDeliveries() {
               buttonType="finish"
               sendToNext={handleConcludeTask}
               nextStepInfo={timeLineData}
-              backToDelivery={() => setSelectedProduct('')}
+              backToDelivery={() => setViewProduct(false)}
               isInsideProduct={true}
               backFlow={() => setModalReturnFlow(true)}
             />
@@ -1324,7 +1359,7 @@ export default function ViewProductsDeliveries() {
               buttonType="finish"
               sendToNext={() => checkFlow('next')}
               nextStepInfo={timeLineData}
-              backToDelivery={() => setSelectedProduct('')}
+              backToDelivery={() => setViewProduct(false)}
               isInsideProduct={true}
               backFlow={() => setModalReturnFlow(true)}
             />
@@ -1342,14 +1377,11 @@ export default function ViewProductsDeliveries() {
               buttonType="finish"
               sendToNext={() => checkFlow('next')}
               nextStepInfo={timeLineData}
-              backToDelivery={() => setSelectedProduct('')}
-              isInsideProduct={true}
               backFlow={() => setModalReturnFlow(true)}
             />
           )}
 
-        {dataProducts?.status !== 'Concluida' &&
-          dataTask?.status !== 'Concluida' &&
+        {dataTask?.status !== 'Concluida' &&
           selectedProduct !== '' &&
           typeOfPlay === 'product' &&
           !finalCard && (
@@ -1360,7 +1392,7 @@ export default function ViewProductsDeliveries() {
               buttonType="finish"
               sendToNext={() => checkFlow('next')}
               nextStepInfo={timeLineData}
-              backToDelivery={() => setSelectedProduct('')}
+              backToDelivery={() => setViewProduct(false)}
               isInsideProduct={true}
               backFlow={() => setModalReturnFlow(true)}
             />
