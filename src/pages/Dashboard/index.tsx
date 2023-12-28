@@ -117,19 +117,18 @@ export default function Dashboard() {
     fromDate: '',
     toDate: ''
   });
-
   const { formData, handleOnChange, setFormValue, setData } = useForm({
     client: '',
     contract: '',
     month: '',
     year: ''
   } as ReportForm);
+  const { data: dataClient } = useFetch<TenantProps[]>('tenant');
+  const [dataProjects, setDataProjects] = useState<ServicesProps[]>([]);
   const [dashType, setDashType] = useState<string>('admin');
   const { data, fetchData, isFetching } = useFetch<any>(
     `/dashboard?date_start=${filter.fromDate}&date_end=${filter.toDate}&dash=${dashType}`
   );
-  const { data: dataClient } = useFetch<TenantProps[]>('tenant');
-  const [dataProjects, setDataProjects] = useState<ServicesProps[]>([]);
   const [modalFilters, setModalFilters] = useState<boolean>(false);
   const [modalReport, setModalReport] = useState<boolean>(false);
 
@@ -524,6 +523,7 @@ export default function Dashboard() {
   const userCards: UserCardProps[] = [
     {
       userInfos: {
+
         user_name: data && dashType === 'admin' ? data.top_users[0]?.name : '',
         clientsNumber: data && dashType === 'admin' ? data.top_users[0]?.clientes : 0,
         avatar: PersonTest
@@ -551,6 +551,7 @@ export default function Dashboard() {
         pendingApro: data && dashType === 'admin' ? data.top_users[1]?.aguardando_aprovacao : 0,
         approved: data && dashType === 'admin' ? data.top_users[1]?.entregue : 0
       },
+       
       mensalReport: {
         reunions: data && dashType === 'admin' ? data.top_users[1]?.reuniao : 0,
         reports: '???'
