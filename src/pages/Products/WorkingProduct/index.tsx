@@ -78,6 +78,7 @@ import { formatBytes } from '../../../utils/convertBytes';
 
 // types
 import { StepTimeline, UploadedFilesProps } from '../../../types';
+import { useParamsHook } from '../../../hooks/useParams';
 
 interface WorkingProductProps {
   productDeliveryId?: any;
@@ -195,6 +196,7 @@ export default function WorkingProduct({
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addToast } = useToast();
+  const { parameters, getParams } = useParamsHook();
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedTab, setSelectedTab] = useState<string>('Redação');
   const [notifications, setNotifications] = useState<boolean>(false);
@@ -232,6 +234,10 @@ export default function WorkingProduct({
       url: ''
     }
   });
+
+  useEffect(() => {
+    getParams();
+  }, []);
 
   useEffect(() => {
     setEssayInfo(productInfos?.essay);
@@ -779,7 +785,9 @@ export default function WorkingProduct({
               }}
             >
               <InputField>
-                <InputFieldTitle>Input - Pré-requisitos</InputFieldTitle>
+                <InputFieldTitle>
+                  Input {parameters.input_name !== '' ? parameters.input_name : 'Pré-requisitos'}
+                </InputFieldTitle>
                 <WrapperEditor
                   value={taskInputs?.copywriting_description}
                   mentionData={[]}
