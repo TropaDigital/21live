@@ -113,7 +113,7 @@ export default function HeaderOpenTask({
         </HeaderTitleInfos>
 
         <RightButtons>
-          {!hideButtonNext && (
+          {!hideButtonNext && nextStepInfo?.currentStep !== '1' && (
             <ButtonDefault typeButton="warning" isOutline onClick={backFlow}>
               Retornar etapa
             </ButtonDefault>

@@ -55,7 +55,7 @@ export default function FilterTask({ applyFilters, clearFilters, selectedClient 
   const [choosenFilters, setChoosenFilter] = useState<SelectedFilters>({
     client: '',
     status: '',
-    sub_tasks: false
+    sub_tasks: true
   });
 
   const handleAddFilters: HandleOnChange = (event) => {

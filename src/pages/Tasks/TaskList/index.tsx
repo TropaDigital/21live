@@ -93,7 +93,7 @@ export default function TaskList() {
   const [filter, setFilter] = useState<FilterProps>({
     status: '',
     client: '',
-    sub_tasks: false
+    sub_tasks: true
   });
   const [selected, setSelected] = useState(1);
   const [search, setSearch] = useState('');

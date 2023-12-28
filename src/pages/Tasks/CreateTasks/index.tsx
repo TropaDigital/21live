@@ -1765,9 +1765,14 @@ export default function CreateTasks() {
       handleOnSubmit();
     }
 
-    // if (selectedInitialUser?.user_id !== '' && DTOForm.start_job !== '' && DTOForm.user_id !== '') {
-    //   handleOnSubmit();
-    // }
+    if (
+      selectedInitialUser?.user_id !== '' &&
+      DTOForm.end_job === '' &&
+      DTOForm.start_job !== '' &&
+      DTOForm.user_id !== ''
+    ) {
+      handleOnSubmit();
+    }
   }, [submitState]);
 
   const handleGenerateTicket = (value: boolean) => {
