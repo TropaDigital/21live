@@ -238,3 +238,31 @@ export interface UploadedFilesProps {
   loading: boolean;
   folder: string;
 }
+
+export interface DeliveryProps {
+  deliveryId: number | string;
+  deliveryDescription: string;
+  creation_date_end: string;
+  copywriting_date_end: string;
+  deliveryTitle?: string;
+  deliveryProducts: any[];
+  showInfo: boolean;
+}
+
+export interface StepTimeline {
+  step: string;
+  name: string;
+  card_id: string;
+  flow_id: string;
+  necessary_upload: string;
+  necessary_responsible: string;
+  email_alert: string;
+  tenant_approve: string;
+  manager_approve: string;
+  previous_step: string;
+  function_id: string;
+  final_card: string;
+  ticket_status: string;
+  ticket_status_id: string;
+  tenant_id: string;
+}

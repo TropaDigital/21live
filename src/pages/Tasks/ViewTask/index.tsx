@@ -2,12 +2,14 @@
 /* eslint-disable import-helpers/order-imports */
 // React
 import { useState, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 // Icons
 import { FaArrowLeft, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { BsChevronDoubleRight } from 'react-icons/bs';
 import { IconBigCheck } from '../../../assets/icons';
+import { BiArrowBack } from 'react-icons/bi';
+import { FiCornerDownRight } from 'react-icons/fi';
 
 // Components
 import HeaderOpenTask from '../../../components/HeaderTaskPage';
@@ -16,6 +18,7 @@ import { ContainerDefault } from '../../../components/UiElements/styles';
 import { TasksTable } from '../../../components/Ui/TaskTable/styles';
 import ProgressBar from '../../../components/Ui/ProgressBar';
 import WorkingProduct from '../../Products/WorkingProduct';
+import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 
 // Styles
 import {
@@ -36,7 +39,9 @@ import {
   TimelineInfo,
   TimelineStep,
   DeliveriesWrapper,
-  TableWrapper
+  TableWrapper,
+  StatusTask,
+  DeliveriesTopWrapper
 } from './styles';
 
 // Services
@@ -51,16 +56,11 @@ import { useToast } from '../../../hooks/toast';
 
 // Utils
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
-import { BiArrowBack } from 'react-icons/bi';
+import { StepTimeline } from '../../../types';
 
 interface TimelineProps {
   steps: StepTimeline[];
   currentStep: string;
-}
-
-interface StepTimeline {
-  step: string;
-  name: string;
 }
 
 interface TaskInfos {
@@ -107,6 +107,7 @@ interface ProductsProps {
 export default function ViewTask() {
   const location = useLocation();
   const { addToast } = useToast();
+  const navigate = useNavigate();
   const openRightRef = useRef<any>();
   const [loading, setLoading] = useState<boolean>(false);
   const [hideRightCard, setHideRightCard] = useState<string>('show');
@@ -147,10 +148,14 @@ export default function ViewTask() {
       try {
         setLoading(true);
         const response = await api.get(`/tasks/${id}`);
-        console.log('log do response get task', response.data.result);
+        // console.log('log do response get task', response.data.result);
 
         if (response.data.result.length > 0) {
           setDataTask(response.data.result[0]);
+        }
+
+        if (response.data.result[0].parents?.length > 0) {
+          setVisualizationType('subtasks');
         }
 
         setLoading(false);
@@ -175,12 +180,25 @@ export default function ViewTask() {
     }
   }, [location]);
 
+  useEffect(() => {
+    if (dataTask?.parents?.length > 0 && visualizationType === 'deliveries') {
+      setVisualizationType('subtasks');
+    }
+  }, [visualizationType]);
+
   const handleNavigateProduct = (infoProduct: any) => {
     const taskCompleteInfo = {
       productInfo: infoProduct,
       taskInfos: dataTask
     };
     setSelectedProduct(taskCompleteInfo);
+  };
+
+  const handleNavigateTask = (taskId: string) => {
+    const idTask = {
+      id: taskId
+    };
+    navigate(`/tarefa/${taskId}`, { state: idTask });
   };
 
   useEffect(() => {
@@ -211,6 +229,7 @@ export default function ViewTask() {
           buttonType="send"
           nextStepInfo={timeLineData}
           hideButtonNext={true}
+          backFlow={() => ''}
         />
 
         <CardsWrapper>
@@ -244,9 +263,219 @@ export default function ViewTask() {
           />
         </CardsWrapper>
 
+        {visualizationType === 'subtasks' && (
+          <>
+            {dataTask.parents?.length > 0 && (
+              <DeliveriesWrapper>
+                <span className="title-info">Sub Tarefas</span>
+
+                <TableWrapper>
+                  <TasksTable>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Título</th>
+                          <th>Tempo utilizado</th>
+                          <th>Tempo estimado</th>
+                          <th>Status</th>
+                          <th>Cliente</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {dataTask?.parents.map((row: any) => (
+                          <tr
+                            key={row.task_id}
+                            onClick={() => handleNavigateTask(row.task_id)}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            <td
+                              style={{
+                                display: 'table-cell',
+                                paddingRight: '0.5rem'
+                              }}
+                            >
+                              <FiCornerDownRight
+                                color="var(--primary)"
+                                size={'1rem'}
+                                className="sub"
+                              />
+                              #{String(row.task_id).padStart(4, '0')}
+                            </td>
+                            <td style={{ textTransform: 'capitalize', cursor: 'pointer' }}>
+                              {row.title}
+                            </td>
+                            <td>
+                              <span style={{ marginBottom: '4px', display: 'block' }}>
+                                {row.time_consumed}
+                              </span>
+                              <ProgressBar
+                                totalHours={convertToMilliseconds(
+                                  dataTask?.total_time !== 'undefined'
+                                    ? dataTask?.total_time
+                                    : row.time_consumed
+                                )}
+                                restHours={convertToMilliseconds(row.time_consumed)}
+                              />
+                            </td>
+                            <td>
+                              {dataTask?.total_time !== 'undefined'
+                                ? dataTask?.total_time
+                                : 'Livre'}
+                            </td>
+                            <td>
+                              <StatusTask
+                                className={
+                                  row.status === 'Em Andamento'
+                                    ? 'progress'
+                                    : row.status === 'Concluida'
+                                    ? 'finished'
+                                    : ''
+                                }
+                              >
+                                {row.status === 'Em Andamento'
+                                  ? 'Em progresso'
+                                  : row.status === 'Concluida'
+                                  ? 'Concluída'
+                                  : row.status === 'Aguardando Aprovação'
+                                  ? 'Aguardando Aprovação'
+                                  : row.status === 'Alteração Interna'
+                                  ? 'Alteração interna'
+                                  : row.status === 'Alteração Externa'
+                                  ? 'Alteração externa'
+                                  : 'Pendente'}
+                              </StatusTask>
+                            </td>
+                            <td>{row.tenant}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </TasksTable>
+                </TableWrapper>
+              </DeliveriesWrapper>
+            )}
+
+            <DeliveriesWrapper>
+              <DeliveriesTopWrapper>
+                <span className="title-info">Entregas</span>
+
+                {dataTask?.parent_id !== '' && (
+                  <ButtonDefault
+                    typeButton="primary"
+                    onClick={() => handleNavigateTask(dataTask?.parent_id)}
+                  >
+                    Ir para tarefa mãe
+                  </ButtonDefault>
+                )}
+              </DeliveriesTopWrapper>
+
+              <TableWrapper>
+                <span className="date-info">
+                  {moment(dataTask?.start_job).format('DD/MM/YYYY')}
+                </span>
+                <TasksTable>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Tempo consumido</th>
+                        <th>Tempo estimado</th>
+                        <th>Data inicial</th>
+                        <th>Data final</th>
+                        <th>Produtos</th>
+                        <th>Etapa</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {dataTask?.deliverys.map((row: TaskInfos) => (
+                        <tr
+                          key={row.delivery_id}
+                          onClick={() => {
+                            setDeliveryProduct(row.products);
+                            setVisualizationType('delivery-products');
+                          }}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <td>#{String(row.delivery_id).padStart(2, '0')}</td>
+                          <td>{row.title}</td>
+                          <td>
+                            <span style={{ marginBottom: '4px', display: 'block' }}>
+                              {row.time_consumed}
+                            </span>
+                            <ProgressBar
+                              totalHours={convertToMilliseconds(
+                                dataTask?.total_time !== 'undefined'
+                                  ? dataTask?.total_time
+                                  : row.time_consumed
+                              )}
+                              restHours={convertToMilliseconds(row.time_consumed)}
+                            />
+                          </td>
+                          <td>
+                            {dataTask?.total_time !== 'undefined' ? dataTask?.total_time : 'Livre'}
+                          </td>
+                          <td>{moment(row.date_end).format('DD/MM/YYYY')}</td>
+                          <td>
+                            {dataTask?.end_job !== ''
+                              ? moment(dataTask?.end_job).format('DD/MM/YYYY')
+                              : '----'}
+                          </td>
+                          <td>
+                            {row.products.length <= 1
+                              ? `${row.products.length} produto`
+                              : `${row.products.length} produtos`}
+                          </td>
+                          <td>
+                            <div className="column">
+                              {dataTask?.card_name}
+                              <span>Fluxo: {dataTask?.flow}</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div
+                              className={
+                                dataTask?.status === 'Em Andamento'
+                                  ? 'status progress'
+                                  : dataTask?.status === 'Concluida'
+                                  ? 'status finished'
+                                  : 'status'
+                              }
+                            >
+                              {dataTask?.status === 'Em Andamento'
+                                ? 'Em Andamento'
+                                : dataTask?.status === 'Concluida'
+                                ? 'Concluída'
+                                : 'Pendente'}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </TasksTable>
+              </TableWrapper>
+            </DeliveriesWrapper>
+          </>
+        )}
+
         {visualizationType === 'deliveries' && (
           <DeliveriesWrapper>
-            <span className="title-info">Entregas</span>
+            <DeliveriesTopWrapper>
+              <span className="title-info">Entregas</span>
+              {dataTask?.parent_id !== '' && (
+                <ButtonDefault
+                  typeButton="primary"
+                  onClick={() => handleNavigateTask(dataTask?.parent_id)}
+                >
+                  Ir para tarefa mãe
+                </ButtonDefault>
+              )}
+            </DeliveriesTopWrapper>
 
             <TableWrapper>
               <span className="date-info">{moment(dataTask?.start_job).format('DD/MM/YYYY')}</span>
@@ -372,6 +601,7 @@ export default function ViewTask() {
                           handleNavigateProduct(row);
                           setVisualizationType('product');
                         }}
+                        style={{ cursor: 'pointer' }}
                       >
                         <td>#{String(row.products_delivery_id).padStart(2, '0')}</td>
                         <td>{row.service}</td>
@@ -419,6 +649,8 @@ export default function ViewTask() {
             taskFiles={dataTask?.files}
             goBack={() => setVisualizationType('delivery-products')}
             backButtonTitle={'Voltar para produtos'}
+            returnReasons={dataTask?.reason_return}
+            timelineData={timeLineData}
           />
         )}
 

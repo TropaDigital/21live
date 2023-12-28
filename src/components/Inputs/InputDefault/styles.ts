@@ -83,6 +83,10 @@ export const ContainerInput = styled.div<ContainerProps>`
       color: #cccccc;
     }
 
+    &:disabled {
+      background: var(--gray-100);
+    }
+
     &:focus-visible {
       z-index: 1;
       border-color: rgb(49, 130, 206);

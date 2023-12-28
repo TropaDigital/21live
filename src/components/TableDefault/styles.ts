@@ -60,6 +60,11 @@ export const Container = styled.div`
       text-align: center;
     }
   }
+
+  @media (max-width: 1600px) {
+    max-width: 1280px;
+    overflow-x: auto;
+  }
 `;
 
 export const TitleTable = styled.h1<TitleProps>`

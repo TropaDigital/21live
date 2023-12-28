@@ -67,6 +67,13 @@ export const Container = styled.div`
       width: 500px;
       text-align: center;
     }
+
+    .parent {
+      td {
+        background-color: var(--primary-025);
+        border-bottom: 1px solid var(--primary-200);
+      }
+    }
   }
 `;
 

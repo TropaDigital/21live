@@ -65,7 +65,7 @@ export default function Header({ handleOnMenu, modalActive }: HeaderProps) {
           addToast({
             title: 'Sucesso',
             type: 'success',
-            description: 'Tarefa pausada, para dar ao play novamente entre na tarefa'
+            description: 'Tarefa pausada, para dar play novamente entre na tarefa'
           });
         }
         // setLoading(false);
@@ -105,7 +105,7 @@ export default function Header({ handleOnMenu, modalActive }: HeaderProps) {
           addToast({
             title: 'Sucesso',
             type: 'success',
-            description: 'Tarefa pausada, para dar ao play novamente entre na tarefa'
+            description: 'Tarefa pausada, para dar play novamente entre na tarefa'
           });
         }
         // setLoading(false);

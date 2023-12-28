@@ -22,18 +22,28 @@ import WorkingProduct from '../WorkingProduct';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import UploadFiles from '../../../components/Upload/UploadFiles';
 import UploadFilesTicket from '../../../components/UploadTicket/UploadFilex';
+import { UsersWrapper } from '../../Tasks/CreateTasks/styles';
+import { ProductsTable } from '../../Tasks/ComponentSteps/InfoDeliverables/styles';
+import { ModalButtons } from '../../Tasks/ViewTask/styles';
+import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
+import { SelectDefault } from '../../../components/Inputs/SelectDefault';
+import { TextAreaDefault } from '../../../components/Inputs/TextAreaDefault';
 
 // Styles
 import {
   ArrowSection,
   CardsWrapper,
   DeliveryWrapper,
+  ModalProductsWrapper,
+  ModalReturnFlow,
   ModalUploadWrapper,
   RightInfosCard,
   RightInfosTitle,
+  SelectProductField,
   ShowInfosButton,
   TaskInfoField,
   TasksInfos,
+  TextInfo,
   TimeLine,
   TimeLineIcon,
   TimelineInfo,
@@ -49,47 +59,28 @@ import 'moment/dist/locale/pt-br';
 
 // Hooks
 import { useToast } from '../../../hooks/toast';
-import { useAuth } from '../../../hooks/AuthContext';
 import { useStopWatch } from '../../../hooks/stopWatch';
 
 // Types
-import { UploadedFilesProps } from '../../../types';
+import { StepTimeline, UploadedFilesProps } from '../../../types';
+
+// Utils
+import { UsersNoSchedule } from '../../../utils/models';
 
 interface TimelineProps {
   steps: StepTimeline[];
   currentStep: string;
 }
 
-interface StepTimeline {
-  step: string;
-  name: string;
-  card_id: string;
-  flow_id: string;
-  necessary_upload: string;
-  necessary_responsible: string;
-  email_alert: string;
-  tenant_approve: string;
-  manager_approve: string;
-  previous_step: string;
-  function_id: string;
-  final_card: string;
-  ticket_status: string;
-  ticket_status_id: string;
-  tenant_id: string;
-}
-
-interface ModalUsersProps {
-  user_id: string;
-  name: string;
-  function: string;
-  tasks: string;
+interface ReturnProps {
+  chosenStep: string;
+  returnMotive: string;
 }
 
 export default function ViewProductsDeliveries() {
   const location = useLocation();
   const navigate = useNavigate();
   const { addToast } = useToast();
-  const { user } = useAuth();
   const { state, setInitialTime, setTaskInfo, handleClock } = useStopWatch();
   const openRightRef = useRef<any>();
   const [modalSendToUser, setModalSendToUser] = useState<boolean>(false);
@@ -109,6 +100,24 @@ export default function ViewProductsDeliveries() {
   const [productForUpload, setProductForUpload] = useState<any>({});
   const [enableUpload, setEnableUpload] = useState<boolean>(false);
   const [viewProduct, setViewProduct] = useState<boolean>(false);
+  const [modalWithoutSchedule, setModalWithoutSchedule] = useState<boolean>(false);
+  const [usersWithoutSchedule, setUsersWithoutSchedule] = useState<UsersNoSchedule[]>([]);
+  const [selectedInitialUser, setSelectedInitalUser] = useState<UsersNoSchedule>();
+  const [modalReturnFlow, setModalReturnFlow] = useState<boolean>(false);
+  const [returnInfos, setReturnInfos] = useState<ReturnProps>({
+    chosenStep: '',
+    returnMotive: ''
+  });
+  const [toClientConfirmation, setToClientConfirmation] = useState<boolean>(false);
+  const [showHoursBack, setShowHoursBack] = useState<boolean>(false);
+  const [modalProducts, setModalProducts] = useState<boolean>(false);
+  const [modalDismemberment, setModalDismemberment] = useState<boolean>(false);
+
+  let userInfos = {
+    next_user: '',
+    start_job: '',
+    end_job: ''
+  };
 
   const deliveryId = location.state.task.deliverys.filter(
     (obj: any) => Number(obj.order) === location.state.task_index
@@ -134,17 +143,32 @@ export default function ViewProductsDeliveries() {
     creation_description: location.state.task.creation_description
   };
 
+  const actualDate = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
   const actualStep = timeLineData?.currentStep;
   const uploadIsTrue = timeLineData
     ? timeLineData.steps.filter((obj) => obj.step === actualStep)
     : '';
   const nextStep = timeLineData
     ? timeLineData.steps.filter((obj) => Number(obj.step) === Number(actualStep) + 1)
-    : '';
+    : [];
 
   const finalCard = uploadIsTrue && uploadIsTrue[0].final_card === 'true';
 
   const uploadClient = uploadIsTrue && uploadIsTrue[0].tenant_approve === 'true';
+
+  const stepsToReturn: any[] = timeLineData
+    ? timeLineData.steps.filter((obj) => Number(obj.step) < Number(actualStep))
+    : [];
+
+  // const checkAllFinished: any[] = dataProducts.products.every(
+  //   (product: any) => product.status === 'Concluida'
+  // );
+
+  const hasDismemberedProduct = (delivery: any): boolean => {
+    return delivery.products.some((product: any) => product.status === 'recusado');
+  };
+
+  const hasDismemberedProductInDeliveries = dataTask?.deliverys?.some(hasDismemberedProduct);
 
   useEffect(() => {
     async function getClockIsOpen() {
@@ -429,23 +453,147 @@ export default function ViewProductsDeliveries() {
     }
   };
 
-  const handleNavigateProduct = (infoProduct: any) => {
-    const taskCompleteInfo = {
-      productInfo: infoProduct,
-      taskInfos: dataTask
-    };
-    setSelectedProduct(taskCompleteInfo);
-    setViewProduct(true);
+  const handleNavigateProduct = (type: string, infoProduct: any) => {
+    if (type === 'view') {
+      const taskCompleteInfo = {
+        productInfo: infoProduct,
+        taskInfos: dataTask
+      };
+      setSelectedProduct(taskCompleteInfo);
+      setViewProduct(true);
+    }
+
+    if (type === 'select') {
+      const taskCompleteInfo = {
+        productInfo: JSON.parse(infoProduct.target.value),
+        taskInfos: dataTask
+      };
+      setSelectedProduct(taskCompleteInfo);
+    }
   };
 
   const handleAssignTask = (values: any) => {
-    setModalSendToUser(false);
-    handleSendToNextUser(values);
+    if (!showHoursBack) {
+      setModalSendToUser(false);
+      handleSendToNextUser(values);
+    }
+
+    if (showHoursBack) {
+      setModalSendToUser(false);
+      handleReturnTask(values);
+    }
   };
 
-  const handleFinishDelivery = async () => {
+  // const handleFinishDelivery = async () => {
+  //   try {
+  //     setLoading(true);
+
+  //     if (dataTask.type === 'Livre') {
+  //       const responseNextDate = await api.get(
+  //         `/task/nextdate=${moment(new Date()).format('YYYY-MM-DD')}&task_id=${dataTask?.task_id}`
+  //       );
+
+  //       const response = await api.get(`/task/next-user/${dataTask?.task_id}`);
+
+  //       if (response.data.result.length > 0) {
+  //         const payload = {
+  //           user_id: response.data.result[0].user_id,
+  //           task_id: dataTask?.task_id
+  //         };
+
+  //         const responseConclude = await api.put(`/task/send-for-evaluation`, payload);
+
+  //         console.log('log do response conclude', responseConclude.data.result);
+  //         navigate('/minhas-tarefas');
+  //         localStorage.removeItem('stopwatchState');
+  //       }
+
+  //       setLoading(false);
+
+  //       console.log('log do response for free task', response.data);
+  //     } else {
+  //       const response = await api.put(`/task/delivery-conclude/${deliveryId[0].delivery_id}`);
+  //       if (response.data.result === 1) {
+  //         addToast({
+  //           title: 'Sucesso',
+  //           type: 'success',
+  //           description: 'Entrega finalizada com sucesso'
+  //         });
+  //         navigate('/minhas-tarefas');
+  //         localStorage.removeItem('stopwatchState');
+  //       }
+  //       if (response.data.result.last_delivery) {
+  //         setModalSendToUser(true);
+  //       }
+  //       setLoading(false);
+  //     }
+  //   } catch (error: any) {
+  //     console.log('log error finish delivery', error);
+  //     setLoading(false);
+
+  //     if (error.response.data.result.length !== 0) {
+  //       error.response.data.result.map((row: any) => {
+  //         addToast({
+  //           title: 'Atenção',
+  //           description: row.error,
+  //           type: 'warning'
+  //         });
+  //       });
+  //     } else {
+  //       addToast({
+  //         title: 'Atenção',
+  //         description: error.response.data.message,
+  //         type: 'danger'
+  //       });
+  //     }
+  //   }
+  // };
+
+  // async function handleFinishProduct() {
+  //   try {
+  //     setLoading(true);
+  //     const response = await api.put(
+  //       `/task/product-conclude/${selectedProduct?.productInfo.products_delivery_id}`
+  //     );
+
+  //     if (response.data.result === 1) {
+  //       addToast({
+  //         title: 'Sucesso',
+  //         type: 'success',
+  //         description: 'Entrega finalizada com sucesso'
+  //       });
+  //       navigate('/minhas-tarefas');
+  //       localStorage.removeItem('stopwatchState');
+  //     }
+  //     setLoading(false);
+  //   } catch (error: any) {
+  //     if (error.response.data.result.length !== 0) {
+  //       error.response.data.result.map((row: any) => {
+  //         addToast({
+  //           title: 'Atenção',
+  //           description: row.error,
+  //           type: 'warning'
+  //         });
+  //       });
+  //     } else {
+  //       addToast({
+  //         title: 'Atenção',
+  //         description: error.response.data.message,
+  //         type: 'danger'
+  //       });
+  //     }
+  //     setLoading(false);
+  //   }
+  // }
+
+  const handleSendToNextUser = async (values: any) => {
     try {
       setLoading(true);
+      const next_user = {
+        next_user: values.user_id,
+        start_job: values.start_job,
+        end_job: values.end_job
+      };
 
       if (dataTask.type === 'Livre') {
         const responseNextDate = await api.get(
@@ -466,104 +614,104 @@ export default function ViewProductsDeliveries() {
           navigate('/minhas-tarefas');
           localStorage.removeItem('stopwatchState');
         }
+      }
 
-        setLoading(false);
+      if (dataTask?.status !== 'Concluida' && typeOfPlay === 'schedule') {
+        const response = await api.put(
+          `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
+          next_user
+        );
+        console.log('log do response', response.data.result);
 
-        console.log('log do response for free task', response.data);
-      } else {
-        const response = await api.put(`/task/delivery-conclude/${deliveryId[0].delivery_id}`);
         if (response.data.result === 1) {
-          addToast({
-            title: 'Sucesso',
-            type: 'success',
-            description: 'Entrega finalizada com sucesso'
-          });
           navigate('/minhas-tarefas');
           localStorage.removeItem('stopwatchState');
         }
-        if (response.data.result.last_delivery) {
-          setModalSendToUser(true);
+      }
+
+      if (dataTask?.status !== 'Concluida' && selectedProduct !== '' && typeOfPlay === 'product') {
+        if (selectedProduct.status !== 'Concluida') {
+          const response = await api.put(
+            `/task/product-conclude/${selectedProduct?.productInfo.products_delivery_id}`
+          );
+
+          if (response.data.result === 1) {
+            addToast({
+              title: 'Sucesso',
+              type: 'success',
+              description: 'Entrega finalizada com sucesso'
+            });
+            navigate('/minhas-tarefas');
+            localStorage.removeItem('stopwatchState');
+          }
+        } else {
+          const response = await api.put(
+            `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
+            next_user
+          );
+          console.log('log do response', response.data.result);
+
+          if (response.data.result === 1) {
+            navigate('/minhas-tarefas');
+            localStorage.removeItem('stopwatchState');
+          }
         }
-        setLoading(false);
       }
-    } catch (error: any) {
-      console.log('log error finish delivery', error);
-      setLoading(false);
 
-      if (error.response.data.result.length !== 0) {
-        error.response.data.result.map((row: any) => {
-          addToast({
-            title: 'Atenção',
-            description: row.error,
-            type: 'warning'
-          });
-        });
-      } else {
-        addToast({
-          title: 'Atenção',
-          description: error.response.data.message,
-          type: 'danger'
-        });
+      if (dataTask?.status !== 'Concluida' && selectedProduct === '' && typeOfPlay === 'product') {
+        const response = await api.put(
+          `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
+          next_user
+        );
+        console.log('log do response', response.data.result);
+
+        if (response.data.result === 1) {
+          navigate('/minhas-tarefas');
+          localStorage.removeItem('stopwatchState');
+        }
+        // if (location.state.delivery.products.length === 1) {
+        //   if (location.state.delivery.products.status === 'Concluida') {
+        //   } else {
+        //     const response = await api.put(
+        //       `/task/product-conclude/${location.state.delivery.products[0].products_delivery_id}`
+        //     );
+
+        //     if (response.data.result === 1) {
+        //       addToast({
+        //         title: 'Sucesso',
+        //         type: 'success',
+        //         description: 'Entrega finalizada com sucesso'
+        //       });
+        //       navigate('/minhas-tarefas');
+        //       localStorage.removeItem('stopwatchState');
+        //     }
+        //   }
+        // }
+
+        if (location.state.delivery.products.length > 1) {
+          userInfos = next_user;
+          // setModalProducts(true);
+          // setHideRightCard('hide');
+        }
       }
-    }
-  };
 
-  async function handleFinishProduct() {
-    try {
-      setLoading(true);
-      const response = await api.put(
-        `/task/product-conclude/${selectedProduct?.productInfo.products_delivery_id}`
-      );
+      // if (
+      //   dataProducts?.status === 'Concluida' &&
+      //   selectedProduct === '' &&
+      //   typeOfPlay === 'product'
+      // ) {
+      //   const response = await api.put(
+      //     `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
+      //     next_user
+      //   );
+      //   console.log('log do response', response.data.result);
 
-      if (response.data.result === 1) {
-        addToast({
-          title: 'Sucesso',
-          type: 'success',
-          description: 'Entrega finalizada com sucesso'
-        });
-        navigate('/minhas-tarefas');
-        localStorage.removeItem('stopwatchState');
-      }
-      setLoading(false);
-    } catch (error: any) {
-      if (error.response.data.result.length !== 0) {
-        error.response.data.result.map((row: any) => {
-          addToast({
-            title: 'Atenção',
-            description: row.error,
-            type: 'warning'
-          });
-        });
-      } else {
-        addToast({
-          title: 'Atenção',
-          description: error.response.data.message,
-          type: 'danger'
-        });
-      }
-      setLoading(false);
-    }
-  }
+      //   if (response.data.result === 1) {
+      //     navigate('/minhas-tarefas');
+      //     localStorage.removeItem('stopwatchState');
+      //   }
+      // }
 
-  const handleSendToNextUser = async (values: any) => {
-    try {
-      setLoading(true);
-      const next_user = {
-        next_user: values.user_id,
-        start_job: values.start_job,
-        end_job: values.end_job
-      };
-
-      const response = await api.put(
-        `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
-        next_user
-      );
-      console.log('log do response', response.data.result);
-
-      if (response.data.result === 1) {
-        navigate('/minhas-tarefas');
-        localStorage.removeItem('stopwatchState');
-      }
       setLoading(false);
     } catch (error: any) {
       console.log('log error next user', error);
@@ -711,9 +859,14 @@ export default function ViewProductsDeliveries() {
         products_delivery_id: productForUpload.products_delivery_id
       };
 
-      const response = await api.put(`/task/upload`, uploadInfos);
+      const response = await api.put(`/archive/upload/final/${dataTask?.task_id}`, uploadInfos);
 
       if (response.data.status === 'success') {
+        addToast({
+          title: 'Sucesso',
+          description: 'Sucesso, upload concluído.',
+          type: 'success'
+        });
         setUploadedFiles([]);
         setModalUpload(false);
         setModalFinalFile(false);
@@ -753,8 +906,16 @@ export default function ViewProductsDeliveries() {
       const response = await api.put(`/task/upload-tenant-approve`, uploadInfos);
 
       if (response.data.status === 'success') {
+        addToast({
+          title: 'Sucesso',
+          description: 'Arquivo enviado, aguarde a aprovação do cliente.',
+          type: 'success'
+        });
         setUploadedFiles([]);
         setModalFinalFile(false);
+        setTimeout(() => {
+          navigate('/minhas-tarefas');
+        }, 1500);
       }
 
       // console.log('log do response do saveUpload', response.data.result);
@@ -778,28 +939,300 @@ export default function ViewProductsDeliveries() {
     }
   }
 
+  async function checkFlow(checkType: string) {
+    try {
+      setLoading(true);
+      if (hasDismemberedProductInDeliveries) {
+        setModalDismemberment(true);
+      }
+
+      if (checkType === 'next') {
+        const response = await api.get(
+          `/flow-function?step=${Number(actualStep) + 1}&flow_id=${dataTask?.flow_id}`
+        );
+
+        if (response.data.result[0].show_hours === 'true') {
+          setModalSendToUser(true);
+          // console.log('log do checkFlow to show hours');
+        }
+        if (response.data.result[0].show_hours === 'false') {
+          handleNextUser('next');
+          // console.log('log do checkFlow to show schedule');
+        }
+      }
+
+      if (checkType === 'back') {
+        const response = await api.get(
+          `/flow-function?step=${returnInfos.chosenStep}&flow_id=${dataTask?.flow_id}`
+        );
+
+        if (response.data.result[0].show_hours === 'true') {
+          setModalSendToUser(true);
+          setShowHoursBack(true);
+        }
+        if (response.data.result[0].show_hours === 'false') {
+          handleNextUser('back');
+          setShowHoursBack(true);
+        }
+      }
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log do error check flow', error);
+      setLoading(false);
+    }
+  }
+
+  async function handleNextUser(type: string) {
+    try {
+      setLoading(true);
+
+      if (type === 'next') {
+        const response = await api.get(
+          `/task/next-user?project_product_id=${dataTask?.project_product_id}&flow_id=${
+            dataTask?.flow_id
+          }&step=${Number(actualStep) + 1}`
+        );
+        setUsersWithoutSchedule(response.data.result);
+        setModalWithoutSchedule(true);
+      }
+
+      if (type === 'back') {
+        const response = await api.get(
+          `/task/next-user?project_product_id=${dataTask?.project_product_id}&flow_id=${dataTask?.flow_id}&step=${returnInfos.chosenStep}`
+        );
+        setUsersWithoutSchedule(response.data.result);
+        setModalWithoutSchedule(true);
+      }
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log error handleNextUser', error);
+
+      setLoading(false);
+    }
+  }
+
+  const handleSetUserWithoutSchedule = async () => {
+    try {
+      setLoading(true);
+
+      const next_user = {
+        next_user: selectedInitialUser?.user_id,
+        start_job: actualDate,
+        end_job: ''
+      };
+
+      const response = await api.put(
+        `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
+        next_user
+      );
+      console.log('log do response', response.data.result);
+
+      if (response.data.result === 1) {
+        navigate('/minhas-tarefas');
+        localStorage.removeItem('stopwatchState');
+      }
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log error next user', error);
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
+      setLoading(false);
+    }
+  };
+
+  const handleChooseStepAndMotive = (e: any) => {
+    const { name, value } = e.target;
+
+    setReturnInfos((prevState: any) => ({ ...prevState, [name]: value }));
+  };
+
+  const handleBackFlow = () => {
+    const selectedStep = timeLineData?.steps.filter((obj) => obj.step === returnInfos.chosenStep);
+
+    checkFlow('back');
+
+    console.log('log do selectedStep =>', selectedStep);
+  };
+
+  async function handleReturnTask(infos: any) {
+    try {
+      setLoading(true);
+
+      const returnParams = {
+        task_id: dataTask?.task_id,
+        reason: returnInfos.returnMotive,
+        step: returnInfos.chosenStep,
+        user_id: infos.user_id,
+        start_job: infos.start_job,
+        end_job: infos.end_job
+      };
+
+      // console.log('log do returnParams =>', returnParams);
+      // console.log('log do back or next =>', showHoursBack);
+
+      const response = await api.put(`/task/return-task`, returnParams);
+
+      if (response.data.status === 'success') {
+        navigate('/minhas-tarefas');
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.log('log return task error', error);
+      setLoading(false);
+    }
+  }
+
+  const handleCancelReturn = () => {
+    setReturnInfos({
+      chosenStep: '',
+      returnMotive: ''
+    });
+    setModalReturnFlow(false);
+  };
+
+  const handleSelectProduct = () => {
+    const user_info = {
+      start_job: userInfos.start_job,
+      end_job: userInfos.end_job,
+      user_id: userInfos.next_user
+    };
+
+    setModalProducts(false);
+    handleSendToNextUser(user_info);
+  };
+
+  async function handleDismemberment() {
+    try {
+      setLoading(true);
+
+      const response = await api.put(`/task/dismember/${dataTask?.task_id}`);
+      if (response.data.result) {
+        setModalDismemberment(false);
+        navigate('/nova-tarefa', { state: { id: response.data.result } });
+      }
+
+      setLoading(false);
+    } catch (error: any) {
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
+      setLoading(false);
+    }
+  }
+
+  async function handleConcludeTask() {
+    try {
+      setLoading(true);
+
+      const response = await api.put(`/task/task-conclude/${dataTask?.task_id}`);
+
+      if (response.data.result) {
+        navigate('/minhas-tarefas');
+      }
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log error conclude task', error);
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
     // console.log('log do selectedProducts', selectedProduct);
     // console.log('log do next step', nextStep);
     // console.log('log do upload', uploadIsTrue);
     // console.log('log do final card', finalCard);
-  }, [selectedProduct, typeOfPlay, nextStep, uploadIsTrue, finalCard]);
+    // console.log('log dataTask', dataTask);
+    // console.log('log dataProducts =>', dataProducts);
+  }, [selectedProduct, typeOfPlay, nextStep, uploadIsTrue, finalCard, dataTask, dataProducts]);
 
   return (
     <ContainerDefault>
       <DeliveryWrapper>
-        {dataProducts?.status === 'Concluida' && (
+        {/* {uploadClient && (
+          <HeaderOpenTask
+            title={titleInfos}
+            disableButton={true}
+            goBack
+            buttonType="client"
+            nextStepInfo={timeLineData}
+            hideButtonNext={true}
+            sendToNext={() => setModalFinalFile(true)}
+            backFlow={() => ''}
+          />
+        )} */}
+
+        {dataTask?.status === 'Concluida' && (
           <HeaderOpenTask
             title={titleInfos}
             disableButton={true}
             goBack
             buttonType="send"
             nextStepInfo={timeLineData}
+            backFlow={() => setModalReturnFlow(true)}
           />
         )}
 
+        {dataTask?.status !== 'Concluida' &&
+          typeOfPlay === 'schedule' &&
+          selectedProduct === '' && (
+            <HeaderOpenTask
+              title={titleInfos}
+              disableButton={false}
+              goBack
+              buttonType="send"
+              sendToNext={() => checkFlow('next')}
+              nextStepInfo={timeLineData}
+              backFlow={() => setModalReturnFlow(true)}
+            />
+          )}
+
+        {dataProducts?.status === 'Concluida' &&
+          dataTask?.status !== 'Concluida' &&
+          typeOfPlay === 'schedule' &&
+          selectedProduct !== '' && (
+            <HeaderOpenTask
+              title={titleInfos}
+              disableButton={false}
+              goBack
+              buttonType="send"
+              sendToNext={() => checkFlow('next')}
+              nextStepInfo={timeLineData}
+              backFlow={() => setModalReturnFlow(true)}
+            />
+          )}
+
         {dataProducts?.status !== 'Concluida' &&
+          dataTask?.status !== 'Concluida' &&
           selectedProduct === '' &&
           typeOfPlay === 'schedule' &&
           !finalCard && (
@@ -808,12 +1241,14 @@ export default function ViewProductsDeliveries() {
               disableButton={false}
               goBack
               buttonType="send"
-              sendToNext={handleFinishDelivery}
+              sendToNext={() => checkFlow('next')}
               nextStepInfo={timeLineData}
+              backFlow={() => setModalReturnFlow(true)}
             />
           )}
 
         {dataProducts?.status !== 'Concluida' &&
+          dataTask?.status !== 'Concluida' &&
           selectedProduct === '' &&
           typeOfPlay === 'schedule' &&
           finalCard && (
@@ -822,12 +1257,30 @@ export default function ViewProductsDeliveries() {
               disableButton={false}
               goBack
               buttonType="finish"
-              sendToNext={handleFinishDelivery}
+              sendToNext={handleConcludeTask}
               nextStepInfo={timeLineData}
+              backFlow={() => setModalReturnFlow(true)}
             />
           )}
 
         {dataProducts?.status !== 'Concluida' &&
+          dataTask?.status !== 'Concluida' &&
+          selectedProduct !== '' &&
+          typeOfPlay === 'schedule' &&
+          finalCard && (
+            <HeaderOpenTask
+              title={titleInfos}
+              disableButton={false}
+              goBack
+              buttonType="finish"
+              sendToNext={handleConcludeTask}
+              nextStepInfo={timeLineData}
+              backFlow={() => setModalReturnFlow(true)}
+            />
+          )}
+
+        {dataProducts?.status !== 'Concluida' &&
+          dataTask?.status !== 'Concluida' &&
           selectedProduct !== '' &&
           typeOfPlay === 'schedule' &&
           !finalCard && (
@@ -836,12 +1289,14 @@ export default function ViewProductsDeliveries() {
               disableButton={false}
               goBack
               buttonType="send"
-              sendToNext={handleFinishDelivery}
+              sendToNext={() => checkFlow('next')}
               nextStepInfo={timeLineData}
+              backFlow={() => setModalReturnFlow(true)}
             />
           )}
 
         {dataProducts?.status !== 'Concluida' &&
+          dataTask?.status !== 'Concluida' &&
           selectedProduct === '' &&
           typeOfPlay === 'product' &&
           finalCard && (
@@ -850,12 +1305,14 @@ export default function ViewProductsDeliveries() {
               disableButton={false}
               goBack
               buttonType="finish"
-              sendToNext={handleFinishDelivery}
+              sendToNext={handleConcludeTask}
               nextStepInfo={timeLineData}
+              backFlow={() => setModalReturnFlow(true)}
             />
           )}
 
         {dataProducts?.status !== 'Concluida' &&
+          dataTask?.status !== 'Concluida' &&
           selectedProduct !== '' &&
           typeOfPlay === 'product' &&
           selectedProduct.status !== 'Concluida' &&
@@ -865,14 +1322,16 @@ export default function ViewProductsDeliveries() {
               disableButton={typeOfPlay === 'product' ? false : true}
               goBack
               buttonType="finish"
-              sendToNext={handleFinishProduct}
+              sendToNext={() => checkFlow('next')}
               nextStepInfo={timeLineData}
-              backToDelivery={() => setSelectedProduct('')}
+              backToDelivery={() => setViewProduct(false)}
               isInsideProduct={true}
+              backFlow={() => setModalReturnFlow(true)}
             />
           )}
 
         {dataProducts?.status !== 'Concluida' &&
+          dataTask?.status !== 'Concluida' &&
           selectedProduct !== '' &&
           typeOfPlay === 'product' &&
           selectedProduct.status === 'Concluida' &&
@@ -882,14 +1341,16 @@ export default function ViewProductsDeliveries() {
               disableButton={true}
               goBack
               buttonType="finish"
-              sendToNext={handleFinishProduct}
+              sendToNext={handleConcludeTask}
               nextStepInfo={timeLineData}
-              backToDelivery={() => setSelectedProduct('')}
+              backToDelivery={() => setViewProduct(false)}
               isInsideProduct={true}
+              backFlow={() => setModalReturnFlow(true)}
             />
           )}
 
         {dataProducts?.status !== 'Concluida' &&
+          dataTask?.status !== 'Concluida' &&
           selectedProduct !== '' &&
           typeOfPlay === 'product' &&
           selectedProduct.status !== 'Concluida' &&
@@ -899,10 +1360,47 @@ export default function ViewProductsDeliveries() {
               disableButton={true}
               goBack
               buttonType="finish"
-              sendToNext={handleFinishProduct}
+              sendToNext={() => checkFlow('next')}
               nextStepInfo={timeLineData}
-              backToDelivery={() => setSelectedProduct('')}
+              backToDelivery={() => setViewProduct(false)}
               isInsideProduct={true}
+              backFlow={() => setModalReturnFlow(true)}
+            />
+          )}
+
+        {dataProducts?.status !== 'Concluida' &&
+          dataTask?.status !== 'Concluida' &&
+          selectedProduct === '' &&
+          typeOfPlay === 'product' &&
+          !finalCard && (
+            <HeaderOpenTask
+              title={titleInfos}
+              disableButton={false}
+              goBack
+              buttonType="finish"
+              sendToNext={() => checkFlow('next')}
+              nextStepInfo={timeLineData}
+              backFlow={() => setModalReturnFlow(true)}
+            />
+          )}
+
+        {dataTask?.status !== 'Concluida' &&
+          selectedProduct !== '' &&
+          typeOfPlay === 'product' &&
+          !finalCard && (
+            <HeaderOpenTask
+              title={titleInfos}
+              disableButton={false}
+              goBack
+              buttonType="finish"
+              sendToNext={() => checkFlow('next')}
+              nextStepInfo={timeLineData}
+              backToDelivery={() => {
+                setViewProduct(false);
+                setSelectedProduct('');
+              }}
+              isInsideProduct={true}
+              backFlow={() => setModalReturnFlow(true)}
             />
           )}
 
@@ -1028,35 +1526,6 @@ export default function ViewProductsDeliveries() {
             />
           )}
 
-          {/* {dataProducts?.status !== 'Concluida' &&
-            typeOfPlay === 'schedule' &&
-            selectedProduct === '' && (
-              <CardTaskPlay
-                cardTitle="Iniciar atividade"
-                dataTime={data ? data?.estimatedTime : '00:00:00'}
-                blockPlay={blockPlayButton}
-              />
-            )}
-
-          {dataProducts?.status !== 'Concluida' &&
-            typeOfPlay === 'schedule' &&
-            selectedProduct !== '' && (
-              <CardTaskPlay
-                cardTitle="Iniciar atividade"
-                dataTime={data ? data?.estimatedTime : '00:00:00'}
-                blockPlay={true}
-              />
-            )}
-
-          {dataProducts?.status !== 'Concluida' &&
-            typeOfPlay === 'product' &&
-            selectedProduct === '' && (
-              <CardTaskPlay
-                cardTitle="Iniciar atividade"
-                dataTime={data ? data?.estimatedTime : '00:00:00'}
-                blockPlay={true}
-              />
-            )} */}
           <CardTaskInfo
             cardTitle="Contexto geral"
             cardType="text"
@@ -1071,7 +1540,7 @@ export default function ViewProductsDeliveries() {
             timeData={timeData}
             workForProduct={handleSwitchPlayType}
             isPlayingForSchedule={playingForSchedule}
-            productSelected={handleNavigateProduct}
+            productSelected={(value: any) => handleNavigateProduct('view', value)}
             isFinished={dataTask?.status === 'Concluida' ? true : false}
             typeOfWorkFinished={dataTask?.type_play}
             typeOfPlay={typeOfPlay}
@@ -1096,6 +1565,7 @@ export default function ViewProductsDeliveries() {
             toApprove={handleSendToManager}
             backButtonTitle="Voltar para produtos"
             goBack={() => setViewProduct(false)}
+            returnReasons={dataTask?.reason_return}
           />
         )}
       </DeliveryWrapper>
@@ -1114,7 +1584,91 @@ export default function ViewProductsDeliveries() {
           step={Number(location.state.task.step) + 1}
           user_alocated={handleAssignTask}
           closeModal={() => setModalSendToUser(false)}
+          manualOverrideDate={showHoursBack}
         />
+      </ModalDefault>
+
+      {/* Modal User without schedule */}
+      <ModalDefault
+        isOpen={modalWithoutSchedule}
+        onOpenChange={() => setModalWithoutSchedule(false)}
+        title="Escolha o usuário que receberá a tarefa"
+      >
+        <UsersWrapper>
+          <ProductsTable>
+            <table>
+              <thead>
+                <tr>
+                  <th>Selecionar</th>
+                  <th>Nome</th>
+                  <th>Tarefas</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {usersWithoutSchedule.map((row: UsersNoSchedule) => (
+                  <tr key={row.user_id}>
+                    <td>
+                      <CheckboxDefault
+                        label=""
+                        name={''}
+                        onChange={() => setSelectedInitalUser(row)}
+                        checked={selectedInitialUser?.user_id === row.user_id}
+                      />
+                    </td>
+                    <td>{row.name}</td>
+                    <td>{row.tasks}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </ProductsTable>
+
+          <ModalButtons>
+            <ButtonDefault
+              typeButton="dark"
+              isOutline
+              onClick={() => {
+                setModalWithoutSchedule(false);
+                setSelectedInitalUser({
+                  function: '',
+                  name: '',
+                  tasks: 0,
+                  user_id: ''
+                });
+              }}
+            >
+              Cancelar
+            </ButtonDefault>
+            {!showHoursBack && (
+              <ButtonDefault
+                typeButton="primary"
+                onClick={() => {
+                  handleSetUserWithoutSchedule();
+                  setModalWithoutSchedule(false);
+                }}
+              >
+                Escolher
+              </ButtonDefault>
+            )}
+
+            {showHoursBack && (
+              <ButtonDefault
+                typeButton="primary"
+                onClick={() => {
+                  handleReturnTask({
+                    user_id: selectedInitialUser?.user_id,
+                    start_job: actualDate,
+                    end_job: ''
+                  });
+                  setModalWithoutSchedule(false);
+                }}
+              >
+                Escolher
+              </ButtonDefault>
+            )}
+          </ModalButtons>
+        </UsersWrapper>
       </ModalDefault>
 
       {/* Modal upload files */}
@@ -1160,11 +1714,13 @@ export default function ViewProductsDeliveries() {
         isOpen={modalFinalFile}
         onOpenChange={() => setModalFinalFile(false)}
         title={
-          finalCard ? 'Upload para arquivo final' : 'Upload de arquivo para aprovação do cliente'
+          finalCard
+            ? 'Upload de arquivo final para o 21Clients'
+            : 'Upload de arquivo para aprovação do cliente no 21Clients'
         }
       >
         <ModalUploadWrapper>
-          {finalCard && (
+          {finalCard && !toClientConfirmation && (
             <UploadFiles
               uploadedFiles={uploadedFiles}
               setUploadedFiles={setUploadedFiles}
@@ -1174,6 +1730,14 @@ export default function ViewProductsDeliveries() {
               setLoading={setLoading}
               folderInfo="tasks"
             />
+          )}
+
+          {finalCard && toClientConfirmation && (
+            <div className="confirmation">
+              <span>Atenção:</span> <br />
+              Os arquivos serão enviados para a área do cliente. <br />
+              Essa ação não pode ser revertida.
+            </div>
           )}
 
           {uploadClient && dataTask?.ticket_id && (
@@ -1188,7 +1752,7 @@ export default function ViewProductsDeliveries() {
             />
           )}
 
-          {finalCard && (
+          {finalCard && !toClientConfirmation && (
             <div className="modal-buttons">
               <ButtonDefault
                 typeButton="lightWhite"
@@ -1198,8 +1762,28 @@ export default function ViewProductsDeliveries() {
                 Cancelar
               </ButtonDefault>
 
+              <ButtonDefault typeButton="primary" onClick={() => setToClientConfirmation(true)}>
+                Enviar para o cliente
+              </ButtonDefault>
+            </div>
+          )}
+
+          {finalCard && toClientConfirmation && (
+            <div className="modal-buttons">
+              <ButtonDefault
+                typeButton="lightWhite"
+                isOutline
+                onClick={() => {
+                  setModalFinalFile(false);
+                  setToClientConfirmation(false);
+                  setUploadedFiles([]);
+                }}
+              >
+                Cancelar
+              </ButtonDefault>
+
               <ButtonDefault typeButton="primary" onClick={handleSaveUploadFinal}>
-                Salvar
+                OK
               </ButtonDefault>
             </div>
           )}
@@ -1220,6 +1804,119 @@ export default function ViewProductsDeliveries() {
             </div>
           )}
         </ModalUploadWrapper>
+      </ModalDefault>
+
+      {/* Modal return flow */}
+      <ModalDefault
+        isOpen={modalReturnFlow}
+        onOpenChange={handleCancelReturn}
+        title="Para qual etapa deseja retornar?"
+      >
+        <ModalReturnFlow>
+          <SelectDefault
+            label="Escolha a etapa"
+            name="chosenStep"
+            onChange={handleChooseStepAndMotive}
+            value={returnInfos.chosenStep}
+          >
+            {stepsToReturn?.map((row: StepTimeline) => (
+              <option key={row.card_id} value={row.step}>
+                {row.name}
+              </option>
+            ))}
+          </SelectDefault>
+
+          <TextAreaDefault
+            label="Descreva o motivo para retornar"
+            placeholder="Digite o motivo..."
+            name="returnMotive"
+            onChange={handleChooseStepAndMotive}
+            value={returnInfos.returnMotive}
+            required
+          />
+
+          <div className="modal-buttons">
+            <ButtonDefault typeButton="dark" isOutline onClick={handleCancelReturn}>
+              Descartar
+            </ButtonDefault>
+            <ButtonDefault
+              typeButton={
+                returnInfos.chosenStep === '' || returnInfos.returnMotive === ''
+                  ? 'blocked'
+                  : 'primary'
+              }
+              onClick={handleBackFlow}
+              disabled={returnInfos.chosenStep === '' || returnInfos.returnMotive === ''}
+            >
+              Retornar
+            </ButtonDefault>
+          </div>
+        </ModalReturnFlow>
+      </ModalDefault>
+
+      {/* Modal select product to conclude */}
+      <ModalDefault
+        isOpen={modalProducts}
+        title="Qual produto deseja finalizar?"
+        onOpenChange={() => setModalProducts(false)}
+      >
+        <ModalProductsWrapper>
+          <SelectProductField>
+            <SelectDefault
+              label="Produtos dessa entrega"
+              placeholder="Selecione..."
+              name="product"
+              onChange={(value) => handleNavigateProduct('select', value)}
+              value={selectedProduct.products_delivery_id}
+              required
+            >
+              {dataProducts?.products.map((row: any, index: number) => (
+                <option key={row.products_delivery_id} value={JSON.stringify(row)}>
+                  ID: {String(index + 1).padStart(2, '0')} - Nome: {row.service} - Descrição:
+                  {row.description}
+                </option>
+              ))}
+            </SelectDefault>
+          </SelectProductField>
+
+          <ModalButtons>
+            <ButtonDefault
+              typeButton="dark"
+              isOutline
+              onClick={() => {
+                setSelectedProduct('');
+                setModalProducts(false);
+              }}
+            >
+              Descartar
+            </ButtonDefault>
+
+            <ButtonDefault typeButton="primary" onClick={handleSelectProduct}>
+              Escolher
+            </ButtonDefault>
+          </ModalButtons>
+        </ModalProductsWrapper>
+      </ModalDefault>
+
+      {/* Modal inform dismemberment */}
+      <ModalDefault
+        isOpen={modalDismemberment}
+        title="Desmembramento"
+        onOpenChange={() => setModalDismemberment(false)}
+      >
+        <ModalProductsWrapper>
+          <TextInfo>
+            <span>Atenção!</span>
+            <span>Existem produtos reprovados.</span>
+            <span>Para continuar, a entrega será dividida!</span>
+          </TextInfo>
+
+          <ModalButtons>
+            <ButtonDefault typeButton="warning" onClick={handleDismemberment}>
+              OK
+            </ButtonDefault>
+          </ModalButtons>
+        </ModalProductsWrapper>
       </ModalDefault>
     </ContainerDefault>
   );

@@ -16,6 +16,7 @@ import { TenantProps } from '../../utils/models';
 
 // Hooks
 import { useFetch } from '../../hooks/useFetch';
+import { CheckboxDefault } from '../Inputs/CheckboxDefault';
 
 type HandleOnChange = (
   event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>
@@ -28,8 +29,9 @@ interface FilterProps {
 }
 
 interface SelectedFilters {
-  client: string;
-  status: string;
+  client: any;
+  status: any;
+  sub_tasks: boolean;
 }
 
 export default function FilterTask({ applyFilters, clearFilters, selectedClient }: FilterProps) {
@@ -52,12 +54,18 @@ export default function FilterTask({ applyFilters, clearFilters, selectedClient 
 
   const [choosenFilters, setChoosenFilter] = useState<SelectedFilters>({
     client: '',
-    status: ''
+    status: '',
+    sub_tasks: false
   });
 
   const handleAddFilters: HandleOnChange = (event) => {
     const { name, value } = event.target;
     setChoosenFilter({ ...choosenFilters, [name]: value });
+  };
+
+  const handleCheckFilter = (event: any) => {
+    const value = event.currentTarget?.checked;
+    setChoosenFilter({ ...choosenFilters, ['sub_tasks']: value });
   };
 
   const handleAddClientFilter = (client: any) => {
@@ -68,7 +76,8 @@ export default function FilterTask({ applyFilters, clearFilters, selectedClient 
   const handleClearFilters = () => {
     setChoosenFilter({
       client: '',
-      status: ''
+      status: '',
+      sub_tasks: false
     });
     clearFilters();
     setInitialValue({
@@ -120,7 +129,18 @@ export default function FilterTask({ applyFilters, clearFilters, selectedClient 
             <option value="Concluida">Concluída</option>
             <option value="Pendente">Pendente</option>
             <option value="Em Andamento">Em progresso</option>
+            <option value="Alteração Interna">Alteração interna</option>
+            <option value="Alteração Externa">Alteração externa</option>
           </SelectDefault>
+        </div>
+
+        <div style={{ maxHeight: '62px' }}>
+          <CheckboxDefault
+            label="Mostrar subtarefas"
+            id="subtasks"
+            checked={choosenFilters.sub_tasks}
+            onChange={handleCheckFilter}
+          />
         </div>
       </FilterOptions>
 

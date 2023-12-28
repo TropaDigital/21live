@@ -1,12 +1,18 @@
+// React
 import { useCallback, useId, useState } from 'react';
+
+// Icons
 import { BiEdit, BiPlus, BiSearchAlt, BiX } from 'react-icons/bi';
 import { HiOutlineEye } from 'react-icons/hi';
 
+// Hooks
 import useDebouncedCallback from '../../hooks/useDebounced';
 import { useFetch } from '../../hooks/useFetch';
 
+// Utils
 import { generateNameAndColor } from '../../utils/generateNameAndColors';
 
+// Components
 import ButtonDefault from '../../components/Buttons/ButtonDefault';
 import HeaderPage from '../../components/HeaderPage';
 import { InputDefault } from '../../components/Inputs/InputDefault';
@@ -22,8 +28,10 @@ import {
   FooterModal
 } from '../../components/UiElements/styles';
 
+// Libraries
 import * as Dialog from '@radix-ui/react-dialog';
 
+// Styles
 import { Container } from './styles';
 
 interface UserProps {
@@ -49,7 +57,7 @@ export default function Users() {
   const optionsCoffe = [
     {
       id: 1,
-      name: 'Cagfé Melita'
+      name: 'Café Melita'
     },
     {
       id: 2,
@@ -58,15 +66,6 @@ export default function Users() {
     {
       id: 3,
       name: 'Café Tres corações'
-    }
-  ];
-
-  const avatarData = [
-    {
-      id: 1,
-      name: 'João',
-      url: null,
-      isOnline: false
     }
   ];
 

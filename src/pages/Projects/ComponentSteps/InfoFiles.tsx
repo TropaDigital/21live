@@ -1,8 +1,8 @@
-import React from 'react';
-
+// Components
 import { FieldDefault } from '../../../components/UiElements/styles';
 import UploadFiles, { UploadedFilesProps } from '../../../components/Upload/UploadFiles';
 
+// Styles
 import { ContainerSteps } from './styles';
 
 interface InfoFilesSteps {

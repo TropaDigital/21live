@@ -11,7 +11,6 @@ import { ContainerDefault } from '../../../components/UiElements/styles';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import ModalDefault from '../../../components/Ui/ModalDefault';
 import WrapperEditor from '../../../components/WrapperEditor';
-import UploadFiles, { UploadedFilesProps } from '../../../components/Upload/UploadFiles';
 import Loader from '../../../components/LoaderSpin';
 import AvatarDefault from '../../../components/Ui/Avatar/avatarDefault';
 
@@ -618,7 +617,7 @@ export default function ViewRequest() {
                             <DocViewer
                               documents={[
                                 {
-                                  uri: `https://app.21live.com.br/public/files/${row.annex}`,
+                                  uri: `https://app.21live.com.br/public/files/tickets/${requestData?.ticket_id}/${row.annex}`,
                                   fileType: 'pptx'
                                 }
                               ]}

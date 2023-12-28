@@ -135,6 +135,11 @@ export const ProductsTable = styled.div`
     }
 
     tbody > tr {
+      &.reject {
+        td {
+          background-color: var(--gray-200);
+        }
+      }
       &:hover {
         td {
           background-color: var(--primary-025);

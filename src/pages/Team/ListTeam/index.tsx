@@ -38,15 +38,17 @@ import Alert from '../../../components/Ui/Alert';
 import AvatarDefault from '../../../components/Ui/Avatar/avatarDefault';
 import ModalDefault from '../../../components/Ui/ModalDefault';
 import {
+  AppliedFilter,
   ContainerDefault,
   // ContainerGroupTable,
   FieldDefault,
   FieldGroupFormDefault,
+  FilterTotal,
   FooterModal,
   SectionDefault
 } from '../../../components/UiElements/styles';
 import { Table } from '../../../components/Table';
-import { TableHead } from '../../../components/Table/styles';
+import { FilterGroup, TableHead } from '../../../components/Table/styles';
 import Pagination from '../../../components/Pagination';
 import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
 import Loader from '../../../components/LoaderSpin';
@@ -166,6 +168,7 @@ export default function Team() {
   const [loading, setLoading] = useState<boolean>(false);
   const [changeBreakName, setChangeBreakName] = useState<string>('');
   const [modalFilters, setModalFilters] = useState<boolean>(false);
+  const [selectedRole, setSelectedRole] = useState<OfficeProps[]>([]);
 
   const handleOnCancel = useCallback(() => {
     setModal({
@@ -244,7 +247,7 @@ export default function Team() {
         addToast({
           type: 'success',
           title: 'Sucesso',
-          description: 'Serviço cadastrado com sucesso!'
+          description: 'Usuário atualizado com sucesso!'
         });
         handleOnCancel();
         fetchData();
@@ -566,11 +569,12 @@ export default function Team() {
 
   const hasFilters = Object.values(filter).every((obj) => obj === null || obj === '');
 
-  // useEffect(() => {
-  //   console.log('log das pausas', selectedBreaks);
-  //   console.log('log dos workdays', workDays);
-  //   console.log('log do dia selecionado', selectedBreakDay);
-  // }, [selectedBreaks, workDays, selectedBreakDay]);
+  useEffect(() => {
+    // console.log('log das pausas', selectedBreaks);
+    // console.log('log dos workdays', workDays);
+    // console.log('log do dia selecionado', selectedBreakDay);
+    // console.log('log do selectedRole', selectedRole);
+  }, [selectedBreaks, workDays, selectedBreakDay, selectedRole]);
 
   return (
     <ContainerDefault>
@@ -640,12 +644,25 @@ export default function Team() {
                   </ButtonDefault>
                 </FilterTeamWrapper>
               </TableHead>
-              {/* {!hasFilters && (
-                <FiltersList>
-                  Filtros aplicados:
-                  <FilterName>Cargo</FilterName>
-                </FiltersList>
-              )} */}
+              {!hasFilters && (
+                <FilterGroup>
+                  <FilterTotal>
+                    <div className="filter-title">Filtros (1):</div>
+                    {filter.role !== '' ? <span>Cargo</span> : ''}
+                  </FilterTotal>
+
+                  <AppliedFilter>
+                    {filter.role !== '' ? (
+                      <div className="filter-title">
+                        Cargo:{' '}
+                        <span>{selectedRole?.length > 0 ? selectedRole[0]?.function : ''}</span>
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </AppliedFilter>
+                </FilterGroup>
+              )}
               <table>
                 <thead>
                   <tr style={{ whiteSpace: 'nowrap' }}>
@@ -766,7 +783,6 @@ export default function Team() {
                 name="birthday"
                 onChange={handleOnChange}
                 value={formData.birthday}
-                required
                 type="date"
                 max={'9999-12-31'}
                 icon={BiCalendar}
@@ -778,7 +794,6 @@ export default function Team() {
                 name="hiring_date"
                 onChange={handleOnChange}
                 value={formData.hiring_date}
-                required
                 type="date"
                 max={'9999-12-31'}
                 icon={BiCalendar}
@@ -792,7 +807,6 @@ export default function Team() {
                 name="phone"
                 onChange={handleOnChange}
                 value={formData.phone}
-                required
                 placeholder="99 9999-9999"
                 icon={BiPhoneCall}
               />
@@ -804,7 +818,6 @@ export default function Team() {
                 placeholder="Ex: 10.00"
                 onChange={handleOnChange}
                 value={formData.cost_per_hour}
-                required
                 icon={BiMoney}
               />
             </FieldDefault>
@@ -1323,6 +1336,7 @@ export default function Team() {
         onOpenChange={() => setModalFilters(!modalFilters)}
         applyFilters={handleApplyFilters}
         clearFilters={handleClearFilters}
+        clientSelected={setSelectedRole}
         filterType="team"
       />
     </ContainerDefault>

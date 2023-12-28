@@ -58,7 +58,7 @@ export const FiltersRequests = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 24px;
+  gap: 18px;
 
   /* width: 100%; */
   padding: 0 1.5rem;

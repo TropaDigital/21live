@@ -14,7 +14,6 @@ import ModalDefault from '../../../components/Ui/ModalDefault';
 import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
 import { SwitchSelector } from '../../../components/CardProductsSelected/styles';
 import InputSwitchDefault from '../../../components/Inputs/InputSwitchDefault';
-import { UploadedFilesProps } from '../../../components/Upload/UploadFiles';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import InfoDeliveries from '../ComponentSteps/InfoDeliverables';
 import AddTextButton from '../../../components/Buttons/AddTextButton';
@@ -22,6 +21,9 @@ import TaskInputs from '../ComponentSteps/InfoInputs';
 import SummaryTasks from '../ComponentSteps/SummaryTasks';
 import QuantityInput from '../../../components/Inputs/QuantityInput';
 import ScheduleUser from '../../../components/ScheduleUser';
+import InfoFiles from '../ComponentSteps/InfoFiles';
+import { ProductsTable } from '../../../components/Ui/ProductTable/styles';
+import { ModalButtons } from '../ViewTask/styles';
 
 // Styles
 import {
@@ -40,7 +42,8 @@ import {
   ProductsModalTop,
   ProductsModalWrapper,
   SearchProductsModal,
-  SplitDeliveries
+  SplitDeliveries,
+  UsersWrapper
 } from './styles';
 import {
   FinishModal,
@@ -53,18 +56,21 @@ import { useToast } from '../../../hooks/toast';
 import { useFetch } from '../../../hooks/useFetch';
 import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useAuth } from '../../../hooks/AuthContext';
+import { useParamsHook } from '../../../hooks/useParams';
 
 // Types
 import {
+  DeliveryProps,
   IProduct,
   IProductBackend,
   ITaskCreate,
   OrganizationsProps,
-  ServicesProps
+  ServicesProps,
+  UploadedFilesProps
 } from '../../../types';
 
 // Utils
-import { TenantProps } from '../../../utils/models';
+import { TenantProps, UsersNoSchedule } from '../../../utils/models';
 import {
   isTimeConsumedMoreThanPercent,
   multiplyTime,
@@ -81,7 +87,6 @@ import api from '../../../services/api';
 
 // Libraries
 import moment from 'moment';
-import InfoFiles from '../ComponentSteps/InfoFiles';
 
 interface StateProps {
   [key: string]: any;
@@ -99,15 +104,6 @@ interface ProjectProductProps {
   tipo: string;
 }
 
-interface DeliveryProps {
-  deliveryId: number | string;
-  deliveryDescription: string;
-  deliveryDate: string;
-  deliveryTitle?: string;
-  deliveryProducts: any[];
-  showInfo: boolean;
-}
-
 interface DeliveryUpdate {
   delivery_id: number | string;
   description: string;
@@ -122,63 +118,73 @@ interface ModalDeliveryProps {
   indexDelivery: number | any;
 }
 
-interface ILocation {
-  hash: string;
-  key: string;
-  pathname: string;
-  search: string;
-  state: ITaskCreate;
+interface StepCards {
+  card_id: string;
+  flow_id: string;
+  step: string;
+  name: string;
+  necessary_upload: string;
+  necessary_responsible: string;
+  email_alert: string;
+  tenant_approve: string;
+  manager_approve: string;
+  function_id: string;
+  final_card: string;
+  ticket_status: string;
+  ticket_status_id: string;
+  tenant_id: string;
+  approver: string;
 }
 
-interface ITicketProps {
-  ticket_id: string;
-  tenant_id: string;
-  ticket_cat_id: string;
-  ticket_status_id: string;
-  user_id: string;
-  organization_id: string;
-  media_id: string;
-  title: string;
-  width: string;
-  height: string;
-  info: string;
-  target: string;
-  obs: string;
-  file_format: string;
-  workminutes: string;
-  deadline: string;
-  created: string;
-  updated: string;
-  finished: string;
-  tenant_name: string;
-  user_name: string;
-  status: string;
-  organization_name: string;
-  media_name: string;
-  measure: string;
-  value: string;
-  media_cat_id: string;
-  midia_cat_title: string;
-  files: [];
-  interactions: [
-    {
-      ticket_interaction_id: string;
-      ticket_id: string;
-      reply_id: string;
-      user_id: string;
-      message: string;
-      annex: string;
-      annex_title: string;
-      status: string;
-      access: string;
-      created: string;
-      updated: string;
-      user_name: string;
-      avatar: string;
-    }
-  ];
-  fields: [];
-}
+// interface ITicketProps {
+//   ticket_id: string;
+//   tenant_id: string;
+//   ticket_cat_id: string;
+//   ticket_status_id: string;
+//   user_id: string;
+//   organization_id: string;
+//   media_id: string;
+//   title: string;
+//   width: string;
+//   height: string;
+//   info: string;
+//   target: string;
+//   obs: string;
+//   file_format: string;
+//   workminutes: string;
+//   deadline: string;
+//   created: string;
+//   updated: string;
+//   finished: string;
+//   tenant_name: string;
+//   user_name: string;
+//   status: string;
+//   organization_name: string;
+//   media_name: string;
+//   measure: string;
+//   value: string;
+//   media_cat_id: string;
+//   midia_cat_title: string;
+//   files: [];
+//   interactions: [
+//     {
+//       ticket_interaction_id: string;
+//       ticket_id: string;
+//       reply_id: string;
+//       user_id: string;
+//       message: string;
+//       annex: string;
+//       annex_title: string;
+//       status: string;
+//       access: string;
+//       created: string;
+//       updated: string;
+//       user_name: string;
+//       avatar: string;
+//     }
+//   ];
+//   fields: [];
+// }
 
 type HandleOnChange = (
   event:
@@ -193,10 +199,12 @@ export default function CreateTasks() {
   const { addToast } = useToast();
   const { user } = useAuth();
   const location = useLocation();
+  const { parameters, getParams } = useParamsHook();
 
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const [error, setError] = useState<StateProps>({});
   const [errorCategory, setErrorCategory] = useState<any[]>([]);
+  const [errorDeliveryDate, setErrorDeliveryDate] = useState<any[]>([]);
   // const [addDeliveries, setAddDeliveries] = useState<boolean>(false);
   const newDate = new Date();
   const [DTOForm, setDTOForm] = useState<ITaskCreate>({
@@ -247,7 +255,6 @@ export default function CreateTasks() {
     }
   }
 
-  // /project-products/199?organization_id=28786
   const { data: organizationProjects } = useFetch<ServicesProps[]>(
     `project-products/${user.principalTenant}?organization_id=${DTOForm.organization_id}`
   );
@@ -255,7 +262,6 @@ export default function CreateTasks() {
   const { data: dataTypes } = useFetch<any[]>(`/task-type`);
   const { data: dataOrganizations } = useFetch<OrganizationsProps[]>('organization');
   const [productsArray, setProductsArray] = useState<ServicesProps[]>([]);
-  // const [quantityProductsArray, setQuantityProductsArray] = useState<any[]>([]);
   const [selectedProject, setSelectedProject] = useState<ProjectProductProps>({
     categoria: '',
     listavel: '',
@@ -324,20 +330,26 @@ export default function CreateTasks() {
   const DeliveryDefault: DeliveryProps = {
     deliveryId: 1,
     deliveryDescription: '',
-    deliveryDate: '',
+    creation_date_end: '',
+    copywriting_date_end: '',
     deliveryTitle: '',
     deliveryProducts: productsArray,
     showInfo: false
   };
   const [DTODelivery, setDTODelivery] = useState<any[]>([DeliveryDefault]);
-  // const [dataFlow, setDataFlow] = useState<any[]>();
   const [submitState, setSubmitState] = useState<Date>(new Date());
+  const [modalWithoutSchedule, setModalWithoutSchedule] = useState<boolean>(false);
+  const [usersWithoutSchedule, setUsersWithoutSchedule] = useState<UsersNoSchedule[]>([]);
+  const [selectedInitialUser, setSelectedInitalUser] = useState<UsersNoSchedule>();
+  const [warningModal, setWarningModal] = useState<boolean>(false);
 
   const addDelivery = () => {
     const newDelivery: DeliveryProps = {
       deliveryId: DTODelivery.length + 1,
       deliveryDescription: '',
-      deliveryDate: '',
+      creation_date_end: '',
+      copywriting_date_end: '',
+      deliveryTitle: '',
       deliveryProducts: [],
       showInfo: false
     };
@@ -346,7 +358,17 @@ export default function CreateTasks() {
   };
 
   useEffect(() => {
+    getParams();
+  }, []);
+
+  const selectedInfos: any[] = dataProjects?.filter(
+    (obj: any) => obj.project_product_id === location?.state?.project_product_id
+  );
+
+  useEffect(() => {
     if (location.state !== null && location.state.ticket_id) {
+      getProjects(location.state.tenant_id);
+
       setDTOForm((prevState: any) => ({
         ...prevState,
         ['tenant_id']: location.state.tenant_id
@@ -359,20 +381,15 @@ export default function CreateTasks() {
         ...prevState,
         ['title']: location.state.title
       }));
-
-      getProjects(DTOForm.tenant_id);
     }
 
     if (location.state !== null && location.state.task_id) {
-      const selectedInfos: any = dataProjects?.filter(
-        (obj: any) => obj.project_product_id === location.state.project_product_id
-      );
       getProjects(location.state.tenant_id);
       setProductsArray([]);
       setDTOForm(location.state);
       setProductsArray(location.state.deliverys[0]?.products);
       setDTODelivery(location.state.deliverys);
-      if (dataProjects) {
+      if (dataProjects && selectedInfos.length > 0) {
         setSelectedProject(selectedInfos[0]);
       }
       if (location.state.deliverys.length > 1) {
@@ -389,19 +406,6 @@ export default function CreateTasks() {
       getProjects(DTOForm.tenant_id);
     }
   }, [DTOForm]);
-
-  // useEffect(() => {
-  //   const getDataFlow = async () => {
-  //     try {
-  //       const response = await api.get(`/flow/${DTOForm.flow_id}`);
-  //       setDataFlow(response.data.result);
-  //     } catch (error) {
-  //       console.log('log Error Flow', error);
-  //     }
-  //   };
-
-  //   getDataFlow();
-  // }, [DTOForm]);
 
   const handleDeliveryTitle = (value: any, id: any) => {
     if (location.state !== null) {
@@ -424,12 +428,13 @@ export default function CreateTasks() {
     );
   };
 
-  const handleUpdateDeliveryDate = (value: any, id: any) => {
+  const handleUpdateDeliveryDate = (e: any, id: any) => {
+    const { name, value } = e.target;
     if (location.state !== null) {
       setDTODelivery((current: any) =>
         current.map((obj: { delivery_id: any }) => {
           if (obj.delivery_id === id) {
-            return { ...obj, date_end: value };
+            return { ...obj, [name]: value };
           }
           return obj;
         })
@@ -438,7 +443,7 @@ export default function CreateTasks() {
     setDTODelivery((current: any) =>
       current.map((obj: { deliveryId: any }) => {
         if (obj.deliveryId === id) {
-          return { ...obj, deliveryDate: value };
+          return { ...obj, [name]: value };
         }
         return obj;
       })
@@ -797,12 +802,12 @@ export default function CreateTasks() {
       organization_id,
       project_product_id,
       flow_id,
-      user_id,
       description,
-      copywriting_date_end,
       creation_date_end,
       creation_description,
-      copywriting_description
+      copywriting_description,
+      requester_id,
+      gen_ticket
     } = DTOForm;
 
     try {
@@ -844,6 +849,12 @@ export default function CreateTasks() {
         setErrorInput('project_product_id', undefined);
       }
 
+      if (gen_ticket === 'true' && requester_id === '') {
+        throw setErrorInput('requester_id', 'Solicitante é obrigatório!');
+      } else {
+        setErrorInput('requester_id', undefined);
+      }
+
       // if (user_id === '') {
       //   throw setErrorInput('user_id', 'Fluxo - Responsável é obrigatório!');
       // } else {
@@ -858,19 +869,19 @@ export default function CreateTasks() {
 
       if (tasksType === 'livre' && createStep === 2) {
         if (DTOForm.copywriting_date_end === '') {
-          throw setErrorInput('copywriting_date_end', 'Data de entrega inicial não informada!');
+          throw setErrorInput('copywriting_date_end', 'Data de entrega não informada!');
         } else {
           setErrorInput('copywriting_date_end', undefined);
         }
 
         if (moment(DTOForm.copywriting_date_end).isSameOrBefore(newDate)) {
-          throw setErrorInput('copywriting_date_end', 'Data de entrega inicial menor que a atual!');
+          throw setErrorInput('copywriting_date_end', 'Data de entrega é menor que a atual!');
         } else {
           setErrorInput('copywriting_date_end', undefined);
         }
 
         if (DTOForm.creation_date_end === '') {
-          throw setErrorInput('creation_date_end', 'Data de entrega de criação não informada!');
+          throw setErrorInput('creation_date_end', 'Data de entrega de atividade não informada!');
         } else {
           setErrorInput('creation_date_end', undefined);
         }
@@ -878,7 +889,7 @@ export default function CreateTasks() {
         if (moment(DTOForm.creation_date_end).isSameOrBefore(DTOForm.copywriting_date_end)) {
           throw setErrorInput(
             'creation_date_end',
-            'Data de entrega de criação menor que a data de entrega inicial!'
+            'Data de entrega de atividade menor que a data de entrega inicial!'
           );
         } else {
           setErrorInput('creation_date_end', undefined);
@@ -888,18 +899,9 @@ export default function CreateTasks() {
       if (createStep === 1 && tasksType === 'horas' && !taskEdit) {
         setProductsModal(true);
       } else if (createStep === 2 && tasksType === 'horas') {
-        if (DTOForm.copywriting_date_end === '') {
-          throw setErrorInput('copywriting_date_end', 'Data de entrega inicial não informada!');
-        } else {
-          setErrorInput('copywriting_date_end', undefined);
+        if (splitDeliveries && DTODelivery.length <= 1) {
+          throw new Error('Entregas dívidas não podem ter somente uma entrega');
         }
-
-        if (creation_date_end === '') {
-          throw setErrorInput('creation_date_end', 'Data de Entrega Criação é obrigatória!');
-        } else {
-          setErrorInput('creation_date_end', undefined);
-        }
-
         if (splitDeliveries && location.state !== null) {
           DTODelivery.map((current: DeliveryUpdate) => {
             current.produtos.map((obj: any) => {
@@ -931,28 +933,94 @@ export default function CreateTasks() {
           });
 
           DTODelivery.map((current: DeliveryProps) => {
+            if (current.creation_date_end === '' || current.creation_date_end === undefined) {
+              setErrorDeliveryDate((errorDeliveryDate: any) => [
+                ...errorDeliveryDate,
+                {
+                  id: current.deliveryId,
+                  typeError: 'creation',
+                  error: 'Data da entrega não atribuida!'
+                }
+              ]);
+              throw new Error('Data da entrega não atribuida!');
+            } else {
+              setErrorDeliveryDate((prevState) =>
+                prevState.filter((delivery) => delivery.id !== current.deliveryId)
+              );
+            }
+          });
+
+          DTODelivery.map((current: DeliveryProps) => {
+            if (current.copywriting_date_end === '' || current.copywriting_date_end === undefined) {
+              setErrorDeliveryDate((errorDeliveryDate: any) => [
+                ...errorDeliveryDate,
+                {
+                  id: current.deliveryId,
+                  typeError: 'copywriting',
+                  error: 'Data da entrega não atribuida!'
+                }
+              ]);
+              throw new Error('Data da entrega não atribuida!');
+            } else {
+              setErrorDeliveryDate((prevState) =>
+                prevState.filter((delivery) => delivery.id !== current.deliveryId)
+              );
+            }
+          });
+
+          DTODelivery.map((current: DeliveryProps) => {
             current.deliveryProducts.map((obj: any) => {
               if (obj.reason_change === '' || obj.reason_change === undefined) {
-                // console.log('log se tiver erro', DTODelivery);
                 setErrorCategory((errorCategory: any) => [...errorCategory, obj.job_service_id]);
                 throw new Error('Existem produtos sem o "Tipo" selecionado!');
               } else if (obj.reason_change !== '' && obj.reason_change !== undefined) {
                 setErrorCategory((prevState) =>
                   prevState.filter((product) => product !== obj.job_service_id)
                 );
-                if (errorCategory.length === 0) {
-                  // setAddDeliveries(true);
-                  setTimeout(() => {
-                    setCreateStep(createStep + 1);
-                  }, 150);
-                }
               }
             });
           });
+
+          setCreateStep(createStep + 1);
+
+          // DTODelivery.map((obj: DeliveryProps) => {
+          //   if (obj.copywriting_date_end === '' || obj.copywriting_date_end === undefined) {
+          //     setErrorDeliveryDate((errorDeliveryDate: any) => [
+          //       ...errorDeliveryDate,
+          //       {
+          //         id: obj.deliveryId,
+          //         error: 'Data da entrega não atribuida!'
+          //       }
+          //     ]);
+          //     throw new Error('Data da entrega não atribuida!');
+          //   } else if (obj.copywriting_date_end !== '' && obj.copywriting_date_end !== undefined) {
+          //     setErrorDeliveryDate((prevState) =>
+          //       prevState.filter((delivery) => delivery.id !== obj.deliveryId)
+          //     );
+          //     if (errorDeliveryDate.length === 0) {
+          //       // setAddDeliveries(true);
+          //       setTimeout(() => {
+          //         setCreateStep(createStep + 1);
+          //       }, 150);
+          //     }
+          //   }
+          // });
         }
 
         if (!splitDeliveries && location.state !== null) {
           // console.log('log do DTODelivery', DTODelivery);
+          if (DTOForm.copywriting_date_end === '') {
+            throw setErrorInput('copywriting_date_end', 'Data de entrega não informada!');
+          } else {
+            setErrorInput('copywriting_date_end', undefined);
+          }
+
+          if (creation_date_end === '') {
+            throw setErrorInput('creation_date_end', 'Data de Entrega de atividade é obrigatória!');
+          } else {
+            setErrorInput('creation_date_end', undefined);
+          }
+
           let hasError = false;
           productsArray.forEach((obj: any) => {
             if (obj.reason_change === '' || obj.reason_change === undefined) {
@@ -978,6 +1046,19 @@ export default function CreateTasks() {
 
         if (!splitDeliveries && location.state === null) {
           // console.log('log do DTODelivery', DTODelivery);
+
+          if (DTOForm.copywriting_date_end === '') {
+            throw setErrorInput('copywriting_date_end', 'Data de entrega não informada!');
+          } else {
+            setErrorInput('copywriting_date_end', undefined);
+          }
+
+          if (creation_date_end === '') {
+            throw setErrorInput('creation_date_end', 'Data de Entrega de atividade é obrigatória!');
+          } else {
+            setErrorInput('creation_date_end', undefined);
+          }
+
           let hasError = false;
           productsArray.forEach((obj: any) => {
             if (obj.reason_change === '' || obj.reason_change === undefined) {
@@ -1002,13 +1083,13 @@ export default function CreateTasks() {
         }
       } else if (createStep === 2 && tasksType === 'produto') {
         if (DTOForm.copywriting_date_end === '') {
-          throw setErrorInput('copywriting_date_end', 'Data de entrega inicial não informada!');
+          throw setErrorInput('copywriting_date_end', 'Data de entrega não informada!');
         } else {
           setErrorInput('copywriting_date_end', undefined);
         }
 
         if (creation_date_end === '') {
-          throw setErrorInput('creation_date_end', 'Data de Entrega Criação é obrigatória!');
+          throw setErrorInput('creation_date_end', 'Data de Entrega de atividade é obrigatória!');
         } else {
           setErrorInput('creation_date_end', undefined);
         }
@@ -1033,7 +1114,9 @@ export default function CreateTasks() {
         if (copywriting_description === '') {
           throw setErrorInput(
             'copywriting_description',
-            'Descrição do Input de Pré-requisitos é obrigatória!'
+            `Descrição do Input de ${
+              parameters.input_name !== '' ? parameters.input_name : 'Pré-requisitos'
+            } é obrigatória!`
           );
         } else {
           setErrorInput('copywriting_description', undefined);
@@ -1042,7 +1125,7 @@ export default function CreateTasks() {
         if (creation_description === '') {
           throw setErrorInput(
             'creation_description',
-            'Descrição do Input de criação é obrigatória!'
+            'Descrição do Input de atividade é obrigatória!'
           );
         } else {
           setErrorInput('creation_description', undefined);
@@ -1290,6 +1373,10 @@ export default function CreateTasks() {
           ]
         };
 
+        if (ticket_id === '0') {
+          delete createNewData.ticket_id;
+        }
+
         if (requester_id === '') {
           delete createNewData.requester_id;
         }
@@ -1331,6 +1418,10 @@ export default function CreateTasks() {
           gen_ticket,
           ticket_id
         };
+
+        if (ticket_id === '0') {
+          delete createNewData.ticket_id;
+        }
 
         if (requester_id === '') {
           delete createNewData.requester_id;
@@ -1377,6 +1468,10 @@ export default function CreateTasks() {
             ticket_id
           };
 
+          if (ticket_id === '0') {
+            delete createNewData.ticket_id;
+          }
+
           if (requester_id === '') {
             delete createNewData.requester_id;
           }
@@ -1391,9 +1486,11 @@ export default function CreateTasks() {
             await api.post(`tasks`, createNewData);
           }
         } else {
-          const deadlines = DTODelivery.map((row: any, index: any) => {
+          const deadlines = DTODelivery.map((row: DeliveryProps, index: any) => {
             return {
-              date_end: row.deliveryDate,
+              date_end: row.creation_date_end,
+              creation_date_end: row.creation_date_end,
+              copywriting_date_end: row.copywriting_date_end,
               description: DTOForm?.creation_description,
               title: row.deliveryTitle !== '' ? row.deliveryTitle : `${index + 1}ª entrega`,
               products: row.deliveryProducts
@@ -1412,14 +1509,16 @@ export default function CreateTasks() {
             description,
             files: fileArray,
             creation_description,
-            creation_date_end,
-            copywriting_date_end,
             copywriting_description,
             deadlines: deadlines,
             step,
             gen_ticket,
             ticket_id
           };
+
+          if (ticket_id === '0') {
+            delete createNewData.ticket_id;
+          }
 
           if (requester_id === '') {
             delete createNewData.requester_id;
@@ -1432,7 +1531,6 @@ export default function CreateTasks() {
           if (location.state !== null && location.state.task_id) {
             await api.put(`tasks/${location.state.task_id}`, createNewData);
           } else {
-            console.log('log do DTO on submit errado =>', createNewData);
             await api.post(`tasks`, createNewData);
           }
         }
@@ -1473,22 +1571,6 @@ export default function CreateTasks() {
         ...prevState,
         ['client']: selectedClient[0]
       }));
-
-      // if (DTOForm.tenant_id !== '' && DTOForm.ticket_id !== '') {
-      //   addToast({
-      //     type: 'warning',
-      //     title: 'ATENÇÃO',
-      //     description: 'Não é possivel alterar o cliente ao criar tarefa com base no ticket'
-      //   });
-      // } else {
-      //   const id = e.target.value;
-      //   const selectedClient: any = dataClient?.filter((obj: any) => obj.tenant_id === id);
-      //   setSelectedSummaryInfos((prevState: any) => ({
-      //     ...prevState,
-      //     ['client']: selectedClient[0]
-      //   }));
-      //   handleChangeInput(e);
-      // }
     } else if (e.target.name === 'project_product_id') {
       if (user?.organizations?.length > 0) {
         const id = e.target.value;
@@ -1502,7 +1584,7 @@ export default function CreateTasks() {
         const selectedInfos: any = dataProjects?.filter(
           (obj: any) => obj.project_product_id === id
         );
-        console.log('log do selected infos', selectedInfos);
+        // console.log('log do selected infos', selectedInfos);
         setSelectedProject(selectedInfos[0]);
         handleChangeInput(e);
       }
@@ -1561,8 +1643,53 @@ export default function CreateTasks() {
     setDTODelivery(DTODelivery.filter((obj) => obj.deliveryId !== id));
   };
 
-  const handleSelectUserForTask = () => {
-    setSelectUserModal(true);
+  async function checkFlow() {
+    try {
+      const response = await api.get(`/flow-function?step=1&flow_id=${DTOForm.flow_id}`);
+
+      if (response.data.result[0].show_hours === 'true') {
+        setSelectUserModal(true);
+      }
+      if (response.data.result[0].show_hours === 'false') {
+        handleNextUser();
+      }
+    } catch (error: any) {
+      console.log('log do error check flow', error);
+    }
+  }
+
+  async function handleNextUser() {
+    try {
+      const response = await api.get(
+        `/task/next-user?project_product_id=${DTOForm.project_product_id}&flow_id=${DTOForm.flow_id}&step=1`
+      );
+      setUsersWithoutSchedule(response.data.result);
+      setModalWithoutSchedule(true);
+    } catch (error: any) {
+      console.log('log error handleNextUser', error);
+    }
+  }
+
+  const handleSetUserWithoutSchedule = () => {
+    const actualDate = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+    setDTOForm((prevState: any) => ({ ...prevState, ['user_id']: selectedInitialUser?.user_id }));
+    setDTOForm((prevState: any) => ({ ...prevState, ['start_job']: actualDate }));
+
+    if (DTOForm.gen_ticket === '' && ticketAsk === 'never') {
+      setDTOForm((prevState: any) => ({
+        ...prevState,
+        ['gen_ticket']: 'false'
+      }));
+    }
+
+    if (DTOForm.gen_ticket === '' && ticketAsk === 'always') {
+      setDTOForm((prevState: any) => ({
+        ...prevState,
+        ['gen_ticket']: 'true'
+      }));
+    }
+
+    setSubmitState(new Date());
   };
 
   useEffect(() => {
@@ -1637,6 +1764,10 @@ export default function CreateTasks() {
     if (DTOForm.end_job !== '' && DTOForm.start_job !== '' && DTOForm.user_id !== '') {
       handleOnSubmit();
     }
+
+    // if (selectedInitialUser?.user_id !== '' && DTOForm.start_job !== '' && DTOForm.user_id !== '') {
+    //   handleOnSubmit();
+    // }
   }, [submitState]);
 
   const handleGenerateTicket = (value: boolean) => {
@@ -1654,23 +1785,64 @@ export default function CreateTasks() {
     }
   };
 
-  useEffect(() => {
-    async function checkFlowAndProject() {
-      try {
-        const response = await api.get(
-          `/verify-flow?project_product_id=${DTOForm.project_product_id}&flow_id=${DTOForm.flow_id}`
-        );
-        console.log('log do response check flow and project', response.data);
-        // if (response.data.result )
-      } catch (error: any) {
-        console.log('log do error', error);
+  const checkFlowAndProject = useCallback(async () => {
+    try {
+      const response = await api.get(
+        `/verify-flow?project_product_id=${DTOForm.project_product_id}&flow_id=${DTOForm.flow_id}`
+      );
+      if (response.data.result === 'Existem divergencias entre o projeto e o fluxo alocado') {
+        throw new Error('Existem divergencias entre o projeto e o fluxo alocado');
+      }
+
+      if (response.data.result.gen_ticket) {
+        setWarningModal(true);
+        setDTOForm((prevState: any) => ({
+          ...prevState,
+          ['gen_ticket']: 'true'
+        }));
+        setDTOForm((prevState: any) => ({
+          ...prevState,
+          ['ticket_id']: '0'
+        }));
+      }
+
+      if (response.data.result === 'Fluxo ok!') {
+        addToast({
+          type: 'success',
+          title: 'Sucesso',
+          description: 'Fluxo compativel com o projeto'
+        });
+      }
+    } catch (e: any) {
+      if (e.message === 'Existem divergencias entre o projeto e o fluxo alocado') {
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: e.message
+        });
+      } else if (e.response.data.result.length !== 0) {
+        e.response.data.result.map((row: any) => {
+          addToast({
+            type: 'danger',
+            title: 'ATENÇÃO',
+            description: row.error
+          });
+        });
+      } else {
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: e.response.data.message
+        });
       }
     }
+  }, [DTOForm.flow_id, DTOForm.project_product_id]);
 
+  useEffect(() => {
     if (DTOForm.flow_id && DTOForm.project_product_id) {
       checkFlowAndProject();
     }
-  }, [DTOForm]);
+  }, [DTOForm.flow_id, DTOForm.project_product_id]);
 
   // useEffect(() => {
   //   console.log('log do tipo de task', tasksType);
@@ -1697,8 +1869,12 @@ export default function CreateTasks() {
   // }, [estimatedTime]);
 
   // useEffect(() => {
-  //   console.log('log dos erros', errorCategory);
+  //   console.log('log errorCategory =>', errorCategory);
   // }, [errorCategory]);
+
+  // useEffect(() => {
+  //   console.log('log errorDateDelivery =>', errorDeliveryDate);
+  // }, [errorDeliveryDate]);
 
   // useEffect(() => {
   //   console.log('log do info projects', infoProjects);
@@ -1776,47 +1952,20 @@ export default function CreateTasks() {
           )}
           {createStep === 2 && (
             <>
-              <FormTitle>Entregáveis</FormTitle>
-              <SplitDeliveries>
-                {tasksType === 'horas' && (
-                  <SwitchSelector>
-                    <InputSwitchDefault
-                      onChange={(e) => {
-                        handleSwitch(e.target.checked);
-                      }}
-                      isChecked={splitDeliveries}
-                    />
-                    <span>Dividir entregas</span>
-                  </SwitchSelector>
-                )}
-                <Deliveries>
-                  <InputDefault
-                    label="Entrega - Pré-Requisitos"
-                    // placeholder="00/00/0000"
-                    name="dateStart"
-                    type="date"
-                    max={'9999-12-31'}
-                    icon={BiCalendar}
-                    onChange={(e) => handleTaskDeliveries('dateStart', e.target.value)}
-                    value={DTOForm.copywriting_date_end}
-                    error={error?.copywriting_date_end}
-                  />
-
-                  <InputDefault
-                    label="Entrega Criação"
-                    placeholder="00/00/0000"
-                    name="creationDate"
-                    type="date"
-                    max={'9999-12-31'}
-                    icon={BiCalendar}
-                    onChange={(e) => handleTaskDeliveries('creationDate', e.target.value)}
-                    value={DTOForm.creation_date_end}
-                    error={error?.creation_date_end}
-                  />
-                </Deliveries>
-              </SplitDeliveries>
               {tasksType !== 'livre' && (
                 <>
+                  <FormTitle>Entregáveis</FormTitle>
+                  {tasksType === 'horas' && (
+                    <SwitchSelector>
+                      <InputSwitchDefault
+                        onChange={(e) => {
+                          handleSwitch(e.target.checked);
+                        }}
+                        isChecked={splitDeliveries}
+                      />
+                      <span>Dividir entregas</span>
+                    </SwitchSelector>
+                  )}
                   <InfoDeliveries
                     data={productsArray}
                     dataTypes={dataTypes}
@@ -1825,6 +1974,7 @@ export default function CreateTasks() {
                     deliveriesSplited={splitDeliveries}
                     projectInfo={selectedProject}
                     errorCategory={errorCategory}
+                    errorDelivery={errorDeliveryDate}
                     addDelivery={addDelivery}
                     addProducts={(value: any, text: any, index: any) =>
                       setProductsDeliveriesModal({
@@ -1845,7 +1995,12 @@ export default function CreateTasks() {
                     handleTitleOfDelivery={handleDeliveryTitle}
                   />
                   {!splitDeliveries && tasksType === 'horas' && (
-                    <AddTextButton title="Adicionar produto" click={() => setProductsModal(true)} />
+                    <div style={{ marginBottom: '38px' }}>
+                      <AddTextButton
+                        title="Adicionar produto"
+                        click={() => setProductsModal(true)}
+                      />
+                    </div>
                   )}
                 </>
               )}
@@ -1863,6 +2018,43 @@ export default function CreateTasks() {
                     inputsError={error}
                   />
                 </div>
+              )}
+
+              {!splitDeliveries && (
+                <>
+                  <FormTitle style={{ marginTop: '38px' }}>Data da entrega</FormTitle>
+                  <SplitDeliveries>
+                    <Deliveries>
+                      <InputDefault
+                        label={`Entrega ${
+                          parameters.input_name !== '' ? parameters.input_name : 'Pré-requisito'
+                        }`}
+                        // placeholder="00/00/0000"
+                        name="dateStart"
+                        type="date"
+                        max={'9999-12-31'}
+                        icon={BiCalendar}
+                        onChange={(e) => handleTaskDeliveries('dateStart', e.target.value)}
+                        value={DTOForm.copywriting_date_end}
+                        error={error?.copywriting_date_end}
+                      />
+
+                      <div style={{ width: !splitDeliveries ? '50%' : '180px' }}>
+                        <InputDefault
+                          label="Entrega de atividade"
+                          placeholder="00/00/0000"
+                          name="creationDate"
+                          type="date"
+                          max={'9999-12-31'}
+                          icon={BiCalendar}
+                          onChange={(e) => handleTaskDeliveries('creationDate', e.target.value)}
+                          value={DTOForm.creation_date_end}
+                          error={error?.creation_date_end}
+                        />
+                      </div>
+                    </Deliveries>
+                  </SplitDeliveries>
+                </>
               )}
             </>
           )}
@@ -1918,7 +2110,7 @@ export default function CreateTasks() {
                   <FormTitle>Resumo da tarefa</FormTitle>
                   <SummaryTasks
                     selectedProducts={productsArray}
-                    createTasks={handleSelectUserForTask}
+                    createTasks={checkFlow}
                     editTasks={() => {
                       setCreateStep(1);
                       setTaskEdit(true);
@@ -1933,6 +2125,7 @@ export default function CreateTasks() {
                     taskFiles={uploadedFiles}
                     ticketAsk={ticketAsk}
                     error={error}
+                    splitDeliveries={splitDeliveries}
                   />
                 </>
               )}
@@ -1954,7 +2147,7 @@ export default function CreateTasks() {
               {tasksType === 'horas' && (
                 <SummaryTasks
                   selectedProducts={DTODelivery}
-                  createTasks={handleSelectUserForTask}
+                  createTasks={checkFlow}
                   editTasks={() => {
                     setCreateStep(1);
                     setTaskEdit(true);
@@ -1968,13 +2161,14 @@ export default function CreateTasks() {
                   estimatedtotalTime={setEstimatedTime}
                   taskFiles={uploadedFiles}
                   ticketAsk={ticketAsk}
+                  splitDeliveries={splitDeliveries}
                   error={error}
                 />
               )}
               {tasksType !== 'horas' && (
                 <SummaryTasks
                   selectedProducts={productsArray}
-                  createTasks={handleSelectUserForTask}
+                  createTasks={checkFlow}
                   editTasks={() => {
                     setCreateStep(1);
                     setTaskEdit(true);
@@ -1988,6 +2182,7 @@ export default function CreateTasks() {
                   estimatedtotalTime={() => ''}
                   taskFiles={uploadedFiles}
                   ticketAsk={ticketAsk}
+                  splitDeliveries={splitDeliveries}
                   error={error}
                 />
               )}
@@ -2390,6 +2585,89 @@ export default function CreateTasks() {
             user_alocated={handleScheduleUser}
             closeModal={() => setSelectUserModal(false)}
           />
+        </ModalDefault>
+
+        {/* Modal to select user without schedule */}
+        <ModalDefault
+          isOpen={modalWithoutSchedule}
+          onOpenChange={() => setModalWithoutSchedule(false)}
+          title="Escolha o usuário inicial"
+        >
+          <UsersWrapper>
+            <ProductsTable>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Selecionar</th>
+                    <th>Nome</th>
+                    <th>Tarefas</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {usersWithoutSchedule.map((row: UsersNoSchedule) => (
+                    <tr key={row.user_id}>
+                      <td>
+                        <CheckboxDefault
+                          label=""
+                          name={''}
+                          onChange={() => setSelectedInitalUser(row)}
+                          checked={selectedInitialUser?.user_id === row.user_id}
+                        />
+                      </td>
+                      <td>{row.name}</td>
+                      <td>{row.tasks}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </ProductsTable>
+
+            <ModalButtons>
+              <ButtonDefault
+                typeButton="dark"
+                isOutline
+                onClick={() => {
+                  setModalWithoutSchedule(false);
+                  setSelectedInitalUser({
+                    function: '',
+                    name: '',
+                    tasks: 0,
+                    user_id: ''
+                  });
+                }}
+              >
+                Cancelar
+              </ButtonDefault>
+              <ButtonDefault
+                typeButton="primary"
+                onClick={() => {
+                  handleSetUserWithoutSchedule();
+                  setModalWithoutSchedule(false);
+                }}
+              >
+                Escolher
+              </ButtonDefault>
+            </ModalButtons>
+          </UsersWrapper>
+        </ModalDefault>
+
+        <ModalDefault
+          isOpen={warningModal}
+          title="Aviso"
+          onOpenChange={() => setWarningModal(false)}
+        >
+          <ProductsModalWrapper>
+            <div>No fluxo escolhido é obrigatório gerar o ticket.</div>
+            <div>Essa tarefa ficará visivel também para o seu cliente no 21Clients.</div>
+            <div>Os campos disponíveis para visualização por ele serão: TÍTULO e DATAS.</div>
+
+            <ModalButtons>
+              <ButtonDefault typeButton="warning" onClick={() => setWarningModal(false)}>
+                OK
+              </ButtonDefault>
+            </ModalButtons>
+          </ProductsModalWrapper>
         </ModalDefault>
       </ContainerWrapper>
     </>

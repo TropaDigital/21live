@@ -30,13 +30,15 @@ import { SelectDefault } from '../../components/Inputs/SelectDefault';
 import { TextAreaDefault } from '../../components/Inputs/TextAreaDefault';
 import Pagination from '../../components/Pagination';
 import { Table } from '../../components/Table';
-import { FieldTogleButton, TableHead } from '../../components/Table/styles';
+import { FieldTogleButton, FilterGroup, TableHead } from '../../components/Table/styles';
 import Alert from '../../components/Ui/Alert';
 import ModalDefault from '../../components/Ui/ModalDefault';
 import {
+  AppliedFilter,
   ContainerDefault,
   FieldDefault,
   FieldGroup,
+  FilterTotal,
   FooterModal
 } from '../../components/UiElements/styles';
 import { CheckboxDefault } from '../../components/Inputs/CheckboxDefault';
@@ -60,6 +62,7 @@ import {
   ShowServicesContainer,
   TableKits
 } from './styles';
+import { useParamsHook } from '../../hooks/useParams';
 
 interface ServicesProps {
   job_service_id?: number | string;
@@ -70,6 +73,7 @@ interface ServicesProps {
   minutes: string;
   minutes_creation: any;
   minutes_essay: any;
+  service_category_id: string;
   category: string;
   flag: string;
 }
@@ -79,6 +83,7 @@ interface FormDataProps {
   description: string;
   type: string;
   size: string;
+  service_category_id: string;
   category: string;
   flag: string;
   minutes_creation: any;
@@ -106,8 +111,15 @@ interface IModalKit {
   kit: IDataKit;
 }
 
+interface FilterProps {
+  category: string;
+  type: string;
+  [key: string]: string; // Index signature
+}
+
 export default function Services() {
   const { addToast } = useToast();
+  const { parameters, getParams } = useParamsHook();
   const { formData, setData, handleOnChange, handleOnChangeSwitch, handleOnChangeMinutes } =
     useForm({
       service: '',
@@ -117,7 +129,7 @@ export default function Services() {
       minutes: '',
       minutes_creation: '',
       minutes_essay: '',
-      category: '',
+      service_category_id: '',
       flag: 'false',
       job_service_id: ''
     } as FormDataProps);
@@ -157,7 +169,7 @@ export default function Services() {
     (search: string) => setSearch(search),
     700
   );
-  const [filter, setFilter] = useState({
+  const [filter, setFilter] = useState<FilterProps>({
     category: '',
     type: ''
   });
@@ -520,7 +532,45 @@ export default function Services() {
           tenant_id
         };
 
-        if (modal.type === 'Novo produto') {
+        if (formData.flag === 'true' && modal.type === 'Novo produto') {
+          const newFormData = {
+            service,
+            description,
+            category,
+            flag,
+            type,
+            size,
+            minutes_creation: '00:00:00',
+            minutes_essay: '00:00:00',
+            tenant_id
+          };
+
+          await api.post('services', newFormData);
+          addToast({
+            type: 'success',
+            title: 'Sucesso',
+            description: 'Produto criado com sucesso!'
+          });
+        } else if (formData.flag === 'true' && modal.type !== 'Novo produto') {
+          const updateFormData = {
+            service,
+            description,
+            category,
+            flag,
+            type,
+            size,
+            minutes_creation: '00:00:00',
+            minutes_essay: '00:00:00',
+            tenant_id
+          };
+
+          await api.put(`services/${formData.job_service_id}`, updateFormData);
+          addToast({
+            type: 'success',
+            title: 'Sucesso',
+            description: 'Produto salvo com sucesso!'
+          });
+        } else if (formData.flag !== 'true' && modal.type === 'Novo produto') {
           await api.post('services', newFormData);
           addToast({
             type: 'success',
@@ -572,15 +622,6 @@ export default function Services() {
       setListSelected((obj) => [...obj, value]);
     }
   }
-
-  // function handleViewMoreDescription(description: string): string {
-  //   const descriptionLength = description.length;
-  //   let newDescription: string = description;
-
-  //   if (descriptionLength >= 50) newDescription = description.substring(0, 50) + '...';
-
-  //   return newDescription;
-  // }
 
   const handleAddHours = (event: any) => {
     const { name, value } = event.target;
@@ -725,6 +766,19 @@ export default function Services() {
 
   const hasFilters = Object.values(filter).every((obj) => obj === null || obj === '');
 
+  const countNonEmptyProperties = () => {
+    let count = 0;
+    for (const key in filter) {
+      if (Object.prototype.hasOwnProperty.call(filter, key)) {
+        // Check if the property is not empty or null
+        if (filter[key] !== '' && filter[key] !== null) {
+          count++;
+        }
+      }
+    }
+    return count;
+  };
+
   return (
     <ContainerDefault>
       <HeaderPage title="Produtos">
@@ -840,6 +894,33 @@ export default function Services() {
             </ButtonDefault>
           </FieldGroup>
         </TableHead>
+        {!hasFilters && (
+          <FilterGroup>
+            <FilterTotal>
+              <div className="filter-title">Filtros ({countNonEmptyProperties()}):</div>
+              {filter.category !== '' ? <span>Categoria</span> : ''}
+              {filter.type !== '' ? <span>Tipo</span> : ''}
+            </FilterTotal>
+
+            <AppliedFilter>
+              {filter.category !== '' ? (
+                <div className="filter-title">
+                  Categoria: <span>{filter.category}</span>
+                </div>
+              ) : (
+                ''
+              )}
+
+              {filter.type !== '' ? (
+                <div className="filter-title">
+                  Tipo: <span>{filter.type}</span>
+                </div>
+              ) : (
+                ''
+              )}
+            </AppliedFilter>
+          </FilterGroup>
+        )}
         {typeList === 'produtos' && (
           <table>
             <thead>
@@ -847,7 +928,7 @@ export default function Services() {
                 <th>ID</th>
                 <th>Produto</th>
                 <th>Categoria</th>
-                <th>Listar produtos</th>
+                <th>Chamar produtos</th>
                 <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
               </tr>
             </thead>
@@ -1081,18 +1162,18 @@ export default function Services() {
             <SelectDefault
               label="Categoria"
               placeholder="Selecione aqui..."
-              name="category"
+              name="service_category_id"
               onChange={handleOnChange}
-              value={formData.category}
+              value={formData.service_category_id}
               required
             >
               {modal.type.includes('Editar servico') && (
-                <option selected={true} value={formData.category}>
+                <option selected={true} value={formData.service_category_id}>
                   {formData.category}
                 </option>
               )}
               {dataCategory?.map((row) => (
-                <option key={row.category_id} value={row.category}>
+                <option key={row.service_category_id} value={row.service_category_id}>
                   {row.category}
                 </option>
               ))}
@@ -1111,84 +1192,93 @@ export default function Services() {
             <InputSwitchDefault
               onChange={(e) => handleOnChangeSwitch({ name: 'flag', value: e.target.checked })}
               isChecked={formData.flag === 'true' ? true : false}
-              label="Listar produto"
+              label="Chamar produtos"
             />
           </FieldDefault>
 
-          {modal.type.includes('Editar produto') && (
-            <FieldDefault>
-              <EstimatedTime>
-                <span>Tempo total do produto</span>
-                <EstimatedTimeInputs>
-                  <div>{formData?.minutes}</div>
-                </EstimatedTimeInputs>
-              </EstimatedTime>
-            </FieldDefault>
+          {formData.flag !== 'true' && (
+            <div>
+              {modal.type.includes('Editar produto') && (
+                <FieldDefault>
+                  <EstimatedTime>
+                    <span>Tempo total do produto</span>
+                    <EstimatedTimeInputs>
+                      <div>{formData?.minutes}</div>
+                    </EstimatedTimeInputs>
+                  </EstimatedTime>
+                </FieldDefault>
+              )}
+
+              <FieldDefault>
+                <EstimatedTime>
+                  <span>Tempo estimado de atividade (Horas : Minutos)</span>
+                  <EstimatedTimeInputs>
+                    <InputDefault
+                      label=""
+                      name="hours_creation"
+                      onChange={handleAddHours}
+                      value={estimatedTimeCreation.hours}
+                      type="number"
+                      min="0"
+                      step="1"
+                      icon={BiTime}
+                      required
+                    />
+                    :
+                    <InputDefault
+                      label=""
+                      name="minutes_creation"
+                      onChange={handleAddHours}
+                      value={estimatedTimeCreation.minutes}
+                      type="number"
+                      min="0"
+                      max="59"
+                      step="1"
+                      icon={BiTime}
+                      required
+                    />
+                  </EstimatedTimeInputs>
+                </EstimatedTime>
+              </FieldDefault>
+
+              <FieldDefault>
+                <EstimatedTime>
+                  <span>
+                    Tempo estimado de{' '}
+                    {parameters.input_name !== '' ? parameters.input_name : 'redação'} (Horas :
+                    Minutos)
+                  </span>
+                  <EstimatedTimeInputs>
+                    <InputDefault
+                      label=""
+                      name="hours_essay"
+                      onChange={handleAddHours}
+                      value={estimatedTimeEssay.hours}
+                      type="number"
+                      min="0"
+                      step="1"
+                      icon={BiTime}
+                      required
+                    />
+                    :
+                    <InputDefault
+                      label=""
+                      name="minutes_essay"
+                      onChange={handleAddHours}
+                      value={estimatedTimeEssay.minutes}
+                      type="number"
+                      min="0"
+                      max="59"
+                      step="1"
+                      icon={BiTime}
+                      required
+                    />
+                  </EstimatedTimeInputs>
+                </EstimatedTime>
+              </FieldDefault>
+            </div>
           )}
 
-          <FieldDefault>
-            <EstimatedTime>
-              <span>Tempo estimado de criação (Horas : Minutos)</span>
-              <EstimatedTimeInputs>
-                <InputDefault
-                  label=""
-                  name="hours_creation"
-                  onChange={handleAddHours}
-                  value={estimatedTimeCreation.hours}
-                  type="number"
-                  min="0"
-                  step="1"
-                  icon={BiTime}
-                  required
-                />
-                :
-                <InputDefault
-                  label=""
-                  name="minutes_creation"
-                  onChange={handleAddHours}
-                  value={estimatedTimeCreation.minutes}
-                  type="number"
-                  min="0"
-                  max="59"
-                  step="1"
-                  icon={BiTime}
-                  required
-                />
-              </EstimatedTimeInputs>
-            </EstimatedTime>
-          </FieldDefault>
-
-          <FieldDefault>
-            <EstimatedTime>
-              <span>Tempo estimado de redação (Horas : Minutos)</span>
-              <EstimatedTimeInputs>
-                <InputDefault
-                  label=""
-                  name="hours_essay"
-                  onChange={handleAddHours}
-                  value={estimatedTimeEssay.hours}
-                  type="number"
-                  min="0"
-                  step="1"
-                  icon={BiTime}
-                  required
-                />
-                :
-                <InputDefault
-                  label=""
-                  name="minutes_essay"
-                  onChange={handleAddHours}
-                  value={estimatedTimeEssay.minutes}
-                  type="number"
-                  min="0"
-                  max="59"
-                  step="1"
-                  icon={BiTime}
-                  required
-                />
-              </EstimatedTimeInputs>
-            </EstimatedTime>
-          </FieldDefault>
           <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
             <ButtonDefault typeButton="dark" isOutline onClick={handleOnCancel}>
               Descartar
@@ -1236,12 +1326,15 @@ export default function Services() {
               </SummaryTaskInfo>
 
               <SummaryTaskInfo>
-                <div className="title-info">Total de horas de criação:</div>
+                <div className="title-info">Total de horas de atividade:</div>
                 <div className="info">{modalShowProduct.product.minutes_creation}</div>
               </SummaryTaskInfo>
 
               <SummaryTaskInfo>
-                <div className="title-info">Total de horas de redação:</div>
+                <div className="title-info">
+                  Total de horas de{' '}
+                  {parameters.input_name !== '' ? parameters.input_name : 'Pré-requisito'}:
+                </div>
                 <div className="info">{modalShowProduct.product.minutes_essay}</div>
               </SummaryTaskInfo>
 
@@ -1331,7 +1424,7 @@ export default function Services() {
                     <p className="service-data service" title={row?.service}>
                       {row?.service}
                     </p>
-                    <p className="service-data">{row?.category}</p>
+                    <p className="service-data">{row?.service_category_id}</p>
                     <p className="service-data">{row?.flag === 'true' ? 'Sim' : 'Não'}</p>
                     <p className="service-data">{row?.minutes}</p>
                     <div className="service-data center">
@@ -1401,7 +1494,7 @@ export default function Services() {
                     onClick={() => handleOnShowKitDetails(row?.service)}
                   >
                     <p className="service-data center">{row?.service}</p>
-                    <p className="service-data center">{row?.category}</p>
+                    <p className="service-data center">{row?.service_category_id}</p>
                     <p className="service-data center">{row?.type}</p>
                     <p
                       className={`service-data center chevron ${

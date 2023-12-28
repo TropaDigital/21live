@@ -19,6 +19,8 @@ import { HiOutlineArrowRight, HiOutlineChatAlt } from 'react-icons/hi';
 import { BsCheckCircle, BsFolder } from 'react-icons/bs';
 import { IoIosCloseCircleOutline } from 'react-icons/io';
 import { FaDownload } from 'react-icons/fa';
+import { MdClose } from 'react-icons/md';
+import { AiOutlineInteraction } from 'react-icons/ai';
 
 // Components
 import { ContainerDefault } from '../../../components/UiElements/styles';
@@ -28,15 +30,17 @@ import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import AvatarDefault from '../../../components/Ui/Avatar/avatarDefault';
 import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
 import { Table } from '../../../components/Table';
-import Alert from '../../../components/Ui/Alert';
-import ButtonTable from '../../../components/Buttons/ButtonTable';
 import ModalDefault from '../../../components/Ui/ModalDefault';
 import UploadFiles from '../../../components/Upload/UploadFiles';
+import { ModalImage } from '../../Requests/ViewRequests/styles';
+import UploadFilesTicket from '../../../components/UploadTicket/UploadFilex';
 
 // Styles
 import {
   ButtonApproveReject,
   ButtonsWrapper,
+  CardChangeInfos,
+  CardChangesWrapper,
   ChatMessage,
   ChatSendButton,
   ChatUserImg,
@@ -71,10 +75,9 @@ import api from '../../../services/api';
 
 // Utils
 import { formatBytes } from '../../../utils/convertBytes';
-import axios from 'axios';
-import { ModalImage } from '../../Requests/ViewRequests/styles';
-import { MdClose } from 'react-icons/md';
-import UploadFilesTicket from '../../../components/UploadTicket/UploadFilex';
+
+// types
+import { StepTimeline, UploadedFilesProps } from '../../../types';
 
 interface WorkingProductProps {
   productDeliveryId?: any;
@@ -91,6 +94,19 @@ interface WorkingProductProps {
   sendToApprove?: boolean;
   toApprove?: () => void;
   timelineData?: TimelineProps;
+  returnReasons?: ReturnReasons[];
+}
+
+interface ReturnReasons {
+  current_step: string;
+  name: string;
+  reason: string;
+  returner_id: string;
+  step: string;
+  task_id: string;
+  task_return_id: string;
+  updated: string;
+  user_id: string;
 }
 
 interface InputProps {
@@ -100,7 +116,7 @@ interface InputProps {
 
 interface ChatMessages {
   comment: string;
-  user_id: number;
+  user_id: string;
   name: string;
   avatar: string;
   created: string;
@@ -148,25 +164,6 @@ interface ProductInfo {
   updated: string;
 }
 
-interface UploadedFilesProps {
-  file?: File;
-  file_id: string;
-  name: string;
-  readableSize: string;
-  preview: string;
-  progress?: number;
-  uploaded: boolean;
-  error?: boolean;
-  url: string | null;
-  bucket: string;
-  key: string;
-  size: number;
-  file_name: string;
-  isNew: boolean;
-  loading: boolean;
-  folder: string;
-}
-
 interface ModalApprovationInfos {
   isOpen: boolean;
   productId: string;
@@ -177,24 +174,6 @@ interface ModalApprovationInfos {
 interface TimelineProps {
   steps: StepTimeline[];
   currentStep: string;
-}
-
-interface StepTimeline {
-  step: string;
-  name: string;
-  card_id: string;
-  flow_id: string;
-  necessary_upload: string;
-  necessary_responsible: string;
-  email_alert: string;
-  tenant_approve: string;
-  manager_approve: string;
-  previous_step: string;
-  function_id: string;
-  final_card: string;
-  ticket_status: string;
-  ticket_status_id: string;
-  tenant_id: string;
 }
 
 export default function WorkingProduct({
@@ -209,6 +188,7 @@ export default function WorkingProduct({
   sendToApprove,
   timelineData,
   ticket_id,
+  returnReasons,
   toApprove,
   goBack
 }: WorkingProductProps) {
@@ -236,6 +216,7 @@ export default function WorkingProduct({
     approve: false,
     disapprove: false
   });
+  const [toClientConfirmation, setToClientConfirmation] = useState<boolean>(false);
 
   const [previewImage, setPreviewImage] = useState({
     isOpen: false,
@@ -253,41 +234,47 @@ export default function WorkingProduct({
   });
 
   useEffect(() => {
-    setEssayInfo(productInfos.essay);
+    setEssayInfo(productInfos?.essay);
     setProductsInfo(productInfos);
   }, [productInfos]);
 
-  async function getComments() {
+  async function getComments(filter: string) {
     try {
       setLoading(true);
-      const response = await api.get(`/tasks/comment/${taskId}`);
-      // console.log('log do response do comment', response.data.result);
-      setDataComments(response.data.result);
+      if (filter === '') {
+        const response = await api.get(`/tasks/comment/${taskId}`);
+        setDataComments(response.data.result);
+      }
+
+      if (filter === 'system') {
+        const response = await api.get(`/tasks/comment/${taskId}?filter=system`);
+        setDataComments(response.data.result);
+      }
 
       setLoading(false);
-    } catch (error) {
-      console.log('log error send comment', error);
-      setLoading(false);
-    }
-  }
-
-  async function getCommentSystem() {
-    try {
-      setLoading(true);
-      const response = await api.get(`/tasks/comment/${taskId}?filter=system`);
-      // console.log('log do response do comment', response.data.result);
-      setDataComments(response.data.result);
-
-      setLoading(false);
-    } catch (error) {
-      console.log('log error send comment', error);
+    } catch (error: any) {
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
       setLoading(false);
     }
   }
 
   useEffect(() => {
     if (selectedTab === 'Comentários') {
-      getComments();
+      getComments('system');
       setInputschanges({
         copywriting_description: taskInputs?.copywriting_description,
         creation_description: taskInputs?.creation_description
@@ -364,7 +351,7 @@ export default function WorkingProduct({
         type: 'success',
         description: 'Mensagem enviada.'
       });
-      getComments();
+      getComments('');
       setChatMessage('');
       setLoading(false);
     } catch (error) {
@@ -392,7 +379,7 @@ export default function WorkingProduct({
         type: 'success',
         description: 'Comentário excluido com sucesso.'
       });
-      getComments();
+      getComments('');
       setLoading(false);
     } catch (error: any) {
       console.log('log error delete comment', error);
@@ -409,10 +396,10 @@ export default function WorkingProduct({
   const handleShowLogs = () => {
     if (logIsOn) {
       setLogIsOn(false);
-      getComments();
+      getComments('system');
     } else {
+      getComments('');
       setLogIsOn(true);
-      getCommentSystem();
     }
   };
 
@@ -532,12 +519,18 @@ export default function WorkingProduct({
         products_delivery_id: productInfos?.products_delivery_id
       };
 
-      const response = await api.put(`/task/upload`, uploadInfos);
+      const response = await api.put(`/archive/upload/final/${taskId}`, uploadInfos);
 
       if (response.data.status === 'success') {
+        addToast({
+          title: 'Sucesso',
+          description: 'Sucesso, upload concluído.',
+          type: 'success'
+        });
         setUploadedFiles([]);
         setModalUpload(false);
         setModalFinalFile(false);
+        navigate('/minhas-tarefas');
       }
 
       console.log('log do response do saveUpload', response.data.result);
@@ -575,8 +568,16 @@ export default function WorkingProduct({
       const response = await api.put(`/task/upload-tenant-approve`, uploadInfos);
 
       if (response.data.status === 'success') {
+        addToast({
+          title: 'Sucesso',
+          description: 'Arquivo enviado, aguarde a aprovação do cliente.',
+          type: 'success'
+        });
         setUploadedFiles([]);
         setModalFinalFile(false);
+        setTimeout(() => {
+          navigate('/minhas-tarefas');
+        }, 1500);
       }
 
       console.log('log do response do saveUpload', response.data.result);
@@ -617,8 +618,14 @@ export default function WorkingProduct({
     }
   }
 
+  function findCardNameByStep(data: any[], targetStep: string): string | null {
+    const foundCard = data.find((obj: any) => obj.step === targetStep);
+
+    return foundCard ? foundCard.name : null;
+  }
+
   useEffect(() => {
-    console.log('log do ticket_id =>', ticket_id);
+    // console.log('log do ticket_id =>', ticket_id);
     // console.log('log do final card =>', finalCard);
     // console.log('log do upload client =>', uploadClient);
     // console.log('log do isToApprove =>', isToApprove);
@@ -652,7 +659,7 @@ export default function WorkingProduct({
         <TaskTab
           onClick={(e: any) => {
             setSelectedTab(e.target.innerText);
-            getComments();
+            getComments('system');
           }}
           className={selectedTab === 'Comentários' ? 'active' : ''}
         >
@@ -664,12 +671,23 @@ export default function WorkingProduct({
         <TaskTab
           onClick={(e: any) => {
             setSelectedTab(e.target.innerText);
-            getComments();
+            setLogIsOn(false);
           }}
           className={selectedTab === 'Arquivos' ? 'active' : ''}
         >
           <BsFolder />
           Arquivos
+        </TaskTab>
+
+        <TaskTab
+          onClick={(e: any) => {
+            setSelectedTab(e.target.innerText);
+            setLogIsOn(false);
+          }}
+          className={selectedTab === 'Alterações' ? 'active' : ''}
+        >
+          <AiOutlineInteraction />
+          Alterações
         </TaskTab>
 
         {backButtonTitle && (
@@ -752,7 +770,14 @@ export default function WorkingProduct({
         )}
         {selectedTab === 'Inputs' && (
           <>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px',
+                marginBottom: '16px'
+              }}
+            >
               <InputField>
                 <InputFieldTitle>Input - Pré-requisitos</InputFieldTitle>
                 <WrapperEditor
@@ -764,7 +789,7 @@ export default function WorkingProduct({
                 />
               </InputField>
 
-              <InputField>
+              <InputField style={{ marginBottom: '16px' }}>
                 <InputFieldTitle>Input Criação</InputFieldTitle>
                 <WrapperEditor
                   value={taskInputs?.creation_description}
@@ -797,7 +822,7 @@ export default function WorkingProduct({
             <MessageList>
               {dataComments?.map((message: ChatMessages, index: number) => (
                 <ChatMessage key={index}>
-                  {message.user_id !== user.user_id && (
+                  {Number(message.user_id) !== user.user_id && (
                     <>
                       {message.avatar !== '' ? (
                         <ChatUserImg>
@@ -816,7 +841,7 @@ export default function WorkingProduct({
                         <UserMessageInfo>
                           <div className="user-name">{message.name}</div>
                           <div className="date-message">{moment(message.created).fromNow()}</div>
-                          {message.name !== 'Sistema' && (
+                          {message.user_id !== '1' && (
                             <div
                               style={{ cursor: 'pointer' }}
                               onClick={() => handleDeleteComment(message.comment_id)}
@@ -830,9 +855,11 @@ export default function WorkingProduct({
                       </MessageInfos>
                     </>
                   )}
-                  {message.user_id === user.user_id && (
+                  {Number(message.user_id) === user.user_id && (
                     <>
-                      <MessageInfos className={message.user_id === user.user_id ? 'left' : ''}>
+                      <MessageInfos
+                        className={Number(message.user_id) === user.user_id ? 'left' : ''}
+                      >
                         <UserMessageInfo>
                           <div className="user-name">{message.name}</div>
                           <div className="date-message">{moment(message.created).fromNow()}</div>
@@ -899,130 +926,168 @@ export default function WorkingProduct({
                 </thead>
 
                 <tbody>
-                  {taskFiles
-                    ? taskFiles?.length > 0 &&
-                      taskFiles?.map((row: FilesMap) => (
-                        <tr key={row.task_file_id}>
-                          <td>
-                            <div className="id-column">
-                              #{String(row.task_file_id).padStart(2, '0')}
-                            </div>
-                          </td>
-                          <td>
-                            {row.products_delivery_id !== '' ? row.products_delivery_id : '-----'}
-                          </td>
-                          <td>{row.file_name}</td>
-                          <td>{formatBytes(row.size)}</td>
-                          <td style={{ textTransform: 'capitalize' }}>Criação</td>
-                          <td style={{ textTransform: 'capitalize' }}>
-                            {moment('2023/11/31').format('DD/MM/YYYY')}
-                          </td>
-                          <td>
-                            {row.products_delivery_id !== '' ? (
-                              <StatusTable
-                                className={
-                                  row.status === 'fail'
-                                    ? 'status reject'
-                                    : row.status === 'pass'
-                                    ? 'status accept'
-                                    : 'status'
-                                }
-                              >
-                                {row.status === 'fail'
-                                  ? 'Reprovado'
+                  {taskFiles && taskFiles?.length > 0 ? (
+                    taskFiles?.map((row: FilesMap) => (
+                      <tr key={row.task_file_id}>
+                        <td>
+                          <div className="id-column">
+                            #{String(row.task_file_id).padStart(2, '0')}
+                          </div>
+                        </td>
+                        <td>
+                          {row.products_delivery_id !== '' ? row.products_delivery_id : '-----'}
+                        </td>
+                        <td>{row.file_name}</td>
+                        <td>{formatBytes(row.size)}</td>
+                        <td style={{ textTransform: 'capitalize' }}>Criação</td>
+                        <td style={{ textTransform: 'capitalize' }}>
+                          {moment('2023/11/31').format('DD/MM/YYYY')}
+                        </td>
+                        <td>
+                          {row.products_delivery_id !== '' ? (
+                            <StatusTable
+                              className={
+                                row.status === 'fail'
+                                  ? 'status reject'
                                   : row.status === 'pass'
-                                  ? 'Aprovado'
-                                  : row.status === 'await'
-                                  ? 'Aguardando aprovação'
-                                  : ''}
-                              </StatusTable>
-                            ) : (
-                              '-----'
-                            )}
-                          </td>
-                          <td>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                              <ViewFile
-                                onClick={() =>
-                                  setPreviewImage({
-                                    isOpen: true,
-                                    imageInfos: {
-                                      bucket: row.bucket,
-                                      created: row.created,
-                                      file_name: row.file_name,
-                                      key: row.key,
-                                      task_file_id: row.task_file_id,
-                                      task_id: row.task_id,
-                                      size: row.size,
-                                      updated: row.updated,
-                                      url: row.url
-                                    }
-                                  })
-                                }
-                              >
-                                <BiShow size={20} />
-                              </ViewFile>
+                                  ? 'status accept'
+                                  : 'status'
+                              }
+                            >
+                              {row.status === 'fail'
+                                ? 'Reprovado'
+                                : row.status === 'pass'
+                                ? 'Aprovado'
+                                : row.status === 'await'
+                                ? 'Aguardando aprovação'
+                                : ''}
+                            </StatusTable>
+                          ) : (
+                            '-----'
+                          )}
+                        </td>
+                        <td>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <ViewFile
+                              onClick={() =>
+                                setPreviewImage({
+                                  isOpen: true,
+                                  imageInfos: {
+                                    bucket: row.bucket,
+                                    created: row.created,
+                                    file_name: row.file_name,
+                                    key: row.key,
+                                    task_file_id: row.task_file_id,
+                                    task_id: row.task_id,
+                                    size: row.size,
+                                    updated: row.updated,
+                                    url: row.url
+                                  }
+                                })
+                              }
+                            >
+                              <BiShow size={20} />
+                            </ViewFile>
 
-                              <DownloadIcon onClick={() => downloadFile(row)}>
-                                <FaDownload />
-                              </DownloadIcon>
-                            </div>
-                            {/* {productsInfo?.file_status === 'pass' && (
+                            <DownloadIcon onClick={() => downloadFile(row)}>
+                              <FaDownload />
+                            </DownloadIcon>
+                          </div>
+                          {/* {productsInfo?.file_status === 'pass' && (
                               <div className="fieldTableClients">                               
                               </div>
                             )} */}
-                            {/* productsInfo?.file_status === 'await' && */}
-                            {isToApprove &&
-                              isToApprove[0].manager_approve === 'true' &&
-                              row.status === 'await' && (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                  {/* <DownloadIcon onClick={() => handleDownload(row)}>
+                          {/* productsInfo?.file_status === 'await' && */}
+                          {isToApprove &&
+                            isToApprove[0].manager_approve === 'true' &&
+                            row.status === 'await' && (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                {/* <DownloadIcon onClick={() => handleDownload(row)}>
                                   <FaDownload />
                                 </DownloadIcon> */}
 
-                                  <ButtonApproveReject
-                                    className="reject"
-                                    // onClick={() => disapproveFile(row.products_delivery_id)}
-                                    onClick={() =>
-                                      setModalApproveDisapprove({
-                                        isOpen: true,
-                                        productId: row.products_delivery_id,
-                                        approve: false,
-                                        disapprove: true
-                                      })
-                                    }
-                                  >
-                                    <IoIosCloseCircleOutline />
+                                <ButtonApproveReject
+                                  className="reject"
+                                  // onClick={() => disapproveFile(row.products_delivery_id)}
+                                  onClick={() =>
+                                    setModalApproveDisapprove({
+                                      isOpen: true,
+                                      productId: row.products_delivery_id,
+                                      approve: false,
+                                      disapprove: true
+                                    })
+                                  }
+                                >
+                                  <IoIosCloseCircleOutline />
 
-                                    {/* <div className="hover-text">Reprovar</div> */}
-                                  </ButtonApproveReject>
+                                  {/* <div className="hover-text">Reprovar</div> */}
+                                </ButtonApproveReject>
 
-                                  <ButtonApproveReject
-                                    className="check"
-                                    // onClick={() => approveFile(row.products_delivery_id)}
-                                    onClick={() =>
-                                      setModalApproveDisapprove({
-                                        isOpen: true,
-                                        productId: row.products_delivery_id,
-                                        approve: true,
-                                        disapprove: false
-                                      })
-                                    }
-                                  >
-                                    <BsCheckCircle />
+                                <ButtonApproveReject
+                                  className="check"
+                                  // onClick={() => approveFile(row.products_delivery_id)}
+                                  onClick={() =>
+                                    setModalApproveDisapprove({
+                                      isOpen: true,
+                                      productId: row.products_delivery_id,
+                                      approve: true,
+                                      disapprove: false
+                                    })
+                                  }
+                                >
+                                  <BsCheckCircle />
 
-                                    {/* <div className="hover-text">Aprovar</div> */}
-                                  </ButtonApproveReject>
-                                </div>
-                              )}
-                          </td>
-                        </tr>
-                      ))
-                    : ''}
+                                  {/* <div className="hover-text">Aprovar</div> */}
+                                </ButtonApproveReject>
+                              </div>
+                            )}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={8}>Sem arquivos</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </Table>
           </FilesTableWrapper>
+        )}
+        {selectedTab === 'Alterações' && (
+          <CardChangesWrapper>
+            <div className="title-card">
+              Alterações:{' '}
+              <div className="change-number">
+                {returnReasons && returnReasons?.length > 0 ? returnReasons?.length : 0}
+              </div>
+            </div>
+
+            {returnReasons?.map((row: ReturnReasons) => (
+              <CardChangeInfos key={row.task_return_id}>
+                <div className="top-infos">
+                  <div className="field-names">
+                    Quem solicitou: <span>{row.name}</span>
+                  </div>
+                  {/* <div className="field-names">
+                    Etapa que retornou: <span>{row.step}</span>
+                  </div> */}
+                  <div className="field-names">
+                    Etapa que estava:{' '}
+                    <span>
+                      {findCardNameByStep(
+                        timelineData ? timelineData?.steps : [],
+                        row?.current_step
+                      )}
+                    </span>
+                  </div>
+                </div>
+                <div className="field-names">
+                  Motivo: <span>{row.reason}</span>
+                </div>
+              </CardChangeInfos>
+            ))}
+          </CardChangesWrapper>
         )}
       </WorkSection>
 
@@ -1112,11 +1177,13 @@ export default function WorkingProduct({
         isOpen={modalFinalFile}
         onOpenChange={() => setModalFinalFile(false)}
         title={
-          finalCard ? 'Upload para arquivo final' : 'Upload de arquivo para aprovação do cliente'
+          uploadClient
+            ? 'Upload de arquivo para aprovação do cliente no 21Clients'
+            : 'Upload de arquivo final para o 21Clients'
         }
       >
         <ModalUploadWrapper>
-          {finalCard && (
+          {finalCard && !toClientConfirmation && (
             <UploadFiles
               uploadedFiles={uploadedFiles}
               setUploadedFiles={setUploadedFiles}
@@ -1126,6 +1193,14 @@ export default function WorkingProduct({
               setLoading={setLoading}
               folderInfo="tasks"
             />
+          )}
+
+          {finalCard && toClientConfirmation && (
+            <div className="confirmation">
+              <span>Atenção:</span> <br />
+              Os arquivos serão enviados para a área do cliente. <br />
+              Essa ação não pode ser revertida.
+            </div>
           )}
 
           {uploadClient && ticket_id && (
@@ -1140,7 +1215,7 @@ export default function WorkingProduct({
             />
           )}
 
-          {finalCard && (
+          {finalCard && !toClientConfirmation && (
             <div className="modal-buttons">
               <ButtonDefault
                 typeButton="lightWhite"
@@ -1150,8 +1225,28 @@ export default function WorkingProduct({
                 Cancelar
               </ButtonDefault>
 
+              <ButtonDefault typeButton="primary" onClick={() => setToClientConfirmation(true)}>
+                Enviar para o cliente
+              </ButtonDefault>
+            </div>
+          )}
+
+          {finalCard && toClientConfirmation && (
+            <div className="modal-buttons">
+              <ButtonDefault
+                typeButton="lightWhite"
+                isOutline
+                onClick={() => {
+                  setModalFinalFile(false);
+                  setToClientConfirmation(false);
+                  setUploadedFiles([]);
+                }}
+              >
+                Cancelar
+              </ButtonDefault>
+
               <ButtonDefault typeButton="primary" onClick={handleSaveUploadFinal}>
-                Salvar
+                OK
               </ButtonDefault>
             </div>
           )}

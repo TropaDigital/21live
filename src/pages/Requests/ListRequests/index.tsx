@@ -2,6 +2,7 @@
 /* eslint-disable import-helpers/order-imports */
 // React
 import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // Icons
 import { BiFilter, BiSearchAlt, BiX } from 'react-icons/bi';
@@ -12,9 +13,14 @@ import HeaderPage from '../../../components/HeaderPage';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { FilterGroup, TableHead } from '../../../components/Table/styles';
 import FilterModal from '../../../components/Ui/FilterModal';
-import { ContainerDefault } from '../../../components/UiElements/styles';
+import {
+  AppliedFilter,
+  ContainerDefault,
+  FilterTotal
+} from '../../../components/UiElements/styles';
 import { Table } from '../../../components/Table';
 import Pagination from '../../../components/Pagination';
+import Loader from '../../../components/LoaderSpin';
 
 // Hooks
 import useDebouncedCallback from '../../../hooks/useDebounced';
@@ -26,8 +32,6 @@ import moment from 'moment';
 
 // Styles
 import { FiltersRequests, RequestsWrapper } from './styles';
-import { useNavigate } from 'react-router-dom';
-import Loader from '../../../components/LoaderSpin';
 
 interface ChoosenFilters {
   code: string;
@@ -36,6 +40,7 @@ interface ChoosenFilters {
   delivery: string;
   fromDate: string;
   toDate: string;
+  [key: string]: string;
 }
 
 interface RequestsProps {
@@ -74,6 +79,7 @@ export default function Requests() {
       choosenFilters.delivery
     }&date_start=${choosenFilters.fromDate}&date_end=${choosenFilters.toDate}`
   );
+  const [selectedStatus, setSelectedStatus] = useState<any>();
 
   const handleViewRequest = (request: any) => {
     navigate(`/solicitacao/${request.ticket_id}`, { state: request.ticket_id });
@@ -98,6 +104,19 @@ export default function Requests() {
 
   const hasFilters = Object.values(choosenFilters).every((obj) => obj === null || obj === '');
 
+  const countNonEmptyProperties = () => {
+    let count = 0;
+    for (const key in choosenFilters) {
+      if (Object.prototype.hasOwnProperty.call(choosenFilters, key)) {
+        // Check if the property is not empty or null
+        if (choosenFilters[key] !== '' && choosenFilters[key] !== null) {
+          count++;
+        }
+      }
+    }
+    return count;
+  };
+
   return (
     <ContainerDefault>
       <HeaderPage title="Solicitações" />
@@ -107,7 +126,7 @@ export default function Requests() {
       {!isFetching && (
         <RequestsWrapper>
           <Table>
-            <TableHead>
+            <TableHead style={{ width: 'calc(100vw - 230px)' }}>
               <div className="groupTable">
                 <h2>
                   Lista de solicitações{' '}
@@ -123,7 +142,7 @@ export default function Requests() {
                 </h2>
               </div>
 
-              {/* <div>
+              <FiltersRequests>
                 <InputDefault
                   label=""
                   name="search"
@@ -137,42 +156,89 @@ export default function Requests() {
                   isLoading={isLoading}
                   className="search-field"
                 />
-              </div> */}
-            </TableHead>
 
-            <FiltersRequests>
-              <InputDefault
-                label=""
-                name="search"
-                placeholder="Buscar..."
-                onChange={(event) => {
-                  setSearchTerm(event.target.value);
-                  debouncedCallback(event.target.value);
-                }}
-                value={searchTerm}
-                icon={BiSearchAlt}
-                isLoading={isLoading}
-                className="search-field"
-              />
+                {!hasFilters && (
+                  <ButtonDefault typeButton="danger" isOutline onClick={handleClearFilters}>
+                    <div className="close-icon">
+                      <BiX size={30} />
+                    </div>
+                    Limpar filtros
+                  </ButtonDefault>
+                )}
 
-              {!hasFilters && (
-                <ButtonDefault typeButton="danger" isOutline onClick={handleClearFilters}>
-                  <div className="close-icon">
-                    <BiX size={30} />
-                  </div>
-                  Limpar filtros
+                <ButtonDefault
+                  typeButton="lightWhite"
+                  isOutline
+                  onClick={() => setModalFilters(true)}
+                >
+                  <BiFilter />
+                  Filtros
                 </ButtonDefault>
-              )}
+              </FiltersRequests>
+            </TableHead>
+            {!hasFilters && (
+              <FilterGroup style={{ width: 'calc(100vw - 260px)' }}>
+                <FilterTotal>
+                  <div className="filter-title">Filtros ({countNonEmptyProperties()}):</div>
+                  {choosenFilters.code !== '' ? <span>Código</span> : ''}
+                  {choosenFilters.format !== '' ? <span>Formato</span> : ''}
+                  {choosenFilters.status !== '' ? <span>Status</span> : ''}
+                  {choosenFilters.delivery !== '' ? <span>Entrega</span> : ''}
+                  {choosenFilters.fromDate !== '' ? <span>Data</span> : ''}
+                </FilterTotal>
 
-              <ButtonDefault
-                typeButton="lightWhite"
-                isOutline
-                onClick={() => setModalFilters(true)}
-              >
-                <BiFilter />
-                Filtros
-              </ButtonDefault>
-            </FiltersRequests>
+                <AppliedFilter>
+                  {choosenFilters.code !== '' ? (
+                    <div className="filter-title">
+                      Código: <span>{choosenFilters.code}</span>
+                    </div>
+                  ) : (
+                    ''
+                  )}
+
+                  {choosenFilters.format !== '' ? (
+                    <div className="filter-title">
+                      Formato: <span>{choosenFilters.format}</span>
+                    </div>
+                  ) : (
+                    ''
+                  )}
+                  {/* Ajustar */}
+                  {choosenFilters.status !== '' ? (
+                    <div className="filter-title">
+                      Status: <span>{selectedStatus?.name}</span>
+                    </div>
+                  ) : (
+                    ''
+                  )}
+
+                  {choosenFilters.delivery !== '' ? (
+                    <div className="filter-title">
+                      Entrega: <span>{moment(choosenFilters.delivery).format('DD/MM/YYYY')}</span>
+                    </div>
+                  ) : (
+                    ''
+                  )}
+
+                  {choosenFilters.fromDate !== '' ? (
+                    <div className="filter-title">
+                      Data inicial:{' '}
+                      <span>{moment(choosenFilters.fromDate).format('DD/MM/YYYY')}</span>
+                    </div>
+                  ) : (
+                    ''
+                  )}
+
+                  {choosenFilters.toDate !== '' ? (
+                    <div className="filter-title">
+                      Data final: <span>{moment(choosenFilters.toDate).format('DD/MM/YYYY')}</span>
+                    </div>
+                  ) : (
+                    ''
+                  )}
+                </AppliedFilter>
+              </FilterGroup>
+            )}
 
             <table>
               <thead>
@@ -270,6 +336,7 @@ export default function Requests() {
         onOpenChange={() => setModalFilters(!modalFilters)}
         applyFilters={handleApplyFilters}
         clearFilters={handleClearFilters}
+        clientSelected={setSelectedStatus}
         filterType="ticket"
       />
     </ContainerDefault>

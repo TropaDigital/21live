@@ -15,6 +15,7 @@ import {
   BackButton,
   Container,
   HeaderTitleInfos,
+  RightButtons,
   RightSideHeader,
   TitleBottomInfos,
   TitleTopInfos
@@ -24,13 +25,14 @@ interface HeaderTaskProps {
   title: TitleProps;
   backPage?: string;
   goBack?: boolean;
-  buttonType?: 'finish' | 'send';
+  buttonType?: 'finish' | 'send' | 'client';
   disableButton?: boolean;
   sendToNext?: () => void;
   nextStepInfo?: any;
   isInsideProduct?: boolean;
   backToDelivery?: () => void;
   hideButtonNext?: boolean;
+  backFlow: () => void;
 }
 
 interface TitleProps {
@@ -59,6 +61,7 @@ export default function HeaderOpenTask({
   nextStepInfo,
   isInsideProduct,
   backToDelivery,
+  backFlow,
   hideButtonNext
 }: HeaderTaskProps) {
   const navigate = useNavigate();
@@ -109,30 +112,46 @@ export default function HeaderOpenTask({
           </TitleBottomInfos>
         </HeaderTitleInfos>
 
-        {disableButton && buttonType === 'send' && !hideButtonNext && (
-          <ButtonDefault typeButton="blocked">
-            Enviar tarefa para {nextSteps?.name !== '' ? nextSteps?.name?.toLowerCase() : 'revisão'}
-            <HiOutlineArrowRight />
-          </ButtonDefault>
-        )}
-        {!disableButton && buttonType === 'send' && !hideButtonNext && (
-          <ButtonDefault typeButton="secondary" onClick={sendToNext}>
-            Enviar tarefa para {nextSteps?.name !== '' ? nextSteps?.name?.toLowerCase() : 'revisão'}
-            <HiOutlineArrowRight />
-          </ButtonDefault>
-        )}
-        {disableButton && buttonType === 'finish' && !hideButtonNext && (
-          <ButtonDefault typeButton="blocked">
-            Marcar entrega como concluída
-            <HiOutlineArrowRight />
-          </ButtonDefault>
-        )}
-        {!disableButton && buttonType === 'finish' && !hideButtonNext && (
-          <ButtonDefault typeButton="secondary" onClick={sendToNext}>
-            Marcar entrega como concluída
-            <HiOutlineArrowRight />
-          </ButtonDefault>
-        )}
+        <RightButtons>
+          {!hideButtonNext && (
+            <ButtonDefault typeButton="warning" isOutline onClick={backFlow}>
+              Retornar etapa
+            </ButtonDefault>
+          )}
+
+          {disableButton && buttonType === 'send' && !hideButtonNext && (
+            <ButtonDefault typeButton="blocked">
+              Enviar tarefa para{' '}
+              {nextSteps?.name !== '' ? nextSteps?.name?.toLowerCase() : 'revisão'}
+              <HiOutlineArrowRight />
+            </ButtonDefault>
+          )}
+          {!disableButton && buttonType === 'send' && !hideButtonNext && (
+            <ButtonDefault typeButton="secondary" onClick={sendToNext}>
+              Enviar tarefa para{' '}
+              {nextSteps?.name !== '' ? nextSteps?.name?.toLowerCase() : 'revisão'}
+              <HiOutlineArrowRight />
+            </ButtonDefault>
+          )}
+          {disableButton && buttonType === 'finish' && !hideButtonNext && (
+            <ButtonDefault typeButton="blocked">
+              Marcar entrega como concluída
+              <HiOutlineArrowRight />
+            </ButtonDefault>
+          )}
+          {!disableButton && buttonType === 'finish' && !hideButtonNext && (
+            <ButtonDefault typeButton="secondary" onClick={sendToNext}>
+              Marcar entrega como concluída
+              <HiOutlineArrowRight />
+            </ButtonDefault>
+          )}
+          {buttonType === 'client' && (
+            <ButtonDefault typeButton="secondary" onClick={sendToNext}>
+              Enviar para cliente
+              <HiOutlineArrowRight />
+            </ButtonDefault>
+          )}
+        </RightButtons>
       </RightSideHeader>
     </Container>
   );

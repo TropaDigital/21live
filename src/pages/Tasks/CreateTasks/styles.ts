@@ -229,3 +229,28 @@ export const DeliverySplitRadio = styled.div`
   font-size: var(--text-small-sm);
   font-weight: var(--weight-medium);
 `;
+
+export const UsersWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  height: fit-content;
+
+  div {
+    overflow-y: auto;
+
+    border-left: 1px solid var(--gray-200);
+    border-right: 1px solid var(--gray-200);
+
+    table {
+      tbody {
+        tr {
+          td {
+            height: 48px;
+          }
+        }
+      }
+    }
+  }
+`;

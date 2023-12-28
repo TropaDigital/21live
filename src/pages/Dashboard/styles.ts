@@ -43,6 +43,20 @@ export const CardBase = styled.div`
     font-size: var(--text-small-sm);
     font-weight: var(--weight-bold);
   }
+
+  .title-with-back {
+    display: flex;
+    align-items: center;
+
+    background: var(--gray-100);
+    border-radius: 8px;
+
+    padding: 8px;
+
+    color: var(--title-color);
+    font-size: var(--text-small-md);
+    font-weight: var(--weight-bold);
+  }
 `;
 
 export const JobStatus = styled.div`
@@ -156,7 +170,7 @@ export const GridServiceWrapper = styled.div`
 
   table {
     td {
-      padding: 6px 2px !important;
+      padding: 10px 4px !important;
     }
   }
 `;
@@ -290,37 +304,6 @@ export const OperatorTopWrapper = styled.div`
   gap: 30px;
 `;
 
-export const TimeChartsTopCard = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: 264px;
-  height: 264px;
-
-  border-radius: 12px;
-  border: 1px solid var(--gray-200);
-  background: var(--background-primary);
-
-  padding: 24px;
-  position: relative;
-
-  .card-title {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-
-    color: var(--gray-500);
-    font-size: var(--text-small-sm);
-    font-weight: var(--weight-medium);
-
-    span {
-      color: var(--gray-800);
-      font-size: var(--text-headline-lg);
-      font-weight: var(--weight-semibold);
-    }
-  }
-`;
-
 export const SmallCardsWrapper = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
@@ -364,6 +347,9 @@ export const HoursTable = styled.div`
 
   &.minus {
     color: var(--error-600);
+
+    background: var(--error-100);
+    border-radius: 16px;
   }
 `;
 
@@ -379,20 +365,6 @@ export const TdColor = styled.div`
     background-color: var(--warning-100);
     border-radius: 4px;
   }
-`;
-
-export const ClientPerformanceTraffic = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-`;
-
-export const BulletsWrapper = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: 60px;
-
-  padding-top: 70px;
 `;
 
 export const BulletPointInfos = styled.div`
@@ -417,4 +389,34 @@ export const BulletPointInfos = styled.div`
     content: '▪';
     margin-right: 12px;
   }
+`;
+
+export const BulletsClientWrapper = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+
+  margin-top: 18px;
+
+  padding-left: 12px;
+`;
+
+export const ModalReportWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  margin-top: 40px;
+
+  padding: 0 12px;
+
+  padding-bottom: 40px;
+`;
+
+export const ModalField = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 600px;
+  height: fit-content;
 `;

@@ -1,8 +1,8 @@
-import React from 'react';
-
+// Components
 import { FieldDefault } from '../../../components/UiElements/styles';
 import WrapperEditor from '../../../components/WrapperEditor';
 
+// Styles
 import { ContainerSteps } from './styles';
 
 interface DescriptionStepProps {

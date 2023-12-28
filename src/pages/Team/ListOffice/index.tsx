@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable import-helpers/order-imports */
 // react
 import { useCallback, useEffect, useState } from 'react';
@@ -11,6 +12,7 @@ import { useToast } from '../../../hooks/toast';
 import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useFetch } from '../../../hooks/useFetch';
 import useForm from '../../../hooks/useForm';
+import { useParamsHook } from '../../../hooks/useParams';
 
 // Components
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
@@ -29,22 +31,23 @@ import {
   FooterModal,
   SectionDefault
 } from '../../../components/UiElements/styles';
+import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
+import { SelectDefault } from '../../../components/Inputs/SelectDefault';
 
 // Styles
 // import { PermissionsList, PermissionsTitle, PermissionsWrapper } from './styles';
+import { SwitchField } from './styles';
 
 // Libraries
 import Switch from 'react-switch';
-import { SwitchSelector } from '../../../components/CardProductsSelected/styles';
-import InputSwitchDefault from '../../../components/Inputs/InputSwitchDefault';
-import { SwitchField } from './styles';
 
 interface OfficeProps {
   function_id: number;
   tenant_id: string;
   function: string;
   description: string;
-  show_hours: boolean;
+  show_hours: string;
+  deduct_hours: string;
 }
 
 // interface PermissionProps {
@@ -55,12 +58,14 @@ interface OfficeProps {
 
 export default function ListOffice() {
   const { addToast } = useToast();
-  const { formData, setData, handleOnChange, handleOnChangeSwitch } = useForm({
+  const { parameters, getParams } = useParamsHook();
+  const { formData, setData, handleOnChange, setFormValue } = useForm({
     function_id: 0,
     tenant_id: '',
     function: '',
     description: '',
-    show_hours: false
+    show_hours: 'false',
+    deduct_hours: ''
   } as OfficeProps);
 
   const [modal, setModal] = useState({
@@ -74,14 +79,20 @@ export default function ListOffice() {
     (search: string) => setSearch(search),
     700
   );
-  const { data, fetchData } = useFetch<OfficeProps[]>(`function?=${search}`);
-  // const [permissionFor, setPermissionFor] = useState<any[]>([]);
-  // const [permissionsData, setPermissionsData] = useState<PermissionProps[]>([]);
+  const { data, fetchData } = useFetch<OfficeProps[]>(
+    `function?search=${search.replace(/[^\w ]/g, '')}`
+  );
   const [showHours, setShowHours] = useState<boolean>(false);
 
   useEffect(() => {
-    if (formData.show_hours) {
+    getParams();
+  }, []);
+
+  useEffect(() => {
+    if (formData.show_hours === 'true') {
       setShowHours(true);
+    } else {
+      setShowHours(false);
     }
   }, [formData]);
 
@@ -94,7 +105,9 @@ export default function ListOffice() {
       function_id: 0,
       tenant_id: '',
       function: '',
-      description: ''
+      description: '',
+      show_hours: 'false',
+      deduct_hours: ''
     } as OfficeProps);
   }, [setData]);
 
@@ -103,7 +116,7 @@ export default function ListOffice() {
 
     setModal({
       isOpen: true,
-      type: `Editar serviço: ${item.function}`
+      type: `Editar cargo: ${item.function}`
     });
   };
 
@@ -131,75 +144,66 @@ export default function ListOffice() {
       try {
         event.preventDefault();
 
-        const { function: AsFuncation, description } = formData;
+        const { function: asFunction, description, show_hours, deduct_hours } = formData;
 
-        // Inserir lógica
         const newFormData = {
-          function: AsFuncation,
-          description
-          // permissions: permissionFor
+          function: asFunction,
+          description,
+          show_hours,
+          deduct_hours
         };
+
+        if (!showHours) {
+          delete newFormData.deduct_hours;
+        }
 
         if (modal.type === 'Novo Cargo') {
           await api.post('function', newFormData);
+          addToast({
+            type: 'success',
+            title: 'Sucesso',
+            description: 'Cargo cadastrado com sucesso!'
+          });
         } else {
           await api.put(`function/${formData.function_id}`, newFormData);
+          addToast({
+            type: 'success',
+            title: 'Sucesso',
+            description: 'Cargo editado com sucesso!'
+          });
         }
-
-        addToast({
-          type: 'success',
-          title: 'Sucesso',
-          description: 'Serviço cadastrado com sucesso!'
-        });
-
         handleOnCancel();
         fetchData();
       } catch (e: any) {
-        addToast({
-          type: 'danger',
-          title: 'ATENÇÃO',
-          description: e.response.data.message
-        });
+        if (e.response.data.result.length !== 0) {
+          e.response.data.result.map((row: any) => {
+            addToast({
+              type: 'danger',
+              title: 'ATENÇÃO',
+              description: row.error
+            });
+          });
+        } else {
+          addToast({
+            title: 'Atenção',
+            description: e.response.data.message,
+            type: 'danger'
+          });
+        }
       }
     },
     [formData, addToast, fetchData, handleOnCancel, modal]
   );
 
-  // const handleSwitch = (value: any) => {
-  //   setShowHours(value);
-  // };
+  const handleShowHours = (value: any) => {
+    if (value) {
+      setFormValue('show_hours', 'true');
+    }
 
-  // const handlePermissions = (id: any) => {
-  //   if (permissionFor.includes(id)) {
-  //     setPermissionFor(permissionFor.filter((obj) => obj !== id));
-  //   } else {
-  //     setPermissionFor((prevState: any) => [...prevState, id]);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   const handleGetPermissions = async () => {
-  //     try {
-  //       const response = await api.get(`/permissions`);
-
-  //       const allPermissions: PermissionProps[] = [];
-
-  //       response.data.result.map((row: any) => {
-  //         allPermissions.push({
-  //           permission_id: row.permission_id,
-  //           name: row.name,
-  //           checked: false
-  //         });
-  //       });
-
-  //       setPermissionsData(allPermissions);
-  //     } catch (error) {
-  //       console.log('log do error getting permissions');
-  //     }
-  //   };
-
-  //   handleGetPermissions();
-  // }, []);
+    if (!value) {
+      setFormValue('show_hours', 'false');
+    }
+  };
 
   return (
     <ContainerDefault>
@@ -248,6 +252,7 @@ export default function ListOffice() {
                   <th>ID</th>
                   <th>Cargo</th>
                   <th>Descrição</th>
+                  <th>Exibe horas</th>
                   <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
                 </tr>
               </thead>
@@ -258,6 +263,16 @@ export default function ListOffice() {
                     <td>#{String(row.function_id).padStart(5, '0')}</td>
                     <td>{row.function}</td>
                     <td>{row.description}</td>
+                    <td>
+                      <div style={{ paddingLeft: '20px' }}>
+                        <CheckboxDefault
+                          label=""
+                          name=""
+                          onChange={() => ''}
+                          checked={row.show_hours === 'true' ? true : false}
+                        />
+                      </div>
+                    </td>
                     <td>
                       <div className="fieldTableClients">
                         <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
@@ -296,37 +311,41 @@ export default function ListOffice() {
               value={formData.description}
             />
           </FieldDefault>
-          <SwitchField>
-            <Switch
-              onChange={(value: any) => setShowHours(value)}
-              checked={showHours}
-              uncheckedIcon={false}
-              checkedIcon={false}
-              onColor="#0046B5"
-              width={40}
-              height={21}
-            />
-            Exibir horas
-          </SwitchField>
-          {/* <PermissionsWrapper>
-            <PermissionsTitle>Permissões</PermissionsTitle>
-            <PermissionsList>
-              {permissionsData.map((row: PermissionProps, index: number) => (
-                <div className="permission-field" key={index}>
-                  <Switch
-                    onChange={() => handlePermissions(row.permission_id)}
-                    checked={permissionFor.includes(row.permission_id) ? true : false}
-                    uncheckedIcon={false}
-                    checkedIcon={false}
-                    onColor="#0046B5"
-                    width={40}
-                    height={21}
-                  />
-                  {row.name.split('_')[1]} - {row.name.split('_')[2]}
-                </div>
-              ))}
-            </PermissionsList>
-          </PermissionsWrapper> */}
+
+          <FieldDefault>
+            <SwitchField>
+              <Switch
+                onChange={(e: any) => handleShowHours(e)}
+                checked={formData.show_hours === 'true' ? true : false}
+                uncheckedIcon={false}
+                checkedIcon={false}
+                onColor="#0046B5"
+                width={40}
+                height={21}
+              />
+              Exibir horas
+            </SwitchField>
+          </FieldDefault>
+
+          {showHours && (
+            <FieldDefault>
+              <SelectDefault
+                label="Tipo de horas"
+                placeholder="Selecione"
+                name="deduct_hours"
+                onChange={handleOnChange}
+                value={formData.deduct_hours}
+              >
+                <option key={'creation'} value={'creation'}>
+                  Horas de atividade
+                </option>
+                <option key={'essay'} value={'essay'}>
+                  Horas de {parameters.input_name !== '' ? parameters.input_name : 'Pré-requisito'}
+                </option>
+              </SelectDefault>
+            </FieldDefault>
+          )}
+
           <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
             <ButtonDefault typeButton="dark" isOutline onClick={handleOnCancel}>
               Descartar
