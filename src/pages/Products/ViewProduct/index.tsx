@@ -610,7 +610,11 @@ export default function ViewProductsDeliveries() {
 
           const responseConclude = await api.put(`/task/send-for-evaluation`, payload);
 
-          console.log('log do response conclude', responseConclude.data.result);
+          addToast({
+            title: 'Sucesso',
+            description: 'Tarefa avançou para a próxima etapa.',
+            type: 'success'
+          });
           navigate('/minhas-tarefas');
           localStorage.removeItem('stopwatchState');
         }
@@ -624,6 +628,11 @@ export default function ViewProductsDeliveries() {
         console.log('log do response', response.data.result);
 
         if (response.data.result === 1) {
+          addToast({
+            title: 'Sucesso',
+            description: 'Tarefa avançou para a próxima etapa.',
+            type: 'success'
+          });
           navigate('/minhas-tarefas');
           localStorage.removeItem('stopwatchState');
         }
@@ -666,6 +675,11 @@ export default function ViewProductsDeliveries() {
         console.log('log do response', response.data.result);
 
         if (response.data.result === 1) {
+          addToast({
+            title: 'Sucesso',
+            description: 'Tarefa avançou para a próxima etapa.',
+            type: 'success'
+          });
           navigate('/minhas-tarefas');
           localStorage.removeItem('stopwatchState');
         }
@@ -1030,6 +1044,11 @@ export default function ViewProductsDeliveries() {
       console.log('log do response', response.data.result);
 
       if (response.data.result === 1) {
+        addToast({
+          title: 'Sucesso',
+          description: 'Tarefa avançou para a próxima etapa.',
+          type: 'success'
+        });
         navigate('/minhas-tarefas');
         localStorage.removeItem('stopwatchState');
       }
@@ -1202,19 +1221,19 @@ export default function ViewProductsDeliveries() {
           />
         )}
 
-        {dataTask?.status !== 'Concluida' &&
+        {/* {dataTask?.status !== 'Concluida' &&
           typeOfPlay === 'schedule' &&
           selectedProduct === '' && (
             <HeaderOpenTask
               title={titleInfos}
-              disableButton={false}
+              disableButton={true}
               goBack
               buttonType="send"
               sendToNext={() => checkFlow('next')}
               nextStepInfo={timeLineData}
               backFlow={() => setModalReturnFlow(true)}
             />
-          )}
+          )} */}
 
         {dataProducts?.status === 'Concluida' &&
           dataTask?.status !== 'Concluida' &&
@@ -1231,8 +1250,7 @@ export default function ViewProductsDeliveries() {
             />
           )}
 
-        {dataProducts?.status !== 'Concluida' &&
-          dataTask?.status !== 'Concluida' &&
+        {dataTask?.status !== 'Concluida' &&
           selectedProduct === '' &&
           typeOfPlay === 'schedule' &&
           !finalCard && (

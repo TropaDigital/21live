@@ -380,6 +380,8 @@ export default function CreateProject() {
         //   })
         // );
 
+        setLoading(true);
+
         const totalTime = sumTimes(productsHours);
         if (editProject) {
           const teamFiltered = DTOForm?.team.map((row: any) => ({
@@ -524,7 +526,7 @@ export default function CreateProject() {
             // });
           }
         }
-
+        setLoading(false);
         // console.log('log do post project', DTOForm);
         // console.log('log do post new data', createNewData);
       } catch (e: any) {
@@ -543,6 +545,7 @@ export default function CreateProject() {
             description: e.response.data.message
           });
         }
+        setLoading(false);
         // setErros(getValidationErrors(e.response.data.result))
       }
     },
@@ -880,7 +883,13 @@ export default function CreateProject() {
                   >
                     Editar projeto/contrato
                   </ButtonDefault>
-                  <ButtonDefault onClick={handleOnSubmit}>Salvar Projeto/Contrato</ButtonDefault>
+                  <ButtonDefault
+                    onClick={handleOnSubmit}
+                    typeButton={loading ? 'blocked' : 'primary'}
+                    disabled={loading}
+                  >
+                    Salvar Projeto/Contrato
+                  </ButtonDefault>
                 </FinishButtons>
               </div>
             </SummaryWrapper>

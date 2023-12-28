@@ -17,7 +17,7 @@ export default function InfoDescription({
   mentions
 }: DescriptionStepProps) {
   return (
-    <ContainerSteps>
+    <ContainerSteps style={{ paddingBottom: '64px' }}>
       <FieldDefault>
         <WrapperEditor
           mentionData={mentions}
