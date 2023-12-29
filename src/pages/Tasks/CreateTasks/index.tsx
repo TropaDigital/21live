@@ -1373,6 +1373,10 @@ export default function CreateTasks() {
           ]
         };
 
+        if (end_job === '') {
+          delete createNewData.end_job;
+        }
+
         if (ticket_id === '0') {
           delete createNewData.ticket_id;
         }
@@ -1418,6 +1422,10 @@ export default function CreateTasks() {
           gen_ticket,
           ticket_id
         };
+
+        if (end_job === '') {
+          delete createNewData.end_job;
+        }
 
         if (ticket_id === '0') {
           delete createNewData.ticket_id;
@@ -1468,6 +1476,10 @@ export default function CreateTasks() {
             ticket_id
           };
 
+          if (end_job === '') {
+            delete createNewData.end_job;
+          }
+
           if (ticket_id === '0') {
             delete createNewData.ticket_id;
           }
@@ -1515,6 +1527,10 @@ export default function CreateTasks() {
             gen_ticket,
             ticket_id
           };
+
+          if (end_job === '') {
+            delete createNewData.end_job;
+          }
 
           if (ticket_id === '0') {
             delete createNewData.ticket_id;
