@@ -1,5 +1,9 @@
 import styled from 'styled-components';
 
+interface LogoProps {
+  bgColor: string;
+}
+
 export const ReportWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -29,14 +33,21 @@ export const ClientWrapper = styled.div`
   gap: 12px;
 `;
 
-export const ClientLogo = styled.div`
+export const ClientLogo = styled.div<LogoProps>`
   display: flex;
   align-items: center;
   justify-content: center;
   width: 140px;
   height: 140px;
+  background: ${({ bgColor }) => (bgColor ? bgColor : 'black')};
+  border-radius: 8px;
 
-  background-color: red;
+  .logo-img {
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 90%;
+    height: 90%;
+  }
 `;
 
 export const ClientInfos = styled.div`

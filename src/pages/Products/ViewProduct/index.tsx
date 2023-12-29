@@ -164,11 +164,11 @@ export default function ViewProductsDeliveries() {
   //   (product: any) => product.status === 'Concluida'
   // );
 
-  const hasDismemberedProduct = (delivery: any): boolean => {
-    return delivery.products.some((product: any) => product.status === 'recusado');
-  };
+  // const hasDismemberedProduct = (delivery: any): boolean => {
+  //   return delivery.products.some((product: any) => product.status === 'recusado');
+  // };
 
-  const hasDismemberedProductInDeliveries = dataTask?.deliverys?.some(hasDismemberedProduct);
+  const hasToDismemberProduct = dataTask?.files?.some((obj: any) => obj.status === 'fail');
 
   useEffect(() => {
     async function getClockIsOpen() {
@@ -956,11 +956,11 @@ export default function ViewProductsDeliveries() {
   async function checkFlow(checkType: string) {
     try {
       setLoading(true);
-      if (hasDismemberedProductInDeliveries) {
+      if (hasToDismemberProduct) {
         setModalDismemberment(true);
       }
 
-      if (checkType === 'next') {
+      if (checkType === 'next' && !hasToDismemberProduct) {
         const response = await api.get(
           `/flow-function?step=${Number(actualStep) + 1}&flow_id=${dataTask?.flow_id}`
         );
@@ -975,7 +975,7 @@ export default function ViewProductsDeliveries() {
         }
       }
 
-      if (checkType === 'back') {
+      if (checkType === 'back' && !hasToDismemberProduct) {
         const response = await api.get(
           `/flow-function?step=${returnInfos.chosenStep}&flow_id=${dataTask?.flow_id}`
         );

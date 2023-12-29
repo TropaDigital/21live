@@ -1726,7 +1726,13 @@ export default function CreateTasks() {
         setTasksType('livre');
       } else {
         if (location.state !== null && location.state.ticket_id) {
-          setTasksType('horas');
+          if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel === 'true') {
+            setTasksType('horas');
+          } else if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel !== 'true') {
+            setTasksType('produto');
+          } else if (infoProjects[0]?.tipo !== 'product') {
+            setTasksType('livre');
+          }
         }
       }
     }
@@ -1852,6 +1858,10 @@ export default function CreateTasks() {
   // useEffect(() => {
   //   console.log('log do tipo de task', tasksType);
   // }, [tasksType]);
+
+  // useEffect(() => {
+  //   console.log('log do infoProjects =>', infoProjects);
+  // }, [infoProjects]);
 
   // useEffect(() => {
   //   console.log('log do products Array', productsArray);
