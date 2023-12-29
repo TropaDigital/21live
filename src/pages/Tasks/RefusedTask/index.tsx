@@ -220,7 +220,6 @@ export default function CreateTaksWithRefused() {
   const handleOnSubmit = useCallback(async () => {
     try {
       const {
-        card_name,
         copywriting_date_end,
         copywriting_description,
         creation_date_end,
@@ -229,79 +228,143 @@ export default function CreateTaksWithRefused() {
         description,
         end_job,
         files,
-        flow,
         flow_id,
-        organization_id,
-        parent_id,
-        paret_type,
-        product_period,
-        project,
-        project_category,
         project_product_id,
-        project_type,
         requester_id,
         start_job,
-        status,
         step,
         task_id,
-        tenant,
         tenant_id,
         ticket_id,
-        time,
-        time_consumed,
         title,
-        total_time,
-        type,
-        type_play,
-        urgent,
         user_id,
-        name,
-        project_id,
         gen_ticket
       } = formData;
 
+      // const deadline = [
+      //   {
+      //     delivery_id: '122',
+      //     task_id: '123',
+      //     date_end: '2024-01-12',
+      //     description: '<p>TST-X - 2</p>',
+      //     created: '2023-12-29 17:25:07',
+      //     updated: '2023-12-29 17:25:07',
+      //     order: '1',
+      //     title: '1ª entrega',
+      //     status: 'Pendente',
+      //     total_time: '02:00:00',
+      //     time_consumed: '00:00:00',
+      //     time_creation: '01:00:00',
+      //     time_essay: '01:00:00',
+      //     products: [
+      //       {
+      //         products_delivery_id: '158',
+      //         delivery_id: '122',
+      //         service: 'Ts-Prod-NaoListavel',
+      //         description:
+      //           'Fusce tempor nulla eget purus suscipit, a convallis dui vestibulum. Nullam rhoncus leo sapien, eget maximus augue dignissim at. Proin blandit massa sed quam convallis efficitur. Aenean varius magna non libero convallis facilisis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aliquam porta placerat lectus, a luctus erat sollicitudin non. Sed pretium risus arcu, vel tempus odio malesuada eget. Donec sollicitudin arcu sit amet semper malesuada. Curabitur a neque eu neque vulputate malesuada quis eu magna. Nam eget suscipit erat, vel porta felis. Maecenas a finibus orci. Maecenas maximus placerat est, eget facilisis dolor. Aliquam blandit magna a congue ullamcorper. Maecenas vitae sodales lacus. In cursus, odio malesuada varius placerat, enim ex tristique risus, non cursus sem nibh eget ipsum.\n\n',
+      //         reason_change: '1',
+      //         type: 'impresso',
+      //         size: '150X150',
+      //         flag: 'false',
+      //         minutes: '02:00:00',
+      //         quantity: '1',
+      //         period: '',
+      //         created: '2023-12-29 17:25:07',
+      //         updated: '2023-12-29 17:25:07',
+      //         category: 'NewTest',
+      //         job_service_id: '115',
+      //         status: 'Aguardando Aprovação',
+      //         minutes_consumed: '00:00:00',
+      //         minutes_creation: '01:00:00',
+      //         minutes_essay: '01:00:00',
+      //         ticket_interaction_id: '',
+      //         essay: '',
+      //         task_file_id: '',
+      //         product_return_id: '157'
+      //       }
+      //     ]
+      //   }
+      // ];
+
+      // const product = {
+      //   products_delivery_id: '158',
+      //   delivery_id: '122',
+      //   service: 'Ts-Prod-NaoListavel',
+      //   description:
+      //     'Fusce tempor nulla eget purus suscipit, a convallis dui vestibulum. Nullam rhoncus leo sapien, eget maximus augue dignissim at. Proin blandit massa sed quam convallis efficitur. Aenean varius magna non libero convallis facilisis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aliquam porta placerat lectus, a luctus erat sollicitudin non. Sed pretium risus arcu, vel tempus odio malesuada eget. Donec sollicitudin arcu sit amet semper malesuada. Curabitur a neque eu neque vulputate malesuada quis eu magna. Nam eget suscipit erat, vel porta felis. Maecenas a finibus orci. Maecenas maximus placerat est, eget facilisis dolor. Aliquam blandit magna a congue ullamcorper. Maecenas vitae sodales lacus. In cursus, odio malesuada varius placerat, enim ex tristique risus, non cursus sem nibh eget ipsum.\n\n',
+      //   reason_change: '1',
+      //   type: 'impresso',
+      //   size: '150X150',
+      //   flag: 'false',
+      //   minutes: '02:00:00',
+      //   quantity: '1',
+      //   period: '',
+      //   created: '2023-12-29 17:25:07',
+      //   updated: '2023-12-29 17:25:07',
+      //   category: 'NewTest',
+      //   job_service_id: '115',
+      //   status: 'Aguardando Aprovação',
+      //   minutes_consumed: '00:00:00',
+      //   minutes_creation: '01:00:00',
+      //   minutes_essay: '01:00:00',
+      //   ticket_interaction_id: '',
+      //   essay: '',
+      //   task_file_id: '',
+      //   product_return_id: '157'
+      // };
+
+      // const deadlines = deliverys?.map((row: any) => {
+      //   row.products.map((product: any) => {
+      //     return {
+      //       category: product.category,
+      //       delivery_id: product.delivery_id,
+      //       description: product.description,
+      //       essay: product.essay,
+      //       flag: product.flag,
+      //       job_service_id: product.job_service_id,
+      //       minutes: product.minutes,
+      //       minutes_consumed: product.minutes_consumed,
+      //       minutes_creation: product.minutes_creation,
+      //       minutes_essay: product.minutes_essay,
+      //       period: product.period,
+      //       product_return_id: product.product_return_id,
+      //       products_delivery_id: product.products_delivery_id,
+      //       quantity: product.quantity,
+      //       reason_change: product.reason_change,
+      //       service: product.service,
+      //       size: product.size,
+      //       status: product.status,
+      //       task_file_id: product.task_file_id,
+      //       ticket_interaction_id: product.ticket_interaction_id,
+      //       type: product.type
+      //     };
+      //   });
+      // });
+
       const createNewData = {
-        card_name,
         copywriting_date_end,
         copywriting_description,
         creation_date_end,
         creation_description,
-        deliverys,
+        deadlines: deliverys,
         description,
         end_job,
         files,
-        flow,
         flow_id,
-        organization_id,
-        parent_id,
-        paret_type,
-        product_period,
-        project,
-        project_category,
         project_product_id,
-        project_type,
         requester_id,
         start_job,
-        status,
         step,
         task_id,
-        tenant,
         tenant_id,
         ticket_id,
-        time,
-        time_consumed,
         title,
-        total_time,
-        type,
-        type_play,
-        urgent,
         user_id,
-        name,
-        project_id,
         gen_ticket
       };
 
-      await api.put(`tasks/${location.state.task_id}`, createNewData);
+      await api.put(`tasks/${location.state.id}`, createNewData);
 
       addToast({
         type: 'success',
@@ -369,9 +432,7 @@ export default function CreateTaksWithRefused() {
 
                   <SummaryTaskInfo>
                     <div className="title-info">Cliente:</div>
-                    <div className="info">
-                      {formData.tenant_id ? formData.tenant_id : 'Cliente'}
-                    </div>
+                    <div className="info">{formData.tenant ? formData.tenant : 'Cliente'}</div>
                   </SummaryTaskInfo>
 
                   <SummaryTaskInfo>
@@ -395,7 +456,7 @@ export default function CreateTaksWithRefused() {
                       </div>
                       <SummaryHoverInfo>Clique para editar o fluxo</SummaryHoverInfo>
                     </SummaryTaskTitleWithIcon>
-                    <div className="info">{formData.flow_id}</div>
+                    <div className="info">{formData.flow}</div>
                   </SummaryTaskInfo>
 
                   {/* Edit flow step */}
@@ -414,7 +475,7 @@ export default function CreateTaksWithRefused() {
                       </div>
                       <SummaryHoverInfo>Clique para editar a etapa do fluxo</SummaryHoverInfo>
                     </SummaryTaskTitleWithIcon>
-                    <div className="info">{formData.step}</div>
+                    <div className="info">{formData.card_name}</div>
                   </SummaryTaskInfo>
 
                   <SummaryTaskInfo>
