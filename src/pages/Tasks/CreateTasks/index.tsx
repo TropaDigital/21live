@@ -1866,7 +1866,7 @@ export default function CreateTasks() {
   }, [DTOForm.flow_id, DTOForm.project_product_id]);
 
   useEffect(() => {
-    if (DTOForm.flow_id && DTOForm.project_product_id) {
+    if (DTOForm.flow_id && DTOForm.project_product_id && DTOForm.ticket_id === '') {
       checkFlowAndProject();
     }
   }, [DTOForm.flow_id, DTOForm.project_product_id]);
