@@ -174,6 +174,18 @@ export const ProductsTable = styled.div`
         color: var(--success-600);
       }
     }
+
+    &.block {
+      cursor: not-allowed;
+
+      &:hover {
+        background-color: var(--error-200);
+
+        svg {
+          color: var(--error-500);
+        }
+      }
+    }
   }
 
   /* @media (max-width: 1600px) {
