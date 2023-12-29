@@ -154,7 +154,6 @@ export default function CreateTaksWithRefused() {
   const [loading, setLoading] = useState<boolean>(false);
 
   const { data: dataFlow } = useFetch<any[]>(`/flow?perPage=1000`);
-  const selectedProducts: any[] = [];
 
   // async function getTimelineData() {
   //   try {
@@ -329,9 +328,9 @@ export default function CreateTaksWithRefused() {
     }
   }, [formData]);
 
-  // useEffect(() => {
-  //   console.log('log do formData =>', formData);
-  // }, [formData]);
+  useEffect(() => {
+    console.log('log do formData =>', formData);
+  }, [formData]);
 
   return (
     <RefusedWrapper>
@@ -468,7 +467,7 @@ export default function CreateTaksWithRefused() {
               <SummaryDefault className="big">
                 <div className="title">Produtos selecionados</div>
 
-                {selectedProducts?.map((row: any, index: any) => (
+                {formData.deliverys?.map((row: any, index: any) => (
                   <DeliveriesWrapper key={index}>
                     <DeliveriesTitle>
                       {row.title ? row.title : `${index + 1}ª Entrega`}
@@ -538,18 +537,20 @@ export default function CreateTaksWithRefused() {
               </div>
               <div className="splitter"></div>
               <div className="item-hours">
-                Horas estimadas: <span>{formData.total_time}</span>
+                Horas estimadas: <span>{formData?.total_time}</span>
               </div>
-              <div className="item-hours">
-                Horas disponíveis:
-                {subtractTime(formData.tempo, formData.total_time).includes('-') ? (
-                  <div className="negative">
-                    {subtractTime(formData.tempo, formData.total_time)}
-                  </div>
-                ) : (
-                  <span>{subtractTime(formData.tempo, formData.total_time)}</span>
-                )}
-              </div>
+              {formData.time !== '' && formData.time_consumed !== '' && (
+                <div className="item-hours">
+                  Horas disponíveis:
+                  {subtractTime(formData.time, formData.time_consumed).includes('-') ? (
+                    <div className="negative">
+                      {subtractTime(formData.time, formData.time_consumed)}
+                    </div>
+                  ) : (
+                    <span>{subtractTime(formData.time, formData.time_consumed)}</span>
+                  )}
+                </div>
+              )}
 
               <SummaryButtons>
                 <ButtonDefault onClick={handleOnSubmit}>Criar tarefa</ButtonDefault>

@@ -29,6 +29,9 @@ import { IoMdDownload } from 'react-icons/io';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
+// Images
+// import Logo from '../../assets/logo-21BRZ.png';
+
 interface ReportProps {
   client: string;
   contract: string;
@@ -149,7 +152,9 @@ export default function MonthlyReport() {
       <ReportWrapper ref={inputRef}>
         <ReportHeader>
           <ClientWrapper>
-            <ClientLogo>Logo</ClientLogo>
+            <ClientLogo bgColor="">
+              {/* <div className="logo-img" style={{ backgroundImage: `url(${Logo})` }}></div> */}
+            </ClientLogo>
             <ClientInfos>
               <div className="report-title">Reporte mensal</div>
               <div className="client-name">Cliente: TEREX</div>
