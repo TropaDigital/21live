@@ -30,18 +30,18 @@ import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 import { useAuth } from '../../../hooks/AuthContext';
 import { FaUpload } from 'react-icons/fa';
 
-interface Product {
-  id: string;
-  title: string;
-  consumedTime: string;
-  estimatedTime: string;
-  description: string;
-  format: string;
-  formatType: string;
-  type: string;
-  status: string;
-  copywriting_date_end: string;
-}
+// interface Product {
+//   id: string;
+//   title: string;
+//   consumedTime: string;
+//   estimatedTime: string;
+//   description: string;
+//   format: string;
+//   formatType: string;
+//   type: string;
+//   status: string;
+//   copywriting_date_end: string;
+// }
 
 interface ProductTableProps {
   data: any;
@@ -204,9 +204,16 @@ export default function ProductTable({
                     ? 'Alteração Interna'
                     : 'Alteração externa'}
                 </td>
-                {uploadEnabled && (
+                {uploadEnabled && row.status !== 'Desmembrada' && (
                   <td onClick={() => uploadProduct(row)}>
                     <div className="upload">
+                      <FaUpload />
+                    </div>
+                  </td>
+                )}
+                {uploadEnabled && row.status === 'Desmembrada' && (
+                  <td>
+                    <div className="upload block">
                       <FaUpload />
                     </div>
                   </td>

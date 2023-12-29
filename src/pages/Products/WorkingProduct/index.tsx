@@ -729,18 +729,21 @@ export default function WorkingProduct({
           </ButtonsWrapper>
         )}
 
-        {selectedTab === 'Arquivos' && uploadEnabled && uploadClient && (
-          <ButtonsWrapper>
-            {/* {sendToApprove && (
+        {selectedTab === 'Arquivos' &&
+          uploadEnabled &&
+          uploadClient &&
+          productInfos?.status !== 'Desmembrada' && (
+            <ButtonsWrapper>
+              {/* {sendToApprove && (
               <ButtonDefault typeButton="primary" onClick={toApprove}>
                 Enviar para aprovação
               </ButtonDefault>
             )} */}
-            <ButtonDefault typeButton="primary" onClick={() => setModalFinalFile(true)}>
-              Adicionar arquivo
-            </ButtonDefault>
-          </ButtonsWrapper>
-        )}
+              <ButtonDefault typeButton="primary" onClick={() => setModalFinalFile(true)}>
+                Adicionar arquivo
+              </ButtonDefault>
+            </ButtonsWrapper>
+          )}
       </TabsWrapper>
 
       <WorkSection>
