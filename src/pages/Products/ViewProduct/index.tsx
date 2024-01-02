@@ -1534,9 +1534,9 @@ export default function ViewProductsDeliveries() {
               cardTitle={state.isRunning ? 'Atividade iniciada' : 'Iniciar atividade'}
               dataTime={data ? data?.estimatedTime : '00:00:00'}
               blockPlay={
-                typeOfPlay === 'product' && selectedProduct === ''
+                typeOfPlay === 'schedule' && selectedProduct !== ''
                   ? true
-                  : typeOfPlay === 'schedule' && selectedProduct !== ''
+                  : typeOfPlay === 'product' && selectedProduct === ''
                   ? true
                   : false
               }
