@@ -241,113 +241,29 @@ export default function CreateTaksWithRefused() {
         gen_ticket
       } = formData;
 
-      // const deadline = [
-      //   {
-      //     delivery_id: '122',
-      //     task_id: '123',
-      //     date_end: '2024-01-12',
-      //     description: '<p>TST-X - 2</p>',
-      //     created: '2023-12-29 17:25:07',
-      //     updated: '2023-12-29 17:25:07',
-      //     order: '1',
-      //     title: '1ª entrega',
-      //     status: 'Pendente',
-      //     total_time: '02:00:00',
-      //     time_consumed: '00:00:00',
-      //     time_creation: '01:00:00',
-      //     time_essay: '01:00:00',
-      //     products: [
-      //       {
-      //         products_delivery_id: '158',
-      //         delivery_id: '122',
-      //         service: 'Ts-Prod-NaoListavel',
-      //         description:
-      //           'Fusce tempor nulla eget purus suscipit, a convallis dui vestibulum. Nullam rhoncus leo sapien, eget maximus augue dignissim at. Proin blandit massa sed quam convallis efficitur. Aenean varius magna non libero convallis facilisis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aliquam porta placerat lectus, a luctus erat sollicitudin non. Sed pretium risus arcu, vel tempus odio malesuada eget. Donec sollicitudin arcu sit amet semper malesuada. Curabitur a neque eu neque vulputate malesuada quis eu magna. Nam eget suscipit erat, vel porta felis. Maecenas a finibus orci. Maecenas maximus placerat est, eget facilisis dolor. Aliquam blandit magna a congue ullamcorper. Maecenas vitae sodales lacus. In cursus, odio malesuada varius placerat, enim ex tristique risus, non cursus sem nibh eget ipsum.\n\n',
-      //         reason_change: '1',
-      //         type: 'impresso',
-      //         size: '150X150',
-      //         flag: 'false',
-      //         minutes: '02:00:00',
-      //         quantity: '1',
-      //         period: '',
-      //         created: '2023-12-29 17:25:07',
-      //         updated: '2023-12-29 17:25:07',
-      //         category: 'NewTest',
-      //         job_service_id: '115',
-      //         status: 'Aguardando Aprovação',
-      //         minutes_consumed: '00:00:00',
-      //         minutes_creation: '01:00:00',
-      //         minutes_essay: '01:00:00',
-      //         ticket_interaction_id: '',
-      //         essay: '',
-      //         task_file_id: '',
-      //         product_return_id: '157'
-      //       }
-      //     ]
-      //   }
-      // ];
+      const updateProducts = (dataArray: any[]) => {
+        const updatedData = dataArray.map((item) => {
+          const updatedProducts = item.products.map((product: any) => {
+            // Remove the file_status key from the product object
+            const { file_status, ...rest } = product;
+            return rest;
+          });
 
-      // const product = {
-      //   products_delivery_id: '158',
-      //   delivery_id: '122',
-      //   service: 'Ts-Prod-NaoListavel',
-      //   description:
-      //     'Fusce tempor nulla eget purus suscipit, a convallis dui vestibulum. Nullam rhoncus leo sapien, eget maximus augue dignissim at. Proin blandit massa sed quam convallis efficitur. Aenean varius magna non libero convallis facilisis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aliquam porta placerat lectus, a luctus erat sollicitudin non. Sed pretium risus arcu, vel tempus odio malesuada eget. Donec sollicitudin arcu sit amet semper malesuada. Curabitur a neque eu neque vulputate malesuada quis eu magna. Nam eget suscipit erat, vel porta felis. Maecenas a finibus orci. Maecenas maximus placerat est, eget facilisis dolor. Aliquam blandit magna a congue ullamcorper. Maecenas vitae sodales lacus. In cursus, odio malesuada varius placerat, enim ex tristique risus, non cursus sem nibh eget ipsum.\n\n',
-      //   reason_change: '1',
-      //   type: 'impresso',
-      //   size: '150X150',
-      //   flag: 'false',
-      //   minutes: '02:00:00',
-      //   quantity: '1',
-      //   period: '',
-      //   created: '2023-12-29 17:25:07',
-      //   updated: '2023-12-29 17:25:07',
-      //   category: 'NewTest',
-      //   job_service_id: '115',
-      //   status: 'Aguardando Aprovação',
-      //   minutes_consumed: '00:00:00',
-      //   minutes_creation: '01:00:00',
-      //   minutes_essay: '01:00:00',
-      //   ticket_interaction_id: '',
-      //   essay: '',
-      //   task_file_id: '',
-      //   product_return_id: '157'
-      // };
+          // Update the products array in the current item
+          return { ...item, products: updatedProducts };
+        });
 
-      // const deadlines = deliverys?.map((row: any) => {
-      //   row.products.map((product: any) => {
-      //     return {
-      //       category: product.category,
-      //       delivery_id: product.delivery_id,
-      //       description: product.description,
-      //       essay: product.essay,
-      //       flag: product.flag,
-      //       job_service_id: product.job_service_id,
-      //       minutes: product.minutes,
-      //       minutes_consumed: product.minutes_consumed,
-      //       minutes_creation: product.minutes_creation,
-      //       minutes_essay: product.minutes_essay,
-      //       period: product.period,
-      //       product_return_id: product.product_return_id,
-      //       products_delivery_id: product.products_delivery_id,
-      //       quantity: product.quantity,
-      //       reason_change: product.reason_change,
-      //       service: product.service,
-      //       size: product.size,
-      //       status: product.status,
-      //       task_file_id: product.task_file_id,
-      //       ticket_interaction_id: product.ticket_interaction_id,
-      //       type: product.type
-      //     };
-      //   });
-      // });
+        return updatedData;
+      };
+
+      const updatedData = updateProducts(deliverys);
 
       const createNewData = {
         copywriting_date_end,
         copywriting_description,
         creation_date_end,
         creation_description,
-        deadlines: deliverys,
+        deadlines: updatedData,
         description,
         end_job,
         files,
@@ -363,6 +279,8 @@ export default function CreateTaksWithRefused() {
         user_id,
         gen_ticket
       };
+
+      // console.log('log do deadlinesArray', updatedData);
 
       await api.put(`tasks/${location.state.id}`, createNewData);
 
