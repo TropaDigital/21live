@@ -515,7 +515,7 @@ export default function Services() {
           type,
           minutes_creation,
           minutes_essay,
-          category,
+          service_category_id,
           flag,
           size,
           tenant_id
@@ -523,7 +523,7 @@ export default function Services() {
         const newFormData = {
           service,
           description,
-          category,
+          service_category_id,
           flag,
           type,
           size,
@@ -536,7 +536,7 @@ export default function Services() {
           const newFormData = {
             service,
             description,
-            category,
+            service_category_id,
             flag,
             type,
             size,
@@ -555,7 +555,7 @@ export default function Services() {
           const updateFormData = {
             service,
             description,
-            category,
+            service_category_id,
             flag,
             type,
             size,

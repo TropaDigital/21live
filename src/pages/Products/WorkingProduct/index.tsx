@@ -280,7 +280,7 @@ export default function WorkingProduct({
 
   useEffect(() => {
     if (selectedTab === 'Comentários') {
-      getComments('system');
+      getComments('');
       setInputschanges({
         copywriting_description: taskInputs?.copywriting_description,
         creation_description: taskInputs?.creation_description
@@ -402,9 +402,9 @@ export default function WorkingProduct({
   const handleShowLogs = () => {
     if (logIsOn) {
       setLogIsOn(false);
-      getComments('system');
-    } else {
       getComments('');
+    } else {
+      getComments('system');
       setLogIsOn(true);
     }
   };
