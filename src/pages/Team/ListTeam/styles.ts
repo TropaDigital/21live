@@ -184,21 +184,21 @@ export const FilterTeamWrapper = styled.div`
   gap: 12px;
 `;
 
-export const FiltersList = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
+// export const FiltersList = styled.div`
+//   display: flex;
+//   align-items: center;
+//   gap: 12px;
 
-  padding: 0 24px;
-  margin-bottom: 24px;
-`;
+//   padding: 0 24px;
+//   margin-bottom: 24px;
+// `;
 
-export const FilterName = styled.div`
-  background-color: var(--gray-200);
-  border-radius: 4px;
+// export const FilterName = styled.div`
+//   background-color: var(--gray-200);
+//   border-radius: 4px;
 
-  padding: 4px 12px;
+//   padding: 4px 12px;
 
-  color: var(--gray-900);
-  font-weight: var(--weight-semibold);
-`;
+//   color: var(--gray-900);
+//   font-weight: var(--weight-semibold);
+// `;

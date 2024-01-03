@@ -68,9 +68,7 @@ import {
   CardsWrapper,
   ChangeNameField,
   DivHour,
-  FilterName,
   FilterTeamWrapper,
-  FiltersList,
   ModalButtons,
   ModalSubtitle,
   ModalWrapper,
@@ -740,10 +738,11 @@ export default function Team() {
           </FieldDefault>
           <FieldDefault>
             <InputDefault
-              label="UserName (utilizado para logar na plataforma)"
+              label="Username"
               name="username"
               onChange={handleOnChange}
               value={formData.username}
+              alert="Utilizado para logar na plataforma"
               required
               placeholder="Digite seu username..."
               icon={BiUser}
