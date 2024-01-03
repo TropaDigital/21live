@@ -17,6 +17,7 @@ export const UserInfo = styled.div`
   display: flex;
   align-items: center;
   gap: 14px;
+  min-width: 295px;
 
   .user-image {
     width: 100px;
