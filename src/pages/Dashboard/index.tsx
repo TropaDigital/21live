@@ -61,6 +61,8 @@ import { TenantProps } from '../../utils/models';
 
 // Types
 import { ServicesProps } from '../../types';
+import TaskTable from '../../components/Ui/TaskTable';
+import useDebouncedCallback from '../../hooks/useDebounced';
 
 // interface DashType {
 //   typeDash: 'admin' | 'executive' | 'traffic' | 'operator' | '';
@@ -131,6 +133,19 @@ export default function Dashboard() {
   );
   const [modalFilters, setModalFilters] = useState<boolean>(false);
   const [modalReport, setModalReport] = useState<boolean>(false);
+
+  const [search, setSearch] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selected, setSelected] = useState<number>(1);
+  const { isLoading, debouncedCallback } = useDebouncedCallback(
+    (search: string) => setSearch(search),
+    700
+  );
+  const {
+    data: dataTasks,
+    pages,
+    isFetching: fetchingTask
+  } = useFetch<any[]>(`my-tasks?search=${search.replace(/[^\w ]/g, '')}&page=${selected}`);
 
   const clientsOptions = dataClient?.map((row) => {
     return {
@@ -377,56 +392,61 @@ export default function Dashboard() {
 
   const topTenantJobs = [
     {
-      name: data ? data.top_tenant[0]?.name : '',
-      Total: data ? data.top_tenant[0]?.total : 0,
+      name: data && dashType === 'admin' ? data.top_tenant[0]?.name : '',
+      Total: data && dashType === 'admin' ? data.top_tenant[0]?.total : 0,
       fill: '#59B7FF'
     },
     {
-      name: data ? data.top_tenant[1]?.name : '',
-      Total: data ? data.top_tenant[1]?.total : 0,
+      name: data && dashType === 'admin' ? data.top_tenant[1]?.name : '',
+      Total: data && dashType === 'admin' ? data.top_tenant[1]?.total : 0,
       fill: '#0045B5'
     },
     {
-      name: data ? data.top_tenant[2]?.name : '',
-      Total: data ? data.top_tenant[2]?.total : 0,
+      name: data && dashType === 'admin' ? data.top_tenant[2]?.name : '',
+      Total: data && dashType === 'admin' ? data.top_tenant[2]?.total : 0,
       fill: '#0077E6'
     },
     {
-      name: data ? data.top_tenant[3]?.name : '',
-      Total: data ? data.top_tenant[3]?.total : 0,
+      name: data && dashType === 'admin' ? data.top_tenant[3]?.name : '',
+      Total: data && dashType === 'admin' ? data.top_tenant[3]?.total : 0,
       fill: '#E2F2FF'
     },
     {
-      name: data ? data.top_tenant[4]?.name : '',
-      Total: data ? data.top_tenant[4]?.total : 0,
+      name: data && dashType === 'admin' ? data.top_tenant[4]?.name : '',
+      Total: data && dashType === 'admin' ? data.top_tenant[4]?.total : 0,
       fill: '#0065D4'
     }
   ];
 
   const topTenantHours = [
     {
-      name: data ? data.top_horas[0]?.name : '',
-      Total: data ? Number(data.top_horas[0]?.totalTimeSum.split(':')[0]) : 0,
+      name: data && dashType === 'admin' ? data.top_horas[0]?.name : '',
+      Total:
+        data && dashType === 'admin' ? Number(data.top_horas[0]?.totalTimeSum?.split(':')[0]) : 0,
       fill: '#59B7FF'
     },
     {
-      name: data ? data.top_horas[1]?.name : '',
-      Total: data ? Number(data.top_horas[1]?.totalTimeSum.split(':')[0]) : 0,
+      name: data && dashType === 'admin' ? data.top_horas[1]?.name : '',
+      Total:
+        data && dashType === 'admin' ? Number(data.top_horas[1]?.totalTimeSum?.split(':')[0]) : 0,
       fill: '#0045B5'
     },
     {
-      name: data ? data.top_horas[2]?.name : '',
-      Total: data ? Number(data.top_horas[2]?.totalTimeSum.split(':')[0]) : 0,
+      name: data && dashType === 'admin' ? data.top_horas[2]?.name : '',
+      Total:
+        data && dashType === 'admin' ? Number(data.top_horas[2]?.totalTimeSum?.split(':')[0]) : 0,
       fill: '#0077E6'
     },
     {
-      name: data ? data.top_horas[3]?.name : '',
-      Total: data ? Number(data.top_horas[3]?.totalTimeSum.split(':')[0]) : 0,
+      name: data && dashType === 'admin' ? data.top_horas[3]?.name : '',
+      Total:
+        data && dashType === 'admin' ? Number(data.top_horas[3]?.totalTimeSum?.split(':')[0]) : 0,
       fill: '#E2F2FF'
     },
     {
-      name: data ? data.top_horas[4]?.name : '',
-      Total: data ? Number(data.top_horas[4]?.totalTimeSum.split(':')[0]) : 0,
+      name: data && dashType === 'admin' ? data.top_horas[4]?.name : '',
+      Total:
+        data && dashType === 'admin' ? Number(data.top_horas[4]?.totalTimeSum?.split(':')[0]) : 0,
       fill: '#0065D4'
     }
   ];
@@ -438,7 +458,7 @@ export default function Dashboard() {
       title: 'Total de clientes'
     },
     {
-      data: data ? data.tarefas_quantidade.total : 0,
+      data: data ? data.tarefas_quantidade?.total : 0,
       type: 'jobs',
       title: 'Total Jobs'
     },
@@ -523,7 +543,6 @@ export default function Dashboard() {
   const userCards: UserCardProps[] = [
     {
       userInfos: {
-
         user_name: data && dashType === 'admin' ? data.top_users[0]?.name : '',
         clientsNumber: data && dashType === 'admin' ? data.top_users[0]?.clientes : 0,
         avatar: PersonTest
@@ -551,7 +570,7 @@ export default function Dashboard() {
         pendingApro: data && dashType === 'admin' ? data.top_users[1]?.aguardando_aprovacao : 0,
         approved: data && dashType === 'admin' ? data.top_users[1]?.entregue : 0
       },
-       
+
       mensalReport: {
         reunions: data && dashType === 'admin' ? data.top_users[1]?.reuniao : 0,
         reports: '???'
@@ -759,6 +778,11 @@ export default function Dashboard() {
     return lastTenYears;
   }
 
+  const handleNavigateTask = (infos: any) => {
+    const taskId = infos?.task?.task_id;
+    navigate(`/entregas/${infos.task.task_id}`, { state: taskId });
+  };
+
   const hasFilters = Object.values(filter).every((obj) => obj === null || obj === '');
 
   // useEffect(() => {
@@ -941,7 +965,7 @@ export default function Dashboard() {
           <CardBase>
             <div className="card-title">Performance do Atendimento</div>
 
-            {userCards.map((row: UserCardProps, index: any) => (
+            {userCards?.map((row: UserCardProps, index: any) => (
               <UserPerformanceCard
                 key={index}
                 userInfos={row.userInfos}
@@ -1828,12 +1852,7 @@ export default function Dashboard() {
                 title="Top clientes (Jobs)"
                 height=""
               />
-              <BarChartGrafic
-                data={topTenantHours}
-                isVertical={true}
-                title="Top clientes (Horas)"
-                height=""
-              />
+              <BarChartGrafic data={[]} isVertical={true} title="Top clientes (Horas)" height="" />
             </div>
           </CardBase>
         </SectionDefault>
@@ -1873,7 +1892,7 @@ export default function Dashboard() {
               </thead>
 
               <tbody>
-                {jobsDataList.map((row: JobsList) => (
+                {jobsDataList?.map((row: JobsList) => (
                   <tr key={row.id_job}>
                     <td>{row.client_name}</td>
                     <td>{row.team}</td>
@@ -1931,7 +1950,7 @@ export default function Dashboard() {
                     </thead>
 
                     <tbody>
-                      {jobsListIndividual.map((row) => (
+                      {jobsListIndividual?.map((row) => (
                         <tr key={row.id_job}>
                           <td>{row.client_name}</td>
                           <td>{row.job_name}</td>
@@ -2151,9 +2170,19 @@ export default function Dashboard() {
           </OperatorTopWrapper>
 
           {/* Listagem de jobs */}
-          <div>
-            Aqui vão as tarefas iguais ao <strong>MINHAS TAREFAS</strong>
-          </div>
+          <TaskTable
+            data={dataTasks ? dataTasks : []}
+            loading={isLoading}
+            searchInput={(value: any) => {
+              setSearchTerm(value);
+              debouncedCallback(value);
+            }}
+            searchInfo={searchTerm}
+            addFilter={''}
+            taskSelected={handleNavigateTask}
+            pages={pages}
+            pageSelected={setSelected}
+          />
         </SectionDefault>
       )}
 

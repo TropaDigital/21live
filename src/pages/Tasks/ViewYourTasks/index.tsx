@@ -49,7 +49,7 @@ export default function ViewTaskList() {
     700
   );
   const { data, pages, isFetching } = useFetch<any[]>(
-    `my-tasks?search=${search.replace('#', '')}&page=${selected}`
+    `my-tasks?search=${search.replace(/[^\w ]/g, '')}&page=${selected}`
   );
 
   const handleFilters = () => {
