@@ -1340,7 +1340,7 @@ export default function ViewProductsDeliveries() {
               disableButton={typeOfPlay === 'product' ? false : true}
               goBack
               buttonType="finish"
-              sendToNext={() => checkFlow('next')}
+              sendToNext={handleConcludeTask}
               nextStepInfo={timeLineData}
               backToDelivery={() => setViewProduct(false)}
               isInsideProduct={true}
@@ -1378,7 +1378,7 @@ export default function ViewProductsDeliveries() {
               disableButton={true}
               goBack
               buttonType="finish"
-              sendToNext={() => checkFlow('next')}
+              sendToNext={handleConcludeTask}
               nextStepInfo={timeLineData}
               backToDelivery={() => setViewProduct(false)}
               isInsideProduct={true}
