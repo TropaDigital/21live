@@ -23,6 +23,8 @@ export const InputFieldTitle = styled.div`
   font-size: var(--text-small-sm);
   font-weight: var(--weight-medium);
 
+  text-transform: capitalize;
+
   span {
     color: var(--input-error);
     font-size: var(--text-small-sm);
