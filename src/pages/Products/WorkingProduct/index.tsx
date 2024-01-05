@@ -198,7 +198,7 @@ export default function WorkingProduct({
   const { addToast } = useToast();
   const { parameters, getParams } = useParamsHook();
   const [loading, setLoading] = useState<boolean>(false);
-  const [selectedTab, setSelectedTab] = useState<string>('Redação');
+  const [selectedTab, setSelectedTab] = useState<string>('Inputs');
   const [notifications, setNotifications] = useState<boolean>(false);
   const [chatMessage, setChatMessage] = useState<string>('');
   const [dataComments, setDataComments] = useState<ChatMessages[]>([]);
@@ -645,10 +645,10 @@ export default function WorkingProduct({
             setSelectedTab(e.target.innerText);
             setLogIsOn(false);
           }}
-          className={selectedTab === 'Redação' ? 'active' : ''}
+          className={selectedTab === 'Inputs' ? 'active' : ''}
         >
-          <IconText />
-          Redação
+          <BiInfoCircle />
+          Inputs
         </TaskTab>
 
         <TaskTab
@@ -656,10 +656,10 @@ export default function WorkingProduct({
             setSelectedTab(e.target.innerText);
             setLogIsOn(false);
           }}
-          className={selectedTab === 'Inputs' ? 'active' : ''}
+          className={selectedTab === 'Redação' ? 'active' : ''}
         >
-          <BiInfoCircle />
-          Inputs
+          <IconText />
+          Redação
         </TaskTab>
 
         <TaskTab
@@ -747,36 +747,6 @@ export default function WorkingProduct({
       </TabsWrapper>
 
       <WorkSection>
-        {selectedTab === 'Redação' && (
-          <>
-            {user.permissions.includes('jobs_tasks_essay') ? (
-              <div>
-                <WrapperEditor
-                  value={essayInfo}
-                  mentionData={[]}
-                  handleOnDescription={(value: any) => setEssayInfo(value)}
-                />
-
-                <FooterSection>
-                  <ButtonDefault
-                    typeButton="lightWhite"
-                    isOutline
-                    onClick={() => navigate('/minhas-tarefas')}
-                  >
-                    Descartar
-                  </ButtonDefault>
-                  <ButtonDefault typeButton="primary" onClick={handleSaveEssay}>
-                    Salvar Redação
-                  </ButtonDefault>
-                </FooterSection>
-              </div>
-            ) : (
-              <EssayInfo>
-                <div dangerouslySetInnerHTML={{ __html: essayInfo }} />
-              </EssayInfo>
-            )}
-          </>
-        )}
         {selectedTab === 'Inputs' && (
           <>
             <div
@@ -817,6 +787,36 @@ export default function WorkingProduct({
                 Salvar Inputs
               </ButtonDefault>
             </FooterSection>
+          </>
+        )}
+        {selectedTab === 'Redação' && (
+          <>
+            {user.permissions.includes('jobs_tasks_essay') ? (
+              <div>
+                <WrapperEditor
+                  value={essayInfo}
+                  mentionData={[]}
+                  handleOnDescription={(value: any) => setEssayInfo(value)}
+                />
+
+                <FooterSection>
+                  <ButtonDefault
+                    typeButton="lightWhite"
+                    isOutline
+                    onClick={() => navigate('/minhas-tarefas')}
+                  >
+                    Descartar
+                  </ButtonDefault>
+                  <ButtonDefault typeButton="primary" onClick={handleSaveEssay}>
+                    Salvar Redação
+                  </ButtonDefault>
+                </FooterSection>
+              </div>
+            ) : (
+              <EssayInfo>
+                <div dangerouslySetInnerHTML={{ __html: essayInfo }} />
+              </EssayInfo>
+            )}
           </>
         )}
         {selectedTab === 'Comentários' && (
@@ -1119,7 +1119,7 @@ export default function WorkingProduct({
             folderInfo="tasks"
           />
 
-          <div className="select-product">Para qual produto?</div>
+          {/* <div className="select-product">Para qual produto?</div> */}
 
           <div className="modal-buttons">
             <ButtonDefault typeButton="lightWhite" isOutline onClick={() => setModalUpload(false)}>
