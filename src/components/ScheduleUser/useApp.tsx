@@ -84,7 +84,7 @@ export function useApp({ starterDate, finishDate, data, taskDate }: AppDataProps
     channels: channelsData,
     epg: epgData,
     dayWidth: 7200,
-    sidebarWidth: 5,
+    sidebarWidth: 0,
     itemHeight: 72,
     isSidebar: false,
     isTimeline: true,
