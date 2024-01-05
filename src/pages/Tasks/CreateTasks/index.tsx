@@ -2072,7 +2072,7 @@ export default function CreateTasks() {
 
                       <div style={{ width: !splitDeliveries ? '50%' : '180px' }}>
                         <InputDefault
-                          label="Entrega de atividade"
+                          label="Entrega de Atividade / Criação"
                           placeholder="00/00/0000"
                           name="creationDate"
                           type="date"
