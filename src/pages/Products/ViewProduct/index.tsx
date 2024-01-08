@@ -148,6 +148,7 @@ export default function ViewProductsDeliveries() {
   const uploadIsTrue = timeLineData
     ? timeLineData.steps.filter((obj) => obj.step === actualStep)
     : '';
+
   const nextStep = timeLineData
     ? timeLineData.steps.filter((obj) => Number(obj.step) === Number(actualStep) + 1)
     : [];
@@ -164,11 +165,13 @@ export default function ViewProductsDeliveries() {
   //   (product: any) => product.status === 'Concluida'
   // );
 
-  // const hasDismemberedProduct = (delivery: any): boolean => {
-  //   return delivery.products.some((product: any) => product.status === 'recusado');
-  // };
+  const hasDismemberedProductInDeliveries = (delivery: any): boolean => {
+    return delivery.products.some((product: any) => product.status === 'Desmembrada');
+  };
 
-  const hasToDismemberProduct = dataTask?.files?.some((obj: any) => obj.status === 'fail');
+  const hasDismemberedProduct = dataTask?.deliverys.some(hasDismemberedProductInDeliveries);
+
+  const hasToDismemberTask = dataTask?.files?.some((obj: any) => obj.status === 'fail');
 
   useEffect(() => {
     async function getClockIsOpen() {
@@ -278,8 +281,33 @@ export default function ViewProductsDeliveries() {
     getClockIsOpen();
   }, [typeOfPlay, selectedProduct]);
 
+  async function getTaskInfos() {
+    try {
+      setLoading(true);
+      const response = await api.get(`/tasks/${location.state.task.task_id}`);
+      // console.log('log do response get task', response.data.result);
+
+      if (response.data.result.length > 0) {
+        setDataTask(response.data.result[0]);
+      }
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log do error getting task', error);
+      addToast({
+        title: 'Atenção',
+        description: error.message,
+        type: 'warning'
+      });
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
-    setDataTask(location.state.task);
+    // setDataTask(location.state.task);
+    console.log('log do dataTask =>', location.state.task);
+
+    getTaskInfos();
 
     if (location.state.task.type_play === 'delivery') {
       setTypeOfPlay('schedule');
@@ -838,6 +866,7 @@ export default function ViewProductsDeliveries() {
 
       if (response.data.status === 'success') {
         setUploadedFiles([]);
+        setModalUpload(false);
       }
 
       console.log('log do response do saveUpload', response.data.result);
@@ -956,11 +985,11 @@ export default function ViewProductsDeliveries() {
   async function checkFlow(checkType: string) {
     try {
       setLoading(true);
-      if (hasToDismemberProduct) {
+      if (hasToDismemberTask && checkType !== 'back' && !hasDismemberedProduct) {
         setModalDismemberment(true);
       }
 
-      if (checkType === 'next' && !hasToDismemberProduct) {
+      if (checkType === 'next' && !hasToDismemberTask) {
         const response = await api.get(
           `/flow-function?step=${Number(actualStep) + 1}&flow_id=${dataTask?.flow_id}`
         );
@@ -975,7 +1004,7 @@ export default function ViewProductsDeliveries() {
         }
       }
 
-      if (checkType === 'back' && !hasToDismemberProduct) {
+      if (checkType === 'back') {
         const response = await api.get(
           `/flow-function?step=${returnInfos.chosenStep}&flow_id=${dataTask?.flow_id}`
         );
@@ -983,10 +1012,12 @@ export default function ViewProductsDeliveries() {
         if (response.data.result[0].show_hours === 'true') {
           setModalSendToUser(true);
           setShowHoursBack(true);
+          setModalReturnFlow(false);
         }
         if (response.data.result[0].show_hours === 'false') {
           handleNextUser('back');
           setShowHoursBack(true);
+          setModalReturnFlow(false);
         }
       }
 
@@ -1003,9 +1034,9 @@ export default function ViewProductsDeliveries() {
 
       if (type === 'next') {
         const response = await api.get(
-          `/task/next-user?project_product_id=${dataTask?.project_product_id}&flow_id=${
-            dataTask?.flow_id
-          }&step=${Number(actualStep) + 1}`
+          `/task/next?flow=${dataTask?.flow_id}&project_product_id=${
+            dataTask?.project_product_id
+          }&step=${Number(actualStep) + 1}&task_id=${dataTask.task_id}`
         );
         setUsersWithoutSchedule(response.data.result);
         setModalWithoutSchedule(true);
@@ -1013,7 +1044,7 @@ export default function ViewProductsDeliveries() {
 
       if (type === 'back') {
         const response = await api.get(
-          `/task/next-user?project_product_id=${dataTask?.project_product_id}&flow_id=${dataTask?.flow_id}&step=${returnInfos.chosenStep}`
+          `/task/next?project_product_id=${dataTask?.project_product_id}&flow_id=${dataTask?.flow_id}&step=${returnInfos.chosenStep}&task_id=${dataTask.task_id}`
         );
         setUsersWithoutSchedule(response.data.result);
         setModalWithoutSchedule(true);
@@ -1183,6 +1214,10 @@ export default function ViewProductsDeliveries() {
       setLoading(false);
     }
   }
+
+  // useEffect(() => {
+  //   console.log('log do hasDismemberedProduct =>', hasDismemberedProduct);
+  // }, [hasDismemberedProduct]);
 
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
@@ -1596,10 +1631,11 @@ export default function ViewProductsDeliveries() {
       >
         <ScheduleUser
           task_title={dataTask?.title}
+          taskId={dataTask?.task_id}
           estimated_time={location.state.task.total_time}
           flow={location.state.task.flow_id}
           project_product_id={location.state.task.project_product_id}
-          step={Number(location.state.task.step) + 1}
+          step={showHoursBack ? returnInfos.chosenStep : Number(location.state.task.step) + 1}
           user_alocated={handleAssignTask}
           closeModal={() => setModalSendToUser(false)}
           manualOverrideDate={showHoursBack}
