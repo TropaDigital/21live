@@ -74,6 +74,7 @@ interface ScheduleProps {
 
 interface TaskExchangeProps {
   task_title: string;
+  taskId: string;
   estimated_time: string;
   flow: string;
   project_product_id: string;
@@ -94,6 +95,7 @@ interface TaskExchangeProps {
 
 export default function ScheduleUser({
   task_title,
+  taskId,
   estimated_time,
   flow,
   project_product_id,
@@ -130,7 +132,7 @@ export default function ScheduleUser({
       const response = await api.get(
         `/task/next?flow=${flow}&project_product_id=${project_product_id}&step=${
           step ? step : 1
-        }&date=${moment(dinamicDate).format('YYYY-MM-DD')}`
+        }&date=${moment(dinamicDate).format('YYYY-MM-DD')}&task_id=${taskId}`
       );
 
       if (response.data.result.length > 0) {
@@ -188,6 +190,7 @@ export default function ScheduleUser({
   // }, [limitDate, dinamicDate]);
 
   const addNewObjectToAgenda = (userId: string, newTaskItem: any) => {
+    console.log('log add new object =>', newTaskItem);
     const taskNewInfos = newTaskItem.map((item: any) => {
       let title = '';
       if (item.type === 'new') {
