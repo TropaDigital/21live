@@ -1677,7 +1677,7 @@ export default function CreateTasks() {
   async function handleNextUser() {
     try {
       const response = await api.get(
-        `/task/next-user?project_product_id=${DTOForm.project_product_id}&flow_id=${DTOForm.flow_id}&step=1`
+        `/task/next?project_product_id=${DTOForm.project_product_id}&flow_id=${DTOForm.flow_id}&step=1`
       );
       setUsersWithoutSchedule(response.data.result);
       setModalWithoutSchedule(true);
@@ -2609,6 +2609,7 @@ export default function CreateTasks() {
         >
           <ScheduleUser
             task_title={DTOForm.title}
+            taskId={DTOForm?.task_id}
             estimated_time={tasksType === 'horas' ? estimatedTime : selectedProject?.tempo}
             flow={DTOForm.flow_id}
             project_product_id={DTOForm.project_product_id}
