@@ -101,7 +101,8 @@ export const InputField = styled.div`
   }
 
   .ProseMirror {
-    height: 160px;
+    min-height: 160px;
+    height: fit-content;
   }
 `;
 

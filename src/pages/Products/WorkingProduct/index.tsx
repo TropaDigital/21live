@@ -771,7 +771,7 @@ export default function WorkingProduct({
               </InputField>
 
               <InputField style={{ marginBottom: '16px' }}>
-                <InputFieldTitle>Input Criação</InputFieldTitle>
+                <InputFieldTitle>Input Atividade / Criação</InputFieldTitle>
                 <WrapperEditor
                   value={taskInputs?.creation_description}
                   mentionData={[]}
