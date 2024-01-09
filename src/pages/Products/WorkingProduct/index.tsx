@@ -835,7 +835,7 @@ export default function WorkingProduct({
         {selectedTab === 'Redação' && (
           <>
             {user.permissions.includes('jobs_tasks_essay') &&
-            productInfos.status === 'Concluida' ? (
+            productInfos.status !== 'Concluida' ? (
               <div>
                 <WrapperEditor
                   value={essayInfo}
