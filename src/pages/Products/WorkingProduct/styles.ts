@@ -280,7 +280,7 @@ export const FooterSection = styled.div`
   justify-content: flex-end;
   gap: 12px;
 
-  padding-top: 24px;
+  /* padding-top: 24px; */
   margin-top: 24px;
 `;
 
@@ -563,4 +563,17 @@ export const CardChangeInfos = styled.div`
       font-weight: var(--weight-semibold);
     }
   }
+`;
+
+export const CardShowInputs = styled.div`
+  background: var(--background-primary);
+  border-radius: 12px;
+
+  padding: 24px;
+
+  /* -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none; */
 `;

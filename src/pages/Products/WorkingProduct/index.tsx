@@ -41,6 +41,7 @@ import {
   ButtonsWrapper,
   CardChangeInfos,
   CardChangesWrapper,
+  CardShowInputs,
   ChatMessage,
   ChatSendButton,
   ChatUserImg,
@@ -747,51 +748,94 @@ export default function WorkingProduct({
       </TabsWrapper>
 
       <WorkSection>
-        {selectedTab === 'Inputs' && (
-          <>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '16px',
-                marginBottom: '16px'
-              }}
-            >
-              <InputField>
-                <InputFieldTitle>
-                  Input {parameters.input_name !== '' ? parameters.input_name : 'Pré-requisitos'}
-                </InputFieldTitle>
-                <WrapperEditor
-                  value={taskInputs?.copywriting_description}
-                  mentionData={[]}
-                  handleOnDescription={(value: any) =>
-                    handleInputs('copywriting_description', value)
-                  }
-                />
-              </InputField>
+        {selectedTab === 'Inputs' &&
+          user.permissions.includes('jobs_tasks_execute') &&
+          productInfos.status !== 'Concluida' && (
+            <>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '16px',
+                  marginBottom: '16px'
+                }}
+              >
+                <InputField>
+                  <InputFieldTitle>
+                    Input {parameters.input_name !== '' ? parameters.input_name : 'Pré-requisitos'}
+                  </InputFieldTitle>
+                  <WrapperEditor
+                    value={taskInputs?.copywriting_description}
+                    mentionData={[]}
+                    handleOnDescription={(value: any) =>
+                      handleInputs('copywriting_description', value)
+                    }
+                  />
+                </InputField>
 
-              <InputField style={{ marginBottom: '16px' }}>
-                <InputFieldTitle>Input Atividade / Criação</InputFieldTitle>
-                <WrapperEditor
-                  value={taskInputs?.creation_description}
-                  mentionData={[]}
-                  handleOnDescription={(value: any) => handleInputs('creation_description', value)}
-                />
-              </InputField>
-            </div>
-            <FooterSection>
-              <ButtonDefault typeButton="lightWhite" isOutline onClick={() => navigate('/tarefas')}>
-                Descartar
-              </ButtonDefault>
-              <ButtonDefault typeButton="primary" onClick={handleSaveInputs}>
-                Salvar Inputs
-              </ButtonDefault>
-            </FooterSection>
-          </>
-        )}
+                <InputField style={{ marginBottom: '16px' }}>
+                  <InputFieldTitle>Input Atividade / Criação</InputFieldTitle>
+                  <WrapperEditor
+                    value={taskInputs?.creation_description}
+                    mentionData={[]}
+                    handleOnDescription={(value: any) =>
+                      handleInputs('creation_description', value)
+                    }
+                  />
+                </InputField>
+              </div>
+              <FooterSection>
+                <ButtonDefault
+                  typeButton="lightWhite"
+                  isOutline
+                  onClick={() => navigate('/tarefas')}
+                >
+                  Descartar
+                </ButtonDefault>
+                <ButtonDefault typeButton="primary" onClick={handleSaveInputs}>
+                  Salvar Inputs
+                </ButtonDefault>
+              </FooterSection>
+            </>
+          )}
+
+        {selectedTab === 'Inputs' &&
+          (productInfos.status === 'Concluida' ||
+            !user.permissions.includes('jobs_tasks_execute')) && (
+            <>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '16px',
+                  marginBottom: '16px'
+                }}
+              >
+                <InputField>
+                  <InputFieldTitle>
+                    Input {parameters.input_name !== '' ? parameters.input_name : 'Pré-requisitos'}
+                  </InputFieldTitle>
+                  <CardShowInputs>
+                    <div
+                      dangerouslySetInnerHTML={{ __html: taskInputs?.copywriting_description }}
+                    />
+                  </CardShowInputs>
+                </InputField>
+
+                <InputField style={{ marginBottom: '16px' }}>
+                  <InputFieldTitle>Input Atividade / Criação</InputFieldTitle>
+                  <CardShowInputs>
+                    <div dangerouslySetInnerHTML={{ __html: taskInputs?.creation_description }} />
+                  </CardShowInputs>
+                </InputField>
+              </div>
+            </>
+          )}
+
         {selectedTab === 'Redação' && (
           <>
-            {user.permissions.includes('jobs_tasks_essay') ? (
+            {user.permissions.includes('jobs_tasks_essay') &&
+            productInfos.status === 'Concluida' ? (
               <div>
                 <WrapperEditor
                   value={essayInfo}
@@ -819,6 +863,7 @@ export default function WorkingProduct({
             )}
           </>
         )}
+
         {selectedTab === 'Comentários' && (
           <SectionChatComments>
             <CheckboxWrapper>
@@ -862,7 +907,7 @@ export default function WorkingProduct({
                           )}
                         </UserMessageInfo>
 
-                        <UserMessage>{message.comment.split('em')[0]}</UserMessage>
+                        <UserMessage>{message.comment}</UserMessage>
                       </MessageInfos>
                     </>
                   )}
