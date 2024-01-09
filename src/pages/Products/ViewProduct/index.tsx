@@ -157,6 +157,8 @@ export default function ViewProductsDeliveries() {
 
   const uploadClient = uploadIsTrue && uploadIsTrue[0].tenant_approve === 'true';
 
+  const mandatoryUpload = uploadIsTrue && uploadIsTrue[0].necessary_upload === 'true';
+
   const stepsToReturn: any[] = timeLineData
     ? timeLineData.steps.filter((obj) => Number(obj.step) < Number(actualStep))
     : [];
@@ -305,7 +307,7 @@ export default function ViewProductsDeliveries() {
 
   useEffect(() => {
     // setDataTask(location.state.task);
-    console.log('log do dataTask =>', location.state.task);
+    // console.log('log do dataTask =>', location.state.task);
 
     getTaskInfos();
 
@@ -988,6 +990,17 @@ export default function ViewProductsDeliveries() {
       if (hasToDismemberTask && checkType !== 'back' && !hasDismemberedProduct) {
         setModalDismemberment(true);
       }
+      // console.log('log do mandatoryUpload =>', mandatoryUpload);
+      // console.log('log do checkMandatoryUpload =>', checkMandatoryUpload());
+
+      if (mandatoryUpload && checkMandatoryUpload()) {
+        addToast({
+          title: 'Atenção',
+          description: 'é necessário fazer upload para todos os produtos',
+          type: 'warning'
+        });
+        throw new Error('');
+      }
 
       if (checkType === 'next' && !hasToDismemberTask) {
         const response = await api.get(
@@ -1202,18 +1215,61 @@ export default function ViewProductsDeliveries() {
     try {
       setLoading(true);
 
-      const response = await api.put(`/task/task-conclude/${dataTask?.task_id}`);
+      const response = await api.put(`/task/delivery-conclude/${deliveryId[0].delivery_id}`);
 
       if (response.data.result) {
+        addToast({
+          title: 'Sucesso',
+          description: 'Tarefa concluída com sucesso',
+          type: 'success'
+        });
         navigate('/minhas-tarefas');
       }
 
       setLoading(false);
     } catch (error: any) {
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
       console.log('log error conclude task', error);
       setLoading(false);
     }
   }
+
+  const compareArrays = () => {
+    const matchingItems: any[] = [];
+    dataTask?.deliverys?.map((item1: any) => {
+      item1?.products?.map((product1: any) => {
+        const matchingItem2 = dataTask?.files.find(
+          (obj: any) => obj.products_delivery_id === product1.products_delivery_id
+        );
+        if (matchingItem2) {
+          matchingItems.push(matchingItem2);
+        }
+      });
+    });
+    return matchingItems;
+  };
+
+  const checkMandatoryUpload = () => {
+    if (compareArrays().length < dataProducts?.products?.length) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   // useEffect(() => {
   //   console.log('log do hasDismemberedProduct =>', hasDismemberedProduct);
@@ -1250,6 +1306,7 @@ export default function ViewProductsDeliveries() {
             title={titleInfos}
             disableButton={true}
             goBack
+            hideButtonNext={true}
             buttonType="send"
             nextStepInfo={timeLineData}
             backFlow={() => setModalReturnFlow(true)}
