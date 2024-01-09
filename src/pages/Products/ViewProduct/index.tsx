@@ -148,6 +148,7 @@ export default function ViewProductsDeliveries() {
   const uploadIsTrue = timeLineData
     ? timeLineData.steps.filter((obj) => obj.step === actualStep)
     : '';
+
   const nextStep = timeLineData
     ? timeLineData.steps.filter((obj) => Number(obj.step) === Number(actualStep) + 1)
     : [];
@@ -155,6 +156,8 @@ export default function ViewProductsDeliveries() {
   const finalCard = uploadIsTrue && uploadIsTrue[0].final_card === 'true';
 
   const uploadClient = uploadIsTrue && uploadIsTrue[0].tenant_approve === 'true';
+
+  const mandatoryUpload = uploadIsTrue && uploadIsTrue[0].necessary_upload === 'true';
 
   const stepsToReturn: any[] = timeLineData
     ? timeLineData.steps.filter((obj) => Number(obj.step) < Number(actualStep))
@@ -164,11 +167,13 @@ export default function ViewProductsDeliveries() {
   //   (product: any) => product.status === 'Concluida'
   // );
 
-  // const hasDismemberedProduct = (delivery: any): boolean => {
-  //   return delivery.products.some((product: any) => product.status === 'recusado');
-  // };
+  const hasDismemberedProductInDeliveries = (delivery: any): boolean => {
+    return delivery.products.some((product: any) => product.status === 'Desmembrada');
+  };
 
-  const hasToDismemberProduct = dataTask?.files?.some((obj: any) => obj.status === 'fail');
+  const hasDismemberedProduct = dataTask?.deliverys.some(hasDismemberedProductInDeliveries);
+
+  const hasToDismemberTask = dataTask?.files?.some((obj: any) => obj.status === 'fail');
 
   useEffect(() => {
     async function getClockIsOpen() {
@@ -278,8 +283,33 @@ export default function ViewProductsDeliveries() {
     getClockIsOpen();
   }, [typeOfPlay, selectedProduct]);
 
+  async function getTaskInfos() {
+    try {
+      setLoading(true);
+      const response = await api.get(`/tasks/${location.state.task.task_id}`);
+      // console.log('log do response get task', response.data.result);
+
+      if (response.data.result.length > 0) {
+        setDataTask(response.data.result[0]);
+      }
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log do error getting task', error);
+      addToast({
+        title: 'Atenção',
+        description: error.message,
+        type: 'warning'
+      });
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
-    setDataTask(location.state.task);
+    // setDataTask(location.state.task);
+    // console.log('log do dataTask =>', location.state.task);
+
+    getTaskInfos();
 
     if (location.state.task.type_play === 'delivery') {
       setTypeOfPlay('schedule');
@@ -838,6 +868,7 @@ export default function ViewProductsDeliveries() {
 
       if (response.data.status === 'success') {
         setUploadedFiles([]);
+        setModalUpload(false);
       }
 
       console.log('log do response do saveUpload', response.data.result);
@@ -956,11 +987,22 @@ export default function ViewProductsDeliveries() {
   async function checkFlow(checkType: string) {
     try {
       setLoading(true);
-      if (hasToDismemberProduct) {
+      if (hasToDismemberTask && checkType !== 'back' && !hasDismemberedProduct) {
         setModalDismemberment(true);
       }
+      // console.log('log do mandatoryUpload =>', mandatoryUpload);
+      // console.log('log do checkMandatoryUpload =>', checkMandatoryUpload());
 
-      if (checkType === 'next' && !hasToDismemberProduct) {
+      if (mandatoryUpload && checkMandatoryUpload()) {
+        addToast({
+          title: 'Atenção',
+          description: 'é necessário fazer upload para todos os produtos',
+          type: 'warning'
+        });
+        throw new Error('');
+      }
+
+      if (checkType === 'next' && !hasToDismemberTask) {
         const response = await api.get(
           `/flow-function?step=${Number(actualStep) + 1}&flow_id=${dataTask?.flow_id}`
         );
@@ -975,7 +1017,7 @@ export default function ViewProductsDeliveries() {
         }
       }
 
-      if (checkType === 'back' && !hasToDismemberProduct) {
+      if (checkType === 'back') {
         const response = await api.get(
           `/flow-function?step=${returnInfos.chosenStep}&flow_id=${dataTask?.flow_id}`
         );
@@ -983,10 +1025,12 @@ export default function ViewProductsDeliveries() {
         if (response.data.result[0].show_hours === 'true') {
           setModalSendToUser(true);
           setShowHoursBack(true);
+          setModalReturnFlow(false);
         }
         if (response.data.result[0].show_hours === 'false') {
           handleNextUser('back');
           setShowHoursBack(true);
+          setModalReturnFlow(false);
         }
       }
 
@@ -1003,9 +1047,9 @@ export default function ViewProductsDeliveries() {
 
       if (type === 'next') {
         const response = await api.get(
-          `/task/next-user?project_product_id=${dataTask?.project_product_id}&flow_id=${
-            dataTask?.flow_id
-          }&step=${Number(actualStep) + 1}`
+          `/task/next?flow=${dataTask?.flow_id}&project_product_id=${
+            dataTask?.project_product_id
+          }&step=${Number(actualStep) + 1}&task_id=${dataTask.task_id}`
         );
         setUsersWithoutSchedule(response.data.result);
         setModalWithoutSchedule(true);
@@ -1013,7 +1057,7 @@ export default function ViewProductsDeliveries() {
 
       if (type === 'back') {
         const response = await api.get(
-          `/task/next-user?project_product_id=${dataTask?.project_product_id}&flow_id=${dataTask?.flow_id}&step=${returnInfos.chosenStep}`
+          `/task/next?project_product_id=${dataTask?.project_product_id}&flow_id=${dataTask?.flow_id}&step=${returnInfos.chosenStep}&task_id=${dataTask.task_id}`
         );
         setUsersWithoutSchedule(response.data.result);
         setModalWithoutSchedule(true);
@@ -1171,18 +1215,65 @@ export default function ViewProductsDeliveries() {
     try {
       setLoading(true);
 
-      const response = await api.put(`/task/task-conclude/${dataTask?.task_id}`);
+      const response = await api.put(`/task/delivery-conclude/${deliveryId[0].delivery_id}`);
 
       if (response.data.result) {
+        addToast({
+          title: 'Sucesso',
+          description: 'Tarefa concluída com sucesso',
+          type: 'success'
+        });
         navigate('/minhas-tarefas');
       }
 
       setLoading(false);
     } catch (error: any) {
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
       console.log('log error conclude task', error);
       setLoading(false);
     }
   }
+
+  const compareArrays = () => {
+    const matchingItems: any[] = [];
+    dataTask?.deliverys?.map((item1: any) => {
+      item1?.products?.map((product1: any) => {
+        const matchingItem2 = dataTask?.files.find(
+          (obj: any) => obj.products_delivery_id === product1.products_delivery_id
+        );
+        if (matchingItem2) {
+          matchingItems.push(matchingItem2);
+        }
+      });
+    });
+    return matchingItems;
+  };
+
+  const checkMandatoryUpload = () => {
+    if (compareArrays().length < dataProducts?.products?.length) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  // useEffect(() => {
+  //   console.log('log do hasDismemberedProduct =>', hasDismemberedProduct);
+  // }, [hasDismemberedProduct]);
 
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
@@ -1215,6 +1306,7 @@ export default function ViewProductsDeliveries() {
             title={titleInfos}
             disableButton={true}
             goBack
+            hideButtonNext={true}
             buttonType="send"
             nextStepInfo={timeLineData}
             backFlow={() => setModalReturnFlow(true)}
@@ -1340,7 +1432,7 @@ export default function ViewProductsDeliveries() {
               disableButton={typeOfPlay === 'product' ? false : true}
               goBack
               buttonType="finish"
-              sendToNext={() => checkFlow('next')}
+              sendToNext={handleConcludeTask}
               nextStepInfo={timeLineData}
               backToDelivery={() => setViewProduct(false)}
               isInsideProduct={true}
@@ -1378,7 +1470,7 @@ export default function ViewProductsDeliveries() {
               disableButton={true}
               goBack
               buttonType="finish"
-              sendToNext={() => checkFlow('next')}
+              sendToNext={handleConcludeTask}
               nextStepInfo={timeLineData}
               backToDelivery={() => setViewProduct(false)}
               isInsideProduct={true}
@@ -1596,10 +1688,11 @@ export default function ViewProductsDeliveries() {
       >
         <ScheduleUser
           task_title={dataTask?.title}
+          taskId={dataTask?.task_id}
           estimated_time={location.state.task.total_time}
           flow={location.state.task.flow_id}
           project_product_id={location.state.task.project_product_id}
-          step={Number(location.state.task.step) + 1}
+          step={showHoursBack ? returnInfos.chosenStep : Number(location.state.task.step) + 1}
           user_alocated={handleAssignTask}
           closeModal={() => setModalSendToUser(false)}
           manualOverrideDate={showHoursBack}

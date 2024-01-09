@@ -33,7 +33,7 @@ export function useApp({ starterDate, finishDate, data, taskDate }: AppDataProps
   const channelsData = data ? handleUsers(data) : [];
   const epgData = [].concat(...data.map(handleUserTasks));
   // const epgData = React.useMemo(() => epg, [epg]);
-  const today = moment().format('YYYY-MM-DD');
+  const today = moment(new Date()).format('YYYY-MM-DD');
 
   useEffect(() => {
     if (moment(taskDate).isSame(today)) {
@@ -60,7 +60,8 @@ export function useApp({ starterDate, finishDate, data, taskDate }: AppDataProps
 
     return tasksArray.agenda.map((item: any, index: number) => {
       const isPause = item.type;
-      const id = channelUuid + index;
+      // channelUuid + index - change to only channelId
+      const id = channelUuid;
       const description = item.title || 'Pausa';
       const since = String(moment(item.start).format('YYYY-MM-DDTHH:mm:ss'));
       const till = String(moment(item.end).format('YYYY-MM-DDTHH:mm:ss'));
@@ -84,7 +85,7 @@ export function useApp({ starterDate, finishDate, data, taskDate }: AppDataProps
     channels: channelsData,
     epg: epgData,
     dayWidth: 7200,
-    sidebarWidth: 5,
+    sidebarWidth: 0,
     itemHeight: 72,
     isSidebar: false,
     isTimeline: true,
@@ -95,6 +96,10 @@ export function useApp({ starterDate, finishDate, data, taskDate }: AppDataProps
     theme
   });
 
+  // useEffect(() => {
+  //   console.log('log do channels data =>', channelsData);
+  //   console.log('log do epg data =>', epgData);
+  // }, [channelsData, epgData]);
   // const handleFetchResources = React.useCallback(async () => {
   //   setIsLoading(false);
   //   const epg = await fetchEpg();
