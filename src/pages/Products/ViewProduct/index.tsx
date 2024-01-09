@@ -1843,26 +1843,6 @@ export default function ViewProductsDeliveries() {
             />
           )}
 
-          {finalCard && toClientConfirmation && (
-            <div className="confirmation">
-              <span>Atenção:</span> <br />
-              Os arquivos serão enviados para a área do cliente. <br />
-              Essa ação não pode ser revertida.
-            </div>
-          )}
-
-          {uploadClient && dataTask?.ticket_id && (
-            <UploadFilesTicket
-              uploadedFiles={uploadedFiles}
-              setUploadedFiles={setUploadedFiles}
-              ticket_id={dataTask?.ticket_id}
-              isDisabled={false}
-              loading={loading}
-              setLoading={setLoading}
-              folderInfo="tasks"
-            />
-          )}
-
           {finalCard && !toClientConfirmation && (
             <div className="modal-buttons">
               <ButtonDefault
@@ -1876,6 +1856,14 @@ export default function ViewProductsDeliveries() {
               <ButtonDefault typeButton="primary" onClick={() => setToClientConfirmation(true)}>
                 Enviar para o cliente
               </ButtonDefault>
+            </div>
+          )}
+
+          {finalCard && toClientConfirmation && (
+            <div className="confirmation">
+              <span>Atenção:</span> <br />
+              Os arquivos serão enviados para a área do cliente. <br />
+              Essa ação não pode ser revertida.
             </div>
           )}
 
@@ -1899,12 +1887,52 @@ export default function ViewProductsDeliveries() {
             </div>
           )}
 
-          {uploadClient && (
+          {uploadClient && dataTask?.ticket_id && !toClientConfirmation && (
+            <UploadFilesTicket
+              uploadedFiles={uploadedFiles}
+              setUploadedFiles={setUploadedFiles}
+              ticket_id={dataTask?.ticket_id}
+              isDisabled={false}
+              loading={loading}
+              setLoading={setLoading}
+              folderInfo="tasks"
+            />
+          )}
+
+          {uploadClient && !toClientConfirmation && (
             <div className="modal-buttons">
               <ButtonDefault
                 typeButton="lightWhite"
                 isOutline
                 onClick={() => setModalFinalFile(false)}
+              >
+                Cancelar
+              </ButtonDefault>
+
+              <ButtonDefault typeButton="primary" onClick={() => setToClientConfirmation(true)}>
+                Enviar para o cliente
+              </ButtonDefault>
+            </div>
+          )}
+
+          {uploadClient && toClientConfirmation && (
+            <div className="confirmation">
+              <span>Atenção:</span> <br />
+              Os arquivos serão enviados para a área do cliente. <br />
+              Essa ação não pode ser revertida.
+            </div>
+          )}
+
+          {uploadClient && toClientConfirmation && (
+            <div className="modal-buttons">
+              <ButtonDefault
+                typeButton="lightWhite"
+                isOutline
+                onClick={() => {
+                  setModalFinalFile(false);
+                  setToClientConfirmation(false);
+                  setUploadedFiles([]);
+                }}
               >
                 Cancelar
               </ButtonDefault>
