@@ -390,7 +390,7 @@ export default function Dashboard() {
 
   const topFeeTenantJobs = [
     {
-      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[0].name : '',
+      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[0]?.name : '',
       Total:
         data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[0]?.quantidade_tarefas : 0,
       fill: '#59B7FF'
