@@ -864,11 +864,12 @@ export default function ViewProductsDeliveries() {
         products_delivery_id: productForUpload?.products_delivery_id
       };
 
-      const response = await api.put(`/task/upload-manager-approve`, uploadInfos);
+      const response = await api.put(`/task/upload`, uploadInfos);
 
       if (response.data.status === 'success') {
         setUploadedFiles([]);
         setModalUpload(false);
+        getTaskInfos();
       }
 
       console.log('log do response do saveUpload', response.data.result);
