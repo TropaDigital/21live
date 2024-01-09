@@ -141,11 +141,9 @@ export default function Dashboard() {
     (search: string) => setSearch(search),
     700
   );
-  const {
-    data: dataTasks,
-    pages,
-    isFetching: fetchingTask
-  } = useFetch<any[]>(`my-tasks?search=${search.replace(/[^\w ]/g, '')}&page=${selected}`);
+  const { data: dataTasks, pages } = useFetch<any[]>(
+    `my-tasks?search=${search.replace(/[^\w ]/g, '')}&page=${selected}`
+  );
 
   const clientsOptions = dataClient?.map((row) => {
     return {
@@ -390,6 +388,39 @@ export default function Dashboard() {
     }
   ];
 
+  const topFeeTenantJobs = [
+    {
+      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[0].name : '',
+      Total:
+        data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[0]?.quantidade_tarefas : 0,
+      fill: '#59B7FF'
+    },
+    {
+      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[1]?.name : '',
+      Total:
+        data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[1]?.quantidade_tarefas : 0,
+      fill: '#0045B5'
+    },
+    {
+      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[2]?.name : '',
+      Total:
+        data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[2]?.quantidade_tarefas : 0,
+      fill: '#0077E6'
+    },
+    {
+      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[3]?.name : '',
+      Total:
+        data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[3]?.quantidade_tarefas : 0,
+      fill: '#E2F2FF'
+    },
+    {
+      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[4]?.name : '',
+      Total:
+        data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[4]?.quantidade_tarefas : 0,
+      fill: '#0065D4'
+    }
+  ];
+
   const topTenantJobs = [
     {
       name: data && dashType === 'admin' ? data.top_tenant[0]?.name : '',
@@ -458,7 +489,7 @@ export default function Dashboard() {
       title: 'Total de clientes'
     },
     {
-      data: data ? data.tarefas_quantidade?.total : 0,
+      data: data ? data.total_jobs : 0,
       type: 'jobs',
       title: 'Total Jobs'
     },

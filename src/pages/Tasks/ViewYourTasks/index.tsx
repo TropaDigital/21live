@@ -57,8 +57,22 @@ export default function ViewTaskList() {
   };
 
   const handleNavigateTask = (infos: any) => {
-    const taskId = infos?.task?.task_id;
-    navigate(`/entregas/${infos.task.task_id}`, { state: taskId });
+    // console.log('log do navigate task =>', infos.task);
+    // const taskId = infos?.task?.task_id;
+    // navigate(`/entregas/${infos.task.task_id}`, { state: taskId });
+    if (infos.task.deliverys.length > 1) {
+      const taskId = infos?.task?.task_id;
+      navigate(`/entregas/${infos.task.task_id}`, { state: taskId });
+    }
+
+    if (infos.task.deliverys.length <= 1) {
+      const taskDetails = {
+        delivery: infos.task.deliverys[0],
+        task: infos.task,
+        task_index: infos.task_index
+      };
+      navigate(`/entrega/${infos.task.task_id}`, { state: taskDetails });
+    }
   };
 
   return (
