@@ -321,7 +321,6 @@ export const StatusTable = styled.div`
   padding: 4px 8px;
   width: fit-content;
   border-radius: 35px;
-  background: var(--warning-100);
 
   color: var(--warning-700);
   font-size: var(--text-small-sm);
@@ -331,6 +330,9 @@ export const StatusTable = styled.div`
     color: var(--primary-700);
     background: var(--primary-050);
   } */
+  &.status {
+    background: var(--warning-100);
+  }
 
   &.accept {
     color: var(--secundary-700);
