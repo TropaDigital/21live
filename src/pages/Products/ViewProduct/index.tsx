@@ -3,7 +3,7 @@
 /* eslint-disable import-helpers/order-imports */
 // React
 import { useState, useEffect, useRef } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 // Icons
 import { FaArrowLeft, FaChevronDown, FaChevronUp } from 'react-icons/fa';
@@ -83,7 +83,8 @@ export default function ViewProductsDeliveries() {
   const location = useLocation();
   const navigate = useNavigate();
   const { addToast } = useToast();
-  const { start, stop } = useStopWatch();
+  const { stop } = useStopWatch();
+  const { id } = useParams();
   const { state, setInitialTime, setTaskInfo, handleClock } = useStopWatch();
   const openRightRef = useRef<any>();
   const [modalSendToUser, setModalSendToUser] = useState<boolean>(false);
@@ -289,7 +290,7 @@ export default function ViewProductsDeliveries() {
   async function getTaskInfos() {
     try {
       setLoading(true);
-      const response = await api.get(`/tasks/${location.state.task.task_id}`);
+      const response = await api.get(`/tasks/${id}`);
       // console.log('log do response get task', response.data.result);
 
       if (response.data.result.length > 0) {
@@ -310,7 +311,7 @@ export default function ViewProductsDeliveries() {
 
   useEffect(() => {
     // setDataTask(location.state.task);
-    // console.log('log do dataTask =>', location.state.task);
+    // console.log('log do params =>', id);
 
     getTaskInfos();
 
@@ -331,7 +332,7 @@ export default function ViewProductsDeliveries() {
 
     async function getTimelineData() {
       try {
-        const response = await api.get(`task/timeline/${location.state.task.task_id}`);
+        const response = await api.get(`task/timeline/${id}`);
         setTimelineData(response.data.result);
       } catch (error: any) {
         console.log('log timeline error', error);
