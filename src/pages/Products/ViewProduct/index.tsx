@@ -703,6 +703,12 @@ export default function ViewProductsDeliveries() {
       }
 
       if (dataTask?.status !== 'Concluida' && selectedProduct === '' && typeOfPlay === 'product') {
+        addToast({
+          title: 'Aviso',
+          description: 'Conclua todos os produtos para conseguir avançar.',
+          type: 'warning'
+        });
+
         const response = await api.put(
           `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
           next_user
@@ -1014,7 +1020,19 @@ export default function ViewProductsDeliveries() {
         );
 
         if (response.data.result[0].show_hours === 'true') {
-          setModalSendToUser(true);
+          if (
+            dataTask?.status !== 'Concluida' &&
+            selectedProduct === '' &&
+            typeOfPlay === 'product'
+          ) {
+            addToast({
+              title: 'Aviso',
+              description: 'Conclua todos os produtos para conseguir avançar.',
+              type: 'warning'
+            });
+          } else {
+            setModalSendToUser(true);
+          }
           // console.log('log do checkFlow to show hours');
         }
         if (response.data.result[0].show_hours === 'false') {
