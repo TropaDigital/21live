@@ -875,7 +875,7 @@ export default function ViewProductsDeliveries() {
         products_delivery_id: productForUpload?.products_delivery_id
       };
 
-      const response = await api.put(`/archive/upload`, uploadInfos);
+      const response = await api.post(`/archive/upload`, uploadInfos);
 
       if (response.data.status === 'success') {
         setUploadedFiles([]);
@@ -916,7 +916,7 @@ export default function ViewProductsDeliveries() {
         products_delivery_id: productForUpload.products_delivery_id
       };
 
-      const response = await api.put(`/archive/upload/final/${dataTask?.task_id}`, uploadInfos);
+      const response = await api.post(`/archive/upload/final/${dataTask?.task_id}`, uploadInfos);
 
       if (response.data.status === 'success') {
         addToast({
@@ -960,7 +960,7 @@ export default function ViewProductsDeliveries() {
         bucket: uploadedFiles[0].bucket,
         products_delivery_id: productForUpload.products_delivery_id
       };
-      const response = await api.put(`/archive/upload/ticket`, uploadInfos);
+      const response = await api.post(`/archive/upload/ticket`, uploadInfos);
 
       if (response.data.status === 'success') {
         addToast({

@@ -487,7 +487,7 @@ export default function WorkingProduct({
         products_delivery_id: productInfos?.products_delivery_id
       };
 
-      const response = await api.put(`/archive/upload`, uploadInfos);
+      const response = await api.post(`/archive/upload`, uploadInfos);
 
       if (response.data.status === 'success') {
         setUploadedFiles([]);
@@ -526,7 +526,7 @@ export default function WorkingProduct({
         products_delivery_id: productInfos?.products_delivery_id
       };
 
-      const response = await api.put(`/archive/upload/final/${taskId}`, uploadInfos);
+      const response = await api.post(`/archive/upload/final/${taskId}`, uploadInfos);
 
       if (response.data.status === 'success') {
         addToast({
@@ -572,7 +572,7 @@ export default function WorkingProduct({
         products_delivery_id: productInfos?.products_delivery_id
       };
 
-      const response = await api.put(`/archive/upload/ticket`, uploadInfos);
+      const response = await api.post(`/archive/upload/ticket`, uploadInfos);
 
       if (response.data.status === 'success') {
         addToast({
