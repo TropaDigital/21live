@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 // Hooks
 import { useToast } from '../../../hooks/toast';
 import { useAuth } from '../../../hooks/AuthContext';
+import { useParamsHook } from '../../../hooks/useParams';
 
 // Icons
 import { IconText } from '../../../assets/icons';
@@ -34,6 +35,7 @@ import ModalDefault from '../../../components/Ui/ModalDefault';
 import UploadFiles from '../../../components/Upload/UploadFiles';
 import { ModalImage } from '../../Requests/ViewRequests/styles';
 import UploadFilesTicket from '../../../components/UploadTicket/UploadFilex';
+import UploadFinalFile from '../../../components/UploadFinal/UploadFinalFiles';
 
 // Styles
 import {
@@ -79,7 +81,6 @@ import { formatBytes } from '../../../utils/convertBytes';
 
 // types
 import { StepTimeline, UploadedFilesProps } from '../../../types';
-import { useParamsHook } from '../../../hooks/useParams';
 
 interface WorkingProductProps {
   productDeliveryId?: any;
@@ -526,12 +527,12 @@ export default function WorkingProduct({
         products_delivery_id: productInfos?.products_delivery_id
       };
 
-      const response = await api.post(`/archive/upload/final/${taskId}`, uploadInfos);
+      const response = await api.post(`/task/upload`, uploadInfos);
 
       if (response.data.status === 'success') {
         addToast({
           title: 'Sucesso',
-          description: 'Sucesso, upload concluído.',
+          description: 'Sucesso, upload final concluído.',
           type: 'success'
         });
         setUploadedFiles([]);
@@ -1151,7 +1152,7 @@ export default function WorkingProduct({
       <ModalDefault
         isOpen={modalUpload}
         onOpenChange={() => setModalUpload(false)}
-        title="Upload para aprovação"
+        title="Upload de arquivo"
       >
         <ModalUploadWrapper>
           <UploadFiles
@@ -1240,7 +1241,7 @@ export default function WorkingProduct({
       >
         <ModalUploadWrapper>
           {finalCard && !toClientConfirmation && (
-            <UploadFiles
+            <UploadFinalFile
               uploadedFiles={uploadedFiles}
               setUploadedFiles={setUploadedFiles}
               tenant={taskTenant}
@@ -1248,6 +1249,7 @@ export default function WorkingProduct({
               loading={loading}
               setLoading={setLoading}
               folderInfo="tasks"
+              taskId={taskId ? taskId : '0'}
             />
           )}
 
