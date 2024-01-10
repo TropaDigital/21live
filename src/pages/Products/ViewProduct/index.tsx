@@ -179,7 +179,7 @@ export default function ViewProductsDeliveries() {
   const hasToDismemberTask = dataTask?.files?.some((obj: any) => obj.status === 'fail');
 
   useEffect(() => {
-    console.log('log do params =>', id);
+    // console.log('log do params =>', id);
 
     async function getClockIsOpen() {
       try {
@@ -316,7 +316,7 @@ export default function ViewProductsDeliveries() {
 
   useEffect(() => {
     // setDataTask(location.state.task);
-    console.log('log do params =>', id);
+    // console.log('log do params =>', id);
 
     if (dataTask?.type_play === 'delivery') {
       setTypeOfPlay('schedule');
@@ -632,7 +632,7 @@ export default function ViewProductsDeliveries() {
         end_job: values.end_job
       };
 
-      if (dataTask.type === 'Livre') {
+      if (dataTask?.type === 'Livre') {
         const responseNextDate = await api.get(
           `/task/nextdate=${moment(new Date()).format('YYYY-MM-DD')}&task_id=${dataTask?.task_id}`
         );
@@ -1081,7 +1081,7 @@ export default function ViewProductsDeliveries() {
         const response = await api.get(
           `/task/next?flow=${dataTask?.flow_id}&project_product_id=${
             dataTask?.project_product_id
-          }&step=${Number(actualStep) + 1}&task_id=${dataTask.task_id}`
+          }&step=${Number(actualStep) + 1}&task_id=${dataTask?.task_id}`
         );
         setUsersWithoutSchedule(response.data.result);
         setModalWithoutSchedule(true);
@@ -1090,7 +1090,7 @@ export default function ViewProductsDeliveries() {
 
       if (type === 'back') {
         const response = await api.get(
-          `/task/next?project_product_id=${dataTask?.project_product_id}&flow_id=${dataTask?.flow_id}&step=${returnInfos.chosenStep}&task_id=${dataTask.task_id}`
+          `/task/next?project_product_id=${dataTask?.project_product_id}&flow_id=${dataTask?.flow_id}&step=${returnInfos.chosenStep}&task_id=${dataTask?.task_id}`
         );
         setUsersWithoutSchedule(response.data.result);
         setModalWithoutSchedule(true);
@@ -1879,7 +1879,7 @@ export default function ViewProductsDeliveries() {
               loading={loading}
               setLoading={setLoading}
               folderInfo="tasks"
-              taskId={dataTask.task_id}
+              taskId={dataTask?.task_id}
             />
           )}
 
