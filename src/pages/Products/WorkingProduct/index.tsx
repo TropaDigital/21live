@@ -96,6 +96,7 @@ interface WorkingProductProps {
   stepToReturn?: string;
   sendToApprove?: boolean;
   toApprove?: () => void;
+  updateInfos: () => void;
   timelineData?: TimelineProps;
   returnReasons?: ReturnReasons[];
 }
@@ -193,7 +194,8 @@ export default function WorkingProduct({
   ticket_id,
   returnReasons,
   toApprove,
-  goBack
+  goBack,
+  updateInfos
 }: WorkingProductProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -493,7 +495,8 @@ export default function WorkingProduct({
       if (response.data.status === 'success') {
         setUploadedFiles([]);
         setModalUpload(false);
-        navigate('/minhas-tarefas');
+        updateInfos();
+        // navigate('/minhas-tarefas');
       }
 
       console.log('log do response do saveUpload', response.data.result);
@@ -540,7 +543,8 @@ export default function WorkingProduct({
         setUploadedFiles([]);
         setModalUpload(false);
         setModalFinalFile(false);
-        navigate('/minhas-tarefas');
+        updateInfos();
+        // navigate('/minhas-tarefas');
       }
 
       console.log('log do response do saveUpload', response.data.result);
@@ -585,9 +589,10 @@ export default function WorkingProduct({
         });
         setUploadedFiles([]);
         setModalFinalFile(false);
-        setTimeout(() => {
-          navigate('/minhas-tarefas');
-        }, 1500);
+        updateInfos();
+        // setTimeout(() => {
+        //   navigate('/minhas-tarefas');
+        // }, 1500);
       }
 
       console.log('log do response do saveUpload', response.data.result);

@@ -749,7 +749,7 @@ export default function ViewProductsDeliveries() {
         //   }
         // }
 
-        if (location.state.delivery.products.length > 1) {
+        if (location.state?.delivery.products.length > 1) {
           userInfos = next_user;
           // setModalProducts(true);
           // setHideRightCard('hide');
@@ -933,6 +933,7 @@ export default function ViewProductsDeliveries() {
         setUploadedFiles([]);
         setModalUpload(false);
         setModalFinalFile(false);
+        getTaskInfos();
       }
 
       console.log('log do response do saveUpload', response.data.result);
@@ -976,9 +977,10 @@ export default function ViewProductsDeliveries() {
         });
         setUploadedFiles([]);
         setModalFinalFile(false);
-        setTimeout(() => {
-          navigate('/minhas-tarefas');
-        }, 1500);
+        getTaskInfos();
+        // setTimeout(() => {
+        //   navigate('/minhas-tarefas');
+        // }, 1500);
       }
 
       // console.log('log do response do saveUpload', response.data.result);
@@ -1711,6 +1713,7 @@ export default function ViewProductsDeliveries() {
               backButtonTitle="Voltar para produtos"
               goBack={() => setViewProduct(false)}
               returnReasons={dataTask?.reason_return}
+              updateInfos={getTaskInfos}
             />
           )}
         </DeliveryWrapper>
