@@ -190,7 +190,7 @@ export default function ScheduleUser({
   // }, [limitDate, dinamicDate]);
 
   const addNewObjectToAgenda = (userId: string, newTaskItem: any) => {
-    console.log('log add new object =>', newTaskItem);
+    // console.log('log add new object =>', newTaskItem);
     const taskNewInfos = newTaskItem.map((item: any) => {
       let title = '';
       if (item.type === 'new') {
