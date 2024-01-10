@@ -1010,6 +1010,8 @@ export default function WorkingProduct({
                                   ? 'status reject'
                                   : row.status === 'pass'
                                   ? 'status accept'
+                                  : row.status === ''
+                                  ? ''
                                   : 'status'
                               }
                             >
