@@ -20,7 +20,7 @@ import CardTaskPlay from '../../../components/CardTaskPlay';
 import ScheduleUser from '../../../components/ScheduleUser';
 import WorkingProduct from '../WorkingProduct';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
-import UploadFiles from '../../../components/Upload/UploadFiles';
+import UploadFinalFiles from '../../../components/Upload/UploadFiles';
 import UploadFilesTicket from '../../../components/UploadTicket/UploadFilex';
 import { UsersWrapper } from '../../Tasks/CreateTasks/styles';
 import { ProductsTable } from '../../Tasks/ComponentSteps/InfoDeliverables/styles';
@@ -66,6 +66,8 @@ import { StepTimeline, UploadedFilesProps } from '../../../types';
 
 // Utils
 import { UsersNoSchedule } from '../../../utils/models';
+import UploadFiles from '../../../components/Upload/UploadFiles';
+import UploadFinalFile from '../../../components/UploadFinal/UploadFinalFiles';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -875,7 +877,7 @@ export default function ViewProductsDeliveries() {
         products_delivery_id: productForUpload?.products_delivery_id
       };
 
-      const response = await api.post(`/archive/upload`, uploadInfos);
+      const response = await api.put(`/task/upload`, uploadInfos);
 
       if (response.data.status === 'success') {
         setUploadedFiles([]);
@@ -916,12 +918,12 @@ export default function ViewProductsDeliveries() {
         products_delivery_id: productForUpload.products_delivery_id
       };
 
-      const response = await api.post(`/archive/upload/final/${dataTask?.task_id}`, uploadInfos);
+      const response = await api.post(`/task/upload`, uploadInfos);
 
       if (response.data.status === 'success') {
         addToast({
           title: 'Sucesso',
-          description: 'Sucesso, upload concluído.',
+          description: 'Sucesso, upload final concluído.',
           type: 'success'
         });
         setUploadedFiles([]);
@@ -960,7 +962,7 @@ export default function ViewProductsDeliveries() {
         bucket: uploadedFiles[0].bucket,
         products_delivery_id: productForUpload.products_delivery_id
       };
-      const response = await api.post(`/archive/upload/ticket`, uploadInfos);
+      const response = await api.put(`/task/upload-tenant-approve`, uploadInfos);
 
       if (response.data.status === 'success') {
         addToast({
@@ -1815,7 +1817,7 @@ export default function ViewProductsDeliveries() {
           setModalUpload(false);
           setUploadedFiles([]);
         }}
-        title="Upload para aprovação"
+        title="Upload de arquivo"
       >
         <ModalUploadWrapper>
           <UploadFiles
@@ -1858,7 +1860,7 @@ export default function ViewProductsDeliveries() {
       >
         <ModalUploadWrapper>
           {finalCard && !toClientConfirmation && (
-            <UploadFiles
+            <UploadFinalFile
               uploadedFiles={uploadedFiles}
               setUploadedFiles={setUploadedFiles}
               tenant={dataTask?.tenant_id}
@@ -1866,6 +1868,7 @@ export default function ViewProductsDeliveries() {
               loading={loading}
               setLoading={setLoading}
               folderInfo="tasks"
+              taskId={dataTask.task_id}
             />
           )}
 
