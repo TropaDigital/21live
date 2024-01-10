@@ -81,6 +81,7 @@ export default function ViewProductsDeliveries() {
   const location = useLocation();
   const navigate = useNavigate();
   const { addToast } = useToast();
+  const { start, stop } = useStopWatch();
   const { state, setInitialTime, setTaskInfo, handleClock } = useStopWatch();
   const openRightRef = useRef<any>();
   const [modalSendToUser, setModalSendToUser] = useState<boolean>(false);
@@ -645,6 +646,7 @@ export default function ViewProductsDeliveries() {
             description: 'Tarefa avançou para a próxima etapa.',
             type: 'success'
           });
+          stop();
           navigate('/minhas-tarefas');
           localStorage.removeItem('stopwatchState');
         }
@@ -663,6 +665,7 @@ export default function ViewProductsDeliveries() {
             description: 'Tarefa avançou para a próxima etapa.',
             type: 'success'
           });
+          stop();
           navigate('/minhas-tarefas');
           localStorage.removeItem('stopwatchState');
         }
@@ -680,6 +683,7 @@ export default function ViewProductsDeliveries() {
               type: 'success',
               description: 'Entrega finalizada com sucesso'
             });
+            stop();
             navigate('/minhas-tarefas');
             localStorage.removeItem('stopwatchState');
           }
@@ -692,17 +696,23 @@ export default function ViewProductsDeliveries() {
 
           if (response.data.result === 1) {
             navigate('/minhas-tarefas');
+            stop();
             localStorage.removeItem('stopwatchState');
           }
         }
       }
 
       if (dataTask?.status !== 'Concluida' && selectedProduct === '' && typeOfPlay === 'product') {
+        addToast({
+          title: 'Aviso',
+          description: 'Conclua todos os produtos para conseguir avançar.',
+          type: 'warning'
+        });
+
         const response = await api.put(
           `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
           next_user
         );
-        console.log('log do response', response.data.result);
 
         if (response.data.result === 1) {
           addToast({
@@ -710,6 +720,7 @@ export default function ViewProductsDeliveries() {
             description: 'Tarefa avançou para a próxima etapa.',
             type: 'success'
           });
+          stop();
           navigate('/minhas-tarefas');
           localStorage.removeItem('stopwatchState');
         }
@@ -864,7 +875,7 @@ export default function ViewProductsDeliveries() {
         products_delivery_id: productForUpload?.products_delivery_id
       };
 
-      const response = await api.put(`/task/upload`, uploadInfos);
+      const response = await api.put(`/archive/upload`, uploadInfos);
 
       if (response.data.status === 'success') {
         setUploadedFiles([]);
@@ -949,7 +960,7 @@ export default function ViewProductsDeliveries() {
         bucket: uploadedFiles[0].bucket,
         products_delivery_id: productForUpload.products_delivery_id
       };
-      const response = await api.put(`/task/upload-tenant-approve`, uploadInfos);
+      const response = await api.put(`/archive/upload/ticket`, uploadInfos);
 
       if (response.data.status === 'success') {
         addToast({
@@ -1009,7 +1020,19 @@ export default function ViewProductsDeliveries() {
         );
 
         if (response.data.result[0].show_hours === 'true') {
-          setModalSendToUser(true);
+          if (
+            dataTask?.status !== 'Concluida' &&
+            selectedProduct === '' &&
+            typeOfPlay === 'product'
+          ) {
+            addToast({
+              title: 'Aviso',
+              description: 'Conclua todos os produtos para conseguir avançar.',
+              type: 'warning'
+            });
+          } else {
+            setModalSendToUser(true);
+          }
           // console.log('log do checkFlow to show hours');
         }
         if (response.data.result[0].show_hours === 'false') {
@@ -1054,6 +1077,7 @@ export default function ViewProductsDeliveries() {
         );
         setUsersWithoutSchedule(response.data.result);
         setModalWithoutSchedule(true);
+        stop();
       }
 
       if (type === 'back') {
@@ -1062,6 +1086,7 @@ export default function ViewProductsDeliveries() {
         );
         setUsersWithoutSchedule(response.data.result);
         setModalWithoutSchedule(true);
+        stop();
       }
 
       setLoading(false);
@@ -1627,9 +1652,9 @@ export default function ViewProductsDeliveries() {
               cardTitle={state.isRunning ? 'Atividade iniciada' : 'Iniciar atividade'}
               dataTime={data ? data?.estimatedTime : '00:00:00'}
               blockPlay={
-                typeOfPlay === 'schedule' && selectedProduct !== ''
+                typeOfPlay === 'schedule' && viewProduct
                   ? true
-                  : typeOfPlay === 'product' && selectedProduct === ''
+                  : typeOfPlay === 'product' && !viewProduct
                   ? true
                   : false
               }
