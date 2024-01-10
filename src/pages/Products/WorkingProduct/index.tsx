@@ -492,6 +492,8 @@ export default function WorkingProduct({
 
       if (response.data.status === 'success') {
         setUploadedFiles([]);
+        setModalUpload(false);
+        navigate('/minhas-tarefas');
       }
 
       console.log('log do response do saveUpload', response.data.result);
