@@ -335,14 +335,15 @@ export default function ListProjects() {
 
   async function downloadFile(file: any) {
     try {
-      const params = {
-        bucket: file.bucket,
-        key: file.key
-      };
+      const response = await api.get(
+        `https://app.21live.com.br:3000/archive?bucket=${file.bucket}&key=${file.key}`,
+        { responseType: 'arraybuffer' }
+      );
 
-      const response = await api.post(`https://app.21live.com.br:3000/archive`, params);
+      // console.log('log do response download =>', response);
 
-      const urlResponse = window.URL.createObjectURL(response.data);
+      const blob = new Blob([response.data]);
+      const urlResponse = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = urlResponse;
       link.setAttribute('download', `${file.file_name}`);
