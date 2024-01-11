@@ -63,6 +63,7 @@ import { TenantProps } from '../../utils/models';
 import { ServicesProps } from '../../types';
 import TaskTable from '../../components/Ui/TaskTable';
 import useDebouncedCallback from '../../hooks/useDebounced';
+import { subtractTime } from '../../utils/convertTimes';
 
 // interface DashType {
 //   typeDash: 'admin' | 'executive' | 'traffic' | 'operator' | '';
@@ -173,6 +174,24 @@ export default function Dashboard() {
     });
     setModalFilters(false);
   };
+
+  useEffect(() => {
+    function getDayFromOneMonthAgo() {
+      const currentDate = moment();
+
+      const oneMonthAgo = currentDate.subtract(1, 'month');
+
+      return oneMonthAgo;
+    }
+
+    const dayFromOneMonthAgo = getDayFromOneMonthAgo();
+    // console.log(`1 month ago was: ${moment(dayFromOneMonthAgo).format('YYYY-MM-DD')}`);
+    // console.log(`Today is: ${moment().format('YYYY-MM-DD')}`);
+    setFilter({
+      fromDate: moment(dayFromOneMonthAgo).format('YYYY-MM-DD'),
+      toDate: moment().format('YYYY-MM-DD')
+    });
+  }, []);
 
   useEffect(() => {
     if (user.permissions.includes('dashboard_admin')) {
@@ -388,96 +407,350 @@ export default function Dashboard() {
     }
   ];
 
+  const jobsAwaitingClientAdmin = [
+    {
+      id_job: 0,
+      client_name:
+        data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[0]?.tenant_name : '???',
+      job_name: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[0]?.title : '???',
+      job_service: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[0]?.name : ''
+    },
+    {
+      id_job: 1,
+      client_name:
+        data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[1]?.tenant_name : '???',
+      job_name: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[1]?.title : '???',
+      job_service: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[1]?.name : ''
+    },
+    {
+      id_job: 2,
+      client_name:
+        data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[2]?.tenant_name : '???',
+      job_name: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[2]?.title : '???',
+      job_service: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[2]?.name : ''
+    },
+    {
+      id_job: 3,
+      client_name:
+        data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[3]?.tenant_name : '???',
+      job_name: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[3]?.title : '???',
+      job_service: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[3]?.name : ''
+    },
+    {
+      id_job: 4,
+      client_name:
+        data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[4]?.tenant_name : '???',
+      job_name: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[4]?.title : '???',
+      job_service: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[4]?.name : ''
+    }
+  ];
+
+  const jobsAwaitingToBeSend = [
+    {
+      id_job: 0,
+      client_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.tenant_name : '',
+      job_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.title : '',
+      job_service: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.name : ''
+    },
+    {
+      id_job: 1,
+      client_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.tenant_name : '',
+      job_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.title : '',
+      job_service: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.name : ''
+    },
+    {
+      id_job: 2,
+      client_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.tenant_name : '',
+      job_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.title : '',
+      job_service: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.name : ''
+    },
+    {
+      id_job: 3,
+      client_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.tenant_name : '',
+      job_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.title : '',
+      job_service: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.name : ''
+    },
+    {
+      id_job: 4,
+      client_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.tenant_name : '',
+      job_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.title : '',
+      job_service: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.name : ''
+    }
+  ];
+
   const topFeeTenantJobs = [
     {
-      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[0]?.name : '',
+      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[0]?.name : '???',
       Total:
         data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[0]?.quantidade_tarefas : 0,
       fill: '#59B7FF'
     },
     {
-      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[1]?.name : '',
+      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[1]?.name : '???',
       Total:
         data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[1]?.quantidade_tarefas : 0,
       fill: '#0045B5'
     },
     {
-      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[2]?.name : '',
+      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[2]?.name : '???',
       Total:
         data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[2]?.quantidade_tarefas : 0,
       fill: '#0077E6'
     },
     {
-      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[3]?.name : '',
+      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[3]?.name : '???',
       Total:
         data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[3]?.quantidade_tarefas : 0,
       fill: '#E2F2FF'
     },
     {
-      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[4]?.name : '',
+      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[4]?.name : '???',
       Total:
         data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[4]?.quantidade_tarefas : 0,
       fill: '#0065D4'
     }
   ];
 
-  const topTenantJobs = [
+  const topFeeTenantHours = [
     {
-      name: data && dashType === 'admin' ? data.top_tenant[0]?.name : '',
-      Total: data && dashType === 'admin' ? data.top_tenant[0]?.total : 0,
+      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[0]?.name : '???',
+      Total:
+        data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[0]?.total_tempo : 0,
       fill: '#59B7FF'
     },
     {
-      name: data && dashType === 'admin' ? data.top_tenant[1]?.name : '',
-      Total: data && dashType === 'admin' ? data.top_tenant[1]?.total : 0,
+      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[1]?.name : '???',
+      Total:
+        data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[1]?.total_tempo : 0,
       fill: '#0045B5'
     },
     {
-      name: data && dashType === 'admin' ? data.top_tenant[2]?.name : '',
-      Total: data && dashType === 'admin' ? data.top_tenant[2]?.total : 0,
+      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[2]?.name : '???',
+      Total:
+        data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[2]?.total_tempo : 0,
       fill: '#0077E6'
     },
     {
-      name: data && dashType === 'admin' ? data.top_tenant[3]?.name : '',
-      Total: data && dashType === 'admin' ? data.top_tenant[3]?.total : 0,
+      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[3]?.name : '???',
+      Total:
+        data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[3]?.total_tempo : 0,
       fill: '#E2F2FF'
     },
     {
-      name: data && dashType === 'admin' ? data.top_tenant[4]?.name : '',
-      Total: data && dashType === 'admin' ? data.top_tenant[4]?.total : 0,
+      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[4]?.name : '???',
+      Total:
+        data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[4]?.total_tempo : 0,
       fill: '#0065D4'
     }
   ];
 
-  const topTenantHours = [
+  const topInternalChangesHours = [
     {
-      name: data && dashType === 'admin' ? data.top_horas[0]?.name : '',
-      Total:
-        data && dashType === 'admin' ? Number(data.top_horas[0]?.totalTimeSum?.split(':')[0]) : 0,
+      name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[0]?.name : '???',
+      Total: data && dashType === 'admin' ? data.top_alteracao_interna_horas[0]?.total_time : 0,
       fill: '#59B7FF'
     },
     {
-      name: data && dashType === 'admin' ? data.top_horas[1]?.name : '',
-      Total:
-        data && dashType === 'admin' ? Number(data.top_horas[1]?.totalTimeSum?.split(':')[0]) : 0,
+      name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[1]?.name : '???',
+      Total: data && dashType === 'admin' ? data.top_alteracao_interna_horas[1]?.total_time : 0,
       fill: '#0045B5'
     },
     {
-      name: data && dashType === 'admin' ? data.top_horas[2]?.name : '',
-      Total:
-        data && dashType === 'admin' ? Number(data.top_horas[2]?.totalTimeSum?.split(':')[0]) : 0,
+      name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[2]?.name : '???',
+      Total: data && dashType === 'admin' ? data.top_alteracao_interna_horas[2]?.total_time : 0,
       fill: '#0077E6'
     },
     {
-      name: data && dashType === 'admin' ? data.top_horas[3]?.name : '',
-      Total:
-        data && dashType === 'admin' ? Number(data.top_horas[3]?.totalTimeSum?.split(':')[0]) : 0,
+      name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[3]?.name : '???',
+      Total: data && dashType === 'admin' ? data.top_alteracao_interna_horas[3]?.total_time : 0,
       fill: '#E2F2FF'
     },
     {
-      name: data && dashType === 'admin' ? data.top_horas[4]?.name : '',
+      name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[4]?.name : '???',
+      Total: data && dashType === 'admin' ? data.top_alteracao_interna_horas[4]?.total_time : 0,
+      fill: '#0065D4'
+    }
+  ];
+
+  const topExternalChangeHours = [
+    {
+      name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[0]?.name : '???',
       Total:
-        data && dashType === 'admin' ? Number(data.top_horas[4]?.totalTimeSum?.split(':')[0]) : 0,
+        data && dashType === 'admin' ? data.top_alteracao_externa_horas[0]?.total_tempo : '-----',
+      fill: '#59B7FF'
+    },
+    {
+      name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[1]?.name : '???',
+      Total: data && dashType === 'admin' ? data.top_alteracao_externa_horas[1]?.total_tempo : 0,
+      fill: '#0045B5'
+    },
+    {
+      name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[2]?.name : '???',
+      Total: data && dashType === 'admin' ? data.top_alteracao_externa_horas[2]?.total_tempo : 0,
+      fill: '#0077E6'
+    },
+    {
+      name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[3]?.name : '???',
+      Total: data && dashType === 'admin' ? data.top_alteracao_externa_horas[3]?.total_tempo : 0,
+      fill: '#E2F2FF'
+    },
+    {
+      name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[4]?.name : '???',
+      Total: data && dashType === 'admin' ? data.top_alteracao_externa_horas[4]?.total_tempo : 0,
+      fill: '#0065D4'
+    }
+  ];
+
+  const topSpotJobs = [
+    {
+      name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[0]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data.clientes_spot?.top_tenant_spot[0]?.quantidade_tarefas
+          : 0,
+      fill: '#59B7FF'
+    },
+    {
+      name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[1]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data.clientes_spot?.top_tenant_spot[1]?.quantidade_tarefas
+          : 0,
+      fill: '#0045B5'
+    },
+    {
+      name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[2]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data.clientes_spot?.top_tenant_spot[2]?.quantidade_tarefas
+          : 0,
+      fill: '#0077E6'
+    },
+    {
+      name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[3]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data.clientes_spot?.top_tenant_spot[3]?.quantidade_tarefas
+          : 0,
+      fill: '#E2F2FF'
+    },
+    {
+      name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[4]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data.clientes_spot?.top_tenant_spot[4]?.quantidade_tarefas
+          : 0,
+      fill: '#0065D4'
+    }
+  ];
+
+  const topTenantJobs = [{}];
+
+  const topInternalChange = [
+    {
+      tenant_id: data && dashType === 'admin' ? data.top_alteracao_interna[0]?.tenant_id : 0,
+      name: data && dashType === 'admin' ? data.top_alteracao_interna[0]?.name : '----',
+      Total: data && dashType === 'admin' ? data.top_alteracao_interna[0]?.qtd_tarefas : 0,
+      fill: '#59B7FF'
+    },
+    {
+      tenant_id: data && dashType === 'admin' ? data.top_alteracao_interna[1]?.tenant_id : 0,
+      name: data && dashType === 'admin' ? data.top_alteracao_interna[1]?.name : '----',
+      Total: data && dashType === 'admin' ? data.top_alteracao_interna[1]?.qtd_tarefas : 0,
+      fill: '#0045B5'
+    },
+    {
+      tenant_id: data && dashType === 'admin' ? data.top_alteracao_interna[2]?.tenant_id : 0,
+      name: data && dashType === 'admin' ? data.top_alteracao_interna[2]?.name : '----',
+      Total: data && dashType === 'admin' ? data.top_alteracao_interna[2]?.qtd_tarefas : 0,
+      fill: '#0077E6'
+    },
+    {
+      tenant_id: data && dashType === 'admin' ? data.top_alteracao_interna[3]?.tenant_id : 0,
+      name: data && dashType === 'admin' ? data.top_alteracao_interna[3]?.name : '----',
+      Total: data && dashType === 'admin' ? data.top_alteracao_interna[3]?.qtd_tarefas : 0,
+      fill: '#E2F2FF'
+    },
+    {
+      tenant_id: data && dashType === 'admin' ? data.top_alteracao_interna[4]?.tenant_id : 0,
+      name: data && dashType === 'admin' ? data.top_alteracao_interna[4]?.name : '----',
+      Total: data && dashType === 'admin' ? data.top_alteracao_interna[4]?.qtd_tarefas : 0,
+      fill: '#0065D4'
+    }
+  ];
+
+  const topExternalChange = [
+    {
+      tenant_id: data && dashType === 'admin' ? data.top_alteracao_externa[0]?.tenant_id : 0,
+      name: data && dashType === 'admin' ? data.top_alteracao_externa[0]?.name : '----',
+      Total: data && dashType === 'admin' ? data.top_alteracao_externa[0]?.qtd_tarefas : 0,
+      fill: '#59B7FF'
+    },
+    {
+      tenant_id: data && dashType === 'admin' ? data.top_alteracao_externa[1]?.tenant_id : 0,
+      name: data && dashType === 'admin' ? data.top_alteracao_externa[1]?.name : '----',
+      Total: data && dashType === 'admin' ? data.top_alteracao_externa[1]?.qtd_tarefas : 0,
+      fill: '#0045B5'
+    },
+    {
+      tenant_id: data && dashType === 'admin' ? data.top_alteracao_externa[2]?.tenant_id : 0,
+      name: data && dashType === 'admin' ? data.top_alteracao_externa[2]?.name : '----',
+      Total: data && dashType === 'admin' ? data.top_alteracao_externa[2]?.qtd_tarefas : 0,
+      fill: '#0077E6'
+    },
+    {
+      tenant_id: data && dashType === 'admin' ? data.top_alteracao_externa[3]?.tenant_id : 0,
+      name: data && dashType === 'admin' ? data.top_alteracao_externa[3]?.name : '----',
+      Total: data && dashType === 'admin' ? data.top_alteracao_externa[3]?.qtd_tarefas : 0,
+      fill: '#E2F2FF'
+    },
+    {
+      tenant_id: data && dashType === 'admin' ? data.top_alteracao_externa[4]?.tenant_id : 0,
+      name: data && dashType === 'admin' ? data.top_alteracao_externa[4]?.name : '----',
+      Total: data && dashType === 'admin' ? data.top_alteracao_externa[4]?.qtd_tarefas : 0,
+      fill: '#0065D4'
+    }
+  ];
+
+  const topSpotTenantHours = [
+    {
+      name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[0]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data.clientes_spot?.top_tenant_spot_horas[0]?.total_tempo
+          : 0,
+      fill: '#59B7FF'
+    },
+    {
+      name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[1]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data.clientes_spot?.top_tenant_spot_horas[1]?.total_tempo
+          : 0,
+      fill: '#0045B5'
+    },
+    {
+      name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[2]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data.clientes_spot?.top_tenant_spot_horas[2]?.total_tempo
+          : 0,
+      fill: '#0077E6'
+    },
+    {
+      name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[3]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data.clientes_spot?.top_tenant_spot_horas[3]?.total_tempo
+          : 0,
+      fill: '#E2F2FF'
+    },
+    {
+      name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[4]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data.clientes_spot?.top_tenant_spot_horas[4]?.quantidade_tarefas
+          : 0,
       fill: '#0065D4'
     }
   ];
@@ -586,7 +859,7 @@ export default function Dashboard() {
       },
       mensalReport: {
         reunions: data && dashType === 'admin' ? data.top_users[0]?.reuniao : 0,
-        reports: '???'
+        reports: ''
       }
     },
     {
@@ -604,7 +877,7 @@ export default function Dashboard() {
 
       mensalReport: {
         reunions: data && dashType === 'admin' ? data.top_users[1]?.reuniao : 0,
-        reports: '???'
+        reports: ''
       }
     },
     {
@@ -621,7 +894,7 @@ export default function Dashboard() {
       },
       mensalReport: {
         reunions: data && dashType === 'admin' ? data.top_users[2]?.reuniao : 0,
-        reports: '???'
+        reports: ''
       }
     }
   ];
@@ -747,6 +1020,16 @@ export default function Dashboard() {
     }
   ];
 
+  const rankingCreativeTeam = [
+    {
+      id_creative: 0,
+      name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.tenant_name : '',
+      job_total: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.title : '',
+      hours_total: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.name : '',
+      jobs_no_change: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.name : ''
+    }
+  ];
+
   async function getProjects(tenantId: string) {
     try {
       const response = await api.get(`project-products/${tenantId}`);
@@ -851,39 +1134,76 @@ export default function Dashboard() {
             <CardBase>
               <div className="card-title">Clientes (FEE)</div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <BarChartGrafic
-                  data={topTenantJobs}
-                  isVertical={true}
-                  title="Top clientes (Jobs)"
-                  height=""
-                />
-                <BarChartGrafic
-                  data={topTenantHours}
-                  isVertical={true}
-                  title="Top clientes (Horas)"
-                  height=""
-                />
-              </div>
+              <BarChartGrafic
+                data={topFeeTenantJobs}
+                isVertical={true}
+                title="Top clientes (Jobs)"
+                height=""
+              />
+
+              <TableDefault
+                title="Top clientes (Horas)"
+                titleSize="14px"
+                titleWeight="700"
+                titleColor="#222"
+              >
+                <thead>
+                  <tr>
+                    <th>Cliente</th>
+                    <th>Tempo total</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {topFeeTenantHours.map((row, index: number) => (
+                    <tr key={index}>
+                      <td>{row.name ? row.name : '-----'}</td>
+                      <td>{row.Total ? row.Total : 0}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </TableDefault>
             </CardBase>
 
             <CardBase>
               <div className="card-title">Clientes (SPOT)</div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <BarChartGrafic
-                  data={topTenantJobs}
-                  isVertical={true}
-                  title="Top clientes (Jobs)"
-                  height=""
-                />
-                <BarChartGrafic
-                  data={topTenantHours}
-                  isVertical={true}
-                  title="Top clientes (Horas)"
-                  height=""
-                />
-              </div>
+              <BarChartGrafic
+                data={topSpotJobs}
+                isVertical={true}
+                title="Top clientes (Jobs)"
+                height=""
+              />
+
+              <TableDefault
+                title="Top clientes (Horas)"
+                titleSize="14px"
+                titleWeight="700"
+                titleColor="#222"
+              >
+                <thead>
+                  <tr>
+                    <th>Cliente</th>
+                    <th>Tempo total</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {topSpotTenantHours.map((row, index: number) => (
+                    <tr key={index}>
+                      <td>{row.name ? row.name : '-----'}</td>
+                      <td>{row.Total ? row.Total : 0}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </TableDefault>
+
+              {/* <BarChartGrafic
+                data={topSpotTenantHours}
+                isVertical={true}
+                title="Top clientes (Horas)"
+                height=""
+              /> */}
             </CardBase>
           </GraphicLine>
 
@@ -904,11 +1224,11 @@ export default function Dashboard() {
               </thead>
 
               <tbody>
-                {jobsData.slice(0, 5).map((row) => (
+                {jobsAwaitingToBeSend?.slice(0, 5).map((row) => (
                   <tr key={row.id_job}>
-                    <td>{row.client_name}</td>
+                    <td>{row.client_name ? row.client_name : '-----'}</td>
                     <td>
-                      {row.job_name}
+                      {row.job_service ? row.job_service : '-----'}
                       {/* {new Intl.NumberFormat('pt-BR', {
                         style: 'currency',
                         currency: 'BRL'
@@ -923,7 +1243,8 @@ export default function Dashboard() {
                         height: '49px'
                       }}
                     >
-                      <JobStatus
+                      {row.job_name ? row.job_name : '-----'}
+                      {/* <JobStatus
                         className={
                           row.job_status === 'Pendente de envio'
                             ? 'status progress'
@@ -933,7 +1254,7 @@ export default function Dashboard() {
                         }
                       >
                         {row.job_status}
-                      </JobStatus>
+                      </JobStatus> */}
                     </td>
                   </tr>
                 ))}
@@ -955,11 +1276,11 @@ export default function Dashboard() {
               </thead>
 
               <tbody>
-                {jobsData.slice(0, 5).map((row) => (
+                {jobsAwaitingClientAdmin.slice(0, 5).map((row) => (
                   <tr key={row.id_job}>
-                    <td>{row.client_name}</td>
+                    <td>{row.client_name ? row.client_name : '-----'}</td>
                     <td>
-                      {row.job_name}
+                      {row.job_service ? row.job_service : '-----'}
                       {/* {new Intl.NumberFormat('pt-BR', {
                         style: 'currency',
                         currency: 'BRL'
@@ -974,7 +1295,8 @@ export default function Dashboard() {
                         height: '49px'
                       }}
                     >
-                      <JobStatus
+                      {row.job_name ? row.job_name : '-----'}
+                      {/* <JobStatus
                         className={
                           row.job_status === 'Pendente de envio'
                             ? 'status progress'
@@ -984,7 +1306,7 @@ export default function Dashboard() {
                         }
                       >
                         {row.job_status}
-                      </JobStatus>
+                      </JobStatus> */}
                     </td>
                   </tr>
                 ))}
@@ -1026,10 +1348,10 @@ export default function Dashboard() {
             <tbody>
               {data &&
                 dashType === 'admin' &&
-                data.top_fee_inverso.map((row: TopFeeSpot, index: number) => (
+                data?.top_fee_inverso.slice(0, 10).map((row: TopFeeSpot, index: number) => (
                   <tr key={index}>
                     <td>{row.client_name}</td>
-                    <td>{row.atendimento ? row.atendimento : '?????'}</td>
+                    <td>{row.atendimento ? row.atendimento : '-----'}</td>
                     <td style={{ color: '#00BFA5', fontWeight: '700' }}>
                       {row.tempo_total.split(':')[0]}H
                     </td>
@@ -1037,7 +1359,13 @@ export default function Dashboard() {
                       <HoursTable>{row.consumido.split(':')[0]}H</HoursTable>
                     </td>
                     <td>
-                      <HoursTable className="minus">?????</HoursTable>
+                      <HoursTable
+                        className={
+                          subtractTime(row.tempo_total, row.consumido).includes('-') ? 'minus' : ''
+                        }
+                      >
+                        {subtractTime(row.tempo_total, row.consumido)}
+                      </HoursTable>
                     </td>
                   </tr>
                 ))}
@@ -1066,7 +1394,7 @@ export default function Dashboard() {
                 data.top_spot_inverso.map((row: TopFeeSpot, index: number) => (
                   <tr key={index}>
                     <td>{row.client_name}</td>
-                    <td>{row.atendimento ? row.atendimento : '?????'}</td>
+                    <td>{row.atendimento ? row.atendimento : '-----'}</td>
                     <td style={{ color: '#00BFA5', fontWeight: '700' }}>
                       {row.tempo_total.split(':')[0]}H
                     </td>
@@ -1074,7 +1402,13 @@ export default function Dashboard() {
                       <HoursTable>{row.consumido.split(':')[0]}H</HoursTable>
                     </td>
                     <td>
-                      <HoursTable className="minus">?????</HoursTable>
+                      <HoursTable
+                        className={
+                          subtractTime(row.tempo_total, row.consumido).includes('-') ? 'minus' : ''
+                        }
+                      >
+                        {subtractTime(row.tempo_total, row.consumido)}
+                      </HoursTable>
                     </td>
                   </tr>
                 ))}
@@ -1085,23 +1419,74 @@ export default function Dashboard() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
             <CardBase>
               <div className="card-title">Alterações Internas (Jobs)</div>
-              <BarChartGrafic data={topTenantJobs} isVertical={true} height="" />
+              <BarChartGrafic data={topInternalChange} isVertical={true} height="" />
             </CardBase>
+
             <CardBase>
               <div className="card-title">Alterações Clientes (Jobs)</div>
-              <BarChartGrafic data={topTenantJobs} isVertical={true} height="" />
+              <BarChartGrafic data={topExternalChange} isVertical={true} height="" />
             </CardBase>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
             <CardBase>
-              <div className="card-title">Alterações Internas (Horas)</div>
-              <BarChartGrafic data={topTenantJobs} isVertical={true} height="" />
+              <TableDefault
+                title="Alterações Internas (Horas)"
+                titleSize="14px"
+                titleWeight="700"
+                titleColor="#222"
+              >
+                <thead>
+                  <tr>
+                    <th>Cliente</th>
+                    <th>Tempo total</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {topInternalChangesHours.map((row, index: number) => (
+                    <tr key={index}>
+                      <td>{row.name ? row.name : '-----'}</td>
+                      <td>{row.Total ? row.Total : 0}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </TableDefault>
             </CardBase>
+            {/* <CardBase>
+              <div className="card-title"></div>
+              <BarChartGrafic data={topTenantJobs} isVertical={true} height="" />
+            </CardBase> */}
+
             <CardBase>
+              <TableDefault
+                title="Alterações Clientes (Horas)"
+                titleSize="14px"
+                titleWeight="700"
+                titleColor="#222"
+              >
+                <thead>
+                  <tr>
+                    <th>Cliente</th>
+                    <th>Tempo total</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {topExternalChangeHours.map((row, index: number) => (
+                    <tr key={index}>
+                      <td>{row.name ? row.name : '-----'}</td>
+                      <td>{row.Total ? row.Total : 0}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </TableDefault>
+            </CardBase>
+
+            {/* <CardBase>
               <div className="card-title">Alterações Clientes (Horas)</div>
               <BarChartGrafic data={topTenantJobs} isVertical={true} height="" />
-            </CardBase>
+            </CardBase> */}
           </div>
 
           {/* Monitoramento do time - tabela */}
@@ -1405,7 +1790,7 @@ export default function Dashboard() {
               <thead>
                 <tr>
                   <th style={{ minWidth: '180px' }}>Ranking</th>
-                  <th>Criativo</th>
+                  <th>Atendimento</th>
                   <th>Jobs totais</th>
                   <th>Horas totais</th>
                   <th>Jobs sem alteração</th>
@@ -1468,41 +1853,15 @@ export default function Dashboard() {
               </thead>
 
               <tbody>
-                <tr>
-                  <td>1º</td>
-                  <td>?????</td>
-                  <td>??</td>
-                  <td>???H</td>
-                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
-                </tr>
-                <tr>
-                  <td>2º</td>
-                  <td>?????</td>
-                  <td>??</td>
-                  <td>???H</td>
-                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
-                </tr>
-                <tr>
-                  <td>3º</td>
-                  <td>?????</td>
-                  <td>??</td>
-                  <td>???H</td>
-                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
-                </tr>
-                <tr>
-                  <td>4º</td>
-                  <td>?????</td>
-                  <td>??</td>
-                  <td>???H</td>
-                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
-                </tr>
-                <tr>
-                  <td>5º</td>
-                  <td>?????</td>
-                  <td>??</td>
-                  <td>???H</td>
-                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
-                </tr>
+                {data.time_criacao.map((row: any) => (
+                  <tr key={row.user_id}>
+                    <td>1º</td>
+                    <td>?????</td>
+                    <td>??</td>
+                    <td>???H</td>
+                    <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
+                  </tr>
+                ))}
               </tbody>
             </TableDefault>
           </CardBase>

@@ -933,6 +933,7 @@ export default function ViewProductsDeliveries() {
         setUploadedFiles([]);
         setModalUpload(false);
         setModalFinalFile(false);
+        setToClientConfirmation(false);
         getTaskInfos();
       }
 
@@ -977,6 +978,7 @@ export default function ViewProductsDeliveries() {
         });
         setUploadedFiles([]);
         setModalFinalFile(false);
+        setToClientConfirmation(false);
         getTaskInfos();
         // setTimeout(() => {
         //   navigate('/minhas-tarefas');
@@ -1013,14 +1015,14 @@ export default function ViewProductsDeliveries() {
       // console.log('log do mandatoryUpload =>', mandatoryUpload);
       // console.log('log do checkMandatoryUpload =>', checkMandatoryUpload());
 
-      if (mandatoryUpload && checkMandatoryUpload()) {
-        addToast({
-          title: 'Atenção',
-          description: 'é necessário fazer upload para todos os produtos',
-          type: 'warning'
-        });
-        throw new Error('');
-      }
+      // if (mandatoryUpload && checkMandatoryUpload()) {
+      //   addToast({
+      //     title: 'Atenção',
+      //     description: 'é necessário fazer upload para todos os produtos',
+      //     type: 'warning'
+      //   });
+      //   throw new Error('');
+      // }
 
       if (checkType === 'next') {
         const response = await api.get(
