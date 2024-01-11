@@ -626,10 +626,31 @@ export default function WorkingProduct({
       const link = document.createElement('a');
       link.href = urlResponse;
       link.setAttribute('download', `${file.file_name}`);
+
+      setLoading(true);
+
       document.body.appendChild(link);
       link.click();
+
+      setLoading(false);
     } catch (error: any) {
       console.log('log error download file', error);
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            type: 'danger',
+            title: 'ATENÇÃO',
+            description: row.error
+          });
+        });
+      } else {
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: error.response.data.message
+        });
+      }
+      setLoading(false);
     }
   }
 
@@ -714,25 +735,12 @@ export default function WorkingProduct({
 
         {selectedTab === 'Arquivos' && uploadEnabled && !finalCard && !uploadClient && (
           <ButtonsWrapper>
-            {sendToApprove && (
-              <ButtonDefault typeButton="primary" onClick={toApprove}>
-                Enviar para aprovação
-              </ButtonDefault>
-            )}
-            <ButtonDefault typeButton="primary" onClick={() => setModalUpload(true)}>
-              Adicionar arquivo
-            </ButtonDefault>
-          </ButtonsWrapper>
-        )}
-
-        {selectedTab === 'Arquivos' && uploadEnabled && finalCard && (
-          <ButtonsWrapper>
             {/* {sendToApprove && (
               <ButtonDefault typeButton="primary" onClick={toApprove}>
                 Enviar para aprovação
               </ButtonDefault>
             )} */}
-            <ButtonDefault typeButton="primary" onClick={() => setModalFinalFile(true)}>
+            <ButtonDefault typeButton="primary" onClick={() => setModalUpload(true)}>
               Adicionar arquivo
             </ButtonDefault>
           </ButtonsWrapper>
@@ -740,8 +748,25 @@ export default function WorkingProduct({
 
         {selectedTab === 'Arquivos' &&
           uploadEnabled &&
+          finalCard &&
+          productInfos?.status !== 'Concluida' && (
+            <ButtonsWrapper>
+              {/* {sendToApprove && (
+              <ButtonDefault typeButton="primary" onClick={toApprove}>
+                Enviar para aprovação
+              </ButtonDefault>
+            )} */}
+              <ButtonDefault typeButton="primary" onClick={() => setModalFinalFile(true)}>
+                Adicionar arquivo
+              </ButtonDefault>
+            </ButtonsWrapper>
+          )}
+
+        {selectedTab === 'Arquivos' &&
+          uploadEnabled &&
           uploadClient &&
-          productInfos?.status !== 'Desmembrada' && (
+          productInfos?.status !== 'Desmembrada' &&
+          productInfos?.status !== 'Concluida' && (
             <ButtonsWrapper>
               {/* {sendToApprove && (
               <ButtonDefault typeButton="primary" onClick={toApprove}>
@@ -982,7 +1007,7 @@ export default function WorkingProduct({
                     <th>Produto ID</th>
                     <th>Nome do arquivo</th>
                     <th>Tamanho</th>
-                    <th>Usuário</th>
+                    {/* <th>Usuário</th> */}
                     <th>Data</th>
                     <th>Status</th>
                     <th></th>
@@ -1003,9 +1028,9 @@ export default function WorkingProduct({
                         </td>
                         <td>{row.file_name}</td>
                         <td>{formatBytes(row.size)}</td>
-                        <td style={{ textTransform: 'capitalize' }}>Criação</td>
+                        {/* <td style={{ textTransform: 'capitalize' }}>Criação</td> */}
                         <td style={{ textTransform: 'capitalize' }}>
-                          {moment('2023/11/31').format('DD/MM/YYYY')}
+                          {moment(row.created).format('DD/MM/YYYY')}
                         </td>
                         <td>
                           {row.products_delivery_id !== '' ? (
