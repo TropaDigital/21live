@@ -1049,7 +1049,7 @@ export default function WorkingProduct({
                                 ? 'Reprovado'
                                 : row.status === 'pass'
                                 ? 'Aprovado'
-                                : row.status === 'await'
+                                : row.status === 'wait'
                                 ? 'Aguardando aprovação'
                                 : ''}
                             </StatusTable>
