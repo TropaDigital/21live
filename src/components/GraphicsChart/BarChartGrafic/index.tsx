@@ -66,6 +66,7 @@ const BarChartGrafic = ({ data, isVertical, title, height }: Props) => {
           <XAxis
             type={isVertical ? 'number' : 'category'}
             dataKey={isVertical ? undefined : 'name'}
+            domain={[0, 'dataMax + 15']}
             axisLine={false}
             tickLine={false}
             fontSize={12}
@@ -73,7 +74,7 @@ const BarChartGrafic = ({ data, isVertical, title, height }: Props) => {
           />
           <YAxis
             type={isVertical ? 'category' : 'number'}
-            domain={[0, 'dataMax + 22']}
+            domain={[0, 'dataMax + 20']}
             dataKey={isVertical ? 'name' : undefined}
             axisLine={false}
             tickLine={false}
