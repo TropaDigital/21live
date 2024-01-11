@@ -58,10 +58,10 @@ export function useApp({ starterDate, finishDate, data, taskDate }: AppDataProps
   function handleUserTasks(tasksArray: any) {
     const channelUuid = tasksArray.user_id;
 
-    return tasksArray.agenda.map((item: any, index: number) => {
+    return tasksArray?.agenda?.map((item: any, index: number) => {
       const isPause = item.type;
       // channelUuid + index - change to only channelId
-      const id = channelUuid;
+      const id = channelUuid + index;
       const description = item.title || 'Pausa';
       const since = String(moment(item.start).format('YYYY-MM-DDTHH:mm:ss'));
       const till = String(moment(item.end).format('YYYY-MM-DDTHH:mm:ss'));

@@ -402,7 +402,7 @@ export default function CreateTasks() {
   }, [location]);
 
   useEffect(() => {
-    if (DTOForm.tenant_id) {
+    if (DTOForm.tenant_id && createStep === 1) {
       getProjects(DTOForm.tenant_id);
     }
   }, [DTOForm]);
