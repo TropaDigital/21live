@@ -1022,7 +1022,7 @@ export default function ViewProductsDeliveries() {
         throw new Error('');
       }
 
-      if (checkType === 'next' && hasDismemberedProduct) {
+      if (checkType === 'next') {
         const response = await api.get(
           `/flow-function?step=${Number(actualStep) + 1}&flow_id=${dataTask?.flow_id}`
         );
