@@ -618,11 +618,15 @@ export default function WorkingProduct({
 
   async function downloadFile(file: any) {
     try {
-      const response = await api.post(
-        `https://app.21live.com.br:3000/archive?bucket=${file.bucket}&key=${file.key}`
+      const response = await api.get(
+        `https://app.21live.com.br:3000/archive?bucket=${file.bucket}&key=${file.key}`,
+        { responseType: 'arraybuffer' }
       );
 
-      const urlResponse = window.URL.createObjectURL(response.data);
+      console.log('log do response download =>', response);
+
+      const blob = new Blob([response.data]);
+      const urlResponse = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = urlResponse;
       link.setAttribute('download', `${file.file_name}`);
@@ -1049,7 +1053,7 @@ export default function WorkingProduct({
                                 ? 'Reprovado'
                                 : row.status === 'pass'
                                 ? 'Aprovado'
-                                : row.status === 'wait'
+                                : row.status === 'await' || row.status === 'wait'
                                 ? 'Aguardando aprovação'
                                 : ''}
                             </StatusTable>
