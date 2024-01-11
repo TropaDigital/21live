@@ -204,14 +204,14 @@ export default function ProductTable({
                     ? 'Alteração Interna'
                     : 'Alteração externa'}
                 </td>
-                {uploadEnabled && row.status !== 'Desmembrada' && (
+                {uploadEnabled && row.status !== 'Desmembrada' && row.status !== 'Concluida' && (
                   <td onClick={() => uploadProduct(row)}>
                     <div className="upload">
                       <FaUpload />
                     </div>
                   </td>
                 )}
-                {uploadEnabled && row.status === 'Desmembrada' && (
+                {uploadEnabled && (row.status === 'Desmembrada' || row.status === 'Concluida') && (
                   <td>
                     <div className="upload block">
                       <FaUpload />
