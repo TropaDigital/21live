@@ -202,7 +202,7 @@ function RoutesAll() {
           path="/produto/:id"
           element={
             <PrivateRoutes>
-              <WorkingProduct />
+              <WorkingProduct updateInfos={() => ''} />
             </PrivateRoutes>
           }
         />

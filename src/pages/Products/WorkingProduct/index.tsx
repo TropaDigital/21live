@@ -96,6 +96,7 @@ interface WorkingProductProps {
   stepToReturn?: string;
   sendToApprove?: boolean;
   toApprove?: () => void;
+  updateInfos: () => void;
   timelineData?: TimelineProps;
   returnReasons?: ReturnReasons[];
 }
@@ -193,7 +194,8 @@ export default function WorkingProduct({
   ticket_id,
   returnReasons,
   toApprove,
-  goBack
+  goBack,
+  updateInfos
 }: WorkingProductProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -488,10 +490,13 @@ export default function WorkingProduct({
         products_delivery_id: productInfos?.products_delivery_id
       };
 
-      const response = await api.post(`/archive/upload`, uploadInfos);
+      const response = await api.put(`/task/upload`, uploadInfos);
 
       if (response.data.status === 'success') {
         setUploadedFiles([]);
+        setModalUpload(false);
+        updateInfos();
+        // navigate('/minhas-tarefas');
       }
 
       console.log('log do response do saveUpload', response.data.result);
@@ -538,7 +543,8 @@ export default function WorkingProduct({
         setUploadedFiles([]);
         setModalUpload(false);
         setModalFinalFile(false);
-        navigate('/minhas-tarefas');
+        updateInfos();
+        // navigate('/minhas-tarefas');
       }
 
       console.log('log do response do saveUpload', response.data.result);
@@ -573,7 +579,7 @@ export default function WorkingProduct({
         products_delivery_id: productInfos?.products_delivery_id
       };
 
-      const response = await api.post(`/archive/upload/ticket`, uploadInfos);
+      const response = await api.put(`/task/upload-tenant-approve`, uploadInfos);
 
       if (response.data.status === 'success') {
         addToast({
@@ -583,9 +589,10 @@ export default function WorkingProduct({
         });
         setUploadedFiles([]);
         setModalFinalFile(false);
-        setTimeout(() => {
-          navigate('/minhas-tarefas');
-        }, 1500);
+        updateInfos();
+        // setTimeout(() => {
+        //   navigate('/minhas-tarefas');
+        // }, 1500);
       }
 
       console.log('log do response do saveUpload', response.data.result);
@@ -619,10 +626,31 @@ export default function WorkingProduct({
       const link = document.createElement('a');
       link.href = urlResponse;
       link.setAttribute('download', `${file.file_name}`);
+
+      setLoading(true);
+
       document.body.appendChild(link);
       link.click();
+
+      setLoading(false);
     } catch (error: any) {
       console.log('log error download file', error);
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            type: 'danger',
+            title: 'ATENÇÃO',
+            description: row.error
+          });
+        });
+      } else {
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: error.response.data.message
+        });
+      }
+      setLoading(false);
     }
   }
 
@@ -707,25 +735,12 @@ export default function WorkingProduct({
 
         {selectedTab === 'Arquivos' && uploadEnabled && !finalCard && !uploadClient && (
           <ButtonsWrapper>
-            {sendToApprove && (
-              <ButtonDefault typeButton="primary" onClick={toApprove}>
-                Enviar para aprovação
-              </ButtonDefault>
-            )}
-            <ButtonDefault typeButton="primary" onClick={() => setModalUpload(true)}>
-              Adicionar arquivo
-            </ButtonDefault>
-          </ButtonsWrapper>
-        )}
-
-        {selectedTab === 'Arquivos' && uploadEnabled && finalCard && (
-          <ButtonsWrapper>
             {/* {sendToApprove && (
               <ButtonDefault typeButton="primary" onClick={toApprove}>
                 Enviar para aprovação
               </ButtonDefault>
             )} */}
-            <ButtonDefault typeButton="primary" onClick={() => setModalFinalFile(true)}>
+            <ButtonDefault typeButton="primary" onClick={() => setModalUpload(true)}>
               Adicionar arquivo
             </ButtonDefault>
           </ButtonsWrapper>
@@ -733,8 +748,25 @@ export default function WorkingProduct({
 
         {selectedTab === 'Arquivos' &&
           uploadEnabled &&
+          finalCard &&
+          productInfos?.status !== 'Concluida' && (
+            <ButtonsWrapper>
+              {/* {sendToApprove && (
+              <ButtonDefault typeButton="primary" onClick={toApprove}>
+                Enviar para aprovação
+              </ButtonDefault>
+            )} */}
+              <ButtonDefault typeButton="primary" onClick={() => setModalFinalFile(true)}>
+                Adicionar arquivo
+              </ButtonDefault>
+            </ButtonsWrapper>
+          )}
+
+        {selectedTab === 'Arquivos' &&
+          uploadEnabled &&
           uploadClient &&
-          productInfos?.status !== 'Desmembrada' && (
+          productInfos?.status !== 'Desmembrada' &&
+          productInfos?.status !== 'Concluida' && (
             <ButtonsWrapper>
               {/* {sendToApprove && (
               <ButtonDefault typeButton="primary" onClick={toApprove}>
@@ -975,7 +1007,7 @@ export default function WorkingProduct({
                     <th>Produto ID</th>
                     <th>Nome do arquivo</th>
                     <th>Tamanho</th>
-                    <th>Usuário</th>
+                    {/* <th>Usuário</th> */}
                     <th>Data</th>
                     <th>Status</th>
                     <th></th>
@@ -996,9 +1028,9 @@ export default function WorkingProduct({
                         </td>
                         <td>{row.file_name}</td>
                         <td>{formatBytes(row.size)}</td>
-                        <td style={{ textTransform: 'capitalize' }}>Criação</td>
+                        {/* <td style={{ textTransform: 'capitalize' }}>Criação</td> */}
                         <td style={{ textTransform: 'capitalize' }}>
-                          {moment('2023/11/31').format('DD/MM/YYYY')}
+                          {moment(row.created).format('DD/MM/YYYY')}
                         </td>
                         <td>
                           {row.products_delivery_id !== '' ? (
@@ -1008,6 +1040,8 @@ export default function WorkingProduct({
                                   ? 'status reject'
                                   : row.status === 'pass'
                                   ? 'status accept'
+                                  : row.status === ''
+                                  ? ''
                                   : 'status'
                               }
                             >
@@ -1015,7 +1049,7 @@ export default function WorkingProduct({
                                 ? 'Reprovado'
                                 : row.status === 'pass'
                                 ? 'Aprovado'
-                                : row.status === 'await'
+                                : row.status === 'wait'
                                 ? 'Aguardando aprovação'
                                 : ''}
                             </StatusTable>

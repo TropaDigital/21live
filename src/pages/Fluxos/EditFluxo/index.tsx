@@ -44,7 +44,7 @@ export default function EditFluxo() {
 
   const { data: dataTeam } = useFetch<OfficeProps[]>(`function`);
   // const { data: dataTeam } = useFetch<UserProps[]>(`team?page=${1}&search=${''}`);
-  const latesTeam = dataTeam?.slice(0, 8);
+  const latesTeam = dataTeam;
 
   const { data, isFetching } = useFetch<ColumnModel[]>(`card/${location.state.id}`);
   const { addColumn, moveObject, deleteColumn, updateParcialColumn, column, setColumn } =

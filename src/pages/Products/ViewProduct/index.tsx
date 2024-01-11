@@ -3,7 +3,7 @@
 /* eslint-disable import-helpers/order-imports */
 // React
 import { useState, useEffect, useRef } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 // Icons
 import { FaArrowLeft, FaChevronDown, FaChevronUp } from 'react-icons/fa';
@@ -68,6 +68,7 @@ import { StepTimeline, UploadedFilesProps } from '../../../types';
 import { UsersNoSchedule } from '../../../utils/models';
 import UploadFiles from '../../../components/Upload/UploadFiles';
 import UploadFinalFile from '../../../components/UploadFinal/UploadFinalFiles';
+import Loader from '../../../components/LoaderSpin';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -83,7 +84,8 @@ export default function ViewProductsDeliveries() {
   const location = useLocation();
   const navigate = useNavigate();
   const { addToast } = useToast();
-  const { start, stop } = useStopWatch();
+  const { stop } = useStopWatch();
+  const { id } = useParams();
   const { state, setInitialTime, setTaskInfo, handleClock } = useStopWatch();
   const openRightRef = useRef<any>();
   const [modalSendToUser, setModalSendToUser] = useState<boolean>(false);
@@ -122,13 +124,11 @@ export default function ViewProductsDeliveries() {
     end_job: ''
   };
 
-  const deliveryId = location.state.task.deliverys.filter(
-    (obj: any) => Number(obj.order) === location.state.task_index
-  );
+  const deliveryId = dataTask?.deliverys.filter((obj: any) => Number(obj.order) === 1);
 
   const titleInfos = {
     idNumber: dataTask?.task_id,
-    numberTask: location.state.task_index,
+    numberTask: location?.state?.task_index ? location.state.task_index : 1,
     titleTask: dataTask?.title,
     monthTask: '',
     client_task: dataTask?.tenant,
@@ -138,12 +138,12 @@ export default function ViewProductsDeliveries() {
   };
 
   const data = {
-    estimatedTime: location.state.task.total_time
+    estimatedTime: dataTask?.total_time
   };
 
   const InputsTask = {
-    copywriting_description: location.state.task.copywriting_description,
-    creation_description: location.state.task.creation_description
+    copywriting_description: dataTask?.copywriting_description,
+    creation_description: dataTask?.creation_description
   };
 
   const actualDate = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
@@ -179,13 +179,15 @@ export default function ViewProductsDeliveries() {
   const hasToDismemberTask = dataTask?.files?.some((obj: any) => obj.status === 'fail');
 
   useEffect(() => {
+    // console.log('log do params =>', id);
+
     async function getClockIsOpen() {
       try {
         setLoading(true);
 
         if (typeOfPlay === 'schedule') {
           const response = await api.get(
-            `/clock/consumed?delivery_id=${deliveryId[0].delivery_id}`
+            `/clock/consumed?delivery_id=${deliveryId[0]?.delivery_id}`
           );
           if (response.data.result.play === true) {
             setPlayingForSchedule(true);
@@ -194,14 +196,14 @@ export default function ViewProductsDeliveries() {
               elapsedTime: response.data.result.diff / 1000
             });
             setTaskInfo({
-              idNumber: location.state.task.task_id,
-              numberTask: location.state.task_index,
-              titleTask: location.state.task.title,
+              idNumber: dataTask?.task_id,
+              numberTask: location.state?.task_index,
+              titleTask: dataTask?.title,
               monthTask: '',
-              client_task: location.state.task.tenant,
-              typeTask: location.state.task.project_category,
+              client_task: dataTask?.tenant,
+              typeTask: dataTask?.project_category,
               quantityTask: '',
-              contract_task: location.state.task.product_period
+              contract_task: dataTask?.product_period
             });
           } else {
             setInitialTime({
@@ -209,14 +211,14 @@ export default function ViewProductsDeliveries() {
               elapsedTime: response.data.result.diff / 1000
             });
             setTaskInfo({
-              idNumber: location.state.task.task_id,
-              numberTask: location.state.task_index,
-              titleTask: location.state.task.title,
+              idNumber: dataTask?.task_id,
+              numberTask: location.state?.task_index,
+              titleTask: dataTask?.title,
               monthTask: '',
-              client_task: location.state.task.tenant,
-              typeTask: location.state.task.project_category,
+              client_task: dataTask?.tenant,
+              typeTask: dataTask?.project_category,
               quantityTask: '',
-              contract_task: location.state.task.product_period
+              contract_task: dataTask?.product_period
             });
           }
         }
@@ -227,14 +229,14 @@ export default function ViewProductsDeliveries() {
             elapsedTime: 0
           });
           setTaskInfo({
-            idNumber: location.state.task.task_id,
-            numberTask: location.state.task_index,
-            titleTask: location.state.task.title,
+            idNumber: dataTask?.task_id,
+            numberTask: location.state?.task_index,
+            titleTask: dataTask?.title,
             monthTask: '',
-            client_task: location.state.task.tenant,
-            typeTask: location.state.task.project_category,
+            client_task: dataTask?.tenant,
+            typeTask: dataTask?.project_category,
             quantityTask: '',
-            contract_task: location.state.task.product_period
+            contract_task: dataTask?.product_period
           });
         }
 
@@ -249,14 +251,14 @@ export default function ViewProductsDeliveries() {
               elapsedTime: response.data.result.diff / 1000
             });
             setTaskInfo({
-              idNumber: location.state.task.task_id,
-              numberTask: location.state.task_index,
-              titleTask: location.state.task.title,
+              idNumber: dataTask?.task_id,
+              numberTask: location.state?.task_index,
+              titleTask: dataTask?.title,
               monthTask: '',
-              client_task: location.state.task.tenant,
-              typeTask: location.state.task.project_category,
+              client_task: dataTask?.tenant,
+              typeTask: dataTask?.project_category,
               quantityTask: '',
-              contract_task: location.state.task.product_period
+              contract_task: dataTask?.product_period
             });
           } else {
             setInitialTime({
@@ -264,14 +266,14 @@ export default function ViewProductsDeliveries() {
               elapsedTime: response.data.result.diff / 1000
             });
             setTaskInfo({
-              idNumber: location.state.task.task_id,
-              numberTask: location.state.task_index,
-              titleTask: location.state.task.title,
+              idNumber: dataTask?.task_id,
+              numberTask: location.state?.task_index,
+              titleTask: dataTask?.title,
               monthTask: '',
-              client_task: location.state.task.tenant,
-              typeTask: location.state.task.project_category,
+              client_task: dataTask?.tenant,
+              typeTask: dataTask?.project_category,
               quantityTask: '',
-              contract_task: location.state.task.product_period
+              contract_task: dataTask?.product_period
             });
           }
         }
@@ -289,7 +291,7 @@ export default function ViewProductsDeliveries() {
   async function getTaskInfos() {
     try {
       setLoading(true);
-      const response = await api.get(`/tasks/${location.state.task.task_id}`);
+      const response = await api.get(`/tasks/${id}`);
       // console.log('log do response get task', response.data.result);
 
       if (response.data.result.length > 0) {
@@ -309,29 +311,31 @@ export default function ViewProductsDeliveries() {
   }
 
   useEffect(() => {
-    // setDataTask(location.state.task);
-    // console.log('log do dataTask =>', location.state.task);
-
     getTaskInfos();
+  }, []);
 
-    if (location.state.task.type_play === 'delivery') {
+  useEffect(() => {
+    // setDataTask(location.state.task);
+    // console.log('log do params =>', id);
+
+    if (dataTask?.type_play === 'delivery') {
       setTypeOfPlay('schedule');
     }
 
-    if (location.state.task.type_play === 'product') {
+    if (dataTask?.type_play === 'product') {
       setTypeOfPlay('product');
     }
 
     const timeDataInfo = {
-      totalTime: location.state.task.total_time,
-      timeConsumed: location.state.task.time_consumed
+      totalTime: dataTask?.total_time,
+      timeConsumed: dataTask?.time_consumed
     };
     setTimeData(timeDataInfo);
-    setDataProducts(location.state.delivery);
+    setDataProducts(dataTask?.deliverys[0]);
 
     async function getTimelineData() {
       try {
-        const response = await api.get(`task/timeline/${location.state.task.task_id}`);
+        const response = await api.get(`task/timeline/${id}`);
         setTimelineData(response.data.result);
       } catch (error: any) {
         console.log('log timeline error', error);
@@ -339,7 +343,7 @@ export default function ViewProductsDeliveries() {
     }
 
     getTimelineData();
-  }, [location]);
+  }, [dataTask]);
 
   useEffect(() => {
     if (
@@ -376,7 +380,7 @@ export default function ViewProductsDeliveries() {
   const handleStartPlayingTime = async (value: string) => {
     if (value === 'schedule') {
       const taskClock = {
-        task_id: location.state.task.task_id,
+        task_id: dataTask?.task_id,
         delivery_id: deliveryId[0].delivery_id
       };
 
@@ -411,7 +415,7 @@ export default function ViewProductsDeliveries() {
 
     if (value === 'product') {
       const taskClock = {
-        task_id: location.state.task.task_id,
+        task_id: dataTask?.task_id,
         products_delivery_id: selectedProduct?.productInfo?.products_delivery_id
       };
 
@@ -448,7 +452,7 @@ export default function ViewProductsDeliveries() {
   const handleSwitchPlayType = async (value: any) => {
     if (value) {
       const playType = {
-        task_id: location.state.task.task_id,
+        task_id: dataTask?.task_id,
         type_play: 'product'
       };
       try {
@@ -467,7 +471,7 @@ export default function ViewProductsDeliveries() {
       }
     } else {
       const playType = {
-        task_id: location.state.task.task_id,
+        task_id: dataTask?.task_id,
         type_play: 'delivery'
       };
       try {
@@ -628,7 +632,7 @@ export default function ViewProductsDeliveries() {
         end_job: values.end_job
       };
 
-      if (dataTask.type === 'Livre') {
+      if (dataTask?.type === 'Livre') {
         const responseNextDate = await api.get(
           `/task/nextdate=${moment(new Date()).format('YYYY-MM-DD')}&task_id=${dataTask?.task_id}`
         );
@@ -745,7 +749,7 @@ export default function ViewProductsDeliveries() {
         //   }
         // }
 
-        if (location.state.delivery.products.length > 1) {
+        if (location.state?.delivery.products.length > 1) {
           userInfos = next_user;
           // setModalProducts(true);
           // setHideRightCard('hide');
@@ -861,7 +865,7 @@ export default function ViewProductsDeliveries() {
     if (!finalCard && !uploadClient) {
       setModalUpload(true);
     }
-    if (finalCard || uploadClient) {
+    if ((finalCard && enableUpload) || uploadClient) {
       setModalFinalFile(true);
     }
   };
@@ -929,6 +933,7 @@ export default function ViewProductsDeliveries() {
         setUploadedFiles([]);
         setModalUpload(false);
         setModalFinalFile(false);
+        getTaskInfos();
       }
 
       console.log('log do response do saveUpload', response.data.result);
@@ -972,9 +977,10 @@ export default function ViewProductsDeliveries() {
         });
         setUploadedFiles([]);
         setModalFinalFile(false);
-        setTimeout(() => {
-          navigate('/minhas-tarefas');
-        }, 1500);
+        getTaskInfos();
+        // setTimeout(() => {
+        //   navigate('/minhas-tarefas');
+        // }, 1500);
       }
 
       // console.log('log do response do saveUpload', response.data.result);
@@ -1075,7 +1081,7 @@ export default function ViewProductsDeliveries() {
         const response = await api.get(
           `/task/next?flow=${dataTask?.flow_id}&project_product_id=${
             dataTask?.project_product_id
-          }&step=${Number(actualStep) + 1}&task_id=${dataTask.task_id}`
+          }&step=${Number(actualStep) + 1}&task_id=${dataTask?.task_id}`
         );
         setUsersWithoutSchedule(response.data.result);
         setModalWithoutSchedule(true);
@@ -1084,7 +1090,7 @@ export default function ViewProductsDeliveries() {
 
       if (type === 'back') {
         const response = await api.get(
-          `/task/next?project_product_id=${dataTask?.project_product_id}&flow_id=${dataTask?.flow_id}&step=${returnInfos.chosenStep}&task_id=${dataTask.task_id}`
+          `/task/next?project_product_id=${dataTask?.project_product_id}&flow_id=${dataTask?.flow_id}&step=${returnInfos.chosenStep}&task_id=${dataTask?.task_id}`
         );
         setUsersWithoutSchedule(response.data.result);
         setModalWithoutSchedule(true);
@@ -1315,398 +1321,403 @@ export default function ViewProductsDeliveries() {
 
   return (
     <ContainerDefault>
-      <DeliveryWrapper>
-        {/* {uploadClient && (
-          <HeaderOpenTask
-            title={titleInfos}
-            disableButton={true}
-            goBack
-            buttonType="client"
-            nextStepInfo={timeLineData}
-            hideButtonNext={true}
-            sendToNext={() => setModalFinalFile(true)}
-            backFlow={() => ''}
-          />
-        )} */}
+      {loading && <Loader />}
 
-        {dataTask?.status === 'Concluida' && (
-          <HeaderOpenTask
-            title={titleInfos}
-            disableButton={true}
-            goBack
-            hideButtonNext={true}
-            buttonType="send"
-            nextStepInfo={timeLineData}
-            backFlow={() => setModalReturnFlow(true)}
-          />
-        )}
-
-        {/* {dataTask?.status !== 'Concluida' &&
-          typeOfPlay === 'schedule' &&
-          selectedProduct === '' && (
+      {!loading && (
+        <DeliveryWrapper>
+          {/* {uploadClient && (
             <HeaderOpenTask
               title={titleInfos}
               disableButton={true}
               goBack
-              buttonType="send"
-              sendToNext={() => checkFlow('next')}
+              buttonType="client"
               nextStepInfo={timeLineData}
-              backFlow={() => setModalReturnFlow(true)}
+              hideButtonNext={true}
+              sendToNext={() => setModalFinalFile(true)}
+              backFlow={() => ''}
             />
           )} */}
 
-        {dataProducts?.status === 'Concluida' &&
-          dataTask?.status !== 'Concluida' &&
-          typeOfPlay === 'schedule' &&
-          selectedProduct !== '' && (
-            <HeaderOpenTask
-              title={titleInfos}
-              disableButton={false}
-              goBack
-              buttonType="send"
-              sendToNext={() => checkFlow('next')}
-              nextStepInfo={timeLineData}
-              backFlow={() => setModalReturnFlow(true)}
-            />
-          )}
-
-        {dataTask?.status !== 'Concluida' &&
-          selectedProduct === '' &&
-          typeOfPlay === 'schedule' &&
-          !finalCard && (
-            <HeaderOpenTask
-              title={titleInfos}
-              disableButton={false}
-              goBack
-              buttonType="send"
-              sendToNext={() => checkFlow('next')}
-              nextStepInfo={timeLineData}
-              backFlow={() => setModalReturnFlow(true)}
-            />
-          )}
-
-        {dataProducts?.status !== 'Concluida' &&
-          dataTask?.status !== 'Concluida' &&
-          selectedProduct === '' &&
-          typeOfPlay === 'schedule' &&
-          finalCard && (
-            <HeaderOpenTask
-              title={titleInfos}
-              disableButton={false}
-              goBack
-              buttonType="finish"
-              sendToNext={handleConcludeTask}
-              nextStepInfo={timeLineData}
-              backFlow={() => setModalReturnFlow(true)}
-            />
-          )}
-
-        {dataProducts?.status !== 'Concluida' &&
-          dataTask?.status !== 'Concluida' &&
-          selectedProduct !== '' &&
-          typeOfPlay === 'schedule' &&
-          finalCard && (
-            <HeaderOpenTask
-              title={titleInfos}
-              disableButton={false}
-              goBack
-              buttonType="finish"
-              sendToNext={handleConcludeTask}
-              nextStepInfo={timeLineData}
-              backFlow={() => setModalReturnFlow(true)}
-            />
-          )}
-
-        {dataProducts?.status !== 'Concluida' &&
-          dataTask?.status !== 'Concluida' &&
-          selectedProduct !== '' &&
-          typeOfPlay === 'schedule' &&
-          !finalCard && (
-            <HeaderOpenTask
-              title={titleInfos}
-              disableButton={false}
-              goBack
-              buttonType="send"
-              sendToNext={() => checkFlow('next')}
-              nextStepInfo={timeLineData}
-              backFlow={() => setModalReturnFlow(true)}
-            />
-          )}
-
-        {dataProducts?.status !== 'Concluida' &&
-          dataTask?.status !== 'Concluida' &&
-          selectedProduct === '' &&
-          typeOfPlay === 'product' &&
-          finalCard && (
-            <HeaderOpenTask
-              title={titleInfos}
-              disableButton={false}
-              goBack
-              buttonType="finish"
-              sendToNext={handleConcludeTask}
-              nextStepInfo={timeLineData}
-              backFlow={() => setModalReturnFlow(true)}
-            />
-          )}
-
-        {dataProducts?.status !== 'Concluida' &&
-          dataTask?.status !== 'Concluida' &&
-          selectedProduct !== '' &&
-          typeOfPlay === 'product' &&
-          selectedProduct.status !== 'Concluida' &&
-          finalCard && (
-            <HeaderOpenTask
-              title={titleInfos}
-              disableButton={typeOfPlay === 'product' ? false : true}
-              goBack
-              buttonType="finish"
-              sendToNext={handleConcludeTask}
-              nextStepInfo={timeLineData}
-              backToDelivery={() => setViewProduct(false)}
-              isInsideProduct={true}
-              backFlow={() => setModalReturnFlow(true)}
-            />
-          )}
-
-        {dataProducts?.status !== 'Concluida' &&
-          dataTask?.status !== 'Concluida' &&
-          selectedProduct !== '' &&
-          typeOfPlay === 'product' &&
-          selectedProduct.status === 'Concluida' &&
-          finalCard && (
+          {dataTask?.status === 'Concluida' && (
             <HeaderOpenTask
               title={titleInfos}
               disableButton={true}
               goBack
-              buttonType="finish"
-              sendToNext={handleConcludeTask}
-              nextStepInfo={timeLineData}
-              backToDelivery={() => setViewProduct(false)}
-              isInsideProduct={true}
-              backFlow={() => setModalReturnFlow(true)}
-            />
-          )}
-
-        {dataProducts?.status !== 'Concluida' &&
-          dataTask?.status !== 'Concluida' &&
-          selectedProduct !== '' &&
-          typeOfPlay === 'product' &&
-          selectedProduct.status !== 'Concluida' &&
-          finalCard && (
-            <HeaderOpenTask
-              title={titleInfos}
-              disableButton={true}
-              goBack
-              buttonType="finish"
-              sendToNext={handleConcludeTask}
-              nextStepInfo={timeLineData}
-              backToDelivery={() => setViewProduct(false)}
-              isInsideProduct={true}
-              backFlow={() => setModalReturnFlow(true)}
-            />
-          )}
-
-        {dataProducts?.status !== 'Concluida' &&
-          dataTask?.status !== 'Concluida' &&
-          selectedProduct === '' &&
-          typeOfPlay === 'product' &&
-          !finalCard && (
-            <HeaderOpenTask
-              title={titleInfos}
-              disableButton={false}
-              goBack
-              buttonType="finish"
-              sendToNext={() => checkFlow('next')}
+              hideButtonNext={true}
+              buttonType="send"
               nextStepInfo={timeLineData}
               backFlow={() => setModalReturnFlow(true)}
             />
           )}
 
-        {dataTask?.status !== 'Concluida' &&
-          selectedProduct !== '' &&
-          typeOfPlay === 'product' &&
-          !finalCard && (
-            <HeaderOpenTask
-              title={titleInfos}
-              disableButton={false}
-              goBack
-              buttonType="finish"
-              sendToNext={() => checkFlow('next')}
-              nextStepInfo={timeLineData}
-              backToDelivery={() => {
-                setViewProduct(false);
-                setSelectedProduct('');
-              }}
-              isInsideProduct={true}
-              backFlow={() => setModalReturnFlow(true)}
-            />
-          )}
+          {/* {dataTask?.status !== 'Concluida' &&
+            typeOfPlay === 'schedule' &&
+            selectedProduct === '' && (
+              <HeaderOpenTask
+                title={titleInfos}
+                disableButton={true}
+                goBack
+                buttonType="send"
+                sendToNext={() => checkFlow('next')}
+                nextStepInfo={timeLineData}
+                backFlow={() => setModalReturnFlow(true)}
+              />
+            )} */}
 
-        <RightInfosCard hideCard={hideRightCard} ref={openRightRef}>
-          <TimeLine>
-            <div className="hide-menu" onClick={() => setHideTimeLine(!hideTimeLine)}>
-              {hideTimeLine && <FaChevronDown />}
-              {!hideTimeLine && <FaChevronUp />}
-            </div>
-            <RightInfosTitle>Linha do tempo</RightInfosTitle>
-            {!hideTimeLine &&
-              timeLineData &&
-              timeLineData?.steps.map((row: StepTimeline, index: number) => (
-                <TimelineStep key={index}>
-                  <TimeLineIcon className={row.step <= timeLineData.currentStep ? 'checked' : ''}>
-                    {Number(row.step) >= Number(timeLineData.currentStep) && (
-                      <div className="dot"></div>
-                    )}
+          {dataProducts?.status === 'Concluida' &&
+            dataTask?.status !== 'Concluida' &&
+            typeOfPlay === 'schedule' &&
+            selectedProduct !== '' && (
+              <HeaderOpenTask
+                title={titleInfos}
+                disableButton={false}
+                goBack
+                buttonType="send"
+                sendToNext={() => checkFlow('next')}
+                nextStepInfo={timeLineData}
+                backFlow={() => setModalReturnFlow(true)}
+              />
+            )}
 
-                    {Number(row.step) < Number(timeLineData.currentStep) && <IconBigCheck />}
-                  </TimeLineIcon>
-                  <TimelineInfo>
-                    {row.step < timeLineData.currentStep && (
-                      <div className="info-title">Etapa anterior:</div>
-                    )}
-                    {row.step === timeLineData.currentStep && (
-                      <div className="info-title">Etapa atual:</div>
-                    )}
-                    {row.step > timeLineData.currentStep && (
-                      <div className="info-title">Próxima etapa:</div>
-                    )}
-                    <div className="timeline-info">{row.name}</div>
-                  </TimelineInfo>
-                </TimelineStep>
-              ))}
-          </TimeLine>
-          <TasksInfos>
-            <RightInfosTitle>Detalhes da tarefa</RightInfosTitle>
-            <TaskInfoField>
-              <div className="info-title">Tempo estimado:</div>
-              <div className="info-description">
-                {dataTask?.total_time !== 'undefined' ? dataTask?.total_time : 'Livre'}
+          {dataTask?.status !== 'Concluida' &&
+            selectedProduct === '' &&
+            typeOfPlay === 'schedule' &&
+            !finalCard && (
+              <HeaderOpenTask
+                title={titleInfos}
+                disableButton={false}
+                goBack
+                buttonType="send"
+                sendToNext={() => checkFlow('next')}
+                nextStepInfo={timeLineData}
+                backFlow={() => setModalReturnFlow(true)}
+              />
+            )}
+
+          {dataProducts?.status !== 'Concluida' &&
+            dataTask?.status !== 'Concluida' &&
+            selectedProduct === '' &&
+            typeOfPlay === 'schedule' &&
+            finalCard && (
+              <HeaderOpenTask
+                title={titleInfos}
+                disableButton={false}
+                goBack
+                buttonType="finish"
+                sendToNext={handleConcludeTask}
+                nextStepInfo={timeLineData}
+                backFlow={() => setModalReturnFlow(true)}
+              />
+            )}
+
+          {dataProducts?.status !== 'Concluida' &&
+            dataTask?.status !== 'Concluida' &&
+            selectedProduct !== '' &&
+            typeOfPlay === 'schedule' &&
+            finalCard && (
+              <HeaderOpenTask
+                title={titleInfos}
+                disableButton={false}
+                goBack
+                buttonType="finish"
+                sendToNext={handleConcludeTask}
+                nextStepInfo={timeLineData}
+                backFlow={() => setModalReturnFlow(true)}
+              />
+            )}
+
+          {dataProducts?.status !== 'Concluida' &&
+            dataTask?.status !== 'Concluida' &&
+            selectedProduct !== '' &&
+            typeOfPlay === 'schedule' &&
+            !finalCard && (
+              <HeaderOpenTask
+                title={titleInfos}
+                disableButton={false}
+                goBack
+                buttonType="send"
+                sendToNext={() => checkFlow('next')}
+                nextStepInfo={timeLineData}
+                backFlow={() => setModalReturnFlow(true)}
+              />
+            )}
+
+          {dataProducts?.status !== 'Concluida' &&
+            dataTask?.status !== 'Concluida' &&
+            selectedProduct === '' &&
+            typeOfPlay === 'product' &&
+            finalCard && (
+              <HeaderOpenTask
+                title={titleInfos}
+                disableButton={false}
+                goBack
+                buttonType="finish"
+                sendToNext={handleConcludeTask}
+                nextStepInfo={timeLineData}
+                backFlow={() => setModalReturnFlow(true)}
+              />
+            )}
+
+          {dataProducts?.status !== 'Concluida' &&
+            dataTask?.status !== 'Concluida' &&
+            selectedProduct !== '' &&
+            typeOfPlay === 'product' &&
+            selectedProduct.status !== 'Concluida' &&
+            finalCard && (
+              <HeaderOpenTask
+                title={titleInfos}
+                disableButton={typeOfPlay === 'product' ? false : true}
+                goBack
+                buttonType="finish"
+                sendToNext={handleConcludeTask}
+                nextStepInfo={timeLineData}
+                backToDelivery={() => setViewProduct(false)}
+                isInsideProduct={true}
+                backFlow={() => setModalReturnFlow(true)}
+              />
+            )}
+
+          {dataProducts?.status !== 'Concluida' &&
+            dataTask?.status !== 'Concluida' &&
+            selectedProduct !== '' &&
+            typeOfPlay === 'product' &&
+            selectedProduct.status === 'Concluida' &&
+            finalCard && (
+              <HeaderOpenTask
+                title={titleInfos}
+                disableButton={true}
+                goBack
+                buttonType="finish"
+                sendToNext={handleConcludeTask}
+                nextStepInfo={timeLineData}
+                backToDelivery={() => setViewProduct(false)}
+                isInsideProduct={true}
+                backFlow={() => setModalReturnFlow(true)}
+              />
+            )}
+
+          {dataProducts?.status !== 'Concluida' &&
+            dataTask?.status !== 'Concluida' &&
+            selectedProduct !== '' &&
+            typeOfPlay === 'product' &&
+            selectedProduct.status !== 'Concluida' &&
+            finalCard && (
+              <HeaderOpenTask
+                title={titleInfos}
+                disableButton={true}
+                goBack
+                buttonType="finish"
+                sendToNext={handleConcludeTask}
+                nextStepInfo={timeLineData}
+                backToDelivery={() => setViewProduct(false)}
+                isInsideProduct={true}
+                backFlow={() => setModalReturnFlow(true)}
+              />
+            )}
+
+          {dataProducts?.status !== 'Concluida' &&
+            dataTask?.status !== 'Concluida' &&
+            selectedProduct === '' &&
+            typeOfPlay === 'product' &&
+            !finalCard && (
+              <HeaderOpenTask
+                title={titleInfos}
+                disableButton={false}
+                goBack
+                buttonType="finish"
+                sendToNext={() => checkFlow('next')}
+                nextStepInfo={timeLineData}
+                backFlow={() => setModalReturnFlow(true)}
+              />
+            )}
+
+          {dataTask?.status !== 'Concluida' &&
+            selectedProduct !== '' &&
+            typeOfPlay === 'product' &&
+            !finalCard && (
+              <HeaderOpenTask
+                title={titleInfos}
+                disableButton={false}
+                goBack
+                buttonType="finish"
+                sendToNext={() => checkFlow('next')}
+                nextStepInfo={timeLineData}
+                backToDelivery={() => {
+                  setViewProduct(false);
+                  setSelectedProduct('');
+                }}
+                isInsideProduct={true}
+                backFlow={() => setModalReturnFlow(true)}
+              />
+            )}
+
+          <RightInfosCard hideCard={hideRightCard} ref={openRightRef}>
+            <TimeLine>
+              <div className="hide-menu" onClick={() => setHideTimeLine(!hideTimeLine)}>
+                {hideTimeLine && <FaChevronDown />}
+                {!hideTimeLine && <FaChevronUp />}
               </div>
-            </TaskInfoField>
+              <RightInfosTitle>Linha do tempo</RightInfosTitle>
+              {!hideTimeLine &&
+                timeLineData &&
+                timeLineData?.steps.map((row: StepTimeline, index: number) => (
+                  <TimelineStep key={index}>
+                    <TimeLineIcon className={row.step <= timeLineData.currentStep ? 'checked' : ''}>
+                      {Number(row.step) >= Number(timeLineData.currentStep) && (
+                        <div className="dot"></div>
+                      )}
 
-            {/* <TaskInfoField>
-              <div className="info-title">Responsável:</div>
-              <div className="info-description">Qual???</div>
-            </TaskInfoField> */}
+                      {Number(row.step) < Number(timeLineData.currentStep) && <IconBigCheck />}
+                    </TimeLineIcon>
+                    <TimelineInfo>
+                      {row.step < timeLineData.currentStep && (
+                        <div className="info-title">Etapa anterior:</div>
+                      )}
+                      {row.step === timeLineData.currentStep && (
+                        <div className="info-title">Etapa atual:</div>
+                      )}
+                      {row.step > timeLineData.currentStep && (
+                        <div className="info-title">Próxima etapa:</div>
+                      )}
+                      <div className="timeline-info">{row.name}</div>
+                    </TimelineInfo>
+                  </TimelineStep>
+                ))}
+            </TimeLine>
+            <TasksInfos>
+              <RightInfosTitle>Detalhes da tarefa</RightInfosTitle>
+              <TaskInfoField>
+                <div className="info-title">Tempo estimado:</div>
+                <div className="info-description">
+                  {dataTask?.total_time !== 'undefined' ? dataTask?.total_time : 'Livre'}
+                </div>
+              </TaskInfoField>
 
-            <TaskInfoField>
-              <div className="info-title">Etapa:</div>
-              <div className="info-description">{dataTask?.card_name}</div>
-            </TaskInfoField>
+              {/* <TaskInfoField>
+                <div className="info-title">Responsável:</div>
+                <div className="info-description">Qual???</div>
+              </TaskInfoField> */}
 
-            {/* <TaskInfoField>
-              <div className="info-title">Formato:</div>
-              <div className="info-description">Do que???</div>
-            </TaskInfoField> */}
+              <TaskInfoField>
+                <div className="info-title">Etapa:</div>
+                <div className="info-description">{dataTask?.card_name}</div>
+              </TaskInfoField>
 
-            <TaskInfoField>
-              <div className="info-title">I/D:</div>
-              <div className="info-description">Digital</div>
-            </TaskInfoField>
+              {/* <TaskInfoField>
+                <div className="info-title">Formato:</div>
+                <div className="info-description">Do que???</div>
+              </TaskInfoField> */}
 
-            <TaskInfoField>
-              <div className="info-title">Prioridade:</div>
-              <div
-                className={
-                  dataTask?.urgent === 'false' ? 'info-description' : 'info-description urgent'
+              <TaskInfoField>
+                <div className="info-title">I/D:</div>
+                <div className="info-description">Digital</div>
+              </TaskInfoField>
+
+              <TaskInfoField>
+                <div className="info-title">Prioridade:</div>
+                <div
+                  className={
+                    dataTask?.urgent === 'false' ? 'info-description' : 'info-description urgent'
+                  }
+                >
+                  {dataTask?.urgent === 'false' ? 'Normal' : 'Urgente'}
+                </div>
+              </TaskInfoField>
+
+              <TaskInfoField>
+                <div className="info-title">Data inicial:</div>
+                <div className="info-description">
+                  {moment(dataTask?.copywriting_date_end).format('DD/MM/YYYY')}
+                </div>
+              </TaskInfoField>
+
+              <TaskInfoField>
+                <div className="info-title">Data final:</div>
+                <div className="info-description">
+                  {moment(dataTask?.creation_date_end).format('DD/MM/YYYY')}
+                </div>
+              </TaskInfoField>
+            </TasksInfos>
+            <ArrowSection onClick={() => setHideRightCard('hide')}>
+              <BsChevronDoubleRight />
+              <div className="hide">Fechar</div>
+            </ArrowSection>
+          </RightInfosCard>
+
+          <ShowInfosButton onClick={() => setHideRightCard('show')}>
+            <FaArrowLeft />
+          </ShowInfosButton>
+
+          <CardsWrapper>
+            {dataTask?.status === 'Concluida' && (
+              <CardTaskPlay
+                cardTitle="Atividade concluída"
+                dataTime={data ? data?.estimatedTime : ''}
+                blockPlay={true}
+                handlePlay={() => ''}
+              />
+            )}
+
+            {dataTask?.status !== 'Concluida' && (
+              <CardTaskPlay
+                cardTitle={state.isRunning ? 'Atividade iniciada' : 'Iniciar atividade'}
+                dataTime={data ? data?.estimatedTime : '00:00:00'}
+                blockPlay={
+                  typeOfPlay === 'schedule' && viewProduct
+                    ? true
+                    : typeOfPlay === 'product' && !viewProduct
+                    ? true
+                    : false
                 }
-              >
-                {dataTask?.urgent === 'false' ? 'Normal' : 'Urgente'}
-              </div>
-            </TaskInfoField>
+                handlePlay={handlePlayingType}
+              />
+            )}
 
-            <TaskInfoField>
-              <div className="info-title">Data inicial:</div>
-              <div className="info-description">
-                {moment(dataTask?.copywriting_date_end).format('DD/MM/YYYY')}
-              </div>
-            </TaskInfoField>
+            <CardTaskInfo
+              cardTitle="Contexto geral"
+              cardType="text"
+              dataText={dataTask?.description}
+              isPlayingTime={() => ''}
+            />
+          </CardsWrapper>
 
-            <TaskInfoField>
-              <div className="info-title">Data final:</div>
-              <div className="info-description">
-                {moment(dataTask?.creation_date_end).format('DD/MM/YYYY')}
-              </div>
-            </TaskInfoField>
-          </TasksInfos>
-          <ArrowSection onClick={() => setHideRightCard('hide')}>
-            <BsChevronDoubleRight />
-            <div className="hide">Fechar</div>
-          </ArrowSection>
-        </RightInfosCard>
-
-        <ShowInfosButton onClick={() => setHideRightCard('show')}>
-          <FaArrowLeft />
-        </ShowInfosButton>
-
-        <CardsWrapper>
-          {dataProducts?.status === 'Concluida' && (
-            <CardTaskPlay
-              cardTitle="Atividade concluída"
-              dataTime={data ? data?.estimatedTime : ''}
-              blockPlay={true}
-              handlePlay={() => ''}
+          {!viewProduct && (
+            <ProductTable
+              data={dataProducts}
+              timeData={timeData}
+              workForProduct={handleSwitchPlayType}
+              isPlayingForSchedule={playingForSchedule}
+              productSelected={(value: any) => handleNavigateProduct('view', value)}
+              isFinished={dataTask?.status === 'Concluida' ? true : false}
+              typeOfWorkFinished={dataTask?.type_play}
+              typeOfPlay={typeOfPlay}
+              uploadProduct={handleUploadForProduct}
+              uploadEnabled={enableUpload}
             />
           )}
 
-          {dataProducts?.status !== 'Concluida' && (
-            <CardTaskPlay
-              cardTitle={state.isRunning ? 'Atividade iniciada' : 'Iniciar atividade'}
-              dataTime={data ? data?.estimatedTime : '00:00:00'}
-              blockPlay={
-                typeOfPlay === 'schedule' && viewProduct
-                  ? true
-                  : typeOfPlay === 'product' && !viewProduct
-                  ? true
-                  : false
-              }
-              handlePlay={handlePlayingType}
+          {viewProduct && (
+            <WorkingProduct
+              productDeliveryId={selectedProduct?.productInfo?.products_delivery_id}
+              productInfos={selectedProduct.productInfo}
+              taskInputs={InputsTask}
+              taskId={dataTask?.task_id}
+              ticket_id={dataTask?.ticket_id}
+              taskFiles={dataTask?.files}
+              taskTenant={dataTask?.tenant_id}
+              uploadEnabled={enableUpload}
+              stepToReturn={uploadIsTrue !== '' ? uploadIsTrue[0]?.previous_step : ''}
+              sendToApprove={nextStep && nextStep[0]?.manager_approve === 'true' ? true : false}
+              timelineData={timeLineData}
+              toApprove={handleSendToManager}
+              backButtonTitle="Voltar para produtos"
+              goBack={() => setViewProduct(false)}
+              returnReasons={dataTask?.reason_return}
+              updateInfos={getTaskInfos}
             />
           )}
-
-          <CardTaskInfo
-            cardTitle="Contexto geral"
-            cardType="text"
-            dataText={dataTask?.description}
-            isPlayingTime={() => ''}
-          />
-        </CardsWrapper>
-
-        {!viewProduct && (
-          <ProductTable
-            data={dataProducts}
-            timeData={timeData}
-            workForProduct={handleSwitchPlayType}
-            isPlayingForSchedule={playingForSchedule}
-            productSelected={(value: any) => handleNavigateProduct('view', value)}
-            isFinished={dataTask?.status === 'Concluida' ? true : false}
-            typeOfWorkFinished={dataTask?.type_play}
-            typeOfPlay={typeOfPlay}
-            uploadProduct={handleUploadForProduct}
-            uploadEnabled={enableUpload}
-          />
-        )}
-
-        {viewProduct && (
-          <WorkingProduct
-            productDeliveryId={selectedProduct?.productInfo?.products_delivery_id}
-            productInfos={selectedProduct.productInfo}
-            taskInputs={InputsTask}
-            taskId={dataTask?.task_id}
-            ticket_id={dataTask?.ticket_id}
-            taskFiles={dataTask?.files}
-            taskTenant={dataTask?.tenant_id}
-            uploadEnabled={enableUpload}
-            stepToReturn={uploadIsTrue !== '' ? uploadIsTrue[0]?.previous_step : ''}
-            sendToApprove={nextStep && nextStep[0]?.manager_approve === 'true' ? true : false}
-            timelineData={timeLineData}
-            toApprove={handleSendToManager}
-            backButtonTitle="Voltar para produtos"
-            goBack={() => setViewProduct(false)}
-            returnReasons={dataTask?.reason_return}
-          />
-        )}
-      </DeliveryWrapper>
+        </DeliveryWrapper>
+      )}
 
       {/* Modal Schedule user */}
       <ModalDefault
@@ -1717,10 +1728,10 @@ export default function ViewProductsDeliveries() {
         <ScheduleUser
           task_title={dataTask?.title}
           taskId={dataTask?.task_id}
-          estimated_time={location.state.task.total_time}
-          flow={location.state.task.flow_id}
-          project_product_id={location.state.task.project_product_id}
-          step={showHoursBack ? returnInfos.chosenStep : Number(location.state.task.step) + 1}
+          estimated_time={dataTask?.total_time}
+          flow={dataTask?.flow_id}
+          project_product_id={dataTask?.project_product_id}
+          step={showHoursBack ? returnInfos.chosenStep : Number(dataTask?.step) + 1}
           user_alocated={handleAssignTask}
           closeModal={() => setModalSendToUser(false)}
           manualOverrideDate={showHoursBack}
@@ -1868,7 +1879,7 @@ export default function ViewProductsDeliveries() {
               loading={loading}
               setLoading={setLoading}
               folderInfo="tasks"
-              taskId={dataTask.task_id}
+              taskId={dataTask?.task_id}
             />
           )}
 

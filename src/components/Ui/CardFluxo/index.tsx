@@ -19,6 +19,7 @@ import ActionPopup from './actionPopup';
 
 // Styles
 import { Container, FormCardFluxo, HeaderCardFluxo, SectionButtonsHeaderFluxo } from './styles';
+import { useToast } from '../../../hooks/toast';
 
 interface CardProps {
   isLastItem: boolean;
@@ -48,6 +49,7 @@ export default function CardFluxo({
   index,
   errorField
 }: CardProps) {
+  const { addToast } = useToast();
   const [dataStatus, setDataStatus] = useState<any[]>([]);
 
   const handleOnChange = (
@@ -59,7 +61,31 @@ export default function CardFluxo({
 
   const handleOnChangeCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { checked, name } = event.target;
-    onUpdate(index, name, String(checked));
+    if (
+      name === 'necessary_upload' &&
+      checked &&
+      data.tenant_approve === 'true' &&
+      data.final_card === 'true'
+    ) {
+      addToast({
+        type: 'warning',
+        title: 'Aviso',
+        description: 'Escolha entre upload obrigatório ou aprovação do cliente!'
+      });
+    } else if (
+      name === 'tenant_approve' &&
+      checked &&
+      data.necessary_upload === 'true' &&
+      data.final_card === 'true'
+    ) {
+      addToast({
+        type: 'warning',
+        title: 'Aviso',
+        description: 'Escolha entre aprovação do cliente ou upload obrigatório!'
+      });
+    } else {
+      onUpdate(index, name, String(checked));
+    }
   };
 
   useEffect(() => {
