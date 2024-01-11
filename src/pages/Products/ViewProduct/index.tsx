@@ -865,7 +865,7 @@ export default function ViewProductsDeliveries() {
     if (!finalCard && !uploadClient) {
       setModalUpload(true);
     }
-    if (finalCard || uploadClient) {
+    if ((finalCard && enableUpload) || uploadClient) {
       setModalFinalFile(true);
     }
   };
@@ -1649,7 +1649,7 @@ export default function ViewProductsDeliveries() {
           </ShowInfosButton>
 
           <CardsWrapper>
-            {dataProducts?.status === 'Concluida' && (
+            {dataTask?.status === 'Concluida' && (
               <CardTaskPlay
                 cardTitle="Atividade concluída"
                 dataTime={data ? data?.estimatedTime : ''}
@@ -1658,7 +1658,7 @@ export default function ViewProductsDeliveries() {
               />
             )}
 
-            {dataProducts?.status !== 'Concluida' && (
+            {dataTask?.status !== 'Concluida' && (
               <CardTaskPlay
                 cardTitle={state.isRunning ? 'Atividade iniciada' : 'Iniciar atividade'}
                 dataTime={data ? data?.estimatedTime : '00:00:00'}
