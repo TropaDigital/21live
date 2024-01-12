@@ -1092,7 +1092,7 @@ export default function ViewProductsDeliveries() {
 
       if (type === 'back') {
         const response = await api.get(
-          `/task/next?project_product_id=${dataTask?.project_product_id}&flow_id=${dataTask?.flow_id}&step=${returnInfos.chosenStep}&task_id=${dataTask?.task_id}`
+          `/task/next?project_product_id=${dataTask?.project_product_id}&flow=${dataTask?.flow_id}&step=${returnInfos.chosenStep}&task_id=${dataTask?.task_id}`
         );
         setUsersWithoutSchedule(response.data.result);
         setModalWithoutSchedule(true);
