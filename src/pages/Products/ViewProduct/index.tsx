@@ -491,7 +491,11 @@ export default function ViewProductsDeliveries() {
   };
 
   const handleNavigateProduct = (type: string, infoProduct: any) => {
-    if (type === 'view') {
+    if (type === 'view' && infoProduct === 'task') {
+      navigate(`/tarefa/${dataTask.parents[0].task_id}`);
+    }
+
+    if (type === 'view' && infoProduct !== 'task') {
       const taskCompleteInfo = {
         productInfo: infoProduct,
         taskInfos: dataTask
@@ -1011,20 +1015,7 @@ export default function ViewProductsDeliveries() {
       setLoading(true);
       if (hasToDismemberTask && checkType !== 'back' && !hasDismemberedProduct) {
         setModalDismemberment(true);
-      }
-      // console.log('log do mandatoryUpload =>', mandatoryUpload);
-      // console.log('log do checkMandatoryUpload =>', checkMandatoryUpload());
-
-      // if (mandatoryUpload && checkMandatoryUpload()) {
-      //   addToast({
-      //     title: 'Atenção',
-      //     description: 'é necessário fazer upload para todos os produtos',
-      //     type: 'warning'
-      //   });
-      //   throw new Error('');
-      // }
-
-      if (checkType === 'next') {
+      } else if (checkType === 'next') {
         const response = await api.get(
           `/flow-function?step=${Number(actualStep) + 1}&flow_id=${dataTask?.flow_id}`
         );
@@ -1067,6 +1058,18 @@ export default function ViewProductsDeliveries() {
           setModalReturnFlow(false);
         }
       }
+
+      // console.log('log do mandatoryUpload =>', mandatoryUpload);
+      // console.log('log do checkMandatoryUpload =>', checkMandatoryUpload());
+
+      // if (mandatoryUpload && checkMandatoryUpload()) {
+      //   addToast({
+      //     title: 'Atenção',
+      //     description: 'é necessário fazer upload para todos os produtos',
+      //     type: 'warning'
+      //   });
+      //   throw new Error('');
+      // }
 
       setLoading(false);
     } catch (error: any) {
