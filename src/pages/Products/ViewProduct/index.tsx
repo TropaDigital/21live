@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 // Icons
-import { FaArrowLeft, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { FaArrowLeft, FaChevronDown, FaChevronUp, FaDownload } from 'react-icons/fa';
 import { BsChevronDoubleRight } from 'react-icons/bs';
 import { IconBigCheck } from '../../../assets/icons';
 
@@ -34,6 +34,8 @@ import {
   ArrowSection,
   CardsWrapper,
   DeliveryWrapper,
+  FileProductList,
+  FileProductsWrapper,
   ModalProductsWrapper,
   ModalReturnFlow,
   ModalUploadWrapper,
@@ -62,13 +64,16 @@ import { useToast } from '../../../hooks/toast';
 import { useStopWatch } from '../../../hooks/stopWatch';
 
 // Types
-import { StepTimeline, UploadedFilesProps } from '../../../types';
+import { StepTimeline, TaskFile, UploadedFilesProps } from '../../../types';
 
 // Utils
 import { UsersNoSchedule } from '../../../utils/models';
 import UploadFiles from '../../../components/Upload/UploadFiles';
 import UploadFinalFile from '../../../components/UploadFinal/UploadFinalFiles';
 import Loader from '../../../components/LoaderSpin';
+import { Table } from '../../../components/Table';
+import { DownloadIcon, ViewFile } from '../WorkingProduct/styles';
+import { BiShow } from 'react-icons/bi';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -117,6 +122,23 @@ export default function ViewProductsDeliveries() {
   const [showHoursBack, setShowHoursBack] = useState<boolean>(false);
   const [modalProducts, setModalProducts] = useState<boolean>(false);
   const [modalDismemberment, setModalDismemberment] = useState<boolean>(false);
+  const [modalTenantApprove, setModalTenantApprove] = useState<boolean>(false);
+  const [filesToTenantApprove, setFilesToTenantApprove] = useState<TaskFile[]>([]);
+
+  const [previewImage, setPreviewImage] = useState({
+    isOpen: false,
+    imageInfos: {
+      bucket: '',
+      created: '',
+      file_name: '',
+      key: '',
+      task_file_id: '',
+      task_id: '',
+      size: '',
+      updated: '',
+      url: ''
+    }
+  });
 
   let userInfos = {
     next_user: '',
@@ -491,7 +513,11 @@ export default function ViewProductsDeliveries() {
   };
 
   const handleNavigateProduct = (type: string, infoProduct: any) => {
-    if (type === 'view') {
+    if (type === 'view' && infoProduct === 'task') {
+      navigate(`/tarefa/${dataTask.parents[0].task_id}`);
+    }
+
+    if (type === 'view' && infoProduct !== 'task') {
       const taskCompleteInfo = {
         productInfo: infoProduct,
         taskInfos: dataTask
@@ -1009,22 +1035,14 @@ export default function ViewProductsDeliveries() {
   async function checkFlow(checkType: string) {
     try {
       setLoading(true);
+      if (uploadClient) {
+        console.log('log do modal do enviar tarefa');
+        setModalTenantApprove(true);
+      }
+
       if (hasToDismemberTask && checkType !== 'back' && !hasDismemberedProduct) {
         setModalDismemberment(true);
-      }
-      // console.log('log do mandatoryUpload =>', mandatoryUpload);
-      // console.log('log do checkMandatoryUpload =>', checkMandatoryUpload());
-
-      // if (mandatoryUpload && checkMandatoryUpload()) {
-      //   addToast({
-      //     title: 'Atenção',
-      //     description: 'é necessário fazer upload para todos os produtos',
-      //     type: 'warning'
-      //   });
-      //   throw new Error('');
-      // }
-
-      if (checkType === 'next') {
+      } else if (checkType === 'next') {
         const response = await api.get(
           `/flow-function?step=${Number(actualStep) + 1}&flow_id=${dataTask?.flow_id}`
         );
@@ -1067,6 +1085,18 @@ export default function ViewProductsDeliveries() {
           setModalReturnFlow(false);
         }
       }
+
+      // console.log('log do mandatoryUpload =>', mandatoryUpload);
+      // console.log('log do checkMandatoryUpload =>', checkMandatoryUpload());
+
+      // if (mandatoryUpload && checkMandatoryUpload()) {
+      //   addToast({
+      //     title: 'Atenção',
+      //     description: 'é necessário fazer upload para todos os produtos',
+      //     type: 'warning'
+      //   });
+      //   throw new Error('');
+      // }
 
       setLoading(false);
     } catch (error: any) {
@@ -1306,6 +1336,91 @@ export default function ViewProductsDeliveries() {
       return false;
     }
   };
+
+  async function downloadFile(file: any) {
+    try {
+      const response = await api.get(
+        `https://app.21live.com.br:3000/archive?bucket=${file.bucket}&key=${file.key}`,
+        { responseType: 'arraybuffer' }
+      );
+
+      console.log('log do response download =>', response);
+
+      const blob = new Blob([response.data]);
+      const urlResponse = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = urlResponse;
+      link.setAttribute('download', `${file.file_name}`);
+
+      setLoading(true);
+
+      document.body.appendChild(link);
+      link.click();
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log error download file', error);
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            type: 'danger',
+            title: 'ATENÇÃO',
+            description: row.error
+          });
+        });
+      } else {
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: error.response.data.message
+        });
+      }
+      setLoading(false);
+    }
+  }
+
+  const handleSelectFile = (file: TaskFile) => {
+    if (filesToTenantApprove.find((obj) => obj.task_file_id === file.task_file_id)) {
+      setFilesToTenantApprove(
+        filesToTenantApprove.filter((obj) => obj.task_file_id !== file.task_file_id)
+      );
+    } else {
+      setFilesToTenantApprove((prevState) => [...prevState, file]);
+    }
+  };
+
+  const handleCancelSendToTenant = () => {
+    setToClientConfirmation(false);
+    setModalTenantApprove(false);
+    setFilesToTenantApprove([]);
+  };
+
+  async function handleUploadTenant() {
+    try {
+      setLoading(true);
+
+      const formData = new FormData();
+
+      await Promise.all(
+        filesToTenantApprove.map(async (imageUrl: TaskFile, index) => {
+          // Download the image from the provided URL
+          const response = await api.get(
+            `https://app.21live.com.br:3000/archive?bucket=${imageUrl.bucket}&key=${imageUrl.key}`,
+            { responseType: 'arraybuffer' }
+          );
+
+          const blob = new Blob([response.data]);
+          formData.append(`${imageUrl.file_name.split('-').pop()}`, blob, `${imageUrl.file_name}`);
+
+          // const responseFile = await api.post('/archive/upload/ticket', formData);
+        })
+      );
+
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+    }
+  }
 
   // useEffect(() => {
   //   console.log('log do hasDismemberedProduct =>', hasDismemberedProduct);
@@ -2098,6 +2213,118 @@ export default function ViewProductsDeliveries() {
             </ButtonDefault>
           </ModalButtons>
         </ModalProductsWrapper>
+      </ModalDefault>
+
+      {/* Modal Tenant approve */}
+      <ModalDefault
+        isOpen={modalTenantApprove}
+        onOpenChange={() => setModalTenantApprove(false)}
+        title="Aprovação do cliente"
+      >
+        <FileProductsWrapper>
+          <div className="title-list">Selecione os arquivos para o cliente aprovar.</div>
+
+          <FileProductList>
+            {!toClientConfirmation && (
+              <Table>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Checkbox</th>
+                      <th>Produto ID</th>
+                      <th>Nome do arquivo</th>
+                      <th>Tamanho</th>
+                      <th>Data</th>
+                      <th>Detalhes</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {dataTask?.files.map((row: TaskFile) => (
+                      <tr key={row.task_file_id}>
+                        <td>
+                          <CheckboxDefault
+                            label=""
+                            id="subtasks"
+                            checked={
+                              filesToTenantApprove.find(
+                                (obj) => obj.task_file_id === row.task_file_id
+                              )
+                                ? true
+                                : false
+                            }
+                            onChange={() => handleSelectFile(row)}
+                          />
+                        </td>
+                        <td>#{row.task_file_id}</td>
+                        <td>{row.file_name.split('-').pop()}</td>
+                        <td>{row.size}</td>
+                        <td>{row.created}</td>
+                        <td>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <ViewFile
+                              onClick={() =>
+                                setPreviewImage({
+                                  isOpen: true,
+                                  imageInfos: {
+                                    bucket: 'row.bucket',
+                                    created: 'row.created',
+                                    file_name: 'row.file_name',
+                                    key: 'row.key',
+                                    task_file_id: 'row.task_file_id',
+                                    task_id: 'row.task_id',
+                                    size: 'row.size',
+                                    updated: 'row.updated',
+                                    url: 'row.url'
+                                  }
+                                })
+                              }
+                            >
+                              <BiShow size={20} />
+                            </ViewFile>
+
+                            <DownloadIcon onClick={() => downloadFile('nada')}>
+                              <FaDownload />
+                            </DownloadIcon>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </Table>
+            )}
+            {toClientConfirmation && (
+              <div className="confirmation">
+                <span>Atenção:</span> <br />
+                Os arquivos serão enviados para a área do cliente. <br />
+                Essa ação não pode ser revertida.
+              </div>
+            )}
+          </FileProductList>
+
+          {!toClientConfirmation && (
+            <ModalButtons>
+              <ButtonDefault typeButton="dark" isOutline onClick={handleCancelSendToTenant}>
+                Descartar
+              </ButtonDefault>
+              <ButtonDefault typeButton="primary" onClick={() => setToClientConfirmation(true)}>
+                Salvar
+              </ButtonDefault>
+            </ModalButtons>
+          )}
+
+          {toClientConfirmation && (
+            <ModalButtons>
+              <ButtonDefault typeButton="dark" isOutline onClick={handleCancelSendToTenant}>
+                Cancelar
+              </ButtonDefault>
+              <ButtonDefault typeButton="primary" onClick={handleUploadTenant}>
+                Enviar
+              </ButtonDefault>
+            </ModalButtons>
+          )}
+        </FileProductsWrapper>
       </ModalDefault>
     </ContainerDefault>
   );

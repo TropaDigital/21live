@@ -459,9 +459,17 @@ export default function ViewTask() {
                                 }
                               >
                                 {dataTask?.status === 'Em Andamento'
-                                  ? 'Em Andamento'
+                                  ? 'Em progresso'
                                   : dataTask?.status === 'Concluida'
                                   ? 'Concluída'
+                                  : dataTask?.status === 'Aguardando Aprovação'
+                                  ? 'Aguardando Aprovação'
+                                  : dataTask?.status === 'Alteração Interna'
+                                  ? 'Alteração interna'
+                                  : dataTask?.status === 'Alteração Externa'
+                                  ? 'Alteração externa'
+                                  : dataTask?.status === 'Parcial'
+                                  ? 'Parcial'
                                   : 'Pendente'}
                               </div>
                             </td>
@@ -566,15 +574,15 @@ export default function ViewTask() {
                             >
                               {dataTask?.status === 'Em Andamento'
                                 ? 'Em progresso'
-                                : row.status === 'Concluida'
+                                : dataTask?.status === 'Concluida'
                                 ? 'Concluída'
-                                : row.status === 'Aguardando Aprovação'
+                                : dataTask?.status === 'Aguardando Aprovação'
                                 ? 'Aguardando Aprovação'
-                                : row.status === 'Alteração Interna'
+                                : dataTask?.status === 'Alteração Interna'
                                 ? 'Alteração interna'
-                                : row.status === 'Alteração Externa'
+                                : dataTask?.status === 'Alteração Externa'
                                 ? 'Alteração externa'
-                                : row.status === 'Parcial'
+                                : dataTask?.status === 'Parcial'
                                 ? 'Parcial'
                                 : 'Pendente'}
                             </div>

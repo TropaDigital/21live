@@ -148,6 +148,7 @@ export default function CreateTaksWithRefused() {
     project_id: '',
     gen_ticket: ''
   } as TaskProps);
+  const [initialTaskData, setInitialTaskData] = useState<TaskProps>();
   const [modalEdit, setModalEdit] = useState<ModalProps>({
     isOpen: false,
     typeOfField: undefined
@@ -155,6 +156,9 @@ export default function CreateTaksWithRefused() {
   const [loading, setLoading] = useState<boolean>(false);
 
   const { data: dataFlow } = useFetch<any[]>(`/flow?perPage=1000`);
+  const [stepsFlowCards, setStepFlowCards] = useState<any[]>([]);
+
+  const flowCards = stepsFlowCards.filter((obj) => obj.step <= formData.step);
 
   // async function getTimelineData() {
   //   try {
@@ -197,6 +201,7 @@ export default function CreateTaksWithRefused() {
 
       if (response.data.result.length > 0) {
         setData(response.data.result[0]);
+        setInitialTaskData(response.data.result[0]);
       }
 
       setLoading(false);
@@ -217,6 +222,27 @@ export default function CreateTaksWithRefused() {
       getTaskInfos(location.state.id);
     }
   }, []);
+
+  async function getCardsFromflow(flowId: string) {
+    try {
+      setLoading(true);
+
+      const response = await api.get(`/card/${flowId}`);
+
+      setStepFlowCards(response.data.result);
+
+      setLoading(false);
+    } catch (error) {
+      console.log('log steps card error', error);
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (formData.flow_id) {
+      getCardsFromflow(formData.flow_id);
+    }
+  }, [formData.flow_id]);
 
   const handleOnSubmit = useCallback(async () => {
     try {
@@ -280,8 +306,7 @@ export default function CreateTaksWithRefused() {
         user_id,
         gen_ticket
       };
-
-      // console.log('log do deadlinesArray', updatedData);
+      console.log('log do createNewData =>', formData);
 
       await api.put(`tasks/${location.state.id}`, createNewData);
 
@@ -310,9 +335,12 @@ export default function CreateTaksWithRefused() {
     }
   }, [formData]);
 
-  useEffect(() => {
-    console.log('log do formData =>', formData);
-  }, [formData]);
+  // useEffect(() => {
+  //   console.log('log do formData =>', formData);
+  //   console.log('log do InitialTask =>', initialTaskData);
+  //   console.log('log do flowCards =>', flowCards);
+  //   console.log('log do StepflowCards =>', stepsFlowCards);
+  // }, [formData, flowCards, stepsFlowCards]);
 
   return (
     <RefusedWrapper>
@@ -594,21 +622,37 @@ export default function CreateTaksWithRefused() {
                 </SelectDefault>
               </ModalField>
 
-              <ModalField>
-                <SelectDefault
-                  label="Etapas do Fluxo"
-                  name="step"
-                  value={formData.step}
-                  onChange={handleOnChange}
-                >
-                  {/* {dataFlow?.map((row: any) => (
-                  <option key={row.flow_id} value={row.flow_id}>
-                    {row.name}
-                  </option>
-                ))} */}
-                  <option value={'Etapa 1'}>Etapa 1</option>
-                </SelectDefault>
-              </ModalField>
+              {formData.flow_id === initialTaskData?.flow_id ? (
+                <ModalField>
+                  <SelectDefault
+                    label="Etapas do Fluxo"
+                    name="step"
+                    value={formData.step}
+                    onChange={handleOnChange}
+                  >
+                    {flowCards?.map((row: any) => (
+                      <option key={row.card_id} value={row.step}>
+                        {row.name}
+                      </option>
+                    ))}
+                  </SelectDefault>
+                </ModalField>
+              ) : (
+                <ModalField>
+                  <SelectDefault
+                    label="Etapas do Fluxo"
+                    name="step"
+                    value={formData.step}
+                    onChange={handleOnChange}
+                  >
+                    {stepsFlowCards?.map((row: any) => (
+                      <option key={row.card_id} value={row.step}>
+                        {row.name}
+                      </option>
+                    ))}
+                  </SelectDefault>
+                </ModalField>
+              )}
             </>
           )}
 
@@ -621,12 +665,12 @@ export default function CreateTaksWithRefused() {
                 value={formData.step}
                 onChange={handleOnChange}
               >
-                {/* {dataFlow?.map((row: any) => (
-                  <option key={row.flow_id} value={row.flow_id}>
+                {stepsFlowCards?.map((row: any) => (
+                  <option key={row.card_id} value={row.step}>
                     {row.name}
                   </option>
-                ))} */}
-                <option value={'Etapa 1'}>Etapa 1</option>
+                ))}
+                {/* <option value={'Etapa 1'}>Etapa 1</option> */}
               </SelectDefault>
             </ModalField>
           )}

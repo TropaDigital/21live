@@ -113,7 +113,6 @@ export const ProductsTable = styled.div`
       justify-content: center;
       align-items: center;
 
-      margin: 0 auto;
       padding: 4px 8px;
       width: fit-content;
       border-radius: 35px;
@@ -131,6 +130,11 @@ export const ProductsTable = styled.div`
       &.finished {
         color: var(--secundary-700);
         background: var(--secundary-100);
+      }
+
+      &.break {
+        color: var(--error-600);
+        background: var(--error-100);
       }
     }
 

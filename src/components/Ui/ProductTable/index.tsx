@@ -144,17 +144,27 @@ export default function ProductTable({
               <th>Formato</th>
               <th>I/D</th>
               <th>Tipo</th>
+              <th>Status</th>
               {uploadEnabled && <th>Upload</th>}
-              {workFor === 'product' && <th>Status</th>}
             </tr>
           </thead>
           {data?.products.map((row: any, index: number) => (
             <tbody key={index}>
               <tr className={row.status === 'Desmembrada' ? 'reject' : ''}>
-                <td style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
-                  #{String(index + 1).padStart(2, '0')}
+                <td
+                  style={{ cursor: 'pointer' }}
+                  onClick={() =>
+                    row.status !== 'Desmembrada' ? productSelected(row) : productSelected('task')
+                  }
+                >
+                  #{String(row.products_delivery_id).padStart(2, '0')}
                 </td>
-                <td style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
+                <td
+                  style={{ cursor: 'pointer' }}
+                  onClick={() =>
+                    row.status !== 'Desmembrada' ? productSelected(row) : productSelected('task')
+                  }
+                >
                   {user.permissions.includes('jobs_tasks_essay') && (
                     <div className="flex info">
                       <IconText /> {row.service}
@@ -169,7 +179,14 @@ export default function ProductTable({
                 </td>
                 {workFor === 'product' && (
                   <>
-                    <td style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
+                    <td
+                      style={{ cursor: 'pointer' }}
+                      onClick={() =>
+                        row.status === 'Desmembrada'
+                          ? productSelected(row)
+                          : productSelected('task')
+                      }
+                    >
                       <span style={{ marginBottom: '4px', display: 'block' }}>
                         {timeData?.timeConsumed}
                       </span>
@@ -178,24 +195,48 @@ export default function ProductTable({
                         restHours={convertToMilliseconds(timeData?.timeConsumed)}
                       />
                     </td>
-                    <td style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
+                    <td
+                      style={{ cursor: 'pointer' }}
+                      onClick={() =>
+                        row.status === 'Desmembrada'
+                          ? productSelected(row)
+                          : productSelected('task')
+                      }
+                    >
                       {row?.minutes}
                     </td>
                   </>
                 )}
-                <td style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
+                <td
+                  style={{ cursor: 'pointer' }}
+                  onClick={() =>
+                    row.status !== 'Desmembrada' ? productSelected(row) : productSelected('task')
+                  }
+                >
                   <div dangerouslySetInnerHTML={{ __html: row.description }} />
                 </td>
-                <td style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
+                <td
+                  style={{ cursor: 'pointer' }}
+                  onClick={() =>
+                    row.status !== 'Desmembrada' ? productSelected(row) : productSelected('task')
+                  }
+                >
                   {row.size}
                 </td>
                 <td
                   style={{ cursor: 'pointer', textTransform: 'capitalize' }}
-                  onClick={() => productSelected(row)}
+                  onClick={() =>
+                    row.status !== 'Desmembrada' ? productSelected(row) : productSelected('task')
+                  }
                 >
                   {row.type}
                 </td>
-                <td style={{ cursor: 'pointer' }} onClick={() => productSelected(row)}>
+                <td
+                  style={{ cursor: 'pointer' }}
+                  onClick={() =>
+                    row.status !== 'Desmembrada' ? productSelected(row) : productSelected('task')
+                  }
+                >
                   {row.reason_change === '1'
                     ? 'Criação'
                     : row.reason_change === '2'
@@ -203,6 +244,29 @@ export default function ProductTable({
                     : row.reason_change === '3'
                     ? 'Alteração Interna'
                     : 'Alteração externa'}
+                </td>
+                <td>
+                  <div
+                    className={
+                      row.status === 'Em Andamento'
+                        ? 'status progress'
+                        : row.status === 'Concluida'
+                        ? 'status finished'
+                        : row.status === 'Desmembrada'
+                        ? 'status break'
+                        : 'status'
+                    }
+                  >
+                    {row.status === 'Em Andamento'
+                      ? 'Em progresso'
+                      : row.status === 'Concluida'
+                      ? 'Concluída'
+                      : row.status === 'Aguardando Aprovação'
+                      ? 'Aguardando Aprovação'
+                      : row.status === 'Desmembrada'
+                      ? 'Reprovado'
+                      : 'Pendente'}
+                  </div>
                 </td>
                 {uploadEnabled && row.status !== 'Desmembrada' && row.status !== 'Concluida' && (
                   <td onClick={() => uploadProduct(row)}>
@@ -215,25 +279,6 @@ export default function ProductTable({
                   <td>
                     <div className="upload block">
                       <FaUpload />
-                    </div>
-                  </td>
-                )}
-                {workFor === 'product' && (
-                  <td>
-                    <div
-                      className={
-                        row.status === 'Em Andamento'
-                          ? 'status progress'
-                          : row.status === 'Concluida'
-                          ? 'status finished'
-                          : 'status'
-                      }
-                    >
-                      {row.status === 'Em Andamento'
-                        ? 'Em Andamento'
-                        : row.status === 'Concluida'
-                        ? 'Concluída'
-                        : 'Pendente'}
                     </div>
                   </td>
                 )}

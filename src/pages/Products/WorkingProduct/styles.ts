@@ -579,3 +579,40 @@ export const CardShowInputs = styled.div`
   -o-user-select: none;
   user-select: none; */
 `;
+
+export const EssayField = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .ProseMirror {
+    min-height: 260px;
+    height: fit-content;
+  }
+`;
+
+export const InfoFile = styled.div`
+  display: grid;
+  place-items: center;
+
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  padding: 8px;
+  height: 36px;
+  width: 36px;
+  transition: all 0.35s ease;
+
+  cursor: pointer;
+
+  svg {
+    fill: #344054;
+  }
+
+  &:hover {
+    svg {
+      fill: var(--warning-600);
+    }
+    background: var(--warning-100);
+  }
+`;
