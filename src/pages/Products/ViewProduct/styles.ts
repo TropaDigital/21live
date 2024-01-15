@@ -304,3 +304,45 @@ export const TextInfo = styled.div`
   font-size: var(--text-small-md);
   font-weight: var(--weight-semibold);
 `;
+
+export const FileProductsWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  margin-top: 24px;
+
+  .title-list {
+    color: var(--title-color);
+    font-size: var(--text-small-md);
+    font-weight: var(--weight-medium);
+  }
+`;
+
+export const FileProductList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  min-width: 900px;
+  margin-top: -20px;
+  margin-left: -20px;
+  margin-right: -20px;
+  margin-bottom: 0;
+
+  table {
+    td {
+      padding: 0.5rem 1rem;
+    }
+  }
+
+  .confirmation {
+    color: var(--title-color);
+    font-size: var(--text-small-lg);
+    font-weight: var(--weight-semibold);
+
+    span {
+      color: var(--Warning);
+    }
+  }
+`;
