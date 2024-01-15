@@ -22,6 +22,7 @@ import { IoIosCloseCircleOutline } from 'react-icons/io';
 import { FaDownload } from 'react-icons/fa';
 import { MdClose } from 'react-icons/md';
 import { AiOutlineInteraction } from 'react-icons/ai';
+import { BsChatText } from 'react-icons/bs';
 
 // Components
 import { ContainerDefault } from '../../../components/UiElements/styles';
@@ -53,6 +54,7 @@ import {
   EssayInfo,
   FilesTableWrapper,
   FooterSection,
+  InfoFile,
   InputChat,
   InputField,
   InputFieldTitle,
@@ -224,6 +226,7 @@ export default function WorkingProduct({
     disapprove: false
   });
   const [toClientConfirmation, setToClientConfirmation] = useState<boolean>(false);
+  const [modalRejectedInfo, setModalRejectedInfo] = useState<boolean>(false);
 
   const [previewImage, setPreviewImage] = useState({
     isOpen: false,
@@ -1064,6 +1067,12 @@ export default function WorkingProduct({
                         </td>
                         <td>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            {row.status === 'fail' && (
+                              <InfoFile onClick={() => setModalRejectedInfo(true)}>
+                                <BsChatText size={20} />
+                              </InfoFile>
+                            )}
+
                             <ViewFile
                               onClick={() =>
                                 setPreviewImage({
@@ -1429,6 +1438,13 @@ export default function WorkingProduct({
             />
           )}
         </>
+      </ModalDefault>
+
+      {/* Modal rejected info */}
+      <ModalDefault isOpen={modalRejectedInfo} onOpenChange={() => setModalRejectedInfo(false)}>
+        <div>
+          <p>Rejeitado e seu motivo</p>
+        </div>
       </ModalDefault>
     </ContainerDefault>
   );
