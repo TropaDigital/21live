@@ -352,6 +352,8 @@ export default function ViewTask() {
                                     ? 'Alteração interna'
                                     : row.status === 'Alteração Externa'
                                     ? 'Alteração externa'
+                                    : row.status === 'Parcial'
+                                    ? 'Parcial'
                                     : 'Pendente'}
                                 </StatusTask>
                               </td>
@@ -457,9 +459,17 @@ export default function ViewTask() {
                                 }
                               >
                                 {dataTask?.status === 'Em Andamento'
-                                  ? 'Em Andamento'
+                                  ? 'Em progresso'
                                   : dataTask?.status === 'Concluida'
                                   ? 'Concluída'
+                                  : dataTask?.status === 'Aguardando Aprovação'
+                                  ? 'Aguardando Aprovação'
+                                  : dataTask?.status === 'Alteração Interna'
+                                  ? 'Alteração interna'
+                                  : dataTask?.status === 'Alteração Externa'
+                                  ? 'Alteração externa'
+                                  : dataTask?.status === 'Parcial'
+                                  ? 'Parcial'
                                   : 'Pendente'}
                               </div>
                             </td>
@@ -537,7 +547,7 @@ export default function ViewTask() {
                           </td>
                           <td>{moment(row.date_end).format('DD/MM/YYYY')}</td>
                           <td>
-                            {dataTask?.end_job !== ''
+                            {dataTask?.end_job
                               ? moment(dataTask?.end_job).format('DD/MM/YYYY')
                               : '----'}
                           </td>
@@ -563,9 +573,17 @@ export default function ViewTask() {
                               }
                             >
                               {dataTask?.status === 'Em Andamento'
-                                ? 'Em Andamento'
+                                ? 'Em progresso'
                                 : dataTask?.status === 'Concluida'
                                 ? 'Concluída'
+                                : dataTask?.status === 'Aguardando Aprovação'
+                                ? 'Aguardando Aprovação'
+                                : dataTask?.status === 'Alteração Interna'
+                                ? 'Alteração interna'
+                                : dataTask?.status === 'Alteração Externa'
+                                ? 'Alteração externa'
+                                : dataTask?.status === 'Parcial'
+                                ? 'Parcial'
                                 : 'Pendente'}
                             </div>
                           </td>

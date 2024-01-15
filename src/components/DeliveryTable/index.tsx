@@ -235,9 +235,17 @@ export default function DeliveryTable({
                         }
                       >
                         {row.status === 'Em Andamento'
-                          ? 'Em Andamento'
+                          ? 'Em progresso'
                           : row.status === 'Concluida'
                           ? 'Concluída'
+                          : row.status === 'Aguardando Aprovação'
+                          ? 'Aguardando Aprovação'
+                          : row.status === 'Alteração Interna'
+                          ? 'Alteração interna'
+                          : row.status === 'Alteração Externa'
+                          ? 'Alteração externa'
+                          : row.status === 'Parcial'
+                          ? 'Parcial'
                           : 'Pendente'}
                       </div>
                     </td>

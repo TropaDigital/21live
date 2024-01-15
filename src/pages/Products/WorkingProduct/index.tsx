@@ -49,6 +49,7 @@ import {
   ChatUserImg,
   CheckboxWrapper,
   DownloadIcon,
+  EssayField,
   EssayInfo,
   FilesTableWrapper,
   FooterSection,
@@ -873,7 +874,7 @@ export default function WorkingProduct({
           <>
             {user.permissions.includes('jobs_tasks_essay') &&
             productInfos.status !== 'Concluida' ? (
-              <div>
+              <EssayField>
                 <WrapperEditor
                   value={essayInfo}
                   mentionData={[]}
@@ -892,7 +893,7 @@ export default function WorkingProduct({
                     Salvar Redação
                   </ButtonDefault>
                 </FooterSection>
-              </div>
+              </EssayField>
             ) : (
               <EssayInfo>
                 <div dangerouslySetInnerHTML={{ __html: essayInfo }} />

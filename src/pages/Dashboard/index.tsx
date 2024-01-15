@@ -63,6 +63,7 @@ import { TenantProps } from '../../utils/models';
 import { ServicesProps } from '../../types';
 import TaskTable from '../../components/Ui/TaskTable';
 import useDebouncedCallback from '../../hooks/useDebounced';
+import { subtractTime } from '../../utils/convertTimes';
 
 // interface DashType {
 //   typeDash: 'admin' | 'executive' | 'traffic' | 'operator' | '';
@@ -173,6 +174,24 @@ export default function Dashboard() {
     });
     setModalFilters(false);
   };
+
+  useEffect(() => {
+    function getDayFromOneMonthAgo() {
+      const currentDate = moment();
+
+      const oneMonthAgo = currentDate.subtract(1, 'month');
+
+      return oneMonthAgo;
+    }
+
+    const dayFromOneMonthAgo = getDayFromOneMonthAgo();
+    // console.log(`1 month ago was: ${moment(dayFromOneMonthAgo).format('YYYY-MM-DD')}`);
+    // console.log(`Today is: ${moment().format('YYYY-MM-DD')}`);
+    setFilter({
+      fromDate: moment(dayFromOneMonthAgo).format('YYYY-MM-DD'),
+      toDate: moment().format('YYYY-MM-DD')
+    });
+  }, []);
 
   useEffect(() => {
     if (user.permissions.includes('dashboard_admin')) {
@@ -388,108 +407,500 @@ export default function Dashboard() {
     }
   ];
 
+  const jobsAwaitingClientAdmin = [
+    {
+      id_job: 0,
+      // client_name:
+      //   data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[0]?.tenant_name : '???',
+      client_name: 'Takao',
+      // job_name: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[0]?.title : '???',
+      job_name: 'Redes Sociais',
+      // job_service: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[0]?.name : ''
+      job_service: 'Mike'
+    },
+    {
+      id_job: 1,
+      // client_name:
+      //   data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[1]?.tenant_name : '???',
+      client_name: 'Diolaser',
+      // job_name: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[1]?.title : '???',
+      job_name: 'Posts',
+      // job_service: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[1]?.name : ''
+      job_service: 'Vitor'
+    },
+    {
+      id_job: 2,
+      // client_name:
+      //   data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[2]?.tenant_name : '???',
+      client_name: 'Titan',
+      // job_name: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[2]?.title : '???',
+      job_name: 'Banners Pascoa',
+      // job_service: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[2]?.name : ''
+      job_service: 'Adriano'
+    },
+    {
+      id_job: 3,
+      // client_name:
+      //   data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[3]?.tenant_name : '???',
+      client_name: 'Blue Dental',
+      // job_name: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[3]?.title : '???',
+      job_name: 'Tarefa 22',
+      // job_service: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[3]?.name : ''
+      job_service: 'Fernanda'
+    },
+    {
+      id_job: 4,
+      // client_name:
+      //   data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[4]?.tenant_name : '???',
+      client_name: 'Iveco',
+      // job_name: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[4]?.title : '???',
+      job_name: 'Posts agendados',
+      job_service: 'Michael'
+    }
+  ];
+
+  const jobsAwaitingToBeSend = [
+    {
+      id_job: 0,
+      // client_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.tenant_name : '',
+      client_name: 'Metso',
+      // job_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.title : '',
+      job_name: 'Tarefa 01',
+      // job_service: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.name : ''
+      job_service: 'Michael'
+    },
+    {
+      id_job: 1,
+      // client_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.tenant_name : '',
+      client_name: 'Terex',
+      // job_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.title : '',
+      job_name: 'Tarefa X',
+      // job_service: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.name : ''
+      job_service: 'Amanda'
+    },
+    {
+      id_job: 2,
+      // client_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.tenant_name : '',
+      client_name: 'Linkbelt',
+      // job_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.title : '',
+      job_name: 'Banner',
+      // job_service: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.name : ''
+      job_service: 'Fernanda'
+    },
+    {
+      id_job: 3,
+      // client_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.tenant_name : '',
+      client_name: '21BRZ',
+      // job_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.title : '',
+      job_name: 'Post Instagram',
+      // job_service: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.name : ''
+      job_service: 'Jonathan'
+    },
+    {
+      id_job: 4,
+      // client_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.tenant_name : '',
+      client_name: 'Leve Brisa',
+      // job_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.title : '',
+      job_name: 'Redes Sociais',
+      // job_service: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.name : ''
+      job_service: 'Anderson'
+    }
+  ];
+
   const topFeeTenantJobs = [
     {
-      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[0]?.name : '',
-      Total:
-        data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[0]?.quantidade_tarefas : 0,
+      // name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[0]?.name : '???',
+      name: '21BRZ',
+      // Total: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[0]?.quantidade_tarefas : 0,
+      Total: 59,
       fill: '#59B7FF'
     },
     {
-      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[1]?.name : '',
-      Total:
-        data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[1]?.quantidade_tarefas : 0,
+      // name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[1]?.name : '???',
+      name: 'ATHLETA BRASIL',
+      // Total:
+      //   data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[1]?.quantidade_tarefas : 0,
+      Total: 53,
       fill: '#0045B5'
     },
     {
-      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[2]?.name : '',
-      Total:
-        data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[2]?.quantidade_tarefas : 0,
+      // name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[2]?.name : '???',
+      name: 'Metso',
+      // Total:
+      //   data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[2]?.quantidade_tarefas : 0,
+      Total: 47,
       fill: '#0077E6'
     },
     {
-      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[3]?.name : '',
-      Total:
-        data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[3]?.quantidade_tarefas : 0,
+      // name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[3]?.name : '???',
+      name: 'Takao',
+      // Total:
+      //   data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[3]?.quantidade_tarefas : 0,
+      Total: 40,
       fill: '#E2F2FF'
     },
     {
-      name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[4]?.name : '',
-      Total:
-        data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[4]?.quantidade_tarefas : 0,
+      // name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[4]?.name : '???',
+      name: 'CNH Industrial',
+      // Total:
+      //   data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[4]?.quantidade_tarefas : 0,
+      Total: 27,
       fill: '#0065D4'
     }
   ];
 
-  const topTenantJobs = [
+  const topFeeTenantHours = [
     {
-      name: data && dashType === 'admin' ? data.top_tenant[0]?.name : '',
-      Total: data && dashType === 'admin' ? data.top_tenant[0]?.total : 0,
+      // name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[0]?.name : '???',
+      name: '21BRZ',
+      // Total:
+      //   data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[0]?.total_tempo : 0,
+      Total: 120,
       fill: '#59B7FF'
     },
     {
-      name: data && dashType === 'admin' ? data.top_tenant[1]?.name : '',
-      Total: data && dashType === 'admin' ? data.top_tenant[1]?.total : 0,
+      // name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[1]?.name : '???',
+      name: 'Metso',
+      // Total:
+      //   data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[1]?.total_tempo : 0,
+      Total: 92,
       fill: '#0045B5'
     },
     {
-      name: data && dashType === 'admin' ? data.top_tenant[2]?.name : '',
-      Total: data && dashType === 'admin' ? data.top_tenant[2]?.total : 0,
+      // name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[2]?.name : '???',
+      name: 'Blue Dental',
+      // Total:
+      //   data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[2]?.total_tempo : 0,
+      Total: 67,
       fill: '#0077E6'
     },
     {
-      name: data && dashType === 'admin' ? data.top_tenant[3]?.name : '',
-      Total: data && dashType === 'admin' ? data.top_tenant[3]?.total : 0,
+      // name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[3]?.name : '???',
+      name: 'Iveco',
+      // Total:
+      //   data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[3]?.total_tempo : 0,
+      Total: 55,
       fill: '#E2F2FF'
     },
     {
-      name: data && dashType === 'admin' ? data.top_tenant[4]?.name : '',
-      Total: data && dashType === 'admin' ? data.top_tenant[4]?.total : 0,
+      // name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[4]?.name : '???',
+      name: 'Takao',
+      // Total:
+      //   data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[4]?.total_tempo : 0,
+      Total: 47,
       fill: '#0065D4'
     }
   ];
 
-  const topTenantHours = [
+  const topInternalChangesHours = [
     {
-      name: data && dashType === 'admin' ? data.top_horas[0]?.name : '',
-      Total:
-        data && dashType === 'admin' ? Number(data.top_horas[0]?.totalTimeSum?.split(':')[0]) : 0,
+      // name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[0]?.name : '???',
+      name: 'Nexpro',
+      // Total: data && dashType === 'admin' ? data.top_alteracao_interna_horas[0]?.total_time : 0,
+      Total: 170,
       fill: '#59B7FF'
     },
     {
-      name: data && dashType === 'admin' ? data.top_horas[1]?.name : '',
-      Total:
-        data && dashType === 'admin' ? Number(data.top_horas[1]?.totalTimeSum?.split(':')[0]) : 0,
+      // name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[1]?.name : '???',
+      name: '21BRZ',
+      // Total: data && dashType === 'admin' ? data.top_alteracao_interna_horas[1]?.total_time : 0,
+      Total: 143,
       fill: '#0045B5'
     },
     {
-      name: data && dashType === 'admin' ? data.top_horas[2]?.name : '',
-      Total:
-        data && dashType === 'admin' ? Number(data.top_horas[2]?.totalTimeSum?.split(':')[0]) : 0,
+      // name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[2]?.name : '???',
+      name: 'Terex',
+      // Total: data && dashType === 'admin' ? data.top_alteracao_interna_horas[2]?.total_time : 0,
+      Total: 127,
       fill: '#0077E6'
     },
     {
-      name: data && dashType === 'admin' ? data.top_horas[3]?.name : '',
-      Total:
-        data && dashType === 'admin' ? Number(data.top_horas[3]?.totalTimeSum?.split(':')[0]) : 0,
+      // name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[3]?.name : '???',
+      name: 'Titan',
+      // Total: data && dashType === 'admin' ? data.top_alteracao_interna_horas[3]?.total_time : 0,
+      Total: 90,
       fill: '#E2F2FF'
     },
     {
-      name: data && dashType === 'admin' ? data.top_horas[4]?.name : '',
+      // name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[4]?.name : '???',
+      name: 'CNH Industrial',
+      // Total: data && dashType === 'admin' ? data.top_alteracao_interna_horas[4]?.total_time : 0,
+      Total: 77,
+      fill: '#0065D4'
+    }
+  ];
+
+  const topExternalChangeHours = [
+    {
+      name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[0]?.name : '???',
       Total:
-        data && dashType === 'admin' ? Number(data.top_horas[4]?.totalTimeSum?.split(':')[0]) : 0,
+        data && dashType === 'admin' ? data.top_alteracao_externa_horas[0]?.total_tempo : '-----',
+      fill: '#59B7FF'
+    },
+    {
+      name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[1]?.name : '???',
+      Total: data && dashType === 'admin' ? data.top_alteracao_externa_horas[1]?.total_tempo : 0,
+      fill: '#0045B5'
+    },
+    {
+      name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[2]?.name : '???',
+      Total: data && dashType === 'admin' ? data.top_alteracao_externa_horas[2]?.total_tempo : 0,
+      fill: '#0077E6'
+    },
+    {
+      name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[3]?.name : '???',
+      Total: data && dashType === 'admin' ? data.top_alteracao_externa_horas[3]?.total_tempo : 0,
+      fill: '#E2F2FF'
+    },
+    {
+      name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[4]?.name : '???',
+      Total: data && dashType === 'admin' ? data.top_alteracao_externa_horas[4]?.total_tempo : 0,
+      fill: '#0065D4'
+    }
+  ];
+
+  const topSpotJobs = [
+    {
+      // name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[0]?.name : '???',
+      name: 'Metso',
+      // Total:
+      //   data && dashType === 'admin'
+      //     ? data.clientes_spot?.top_tenant_spot[0]?.quantidade_tarefas
+      //     : 0,
+      Total: 22,
+      fill: '#59B7FF'
+    },
+    {
+      // name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[1]?.name : '???',
+      name: 'Iveco',
+      // Total:
+      //   data && dashType === 'admin'
+      //     ? data.clientes_spot?.top_tenant_spot[1]?.quantidade_tarefas
+      //     : 0,
+      Total: 19,
+      fill: '#0045B5'
+    },
+    {
+      // name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[2]?.name : '???',
+      name: 'CNH Industrial',
+      // Total:
+      //   data && dashType === 'admin'
+      //     ? data.clientes_spot?.top_tenant_spot[2]?.quantidade_tarefas
+      //     : 0,
+      Total: 18,
+      fill: '#0077E6'
+    },
+    {
+      // name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[3]?.name : '???',
+      name: 'Blue Dental',
+      // Total:
+      //   data && dashType === 'admin'
+      //     ? data.clientes_spot?.top_tenant_spot[3]?.quantidade_tarefas
+      //     : 0,
+      Total: 15,
+      fill: '#E2F2FF'
+    },
+    {
+      // name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[4]?.name : '???',
+      name: 'LinkBelt',
+      // Total:
+      //   data && dashType === 'admin'
+      //     ? data.clientes_spot?.top_tenant_spot[4]?.quantidade_tarefas
+      //     : 0,
+      Total: 12,
+      fill: '#0065D4'
+    }
+  ];
+
+  const topClientFeeDetails = [
+    {
+      client_name: '21BRZ',
+      atendimento: 'Mike',
+      tempo_total: '122:00:00',
+      consumido: '22:00:00',
+      balance_hours: '100'
+    },
+    {
+      client_name: 'ATHLETABRASIL',
+      atendimento: 'Amanda',
+      tempo_total: '112:00:00',
+      consumido: '34:00:00',
+      balance_hours: '78'
+    },
+    {
+      client_name: 'Metso',
+      atendimento: 'Vitor',
+      tempo_total: '99:00:00',
+      consumido: '33:00:00',
+      balance_hours: '66'
+    },
+    {
+      client_name: 'Nexpro',
+      atendimento: 'Fernanda',
+      tempo_total: '88:00:00',
+      consumido: '25:00:00',
+      balance_hours: '63'
+    },
+    {
+      client_name: 'Takao',
+      atendimento: 'Mike',
+      tempo_total: '59:00:00',
+      consumido: '60:00:00',
+      balance_hours: '46'
+    }
+  ];
+
+  const topTenantJobs = [{}];
+
+  const topInternalChange = [
+    {
+      tenant_id: data && dashType === 'admin' ? data.top_alteracao_interna[0]?.tenant_id : 0,
+      // name: data && dashType === 'admin' ? data.top_alteracao_interna[0]?.name : '----',
+      name: 'Takao',
+      // Total: data && dashType === 'admin' ? data.top_alteracao_interna[0]?.qtd_tarefas : 0,
+      Total: 13,
+      fill: '#59B7FF'
+    },
+    {
+      tenant_id: data && dashType === 'admin' ? data.top_alteracao_interna[1]?.tenant_id : 0,
+      // name: data && dashType === 'admin' ? data.top_alteracao_interna[1]?.name : '----',
+      name: 'LinkBelt',
+      // Total: data && dashType === 'admin' ? data.top_alteracao_interna[1]?.qtd_tarefas : 0,
+      Total: 22,
+      fill: '#0045B5'
+    },
+    {
+      tenant_id: data && dashType === 'admin' ? data.top_alteracao_interna[2]?.tenant_id : 0,
+      // name: data && dashType === 'admin' ? data.top_alteracao_interna[2]?.name : '----',
+      name: 'ATHLETA BRASIL',
+      // Total: data && dashType === 'admin' ? data.top_alteracao_interna[2]?.qtd_tarefas : 0,
+      Total: 11,
+      fill: '#0077E6'
+    },
+    {
+      tenant_id: data && dashType === 'admin' ? data.top_alteracao_interna[3]?.tenant_id : 0,
+      // name: data && dashType === 'admin' ? data.top_alteracao_interna[3]?.name : '----',
+      name: 'Iveco',
+      // Total: data && dashType === 'admin' ? data.top_alteracao_interna[3]?.qtd_tarefas : 0,
+      Total: 8,
+      fill: '#E2F2FF'
+    },
+    {
+      tenant_id: data && dashType === 'admin' ? data.top_alteracao_interna[4]?.tenant_id : 0,
+      // name: data && dashType === 'admin' ? data.top_alteracao_interna[4]?.name : '----',
+      name: 'Nexpro',
+      // Total: data && dashType === 'admin' ? data.top_alteracao_interna[4]?.qtd_tarefas : 0,
+      Total: 15,
+      fill: '#0065D4'
+    }
+  ];
+
+  const topExternalChange = [
+    {
+      tenant_id: data && dashType === 'admin' ? data.top_alteracao_externa[0]?.tenant_id : 0,
+      // name: data && dashType === 'admin' ? data.top_alteracao_externa[0]?.name : '----',
+      name: 'Leve Brisa',
+      // Total: data && dashType === 'admin' ? data.top_alteracao_externa[0]?.qtd_tarefas : 0,
+      Total: 57,
+      fill: '#59B7FF'
+    },
+    {
+      tenant_id: data && dashType === 'admin' ? data.top_alteracao_externa[1]?.tenant_id : 0,
+      // name: data && dashType === 'admin' ? data.top_alteracao_externa[1]?.name : '----',
+      name: 'Blue Dental',
+      // Total: data && dashType === 'admin' ? data.top_alteracao_externa[1]?.qtd_tarefas : 0,
+      Total: 50,
+      fill: '#0045B5'
+    },
+    {
+      tenant_id: data && dashType === 'admin' ? data.top_alteracao_externa[2]?.tenant_id : 0,
+      // name: data && dashType === 'admin' ? data.top_alteracao_externa[2]?.name : '----',
+      name: 'Diolaser',
+      // Total: data && dashType === 'admin' ? data.top_alteracao_externa[2]?.qtd_tarefas : 0,
+      Total: 44,
+      fill: '#0077E6'
+    },
+    {
+      tenant_id: data && dashType === 'admin' ? data.top_alteracao_externa[3]?.tenant_id : 0,
+      // name: data && dashType === 'admin' ? data.top_alteracao_externa[3]?.name : '----',
+      name: 'Metso',
+      // Total: data && dashType === 'admin' ? data.top_alteracao_externa[3]?.qtd_tarefas : 0,
+      Total: 35,
+      fill: '#E2F2FF'
+    },
+    {
+      tenant_id: data && dashType === 'admin' ? data.top_alteracao_externa[4]?.tenant_id : 0,
+      // name: data && dashType === 'admin' ? data.top_alteracao_externa[4]?.name : '----',
+      name: 'Iveco',
+      // Total: data && dashType === 'admin' ? data.top_alteracao_externa[4]?.qtd_tarefas : 0,
+      Total: 30,
+      fill: '#0065D4'
+    }
+  ];
+
+  const topSpotTenantHours = [
+    {
+      // name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[0]?.name : '???',
+      name: 'Takao',
+      // Total:
+      //   data && dashType === 'admin'
+      //     ? data.clientes_spot?.top_tenant_spot_horas[0]?.total_tempo
+      //     : 0,
+      Total: 83,
+      fill: '#59B7FF'
+    },
+    {
+      // name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[1]?.name : '???',
+      name: 'LinkBelt',
+      // Total:
+      //   data && dashType === 'admin'
+      //     ? data.clientes_spot?.top_tenant_spot_horas[1]?.total_tempo
+      //     : 0,
+      Total: 79,
+      fill: '#0045B5'
+    },
+    {
+      // name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[2]?.name : '???',
+      name: 'Nexpro',
+      // Total:
+      //   data && dashType === 'admin'
+      //     ? data.clientes_spot?.top_tenant_spot_horas[2]?.total_tempo
+      //     : 0,
+      Total: 69,
+      fill: '#0077E6'
+    },
+    {
+      // name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[3]?.name : '???',
+      name: '21BRZ',
+      // Total:
+      //   data && dashType === 'admin'
+      //     ? data.clientes_spot?.top_tenant_spot_horas[3]?.total_tempo
+      //     : 0,
+      Total: 57,
+      fill: '#E2F2FF'
+    },
+    {
+      // name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[4]?.name : '???',
+      name: 'Metso',
+      // Total:
+      //   data && dashType === 'admin'
+      //     ? data.clientes_spot?.top_tenant_spot_horas[4]?.quantidade_tarefas
+      //     : 0,
+      Total: 29,
       fill: '#0065D4'
     }
   ];
 
   const topCardsDataManager: CardsData[] = [
     {
-      data: data ? data.total_clientes : 0,
+      // data: data ? data.total_clientes : 0,
+      data: 37,
       type: 'success',
       title: 'Total de clientes'
     },
     {
-      data: data ? data.total_jobs : 0,
+      // data: data ? data.total_jobs : 0,
+      data: 21,
       type: 'jobs',
       title: 'Total Jobs'
     },
@@ -499,32 +910,38 @@ export default function Dashboard() {
       title: 'Alt. internas'
     },
     {
-      data: data ? data.alteracao_externa : 0,
+      // data: data ? data.alteracao_externa : 0,
+      data: 8,
       type: 'danger',
       title: 'Alt. externas'
     },
     {
-      data: data ? data.equipe : 0,
+      // data: data ? data.equipe : 0,
+      data: 12,
       type: 'team',
       title: 'Equipes'
     },
     {
-      data: data ? data.contratos_fee : 0,
+      // data: data ? data.contratos_fee : 0,
+      data: 8,
       type: 'jobFee',
       title: 'Jobs FEE contrato'
     },
     {
-      data: data ? data.contratos_spot : 0,
+      // data: data ? data.contratos_spot : 0,
+      data: 16,
       type: 'jobSpot',
       title: 'Jobs SPOT'
     },
     {
-      data: data ? data.novos_contratos_fee : 0,
+      // data: data ? data.novos_contratos_fee : 0,
+      data: 3,
       type: 'newFee',
       title: 'Novos FEE contrato'
     },
     {
-      data: data ? data.novos_contratos_spot : 0,
+      // data: data ? data.novos_contratos_spot : 0,
+      data: 5,
       type: 'newSpot',
       title: 'Novos Jobs SPOT'
     }
@@ -574,54 +991,68 @@ export default function Dashboard() {
   const userCards: UserCardProps[] = [
     {
       userInfos: {
-        user_name: data && dashType === 'admin' ? data.top_users[0]?.name : '',
-        clientsNumber: data && dashType === 'admin' ? data.top_users[0]?.clientes : 0,
+        // user_name: data && dashType === 'admin' ? data.top_users[0]?.name : '',
+        user_name: 'Amanda',
+        // clientsNumber: data && dashType === 'admin' ? data.top_users[0]?.clientes : 0,
+        clientsNumber: 12,
         avatar: PersonTest
       },
       tableData: {
         totalJobs: data && dashType === 'admin' ? data.top_users[0]?.tarefas_total : 0,
-        pendingSend: data && dashType === 'admin' ? data.top_users[0]?.pendente : 0,
+        // pendingSend: data && dashType === 'admin' ? data.top_users[0]?.pendente : 0,
+        pendingSend: 2,
         pendingApro: data && dashType === 'admin' ? data.top_users[0]?.aguardando_aprovacao : 0,
         approved: data && dashType === 'admin' ? data.top_users[0]?.entregue : 0
       },
       mensalReport: {
-        reunions: data && dashType === 'admin' ? data.top_users[0]?.reuniao : 0,
-        reports: '???'
+        // reunions: data && dashType === 'admin' ? data.top_users[0]?.reuniao : 0,
+        reunions: 3,
+        reports: '4'
       }
     },
     {
       userInfos: {
-        user_name: data && dashType === 'admin' ? data.top_users[1]?.name : '',
-        clientsNumber: data && dashType === 'admin' ? data.top_users[1]?.clientes : 0,
+        // user_name: data && dashType === 'admin' ? data.top_users[1]?.name : '',
+        user_name: 'Jonathan',
+        // clientsNumber: data && dashType === 'admin' ? data.top_users[1]?.clientes : 0,
+        clientsNumber: 10,
         avatar: PersonTest
       },
       tableData: {
         totalJobs: data && dashType === 'admin' ? data.top_users[1]?.tarefas_total : 0,
         pendingSend: data && dashType === 'admin' ? data.top_users[1]?.pendente : 0,
-        pendingApro: data && dashType === 'admin' ? data.top_users[1]?.aguardando_aprovacao : 0,
+        // pendingApro: data && dashType === 'admin' ? data.top_users[1]?.aguardando_aprovacao : 0,
+        pendingApro: 2,
         approved: data && dashType === 'admin' ? data.top_users[1]?.entregue : 0
       },
 
       mensalReport: {
-        reunions: data && dashType === 'admin' ? data.top_users[1]?.reuniao : 0,
-        reports: '???'
+        // reunions: data && dashType === 'admin' ? data.top_users[1]?.reuniao : 0,
+        reunions: 1,
+        reports: '1'
       }
     },
     {
       userInfos: {
-        user_name: data && dashType === 'admin' ? data.top_users[2]?.name : '',
-        clientsNumber: data && dashType === 'admin' ? data.top_users[2]?.clientes : 0,
+        // user_name: data && dashType === 'admin' ? data.top_users[2]?.name : '',
+        user_name: 'Camila',
+        // clientsNumber: data && dashType === 'admin' ? data.top_users[2]?.clientes : 0,
+        clientsNumber: 7,
         avatar: PersonTest
       },
       tableData: {
         totalJobs: data && dashType === 'admin' ? data.top_users[2]?.tarefas_total : 0,
-        pendingSend: data && dashType === 'admin' ? data.top_users[2]?.pendente : 0,
-        pendingApro: data && dashType === 'admin' ? data.top_users[2]?.aguardando_aprovacao : 0,
-        approved: data && dashType === 'admin' ? data.top_users[2]?.entregue : 0
+        // pendingSend: data && dashType === 'admin' ? data.top_users[2]?.pendente : 0,
+        pendingSend: 1,
+        // pendingApro: data && dashType === 'admin' ? data.top_users[2]?.aguardando_aprovacao : 0,
+        pendingApro: 1,
+        // approved: data && dashType === 'admin' ? data.top_users[2]?.entregue : 0
+        approved: 1
       },
       mensalReport: {
-        reunions: data && dashType === 'admin' ? data.top_users[2]?.reuniao : 0,
-        reports: '???'
+        // reunions: data && dashType === 'admin' ? data.top_users[2]?.reuniao : 0,
+        reunions: 2,
+        reports: '1'
       }
     }
   ];
@@ -747,6 +1178,16 @@ export default function Dashboard() {
     }
   ];
 
+  const rankingCreativeTeam = [
+    {
+      id_creative: 0,
+      name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.tenant_name : '',
+      job_total: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.title : '',
+      hours_total: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.name : '',
+      jobs_no_change: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.name : ''
+    }
+  ];
+
   async function getProjects(tenantId: string) {
     try {
       const response = await api.get(`project-products/${tenantId}`);
@@ -851,39 +1292,76 @@ export default function Dashboard() {
             <CardBase>
               <div className="card-title">Clientes (FEE)</div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <BarChartGrafic
-                  data={topTenantJobs}
-                  isVertical={true}
-                  title="Top clientes (Jobs)"
-                  height=""
-                />
-                <BarChartGrafic
-                  data={topTenantHours}
-                  isVertical={true}
-                  title="Top clientes (Horas)"
-                  height=""
-                />
-              </div>
+              <BarChartGrafic
+                data={topFeeTenantJobs}
+                isVertical={true}
+                title="Top clientes (Jobs)"
+                height=""
+              />
+
+              <TableDefault
+                title="Top clientes (Horas)"
+                titleSize="14px"
+                titleWeight="700"
+                titleColor="#222"
+              >
+                <thead>
+                  <tr>
+                    <th>Cliente</th>
+                    <th>Tempo total</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {topFeeTenantHours.map((row, index: number) => (
+                    <tr key={index}>
+                      <td>{row.name ? row.name : '-----'}</td>
+                      <td>{row.Total ? row.Total : 0}H</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </TableDefault>
             </CardBase>
 
             <CardBase>
               <div className="card-title">Clientes (SPOT)</div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <BarChartGrafic
-                  data={topTenantJobs}
-                  isVertical={true}
-                  title="Top clientes (Jobs)"
-                  height=""
-                />
-                <BarChartGrafic
-                  data={topTenantHours}
-                  isVertical={true}
-                  title="Top clientes (Horas)"
-                  height=""
-                />
-              </div>
+              <BarChartGrafic
+                data={topSpotJobs}
+                isVertical={true}
+                title="Top clientes (Jobs)"
+                height=""
+              />
+
+              <TableDefault
+                title="Top clientes (Horas)"
+                titleSize="14px"
+                titleWeight="700"
+                titleColor="#222"
+              >
+                <thead>
+                  <tr>
+                    <th>Cliente</th>
+                    <th>Tempo total</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {topSpotTenantHours.map((row, index: number) => (
+                    <tr key={index}>
+                      <td>{row.name ? row.name : '-----'}</td>
+                      <td>{row.Total ? row.Total : 0}H</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </TableDefault>
+
+              {/* <BarChartGrafic
+                data={topSpotTenantHours}
+                isVertical={true}
+                title="Top clientes (Horas)"
+                height=""
+              /> */}
             </CardBase>
           </GraphicLine>
 
@@ -904,11 +1382,11 @@ export default function Dashboard() {
               </thead>
 
               <tbody>
-                {jobsData.slice(0, 5).map((row) => (
+                {jobsAwaitingToBeSend?.slice(0, 5).map((row) => (
                   <tr key={row.id_job}>
-                    <td>{row.client_name}</td>
+                    <td>{row.client_name ? row.client_name : '-----'}</td>
                     <td>
-                      {row.job_name}
+                      {row.job_service ? row.job_service : '-----'}
                       {/* {new Intl.NumberFormat('pt-BR', {
                         style: 'currency',
                         currency: 'BRL'
@@ -923,7 +1401,8 @@ export default function Dashboard() {
                         height: '49px'
                       }}
                     >
-                      <JobStatus
+                      {row.job_name ? row.job_name : '-----'}
+                      {/* <JobStatus
                         className={
                           row.job_status === 'Pendente de envio'
                             ? 'status progress'
@@ -933,7 +1412,7 @@ export default function Dashboard() {
                         }
                       >
                         {row.job_status}
-                      </JobStatus>
+                      </JobStatus> */}
                     </td>
                   </tr>
                 ))}
@@ -955,11 +1434,11 @@ export default function Dashboard() {
               </thead>
 
               <tbody>
-                {jobsData.slice(0, 5).map((row) => (
+                {jobsAwaitingClientAdmin.slice(0, 5).map((row) => (
                   <tr key={row.id_job}>
-                    <td>{row.client_name}</td>
+                    <td>{row.client_name ? row.client_name : '-----'}</td>
                     <td>
-                      {row.job_name}
+                      {row.job_service ? row.job_service : '-----'}
                       {/* {new Intl.NumberFormat('pt-BR', {
                         style: 'currency',
                         currency: 'BRL'
@@ -974,7 +1453,8 @@ export default function Dashboard() {
                         height: '49px'
                       }}
                     >
-                      <JobStatus
+                      {row.job_name ? row.job_name : '-----'}
+                      {/* <JobStatus
                         className={
                           row.job_status === 'Pendente de envio'
                             ? 'status progress'
@@ -984,7 +1464,7 @@ export default function Dashboard() {
                         }
                       >
                         {row.job_status}
-                      </JobStatus>
+                      </JobStatus> */}
                     </td>
                   </tr>
                 ))}
@@ -1026,10 +1506,11 @@ export default function Dashboard() {
             <tbody>
               {data &&
                 dashType === 'admin' &&
-                data.top_fee_inverso.map((row: TopFeeSpot, index: number) => (
+                // data?.top_fee_inverso.slice(0, 10).map((row: TopFeeSpot, index: number) => (
+                topClientFeeDetails.map((row: TopFeeSpot, index: number) => (
                   <tr key={index}>
                     <td>{row.client_name}</td>
-                    <td>{row.atendimento ? row.atendimento : '?????'}</td>
+                    <td>{row.atendimento ? row.atendimento : '-----'}</td>
                     <td style={{ color: '#00BFA5', fontWeight: '700' }}>
                       {row.tempo_total.split(':')[0]}H
                     </td>
@@ -1037,7 +1518,13 @@ export default function Dashboard() {
                       <HoursTable>{row.consumido.split(':')[0]}H</HoursTable>
                     </td>
                     <td>
-                      <HoursTable className="minus">?????</HoursTable>
+                      <HoursTable
+                        className={
+                          subtractTime(row.tempo_total, row.consumido).includes('-') ? 'minus' : ''
+                        }
+                      >
+                        {subtractTime(row.tempo_total, row.consumido)}
+                      </HoursTable>
                     </td>
                   </tr>
                 ))}
@@ -1063,10 +1550,11 @@ export default function Dashboard() {
             <tbody>
               {data &&
                 dashType === 'admin' &&
-                data.top_spot_inverso.map((row: TopFeeSpot, index: number) => (
+                // data.top_spot_inverso.map((row: TopFeeSpot, index: number) => (
+                topClientFeeDetails.map((row: TopFeeSpot, index: number) => (
                   <tr key={index}>
                     <td>{row.client_name}</td>
-                    <td>{row.atendimento ? row.atendimento : '?????'}</td>
+                    <td>{row.atendimento ? row.atendimento : '-----'}</td>
                     <td style={{ color: '#00BFA5', fontWeight: '700' }}>
                       {row.tempo_total.split(':')[0]}H
                     </td>
@@ -1074,7 +1562,13 @@ export default function Dashboard() {
                       <HoursTable>{row.consumido.split(':')[0]}H</HoursTable>
                     </td>
                     <td>
-                      <HoursTable className="minus">?????</HoursTable>
+                      <HoursTable
+                        className={
+                          subtractTime(row.tempo_total, row.consumido).includes('-') ? 'minus' : ''
+                        }
+                      >
+                        {subtractTime(row.tempo_total, row.consumido)}
+                      </HoursTable>
                     </td>
                   </tr>
                 ))}
@@ -1085,23 +1579,75 @@ export default function Dashboard() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
             <CardBase>
               <div className="card-title">Alterações Internas (Jobs)</div>
-              <BarChartGrafic data={topTenantJobs} isVertical={true} height="" />
+              <BarChartGrafic data={topInternalChange} isVertical={true} height="" />
             </CardBase>
+
             <CardBase>
               <div className="card-title">Alterações Clientes (Jobs)</div>
-              <BarChartGrafic data={topTenantJobs} isVertical={true} height="" />
+              <BarChartGrafic data={topExternalChange} isVertical={true} height="" />
             </CardBase>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
             <CardBase>
-              <div className="card-title">Alterações Internas (Horas)</div>
-              <BarChartGrafic data={topTenantJobs} isVertical={true} height="" />
+              <TableDefault
+                title="Alterações Internas (Horas)"
+                titleSize="14px"
+                titleWeight="700"
+                titleColor="#222"
+              >
+                <thead>
+                  <tr>
+                    <th>Cliente</th>
+                    <th>Tempo total</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {topInternalChangesHours.map((row, index: number) => (
+                    <tr key={index}>
+                      <td>{row.name ? row.name : '-----'}</td>
+                      <td>{row.Total ? row.Total : 0}H</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </TableDefault>
             </CardBase>
+            {/* <CardBase>
+              <div className="card-title"></div>
+              <BarChartGrafic data={topTenantJobs} isVertical={true} height="" />
+            </CardBase> */}
+
             <CardBase>
+              <TableDefault
+                title="Alterações Clientes (Horas)"
+                titleSize="14px"
+                titleWeight="700"
+                titleColor="#222"
+              >
+                <thead>
+                  <tr>
+                    <th>Cliente</th>
+                    <th>Tempo total</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {/* {topExternalChangeHours.map((row, index: number) => ( */}
+                  {topInternalChangesHours.map((row, index: number) => (
+                    <tr key={index}>
+                      <td>{row.name ? row.name : '-----'}</td>
+                      <td>{row.Total ? row.Total : 0}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </TableDefault>
+            </CardBase>
+
+            {/* <CardBase>
               <div className="card-title">Alterações Clientes (Horas)</div>
               <BarChartGrafic data={topTenantJobs} isVertical={true} height="" />
-            </CardBase>
+            </CardBase> */}
           </div>
 
           {/* Monitoramento do time - tabela */}
@@ -1191,8 +1737,8 @@ export default function Dashboard() {
               <UserInfo>
                 <div className="user-image" style={{ backgroundImage: `url(${PersonTest})` }} />
                 <div className="user-name">
-                  ?????
-                  <span>?? clientes</span>
+                  Mike
+                  <span>12 clientes</span>
                 </div>
               </UserInfo>
 
@@ -1209,19 +1755,19 @@ export default function Dashboard() {
                   <tbody>
                     <tr>
                       <td style={{ color: '#6C757D', fontWeight: '700' }}>CNH</td>
-                      <td>?????</td>
+                      <td>Posts</td>
                       {/* <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
                         Trabalhando agora
                       </td> */}
                       <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
-                        ?????
+                        Na fila
                       </td>
                     </tr>
                     <tr>
                       <td style={{ color: '#6C757D', fontWeight: '700' }}>Terex</td>
-                      <td>?????</td>
+                      <td>Banners</td>
                       <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
-                        ?????
+                        Trabalhando
                       </td>
                       {/* <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
                         ?????
@@ -1229,32 +1775,32 @@ export default function Dashboard() {
                     </tr>
                     <tr>
                       <td style={{ color: '#6C757D', fontWeight: '700' }}>Metso</td>
-                      <td>?????</td>
+                      <td>Tarefa 01</td>
                       {/* <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
                         Trabalhando agora
                       </td> */}
                       <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
-                        ?????
+                        Na fila
                       </td>
                     </tr>
                     <tr>
-                      <td style={{ color: '#6C757D', fontWeight: '700' }}>Metso</td>
-                      <td>?????</td>
+                      <td style={{ color: '#6C757D', fontWeight: '700' }}>21BRZ</td>
+                      <td>Posts agendados</td>
                       {/* <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
                         Trabalhando agora
                       </td> */}
                       <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
-                        ?????
+                        Na fila
                       </td>
                     </tr>
                     <tr>
-                      <td style={{ color: '#6C757D', fontWeight: '700' }}>Metso</td>
-                      <td>?????</td>
+                      <td style={{ color: '#6C757D', fontWeight: '700' }}>LinkBelt</td>
+                      <td>Banners</td>
                       {/* <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
                         Trabalhando agora
                       </td> */}
                       <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
-                        ?????
+                        Na fila
                       </td>
                     </tr>
                   </tbody>
@@ -1301,8 +1847,8 @@ export default function Dashboard() {
               <UserInfo>
                 <div className="user-image" style={{ backgroundImage: `url(${PersonTest})` }} />
                 <div className="user-name">
-                  ?????
-                  <span>?? clientes</span>
+                  Fernanda
+                  <span>10 clientes</span>
                 </div>
               </UserInfo>
 
@@ -1318,53 +1864,53 @@ export default function Dashboard() {
 
                   <tbody>
                     <tr>
-                      <td style={{ color: '#6C757D', fontWeight: '700' }}>?????</td>
-                      <td>?????</td>
+                      <td style={{ color: '#6C757D', fontWeight: '700' }}>CNH</td>
+                      <td>Posts</td>
                       <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
-                        ?????
+                        Trabalhando agora
                       </td>
                       {/* <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
                         Na fila
                       </td> */}
                     </tr>
                     <tr>
-                      <td style={{ color: '#6C757D', fontWeight: '700' }}>?????</td>
-                      <td>?????</td>
+                      <td style={{ color: '#6C757D', fontWeight: '700' }}>21BRZ</td>
+                      <td>Post Instagram</td>
                       {/* <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
                         Trabalhando agora
                       </td> */}
                       <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
-                        ?????
+                        Na fila
                       </td>
                     </tr>
                     <tr>
-                      <td style={{ color: '#6C757D', fontWeight: '700' }}>?????</td>
-                      <td>?????</td>
+                      <td style={{ color: '#6C757D', fontWeight: '700' }}>Diolaser</td>
+                      <td>Redes Sociais</td>
                       {/* <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
                         Trabalhando agora
                       </td> */}
                       <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
-                        ?????
+                        Na fila
                       </td>
                     </tr>
                     <tr>
-                      <td style={{ color: '#6C757D', fontWeight: '700' }}>?????</td>
-                      <td>?????</td>
+                      <td style={{ color: '#6C757D', fontWeight: '700' }}>Terex</td>
+                      <td>Tarefa X</td>
                       <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
-                        ?????
+                        Trabalhando agora
                       </td>
                       {/* <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
                         Na fila
                       </td> */}
                     </tr>
                     <tr>
-                      <td style={{ color: '#6C757D', fontWeight: '700' }}>?????</td>
-                      <td>?????</td>
+                      <td style={{ color: '#6C757D', fontWeight: '700' }}>Blue Dental</td>
+                      <td>Posts agendados</td>
                       {/* <td style={{ color: '#2979FF', fontSize: '14px', fontWeight: '400' }}>
                         Trabalhando agora
                       </td> */}
                       <td style={{ color: '#FFAB00', fontSize: '14px', fontWeight: '400' }}>
-                        ?????
+                        Na fila
                       </td>
                     </tr>
                   </tbody>
@@ -1393,19 +1939,30 @@ export default function Dashboard() {
                   </CountUp>
                   <div className="numberCard-title">horas</div>
                 </NumberCard>
+
+                <NumberCard height_size={'82px'}>
+                  <CountUp start={0} end={12} delay={0}>
+                    {({ countUpRef }) => (
+                      <div>
+                        <span className="numberCard" ref={countUpRef} />
+                      </div>
+                    )}
+                  </CountUp>
+                  <div className="numberCard-title">horas disponíveis</div>
+                </NumberCard>
               </div>
             </GridServiceWrapper>
           </CardBase>
 
           {/* Monitoramento Atendimento */}
-          <CardBase>
+          {/* <CardBase>
             <div className="card-title">Monitoramento Do Time - Ranking Atendimento</div>
 
             <TableDefault title="" titleSize="14px" titleWeight="700" titleColor="#222">
               <thead>
                 <tr>
                   <th style={{ minWidth: '180px' }}>Ranking</th>
-                  <th>Criativo</th>
+                  <th>Atendimento</th>
                   <th>Jobs totais</th>
                   <th>Horas totais</th>
                   <th>Jobs sem alteração</th>
@@ -1450,10 +2007,10 @@ export default function Dashboard() {
                 </tr>
               </tbody>
             </TableDefault>
-          </CardBase>
+          </CardBase> */}
 
           {/* Monitoramento criativo */}
-          <CardBase>
+          {/* <CardBase>
             <div className="card-title">Monitoramento Do Time - Ranking Criativo</div>
 
             <TableDefault title="" titleSize="14px" titleWeight="700" titleColor="#222">
@@ -1468,44 +2025,18 @@ export default function Dashboard() {
               </thead>
 
               <tbody>
-                <tr>
-                  <td>1º</td>
-                  <td>?????</td>
-                  <td>??</td>
-                  <td>???H</td>
-                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
-                </tr>
-                <tr>
-                  <td>2º</td>
-                  <td>?????</td>
-                  <td>??</td>
-                  <td>???H</td>
-                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
-                </tr>
-                <tr>
-                  <td>3º</td>
-                  <td>?????</td>
-                  <td>??</td>
-                  <td>???H</td>
-                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
-                </tr>
-                <tr>
-                  <td>4º</td>
-                  <td>?????</td>
-                  <td>??</td>
-                  <td>???H</td>
-                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
-                </tr>
-                <tr>
-                  <td>5º</td>
-                  <td>?????</td>
-                  <td>??</td>
-                  <td>???H</td>
-                  <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
-                </tr>
+                {data.time_criacao.map((row: any) => (
+                  <tr key={row.user_id}>
+                    <td>1º</td>
+                    <td>?????</td>
+                    <td>??</td>
+                    <td>???H</td>
+                    <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
+                  </tr>
+                ))}
               </tbody>
             </TableDefault>
-          </CardBase>
+          </CardBase> */}
 
           {/* Monitoramento jobs entregues */}
           <TableDefault
@@ -1556,7 +2087,7 @@ export default function Dashboard() {
           </TableDefault>
 
           {/* Performance por cliente - Tabela */}
-          <TableDefault
+          {/* <TableDefault
             title="Performance por cliente"
             titleSize="14px"
             titleWeight="700"
@@ -1603,10 +2134,10 @@ export default function Dashboard() {
                 <td>?????</td>
               </tr>
             </tbody>
-          </TableDefault>
+          </TableDefault> */}
 
           {/* Performance por cliente */}
-          <CardBase>
+          {/* <CardBase>
             <div className="title-with-back">CLIENTE: JEEP</div>
 
             <BulletsClientWrapper>
@@ -1673,7 +2204,7 @@ export default function Dashboard() {
                 </div>
               </BulletPointInfos>
             </BulletsClientWrapper>
-          </CardBase>
+          </CardBase> */}
         </SectionDefault>
       )}
 

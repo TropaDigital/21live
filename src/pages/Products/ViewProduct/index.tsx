@@ -491,7 +491,11 @@ export default function ViewProductsDeliveries() {
   };
 
   const handleNavigateProduct = (type: string, infoProduct: any) => {
-    if (type === 'view') {
+    if (type === 'view' && infoProduct === 'task') {
+      navigate(`/tarefa/${dataTask.parents[0].task_id}`);
+    }
+
+    if (type === 'view' && infoProduct !== 'task') {
       const taskCompleteInfo = {
         productInfo: infoProduct,
         taskInfos: dataTask
@@ -933,6 +937,7 @@ export default function ViewProductsDeliveries() {
         setUploadedFiles([]);
         setModalUpload(false);
         setModalFinalFile(false);
+        setToClientConfirmation(false);
         getTaskInfos();
       }
 
@@ -977,6 +982,7 @@ export default function ViewProductsDeliveries() {
         });
         setUploadedFiles([]);
         setModalFinalFile(false);
+        setToClientConfirmation(false);
         getTaskInfos();
         // setTimeout(() => {
         //   navigate('/minhas-tarefas');
@@ -1009,20 +1015,7 @@ export default function ViewProductsDeliveries() {
       setLoading(true);
       if (hasToDismemberTask && checkType !== 'back' && !hasDismemberedProduct) {
         setModalDismemberment(true);
-      }
-      // console.log('log do mandatoryUpload =>', mandatoryUpload);
-      // console.log('log do checkMandatoryUpload =>', checkMandatoryUpload());
-
-      if (mandatoryUpload && checkMandatoryUpload()) {
-        addToast({
-          title: 'Atenção',
-          description: 'é necessário fazer upload para todos os produtos',
-          type: 'warning'
-        });
-        throw new Error('');
-      }
-
-      if (checkType === 'next') {
+      } else if (checkType === 'next') {
         const response = await api.get(
           `/flow-function?step=${Number(actualStep) + 1}&flow_id=${dataTask?.flow_id}`
         );
@@ -1066,6 +1059,18 @@ export default function ViewProductsDeliveries() {
         }
       }
 
+      // console.log('log do mandatoryUpload =>', mandatoryUpload);
+      // console.log('log do checkMandatoryUpload =>', checkMandatoryUpload());
+
+      // if (mandatoryUpload && checkMandatoryUpload()) {
+      //   addToast({
+      //     title: 'Atenção',
+      //     description: 'é necessário fazer upload para todos os produtos',
+      //     type: 'warning'
+      //   });
+      //   throw new Error('');
+      // }
+
       setLoading(false);
     } catch (error: any) {
       console.log('log do error check flow', error);
@@ -1090,7 +1095,7 @@ export default function ViewProductsDeliveries() {
 
       if (type === 'back') {
         const response = await api.get(
-          `/task/next?project_product_id=${dataTask?.project_product_id}&flow_id=${dataTask?.flow_id}&step=${returnInfos.chosenStep}&task_id=${dataTask?.task_id}`
+          `/task/next?project_product_id=${dataTask?.project_product_id}&flow=${dataTask?.flow_id}&step=${returnInfos.chosenStep}&task_id=${dataTask?.task_id}`
         );
         setUsersWithoutSchedule(response.data.result);
         setModalWithoutSchedule(true);

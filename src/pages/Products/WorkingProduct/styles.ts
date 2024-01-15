@@ -579,3 +579,14 @@ export const CardShowInputs = styled.div`
   -o-user-select: none;
   user-select: none; */
 `;
+
+export const EssayField = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .ProseMirror {
+    min-height: 260px;
+    height: fit-content;
+  }
+`;
