@@ -77,7 +77,7 @@ export function CardWelcomeDash({
             <span>Data</span>
           </FilterTotal>
 
-          <AppliedFilter>
+          <AppliedFilter onClick={openFilter} style={{ cursor: 'pointer' }}>
             <div className="filter-title">
               Data inicial: <span>{moment(filtersApplieds?.fromDate).format('DD/MM/YYYY')}</span>
             </div>

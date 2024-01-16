@@ -323,7 +323,7 @@ legend {
     height: 100%;
     overflow-y: auto;
     padding: 20px;
-    animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+    animation: contentShowRight 250ms ease-in-out;
     z-index: 2;
 
     ::-webkit-scrollbar {
@@ -396,6 +396,17 @@ legend {
     to {
       opacity: 1;
       transform: translate(-50%, -50%) scale(1);
+    }
+  }
+
+  @keyframes contentShowRight {
+    from {
+      opacity: 0;
+      transform: translate(300px) scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: translate(0px) scale(1);
     }
   }
 

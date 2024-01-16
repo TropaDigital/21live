@@ -96,6 +96,25 @@ export const Li = styled.li<sidebarProps>`
     display: ${(props) => (props.modalActive ? 'block' : 'none')};
     z-index: 9;
   }
+
+  .counter {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-top: -15px;
+    margin-right: -10px;
+
+    line-height: 18px;
+    background-color: var(--secundary-050);
+    border: 2px dotted var(--secundary-200);
+    border-radius: 8px;
+
+    padding: 4px 6px;
+
+    color: var(--secundary-600);
+    font-size: var(--text-small-xs);
+    font-weight: var(--weight-semibold);
+  }
   svg {
     min-width: 50px;
     line-height: 50px;

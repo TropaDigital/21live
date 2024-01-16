@@ -1,24 +1,23 @@
-import { useState, FormEvent, ChangeEvent, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { BiPlus } from 'react-icons/bi';
-import { FiPaperclip } from 'react-icons/fi';
+// import { FiPaperclip } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 
 import { useAuth } from '../../../hooks/AuthContext';
-import { useToast } from '../../../hooks/toast';
-import useColumn from '../../../hooks/useColumn';
-import useLocalStorage from '../../../hooks/useLocalStorage';
-import useTask from '../../../hooks/useTask';
-
-import { ColumnModel } from '../../../utils/models';
+// import { useToast } from '../../../hooks/toast';
+// import useColumn from '../../../hooks/useColumn';
+// import useLocalStorage from '../../../hooks/useLocalStorage';
+// import useTask from '../../../hooks/useTask';
 
 import ButtonDefault from '../../Buttons/ButtonDefault';
-import { InputDefault } from '../../Inputs/InputDefault';
-import { SelectDefault } from '../../Inputs/SelectDefault';
-import { TextAreaDefault } from '../../Inputs/TextAreaDefault';
-import ModalDefault from '../../Ui/ModalDefault';
-import { FieldDefault, FooterModal } from '../../UiElements/styles';
+// import { InputDefault } from '../../Inputs/InputDefault';
+// import { SelectDefault } from '../../Inputs/SelectDefault';
+// import { TextAreaDefault } from '../../Inputs/TextAreaDefault';
+// import ModalDefault from '../../Ui/ModalDefault';
+// import { FieldDefault, FooterModal } from '../../UiElements/styles';
 import { Container, Ul, Li } from './styles';
 import { IconDash } from '../../../assets/icons';
+import { useTotalInfos } from '../../../hooks/useCounter';
 
 interface IMenu {
   to: string;
@@ -34,100 +33,101 @@ interface ISiderbar {
   modalActive: boolean;
 }
 
-interface FormDataProps {
-  nome: string;
-  cliente: string;
-  projeto: string;
-  alocados: string;
-  quadro: string;
-  tipo: string;
-  ordem: string;
-  dataFinal: string;
-  descricao: string;
-  anexo: string;
-}
+// interface FormDataProps {
+//   nome: string;
+//   cliente: string;
+//   projeto: string;
+//   alocados: string;
+//   quadro: string;
+//   tipo: string;
+//   ordem: string;
+//   dataFinal: string;
+//   descricao: string;
+//   anexo: string;
+// }
 
 export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
   const { user } = useAuth();
-  const { addToast } = useToast();
-  const [state] = useLocalStorage('COLUMN');
-  const { column } = useColumn();
-  const { addTask } = useTask();
-  const [modal, setModal] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { requestsTotal, tasksTotal } = useTotalInfos();
+  // const { addToast } = useToast();
+  // const [state] = useLocalStorage('COLUMN');
+  // const { column } = useColumn();
+  // const { addTask } = useTask();
+  // const [modal, setModal] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [menuSidebar, setMenuSidebar] = useState<any>();
 
-  const [formData, setFormData] = useState<FormDataProps>({
-    nome: '',
-    cliente: '',
-    projeto: '',
-    alocados: '',
-    quadro: '',
-    tipo: '',
-    ordem: '',
-    dataFinal: '',
-    descricao: '',
-    anexo: ''
-  });
+  // const [formData, setFormData] = useState<FormDataProps>({
+  //   nome: '',
+  //   cliente: '',
+  //   projeto: '',
+  //   alocados: '',
+  //   quadro: '',
+  //   tipo: '',
+  //   ordem: '',
+  //   dataFinal: '',
+  //   descricao: '',
+  //   anexo: ''
+  // });
 
-  const modaOpen = () => {
-    setModal(true);
-  };
+  // const modaOpen = () => {
+  //   setModal(true);
+  // };
 
-  const modalClose = () => {
-    setModal(false);
-  };
+  // const modalClose = () => {
+  //   setModal(false);
+  // };
 
-  function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
-    const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
-  }
+  // function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
+  //   const { name, value } = event.target;
+  //   setFormData({ ...formData, [name]: value });
+  // }
 
-  function handleSelectChange(event: ChangeEvent<HTMLSelectElement>) {
-    const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
-  }
+  // function handleSelectChange(event: ChangeEvent<HTMLSelectElement>) {
+  //   const { name, value } = event.target;
+  //   setFormData({ ...formData, [name]: value });
+  // }
 
-  function handleTextareaChange(event: ChangeEvent<HTMLTextAreaElement>) {
-    const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
-  }
+  // function handleTextareaChange(event: ChangeEvent<HTMLTextAreaElement>) {
+  //   const { name, value } = event.target;
+  //   setFormData({ ...formData, [name]: value });
+  // }
 
-  async function handleOnSubmit(event: FormEvent) {
-    event.preventDefault();
+  // async function handleOnSubmit(event: FormEvent) {
+  //   event.preventDefault();
 
-    try {
-      setLoading(true);
+  //   try {
+  //     setLoading(true);
 
-      const columnSelected = column.filter((obj: any) => obj.card_id === Number(formData.quadro));
+  //     const columnSelected = column.filter((obj: any) => obj.card_id === Number(formData.quadro));
 
-      const newData = {
-        ...formData,
-        task_id: columnSelected.length + 1
-      };
+  //     const newData = {
+  //       ...formData,
+  //       task_id: columnSelected.length + 1
+  //     };
 
-      addTask(columnSelected[0], newData);
+  //     addTask(columnSelected[0], newData);
 
-      addToast({
-        type: 'success',
-        title: 'Otimo',
-        description: 'Os dados estao de acordo!'
-      });
+  //     addToast({
+  //       type: 'success',
+  //       title: 'Otimo',
+  //       description: 'Os dados estao de acordo!'
+  //     });
 
-      setTimeout(() => {
-        setLoading(false);
-      }, 1000);
-    } catch (error) {
-      console.log('ERROR', error);
-      setLoading(false);
-      addToast({
-        type: 'danger',
-        title: 'Atenção',
-        description: 'Dados invalidos!'
-      });
-    }
-    // await api.post('points', data);
-  }
+  //     setTimeout(() => {
+  //       setLoading(false);
+  //     }, 1000);
+  //   } catch (error) {
+  //     console.log('ERROR', error);
+  //     setLoading(false);
+  //     addToast({
+  //       type: 'danger',
+  //       title: 'Atenção',
+  //       description: 'Dados invalidos!'
+  //     });
+  //   }
+  //   // await api.post('points', data);
+  // }
 
   useEffect(() => {
     const newMenu = user.permissions;
@@ -161,12 +161,18 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
               <row.icon />
               <span>{row.name}</span>
             </Link>
-            <span className="tooltip">{row.name}</span>
+            {/* <span className="tooltip">{row.name}</span> */}
+            {row.name === 'Minhas tarefas' && (
+              <span className="counter">{tasksTotal > 0 ? tasksTotal : 0}</span>
+            )}
+            {row.name === 'Solicitações' && (
+              <span className="counter">{requestsTotal > 0 ? requestsTotal : 0}</span>
+            )}
           </Li>
         ))}
       </Ul>
 
-      <ModalDefault isOpen={modal} title="Hello World" onOpenChange={setModal}>
+      {/* <ModalDefault isOpen={modal} title="Hello World" onOpenChange={setModal}>
         <form onSubmit={handleOnSubmit}>
           <FieldDefault style={{ marginBottom: '14px' }}>
             <InputDefault label="Nome" name="nome" onChange={handleInputChange} />
@@ -227,7 +233,7 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
             </div>
           </FooterModal>
         </form>
-      </ModalDefault>
+      </ModalDefault> */}
     </Container>
   );
 }
