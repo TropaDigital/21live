@@ -34,6 +34,7 @@ import {
   ArrowSection,
   CardsWrapper,
   DeliveryWrapper,
+  FilePreview,
   FileProductList,
   FileProductsWrapper,
   ModalProductsWrapper,
@@ -74,6 +75,7 @@ import Loader from '../../../components/LoaderSpin';
 import { Table } from '../../../components/Table';
 import { DownloadIcon, ViewFile } from '../WorkingProduct/styles';
 import { BiShow } from 'react-icons/bi';
+import { MdClose } from 'react-icons/md';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -547,108 +549,6 @@ export default function ViewProductsDeliveries() {
     }
   };
 
-  // const handleFinishDelivery = async () => {
-  //   try {
-  //     setLoading(true);
-
-  //     if (dataTask.type === 'Livre') {
-  //       const responseNextDate = await api.get(
-  //         `/task/nextdate=${moment(new Date()).format('YYYY-MM-DD')}&task_id=${dataTask?.task_id}`
-  //       );
-
-  //       const response = await api.get(`/task/next-user/${dataTask?.task_id}`);
-
-  //       if (response.data.result.length > 0) {
-  //         const payload = {
-  //           user_id: response.data.result[0].user_id,
-  //           task_id: dataTask?.task_id
-  //         };
-
-  //         const responseConclude = await api.put(`/task/send-for-evaluation`, payload);
-
-  //         console.log('log do response conclude', responseConclude.data.result);
-  //         navigate('/minhas-tarefas');
-  //         localStorage.removeItem('stopwatchState');
-  //       }
-
-  //       setLoading(false);
-
-  //       console.log('log do response for free task', response.data);
-  //     } else {
-  //       const response = await api.put(`/task/delivery-conclude/${deliveryId[0].delivery_id}`);
-  //       if (response.data.result === 1) {
-  //         addToast({
-  //           title: 'Sucesso',
-  //           type: 'success',
-  //           description: 'Entrega finalizada com sucesso'
-  //         });
-  //         navigate('/minhas-tarefas');
-  //         localStorage.removeItem('stopwatchState');
-  //       }
-  //       if (response.data.result.last_delivery) {
-  //         setModalSendToUser(true);
-  //       }
-  //       setLoading(false);
-  //     }
-  //   } catch (error: any) {
-  //     console.log('log error finish delivery', error);
-  //     setLoading(false);
-
-  //     if (error.response.data.result.length !== 0) {
-  //       error.response.data.result.map((row: any) => {
-  //         addToast({
-  //           title: 'Atenção',
-  //           description: row.error,
-  //           type: 'warning'
-  //         });
-  //       });
-  //     } else {
-  //       addToast({
-  //         title: 'Atenção',
-  //         description: error.response.data.message,
-  //         type: 'danger'
-  //       });
-  //     }
-  //   }
-  // };
-
-  // async function handleFinishProduct() {
-  //   try {
-  //     setLoading(true);
-  //     const response = await api.put(
-  //       `/task/product-conclude/${selectedProduct?.productInfo.products_delivery_id}`
-  //     );
-
-  //     if (response.data.result === 1) {
-  //       addToast({
-  //         title: 'Sucesso',
-  //         type: 'success',
-  //         description: 'Entrega finalizada com sucesso'
-  //       });
-  //       navigate('/minhas-tarefas');
-  //       localStorage.removeItem('stopwatchState');
-  //     }
-  //     setLoading(false);
-  //   } catch (error: any) {
-  //     if (error.response.data.result.length !== 0) {
-  //       error.response.data.result.map((row: any) => {
-  //         addToast({
-  //           title: 'Atenção',
-  //           description: row.error,
-  //           type: 'warning'
-  //         });
-  //       });
-  //     } else {
-  //       addToast({
-  //         title: 'Atenção',
-  //         description: error.response.data.message,
-  //         type: 'danger'
-  //       });
-  //     }
-  //     setLoading(false);
-  //   }
-  // }
-
   const handleSendToNextUser = async (values: any) => {
     try {
       setLoading(true);
@@ -689,7 +589,7 @@ export default function ViewProductsDeliveries() {
           `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
           next_user
         );
-        console.log('log do response', response.data.result);
+        // console.log('log do response', response.data.result);
 
         if (response.data.result === 1) {
           addToast({
@@ -724,7 +624,7 @@ export default function ViewProductsDeliveries() {
             `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
             next_user
           );
-          console.log('log do response', response.data.result);
+          // console.log('log do response', response.data.result);
 
           if (response.data.result === 1) {
             navigate('/minhas-tarefas');
@@ -842,7 +742,7 @@ export default function ViewProductsDeliveries() {
         navigate('/minhas-tarefas');
         localStorage.removeItem('stopwatchState');
 
-        console.log('log do response conclude', responseConclude.data.result);
+        // console.log('log do response conclude', responseConclude.data.result);
       }
       navigate('/minhas-tarefas');
       localStorage.removeItem('stopwatchState');
@@ -915,7 +815,7 @@ export default function ViewProductsDeliveries() {
         getTaskInfos();
       }
 
-      console.log('log do response do saveUpload', response.data.result);
+      // console.log('log do response do saveUpload', response.data.result);
     } catch (error: any) {
       console.log('log save upload for product', error);
       if (error.response.data.result.length !== 0) {
@@ -961,9 +861,10 @@ export default function ViewProductsDeliveries() {
         setModalFinalFile(false);
         setToClientConfirmation(false);
         getTaskInfos();
+        handleConcludeTask();
       }
 
-      console.log('log do response do saveUpload', response.data.result);
+      // console.log('log do response do saveUpload', response.data.result);
     } catch (error: any) {
       console.log('log save upload final file', error);
       if (error.response.data.result.length !== 0) {
@@ -1035,14 +936,16 @@ export default function ViewProductsDeliveries() {
   async function checkFlow(checkType: string) {
     try {
       setLoading(true);
-      if (uploadClient) {
-        console.log('log do modal do enviar tarefa');
+      if (
+        uploadClient &&
+        checkType === 'next' &&
+        dataTask?.files.length > 0 &&
+        dataTask?.status !== 'Aguardando Aprovação'
+      ) {
         setModalTenantApprove(true);
-      }
-
-      if (hasToDismemberTask && checkType !== 'back' && !hasDismemberedProduct) {
+      } else if (hasToDismemberTask && checkType !== 'back' && !hasDismemberedProduct) {
         setModalDismemberment(true);
-      } else if (checkType === 'next') {
+      } else if (checkType === 'next' && !finalCard) {
         const response = await api.get(
           `/flow-function?step=${Number(actualStep) + 1}&flow_id=${dataTask?.flow_id}`
         );
@@ -1066,6 +969,16 @@ export default function ViewProductsDeliveries() {
         if (response.data.result[0].show_hours === 'false') {
           handleNextUser('next');
           // console.log('log do checkFlow to show schedule');
+        }
+      } else if (checkType === 'next' && finalCard) {
+        if (dataTask.ticket_id !== '' && mandatoryUpload) {
+          setModalFinalFile(false);
+        }
+        if (dataTask.ticket_id !== '' && !mandatoryUpload) {
+          handleUploadApproved();
+        }
+        if (dataTask.ticket_id === '') {
+          handleConcludeTask();
         }
       }
 
@@ -1151,7 +1064,7 @@ export default function ViewProductsDeliveries() {
         `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
         next_user
       );
-      console.log('log do response', response.data.result);
+      // console.log('log do response', response.data.result);
 
       if (response.data.result === 1) {
         addToast({
@@ -1195,7 +1108,7 @@ export default function ViewProductsDeliveries() {
 
     checkFlow('back');
 
-    console.log('log do selectedStep =>', selectedStep);
+    // console.log('log do selectedStep =>', selectedStep);
   };
 
   async function handleReturnTask(infos: any) {
@@ -1309,7 +1222,7 @@ export default function ViewProductsDeliveries() {
           type: 'danger'
         });
       }
-      console.log('log error conclude task', error);
+      // console.log('log error conclude task', error);
       setLoading(false);
     }
   }
@@ -1344,7 +1257,7 @@ export default function ViewProductsDeliveries() {
         { responseType: 'arraybuffer' }
       );
 
-      console.log('log do response download =>', response);
+      // console.log('log do response download =>', response);
 
       const blob = new Blob([response.data]);
       const urlResponse = window.URL.createObjectURL(blob);
@@ -1359,7 +1272,6 @@ export default function ViewProductsDeliveries() {
 
       setLoading(false);
     } catch (error: any) {
-      console.log('log error download file', error);
       if (error.response.data.result.length !== 0) {
         error.response.data.result.map((row: any) => {
           addToast({
@@ -1399,32 +1311,123 @@ export default function ViewProductsDeliveries() {
     try {
       setLoading(true);
 
-      const formData = new FormData();
-
       await Promise.all(
-        filesToTenantApprove.map(async (imageUrl: TaskFile, index) => {
-          // Download the image from the provided URL
+        filesToTenantApprove.map(async (imageUrl: TaskFile) => {
+          const fileData = new FormData();
+
           const response = await api.get(
             `https://app.21live.com.br:3000/archive?bucket=${imageUrl.bucket}&key=${imageUrl.key}`,
             { responseType: 'arraybuffer' }
           );
 
           const blob = new Blob([response.data]);
-          formData.append(`${imageUrl.file_name.split('-').pop()}`, blob, `${imageUrl.file_name}`);
+          const newFile: any = new File([blob], imageUrl.file_name, { type: blob.type });
 
-          // const responseFile = await api.post('/archive/upload/ticket', formData);
+          fileData.append('archive', newFile);
+          fileData.append('ticket_id', dataTask?.ticket_id);
+
+          const responseFile = await api.post('/archive/upload/ticket', fileData);
+
+          if (responseFile.data.status === 'success') {
+            const uploadInfos = {
+              task_id: dataTask?.task_id,
+              file_name: responseFile.data.result.file_name,
+              size: responseFile.data.result.size,
+              key: responseFile.data.result.key,
+              bucket: responseFile.data.result.bucket,
+              products_delivery_id: productForUpload.products_delivery_id
+            };
+            const response = await api.put(`/task/upload-tenant-approve`, uploadInfos);
+
+            if (response.data.status === 'success') {
+              addToast({
+                title: 'Sucesso',
+                description: 'Arquivo enviado, aguarde a aprovação do cliente.',
+                type: 'success'
+              });
+              setModalTenantApprove(false);
+              setToClientConfirmation(false);
+              getTaskInfos();
+              // setTimeout(() => {
+              //   navigate('/minhas-tarefas');
+              // }, 1500);
+            }
+          }
         })
       );
+
+      setLoading(false);
+    } catch (error: any) {
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
+      setLoading(false);
+    }
+  }
+
+  async function handleUploadApproved() {
+    try {
+      setLoading(true);
+
+      const approvedFiles = dataTask?.files.filter((file: any) => file.status === 'pass');
+
+      await Promise.all(
+        approvedFiles.map(async (imageUrl: TaskFile) => {
+          const fileData = new FormData();
+
+          const response = await api.get(
+            `https://app.21live.com.br:3000/archive?bucket=${imageUrl.bucket}&key=${imageUrl.key}`,
+            { responseType: 'arraybuffer' }
+          );
+
+          const blob = new Blob([response.data]);
+          const newFile: any = new File([blob], imageUrl.file_name, { type: blob.type });
+
+          fileData.append('archive', newFile);
+
+          const responseFile = await api.post(
+            `/archive/upload/final/${dataTask?.task_id}`,
+            fileData
+          );
+
+          if (responseFile.data.status === 'success') {
+            const uploadInfos = {
+              task_id: dataTask?.task_id,
+              file_name: responseFile.data.result.file_name,
+              size: responseFile.data.result.size,
+              key: responseFile.data.result.key,
+              bucket: responseFile.data.result.bucket,
+              last_archive: 'true',
+              products_delivery_id: productForUpload.products_delivery_id
+            };
+            const response = await api.post(`/task/upload`, uploadInfos);
+
+            if (response.data.status === 'success') {
+              handleConcludeTask();
+            }
+          }
+        })
+      );
+
+      console.log('log approvedFiles =>', approvedFiles);
 
       setLoading(false);
     } catch (error) {
       setLoading(false);
     }
   }
-
-  // useEffect(() => {
-  //   console.log('log do hasDismemberedProduct =>', hasDismemberedProduct);
-  // }, [hasDismemberedProduct]);
 
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
@@ -1489,7 +1492,7 @@ export default function ViewProductsDeliveries() {
                 title={titleInfos}
                 disableButton={false}
                 goBack
-                buttonType="send"
+                buttonType={uploadClient ? 'client' : 'send'}
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
                 backFlow={() => setModalReturnFlow(true)}
@@ -1504,7 +1507,7 @@ export default function ViewProductsDeliveries() {
                 title={titleInfos}
                 disableButton={false}
                 goBack
-                buttonType="send"
+                buttonType={uploadClient ? 'client' : 'send'}
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
                 backFlow={() => setModalReturnFlow(true)}
@@ -1521,7 +1524,8 @@ export default function ViewProductsDeliveries() {
                 disableButton={false}
                 goBack
                 buttonType="finish"
-                sendToNext={handleConcludeTask}
+                // sendToNext={handleConcludeTask}
+                sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
                 backFlow={() => setModalReturnFlow(true)}
               />
@@ -1537,7 +1541,8 @@ export default function ViewProductsDeliveries() {
                 disableButton={false}
                 goBack
                 buttonType="finish"
-                sendToNext={handleConcludeTask}
+                // sendToNext={handleConcludeTask}
+                sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
                 backFlow={() => setModalReturnFlow(true)}
               />
@@ -1552,7 +1557,7 @@ export default function ViewProductsDeliveries() {
                 title={titleInfos}
                 disableButton={false}
                 goBack
-                buttonType="send"
+                buttonType={uploadClient ? 'client' : 'send'}
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
                 backFlow={() => setModalReturnFlow(true)}
@@ -1569,7 +1574,8 @@ export default function ViewProductsDeliveries() {
                 disableButton={false}
                 goBack
                 buttonType="finish"
-                sendToNext={handleConcludeTask}
+                // sendToNext={handleConcludeTask}
+                sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
                 backFlow={() => setModalReturnFlow(true)}
               />
@@ -1586,7 +1592,8 @@ export default function ViewProductsDeliveries() {
                 disableButton={typeOfPlay === 'product' ? false : true}
                 goBack
                 buttonType="finish"
-                sendToNext={handleConcludeTask}
+                // sendToNext={handleConcludeTask}
+                sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
                 backToDelivery={() => setViewProduct(false)}
                 isInsideProduct={true}
@@ -1605,7 +1612,8 @@ export default function ViewProductsDeliveries() {
                 disableButton={true}
                 goBack
                 buttonType="finish"
-                sendToNext={handleConcludeTask}
+                // sendToNext={handleConcludeTask}
+                sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
                 backToDelivery={() => setViewProduct(false)}
                 isInsideProduct={true}
@@ -1624,7 +1632,8 @@ export default function ViewProductsDeliveries() {
                 disableButton={true}
                 goBack
                 buttonType="finish"
-                sendToNext={handleConcludeTask}
+                // sendToNext={handleConcludeTask}
+                sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
                 backToDelivery={() => setViewProduct(false)}
                 isInsideProduct={true}
@@ -2059,11 +2068,14 @@ export default function ViewProductsDeliveries() {
           {uploadClient && !toClientConfirmation && (
             <div className="modal-buttons">
               <ButtonDefault
-                typeButton="lightWhite"
+                typeButton="dark"
                 isOutline
-                onClick={() => setModalFinalFile(false)}
+                onClick={() => {
+                  setModalFinalFile(false);
+                  setUploadedFiles([]);
+                }}
               >
-                Cancelar
+                Descartar
               </ButtonDefault>
 
               <ButtonDefault typeButton="primary" onClick={() => setToClientConfirmation(true)}>
@@ -2095,7 +2107,7 @@ export default function ViewProductsDeliveries() {
               </ButtonDefault>
 
               <ButtonDefault typeButton="primary" onClick={handleSaveUploadClient}>
-                Salvar
+                Confirmar
               </ButtonDefault>
             </div>
           )}
@@ -2222,78 +2234,113 @@ export default function ViewProductsDeliveries() {
         title="Aprovação do cliente"
       >
         <FileProductsWrapper>
-          <div className="title-list">Selecione os arquivos para o cliente aprovar.</div>
+          {!toClientConfirmation && (
+            <div className="title-list">Selecione os arquivos para o cliente aprovar.</div>
+          )}
 
           <FileProductList>
             {!toClientConfirmation && (
-              <Table>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Checkbox</th>
-                      <th>Produto ID</th>
-                      <th>Nome do arquivo</th>
-                      <th>Tamanho</th>
-                      <th>Data</th>
-                      <th>Detalhes</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {dataTask?.files.map((row: TaskFile) => (
-                      <tr key={row.task_file_id}>
-                        <td>
-                          <CheckboxDefault
-                            label=""
-                            id="subtasks"
-                            checked={
-                              filesToTenantApprove.find(
-                                (obj) => obj.task_file_id === row.task_file_id
-                              )
-                                ? true
-                                : false
-                            }
-                            onChange={() => handleSelectFile(row)}
-                          />
-                        </td>
-                        <td>#{row.task_file_id}</td>
-                        <td>{row.file_name.split('-').pop()}</td>
-                        <td>{row.size}</td>
-                        <td>{row.created}</td>
-                        <td>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <ViewFile
-                              onClick={() =>
-                                setPreviewImage({
-                                  isOpen: true,
-                                  imageInfos: {
-                                    bucket: 'row.bucket',
-                                    created: 'row.created',
-                                    file_name: 'row.file_name',
-                                    key: 'row.key',
-                                    task_file_id: 'row.task_file_id',
-                                    task_id: 'row.task_id',
-                                    size: 'row.size',
-                                    updated: 'row.updated',
-                                    url: 'row.url'
-                                  }
-                                })
-                              }
-                            >
-                              <BiShow size={20} />
-                            </ViewFile>
-
-                            <DownloadIcon onClick={() => downloadFile('nada')}>
-                              <FaDownload />
-                            </DownloadIcon>
-                          </div>
-                        </td>
+              <>
+                <Table>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Checkbox</th>
+                        <th>Produto ID</th>
+                        <th>Nome do arquivo</th>
+                        <th>Tamanho</th>
+                        <th>Data</th>
+                        <th>Detalhes</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </Table>
+                    </thead>
+
+                    <tbody>
+                      {dataTask?.files.map((row: TaskFile) => (
+                        <tr key={row.task_file_id}>
+                          <td>
+                            <CheckboxDefault
+                              label=""
+                              id="subtasks"
+                              checked={
+                                filesToTenantApprove.find(
+                                  (obj) => obj.task_file_id === row.task_file_id
+                                )
+                                  ? true
+                                  : false
+                              }
+                              onChange={() => handleSelectFile(row)}
+                            />
+                          </td>
+                          <td>#{row.task_file_id}</td>
+                          <td>{row.file_name.split('-').pop()}</td>
+                          <td>{row.size}</td>
+                          <td>{moment(row.created).format('DD/MM/YYYY - hh:mm')}h</td>
+                          <td>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              <ViewFile
+                                onClick={() =>
+                                  setPreviewImage({
+                                    isOpen: true,
+                                    imageInfos: {
+                                      bucket: row.bucket,
+                                      created: row.created,
+                                      file_name: row.file_name,
+                                      key: row.key,
+                                      task_file_id: row.task_file_id,
+                                      task_id: row.task_id,
+                                      size: row.size,
+                                      updated: row.updated,
+                                      url: row.url
+                                    }
+                                  })
+                                }
+                              >
+                                <BiShow size={20} />
+                              </ViewFile>
+
+                              <DownloadIcon onClick={() => downloadFile(row)}>
+                                <FaDownload />
+                              </DownloadIcon>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </Table>
+                {previewImage.isOpen &&
+                  previewImage.imageInfos.file_name.split('.').pop() !== 'pdf' && (
+                    <FilePreview
+                      style={{
+                        backgroundImage: `url(https://${previewImage.imageInfos.bucket}.s3.amazonaws.com/${previewImage.imageInfos.key})`
+                      }}
+                    >
+                      <div
+                        className="close-button"
+                        onClick={() =>
+                          setPreviewImage({
+                            isOpen: false,
+                            imageInfos: {
+                              bucket: '',
+                              created: '',
+                              file_name: '',
+                              key: '',
+                              task_file_id: '',
+                              task_id: '',
+                              size: '',
+                              updated: '',
+                              url: ''
+                            }
+                          })
+                        }
+                      >
+                        <MdClose />
+                      </div>
+                    </FilePreview>
+                  )}
+              </>
             )}
+
             {toClientConfirmation && (
               <div className="confirmation">
                 <span>Atenção:</span> <br />
