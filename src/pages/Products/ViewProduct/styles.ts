@@ -304,3 +304,87 @@ export const TextInfo = styled.div`
   font-size: var(--text-small-md);
   font-weight: var(--weight-semibold);
 `;
+
+export const FileProductsWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  margin-top: 24px;
+
+  .title-list {
+    color: var(--title-color);
+    font-size: var(--text-small-md);
+    font-weight: var(--weight-medium);
+  }
+`;
+
+export const FileProductList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  min-width: 900px;
+  margin-top: -20px;
+  margin-left: -20px;
+  margin-right: -20px;
+  margin-bottom: 0;
+
+  table {
+    td {
+      padding: 0.5rem 1rem;
+    }
+  }
+
+  .confirmation {
+    color: var(--title-color);
+    font-size: var(--text-small-lg);
+    font-weight: var(--weight-semibold);
+    padding: 24px;
+
+    span {
+      color: var(--Warning);
+    }
+  }
+`;
+
+export const FilePreview = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 450px;
+  height: 270px;
+
+  margin: 0 auto;
+
+  border-radius: 12px;
+
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+
+  position: relative;
+
+  .close-button {
+    width: 20px;
+    height: 20px;
+    transition: all 0.3s;
+    cursor: pointer;
+
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-top: -20px;
+    margin-right: -30px;
+
+    svg {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--gray-500);
+    }
+
+    &:hover {
+      transform: scale(1.3);
+    }
+  }
+`;

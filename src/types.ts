@@ -266,3 +266,19 @@ export interface StepTimeline {
   ticket_status_id: string;
   tenant_id: string;
 }
+
+export interface TaskFile {
+  bucket: string;
+  created: string;
+  file_name: string;
+  key: string;
+  last_archive: string;
+  products_delivery_id: string;
+  size: string;
+  status: string;
+  task_file_id: string;
+  task_id: string;
+  ticket_interaction_id: string;
+  updated: string;
+  url: string;
+}
