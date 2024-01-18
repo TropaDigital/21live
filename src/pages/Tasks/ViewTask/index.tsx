@@ -59,7 +59,6 @@ import { useToast } from '../../../hooks/toast';
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 import { StepTimeline, TaskHistoryProps } from '../../../types';
 import Loader from '../../../components/LoaderSpin';
-import { MotiveBtn } from '../../../components/Ui/ProductTable/styles';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -739,6 +738,7 @@ export default function ViewTask() {
               returnReasons={dataTask?.reason_return}
               timelineData={timeLineData}
               updateInfos={() => ''}
+              allProducts={dataTask.deliverys[0].products}
             />
           )}
 
