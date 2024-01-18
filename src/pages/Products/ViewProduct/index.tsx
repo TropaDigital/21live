@@ -1906,6 +1906,7 @@ export default function ViewProductsDeliveries() {
               goBack={() => setViewProduct(false)}
               returnReasons={dataTask?.reason_return}
               updateInfos={getTaskInfos}
+              allProducts={dataProducts.products}
             />
           )}
         </DeliveryWrapper>
