@@ -226,6 +226,12 @@ export const TimelineInfo = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
+  width: 90%;
+  cursor: default;
+
+  position: relative;
+
+  font-size: var(--text-small-sm);
 
   font-size: var(--text-small-sm);
 
@@ -237,6 +243,30 @@ export const TimelineInfo = styled.div`
   .timeline-info {
     color: var(--gray-900);
     font-weight: var(--weight-medium);
+  }
+`;
+
+export const TimelineExtraInfo = styled.div`
+  display: flex;
+  align-items: center;
+
+  padding: 6px;
+  background-color: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  opacity: 0;
+
+  position: absolute;
+  top: -10px;
+  left: 0;
+  margin-top: 15px;
+  margin-left: -5px;
+
+  transition: all 0.3s;
+
+  ${TimelineInfo}:hover & {
+    opacity: 1;
+    top: 5px;
   }
 `;
 

@@ -72,7 +72,7 @@ import { useToast } from '../../../hooks/toast';
 import { useStopWatch } from '../../../hooks/stopWatch';
 
 // Types
-import { StepTimeline, TaskFile, UploadedFilesProps } from '../../../types';
+import { StepTimeline, TaskFile, TaskHistoryProps, UploadedFilesProps } from '../../../types';
 
 // Utils
 import { UsersNoSchedule } from '../../../utils/models';
@@ -134,6 +134,7 @@ export default function ViewProductsDeliveries() {
   const [modalTenantApprove, setModalTenantApprove] = useState<boolean>(false);
   const [filesToTenantApprove, setFilesToTenantApprove] = useState<TaskFile[]>([]);
   const [showClock, setShowClock] = useState<boolean>(false);
+  const [taskHistory, setTaskHistory] = useState<TaskHistoryProps[]>();
 
   const [previewImage, setPreviewImage] = useState({
     isOpen: false,
@@ -392,7 +393,21 @@ export default function ViewProductsDeliveries() {
       }
     }
 
+    async function getTaskHistory() {
+      try {
+        setLoading(true);
+        const response = await api.get(`/task/historic/${id}`);
+        setTaskHistory(response.data.result);
+
+        setLoading(false);
+      } catch (error: any) {
+        console.log('log timeline error', error);
+        setLoading(false);
+      }
+    }
+
     getTimelineData();
+    getTaskHistory();
   }, [dataTask]);
 
   useEffect(() => {
@@ -1712,14 +1727,15 @@ export default function ViewProductsDeliveries() {
               <RightInfosTitle>Linha do tempo</RightInfosTitle>
               {!hideTimeLine &&
                 timeLineData &&
-                timeLineData?.steps.map((row: StepTimeline, index: number) => (
+                taskHistory &&
+                taskHistory.map((row: TaskHistoryProps, index: number) => (
                   <TimelineStep key={index}>
                     <TimeLineIcon className={row.step <= timeLineData.currentStep ? 'checked' : ''}>
-                      {Number(row.step) >= Number(timeLineData.currentStep) && (
-                        <div className="dot"></div>
-                      )}
+                      {Number(row.step) >= Number(timeLineData.currentStep) &&
+                        dataTask?.status !== 'Concluida' && <div className="dot"></div>}
 
-                      {Number(row.step) < Number(timeLineData.currentStep) && <IconBigCheck />}
+                      {(Number(row.step) < Number(timeLineData.currentStep) ||
+                        dataTask?.status === 'Concluida') && <IconBigCheck />}
                     </TimeLineIcon>
                     <TimelineInfo>
                       {/* {row.step < timeLineData.currentStep && (
@@ -1732,9 +1748,19 @@ export default function ViewProductsDeliveries() {
                         <div className="info-title">Próxima etapa:</div>
                       )} */}
                       <div className="timeline-info">{row.name} - </div>
-                      <div className="info-title">17/01/2024</div>
+                      <div className="info-title">
+                        {row.time_line.length > 0
+                          ? moment(row.time_line[0]?.created).format('DD/MM/YYYY')
+                          : ''}
+                      </div>
 
-                      <TimelineExtraInfo>Concluído por: Danilo</TimelineExtraInfo>
+                      {row.time_line.length > 0 ? (
+                        <TimelineExtraInfo>
+                          Concluído por: {row.time_line[0].name}
+                        </TimelineExtraInfo>
+                      ) : (
+                        ''
+                      )}
                     </TimelineInfo>
                   </TimelineStep>
                 ))}
