@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 // Icons
 import { FaArrowLeft, FaChevronDown, FaChevronUp } from 'react-icons/fa';
-import { BsChevronDoubleRight } from 'react-icons/bs';
+import { BsChatText, BsChevronDoubleRight } from 'react-icons/bs';
 import { IconBigCheck } from '../../../assets/icons';
 import { BiArrowBack } from 'react-icons/bi';
 import { FiCornerDownRight } from 'react-icons/fi';
@@ -41,7 +41,8 @@ import {
   DeliveriesWrapper,
   TableWrapper,
   StatusTask,
-  DeliveriesTopWrapper
+  DeliveriesTopWrapper,
+  TimelineExtraInfo
 } from './styles';
 
 // Services
@@ -56,8 +57,9 @@ import { useToast } from '../../../hooks/toast';
 
 // Utils
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
-import { StepTimeline } from '../../../types';
+import { StepTimeline, TaskHistoryProps } from '../../../types';
 import Loader from '../../../components/LoaderSpin';
+import { MotiveBtn } from '../../../components/Ui/ProductTable/styles';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -118,6 +120,7 @@ export default function ViewTask() {
   const [deliveryProduct, setDeliveryProduct] = useState<ProductsProps[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<any>('');
   const [visualizationType, setVisualizationType] = useState<string>('deliveries');
+  const [taskHistory, setTaskHistory] = useState<TaskHistoryProps[]>();
 
   const titleInfos = {
     idNumber: dataTask?.task_id,
@@ -155,6 +158,11 @@ export default function ViewTask() {
           setDataTask(response.data.result[0]);
         }
 
+        if (response.data.result[0].deliverys.length === 1) {
+          setVisualizationType('delivery-products');
+          setDeliveryProduct(response.data.result[0].deliverys[0].products);
+        }
+
         if (response.data.result[0].parents?.length > 0) {
           setVisualizationType('subtasks');
         }
@@ -171,6 +179,19 @@ export default function ViewTask() {
       }
     }
 
+    async function getTaskHistory() {
+      try {
+        setLoading(true);
+        const response = await api.get(`/task/historic/${location.state.id}`);
+        setTaskHistory(response.data.result);
+
+        setLoading(false);
+      } catch (error: any) {
+        console.log('log timeline error', error);
+        setLoading(false);
+      }
+    }
+
     if (location.state !== null) {
       getTimelineData(location.state.id);
       getTaskInfos(location.state.id);
@@ -179,6 +200,8 @@ export default function ViewTask() {
       getTaskInfos(location.pathname.split('/')[2]);
       getTimelineData(location.pathname.split('/')[2]);
     }
+
+    getTaskHistory();
   }, [location]);
 
   useEffect(() => {
@@ -188,6 +211,9 @@ export default function ViewTask() {
   }, [visualizationType]);
 
   const handleNavigateProduct = (infoProduct: any) => {
+    if (infoProduct.status === 'Desmembrada') {
+      handleNavigateTask(dataTask.parents[0].task_id);
+    }
     const taskCompleteInfo = {
       productInfo: infoProduct,
       taskInfos: dataTask
@@ -600,11 +626,12 @@ export default function ViewTask() {
             <DeliveriesWrapper>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <span className="title-info">Produtos</span>
-
-                <button className="go-back" onClick={() => setVisualizationType('deliveries')}>
-                  <BiArrowBack />
-                  Voltar para entregas
-                </button>
+                {dataTask.deliverys.length > 1 && (
+                  <button className="go-back" onClick={() => setVisualizationType('deliveries')}>
+                    <BiArrowBack />
+                    Voltar para entregas
+                  </button>
+                )}
               </div>
 
               <TableWrapper>
@@ -617,7 +644,7 @@ export default function ViewTask() {
                         <th>Descrição</th>
                         <th>Formato</th>
                         <th>Tipo</th>
-                        <th>I/D</th>
+                        <th>Status</th>
                         <th>Tempo consumido</th>
                         <th>Tempo estimado</th>
                       </tr>
@@ -632,6 +659,7 @@ export default function ViewTask() {
                             setVisualizationType('product');
                           }}
                           style={{ cursor: 'pointer' }}
+                          className={row.status === 'Desmembrada' ? 'reject' : ''}
                         >
                           <td>#{String(row.products_delivery_id).padStart(2, '0')}</td>
                           <td>{row.service}</td>
@@ -648,7 +676,36 @@ export default function ViewTask() {
                               ? 'Alteração Interna'
                               : 'Alteração externa'}
                           </td>
-                          <td>{row.type}</td>
+                          <td>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                              <div
+                                className={
+                                  row.status === 'Em Andamento'
+                                    ? 'status progress'
+                                    : row.status === 'Concluida'
+                                    ? 'status finished'
+                                    : row.status === 'Desmembrada'
+                                    ? 'status break'
+                                    : 'status'
+                                }
+                              >
+                                {row.status === 'Em Andamento'
+                                  ? 'Em progresso'
+                                  : row.status === 'Concluida'
+                                  ? 'Concluída'
+                                  : row.status === 'Aguardando Aprovação'
+                                  ? 'Aguardando Aprovação'
+                                  : row.status === 'Desmembrada'
+                                  ? 'Reprovado'
+                                  : 'Pendente'}
+                              </div>
+                              {/* {row.status === 'Desmembrada' && (
+                                <MotiveBtn onClick={() => ''}>
+                                  <BsChatText size={20} />
+                                </MotiveBtn>
+                              )} */}
+                            </div>
+                          </td>
                           <td>
                             <span style={{ marginBottom: '4px', display: 'block' }}>
                               {row.minutes_consumed}
@@ -694,7 +751,8 @@ export default function ViewTask() {
               <RightInfosTitle>Linha do tempo</RightInfosTitle>
               {!hideTimeLine &&
                 timeLineData &&
-                timeLineData?.steps.map((row: StepTimeline, index: number) => (
+                taskHistory &&
+                taskHistory.map((row: TaskHistoryProps, index: number) => (
                   <TimelineStep key={index}>
                     <TimeLineIcon className={row.step <= timeLineData.currentStep ? 'checked' : ''}>
                       {Number(row.step) >= Number(timeLineData.currentStep) &&
@@ -706,7 +764,7 @@ export default function ViewTask() {
                       {dataTask?.status === 'Concluida' && <IconBigCheck />}
                     </TimeLineIcon>
                     <TimelineInfo>
-                      {row.step < timeLineData.currentStep && (
+                      {/* {row.step < timeLineData.currentStep && (
                         <div className="info-title">Etapa anterior:</div>
                       )}
                       {row.step === timeLineData.currentStep && (
@@ -714,8 +772,21 @@ export default function ViewTask() {
                       )}
                       {row.step > timeLineData.currentStep && (
                         <div className="info-title">Próxima etapa:</div>
+                      )} */}
+                      <div className="timeline-info">{row.name} - </div>
+                      <div className="info-title">
+                        {row.time_line.length > 0
+                          ? moment(row.time_line[0]?.created).format('DD/MM/YYYY')
+                          : ''}
+                      </div>
+
+                      {row.time_line.length > 0 ? (
+                        <TimelineExtraInfo>
+                          Concluído por: {row.time_line[0].name}
+                        </TimelineExtraInfo>
+                      ) : (
+                        ''
                       )}
-                      <div className="timeline-info">{row.name}</div>
                     </TimelineInfo>
                   </TimelineStep>
                 ))}
