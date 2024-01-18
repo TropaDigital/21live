@@ -1453,7 +1453,7 @@ export default function ViewProductsDeliveries() {
               last_archive: 'true',
               products_delivery_id: imageUrl.products_delivery_id
             };
-            const response = await api.post(`/task/upload`, uploadInfos);
+            const response = await api.put(`/task/upload`, uploadInfos);
 
             if (response.data.status === 'success') {
               handleConcludeTask();
