@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 // Icons
@@ -24,7 +24,13 @@ import UploadFinalFiles from '../../../components/Upload/UploadFiles';
 import UploadFilesTicket from '../../../components/UploadTicket/UploadFilex';
 import { UsersWrapper } from '../../Tasks/CreateTasks/styles';
 import { ProductsTable } from '../../Tasks/ComponentSteps/InfoDeliverables/styles';
-import { ModalButtons } from '../../Tasks/ViewTask/styles';
+import {
+  CardTitle,
+  CardWrapper,
+  EstimatedTime,
+  ModalButtons,
+  StopWatchTimer
+} from '../../Tasks/ViewTask/styles';
 import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
 import { SelectDefault } from '../../../components/Inputs/SelectDefault';
 import { TextAreaDefault } from '../../../components/Inputs/TextAreaDefault';
@@ -49,6 +55,7 @@ import {
   TextInfo,
   TimeLine,
   TimeLineIcon,
+  TimelineExtraInfo,
   TimelineInfo,
   TimelineStep
 } from './styles';
@@ -126,6 +133,7 @@ export default function ViewProductsDeliveries() {
   const [modalDismemberment, setModalDismemberment] = useState<boolean>(false);
   const [modalTenantApprove, setModalTenantApprove] = useState<boolean>(false);
   const [filesToTenantApprove, setFilesToTenantApprove] = useState<TaskFile[]>([]);
+  const [showClock, setShowClock] = useState<boolean>(false);
 
   const [previewImage, setPreviewImage] = useState({
     isOpen: false,
@@ -201,6 +209,24 @@ export default function ViewProductsDeliveries() {
   const hasDismemberedProduct = dataTask?.deliverys.some(hasDismemberedProductInDeliveries);
 
   const hasToDismemberTask = dataTask?.files?.some((obj: any) => obj.status === 'fail');
+
+  const fetchClockInfo = useCallback(async () => {
+    try {
+      const response = await api.get(`/clock/verify`);
+      if (response.data.result.show_hours === 'true') {
+        setShowClock(true);
+      }
+      if (response.data.result.show_hours === 'false') {
+        setShowClock(false);
+      }
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+    }
+  }, [showClock]);
+
+  useEffect(() => {
+    fetchClockInfo();
+  }, [fetchClockInfo]);
 
   useEffect(() => {
     // console.log('log do params =>', id);
@@ -1696,7 +1722,7 @@ export default function ViewProductsDeliveries() {
                       {Number(row.step) < Number(timeLineData.currentStep) && <IconBigCheck />}
                     </TimeLineIcon>
                     <TimelineInfo>
-                      {row.step < timeLineData.currentStep && (
+                      {/* {row.step < timeLineData.currentStep && (
                         <div className="info-title">Etapa anterior:</div>
                       )}
                       {row.step === timeLineData.currentStep && (
@@ -1704,8 +1730,11 @@ export default function ViewProductsDeliveries() {
                       )}
                       {row.step > timeLineData.currentStep && (
                         <div className="info-title">Próxima etapa:</div>
-                      )}
-                      <div className="timeline-info">{row.name}</div>
+                      )} */}
+                      <div className="timeline-info">{row.name} - </div>
+                      <div className="info-title">17/01/2024</div>
+
+                      <TimelineExtraInfo>Concluído por: Danilo</TimelineExtraInfo>
                     </TimelineInfo>
                   </TimelineStep>
                 ))}
@@ -1776,25 +1805,36 @@ export default function ViewProductsDeliveries() {
 
           <CardsWrapper>
             {dataTask?.status === 'Concluida' && (
-              <CardTaskPlay
-                cardTitle="Atividade concluída"
-                dataTime={data ? data?.estimatedTime : ''}
-                blockPlay={true}
-                handlePlay={() => ''}
-              />
+              <CardWrapper>
+                <CardTitle>Atividade concluída</CardTitle>
+                <StopWatchTimer className="stopped">{dataTask?.time_consumed}</StopWatchTimer>
+                <EstimatedTime>
+                  Tempo estimado:{' '}
+                  <span>
+                    {dataTask?.total_time !== 'undefined' ? dataTask?.total_time : 'Livre'}
+                  </span>
+                </EstimatedTime>
+              </CardWrapper>
             )}
 
-            {dataTask?.status !== 'Concluida' && (
+            {dataTask?.status !== 'Concluida' && !showClock && (
+              <CardWrapper>
+                <CardTitle>Tempo utilizado</CardTitle>
+                <StopWatchTimer className="stopped">{dataTask?.time_consumed}</StopWatchTimer>
+                <EstimatedTime>
+                  Tempo estimado:{' '}
+                  <span>
+                    {dataTask?.total_time !== 'undefined' ? dataTask?.total_time : 'Livre'}
+                  </span>
+                </EstimatedTime>
+              </CardWrapper>
+            )}
+
+            {dataTask?.status !== 'Concluida' && showClock && (
               <CardTaskPlay
                 cardTitle={state.isRunning ? 'Atividade iniciada' : 'Iniciar atividade'}
                 dataTime={data ? data?.estimatedTime : '00:00:00'}
-                blockPlay={
-                  typeOfPlay === 'schedule' && viewProduct
-                    ? true
-                    : typeOfPlay === 'product' && !viewProduct
-                    ? true
-                    : false
-                }
+                blockPlay={typeOfPlay === 'product' && !viewProduct ? true : false}
                 handlePlay={handlePlayingType}
               />
             )}
