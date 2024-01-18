@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react';
 
 // Icons
-import { BiFilter, BiPencil, BiSearchAlt } from 'react-icons/bi';
+import { BiPencil, BiSearchAlt } from 'react-icons/bi';
 import { FiFlag } from 'react-icons/fi';
 import { IconContext } from 'react-icons';
 import { IconText } from '../../../assets/icons';
@@ -52,7 +52,6 @@ export default function TaskTable({
   loading,
   searchInput,
   searchInfo,
-  addFilter,
   taskSelected,
   pages,
   pageSelected
@@ -213,6 +212,8 @@ export default function TaskTable({
                           ? 'Alteração externa'
                           : task.status === 'Parcial'
                           ? 'Parcial'
+                          : row.status === 'Avaliada'
+                          ? 'Avaliada'
                           : 'Pendente'}
                       </div>
                     </td>

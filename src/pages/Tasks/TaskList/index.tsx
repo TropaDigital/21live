@@ -418,6 +418,8 @@ export default function TaskList() {
                           ? 'Alteração externa'
                           : row.status === 'Parcial'
                           ? 'Parcial'
+                          : row.status === 'Avaliada'
+                          ? 'Avaliada'
                           : 'Pendente'}
                       </StatusTable>
                     </td>
