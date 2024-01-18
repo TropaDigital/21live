@@ -17,15 +17,12 @@ export const TotalInfosProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response1 = await api.get('/ticket');
-        const data1 = response1.data.pagination.total;
-
-        const response2 = await api.get('/my-tasks');
-        const data2 = await response2.data.pagination.total;
+        const response = await api.get('/notification');
+        const data = response.data.result;
 
         setInfos({
-          requestsTotal: data1,
-          tasksTotal: data2
+          requestsTotal: data.ticket_notifications,
+          tasksTotal: data.task_notifications
         });
       } catch (error) {
         console.error('Error fetching data:', error);

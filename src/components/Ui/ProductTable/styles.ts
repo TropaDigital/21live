@@ -200,3 +200,22 @@ export const ProductsTable = styled.div`
     }
   } */
 `;
+
+export const MotiveBtn = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const MotiveInfos = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+
+  gap: 24px;
+  padding-top: 24px;
+
+  .buttons {
+    align-self: flex-end;
+  }
+`;

@@ -1,6 +1,4 @@
-// React
-import { useState, useEffect } from 'react';
-
+// Styles
 import {
   CardTitle,
   CardWrapper,
@@ -9,9 +7,15 @@ import {
   PlayTimer,
   StopWatchTimer
 } from './styles';
+
+// Icons
 import { IconPlay } from '../../assets/icons';
 import { IoMdPause } from 'react-icons/io';
+
+// Utils
 import formatTime from '../../utils/convertSecondsToHours';
+
+// Hooks
 import { useStopWatch } from '../../hooks/stopWatch';
 import { useToast } from '../../hooks/toast';
 
@@ -92,7 +96,7 @@ export default function CardTaskPlay({
       start();
       handlePlay('play');
     }
-    if (value === 'stop' && !blockPlay) {
+    if (value === 'stop') {
       stop();
       handlePlay('stop');
     }

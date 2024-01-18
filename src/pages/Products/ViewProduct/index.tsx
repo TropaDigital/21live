@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 // Icons
@@ -24,7 +24,13 @@ import UploadFinalFiles from '../../../components/Upload/UploadFiles';
 import UploadFilesTicket from '../../../components/UploadTicket/UploadFilex';
 import { UsersWrapper } from '../../Tasks/CreateTasks/styles';
 import { ProductsTable } from '../../Tasks/ComponentSteps/InfoDeliverables/styles';
-import { ModalButtons } from '../../Tasks/ViewTask/styles';
+import {
+  CardTitle,
+  CardWrapper,
+  EstimatedTime,
+  ModalButtons,
+  StopWatchTimer
+} from '../../Tasks/ViewTask/styles';
 import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
 import { SelectDefault } from '../../../components/Inputs/SelectDefault';
 import { TextAreaDefault } from '../../../components/Inputs/TextAreaDefault';
@@ -49,6 +55,7 @@ import {
   TextInfo,
   TimeLine,
   TimeLineIcon,
+  TimelineExtraInfo,
   TimelineInfo,
   TimelineStep
 } from './styles';
@@ -65,7 +72,7 @@ import { useToast } from '../../../hooks/toast';
 import { useStopWatch } from '../../../hooks/stopWatch';
 
 // Types
-import { StepTimeline, TaskFile, UploadedFilesProps } from '../../../types';
+import { StepTimeline, TaskFile, TaskHistoryProps, UploadedFilesProps } from '../../../types';
 
 // Utils
 import { UsersNoSchedule } from '../../../utils/models';
@@ -126,6 +133,8 @@ export default function ViewProductsDeliveries() {
   const [modalDismemberment, setModalDismemberment] = useState<boolean>(false);
   const [modalTenantApprove, setModalTenantApprove] = useState<boolean>(false);
   const [filesToTenantApprove, setFilesToTenantApprove] = useState<TaskFile[]>([]);
+  const [showClock, setShowClock] = useState<boolean>(false);
+  const [taskHistory, setTaskHistory] = useState<TaskHistoryProps[]>();
 
   const [previewImage, setPreviewImage] = useState({
     isOpen: false,
@@ -201,6 +210,24 @@ export default function ViewProductsDeliveries() {
   const hasDismemberedProduct = dataTask?.deliverys.some(hasDismemberedProductInDeliveries);
 
   const hasToDismemberTask = dataTask?.files?.some((obj: any) => obj.status === 'fail');
+
+  const fetchClockInfo = useCallback(async () => {
+    try {
+      const response = await api.get(`/clock/verify`);
+      if (response.data.result.show_hours === 'true') {
+        setShowClock(true);
+      }
+      if (response.data.result.show_hours === 'false') {
+        setShowClock(false);
+      }
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+    }
+  }, [showClock]);
+
+  useEffect(() => {
+    fetchClockInfo();
+  }, [fetchClockInfo]);
 
   useEffect(() => {
     // console.log('log do params =>', id);
@@ -366,7 +393,21 @@ export default function ViewProductsDeliveries() {
       }
     }
 
+    async function getTaskHistory() {
+      try {
+        setLoading(true);
+        const response = await api.get(`/task/historic/${id}`);
+        setTaskHistory(response.data.result);
+
+        setLoading(false);
+      } catch (error: any) {
+        console.log('log timeline error', error);
+        setLoading(false);
+      }
+    }
+
     getTimelineData();
+    getTaskHistory();
   }, [dataTask]);
 
   useEffect(() => {
@@ -1686,17 +1727,18 @@ export default function ViewProductsDeliveries() {
               <RightInfosTitle>Linha do tempo</RightInfosTitle>
               {!hideTimeLine &&
                 timeLineData &&
-                timeLineData?.steps.map((row: StepTimeline, index: number) => (
+                taskHistory &&
+                taskHistory.map((row: TaskHistoryProps, index: number) => (
                   <TimelineStep key={index}>
                     <TimeLineIcon className={row.step <= timeLineData.currentStep ? 'checked' : ''}>
-                      {Number(row.step) >= Number(timeLineData.currentStep) && (
-                        <div className="dot"></div>
-                      )}
+                      {Number(row.step) >= Number(timeLineData.currentStep) &&
+                        dataTask?.status !== 'Concluida' && <div className="dot"></div>}
 
-                      {Number(row.step) < Number(timeLineData.currentStep) && <IconBigCheck />}
+                      {(Number(row.step) < Number(timeLineData.currentStep) ||
+                        dataTask?.status === 'Concluida') && <IconBigCheck />}
                     </TimeLineIcon>
                     <TimelineInfo>
-                      {row.step < timeLineData.currentStep && (
+                      {/* {row.step < timeLineData.currentStep && (
                         <div className="info-title">Etapa anterior:</div>
                       )}
                       {row.step === timeLineData.currentStep && (
@@ -1704,8 +1746,21 @@ export default function ViewProductsDeliveries() {
                       )}
                       {row.step > timeLineData.currentStep && (
                         <div className="info-title">Próxima etapa:</div>
+                      )} */}
+                      <div className="timeline-info">{row.name} - </div>
+                      <div className="info-title">
+                        {row.time_line.length > 0
+                          ? moment(row.time_line[0]?.created).format('DD/MM/YYYY')
+                          : ''}
+                      </div>
+
+                      {row.time_line.length > 0 ? (
+                        <TimelineExtraInfo>
+                          Concluído por: {row.time_line[0].name}
+                        </TimelineExtraInfo>
+                      ) : (
+                        ''
                       )}
-                      <div className="timeline-info">{row.name}</div>
                     </TimelineInfo>
                   </TimelineStep>
                 ))}
@@ -1776,25 +1831,36 @@ export default function ViewProductsDeliveries() {
 
           <CardsWrapper>
             {dataTask?.status === 'Concluida' && (
-              <CardTaskPlay
-                cardTitle="Atividade concluída"
-                dataTime={data ? data?.estimatedTime : ''}
-                blockPlay={true}
-                handlePlay={() => ''}
-              />
+              <CardWrapper>
+                <CardTitle>Atividade concluída</CardTitle>
+                <StopWatchTimer className="stopped">{dataTask?.time_consumed}</StopWatchTimer>
+                <EstimatedTime>
+                  Tempo estimado:{' '}
+                  <span>
+                    {dataTask?.total_time !== 'undefined' ? dataTask?.total_time : 'Livre'}
+                  </span>
+                </EstimatedTime>
+              </CardWrapper>
             )}
 
-            {dataTask?.status !== 'Concluida' && (
+            {dataTask?.status !== 'Concluida' && !showClock && (
+              <CardWrapper>
+                <CardTitle>Tempo utilizado</CardTitle>
+                <StopWatchTimer className="stopped">{dataTask?.time_consumed}</StopWatchTimer>
+                <EstimatedTime>
+                  Tempo estimado:{' '}
+                  <span>
+                    {dataTask?.total_time !== 'undefined' ? dataTask?.total_time : 'Livre'}
+                  </span>
+                </EstimatedTime>
+              </CardWrapper>
+            )}
+
+            {dataTask?.status !== 'Concluida' && showClock && (
               <CardTaskPlay
                 cardTitle={state.isRunning ? 'Atividade iniciada' : 'Iniciar atividade'}
                 dataTime={data ? data?.estimatedTime : '00:00:00'}
-                blockPlay={
-                  typeOfPlay === 'schedule' && viewProduct
-                    ? true
-                    : typeOfPlay === 'product' && !viewProduct
-                    ? true
-                    : false
-                }
+                blockPlay={typeOfPlay === 'product' && !viewProduct ? true : false}
                 handlePlay={handlePlayingType}
               />
             )}
