@@ -84,6 +84,7 @@ import { formatBytes } from '../../../utils/convertBytes';
 
 // types
 import { StepTimeline, UploadedFilesProps } from '../../../types';
+import { MotiveInfos } from '../../../components/Ui/ProductTable/styles';
 
 interface WorkingProductProps {
   productDeliveryId?: any;
@@ -102,6 +103,7 @@ interface WorkingProductProps {
   updateInfos: () => void;
   timelineData?: TimelineProps;
   returnReasons?: ReturnReasons[];
+  allProducts?: any;
 }
 
 interface ReturnReasons {
@@ -196,6 +198,7 @@ export default function WorkingProduct({
   timelineData,
   ticket_id,
   returnReasons,
+  allProducts,
   toApprove,
   goBack,
   updateInfos
@@ -226,7 +229,10 @@ export default function WorkingProduct({
     disapprove: false
   });
   const [toClientConfirmation, setToClientConfirmation] = useState<boolean>(false);
-  const [modalRejectedInfo, setModalRejectedInfo] = useState<boolean>(false);
+  const [modalRejectedInfo, setModalRejectedInfo] = useState<any>({
+    isOpen: false,
+    motive: ''
+  });
 
   const [previewImage, setPreviewImage] = useState({
     isOpen: false,
@@ -242,6 +248,10 @@ export default function WorkingProduct({
       url: ''
     }
   });
+
+  const motiveReject = allProducts.filter(
+    (obj: any) => obj.products_delivery_id === modalRejectedInfo.motive
+  );
 
   useEffect(() => {
     getParams();
@@ -673,7 +683,10 @@ export default function WorkingProduct({
     // console.log('log do final card =>', finalCard);
     // console.log('log do upload client =>', uploadClient);
     // console.log('log do isToApprove =>', isToApprove);
-  }, [finalCard, uploadClient, isToApprove, ticket_id]);
+    // console.log('log do isToApprove =>', isToApprove);
+    console.log('log allProducts =>', allProducts);
+    console.log('log do motiveRejects =>', motiveReject);
+  }, [finalCard, uploadClient, isToApprove, ticket_id, allProducts, motiveReject]);
 
   return (
     <ContainerDefault>
@@ -1068,7 +1081,14 @@ export default function WorkingProduct({
                         <td>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             {row.status === 'fail' && (
-                              <InfoFile onClick={() => setModalRejectedInfo(true)}>
+                              <InfoFile
+                                onClick={() =>
+                                  setModalRejectedInfo({
+                                    isOpen: true,
+                                    motive: row.products_delivery_id
+                                  })
+                                }
+                              >
                                 <BsChatText size={20} />
                               </InfoFile>
                             )}
@@ -1441,10 +1461,18 @@ export default function WorkingProduct({
       </ModalDefault>
 
       {/* Modal rejected info */}
-      <ModalDefault isOpen={modalRejectedInfo} onOpenChange={() => setModalRejectedInfo(false)}>
-        <div>
-          <p>Rejeitado e seu motivo</p>
-        </div>
+      <ModalDefault
+        isOpen={modalRejectedInfo.isOpen}
+        onOpenChange={() => setModalRejectedInfo({ isOpen: false })}
+        title="Motivo da reprovação"
+      >
+        <MotiveInfos>
+          <div dangerouslySetInnerHTML={{ __html: motiveReject[0]?.fail_reason }} />
+
+          <div className="buttons" onClick={() => setModalRejectedInfo({ isOpen: false })}>
+            <ButtonDefault typeButton="primary">Fechar</ButtonDefault>
+          </div>
+        </MotiveInfos>
       </ModalDefault>
     </ContainerDefault>
   );
