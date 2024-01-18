@@ -137,7 +137,7 @@ export const TasksTable = styled.div`
       justify-content: center;
       align-items: center;
 
-      margin: 0 auto;
+      /* margin: 0 auto; */
       padding: 4px 8px;
       width: fit-content;
       border-radius: 35px;
@@ -156,9 +156,20 @@ export const TasksTable = styled.div`
         color: var(--secundary-700);
         background: var(--secundary-100);
       }
+
+      &.break {
+        color: var(--error-600);
+        background: var(--error-100);
+      }
     }
 
     tbody > tr {
+      &.reject {
+        td {
+          background-color: var(--gray-200);
+        }
+      }
+
       &:hover {
         td {
           background-color: var(--primary-025);
