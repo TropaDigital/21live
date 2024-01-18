@@ -9,6 +9,8 @@ import { BiPencil } from 'react-icons/bi';
 
 // Styles
 import {
+  MotiveBtn,
+  MotiveInfos,
   ProductContainer,
   ProductDate,
   ProductSelect,
@@ -29,6 +31,9 @@ import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 // Hooks
 import { useAuth } from '../../../hooks/AuthContext';
 import { FaUpload } from 'react-icons/fa';
+import { BsChatText } from 'react-icons/bs';
+import ModalDefault from '../ModalDefault';
+import ButtonDefault from '../../Buttons/ButtonDefault';
 
 // interface Product {
 //   id: string;
@@ -70,6 +75,10 @@ export default function ProductTable({
 }: ProductTableProps) {
   const { user } = useAuth();
   const [workFor, setWorkFor] = useState<string>('schedule');
+  const [motiveModal, setMotiveModal] = useState<any>({
+    isOpen: false,
+    motive: ''
+  });
   // const workStatus = workFor === 'product' ? true : false;
 
   useEffect(() => {
@@ -246,26 +255,35 @@ export default function ProductTable({
                     : 'Alteração externa'}
                 </td>
                 <td>
-                  <div
-                    className={
-                      row.status === 'Em Andamento'
-                        ? 'status progress'
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div
+                      className={
+                        row.status === 'Em Andamento'
+                          ? 'status progress'
+                          : row.status === 'Concluida'
+                          ? 'status finished'
+                          : row.status === 'Desmembrada'
+                          ? 'status break'
+                          : 'status'
+                      }
+                    >
+                      {row.status === 'Em Andamento'
+                        ? 'Em progresso'
                         : row.status === 'Concluida'
-                        ? 'status finished'
+                        ? 'Concluída'
+                        : row.status === 'Aguardando Aprovação'
+                        ? 'Aguardando Aprovação'
                         : row.status === 'Desmembrada'
-                        ? 'status break'
-                        : 'status'
-                    }
-                  >
-                    {row.status === 'Em Andamento'
-                      ? 'Em progresso'
-                      : row.status === 'Concluida'
-                      ? 'Concluída'
-                      : row.status === 'Aguardando Aprovação'
-                      ? 'Aguardando Aprovação'
-                      : row.status === 'Desmembrada'
-                      ? 'Reprovado'
-                      : 'Pendente'}
+                        ? 'Reprovado'
+                        : 'Pendente'}
+                    </div>
+                    {row.status === 'Desmembrada' && (
+                      <MotiveBtn
+                        onClick={() => setMotiveModal({ isOpen: true, motive: row.fail_reason })}
+                      >
+                        <BsChatText size={20} />
+                      </MotiveBtn>
+                    )}
                   </div>
                 </td>
                 {uploadEnabled && row.status !== 'Desmembrada' && row.status !== 'Concluida' && (
@@ -287,6 +305,20 @@ export default function ProductTable({
           ))}
         </table>
       </ProductsTable>
+
+      <ModalDefault
+        isOpen={motiveModal.isOpen}
+        onOpenChange={() => setMotiveModal({ isOpen: false, motive: '' })}
+        title="Motivo da reprovação"
+      >
+        <MotiveInfos>
+          <div dangerouslySetInnerHTML={{ __html: motiveModal.motive }} />
+
+          <div className="buttons" onClick={() => setMotiveModal({ isOpen: false, motive: '' })}>
+            <ButtonDefault typeButton="primary">Fechar</ButtonDefault>
+          </div>
+        </MotiveInfos>
+      </ModalDefault>
     </ProductContainer>
   );
 }
