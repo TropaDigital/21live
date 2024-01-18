@@ -1376,7 +1376,7 @@ export default function ViewProductsDeliveries() {
               size: responseFile.data.result.size,
               key: responseFile.data.result.key,
               bucket: responseFile.data.result.bucket,
-              products_delivery_id: productForUpload.products_delivery_id
+              products_delivery_id: imageUrl.products_delivery_id
             };
             const response = await api.put(`/task/upload-tenant-approve`, uploadInfos);
 
@@ -1451,7 +1451,7 @@ export default function ViewProductsDeliveries() {
               key: responseFile.data.result.key,
               bucket: responseFile.data.result.bucket,
               last_archive: 'true',
-              products_delivery_id: productForUpload.products_delivery_id
+              products_delivery_id: imageUrl.products_delivery_id
             };
             const response = await api.post(`/task/upload`, uploadInfos);
 
