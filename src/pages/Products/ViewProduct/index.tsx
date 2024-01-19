@@ -977,15 +977,15 @@ export default function ViewProductsDeliveries() {
   async function checkFlow(checkType: string) {
     try {
       setLoading(true);
-      if (
+      if (hasToDismemberTask && checkType !== 'back' && !hasDismemberedProduct) {
+        setModalDismemberment(true);
+      } else if (
         uploadClient &&
         checkType === 'next' &&
         dataTask?.files.length > 0 &&
         dataTask?.status !== 'Aguardando Aprovação'
       ) {
         setModalTenantApprove(true);
-      } else if (hasToDismemberTask && checkType !== 'back' && !hasDismemberedProduct) {
-        setModalDismemberment(true);
       } else if (checkType === 'next' && !finalCard) {
         const response = await api.get(
           `/flow-function?step=${Number(actualStep) + 1}&flow_id=${dataTask?.flow_id}`
@@ -1453,7 +1453,7 @@ export default function ViewProductsDeliveries() {
               last_archive: 'true',
               products_delivery_id: imageUrl.products_delivery_id
             };
-            const response = await api.post(`/task/upload`, uploadInfos);
+            const response = await api.put(`/task/upload`, uploadInfos);
 
             if (response.data.status === 'success') {
               handleConcludeTask();
@@ -2312,7 +2312,8 @@ export default function ViewProductsDeliveries() {
                   <table>
                     <thead>
                       <tr>
-                        <th>Checkbox</th>
+                        <th></th>
+                        <th>File ID</th>
                         <th>Produto ID</th>
                         <th>Nome do arquivo</th>
                         <th>Tamanho</th>
@@ -2339,6 +2340,7 @@ export default function ViewProductsDeliveries() {
                             />
                           </td>
                           <td>#{row.task_file_id}</td>
+                          <td>{row.products_delivery_id}</td>
                           <td>{row.file_name.split('-').pop()}</td>
                           <td>{row.size}</td>
                           <td>{moment(row.created).format('DD/MM/YYYY - hh:mm')}h</td>

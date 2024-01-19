@@ -246,6 +246,8 @@ export default function DeliveryTable({
                           ? 'Alteração externa'
                           : row.status === 'Parcial'
                           ? 'Parcial'
+                          : row.status === 'Avaliada'
+                          ? 'Avaliada'
                           : 'Pendente'}
                       </div>
                     </td>

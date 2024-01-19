@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 // Icons
 import { FaArrowLeft, FaChevronDown, FaChevronUp } from 'react-icons/fa';
-import { BsChatText, BsChevronDoubleRight } from 'react-icons/bs';
+import { BsChevronDoubleRight } from 'react-icons/bs';
 import { IconBigCheck } from '../../../assets/icons';
 import { BiArrowBack } from 'react-icons/bi';
 import { FiCornerDownRight } from 'react-icons/fi';
