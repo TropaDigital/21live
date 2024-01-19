@@ -272,7 +272,7 @@ export default function CreateTaksWithRefused() {
         const updatedData = dataArray.map((item) => {
           const updatedProducts = item.products.map((product: any) => {
             // Remove the file_status key from the product object
-            const { file_status, ...rest } = product;
+            const { file_status, status_interaction, ...rest } = product;
             return rest;
           });
 
