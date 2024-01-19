@@ -684,8 +684,8 @@ export default function WorkingProduct({
     // console.log('log do upload client =>', uploadClient);
     // console.log('log do isToApprove =>', isToApprove);
     // console.log('log do isToApprove =>', isToApprove);
-    console.log('log allProducts =>', allProducts);
-    console.log('log do motiveRejects =>', motiveReject);
+    // console.log('log allProducts =>', allProducts);
+    // console.log('log do motiveRejects =>', motiveReject);
   }, [finalCard, uploadClient, isToApprove, ticket_id, allProducts, motiveReject]);
 
   return (

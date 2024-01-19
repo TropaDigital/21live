@@ -977,15 +977,15 @@ export default function ViewProductsDeliveries() {
   async function checkFlow(checkType: string) {
     try {
       setLoading(true);
-      if (
+      if (hasToDismemberTask && checkType !== 'back' && !hasDismemberedProduct) {
+        setModalDismemberment(true);
+      } else if (
         uploadClient &&
         checkType === 'next' &&
         dataTask?.files.length > 0 &&
         dataTask?.status !== 'Aguardando Aprovação'
       ) {
         setModalTenantApprove(true);
-      } else if (hasToDismemberTask && checkType !== 'back' && !hasDismemberedProduct) {
-        setModalDismemberment(true);
       } else if (checkType === 'next' && !finalCard) {
         const response = await api.get(
           `/flow-function?step=${Number(actualStep) + 1}&flow_id=${dataTask?.flow_id}`

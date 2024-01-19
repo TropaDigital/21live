@@ -479,7 +479,7 @@ export const ModalUploadWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
-  width: 500px;
+  /* width: 500px; */
 
   .modal-buttons {
     display: flex;
