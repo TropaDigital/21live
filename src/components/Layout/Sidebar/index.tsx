@@ -162,11 +162,11 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
               <span>{row.name}</span>
             </Link>
             {/* <span className="tooltip">{row.name}</span> */}
-            {row.name === 'Minhas tarefas' && (
-              <span className="counter">{tasksTotal > 0 ? tasksTotal : 0}</span>
+            {row.name === 'Minhas tarefas' && tasksTotal > 0 && (
+              <span className="counter">{tasksTotal}</span>
             )}
-            {row.name === 'Solicitações' && (
-              <span className="counter">{requestsTotal > 0 ? requestsTotal : 0}</span>
+            {row.name === 'Solicitações' && requestsTotal > 0 && (
+              <span className="counter">{requestsTotal}</span>
             )}
           </Li>
         ))}

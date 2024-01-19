@@ -853,7 +853,8 @@ export default function ViewProductsDeliveries() {
       if (response.data.status === 'success') {
         setUploadedFiles([]);
         setModalUpload(false);
-        getTaskInfos();
+        // getTaskInfos();
+        navigate('/minhas-tarefas');
       }
 
       // console.log('log do response do saveUpload', response.data.result);
@@ -947,9 +948,8 @@ export default function ViewProductsDeliveries() {
         setUploadedFiles([]);
         setModalFinalFile(false);
         setToClientConfirmation(false);
-        getTaskInfos();
+        navigate('/minhas-tarefas');
         // setTimeout(() => {
-        //   navigate('/minhas-tarefas');
         // }, 1500);
       }
 

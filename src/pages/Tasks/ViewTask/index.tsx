@@ -379,6 +379,8 @@ export default function ViewTask() {
                                     ? 'Alteração externa'
                                     : row.status === 'Parcial'
                                     ? 'Parcial'
+                                    : row.status === 'Avaliada'
+                                    ? 'Avaliada'
                                     : 'Pendente'}
                                 </StatusTask>
                               </td>
@@ -609,6 +611,8 @@ export default function ViewTask() {
                                 ? 'Alteração externa'
                                 : dataTask?.status === 'Parcial'
                                 ? 'Parcial'
+                                : dataTask?.status === 'Avaliada'
+                                ? 'Avaliada'
                                 : 'Pendente'}
                             </div>
                           </td>

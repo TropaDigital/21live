@@ -212,7 +212,7 @@ export default function TaskTable({
                           ? 'Alteração externa'
                           : task.status === 'Parcial'
                           ? 'Parcial'
-                          : row.status === 'Avaliada'
+                          : task.status === 'Avaliada'
                           ? 'Avaliada'
                           : 'Pendente'}
                       </div>
