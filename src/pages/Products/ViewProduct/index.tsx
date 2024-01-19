@@ -887,10 +887,11 @@ export default function ViewProductsDeliveries() {
         key: uploadedFiles[0].key,
         bucket: uploadedFiles[0].bucket,
         last_archive: 'true',
-        products_delivery_id: productForUpload.products_delivery_id
+        products_delivery_id:
+          productForUpload.products_delivery_id || dataProducts.products[0].products_delivery_id
       };
 
-      const response = await api.post(`/task/upload`, uploadInfos);
+      const response = await api.put(`/task/upload`, uploadInfos);
 
       if (response.data.status === 'success') {
         addToast({
@@ -978,15 +979,19 @@ export default function ViewProductsDeliveries() {
     try {
       setLoading(true);
       if (hasToDismemberTask && checkType !== 'back' && !hasDismemberedProduct) {
+        console.log('log do checkflow');
         setModalDismemberment(true);
       } else if (
         uploadClient &&
         checkType === 'next' &&
         dataTask?.files.length > 0 &&
-        dataTask?.status !== 'Aguardando Aprovação'
+        dataTask?.status !== 'Aguardando Aprovação' &&
+        dataTask?.status !== 'Avaliada'
       ) {
+        console.log('log do checkflow + aguard approve');
         setModalTenantApprove(true);
       } else if (checkType === 'next' && !finalCard) {
+        console.log('checkei o flow - !finalcard');
         const response = await api.get(
           `/flow-function?step=${Number(actualStep) + 1}&flow_id=${dataTask?.flow_id}`
         );
@@ -1013,7 +1018,7 @@ export default function ViewProductsDeliveries() {
         }
       } else if (checkType === 'next' && finalCard) {
         if (dataTask.ticket_id !== '' && mandatoryUpload) {
-          setModalFinalFile(false);
+          setModalFinalFile(true);
         }
         if (dataTask.ticket_id !== '' && !mandatoryUpload) {
           handleUploadApproved();
@@ -1424,6 +1429,10 @@ export default function ViewProductsDeliveries() {
 
       const approvedFiles = dataTask?.files.filter((file: any) => file.status === 'pass');
 
+      if (approvedFiles.length < 1) {
+        setModalFinalFile(true);
+      }
+
       await Promise.all(
         approvedFiles.map(async (imageUrl: TaskFile) => {
           const fileData = new FormData();
@@ -1462,7 +1471,7 @@ export default function ViewProductsDeliveries() {
         })
       );
 
-      console.log('log approvedFiles =>', approvedFiles);
+      // console.log('log approvedFiles =>', approvedFiles);
 
       setLoading(false);
     } catch (error) {
@@ -1533,7 +1542,11 @@ export default function ViewProductsDeliveries() {
                 title={titleInfos}
                 disableButton={false}
                 goBack
-                buttonType={uploadClient ? 'client' : 'send'}
+                buttonType={
+                  uploadClient && dataTask?.files.length < 1 && dataTask?.status !== 'Avaliada'
+                    ? 'client'
+                    : 'send'
+                }
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
                 backFlow={() => setModalReturnFlow(true)}
@@ -1548,7 +1561,11 @@ export default function ViewProductsDeliveries() {
                 title={titleInfos}
                 disableButton={false}
                 goBack
-                buttonType={uploadClient ? 'client' : 'send'}
+                buttonType={
+                  uploadClient && dataTask?.files.length < 1 && dataTask?.status !== 'Avaliada'
+                    ? 'client'
+                    : 'send'
+                }
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
                 backFlow={() => setModalReturnFlow(true)}
