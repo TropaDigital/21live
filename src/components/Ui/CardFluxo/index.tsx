@@ -212,14 +212,14 @@ export default function CardFluxo({
             </FieldDefault>
           )} */}
 
-          <FieldDefault style={{ marginBottom: '8px' }}>
+          {/* <FieldDefault style={{ marginBottom: '8px' }}>
             <CheckboxDefault
               label="Responsável obrigatório"
               name="necessary_responsible"
               onChange={handleOnChangeCheckbox}
               checked={data.necessary_responsible === 'true' ? true : false}
             />
-          </FieldDefault>
+          </FieldDefault> */}
 
           <FieldDefault style={{ marginBottom: '8px' }}>
             <CheckboxDefault
