@@ -1961,6 +1961,7 @@ export default function ViewProductsDeliveries() {
                 <tr>
                   <th>Selecionar</th>
                   <th>Nome</th>
+                  <th>Cargo</th>
                   <th>Tarefas</th>
                 </tr>
               </thead>
@@ -1977,6 +1978,7 @@ export default function ViewProductsDeliveries() {
                       />
                     </td>
                     <td>{row.name}</td>
+                    <td>{row.function}</td>
                     <td>{row.tasks}</td>
                   </tr>
                 ))}
