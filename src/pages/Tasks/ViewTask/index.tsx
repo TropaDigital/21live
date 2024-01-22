@@ -6,7 +6,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 // Icons
 import { FaArrowLeft, FaChevronDown, FaChevronUp } from 'react-icons/fa';
-import { BsChevronDoubleRight } from 'react-icons/bs';
 import { IconBigCheck } from '../../../assets/icons';
 import { BiArrowBack } from 'react-icons/bi';
 import { FiCornerDownRight } from 'react-icons/fi';
@@ -59,6 +58,7 @@ import { useToast } from '../../../hooks/toast';
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 import { StepTimeline, TaskHistoryProps } from '../../../types';
 import Loader from '../../../components/LoaderSpin';
+import { MdClose } from 'react-icons/md';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -298,6 +298,120 @@ export default function ViewTask() {
 
           {visualizationType === 'subtasks' && (
             <>
+              <DeliveriesWrapper>
+                <DeliveriesTopWrapper>
+                  <span className="title-info">Entregas</span>
+
+                  {dataTask?.parent_id !== '' && (
+                    <ButtonDefault
+                      typeButton="primary"
+                      onClick={() => handleNavigateTask(dataTask?.parent_id)}
+                    >
+                      Ir para tarefa mãe
+                    </ButtonDefault>
+                  )}
+                </DeliveriesTopWrapper>
+
+                <TableWrapper>
+                  <span className="date-info">
+                    {moment(dataTask?.start_job).format('DD/MM/YYYY')}
+                  </span>
+                  <TasksTable>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Título</th>
+                          <th>Tempo consumido</th>
+                          <th>Tempo estimado</th>
+                          <th>Data inicial</th>
+                          <th>Data final</th>
+                          <th>Produtos</th>
+                          <th>Etapa</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {dataTask?.deliverys.map((row: TaskInfos) => (
+                          <tr
+                            key={row.delivery_id}
+                            onClick={() => {
+                              setDeliveryProduct(row.products);
+                              setVisualizationType('delivery-products');
+                            }}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            <td>#{String(row.delivery_id).padStart(2, '0')}</td>
+                            <td>{row.title}</td>
+                            <td>
+                              <span style={{ marginBottom: '4px', display: 'block' }}>
+                                {row.time_consumed}
+                              </span>
+                              <ProgressBar
+                                totalHours={convertToMilliseconds(
+                                  dataTask?.total_time !== 'undefined'
+                                    ? dataTask?.total_time
+                                    : row.time_consumed
+                                )}
+                                restHours={convertToMilliseconds(row.time_consumed)}
+                              />
+                            </td>
+                            <td>
+                              {dataTask?.total_time !== 'undefined'
+                                ? dataTask?.total_time
+                                : 'Livre'}
+                            </td>
+                            <td>{moment(row.date_end).format('DD/MM/YYYY')}</td>
+                            <td>
+                              {dataTask?.end_job !== '0000-00-00 00:00:00'
+                                ? moment(dataTask?.end_job).format('DD/MM/YYYY')
+                                : '------'}
+                            </td>
+                            <td>
+                              {row.products.length <= 1
+                                ? `${row.products.length} produto`
+                                : `${row.products.length} produtos`}
+                            </td>
+                            <td>
+                              <div className="column">
+                                {dataTask?.card_name}
+                                <span>Fluxo: {dataTask?.flow}</span>
+                              </div>
+                            </td>
+                            <td>
+                              <div
+                                className={
+                                  dataTask?.status === 'Em Andamento'
+                                    ? 'status progress'
+                                    : dataTask?.status === 'Concluida'
+                                    ? 'status finished'
+                                    : 'status'
+                                }
+                              >
+                                {dataTask?.status === 'Em Andamento'
+                                  ? 'Em progresso'
+                                  : dataTask?.status === 'Concluida'
+                                  ? 'Concluída'
+                                  : dataTask?.status === 'Aguardando Aprovação'
+                                  ? 'Aguardando Aprovação'
+                                  : dataTask?.status === 'Alteração Interna'
+                                  ? 'Alteração interna'
+                                  : dataTask?.status === 'Alteração Externa'
+                                  ? 'Alteração externa'
+                                  : dataTask?.status === 'Parcial'
+                                  ? 'Parcial'
+                                  : 'Pendente'}
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </TasksTable>
+                </TableWrapper>
+              </DeliveriesWrapper>
+
               {dataTask.parents?.length > 0 && (
                 <DeliveriesWrapper>
                   <span className="title-info">Sub Tarefas</span>
@@ -393,120 +507,6 @@ export default function ViewTask() {
                   </TableWrapper>
                 </DeliveriesWrapper>
               )}
-
-              <DeliveriesWrapper>
-                <DeliveriesTopWrapper>
-                  <span className="title-info">Entregas</span>
-
-                  {dataTask?.parent_id !== '' && (
-                    <ButtonDefault
-                      typeButton="primary"
-                      onClick={() => handleNavigateTask(dataTask?.parent_id)}
-                    >
-                      Ir para tarefa mãe
-                    </ButtonDefault>
-                  )}
-                </DeliveriesTopWrapper>
-
-                <TableWrapper>
-                  <span className="date-info">
-                    {moment(dataTask?.start_job).format('DD/MM/YYYY')}
-                  </span>
-                  <TasksTable>
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>ID</th>
-                          <th>Título</th>
-                          <th>Tempo consumido</th>
-                          <th>Tempo estimado</th>
-                          <th>Data inicial</th>
-                          <th>Data final</th>
-                          <th>Produtos</th>
-                          <th>Etapa</th>
-                          <th>Status</th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        {dataTask?.deliverys.map((row: TaskInfos) => (
-                          <tr
-                            key={row.delivery_id}
-                            onClick={() => {
-                              setDeliveryProduct(row.products);
-                              setVisualizationType('delivery-products');
-                            }}
-                            style={{ cursor: 'pointer' }}
-                          >
-                            <td>#{String(row.delivery_id).padStart(2, '0')}</td>
-                            <td>{row.title}</td>
-                            <td>
-                              <span style={{ marginBottom: '4px', display: 'block' }}>
-                                {row.time_consumed}
-                              </span>
-                              <ProgressBar
-                                totalHours={convertToMilliseconds(
-                                  dataTask?.total_time !== 'undefined'
-                                    ? dataTask?.total_time
-                                    : row.time_consumed
-                                )}
-                                restHours={convertToMilliseconds(row.time_consumed)}
-                              />
-                            </td>
-                            <td>
-                              {dataTask?.total_time !== 'undefined'
-                                ? dataTask?.total_time
-                                : 'Livre'}
-                            </td>
-                            <td>{moment(row.date_end).format('DD/MM/YYYY')}</td>
-                            <td>
-                              {dataTask?.end_job !== ''
-                                ? moment(dataTask?.end_job).format('DD/MM/YYYY')
-                                : '----'}
-                            </td>
-                            <td>
-                              {row.products.length <= 1
-                                ? `${row.products.length} produto`
-                                : `${row.products.length} produtos`}
-                            </td>
-                            <td>
-                              <div className="column">
-                                {dataTask?.card_name}
-                                <span>Fluxo: {dataTask?.flow}</span>
-                              </div>
-                            </td>
-                            <td>
-                              <div
-                                className={
-                                  dataTask?.status === 'Em Andamento'
-                                    ? 'status progress'
-                                    : dataTask?.status === 'Concluida'
-                                    ? 'status finished'
-                                    : 'status'
-                                }
-                              >
-                                {dataTask?.status === 'Em Andamento'
-                                  ? 'Em progresso'
-                                  : dataTask?.status === 'Concluida'
-                                  ? 'Concluída'
-                                  : dataTask?.status === 'Aguardando Aprovação'
-                                  ? 'Aguardando Aprovação'
-                                  : dataTask?.status === 'Alteração Interna'
-                                  ? 'Alteração interna'
-                                  : dataTask?.status === 'Alteração Externa'
-                                  ? 'Alteração externa'
-                                  : dataTask?.status === 'Parcial'
-                                  ? 'Parcial'
-                                  : 'Pendente'}
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </TasksTable>
-                </TableWrapper>
-              </DeliveriesWrapper>
             </>
           )}
 
@@ -642,14 +642,15 @@ export default function ViewTask() {
                   <table>
                     <thead>
                       <tr>
-                        <th>#</th>
+                        <th>ID</th>
                         <th>Produto</th>
                         <th>Descrição</th>
                         <th>Formato</th>
+                        <th>I/D</th>
                         <th>Tipo</th>
                         <th>Status</th>
-                        <th>Tempo consumido</th>
-                        <th>Tempo estimado</th>
+                        {/* <th>Tempo consumido</th>
+                        <th>Tempo estimado</th> */}
                       </tr>
                     </thead>
 
@@ -670,6 +671,7 @@ export default function ViewTask() {
                             <div dangerouslySetInnerHTML={{ __html: row.description }} />
                           </td>
                           <td>{row.size}</td>
+                          <td>{row.type}</td>
                           <td>
                             {row.reason_change === '1'
                               ? 'Criação'
@@ -709,7 +711,7 @@ export default function ViewTask() {
                               )} */}
                             </div>
                           </td>
-                          <td>
+                          {/* <td>
                             <span style={{ marginBottom: '4px', display: 'block' }}>
                               {row.minutes_consumed}
                             </span>
@@ -718,7 +720,7 @@ export default function ViewTask() {
                               restHours={convertToMilliseconds(row.minutes_consumed)}
                             />
                           </td>
-                          <td>{row.minutes}</td>
+                          <td>{row.minutes}</td> */}
                           {/* <td>{moment(row.date_end).format('DD/MM/YYYY')}</td>
                           <td>{moment(dataTask?.end_job).format('DD/MM/YYYY')}</td> */}
                         </tr>
@@ -787,6 +789,7 @@ export default function ViewTask() {
                       {row.time_line.length > 0 ? (
                         <TimelineExtraInfo>
                           Concluído por: {row.time_line[0].name}
+                          <div>as {moment(row.time_line[0].created).format('HH:mm')}h</div>
                         </TimelineExtraInfo>
                       ) : (
                         ''
@@ -805,14 +808,19 @@ export default function ViewTask() {
               </TaskInfoField>
 
               <TaskInfoField>
+                <div className="info-title">Tempo consumido:</div>
+                <div className="info-description">{dataTask?.time_consumed}</div>
+              </TaskInfoField>
+
+              <TaskInfoField>
                 <div className="info-title">Etapa:</div>
                 <div className="info-description">{dataTask?.card_name}</div>
               </TaskInfoField>
 
-              <TaskInfoField>
+              {/* <TaskInfoField>
                 <div className="info-title">I/D:</div>
                 <div className="info-description">Digital</div>
-              </TaskInfoField>
+              </TaskInfoField> */}
 
               <TaskInfoField>
                 <div className="info-title">Prioridade:</div>
@@ -840,8 +848,9 @@ export default function ViewTask() {
               </TaskInfoField>
             </TasksInfos>
             <ArrowSection onClick={() => setHideRightCard('hide')}>
-              <BsChevronDoubleRight />
-              <div className="hide">Fechar</div>
+              <MdClose />
+              {/* <BsChevronDoubleRight />
+              <div className="hide">Fechar</div> */}
             </ArrowSection>
           </RightInfosCard>
 

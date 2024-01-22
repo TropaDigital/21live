@@ -107,10 +107,13 @@ interface WorkingProductProps {
 }
 
 interface ReturnReasons {
+  created: string;
   current_step: string;
-  name: string;
+  requester_name: string;
+  returner_name: string;
   reason: string;
   returner_id: string;
+  return_type: string;
   step: string;
   task_id: string;
   task_return_id: string;
@@ -129,7 +132,7 @@ interface ChatMessages {
   name: string;
   avatar: string;
   created: string;
-  comment_id: string;
+  task_comment_id: string;
 }
 
 interface FilesMap {
@@ -954,7 +957,7 @@ export default function WorkingProduct({
                           {message.user_id !== '1' && (
                             <div
                               style={{ cursor: 'pointer' }}
-                              onClick={() => handleDeleteComment(message.comment_id)}
+                              onClick={() => handleDeleteComment(message.task_comment_id)}
                             >
                               <BiTrash />
                             </div>
@@ -975,7 +978,7 @@ export default function WorkingProduct({
                           <div className="date-message">{moment(message.created).fromNow()}</div>
                           <div
                             style={{ cursor: 'pointer' }}
-                            onClick={() => handleDeleteComment(message.comment_id)}
+                            onClick={() => handleDeleteComment(message.task_comment_id)}
                           >
                             <BiTrash />
                           </div>
@@ -1001,7 +1004,7 @@ export default function WorkingProduct({
                 </ChatMessage>
               ))}
             </MessageList>
-            {!logIsOn && (
+            {!logIsOn && productInfos.status !== 'Concluida' && (
               <InputChat>
                 <InputDefault
                   label=""
@@ -1018,6 +1021,7 @@ export default function WorkingProduct({
             )}
           </SectionChatComments>
         )}
+
         {selectedTab === 'Arquivos' && (
           <FilesTableWrapper>
             <Table>
@@ -1179,6 +1183,7 @@ export default function WorkingProduct({
             </Table>
           </FilesTableWrapper>
         )}
+
         {selectedTab === 'Alterações' && (
           <CardChangesWrapper>
             <div className="title-card">
@@ -1190,13 +1195,13 @@ export default function WorkingProduct({
 
             {returnReasons?.map((row: ReturnReasons) => (
               <CardChangeInfos key={row.task_return_id}>
-                <div className="top-infos">
+                <div className="top-info">
                   <div className="field-names">
-                    Quem solicitou: <span>{row.name}</span>
+                    Tipo da alteração: <span>{row.return_type}</span>
                   </div>
-                  {/* <div className="field-names">
-                    Etapa que retornou: <span>{row.step}</span>
-                  </div> */}
+                </div>
+
+                <div className="top-infos">
                   <div className="field-names">
                     Etapa que estava:{' '}
                     <span>
@@ -1206,9 +1211,32 @@ export default function WorkingProduct({
                       )}
                     </span>
                   </div>
+                  <div className="field-names">
+                    Data/hora: <span>{moment(row.created).format('DD/MM/YYYY - HH:mm')}h</span>
+                  </div>
+                  {/* <div className="field-names">
+                    Etapa que retornou: <span>{row.step}</span>
+                  </div> */}
                 </div>
+
+                <div className="top-infos">
+                  <div className="field-names">
+                    Quem solicitou:{' '}
+                    <span>{row.requester_name === 'Sistema' ? 'Cliente' : row.requester_name}</span>
+                  </div>
+                  {/* <div className="field-names">
+                    Etapa que retornou: <span>{row.step}</span>
+                  </div> */}
+                  <div className="field-names">
+                    Para quem retornou: <span>{row.returner_name}</span>
+                  </div>
+                </div>
+
                 <div className="field-names">
-                  Motivo: <span>{row.reason}</span>
+                  Motivo:{' '}
+                  <span>
+                    <div dangerouslySetInnerHTML={{ __html: row.reason }} />
+                  </span>
                 </div>
               </CardChangeInfos>
             ))}

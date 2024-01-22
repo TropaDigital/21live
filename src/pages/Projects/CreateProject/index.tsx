@@ -558,6 +558,11 @@ export default function CreateProject() {
   };
 
   const finishCreate = () => {
+    addToast({
+      type: 'success',
+      title: 'Sucesso',
+      description: 'Projeto criado com sucesso!'
+    });
     setFinishModal(false);
     setSendFiles(false);
     // navigate('/projetos');
@@ -616,6 +621,11 @@ export default function CreateProject() {
   };
 
   const handleFinishWithoutFiles = () => {
+    addToast({
+      type: 'success',
+      title: 'Sucesso',
+      description: 'Projeto criado com sucesso!'
+    });
     setFinishModal(false);
     navigate('/projetos');
   };

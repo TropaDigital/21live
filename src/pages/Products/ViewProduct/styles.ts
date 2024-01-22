@@ -95,27 +95,14 @@ export const ArrowSection = styled.div`
   cursor: pointer;
 
   svg {
-    path {
-      fill: var(--gray-400);
-    }
-  }
-
-  .hide {
-    display: block;
-    position: absolute;
-    top: -50px;
-    right: 20px;
-    opacity: 0;
     transition: all 0.3s;
-
-    color: var(--gray-400);
-    text-orientation: upright;
-    writing-mode: vertical-rl;
+    color: var(--gray-600);
   }
 
   &:hover {
-    .hide {
-      opacity: 1;
+    svg {
+      transform: scale(1.8);
+      color: var(--Danger);
     }
   }
 `;
@@ -203,7 +190,8 @@ export const TimeLineIcon = styled.div`
 
 export const TimelineExtraInfo = styled.div`
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  /* align-items: center; */
 
   padding: 6px;
   background-color: var(--gray-50);
@@ -223,6 +211,8 @@ export const TimelineExtraInfo = styled.div`
     opacity: 1;
     top: 5px;
   }
+
+  z-index: 3;
 `;
 
 export const TimelineStep = styled.div`

@@ -7,8 +7,9 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 // Icons
 import { FaArrowLeft, FaChevronDown, FaChevronUp, FaDownload } from 'react-icons/fa';
-import { BsChevronDoubleRight } from 'react-icons/bs';
 import { IconBigCheck } from '../../../assets/icons';
+import { BiShow } from 'react-icons/bi';
+import { MdClose } from 'react-icons/md';
 
 // Components
 import HeaderOpenTask from '../../../components/HeaderTaskPage';
@@ -20,7 +21,6 @@ import CardTaskPlay from '../../../components/CardTaskPlay';
 import ScheduleUser from '../../../components/ScheduleUser';
 import WorkingProduct from '../WorkingProduct';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
-import UploadFinalFiles from '../../../components/Upload/UploadFiles';
 import UploadFilesTicket from '../../../components/UploadTicket/UploadFilex';
 import { UsersWrapper } from '../../Tasks/CreateTasks/styles';
 import { ProductsTable } from '../../Tasks/ComponentSteps/InfoDeliverables/styles';
@@ -34,6 +34,10 @@ import {
 import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
 import { SelectDefault } from '../../../components/Inputs/SelectDefault';
 import { TextAreaDefault } from '../../../components/Inputs/TextAreaDefault';
+import UploadFiles from '../../../components/Upload/UploadFiles';
+import UploadFinalFile from '../../../components/UploadFinal/UploadFinalFiles';
+import Loader from '../../../components/LoaderSpin';
+import { Table } from '../../../components/Table';
 
 // Styles
 import {
@@ -59,6 +63,7 @@ import {
   TimelineInfo,
   TimelineStep
 } from './styles';
+import { DownloadIcon, ViewFile } from '../WorkingProduct/styles';
 
 // Services
 import api from '../../../services/api';
@@ -76,13 +81,6 @@ import { StepTimeline, TaskFile, TaskHistoryProps, UploadedFilesProps } from '..
 
 // Utils
 import { UsersNoSchedule } from '../../../utils/models';
-import UploadFiles from '../../../components/Upload/UploadFiles';
-import UploadFinalFile from '../../../components/UploadFinal/UploadFinalFiles';
-import Loader from '../../../components/LoaderSpin';
-import { Table } from '../../../components/Table';
-import { DownloadIcon, ViewFile } from '../WorkingProduct/styles';
-import { BiShow } from 'react-icons/bi';
-import { MdClose } from 'react-icons/md';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -887,10 +885,11 @@ export default function ViewProductsDeliveries() {
         key: uploadedFiles[0].key,
         bucket: uploadedFiles[0].bucket,
         last_archive: 'true',
-        products_delivery_id: productForUpload.products_delivery_id
+        products_delivery_id:
+          productForUpload.products_delivery_id || dataProducts.products[0].products_delivery_id
       };
 
-      const response = await api.post(`/task/upload`, uploadInfos);
+      const response = await api.put(`/task/upload`, uploadInfos);
 
       if (response.data.status === 'success') {
         addToast({
@@ -978,15 +977,19 @@ export default function ViewProductsDeliveries() {
     try {
       setLoading(true);
       if (hasToDismemberTask && checkType !== 'back' && !hasDismemberedProduct) {
+        console.log('log do checkflow');
         setModalDismemberment(true);
       } else if (
         uploadClient &&
         checkType === 'next' &&
         dataTask?.files.length > 0 &&
-        dataTask?.status !== 'Aguardando Aprovação'
+        dataTask?.status !== 'Aguardando Aprovação' &&
+        dataTask?.status !== 'Avaliada'
       ) {
+        console.log('log do checkflow + aguard approve');
         setModalTenantApprove(true);
       } else if (checkType === 'next' && !finalCard) {
+        console.log('checkei o flow - !finalcard');
         const response = await api.get(
           `/flow-function?step=${Number(actualStep) + 1}&flow_id=${dataTask?.flow_id}`
         );
@@ -1013,7 +1016,7 @@ export default function ViewProductsDeliveries() {
         }
       } else if (checkType === 'next' && finalCard) {
         if (dataTask.ticket_id !== '' && mandatoryUpload) {
-          setModalFinalFile(false);
+          setModalFinalFile(true);
         }
         if (dataTask.ticket_id !== '' && !mandatoryUpload) {
           handleUploadApproved();
@@ -1424,6 +1427,10 @@ export default function ViewProductsDeliveries() {
 
       const approvedFiles = dataTask?.files.filter((file: any) => file.status === 'pass');
 
+      if (approvedFiles.length < 1) {
+        setModalFinalFile(true);
+      }
+
       await Promise.all(
         approvedFiles.map(async (imageUrl: TaskFile) => {
           const fileData = new FormData();
@@ -1462,7 +1469,7 @@ export default function ViewProductsDeliveries() {
         })
       );
 
-      console.log('log approvedFiles =>', approvedFiles);
+      // console.log('log approvedFiles =>', approvedFiles);
 
       setLoading(false);
     } catch (error) {
@@ -1533,7 +1540,12 @@ export default function ViewProductsDeliveries() {
                 title={titleInfos}
                 disableButton={false}
                 goBack
-                buttonType={uploadClient ? 'client' : 'send'}
+                buttonType={
+                  // uploadClient && dataTask?.files.length < 1 && dataTask?.status !== 'Avaliada'
+                  //   ? 'client'
+                  //   : 'send'
+                  uploadClient ? 'client' : 'send'
+                }
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
                 backFlow={() => setModalReturnFlow(true)}
@@ -1548,7 +1560,11 @@ export default function ViewProductsDeliveries() {
                 title={titleInfos}
                 disableButton={false}
                 goBack
-                buttonType={uploadClient ? 'client' : 'send'}
+                buttonType={
+                  uploadClient && dataTask?.files.length < 1 && dataTask?.status !== 'Avaliada'
+                    ? 'client'
+                    : 'send'
+                }
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
                 backFlow={() => setModalReturnFlow(true)}
@@ -1757,6 +1773,7 @@ export default function ViewProductsDeliveries() {
                       {row.time_line.length > 0 ? (
                         <TimelineExtraInfo>
                           Concluído por: {row.time_line[0].name}
+                          <div>as {moment(row.time_line[0].created).format('HH:mm')}h</div>
                         </TimelineExtraInfo>
                       ) : (
                         ''
@@ -1774,6 +1791,11 @@ export default function ViewProductsDeliveries() {
                 </div>
               </TaskInfoField>
 
+              <TaskInfoField>
+                <div className="info-title">Tempo consumido:</div>
+                <div className="info-description">{dataTask?.time_consumed}</div>
+              </TaskInfoField>
+
               {/* <TaskInfoField>
                 <div className="info-title">Responsável:</div>
                 <div className="info-description">Qual???</div>
@@ -1785,14 +1807,9 @@ export default function ViewProductsDeliveries() {
               </TaskInfoField>
 
               {/* <TaskInfoField>
-                <div className="info-title">Formato:</div>
-                <div className="info-description">Do que???</div>
-              </TaskInfoField> */}
-
-              <TaskInfoField>
                 <div className="info-title">I/D:</div>
                 <div className="info-description">Digital</div>
-              </TaskInfoField>
+              </TaskInfoField> */}
 
               <TaskInfoField>
                 <div className="info-title">Prioridade:</div>
@@ -1820,8 +1837,7 @@ export default function ViewProductsDeliveries() {
               </TaskInfoField>
             </TasksInfos>
             <ArrowSection onClick={() => setHideRightCard('hide')}>
-              <BsChevronDoubleRight />
-              <div className="hide">Fechar</div>
+              <MdClose />
             </ArrowSection>
           </RightInfosCard>
 
@@ -1944,6 +1960,7 @@ export default function ViewProductsDeliveries() {
                 <tr>
                   <th>Selecionar</th>
                   <th>Nome</th>
+                  <th>Cargo</th>
                   <th>Tarefas</th>
                 </tr>
               </thead>
@@ -1960,6 +1977,7 @@ export default function ViewProductsDeliveries() {
                       />
                     </td>
                     <td>{row.name}</td>
+                    <td>{row.function}</td>
                     <td>{row.tasks}</td>
                   </tr>
                 ))}
