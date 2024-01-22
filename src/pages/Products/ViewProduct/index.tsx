@@ -7,8 +7,9 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 // Icons
 import { FaArrowLeft, FaChevronDown, FaChevronUp, FaDownload } from 'react-icons/fa';
-import { BsChevronDoubleRight } from 'react-icons/bs';
 import { IconBigCheck } from '../../../assets/icons';
+import { BiShow } from 'react-icons/bi';
+import { MdClose } from 'react-icons/md';
 
 // Components
 import HeaderOpenTask from '../../../components/HeaderTaskPage';
@@ -20,7 +21,6 @@ import CardTaskPlay from '../../../components/CardTaskPlay';
 import ScheduleUser from '../../../components/ScheduleUser';
 import WorkingProduct from '../WorkingProduct';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
-import UploadFinalFiles from '../../../components/Upload/UploadFiles';
 import UploadFilesTicket from '../../../components/UploadTicket/UploadFilex';
 import { UsersWrapper } from '../../Tasks/CreateTasks/styles';
 import { ProductsTable } from '../../Tasks/ComponentSteps/InfoDeliverables/styles';
@@ -34,6 +34,10 @@ import {
 import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
 import { SelectDefault } from '../../../components/Inputs/SelectDefault';
 import { TextAreaDefault } from '../../../components/Inputs/TextAreaDefault';
+import UploadFiles from '../../../components/Upload/UploadFiles';
+import UploadFinalFile from '../../../components/UploadFinal/UploadFinalFiles';
+import Loader from '../../../components/LoaderSpin';
+import { Table } from '../../../components/Table';
 
 // Styles
 import {
@@ -59,6 +63,7 @@ import {
   TimelineInfo,
   TimelineStep
 } from './styles';
+import { DownloadIcon, ViewFile } from '../WorkingProduct/styles';
 
 // Services
 import api from '../../../services/api';
@@ -76,13 +81,6 @@ import { StepTimeline, TaskFile, TaskHistoryProps, UploadedFilesProps } from '..
 
 // Utils
 import { UsersNoSchedule } from '../../../utils/models';
-import UploadFiles from '../../../components/Upload/UploadFiles';
-import UploadFinalFile from '../../../components/UploadFinal/UploadFinalFiles';
-import Loader from '../../../components/LoaderSpin';
-import { Table } from '../../../components/Table';
-import { DownloadIcon, ViewFile } from '../WorkingProduct/styles';
-import { BiShow } from 'react-icons/bi';
-import { MdClose } from 'react-icons/md';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -1543,9 +1541,10 @@ export default function ViewProductsDeliveries() {
                 disableButton={false}
                 goBack
                 buttonType={
-                  uploadClient && dataTask?.files.length < 1 && dataTask?.status !== 'Avaliada'
-                    ? 'client'
-                    : 'send'
+                  // uploadClient && dataTask?.files.length < 1 && dataTask?.status !== 'Avaliada'
+                  //   ? 'client'
+                  //   : 'send'
+                  uploadClient ? 'client' : 'send'
                 }
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
@@ -1774,6 +1773,7 @@ export default function ViewProductsDeliveries() {
                       {row.time_line.length > 0 ? (
                         <TimelineExtraInfo>
                           Concluído por: {row.time_line[0].name}
+                          <div>as {moment(row.time_line[0].created).format('HH:mm')}h</div>
                         </TimelineExtraInfo>
                       ) : (
                         ''
@@ -1791,6 +1791,11 @@ export default function ViewProductsDeliveries() {
                 </div>
               </TaskInfoField>
 
+              <TaskInfoField>
+                <div className="info-title">Tempo consumido:</div>
+                <div className="info-description">{dataTask?.time_consumed}</div>
+              </TaskInfoField>
+
               {/* <TaskInfoField>
                 <div className="info-title">Responsável:</div>
                 <div className="info-description">Qual???</div>
@@ -1802,14 +1807,9 @@ export default function ViewProductsDeliveries() {
               </TaskInfoField>
 
               {/* <TaskInfoField>
-                <div className="info-title">Formato:</div>
-                <div className="info-description">Do que???</div>
-              </TaskInfoField> */}
-
-              <TaskInfoField>
                 <div className="info-title">I/D:</div>
                 <div className="info-description">Digital</div>
-              </TaskInfoField>
+              </TaskInfoField> */}
 
               <TaskInfoField>
                 <div className="info-title">Prioridade:</div>
@@ -1837,8 +1837,7 @@ export default function ViewProductsDeliveries() {
               </TaskInfoField>
             </TasksInfos>
             <ArrowSection onClick={() => setHideRightCard('hide')}>
-              <BsChevronDoubleRight />
-              <div className="hide">Fechar</div>
+              <MdClose />
             </ArrowSection>
           </RightInfosCard>
 
