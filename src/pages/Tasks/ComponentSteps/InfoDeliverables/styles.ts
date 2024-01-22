@@ -313,6 +313,10 @@ export const TableDelivery = styled.div`
 `;
 
 export const TotalHours = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
   position: absolute;
   top: 2%;
   right: 0;

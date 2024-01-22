@@ -256,6 +256,7 @@ export default function InfoDeliveries({
         <ProductsTable>
           <FormTitle>Produtos</FormTitle>
           <TotalHours>
+            Quantidade: <span>{'1/8'} </span>
             Total de horas estimadas: <span>{projectInfo?.tempo}</span>
           </TotalHours>
           <table>
