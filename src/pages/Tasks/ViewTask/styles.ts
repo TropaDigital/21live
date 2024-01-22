@@ -174,12 +174,18 @@ export const ArrowSection = styled.div`
   cursor: pointer;
 
   svg {
-    path {
-      fill: var(--gray-400);
+    transition: all 0.3s;
+    color: var(--gray-600);
+  }
+
+  &:hover {
+    svg {
+      transform: scale(1.8);
+      color: var(--Danger);
     }
   }
 
-  .hide {
+  /* .hide {
     display: block;
     position: absolute;
     top: -50px;
@@ -196,7 +202,7 @@ export const ArrowSection = styled.div`
     .hide {
       opacity: 1;
     }
-  }
+  } */
 `;
 
 export const RightInfosTitle = styled.div`
@@ -248,7 +254,8 @@ export const TimelineInfo = styled.div`
 
 export const TimelineExtraInfo = styled.div`
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  /* align-items: center; */
 
   padding: 6px;
   background-color: var(--gray-50);
@@ -263,6 +270,7 @@ export const TimelineExtraInfo = styled.div`
   margin-left: -5px;
 
   transition: all 0.3s;
+  z-index: 3;
 
   ${TimelineInfo}:hover & {
     opacity: 1;
