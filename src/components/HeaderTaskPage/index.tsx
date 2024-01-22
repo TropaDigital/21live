@@ -147,7 +147,7 @@ export default function HeaderOpenTask({
           )}
           {buttonType === 'client' && (
             <ButtonDefault typeButton="secondary" onClick={sendToNext}>
-              Enviar para cliente
+              Enviar arquivos para o cliente
               <HiOutlineArrowRight />
             </ButtonDefault>
           )}
