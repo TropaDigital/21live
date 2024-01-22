@@ -861,11 +861,11 @@ export default function CreateTasks() {
       //   setErrorInput('user_id', undefined);
       // }
 
-      if (description === '') {
-        throw setErrorInput('description', 'Contexto geral é obrigatório!');
-      } else {
-        setErrorInput('description', undefined);
-      }
+      // if (description === '') {
+      //   throw setErrorInput('description', 'Contexto geral é obrigatório!');
+      // } else {
+      //   setErrorInput('description', undefined);
+      // }
 
       if (tasksType === 'livre' && createStep === 2) {
         if (DTOForm.copywriting_date_end === '') {
@@ -874,11 +874,11 @@ export default function CreateTasks() {
           setErrorInput('copywriting_date_end', undefined);
         }
 
-        if (moment(DTOForm.copywriting_date_end).isSameOrBefore(newDate)) {
-          throw setErrorInput('copywriting_date_end', 'Data de entrega é menor que a atual!');
-        } else {
-          setErrorInput('copywriting_date_end', undefined);
-        }
+        // if (moment(DTOForm.copywriting_date_end).isSameOrBefore(newDate)) {
+        //   throw setErrorInput('copywriting_date_end', 'Data de entrega é menor que a atual!');
+        // } else {
+        //   setErrorInput('copywriting_date_end', undefined);
+        // }
 
         if (DTOForm.creation_date_end === '') {
           throw setErrorInput('creation_date_end', 'Data de entrega de atividade não informada!');
@@ -2632,6 +2632,7 @@ export default function CreateTasks() {
                   <tr>
                     <th>Selecionar</th>
                     <th>Nome</th>
+                    <th>Cargo</th>
                     <th>Tarefas</th>
                   </tr>
                 </thead>
@@ -2648,6 +2649,7 @@ export default function CreateTasks() {
                         />
                       </td>
                       <td>{row.name}</td>
+                      <td>{row.function}</td>
                       <td>{row.tasks}</td>
                     </tr>
                   ))}
