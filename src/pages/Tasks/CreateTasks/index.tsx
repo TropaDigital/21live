@@ -36,6 +36,8 @@ import {
   FormTitle,
   FormWrapper,
   Product,
+  ProductGrid,
+  ProductGridHeader,
   ProductListHeader,
   ProductListWrapper,
   ProductModalTitle,
@@ -87,6 +89,8 @@ import api from '../../../services/api';
 
 // Libraries
 import moment from 'moment';
+import { SelectDefault } from '../../../components/Inputs/SelectDefault';
+import { MdClose } from 'react-icons/md';
 
 interface StateProps {
   [key: string]: any;
@@ -98,9 +102,11 @@ interface ProjectProductProps {
   project_product_id: string;
   produto: string;
   projeto: string;
-  quantidade: string;
+  quantidade_inicial: string;
+  quantidade_restante: string;
   select: string;
-  tempo: string;
+  tempo_inicial: string;
+  tempo_restante: string;
   tipo: string;
 }
 
@@ -134,6 +140,11 @@ interface StepCards {
   ticket_status_id: string;
   tenant_id: string;
   approver: string;
+}
+
+interface QuantityInfos {
+  minValue: number;
+  maxValue: number;
 }
 
 // interface ITicketProps {
@@ -206,7 +217,7 @@ export default function CreateTasks() {
   const [errorCategory, setErrorCategory] = useState<any[]>([]);
   const [errorDeliveryDate, setErrorDeliveryDate] = useState<any[]>([]);
   // const [addDeliveries, setAddDeliveries] = useState<boolean>(false);
-  const newDate = new Date();
+  // const newDate = new Date();
   const [DTOForm, setDTOForm] = useState<ITaskCreate>({
     title: '',
     tenant_id: '',
@@ -251,7 +262,7 @@ export default function CreateTasks() {
         setDataProjects(response.data.result);
       }
     } catch (error: any) {
-      console.log('log get projects', error);
+      console.log('log error get projects', error);
     }
   }
 
@@ -268,9 +279,11 @@ export default function CreateTasks() {
     project_product_id: '',
     produto: '',
     projeto: '',
-    quantidade: '',
+    quantidade_inicial: '',
+    quantidade_restante: '',
     select: '',
-    tempo: '',
+    tempo_inicial: '',
+    tempo_restante: '',
     tipo: ''
   });
   const [selectedSummaryInfos, setSelectedSummaryInfos] = useState<any>({
@@ -342,6 +355,30 @@ export default function CreateTasks() {
   const [usersWithoutSchedule, setUsersWithoutSchedule] = useState<UsersNoSchedule[]>([]);
   const [selectedInitialUser, setSelectedInitalUser] = useState<UsersNoSchedule>();
   const [warningModal, setWarningModal] = useState<boolean>(false);
+  const [displayQuantity, setDisplayQuantity] = useState<boolean>(false);
+  const [quantityProductInfos, setQuantityProductInfos] = useState<QuantityInfos>({
+    maxValue: 0,
+    minValue: 1
+  });
+  const [singleProductQuantity, setSingleProductQuantity] = useState<number>(1);
+
+  const numbers = Array.from(
+    { length: quantityProductInfos?.maxValue - quantityProductInfos?.minValue + 1 },
+    (_, index) => quantityProductInfos?.minValue + index
+  );
+
+  async function getSingleProduct(projectId: string) {
+    try {
+      const response = await api.get(`project-products-especific/${projectId}`);
+      setProductsArray(response.data.result);
+      setQuantityProductInfos({
+        maxValue: response.data.result[0].quantity_initial,
+        minValue: 1
+      });
+    } catch (error: any) {
+      console.log('log error get single product', error);
+    }
+  }
 
   const addDelivery = () => {
     const newDelivery: DeliveryProps = {
@@ -617,11 +654,11 @@ export default function CreateTasks() {
 
   const timeConsumedRange = isTimeConsumedMoreThanPercent(
     totalProductsHours,
-    selectedProject?.tempo ? selectedProject?.tempo : '00:00:00'
+    selectedProject?.tempo_inicial ? selectedProject?.tempo_inicial : '00:00:00'
   );
 
   const checkTimeoutHasBeenReached = subtractTime(
-    selectedProject?.tempo ? selectedProject?.tempo : '00:00:00',
+    selectedProject?.tempo_inicial ? selectedProject?.tempo_inicial : '00:00:00',
     totalProductsHours
   );
 
@@ -695,13 +732,16 @@ export default function CreateTasks() {
       const newArray = productsArray.filter((obj) => obj.job_service_id !== product.job_service_id);
       setProductsArray([]);
       setProductsArray(newArray);
-    } else if (selectedProject?.tempo && product.minutes > selectedProject?.tempo) {
+    } else if (selectedProject?.tempo_inicial && product.minutes > selectedProject?.tempo_inicial) {
       addToast({
         type: 'warning',
         title: 'Aviso',
         description: 'Total de horas ultrapassado, revise os horários e quantidades!'
       });
-    } else if (selectedProject?.tempo && selectedProject?.tempo < totalProductsHours) {
+    } else if (
+      selectedProject?.tempo_inicial &&
+      selectedProject?.tempo_inicial < totalProductsHours
+    ) {
       addToast({
         type: 'warning',
         title: 'Aviso',
@@ -753,13 +793,13 @@ export default function CreateTasks() {
         })
       );
       // console.log('log filter product', product, newArray);
-    } else if (selectedProject && selectedProject.tempo < product.minutes) {
+    } else if (selectedProject && selectedProject.tempo_inicial < product.minutes) {
       addToast({
         type: 'warning',
         title: 'Aviso',
         description: 'Total de horas ultrapassado, revise os horários e quantidades!'
       });
-    } else if (selectedProject && selectedProject.tempo < totalProductsHours) {
+    } else if (selectedProject && selectedProject.tempo_inicial < totalProductsHours) {
       addToast({
         type: 'warning',
         title: 'Aviso',
@@ -1226,8 +1266,8 @@ export default function CreateTasks() {
     // console.log('log do product check quantity', quantity, product);
     const totalProductTime = multiplyTime(product.minutes, quantity);
     if (
-      selectedProject?.tempo &&
-      Number(selectedProject?.tempo.slice(0, -6)) < Number(totalProductTime.slice(0, -6))
+      selectedProject?.tempo_inicial &&
+      Number(selectedProject?.tempo_inicial.slice(0, -6)) < Number(totalProductTime.slice(0, -6))
     ) {
       addToast({
         type: 'warning',
@@ -1600,9 +1640,12 @@ export default function CreateTasks() {
         const selectedInfos: any = dataProjects?.filter(
           (obj: any) => obj.project_product_id === id
         );
-        // console.log('log do selected infos', selectedInfos);
         setSelectedProject(selectedInfos[0]);
         handleChangeInput(e);
+        if (selectedInfos[0].listavel === 'false') {
+          setDisplayQuantity(true);
+          getSingleProduct(e.target.value);
+        }
       }
     } else if (e.target.name === 'flow_id') {
       const id = e.target.value;
@@ -1870,6 +1913,10 @@ export default function CreateTasks() {
       checkFlowAndProject();
     }
   }, [DTOForm.flow_id, DTOForm.project_product_id]);
+
+  const handleSingleProductQuantity = (e: any) => {
+    setSingleProductQuantity(e.target.value);
+  };
 
   // useEffect(() => {
   //   console.log('log do tipo de task', tasksType);
@@ -2279,7 +2326,7 @@ export default function CreateTasks() {
           </Footer>
         )}
 
-        {/* Modal product list */}
+        {/* Modal product list hours */}
         <ModalDefault
           isOpen={productsModal}
           onOpenChange={() => setProductsModal(false)}
@@ -2610,7 +2657,7 @@ export default function CreateTasks() {
           <ScheduleUser
             task_title={DTOForm.title}
             taskId={DTOForm?.task_id}
-            estimated_time={tasksType === 'horas' ? estimatedTime : selectedProject?.tempo}
+            estimated_time={tasksType === 'horas' ? estimatedTime : selectedProject?.tempo_inicial}
             flow={DTOForm.flow_id}
             project_product_id={DTOForm.project_product_id}
             limitDate={DTOForm.copywriting_date_end}
@@ -2686,6 +2733,7 @@ export default function CreateTasks() {
           </UsersWrapper>
         </ModalDefault>
 
+        {/* Modal ticket info */}
         <ModalDefault
           isOpen={warningModal}
           title="Aviso"
@@ -2701,6 +2749,61 @@ export default function CreateTasks() {
                 OK
               </ButtonDefault>
             </ModalButtons>
+          </ProductsModalWrapper>
+        </ModalDefault>
+
+        {/* Modal product list quantity */}
+        <ModalDefault isOpen={displayQuantity} onOpenChange={() => setDisplayQuantity(false)}>
+          <ProductsModalWrapper>
+            <ProductsModalTop>
+              <ProductModalTitle>Quantidade de produtos</ProductModalTitle>
+              <CloseModalButton onClick={() => setDisplayQuantity(false)}>
+                <MdClose />
+              </CloseModalButton>
+            </ProductsModalTop>
+
+            <ProductListWrapper>
+              <ProductGridHeader>
+                <div className="list-title">Produto</div>
+                <div className="list-title">Descrição</div>
+                <div className="list-title">Formato</div>
+                <div className="list-title center">Quantidade</div>
+              </ProductGridHeader>
+
+              {productsArray?.map((row: any, index) => (
+                <ProductGrid key={index}>
+                  <div className="product">{row.service}</div>
+                  <div className="category">{row.description}</div>
+                  <div className="category">{row.size}</div>
+                  <div className="quantity">
+                    <SelectDefault
+                      label="Quantidade"
+                      name="quantity_info"
+                      value={singleProductQuantity}
+                      onChange={handleSingleProductQuantity}
+                      error={error?.quantity_info}
+                    >
+                      {numbers.map((number) => (
+                        <option key={number} value={number}>
+                          {number}
+                        </option>
+                      ))}
+                    </SelectDefault>
+                  </div>
+                </ProductGrid>
+              ))}
+            </ProductListWrapper>
+
+            <AddProductButton>
+              <ButtonDefault
+                typeButton="primary"
+                onClick={() => {
+                  setDisplayQuantity(false);
+                }}
+              >
+                Adicionar quantidade
+              </ButtonDefault>
+            </AddProductButton>
           </ProductsModalWrapper>
         </ModalDefault>
       </ContainerWrapper>
