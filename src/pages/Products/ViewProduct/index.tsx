@@ -1444,6 +1444,7 @@ export default function ViewProductsDeliveries() {
           const newFile: any = new File([blob], imageUrl.file_name, { type: blob.type });
 
           fileData.append('archive', newFile);
+          fileData.append('task_file_id', imageUrl.task_file_id);
 
           const responseFile = await api.post(
             `/archive/upload/final/${dataTask?.task_id}`,
