@@ -233,15 +233,18 @@ export default function SummaryTasks({
               </div>
             </SummaryTaskInfo>
 
-            <SummaryTaskDescription>
-              <div className="description-title">Contexto geral</div>
-              <div
-                className="description-info"
-                dangerouslySetInnerHTML={{ __html: taskSummary?.description }}
-              >
-                {/* {taskSummary?.description.replace('<p>', '').replace('</p>', '')} */}
-              </div>
-            </SummaryTaskDescription>
+            {taskSummary?.description !== '' && (
+              <SummaryTaskDescription>
+                <div className="description-title">Contexto geral</div>
+                <div
+                  className="description-info"
+                  dangerouslySetInnerHTML={{ __html: taskSummary?.description }}
+                >
+                  {/* {taskSummary?.description.replace('<p>', '').replace('</p>', '')} */}
+                </div>
+              </SummaryTaskDescription>
+            )}
+
             {taskFiles.length > 0 && (
               <SummaryTaskDescription>
                 <div className="description-title">Arquivos:</div>
@@ -380,9 +383,9 @@ export default function SummaryTasks({
                         <div>
                           Formato: <span>{products.size}</span>
                         </div>
-                        <div>
+                        {/* <div>
                           Quantidade: <span>{products.quantity}</span>
-                        </div>
+                        </div> */}
                       </div>
                     </SummaryCardSubtitle>
                   </SummaryCard>
@@ -469,7 +472,7 @@ export default function SummaryTasks({
               </div>
               <div className="splitter"></div>
               <div className="item-hours">
-                Horas estimadas <span>{projectInfos?.tempo}</span>
+                Horas estimadas <span>{projectInfos?.tempo_restante}</span>
               </div>
             </>
           )}
@@ -486,12 +489,12 @@ export default function SummaryTasks({
               {!updateTask && (
                 <div className="item-hours">
                   Horas disponíveis{' '}
-                  {subtractTime(projectInfos?.tempo, totalArrayHours).includes('-') ? (
+                  {subtractTime(projectInfos?.tempo_restante, totalArrayHours).includes('-') ? (
                     <div className="negative">
-                      {subtractTime(projectInfos?.tempo, totalArrayHours)}
+                      {subtractTime(projectInfos?.tempo_restante, totalArrayHours)}
                     </div>
                   ) : (
-                    <span>{subtractTime(projectInfos?.tempo, totalArrayHours)}</span>
+                    <span>{subtractTime(projectInfos?.tempo_restante, totalArrayHours)}</span>
                   )}
                 </div>
               )}
