@@ -369,7 +369,9 @@ export default function CreateTasks() {
 
   async function getSingleProduct(projectId: string) {
     try {
-      const response = await api.get(`project-products-especific/${projectId}`);
+      const response = await api.get(
+        `/project-products-especific/${projectId}?quantity=${singleProductQuantity}`
+      );
       setProductsArray(response.data.result);
       setQuantityProductInfos({
         maxValue: response.data.result[0].quantity_initial,
@@ -647,18 +649,18 @@ export default function CreateTasks() {
   };
 
   const productsHoursArray = productsArray?.map((row) => {
-    return multiplyTime(row?.minutes, row?.quantity);
+    return row?.minutes;
   });
 
   const totalProductsHours = sumTimes(productsHoursArray);
 
   const timeConsumedRange = isTimeConsumedMoreThanPercent(
     totalProductsHours,
-    selectedProject?.tempo_inicial ? selectedProject?.tempo_inicial : '00:00:00'
+    selectedProject?.tempo_restante ? selectedProject?.tempo_restante : '00:00:00'
   );
 
   const checkTimeoutHasBeenReached = subtractTime(
-    selectedProject?.tempo_inicial ? selectedProject?.tempo_inicial : '00:00:00',
+    selectedProject?.tempo_restante ? selectedProject?.tempo_restante : '00:00:00',
     totalProductsHours
   );
 
@@ -732,15 +734,18 @@ export default function CreateTasks() {
       const newArray = productsArray.filter((obj) => obj.job_service_id !== product.job_service_id);
       setProductsArray([]);
       setProductsArray(newArray);
-    } else if (selectedProject?.tempo_inicial && product.minutes > selectedProject?.tempo_inicial) {
+    } else if (
+      selectedProject?.tempo_restante &&
+      product.minutes > selectedProject?.tempo_restante
+    ) {
       addToast({
         type: 'warning',
         title: 'Aviso',
         description: 'Total de horas ultrapassado, revise os horários e quantidades!'
       });
     } else if (
-      selectedProject?.tempo_inicial &&
-      selectedProject?.tempo_inicial < totalProductsHours
+      selectedProject?.tempo_restante &&
+      selectedProject?.tempo_restante < totalProductsHours
     ) {
       addToast({
         type: 'warning',
@@ -793,13 +798,13 @@ export default function CreateTasks() {
         })
       );
       // console.log('log filter product', product, newArray);
-    } else if (selectedProject && selectedProject.tempo_inicial < product.minutes) {
+    } else if (selectedProject && selectedProject.tempo_restante < product.minutes) {
       addToast({
         type: 'warning',
         title: 'Aviso',
         description: 'Total de horas ultrapassado, revise os horários e quantidades!'
       });
-    } else if (selectedProject && selectedProject.tempo_inicial < totalProductsHours) {
+    } else if (selectedProject && selectedProject.tempo_restante < totalProductsHours) {
       addToast({
         type: 'warning',
         title: 'Aviso',
@@ -1100,14 +1105,12 @@ export default function CreateTasks() {
           }
 
           let hasError = false;
-          productsArray.forEach((obj: any) => {
+          productsArray.forEach((obj: any, index: number) => {
             if (obj.reason_change === '' || obj.reason_change === undefined) {
-              setErrorCategory((errorCategory) => [...errorCategory, obj.job_service_id]);
+              setErrorCategory((errorCategory) => [...errorCategory, index]);
               hasError = true;
             } else {
-              setErrorCategory((prevState) =>
-                prevState.filter((product) => product !== obj.job_service_id)
-              );
+              setErrorCategory((prevState) => prevState.filter((product) => product !== index));
             }
           });
 
@@ -1216,58 +1219,78 @@ export default function CreateTasks() {
   };
 
   const handleProductsDeliveries = (field: string, value: string, productId: any) => {
-    if (field === 'description') {
-      setProductsArray((current) =>
-        current.map((obj) => {
-          if (obj.job_service_id === productId) {
-            return { ...obj, description: value };
+    setProductsArray((current) =>
+      current.map((obj, i) => {
+        if (i === productId) {
+          switch (field) {
+            case 'description':
+              return { ...obj, description: value };
+            case 'size':
+              return { ...obj, size: value };
+            case 'category':
+              setErrorCategory([]);
+              return { ...obj, reason_change: value };
+            case 'type':
+              return { ...obj, type: value };
+            default:
+              return obj;
           }
-          return obj;
-        })
-      );
-    }
+        }
+        return obj;
+      })
+    );
+    // if (field === 'description') {
+    //   setProductsArray((current) =>
+    //     current.map((obj) => {
+    //       if (obj.job_service_id === productId) {
+    //         return { ...obj, description: value };
+    //       }
+    //       return obj;
+    //     })
+    //   );
+    // }
 
-    if (field === 'size') {
-      setProductsArray((current) =>
-        current.map((obj) => {
-          if (obj.job_service_id === productId) {
-            return { ...obj, size: value };
-          }
-          return obj;
-        })
-      );
-    }
+    // if (field === 'size') {
+    //   setProductsArray((current) =>
+    //     current.map((obj) => {
+    //       if (obj.job_service_id === productId) {
+    //         return { ...obj, size: value };
+    //       }
+    //       return obj;
+    //     })
+    //   );
+    // }
 
-    if (field === 'category') {
-      setErrorCategory([]);
-      setProductsArray((current) =>
-        current.map((obj) => {
-          if (obj.job_service_id === productId) {
-            return { ...obj, reason_change: value };
-          }
-          return obj;
-        })
-      );
-    }
+    // if (field === 'category') {
+    //   setErrorCategory([]);
+    //   setProductsArray((current) =>
+    //     current.map((obj) => {
+    //       if (obj.job_service_id === productId) {
+    //         return { ...obj, reason_change: value };
+    //       }
+    //       return obj;
+    //     })
+    //   );
+    // }
 
-    if (field === 'type') {
-      setProductsArray((current) =>
-        current.map((obj) => {
-          if (obj.job_service_id === productId) {
-            return { ...obj, type: value };
-          }
-          return obj;
-        })
-      );
-    }
+    // if (field === 'type') {
+    //   setProductsArray((current) =>
+    //     current.map((obj) => {
+    //       if (obj.job_service_id === productId) {
+    //         return { ...obj, type: value };
+    //       }
+    //       return obj;
+    //     })
+    //   );
+    // }
   };
 
   const handleCheckQuantity = (quantity: any, product: IProduct) => {
     // console.log('log do product check quantity', quantity, product);
     const totalProductTime = multiplyTime(product.minutes, quantity);
     if (
-      selectedProject?.tempo_inicial &&
-      Number(selectedProject?.tempo_inicial.slice(0, -6)) < Number(totalProductTime.slice(0, -6))
+      selectedProject?.tempo_restante &&
+      Number(selectedProject?.tempo_restante.slice(0, -6)) < Number(totalProductTime.slice(0, -6))
     ) {
       addToast({
         type: 'warning',
@@ -1277,67 +1300,69 @@ export default function CreateTasks() {
       // handleProductQuantity(1, product);
     } else {
       if (splitDeliveries) {
-        handleProductQuantityDeliveries(quantity, product);
+        // handleProductQuantityDeliveries(quantity, product);
+        addProductOnDelivery(product, quantity);
       } else {
-        handleProductQuantity(quantity, product);
+        // handleProductQuantity(quantity, product);
+        addObject(product, quantity);
       }
     }
   };
 
-  const handleProductQuantityDeliveries = (value: any, product: any) => {
-    // console.log('log do modal number', productsDeliveriesModal.indexDelivery);
-    if (
-      DTODelivery[productsDeliveriesModal.indexDelivery - 1]?.deliveryProducts.filter(
-        (obj: any) => obj.job_service_id === product.job_service_id
-      ).length > 0
-    ) {
-      const currentProducts =
-        DTODelivery[productsDeliveriesModal.indexDelivery - 1].deliveryProducts;
-      const productIndex = currentProducts.findIndex(
-        (obj: any) => obj.job_service_id === product.job_service_id
-      );
-      const productToUpdate = currentProducts[productIndex];
-      const updatedProduct = {
-        ...productToUpdate,
-        quantity: value
-      };
-      currentProducts[productIndex] = updatedProduct;
-      setDTODelivery((current: any) =>
-        current.map((obj: DeliveryProps) => {
-          if (obj.deliveryProducts[productIndex] === productIndex) {
-            return { deliveryProducts: currentProducts };
-          }
-          return obj;
-        })
-      );
-    } else {
-      addToast({
-        type: 'warning',
-        title: 'ATENÇÃO',
-        description: 'Selecione o produto primeiro, depois a quantidade.'
-      });
-    }
-  };
+  // const handleProductQuantityDeliveries = (value: any, product: any) => {
+  //   // console.log('log do modal number', productsDeliveriesModal.indexDelivery);
+  //   if (
+  //     DTODelivery[productsDeliveriesModal.indexDelivery - 1]?.deliveryProducts.filter(
+  //       (obj: any) => obj.job_service_id === product.job_service_id
+  //     ).length > 0
+  //   ) {
+  //     const currentProducts =
+  //       DTODelivery[productsDeliveriesModal.indexDelivery - 1].deliveryProducts;
+  //     const productIndex = currentProducts.findIndex(
+  //       (obj: any) => obj.job_service_id === product.job_service_id
+  //     );
+  //     const productToUpdate = currentProducts[productIndex];
+  //     const updatedProduct = {
+  //       ...productToUpdate,
+  //       quantity: value
+  //     };
+  //     currentProducts[productIndex] = updatedProduct;
+  //     setDTODelivery((current: any) =>
+  //       current.map((obj: DeliveryProps) => {
+  //         if (obj.deliveryProducts[productIndex] === productIndex) {
+  //           return { deliveryProducts: currentProducts };
+  //         }
+  //         return obj;
+  //       })
+  //     );
+  //   } else {
+  //     addToast({
+  //       type: 'warning',
+  //       title: 'ATENÇÃO',
+  //       description: 'Selecione o produto primeiro, depois a quantidade.'
+  //     });
+  //   }
+  // };
 
-  const handleProductQuantity = (value: any, product: any) => {
-    // console.log('log do product adicionado', value, product);
-    if (productsArray.filter((obj) => obj.job_service_id === product.job_service_id).length > 0) {
-      setProductsArray((current) =>
-        current.map((obj) => {
-          if (obj.job_service_id === product.job_service_id) {
-            return { ...obj, quantity: value };
-          }
-          return obj;
-        })
-      );
-    } else {
-      addToast({
-        type: 'warning',
-        title: 'ATENÇÃO',
-        description: 'Selecione o produto primeiro, depois a quantidade.'
-      });
-    }
-  };
+  // const handleProductQuantity = (value: any, product: any) => {
+  //   // console.log('log do product adicionado', value, product);
+  //   if (productsArray.filter((obj) => obj.job_service_id === product.job_service_id).length > 0) {
+  //     setProductsArray((current) =>
+  //       current.map((obj) => {
+  //         if (obj.job_service_id === product.job_service_id) {
+  //           return { ...obj, quantity: value };
+  //         }
+  //         return obj;
+  //       })
+  //     );
+  //   } else {
+  //     addToast({
+  //       type: 'warning',
+  //       title: 'ATENÇÃO',
+  //       description: 'Selecione o produto primeiro, depois a quantidade.'
+  //     });
+  //   }
+  // };
 
   const handleOnSubmit = useCallback(async () => {
     try {
@@ -1677,22 +1702,44 @@ export default function CreateTasks() {
     }
   };
 
-  const handleDeleteProduct = (id: any, deliveryId: any) => {
-    const newArray = productsArray.filter((obj) => obj.job_service_id !== id);
+  const handleDeleteProduct = (deliveryId: any, index: number) => {
+    console.log('log do delete =>', deliveryId, index);
+    const newArray = [...productsArray];
+    newArray.splice(index, 1);
     setProductsArray([]);
     setProductsArray(newArray);
-    const updatedDeliveryArray = DTODelivery.map((delivery) => {
-      if (delivery.deliveryId === deliveryId) {
-        return {
-          ...delivery,
-          deliveryProducts: delivery.deliveryProducts.filter(
-            (product: any) => product.job_service_id !== id
-          )
-        };
-      }
-      return delivery;
+
+    // const newArray = productsArray.filter((obj) => obj.job_service_id !== id);
+    // setProductsArray([]);
+    // setProductsArray(newArray);
+    // const updatedDeliveryArray = DTODelivery.map((delivery) => {
+    //   if (delivery.deliveryId === deliveryId) {
+    //     return {
+    //       ...delivery,
+    //       deliveryProducts: delivery.deliveryProducts.filter(
+    //         (product: any) => product.job_service_id !== id
+    //       )
+    //     };
+    //   }
+    //   return delivery;
+    // });
+    // setDTODelivery(updatedDeliveryArray);
+  };
+
+  const handleDeleteProductDelivery = (indexDelivery: any, indexProduct: any, idProduct: any) => {
+    setDTODelivery((prevDeliveryArray) => {
+      return prevDeliveryArray.map((delivery) => {
+        if (delivery.deliveryId === indexDelivery) {
+          return {
+            ...delivery,
+            deliveryProducts: delivery.deliveryProducts.filter(
+              (_: any, i: number) => i !== indexProduct
+            )
+          };
+        }
+        return delivery;
+      });
     });
-    setDTODelivery(updatedDeliveryArray);
   };
 
   const handleDeleteDelivery = (id: any) => {
@@ -1918,6 +1965,50 @@ export default function CreateTasks() {
     setSingleProductQuantity(e.target.value);
   };
 
+  const addProductOnDelivery = (product: any, value: number) => {
+    const modifiedObject = { ...product, quantity: 1 };
+    const productIndex = productsDeliveriesModal.indexDelivery - 1;
+
+    setDTODelivery((current: any) =>
+      current.map((obj: DeliveryProps, index: number) => {
+        if (index === productIndex) {
+          const existingProductCount = obj.deliveryProducts.filter(
+            (item) => item.job_service_id === modifiedObject.job_service_id
+          ).length;
+
+          const productsToAdd = Math.max(0, value - existingProductCount);
+
+          const updatedProducts = [
+            ...obj.deliveryProducts,
+            ...Array.from({ length: productsToAdd }, (_, i) => ({ ...modifiedObject }))
+          ];
+
+          return { ...obj, deliveryProducts: updatedProducts };
+        }
+        return obj;
+      })
+    );
+  };
+
+  const addObject = (newObject: any, count: number) => {
+    const modifiedObject = { ...newObject, quantity: 1 };
+
+    setProductsArray((prevObjects) => {
+      const existingObjectCount = prevObjects.filter(
+        (obj) => obj.job_service_id === modifiedObject.job_service_id
+      ).length;
+
+      const objectsToAdd = Math.max(0, count - existingObjectCount);
+
+      return [
+        ...prevObjects,
+        ...Array.from({ length: objectsToAdd }, (_, index) => ({
+          ...modifiedObject
+        }))
+      ];
+    });
+  };
+
   // useEffect(() => {
   //   console.log('log do tipo de task', tasksType);
   // }, [tasksType]);
@@ -1930,9 +2021,9 @@ export default function CreateTasks() {
   //   console.log('log do products Array', productsArray);
   // }, [productsArray]);
 
-  // useEffect(() => {
-  //   console.log('log do Delivery DTO', DTODelivery);
-  // }, [DTODelivery]);
+  useEffect(() => {
+    console.log('log do Delivery DTO', DTODelivery);
+  }, [DTODelivery]);
 
   // useEffect(() => {
   //   console.log('Log do DTO', DTOForm);
@@ -2071,6 +2162,7 @@ export default function CreateTasks() {
                     deleteDelivery={handleDeleteDelivery}
                     deleteProduct={handleDeleteProduct}
                     handleTitleOfDelivery={handleDeliveryTitle}
+                    deleteDeliveryProduct={handleDeleteProductDelivery}
                   />
                   {!splitDeliveries && tasksType === 'horas' && (
                     <div style={{ marginBottom: '38px' }}>
@@ -2374,12 +2466,23 @@ export default function CreateTasks() {
                   className="search-field"
                 />
 
-                {tasksType === 'horas' && (
+                {createStep === 1 && tasksType === 'horas' && (
                   <ButtonDefault
                     typeButton="primary"
                     onClick={() => {
                       setProductsModal(false);
                       setCreateStep(createStep + 1);
+                      setDTODelivery([{ ...DTODelivery[0], deliveryProducts: productsArray }]);
+                    }}
+                  >
+                    Adicionar Produto
+                  </ButtonDefault>
+                )}
+                {createStep > 1 && (
+                  <ButtonDefault
+                    typeButton="primary"
+                    onClick={() => {
+                      setProductsModal(false);
                       setDTODelivery([{ ...DTODelivery[0], deliveryProducts: productsArray }]);
                     }}
                   >
@@ -2418,9 +2521,9 @@ export default function CreateTasks() {
                       receiveQuantity={
                         productsArray?.filter((obj) => obj.job_service_id === row.job_service_id)
                           .length > 0
-                          ? row.quantity
-                            ? row.quantity
-                            : 1
+                          ? productsArray?.filter(
+                              (obj) => obj.job_service_id === row.job_service_id
+                            ).length
                           : 0
                       }
                       infosReceived={row}
@@ -2466,6 +2569,7 @@ export default function CreateTasks() {
                   typeButton="primary"
                   onClick={() => {
                     setProductsModal(false);
+                    setDTODelivery([{ ...DTODelivery[0], deliveryProducts: productsArray }]);
                   }}
                 >
                   Adicionar Produto
@@ -2618,7 +2722,11 @@ export default function CreateTasks() {
                         ]?.deliveryProducts?.filter(
                           (obj: any) => obj.job_service_id === row.job_service_id
                         ).length > 0
-                          ? 1
+                          ? DTODelivery[
+                              productsDeliveriesModal.indexDelivery - 1
+                            ]?.deliveryProducts?.filter(
+                              (obj: any) => obj.job_service_id === row.job_service_id
+                            ).length
                           : 0
                       }
                       infosReceived={row}
@@ -2657,7 +2765,7 @@ export default function CreateTasks() {
           <ScheduleUser
             task_title={DTOForm.title}
             taskId={DTOForm?.task_id}
-            estimated_time={tasksType === 'horas' ? estimatedTime : selectedProject?.tempo_inicial}
+            estimated_time={tasksType === 'horas' ? estimatedTime : selectedProject?.tempo_restante}
             flow={DTOForm.flow_id}
             project_product_id={DTOForm.project_product_id}
             limitDate={DTOForm.copywriting_date_end}
@@ -2799,6 +2907,7 @@ export default function CreateTasks() {
                 typeButton="primary"
                 onClick={() => {
                   setDisplayQuantity(false);
+                  getSingleProduct(selectedProject?.project_product_id);
                 }}
               >
                 Adicionar quantidade
