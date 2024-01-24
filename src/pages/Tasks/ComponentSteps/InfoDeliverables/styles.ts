@@ -329,6 +329,19 @@ export const TotalHours = styled.div`
     color: var(--gray-800);
     font-weight: var(--weight-semibold);
   }
+
+  .info-hours {
+    color: var(--success);
+    font-size: var(--text-small-md);
+    font-weight: var(--weight-semibold);
+
+    &.more-30 {
+      color: var(--Warning);
+    }
+    &.more-50 {
+      color: var(--Danger);
+    }
+  }
 `;
 
 export const DateContainer = styled.div`
