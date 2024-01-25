@@ -276,9 +276,9 @@ export default function InfoDeliveries({
 
   useEffect(() => {
     getParams();
-    console.log('log deliverysArray =>', deliveriesArray);
-    console.log('log dataArray =>', data);
-    console.log('log projectInfo =>', projectInfo);
+    // console.log('log deliverysArray =>', deliveriesArray);
+    // console.log('log dataArray =>', data);
+    // console.log('log projectInfo =>', projectInfo);
   }, []);
 
   return (
@@ -639,7 +639,7 @@ export default function InfoDeliveries({
                     <tbody>
                       {row.deliveryProducts?.map((product: any, indexProduct: any) => (
                         <tr key={indexProduct}>
-                          <td>#{indexProduct + 1}</td>
+                          <td>#{String(indexProduct + 1).padStart(2, '0')}</td>
                           <td style={{ minWidth: '150px' }}>{product.service}</td>
                           <td>
                             <div
@@ -657,7 +657,7 @@ export default function InfoDeliveries({
                                 value={product.description}
                                 maxLength={40}
                                 type={'text'}
-                                disabled={descriptionText.inputId !== product.job_service_id}
+                                disabled={descriptionText.inputId !== indexProduct}
                                 onChange={(e: any) =>
                                   handleDescriptionProduct(
                                     index,
@@ -669,11 +669,9 @@ export default function InfoDeliveries({
                                 //   error={error?.date_start}
                               />
                               <EditableFormat
-                                className={
-                                  descriptionText.inputId === product.job_service_id ? 'edit' : ''
-                                }
+                                className={descriptionText.inputId === indexProduct ? 'edit' : ''}
                                 onClick={() => {
-                                  setDescriptionText({ inputId: product.job_service_id, text: '' });
+                                  setDescriptionText({ inputId: indexProduct, text: '' });
                                 }}
                               >
                                 <BiPencil />
@@ -695,8 +693,7 @@ export default function InfoDeliveries({
                                 placeholder="128x190"
                                 value={product.size}
                                 disabled={
-                                  editFormat.productIndex === product.job_service_id &&
-                                  editFormat.editable
+                                  editFormat.productIndex === indexProduct && editFormat.editable
                                     ? false
                                     : true
                                 }
@@ -711,12 +708,10 @@ export default function InfoDeliveries({
                                 //   error={error?.date_start}
                               />
                               <EditableFormat
-                                className={
-                                  editFormat.productIndex === product.job_service_id ? 'edit' : ''
-                                }
+                                className={editFormat.productIndex === indexProduct ? 'edit' : ''}
                                 onClick={() => {
                                   setEditFormat({
-                                    productIndex: product.job_service_id,
+                                    productIndex: indexProduct,
                                     editable: true
                                   });
                                   setFormatType('');
@@ -740,9 +735,7 @@ export default function InfoDeliveries({
                                 )
                               }
                               placeHolder="Selecione..."
-                              error={
-                                errorCategory.includes(product.job_service_id) ? 'Campo vazio' : ''
-                              }
+                              error={errorCategory.includes(indexProduct) ? 'Campo vazio' : ''}
                             >
                               {dataTypes?.map((row: TypeProps) => (
                                 <option key={row.task_type} value={row.task_type}>
