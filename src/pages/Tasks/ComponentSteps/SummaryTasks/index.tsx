@@ -76,6 +76,10 @@ export default function SummaryTasks({
   const [deliveryArrayHours, setDeliveryArrayHours] = useState<any>('');
   const [totalArrayHours, setTotalArrayHours] = useState<any>('');
 
+  const productsHoursArray = selectedProducts?.flatMap((row: any) => {
+    return row?.minutes;
+  });
+
   function setTotalHours() {
     if (updateTask) {
       setDeliveryArrayHours(
@@ -435,7 +439,7 @@ export default function SummaryTasks({
                       </div>
                     ) : (
                       <div>
-                        Tipo: <span>{row.category}</span>
+                        Categoria: <span>{row.category}</span>
                       </div>
                     )}
                   </div>
@@ -449,6 +453,9 @@ export default function SummaryTasks({
                   >
                     <div>
                       I/D: <span>{row.type}</span>
+                    </div>
+                    <div>
+                      Tempo estimado: <span>{row.minutes}</span>
                     </div>
                     <div>
                       Formato: <span>{row.size}</span>
@@ -467,12 +474,11 @@ export default function SummaryTasks({
           {taskType !== 'horas' && (
             <>
               <div className="item-hours">
-                {/* Total de itens: <span>{selectedProducts.length + deadlineTotal}</span> */}
-                Total de itens: <span>1</span>
+                Total de itens: <span>{selectedProducts?.length}</span>
               </div>
               <div className="splitter"></div>
               <div className="item-hours">
-                Horas estimadas <span>{projectInfos?.tempo_restante}</span>
+                Horas estimadas <span>{sumTimes(productsHoursArray)}</span>
               </div>
             </>
           )}
