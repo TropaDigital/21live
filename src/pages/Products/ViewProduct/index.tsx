@@ -977,7 +977,6 @@ export default function ViewProductsDeliveries() {
     try {
       setLoading(true);
       if (hasToDismemberTask && checkType !== 'back' && !hasDismemberedProduct) {
-        console.log('log do checkflow');
         setModalDismemberment(true);
       } else if (
         uploadClient &&
@@ -986,10 +985,8 @@ export default function ViewProductsDeliveries() {
         dataTask?.status !== 'Aguardando Aprovação' &&
         dataTask?.status !== 'Avaliada'
       ) {
-        console.log('log do checkflow + aguard approve');
         setModalTenantApprove(true);
       } else if (checkType === 'next' && !finalCard) {
-        console.log('checkei o flow - !finalcard');
         const response = await api.get(
           `/flow-function?step=${Number(actualStep) + 1}&flow_id=${dataTask?.flow_id}`
         );
@@ -1008,11 +1005,9 @@ export default function ViewProductsDeliveries() {
           } else {
             setModalSendToUser(true);
           }
-          // console.log('log do checkFlow to show hours');
         }
         if (response.data.result[0].show_hours === 'false') {
           handleNextUser('next');
-          // console.log('log do checkFlow to show schedule');
         }
       } else if (checkType === 'next' && finalCard) {
         if (dataTask.ticket_id !== '' && mandatoryUpload) {
@@ -1444,7 +1439,7 @@ export default function ViewProductsDeliveries() {
           const newFile: any = new File([blob], imageUrl.file_name, { type: blob.type });
 
           fileData.append('archive', newFile);
-          fileData.append('task_file_id', imageUrl.task_file_id);
+          // fileData.append('task_file_id', imageUrl.task_file_id);
 
           const responseFile = await api.post(
             `/archive/upload/final/${dataTask?.task_id}`,
@@ -1773,7 +1768,8 @@ export default function ViewProductsDeliveries() {
 
                       {row.time_line.length > 0 ? (
                         <TimelineExtraInfo>
-                          Concluído por: {row.time_line[0].name}
+                          Concluído por:{' '}
+                          {row.time_line.length > 1 ? row.time_line[1].name : row.time_line[0].name}
                           <div>as {moment(row.time_line[0].created).format('HH:mm')}h</div>
                         </TimelineExtraInfo>
                       ) : (
@@ -1886,7 +1882,6 @@ export default function ViewProductsDeliveries() {
               cardTitle="Contexto geral"
               cardType="text"
               dataText={dataTask?.description}
-              isPlayingTime={() => ''}
             />
           </CardsWrapper>
 
