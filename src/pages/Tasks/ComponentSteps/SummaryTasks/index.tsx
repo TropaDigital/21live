@@ -76,6 +76,10 @@ export default function SummaryTasks({
   const [deliveryArrayHours, setDeliveryArrayHours] = useState<any>('');
   const [totalArrayHours, setTotalArrayHours] = useState<any>('');
 
+  const productsHoursArray = selectedProducts?.flatMap((row: any) => {
+    return row?.minutes;
+  });
+
   function setTotalHours() {
     if (updateTask) {
       setDeliveryArrayHours(
@@ -233,15 +237,18 @@ export default function SummaryTasks({
               </div>
             </SummaryTaskInfo>
 
-            <SummaryTaskDescription>
-              <div className="description-title">Contexto geral</div>
-              <div
-                className="description-info"
-                dangerouslySetInnerHTML={{ __html: taskSummary?.description }}
-              >
-                {/* {taskSummary?.description.replace('<p>', '').replace('</p>', '')} */}
-              </div>
-            </SummaryTaskDescription>
+            {taskSummary?.description !== '' && (
+              <SummaryTaskDescription>
+                <div className="description-title">Contexto geral</div>
+                <div
+                  className="description-info"
+                  dangerouslySetInnerHTML={{ __html: taskSummary?.description }}
+                >
+                  {/* {taskSummary?.description.replace('<p>', '').replace('</p>', '')} */}
+                </div>
+              </SummaryTaskDescription>
+            )}
+
             {taskFiles.length > 0 && (
               <SummaryTaskDescription>
                 <div className="description-title">Arquivos:</div>
@@ -380,9 +387,9 @@ export default function SummaryTasks({
                         <div>
                           Formato: <span>{products.size}</span>
                         </div>
-                        <div>
+                        {/* <div>
                           Quantidade: <span>{products.quantity}</span>
-                        </div>
+                        </div> */}
                       </div>
                     </SummaryCardSubtitle>
                   </SummaryCard>
@@ -432,7 +439,7 @@ export default function SummaryTasks({
                       </div>
                     ) : (
                       <div>
-                        Tipo: <span>{row.category}</span>
+                        Categoria: <span>{row.category}</span>
                       </div>
                     )}
                   </div>
@@ -446,6 +453,9 @@ export default function SummaryTasks({
                   >
                     <div>
                       I/D: <span>{row.type}</span>
+                    </div>
+                    <div>
+                      Tempo estimado: <span>{row.minutes}</span>
                     </div>
                     <div>
                       Formato: <span>{row.size}</span>
@@ -464,12 +474,11 @@ export default function SummaryTasks({
           {taskType !== 'horas' && (
             <>
               <div className="item-hours">
-                {/* Total de itens: <span>{selectedProducts.length + deadlineTotal}</span> */}
-                Total de itens: <span>1</span>
+                Total de itens: <span>{selectedProducts?.length}</span>
               </div>
               <div className="splitter"></div>
               <div className="item-hours">
-                Horas estimadas <span>{projectInfos?.tempo}</span>
+                Horas estimadas <span>{sumTimes(productsHoursArray)}</span>
               </div>
             </>
           )}
@@ -486,12 +495,12 @@ export default function SummaryTasks({
               {!updateTask && (
                 <div className="item-hours">
                   Horas disponíveis{' '}
-                  {subtractTime(projectInfos?.tempo, totalArrayHours).includes('-') ? (
+                  {subtractTime(projectInfos?.tempo_restante, totalArrayHours).includes('-') ? (
                     <div className="negative">
-                      {subtractTime(projectInfos?.tempo, totalArrayHours)}
+                      {subtractTime(projectInfos?.tempo_restante, totalArrayHours)}
                     </div>
                   ) : (
-                    <span>{subtractTime(projectInfos?.tempo, totalArrayHours)}</span>
+                    <span>{subtractTime(projectInfos?.tempo_restante, totalArrayHours)}</span>
                   )}
                 </div>
               )}

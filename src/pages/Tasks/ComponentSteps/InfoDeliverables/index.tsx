@@ -37,6 +37,11 @@ import { useParamsHook } from '../../../../hooks/useParams';
 
 // Utils
 import { DeliveryProps, IProductBackend } from '../../../../types';
+import {
+  isTimeConsumedMoreThanPercent,
+  subtractTime,
+  sumTimes
+} from '../../../../utils/convertTimes';
 
 // Libraries
 import moment from 'moment';
@@ -59,6 +64,11 @@ interface Props {
   deliveriesArray: any[];
   deleteProduct: (id: number, deliveryId: any) => void;
   deleteDelivery: (id: number | string) => void;
+  deleteDeliveryProduct: (
+    indexDelivery: string | number,
+    indexProduct: number,
+    idProduct: number
+  ) => void;
   projectInfo: any;
   passProductProps: (product: any) => void;
   updateDeliveryDate: (value: any, id: any) => void;
@@ -121,6 +131,7 @@ export default function InfoDeliveries({
   deliveriesSplited,
   deleteDelivery,
   deleteProduct,
+  deleteDeliveryProduct,
   projectInfo,
   errorCategory,
   errorDelivery,
@@ -169,7 +180,24 @@ export default function InfoDeliveries({
   );
   const titleRef = useRef<any>();
   const creationDateRef = useRef<any>();
-  const essayDateRef = useRef<any>();
+
+  const productsHoursArray = deliveriesArray?.flatMap((row) => {
+    return row.deliveryProducts.map((product: any) => {
+      return product?.minutes;
+    });
+  });
+
+  const totalProductsHours = sumTimes(productsHoursArray);
+
+  const checkTimeoutHasBeenReached = subtractTime(
+    projectInfo?.tempo_restante ? projectInfo?.tempo_restante : '00:00:00',
+    totalProductsHours
+  );
+
+  const timeConsumedRange = isTimeConsumedMoreThanPercent(
+    totalProductsHours,
+    projectInfo?.tempo_restante ? projectInfo?.tempo_restante : '00:00:00'
+  );
 
   useEffect(() => {
     handleProducts('description', descriptionText.text, descriptionText.inputId);
@@ -194,17 +222,17 @@ export default function InfoDeliveries({
   useEffect(() => {
     if (!updateTask && dataSingleProduct) {
       const productToPass = {
-        category: dataSingleProduct[0].category,
-        description: dataSingleProduct[0].description,
-        flag: dataSingleProduct[0].flag,
-        minutes: dataSingleProduct[0].minutes,
-        minutes_creation: dataSingleProduct[0].minutes_creation,
-        minutes_essay: dataSingleProduct[0].minutes_essay,
+        category: dataSingleProduct[0]?.category,
+        description: dataSingleProduct[0]?.description,
+        flag: dataSingleProduct[0]?.flag,
+        minutes: dataSingleProduct[0]?.minutes,
+        minutes_creation: dataSingleProduct[0]?.minutes_creation,
+        minutes_essay: dataSingleProduct[0]?.minutes_essay,
         quantity: '1',
-        service: dataSingleProduct[0].service,
-        job_service_id: dataSingleProduct[0].job_service_id,
-        size: dataSingleProduct[0].size,
-        type: dataSingleProduct[0].type
+        service: dataSingleProduct[0]?.service,
+        job_service_id: dataSingleProduct[0]?.job_service_id,
+        size: dataSingleProduct[0]?.size,
+        type: dataSingleProduct[0]?.type
       };
       passProductProps(productToPass);
     }
@@ -248,6 +276,9 @@ export default function InfoDeliveries({
 
   useEffect(() => {
     getParams();
+    // console.log('log deliverysArray =>', deliveriesArray);
+    // console.log('log dataArray =>', data);
+    // console.log('log projectInfo =>', projectInfo);
   }, []);
 
   return (
@@ -255,10 +286,31 @@ export default function InfoDeliveries({
       {!deliveriesSplited && (
         <ProductsTable>
           <FormTitle>Produtos</FormTitle>
-          <TotalHours>
-            Quantidade: <span>{'1/8'} </span>
-            Total de horas estimadas: <span>{projectInfo?.tempo}</span>
-          </TotalHours>
+          {projectInfo.listavel === 'true' && (
+            <TotalHours>
+              Total de horas iniciais: <span>{projectInfo?.tempo_restante}</span>
+              Total de horas restantes:{' '}
+              <div
+                className={
+                  timeConsumedRange === 'more than 30%'
+                    ? 'info-hours more-30'
+                    : timeConsumedRange === 'more than 50%'
+                    ? 'info-hours more-50'
+                    : 'info-hours'
+                }
+              >
+                {checkTimeoutHasBeenReached ? checkTimeoutHasBeenReached : '00:00:00'}
+              </div>
+            </TotalHours>
+          )}
+          {projectInfo.listavel === 'false' && (
+            <TotalHours>
+              Quantidade:{' '}
+              <span>
+                {projectInfo.quantidade_restante}/{projectInfo.quantidade_inicial}
+              </span>
+            </TotalHours>
+          )}
           <table>
             <thead>
               <tr>
@@ -292,19 +344,19 @@ export default function InfoDeliveries({
                         value={row.description}
                         maxLength={40}
                         type={'text'}
-                        disabled={descriptionText.inputId !== row.job_service_id}
+                        disabled={descriptionText.inputId !== index}
                         onChange={(e: any) =>
                           setDescriptionText({
-                            inputId: row.job_service_id,
+                            inputId: index,
                             text: e.target.value.slice(0, 40)
                           })
                         }
                         error={errorCategory?.description}
                       />
                       <EditableFormat
-                        className={descriptionText.inputId === row.job_service_id ? 'edit' : ''}
+                        className={descriptionText.inputId === index ? 'edit' : ''}
                         onClick={() => {
-                          setDescriptionText({ inputId: row.job_service_id, text: '' });
+                          setDescriptionText({ inputId: index, text: '' });
                         }}
                       >
                         <BiPencil />
@@ -326,18 +378,16 @@ export default function InfoDeliveries({
                         placeholder="128x190"
                         value={row.size}
                         disabled={
-                          editFormat.productIndex === row.job_service_id && editFormat.editable
-                            ? false
-                            : true
+                          editFormat.productIndex === index && editFormat.editable ? false : true
                         }
                         onChange={(e: any) => setFormatType(e.target.value)}
                         error={errorCategory?.size}
                       />
                       <EditableFormat
-                        className={editFormat.productIndex === row.job_service_id ? 'edit' : ''}
+                        className={editFormat.productIndex === index ? 'edit' : ''}
                         onClick={() => {
                           setEditFormat({
-                            productIndex: row.job_service_id,
+                            productIndex: index,
                             editable: true
                           });
                           setFormatType('');
@@ -354,12 +404,12 @@ export default function InfoDeliveries({
                       value={row.reason_change}
                       onChange={(e: any) =>
                         setProductType({
-                          productIndex: row.job_service_id,
+                          productIndex: index,
                           productTypeValue: e.target.value
                         })
                       }
                       placeHolder="Selecione..."
-                      error={errorCategory.includes(row.job_service_id) ? 'Campo vazio' : ''}
+                      error={errorCategory.includes(index) ? 'Campo vazio' : ''}
                     >
                       {dataTypes?.map((row: TypeProps) => (
                         <option key={row.task_type} value={row.task_type}>
@@ -376,7 +426,7 @@ export default function InfoDeliveries({
                       value={row.type}
                       onChange={(e: any) =>
                         setProductDigitalPrinted({
-                          productIndex: row.job_service_id,
+                          productIndex: index,
                           productTypeSelected: e.target.value
                         })
                       }
@@ -589,7 +639,7 @@ export default function InfoDeliveries({
                     <tbody>
                       {row.deliveryProducts?.map((product: any, indexProduct: any) => (
                         <tr key={indexProduct}>
-                          <td>#{indexProduct + 1}</td>
+                          <td>#{String(indexProduct + 1).padStart(2, '0')}</td>
                           <td style={{ minWidth: '150px' }}>{product.service}</td>
                           <td>
                             <div
@@ -607,7 +657,7 @@ export default function InfoDeliveries({
                                 value={product.description}
                                 maxLength={40}
                                 type={'text'}
-                                disabled={descriptionText.inputId !== product.job_service_id}
+                                disabled={descriptionText.inputId !== indexProduct}
                                 onChange={(e: any) =>
                                   handleDescriptionProduct(
                                     index,
@@ -619,11 +669,9 @@ export default function InfoDeliveries({
                                 //   error={error?.date_start}
                               />
                               <EditableFormat
-                                className={
-                                  descriptionText.inputId === product.job_service_id ? 'edit' : ''
-                                }
+                                className={descriptionText.inputId === indexProduct ? 'edit' : ''}
                                 onClick={() => {
-                                  setDescriptionText({ inputId: product.job_service_id, text: '' });
+                                  setDescriptionText({ inputId: indexProduct, text: '' });
                                 }}
                               >
                                 <BiPencil />
@@ -645,8 +693,7 @@ export default function InfoDeliveries({
                                 placeholder="128x190"
                                 value={product.size}
                                 disabled={
-                                  editFormat.productIndex === product.job_service_id &&
-                                  editFormat.editable
+                                  editFormat.productIndex === indexProduct && editFormat.editable
                                     ? false
                                     : true
                                 }
@@ -661,12 +708,10 @@ export default function InfoDeliveries({
                                 //   error={error?.date_start}
                               />
                               <EditableFormat
-                                className={
-                                  editFormat.productIndex === product.job_service_id ? 'edit' : ''
-                                }
+                                className={editFormat.productIndex === indexProduct ? 'edit' : ''}
                                 onClick={() => {
                                   setEditFormat({
-                                    productIndex: product.job_service_id,
+                                    productIndex: indexProduct,
                                     editable: true
                                   });
                                   setFormatType('');
@@ -690,9 +735,7 @@ export default function InfoDeliveries({
                                 )
                               }
                               placeHolder="Selecione..."
-                              error={
-                                errorCategory.includes(product.job_service_id) ? 'Campo vazio' : ''
-                              }
+                              error={errorCategory.includes(indexProduct) ? 'Campo vazio' : ''}
                             >
                               {dataTypes?.map((row: TypeProps) => (
                                 <option key={row.task_type} value={row.task_type}>
@@ -723,7 +766,13 @@ export default function InfoDeliveries({
                           </td>
                           <td
                             className="delete"
-                            onClick={() => deleteProduct(product.job_service_id, row.deliveryId)}
+                            onClick={() =>
+                              deleteDeliveryProduct(
+                                row.deliveryId,
+                                indexProduct,
+                                product.job_service_id
+                              )
+                            }
                           >
                             <BsTrash />
                           </td>

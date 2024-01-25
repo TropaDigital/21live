@@ -36,6 +36,8 @@ import {
   FormTitle,
   FormWrapper,
   Product,
+  ProductGrid,
+  ProductGridHeader,
   ProductListHeader,
   ProductListWrapper,
   ProductModalTitle,
@@ -87,6 +89,8 @@ import api from '../../../services/api';
 
 // Libraries
 import moment from 'moment';
+import { SelectDefault } from '../../../components/Inputs/SelectDefault';
+import { MdClose } from 'react-icons/md';
 
 interface StateProps {
   [key: string]: any;
@@ -98,9 +102,11 @@ interface ProjectProductProps {
   project_product_id: string;
   produto: string;
   projeto: string;
-  quantidade: string;
+  quantidade_inicial: string;
+  quantidade_restante: string;
   select: string;
-  tempo: string;
+  tempo_inicial: string;
+  tempo_restante: string;
   tipo: string;
 }
 
@@ -134,6 +140,11 @@ interface StepCards {
   ticket_status_id: string;
   tenant_id: string;
   approver: string;
+}
+
+interface QuantityInfos {
+  minValue: number;
+  maxValue: number;
 }
 
 // interface ITicketProps {
@@ -206,7 +217,7 @@ export default function CreateTasks() {
   const [errorCategory, setErrorCategory] = useState<any[]>([]);
   const [errorDeliveryDate, setErrorDeliveryDate] = useState<any[]>([]);
   // const [addDeliveries, setAddDeliveries] = useState<boolean>(false);
-  const newDate = new Date();
+  // const newDate = new Date();
   const [DTOForm, setDTOForm] = useState<ITaskCreate>({
     title: '',
     tenant_id: '',
@@ -251,7 +262,7 @@ export default function CreateTasks() {
         setDataProjects(response.data.result);
       }
     } catch (error: any) {
-      console.log('log get projects', error);
+      console.log('log error get projects', error);
     }
   }
 
@@ -268,9 +279,11 @@ export default function CreateTasks() {
     project_product_id: '',
     produto: '',
     projeto: '',
-    quantidade: '',
+    quantidade_inicial: '',
+    quantidade_restante: '',
     select: '',
-    tempo: '',
+    tempo_inicial: '',
+    tempo_restante: '',
     tipo: ''
   });
   const [selectedSummaryInfos, setSelectedSummaryInfos] = useState<any>({
@@ -342,6 +355,63 @@ export default function CreateTasks() {
   const [usersWithoutSchedule, setUsersWithoutSchedule] = useState<UsersNoSchedule[]>([]);
   const [selectedInitialUser, setSelectedInitalUser] = useState<UsersNoSchedule>();
   const [warningModal, setWarningModal] = useState<boolean>(false);
+  const [displayQuantity, setDisplayQuantity] = useState<boolean>(false);
+  const [quantityProductInfos, setQuantityProductInfos] = useState<QuantityInfos>({
+    maxValue: 0,
+    minValue: 1
+  });
+  const [singleProductQuantity, setSingleProductQuantity] = useState<number>(1);
+
+  const numbers = Array.from(
+    { length: quantityProductInfos?.maxValue - quantityProductInfos?.minValue + 1 },
+    (_, index) => quantityProductInfos?.minValue + index
+  );
+
+  async function getSingleProduct(projectId: string) {
+    try {
+      const response = await api.get(
+        `/project-products-especific/${projectId}?quantity=${singleProductQuantity}`
+      );
+      const transformedData = transformObjects(response.data.result);
+
+      setProductsArray(transformedData);
+
+      setQuantityProductInfos({
+        maxValue: response.data.result[0].quantity,
+        minValue: 1
+      });
+    } catch (error: any) {
+      console.log('log error get single product', error);
+    }
+  }
+
+  function transformObjects(inputArray: any[]) {
+    const keysToKeep = [
+      'category',
+      'description',
+      'flag',
+      'minutes',
+      'minutes_creation',
+      'minutes_essay',
+      'quantity',
+      'service',
+      'job_service_id',
+      'size',
+      'type'
+    ];
+
+    return inputArray.map((inputObject: any) => {
+      const transformedObject: any = {};
+      keysToKeep.forEach((key) => {
+        if (key === 'quantity') {
+          transformedObject[key] = 1;
+        } else if (key in inputObject) {
+          transformedObject[key] = inputObject[key];
+        }
+      });
+      return transformedObject;
+    });
+  }
 
   const addDelivery = () => {
     const newDelivery: DeliveryProps = {
@@ -492,6 +562,7 @@ export default function CreateTasks() {
   };
 
   const handleTypeProduct = (indexDelivery: any, indexProduct: any, idProduct: any, value: any) => {
+    // console.log('log do handleType =>', indexDelivery, indexProduct, idProduct, value);
     if (location.state !== null) {
       const currentProducts = DTODelivery[indexDelivery].produtos;
       const productToUpdate = currentProducts[indexProduct];
@@ -610,18 +681,18 @@ export default function CreateTasks() {
   };
 
   const productsHoursArray = productsArray?.map((row) => {
-    return multiplyTime(row?.minutes, row?.quantity);
+    return row?.minutes;
   });
 
   const totalProductsHours = sumTimes(productsHoursArray);
 
   const timeConsumedRange = isTimeConsumedMoreThanPercent(
     totalProductsHours,
-    selectedProject?.tempo ? selectedProject?.tempo : '00:00:00'
+    selectedProject?.tempo_restante ? selectedProject?.tempo_restante : '00:00:00'
   );
 
   const checkTimeoutHasBeenReached = subtractTime(
-    selectedProject?.tempo ? selectedProject?.tempo : '00:00:00',
+    selectedProject?.tempo_restante ? selectedProject?.tempo_restante : '00:00:00',
     totalProductsHours
   );
 
@@ -695,13 +766,19 @@ export default function CreateTasks() {
       const newArray = productsArray.filter((obj) => obj.job_service_id !== product.job_service_id);
       setProductsArray([]);
       setProductsArray(newArray);
-    } else if (selectedProject?.tempo && product.minutes > selectedProject?.tempo) {
+    } else if (
+      selectedProject?.tempo_restante &&
+      product.minutes > selectedProject?.tempo_restante
+    ) {
       addToast({
         type: 'warning',
         title: 'Aviso',
         description: 'Total de horas ultrapassado, revise os horários e quantidades!'
       });
-    } else if (selectedProject?.tempo && selectedProject?.tempo < totalProductsHours) {
+    } else if (
+      selectedProject?.tempo_restante &&
+      selectedProject?.tempo_restante < totalProductsHours
+    ) {
       addToast({
         type: 'warning',
         title: 'Aviso',
@@ -753,13 +830,13 @@ export default function CreateTasks() {
         })
       );
       // console.log('log filter product', product, newArray);
-    } else if (selectedProject && selectedProject.tempo < product.minutes) {
+    } else if (selectedProject && selectedProject.tempo_restante < product.minutes) {
       addToast({
         type: 'warning',
         title: 'Aviso',
         description: 'Total de horas ultrapassado, revise os horários e quantidades!'
       });
-    } else if (selectedProject && selectedProject.tempo < totalProductsHours) {
+    } else if (selectedProject && selectedProject.tempo_restante < totalProductsHours) {
       addToast({
         type: 'warning',
         title: 'Aviso',
@@ -904,14 +981,12 @@ export default function CreateTasks() {
         }
         if (splitDeliveries && location.state !== null) {
           DTODelivery.map((current: DeliveryUpdate) => {
-            current.produtos.map((obj: any) => {
+            current.produtos.map((obj: any, index: number) => {
               if (obj.reason_change === '' || obj.reason_change === undefined) {
-                setErrorCategory((errorCategory: any) => [...errorCategory, obj.job_service_id]);
+                setErrorCategory((errorCategory: any) => [...errorCategory, index]);
                 throw new Error('Existem produtos sem o "Tipo" selecionado!');
               } else if (obj.reason_change !== '' && obj.reason_change !== undefined) {
-                setErrorCategory((prevState) =>
-                  prevState.filter((product) => product !== obj.job_service_id)
-                );
+                setErrorCategory((prevState) => prevState.filter((product) => product !== index));
                 if (errorCategory.length === 0) {
                   // setAddDeliveries(true);
                   setTimeout(() => {
@@ -969,14 +1044,12 @@ export default function CreateTasks() {
           });
 
           DTODelivery.map((current: DeliveryProps) => {
-            current.deliveryProducts.map((obj: any) => {
+            current.deliveryProducts.map((obj: any, index: number) => {
               if (obj.reason_change === '' || obj.reason_change === undefined) {
-                setErrorCategory((errorCategory: any) => [...errorCategory, obj.job_service_id]);
+                setErrorCategory((errorCategory: any) => [...errorCategory, index]);
                 throw new Error('Existem produtos sem o "Tipo" selecionado!');
               } else if (obj.reason_change !== '' && obj.reason_change !== undefined) {
-                setErrorCategory((prevState) =>
-                  prevState.filter((product) => product !== obj.job_service_id)
-                );
+                setErrorCategory((prevState) => prevState.filter((product) => product !== index));
               }
             });
           });
@@ -1060,14 +1133,12 @@ export default function CreateTasks() {
           }
 
           let hasError = false;
-          productsArray.forEach((obj: any) => {
+          productsArray.forEach((obj: any, index: number) => {
             if (obj.reason_change === '' || obj.reason_change === undefined) {
-              setErrorCategory((errorCategory) => [...errorCategory, obj.job_service_id]);
+              setErrorCategory((errorCategory) => [...errorCategory, index]);
               hasError = true;
             } else {
-              setErrorCategory((prevState) =>
-                prevState.filter((product) => product !== obj.job_service_id)
-              );
+              setErrorCategory((prevState) => prevState.filter((product) => product !== index));
             }
           });
 
@@ -1094,27 +1165,32 @@ export default function CreateTasks() {
           setErrorInput('creation_date_end', undefined);
         }
 
-        productsArray.map((obj: any) => {
+        let hasError = false;
+
+        productsArray.map((obj: any, index: number) => {
           if (obj.reason_change === '' || obj.reason_change === undefined) {
-            setErrorCategory((errorCategory: any) => [...errorCategory, obj.job_service_id]);
-            return addToast({
-              type: 'warning',
-              title: 'Atenção',
-              description: 'Existem produtos sem o "Tipo" selecionado!'
-            });
+            setErrorCategory((errorCategory: any) => [...errorCategory, index]);
+            hasError = true;
+            throw new Error('Existem produtos sem o "Tipo" selecionado!');
           } else {
             setErrorCategory([]);
-            // setAddDeliveries(true);
-            setTimeout(() => {
-              setCreateStep(createStep + 1);
-            }, 500);
           }
         });
+
+        if (hasError) {
+          throw new Error('Existem produtos sem o "Tipo" selecionado!');
+        } else {
+          setErrorCategory([]);
+          // setAddDeliveries(true);
+          setTimeout(() => {
+            setCreateStep(createStep + 1);
+          }, 150);
+        }
       } else if (createStep === 3 && tasksType !== 'livre') {
         if (copywriting_description === '') {
           throw setErrorInput(
             'copywriting_description',
-            `Descrição do Input de ${
+            `Descrição do Input ${
               parameters.input_name !== '' ? parameters.input_name : 'Pré-requisitos'
             } é obrigatória!`
           );
@@ -1125,7 +1201,7 @@ export default function CreateTasks() {
         if (creation_description === '') {
           throw setErrorInput(
             'creation_description',
-            'Descrição do Input de atividade é obrigatória!'
+            'Descrição do Input Atividade/Criação é obrigatória!'
           );
         } else {
           setErrorInput('creation_description', undefined);
@@ -1176,58 +1252,78 @@ export default function CreateTasks() {
   };
 
   const handleProductsDeliveries = (field: string, value: string, productId: any) => {
-    if (field === 'description') {
-      setProductsArray((current) =>
-        current.map((obj) => {
-          if (obj.job_service_id === productId) {
-            return { ...obj, description: value };
+    setProductsArray((current) =>
+      current.map((obj, i) => {
+        if (i === productId) {
+          switch (field) {
+            case 'description':
+              return { ...obj, description: value };
+            case 'size':
+              return { ...obj, size: value };
+            case 'category':
+              setErrorCategory([]);
+              return { ...obj, reason_change: value };
+            case 'type':
+              return { ...obj, type: value };
+            default:
+              return obj;
           }
-          return obj;
-        })
-      );
-    }
+        }
+        return obj;
+      })
+    );
+    // if (field === 'description') {
+    //   setProductsArray((current) =>
+    //     current.map((obj) => {
+    //       if (obj.job_service_id === productId) {
+    //         return { ...obj, description: value };
+    //       }
+    //       return obj;
+    //     })
+    //   );
+    // }
 
-    if (field === 'size') {
-      setProductsArray((current) =>
-        current.map((obj) => {
-          if (obj.job_service_id === productId) {
-            return { ...obj, size: value };
-          }
-          return obj;
-        })
-      );
-    }
+    // if (field === 'size') {
+    //   setProductsArray((current) =>
+    //     current.map((obj) => {
+    //       if (obj.job_service_id === productId) {
+    //         return { ...obj, size: value };
+    //       }
+    //       return obj;
+    //     })
+    //   );
+    // }
 
-    if (field === 'category') {
-      setErrorCategory([]);
-      setProductsArray((current) =>
-        current.map((obj) => {
-          if (obj.job_service_id === productId) {
-            return { ...obj, reason_change: value };
-          }
-          return obj;
-        })
-      );
-    }
+    // if (field === 'category') {
+    //   setErrorCategory([]);
+    //   setProductsArray((current) =>
+    //     current.map((obj) => {
+    //       if (obj.job_service_id === productId) {
+    //         return { ...obj, reason_change: value };
+    //       }
+    //       return obj;
+    //     })
+    //   );
+    // }
 
-    if (field === 'type') {
-      setProductsArray((current) =>
-        current.map((obj) => {
-          if (obj.job_service_id === productId) {
-            return { ...obj, type: value };
-          }
-          return obj;
-        })
-      );
-    }
+    // if (field === 'type') {
+    //   setProductsArray((current) =>
+    //     current.map((obj) => {
+    //       if (obj.job_service_id === productId) {
+    //         return { ...obj, type: value };
+    //       }
+    //       return obj;
+    //     })
+    //   );
+    // }
   };
 
   const handleCheckQuantity = (quantity: any, product: IProduct) => {
     // console.log('log do product check quantity', quantity, product);
     const totalProductTime = multiplyTime(product.minutes, quantity);
     if (
-      selectedProject?.tempo &&
-      Number(selectedProject?.tempo.slice(0, -6)) < Number(totalProductTime.slice(0, -6))
+      selectedProject?.tempo_restante &&
+      Number(selectedProject?.tempo_restante.slice(0, -6)) < Number(totalProductTime.slice(0, -6))
     ) {
       addToast({
         type: 'warning',
@@ -1237,67 +1333,69 @@ export default function CreateTasks() {
       // handleProductQuantity(1, product);
     } else {
       if (splitDeliveries) {
-        handleProductQuantityDeliveries(quantity, product);
+        // handleProductQuantityDeliveries(quantity, product);
+        addProductOnDelivery(product, quantity);
       } else {
-        handleProductQuantity(quantity, product);
+        // handleProductQuantity(quantity, product);
+        addObject(product, quantity);
       }
     }
   };
 
-  const handleProductQuantityDeliveries = (value: any, product: any) => {
-    // console.log('log do modal number', productsDeliveriesModal.indexDelivery);
-    if (
-      DTODelivery[productsDeliveriesModal.indexDelivery - 1]?.deliveryProducts.filter(
-        (obj: any) => obj.job_service_id === product.job_service_id
-      ).length > 0
-    ) {
-      const currentProducts =
-        DTODelivery[productsDeliveriesModal.indexDelivery - 1].deliveryProducts;
-      const productIndex = currentProducts.findIndex(
-        (obj: any) => obj.job_service_id === product.job_service_id
-      );
-      const productToUpdate = currentProducts[productIndex];
-      const updatedProduct = {
-        ...productToUpdate,
-        quantity: value
-      };
-      currentProducts[productIndex] = updatedProduct;
-      setDTODelivery((current: any) =>
-        current.map((obj: DeliveryProps) => {
-          if (obj.deliveryProducts[productIndex] === productIndex) {
-            return { deliveryProducts: currentProducts };
-          }
-          return obj;
-        })
-      );
-    } else {
-      addToast({
-        type: 'warning',
-        title: 'ATENÇÃO',
-        description: 'Selecione o produto primeiro, depois a quantidade.'
-      });
-    }
-  };
+  // const handleProductQuantityDeliveries = (value: any, product: any) => {
+  //   // console.log('log do modal number', productsDeliveriesModal.indexDelivery);
+  //   if (
+  //     DTODelivery[productsDeliveriesModal.indexDelivery - 1]?.deliveryProducts.filter(
+  //       (obj: any) => obj.job_service_id === product.job_service_id
+  //     ).length > 0
+  //   ) {
+  //     const currentProducts =
+  //       DTODelivery[productsDeliveriesModal.indexDelivery - 1].deliveryProducts;
+  //     const productIndex = currentProducts.findIndex(
+  //       (obj: any) => obj.job_service_id === product.job_service_id
+  //     );
+  //     const productToUpdate = currentProducts[productIndex];
+  //     const updatedProduct = {
+  //       ...productToUpdate,
+  //       quantity: value
+  //     };
+  //     currentProducts[productIndex] = updatedProduct;
+  //     setDTODelivery((current: any) =>
+  //       current.map((obj: DeliveryProps) => {
+  //         if (obj.deliveryProducts[productIndex] === productIndex) {
+  //           return { deliveryProducts: currentProducts };
+  //         }
+  //         return obj;
+  //       })
+  //     );
+  //   } else {
+  //     addToast({
+  //       type: 'warning',
+  //       title: 'ATENÇÃO',
+  //       description: 'Selecione o produto primeiro, depois a quantidade.'
+  //     });
+  //   }
+  // };
 
-  const handleProductQuantity = (value: any, product: any) => {
-    // console.log('log do product adicionado', value, product);
-    if (productsArray.filter((obj) => obj.job_service_id === product.job_service_id).length > 0) {
-      setProductsArray((current) =>
-        current.map((obj) => {
-          if (obj.job_service_id === product.job_service_id) {
-            return { ...obj, quantity: value };
-          }
-          return obj;
-        })
-      );
-    } else {
-      addToast({
-        type: 'warning',
-        title: 'ATENÇÃO',
-        description: 'Selecione o produto primeiro, depois a quantidade.'
-      });
-    }
-  };
+  // const handleProductQuantity = (value: any, product: any) => {
+  //   // console.log('log do product adicionado', value, product);
+  //   if (productsArray.filter((obj) => obj.job_service_id === product.job_service_id).length > 0) {
+  //     setProductsArray((current) =>
+  //       current.map((obj) => {
+  //         if (obj.job_service_id === product.job_service_id) {
+  //           return { ...obj, quantity: value };
+  //         }
+  //         return obj;
+  //       })
+  //     );
+  //   } else {
+  //     addToast({
+  //       type: 'warning',
+  //       title: 'ATENÇÃO',
+  //       description: 'Selecione o produto primeiro, depois a quantidade.'
+  //     });
+  //   }
+  // };
 
   const handleOnSubmit = useCallback(async () => {
     try {
@@ -1600,9 +1698,12 @@ export default function CreateTasks() {
         const selectedInfos: any = dataProjects?.filter(
           (obj: any) => obj.project_product_id === id
         );
-        // console.log('log do selected infos', selectedInfos);
         setSelectedProject(selectedInfos[0]);
         handleChangeInput(e);
+        if (selectedInfos[0].listavel === 'false') {
+          setDisplayQuantity(true);
+          getSingleProduct(e.target.value);
+        }
       }
     } else if (e.target.name === 'flow_id') {
       const id = e.target.value;
@@ -1634,22 +1735,43 @@ export default function CreateTasks() {
     }
   };
 
-  const handleDeleteProduct = (id: any, deliveryId: any) => {
-    const newArray = productsArray.filter((obj) => obj.job_service_id !== id);
+  const handleDeleteProduct = (deliveryId: any, index: number) => {
+    const newArray = [...productsArray];
+    newArray.splice(index, 1);
     setProductsArray([]);
     setProductsArray(newArray);
-    const updatedDeliveryArray = DTODelivery.map((delivery) => {
-      if (delivery.deliveryId === deliveryId) {
-        return {
-          ...delivery,
-          deliveryProducts: delivery.deliveryProducts.filter(
-            (product: any) => product.job_service_id !== id
-          )
-        };
-      }
-      return delivery;
+
+    // const newArray = productsArray.filter((obj) => obj.job_service_id !== id);
+    // setProductsArray([]);
+    // setProductsArray(newArray);
+    // const updatedDeliveryArray = DTODelivery.map((delivery) => {
+    //   if (delivery.deliveryId === deliveryId) {
+    //     return {
+    //       ...delivery,
+    //       deliveryProducts: delivery.deliveryProducts.filter(
+    //         (product: any) => product.job_service_id !== id
+    //       )
+    //     };
+    //   }
+    //   return delivery;
+    // });
+    // setDTODelivery(updatedDeliveryArray);
+  };
+
+  const handleDeleteProductDelivery = (indexDelivery: any, indexProduct: any, idProduct: any) => {
+    setDTODelivery((prevDeliveryArray) => {
+      return prevDeliveryArray.map((delivery) => {
+        if (delivery.deliveryId === indexDelivery) {
+          return {
+            ...delivery,
+            deliveryProducts: delivery.deliveryProducts.filter(
+              (_: any, i: number) => i !== indexProduct
+            )
+          };
+        }
+        return delivery;
+      });
     });
-    setDTODelivery(updatedDeliveryArray);
   };
 
   const handleDeleteDelivery = (id: any) => {
@@ -1871,6 +1993,54 @@ export default function CreateTasks() {
     }
   }, [DTOForm.flow_id, DTOForm.project_product_id]);
 
+  const handleSingleProductQuantity = (e: any) => {
+    setSingleProductQuantity(e.target.value);
+  };
+
+  const addProductOnDelivery = (product: any, value: number) => {
+    const modifiedObject = { ...product, quantity: 1 };
+    const productIndex = productsDeliveriesModal.indexDelivery - 1;
+
+    setDTODelivery((current: any) =>
+      current.map((obj: DeliveryProps, index: number) => {
+        if (index === productIndex) {
+          const existingProductCount = obj.deliveryProducts.filter(
+            (item) => item.job_service_id === modifiedObject.job_service_id
+          ).length;
+
+          const productsToAdd = Math.max(0, value - existingProductCount);
+
+          const updatedProducts = [
+            ...obj.deliveryProducts,
+            ...Array.from({ length: productsToAdd }, (_, i) => ({ ...modifiedObject }))
+          ];
+
+          return { ...obj, deliveryProducts: updatedProducts };
+        }
+        return obj;
+      })
+    );
+  };
+
+  const addObject = (newObject: any, count: number) => {
+    const modifiedObject = { ...newObject, quantity: 1 };
+
+    setProductsArray((prevObjects) => {
+      const existingObjectCount = prevObjects.filter(
+        (obj) => obj.job_service_id === modifiedObject.job_service_id
+      ).length;
+
+      const objectsToAdd = Math.max(0, count - existingObjectCount);
+
+      return [
+        ...prevObjects,
+        ...Array.from({ length: objectsToAdd }, (_, index) => ({
+          ...modifiedObject
+        }))
+      ];
+    });
+  };
+
   // useEffect(() => {
   //   console.log('log do tipo de task', tasksType);
   // }, [tasksType]);
@@ -2024,6 +2194,7 @@ export default function CreateTasks() {
                     deleteDelivery={handleDeleteDelivery}
                     deleteProduct={handleDeleteProduct}
                     handleTitleOfDelivery={handleDeliveryTitle}
+                    deleteDeliveryProduct={handleDeleteProductDelivery}
                   />
                   {!splitDeliveries && tasksType === 'horas' && (
                     <div style={{ marginBottom: '38px' }}>
@@ -2279,7 +2450,7 @@ export default function CreateTasks() {
           </Footer>
         )}
 
-        {/* Modal product list */}
+        {/* Modal product list hours */}
         <ModalDefault
           isOpen={productsModal}
           onOpenChange={() => setProductsModal(false)}
@@ -2327,12 +2498,23 @@ export default function CreateTasks() {
                   className="search-field"
                 />
 
-                {tasksType === 'horas' && (
+                {createStep === 1 && tasksType === 'horas' && (
                   <ButtonDefault
                     typeButton="primary"
                     onClick={() => {
                       setProductsModal(false);
                       setCreateStep(createStep + 1);
+                      setDTODelivery([{ ...DTODelivery[0], deliveryProducts: productsArray }]);
+                    }}
+                  >
+                    Adicionar Produto
+                  </ButtonDefault>
+                )}
+                {createStep > 1 && (
+                  <ButtonDefault
+                    typeButton="primary"
+                    onClick={() => {
+                      setProductsModal(false);
                       setDTODelivery([{ ...DTODelivery[0], deliveryProducts: productsArray }]);
                     }}
                   >
@@ -2371,9 +2553,9 @@ export default function CreateTasks() {
                       receiveQuantity={
                         productsArray?.filter((obj) => obj.job_service_id === row.job_service_id)
                           .length > 0
-                          ? row.quantity
-                            ? row.quantity
-                            : 1
+                          ? productsArray?.filter(
+                              (obj) => obj.job_service_id === row.job_service_id
+                            ).length
                           : 0
                       }
                       infosReceived={row}
@@ -2419,6 +2601,7 @@ export default function CreateTasks() {
                   typeButton="primary"
                   onClick={() => {
                     setProductsModal(false);
+                    setDTODelivery([{ ...DTODelivery[0], deliveryProducts: productsArray }]);
                   }}
                 >
                   Adicionar Produto
@@ -2571,7 +2754,11 @@ export default function CreateTasks() {
                         ]?.deliveryProducts?.filter(
                           (obj: any) => obj.job_service_id === row.job_service_id
                         ).length > 0
-                          ? 1
+                          ? DTODelivery[
+                              productsDeliveriesModal.indexDelivery - 1
+                            ]?.deliveryProducts?.filter(
+                              (obj: any) => obj.job_service_id === row.job_service_id
+                            ).length
                           : 0
                       }
                       infosReceived={row}
@@ -2610,7 +2797,7 @@ export default function CreateTasks() {
           <ScheduleUser
             task_title={DTOForm.title}
             taskId={DTOForm?.task_id}
-            estimated_time={tasksType === 'horas' ? estimatedTime : selectedProject?.tempo}
+            estimated_time={tasksType === 'horas' ? estimatedTime : selectedProject?.tempo_restante}
             flow={DTOForm.flow_id}
             project_product_id={DTOForm.project_product_id}
             limitDate={DTOForm.copywriting_date_end}
@@ -2686,6 +2873,7 @@ export default function CreateTasks() {
           </UsersWrapper>
         </ModalDefault>
 
+        {/* Modal ticket info */}
         <ModalDefault
           isOpen={warningModal}
           title="Aviso"
@@ -2701,6 +2889,62 @@ export default function CreateTasks() {
                 OK
               </ButtonDefault>
             </ModalButtons>
+          </ProductsModalWrapper>
+        </ModalDefault>
+
+        {/* Modal product list quantity */}
+        <ModalDefault isOpen={displayQuantity} onOpenChange={() => setDisplayQuantity(false)}>
+          <ProductsModalWrapper>
+            <ProductsModalTop>
+              <ProductModalTitle>Quantidade de produtos</ProductModalTitle>
+              <CloseModalButton onClick={() => setDisplayQuantity(false)}>
+                <MdClose />
+              </CloseModalButton>
+            </ProductsModalTop>
+
+            <ProductListWrapper>
+              <ProductGridHeader>
+                <div className="list-title">Produto</div>
+                <div className="list-title">Descrição</div>
+                <div className="list-title">Formato</div>
+                <div className="list-title center">Quantidade</div>
+              </ProductGridHeader>
+
+              {productsArray?.map((row: any, index) => (
+                <ProductGrid key={index}>
+                  <div className="product">{row.service}</div>
+                  <div className="category">{row.description}</div>
+                  <div className="category">{row.size}</div>
+                  <div className="quantity">
+                    <SelectDefault
+                      label="Quantidade"
+                      name="quantity_info"
+                      value={singleProductQuantity}
+                      onChange={handleSingleProductQuantity}
+                      error={error?.quantity_info}
+                    >
+                      {numbers.map((number) => (
+                        <option key={number} value={number}>
+                          {number}
+                        </option>
+                      ))}
+                    </SelectDefault>
+                  </div>
+                </ProductGrid>
+              ))}
+            </ProductListWrapper>
+
+            <AddProductButton>
+              <ButtonDefault
+                typeButton="primary"
+                onClick={() => {
+                  setDisplayQuantity(false);
+                  getSingleProduct(selectedProject?.project_product_id);
+                }}
+              >
+                Adicionar quantidade
+              </ButtonDefault>
+            </AddProductButton>
           </ProductsModalWrapper>
         </ModalDefault>
       </ContainerWrapper>

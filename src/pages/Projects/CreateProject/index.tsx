@@ -308,11 +308,11 @@ export default function CreateProject() {
         setErrorInput('date_end', undefined);
       }
 
-      if (description === '') {
-        throw setErrorInput('description', 'Observações são obrigatórias!');
-      } else {
-        setErrorInput('description', undefined);
-      }
+      // if (description === '') {
+      //   throw setErrorInput('description', 'Observações são obrigatórias!');
+      // } else {
+      //   setErrorInput('description', undefined);
+      // }
 
       if (createStep < 3 && DTOForm.contract_type === 'free') {
         // console.log('log de um produto livre');

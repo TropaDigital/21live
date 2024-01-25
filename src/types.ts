@@ -286,14 +286,14 @@ export interface TaskFile {
 export interface TaskHistoryProps {
   step: string;
   name: string;
-  time_line: [
-    {
-      action: string;
-      user_id: string;
-      step: number;
-      name: string;
-      avatar: string;
-      created: string;
-    }
-  ];
+  time_line: TaskHistoryTimeline[];
+}
+
+interface TaskHistoryTimeline {
+  action: string;
+  user_id: string;
+  step: number;
+  name: string;
+  avatar: string;
+  created: string;
 }
