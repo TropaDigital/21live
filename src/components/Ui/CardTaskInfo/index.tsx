@@ -1,44 +1,25 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 // Icons
-import { IconClose, IconPlay } from '../../../assets/icons';
-import { IoMdPause } from 'react-icons/io';
+import { IconClose } from '../../../assets/icons';
 
 // Styles
-import {
-  CardInfo,
-  CardInfoField,
-  CardTitle,
-  CardWrapper,
-  EstimatedTime,
-  ModalTextCard,
-  PlayPauseButton,
-  PlayTimer,
-  StopWatchTimer,
-  TextCard
-} from './styles';
+import { CardInfo, CardInfoField, CardTitle, CardWrapper, ModalTextCard, TextCard } from './styles';
 
 // Components
 import ModalDefault from '../ModalDefault';
 
 // Libraries
-import moment from 'moment';
 import 'moment/dist/locale/pt-br';
-import api from '../../../services/api';
-import { useAuth } from '../../../hooks/AuthContext';
 
 interface CardTaskInfoProps {
   cardTitle: string;
   cardType: 'text' | 'info';
   dataText?: string | any;
-  dataTime?: any;
   dataInfos?: DataInfosProps;
-  dataClock?: any;
-  isPlayingTime: () => void;
-  taskIsFinished?: boolean;
 }
 
 interface DataInfosProps {
@@ -55,15 +36,22 @@ export default function CardTaskInfo({
   cardTitle,
   cardType,
   dataText,
-  dataInfos,
-  dataTime,
-  dataClock,
-  isPlayingTime,
-  taskIsFinished
+  dataInfos
 }: CardTaskInfoProps) {
   // const [time, setTime] = useState<number>(0);
   // const [timerOn, setTimerOn] = useState<boolean>(false);
   const [modalContext, setModalContext] = useState<boolean>(false);
+  const [showButtonKnowMore, setShowButtonKnowMore] = useState<boolean>(false);
+  const divRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const stringLength = dataText?.length;
+    const divHeight = divRef.current ? divRef.current.clientHeight : 0;
+
+    const conditionToShowButton = stringLength > 100 || divHeight > 100;
+
+    setShowButtonKnowMore(conditionToShowButton);
+  }, [dataText]);
 
   // const [startTime, setStartTime] = useState<number | null>(null);
   // const [elapsedTime, setElapsedTime] = useState<number>(0);
@@ -176,10 +164,12 @@ export default function CardTaskInfo({
         <CardTitle>{cardTitle}</CardTitle>
         {cardType === 'text' && (
           <TextCard>
-            <div dangerouslySetInnerHTML={{ __html: dataText }} />
-            <div className="infos" onClick={() => setModalContext(!modalContext)}>
-              Saiba mais
-            </div>
+            <div ref={divRef} dangerouslySetInnerHTML={{ __html: dataText }} />
+            {showButtonKnowMore && (
+              <div className="infos" onClick={() => setModalContext(!modalContext)}>
+                Saiba mais
+              </div>
+            )}
           </TextCard>
         )}
         {/* {cardType === 'time' && (
