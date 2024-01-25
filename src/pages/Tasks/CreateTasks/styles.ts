@@ -120,6 +120,14 @@ export const CloseModalButton = styled.button`
   width: 32px;
   height: 32px;
   background-color: transparent;
+
+  &:hover {
+    svg {
+      transition: all 0.3s;
+      transform: scale(1.5);
+      color: var(--Danger);
+    }
+  }
 `;
 
 export const ProductListWrapper = styled.div`
@@ -166,6 +174,66 @@ export const Product = styled.div`
   height: 72px;
   border-bottom: 1px solid var(--gray-200);
   padding: 26px 0;
+
+  .product {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    color: var(--gray-700);
+    font-size: var(--text-small-sm);
+    font-weight: var(--weight-medium);
+    text-transform: uppercase;
+    padding-left: 24px;
+  }
+
+  .category {
+    display: flex;
+    align-items: center;
+    color: var(--gray-700);
+    font-size: var(--text-small-sm);
+    font-weight: var(--weight-medium);
+    padding-left: 24px;
+
+    text-transform: uppercase;
+  }
+
+  .quantity {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+`;
+
+export const ProductGridHeader = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  height: 44px;
+  background: var(--gray-50);
+  border-bottom: 1px solid var(--gray-200);
+  padding: 13px 0;
+
+  .list-title {
+    color: var(--gray-500);
+    font-size: var(--text-small-xs);
+    font-weight: var(--weight-medium);
+    padding-left: 24px;
+
+    &.center {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-left: 0;
+    }
+  }
+`;
+
+export const ProductGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  height: fit-content;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 6px 12px;
 
   .product {
     display: flex;

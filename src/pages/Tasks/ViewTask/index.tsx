@@ -292,7 +292,6 @@ export default function ViewTask() {
               cardTitle="Contexto geral"
               cardType="text"
               dataText={dataTask?.description}
-              isPlayingTime={() => ''}
             />
           </CardsWrapper>
 

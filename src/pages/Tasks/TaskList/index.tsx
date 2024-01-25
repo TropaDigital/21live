@@ -51,6 +51,7 @@ import moment from 'moment';
 
 // Styles
 import { ModalShowTaskWrapper, Flag, StatusTable, FilterTasks } from './styles';
+import { useAuth } from '../../../hooks/AuthContext';
 
 interface FilterProps {
   status: string;
@@ -62,6 +63,7 @@ interface FilterProps {
 export default function TaskList() {
   const { addToast } = useToast();
   const { parameters, getParams } = useParamsHook();
+  const { user } = useAuth();
   const [modalViewTask, setModalViewTask] = useState({
     isOpen: false,
     type: '',
@@ -168,7 +170,7 @@ export default function TaskList() {
       addToast({
         type: 'warning',
         title: 'ATENÇÃO',
-        description: 'Não é possivel editar tarefas "EM PROGRESSO" ou "CONCLUÍDAS"'
+        description: 'Não é possível editar tarefas "EM PROGRESSO" ou "CONCLUÍDAS"'
       });
     } else {
       getInfoTask(task.task_id);
@@ -459,13 +461,15 @@ export default function TaskList() {
                             handleEditTask(row);
                           }}
                         />
-                        <Alert
-                          title="Atenção"
-                          subtitle="Certeza que gostaria de deletar esta Tarefa? Ao excluir esta ação não poderá ser desfeita."
-                          confirmButton={() => handleOnDelete(row.task_id)}
-                        >
-                          <ButtonTable typeButton="delete" />
-                        </Alert>
+                        {user.permissions.includes('jobs_tasks_manager') && (
+                          <Alert
+                            title="Atenção"
+                            subtitle="Certeza que gostaria de deletar esta Tarefa? Ao excluir esta ação não poderá ser desfeita."
+                            confirmButton={() => handleOnDelete(row.task_id)}
+                          >
+                            <ButtonTable typeButton="delete" />
+                          </Alert>
+                        )}
                       </div>
                     </td>
                   </tr>
