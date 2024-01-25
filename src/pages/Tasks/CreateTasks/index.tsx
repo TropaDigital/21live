@@ -372,14 +372,45 @@ export default function CreateTasks() {
       const response = await api.get(
         `/project-products-especific/${projectId}?quantity=${singleProductQuantity}`
       );
-      setProductsArray(response.data.result);
+      const transformedData = transformObjects(response.data.result);
+
+      setProductsArray(transformedData);
+
       setQuantityProductInfos({
-        maxValue: response.data.result[0].quantity_initial,
+        maxValue: response.data.result[0].quantity,
         minValue: 1
       });
     } catch (error: any) {
       console.log('log error get single product', error);
     }
+  }
+
+  function transformObjects(inputArray: any[]) {
+    const keysToKeep = [
+      'category',
+      'description',
+      'flag',
+      'minutes',
+      'minutes_creation',
+      'minutes_essay',
+      'quantity',
+      'service',
+      'job_service_id',
+      'size',
+      'type'
+    ];
+
+    return inputArray.map((inputObject: any) => {
+      const transformedObject: any = {};
+      keysToKeep.forEach((key) => {
+        if (key === 'quantity') {
+          transformedObject[key] = 1;
+        } else if (key in inputObject) {
+          transformedObject[key] = inputObject[key];
+        }
+      });
+      return transformedObject;
+    });
   }
 
   const addDelivery = () => {
@@ -531,6 +562,7 @@ export default function CreateTasks() {
   };
 
   const handleTypeProduct = (indexDelivery: any, indexProduct: any, idProduct: any, value: any) => {
+    // console.log('log do handleType =>', indexDelivery, indexProduct, idProduct, value);
     if (location.state !== null) {
       const currentProducts = DTODelivery[indexDelivery].produtos;
       const productToUpdate = currentProducts[indexProduct];
@@ -949,14 +981,12 @@ export default function CreateTasks() {
         }
         if (splitDeliveries && location.state !== null) {
           DTODelivery.map((current: DeliveryUpdate) => {
-            current.produtos.map((obj: any) => {
+            current.produtos.map((obj: any, index: number) => {
               if (obj.reason_change === '' || obj.reason_change === undefined) {
-                setErrorCategory((errorCategory: any) => [...errorCategory, obj.job_service_id]);
+                setErrorCategory((errorCategory: any) => [...errorCategory, index]);
                 throw new Error('Existem produtos sem o "Tipo" selecionado!');
               } else if (obj.reason_change !== '' && obj.reason_change !== undefined) {
-                setErrorCategory((prevState) =>
-                  prevState.filter((product) => product !== obj.job_service_id)
-                );
+                setErrorCategory((prevState) => prevState.filter((product) => product !== index));
                 if (errorCategory.length === 0) {
                   // setAddDeliveries(true);
                   setTimeout(() => {
@@ -1014,14 +1044,12 @@ export default function CreateTasks() {
           });
 
           DTODelivery.map((current: DeliveryProps) => {
-            current.deliveryProducts.map((obj: any) => {
+            current.deliveryProducts.map((obj: any, index: number) => {
               if (obj.reason_change === '' || obj.reason_change === undefined) {
-                setErrorCategory((errorCategory: any) => [...errorCategory, obj.job_service_id]);
+                setErrorCategory((errorCategory: any) => [...errorCategory, index]);
                 throw new Error('Existem produtos sem o "Tipo" selecionado!');
               } else if (obj.reason_change !== '' && obj.reason_change !== undefined) {
-                setErrorCategory((prevState) =>
-                  prevState.filter((product) => product !== obj.job_service_id)
-                );
+                setErrorCategory((prevState) => prevState.filter((product) => product !== index));
               }
             });
           });
@@ -1137,27 +1165,32 @@ export default function CreateTasks() {
           setErrorInput('creation_date_end', undefined);
         }
 
-        productsArray.map((obj: any) => {
+        let hasError = false;
+
+        productsArray.map((obj: any, index: number) => {
           if (obj.reason_change === '' || obj.reason_change === undefined) {
-            setErrorCategory((errorCategory: any) => [...errorCategory, obj.job_service_id]);
-            return addToast({
-              type: 'warning',
-              title: 'Atenção',
-              description: 'Existem produtos sem o "Tipo" selecionado!'
-            });
+            setErrorCategory((errorCategory: any) => [...errorCategory, index]);
+            hasError = true;
+            throw new Error('Existem produtos sem o "Tipo" selecionado!');
           } else {
             setErrorCategory([]);
-            // setAddDeliveries(true);
-            setTimeout(() => {
-              setCreateStep(createStep + 1);
-            }, 500);
           }
         });
+
+        if (hasError) {
+          throw new Error('Existem produtos sem o "Tipo" selecionado!');
+        } else {
+          setErrorCategory([]);
+          // setAddDeliveries(true);
+          setTimeout(() => {
+            setCreateStep(createStep + 1);
+          }, 150);
+        }
       } else if (createStep === 3 && tasksType !== 'livre') {
         if (copywriting_description === '') {
           throw setErrorInput(
             'copywriting_description',
-            `Descrição do Input de ${
+            `Descrição do Input ${
               parameters.input_name !== '' ? parameters.input_name : 'Pré-requisitos'
             } é obrigatória!`
           );
@@ -1168,7 +1201,7 @@ export default function CreateTasks() {
         if (creation_description === '') {
           throw setErrorInput(
             'creation_description',
-            'Descrição do Input de atividade é obrigatória!'
+            'Descrição do Input Atividade/Criação é obrigatória!'
           );
         } else {
           setErrorInput('creation_description', undefined);
@@ -1703,7 +1736,6 @@ export default function CreateTasks() {
   };
 
   const handleDeleteProduct = (deliveryId: any, index: number) => {
-    console.log('log do delete =>', deliveryId, index);
     const newArray = [...productsArray];
     newArray.splice(index, 1);
     setProductsArray([]);
@@ -2021,9 +2053,9 @@ export default function CreateTasks() {
   //   console.log('log do products Array', productsArray);
   // }, [productsArray]);
 
-  useEffect(() => {
-    console.log('log do Delivery DTO', DTODelivery);
-  }, [DTODelivery]);
+  // useEffect(() => {
+  //   console.log('log do Delivery DTO', DTODelivery);
+  // }, [DTODelivery]);
 
   // useEffect(() => {
   //   console.log('Log do DTO', DTOForm);
