@@ -975,6 +975,8 @@ export default function CreateTasks() {
 
       if (createStep === 1 && tasksType === 'horas' && !taskEdit) {
         setProductsModal(true);
+      } else if (createStep === 1 && tasksType === 'produto' && !taskEdit) {
+        setDisplayQuantity(true);
       } else if (createStep === 2 && tasksType === 'horas') {
         if (splitDeliveries && DTODelivery.length <= 1) {
           throw new Error('Entregas dívidas não podem ter somente uma entrega');
@@ -1701,7 +1703,8 @@ export default function CreateTasks() {
         setSelectedProject(selectedInfos[0]);
         handleChangeInput(e);
         if (selectedInfos[0].listavel === 'false') {
-          setDisplayQuantity(true);
+          // setDisplayQuantity(true);
+          setProductsArray([]);
           getSingleProduct(e.target.value);
         }
       }
@@ -2958,6 +2961,7 @@ export default function CreateTasks() {
                 onClick={() => {
                   setDisplayQuantity(false);
                   getSingleProduct(selectedProject?.project_product_id);
+                  setCreateStep(createStep + 1);
                 }}
               >
                 Adicionar quantidade
