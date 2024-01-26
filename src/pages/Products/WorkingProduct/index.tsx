@@ -256,6 +256,14 @@ export default function WorkingProduct({
     (obj: any) => obj.products_delivery_id === modalRejectedInfo.motive
   );
 
+  const productsNames: any[] =
+    taskFiles?.map((file: any) => {
+      const matchingProduct = allProducts?.find(
+        (product: any) => product.products_delivery_id === file.products_delivery_id
+      );
+      return matchingProduct ? matchingProduct.service : [];
+    }) || [];
+
   useEffect(() => {
     getParams();
   }, []);
@@ -429,10 +437,6 @@ export default function WorkingProduct({
       setLogIsOn(true);
     }
   };
-
-  // const handleDownload = (file: any) => {
-  //   console.log('log para fazer download do file', file);
-  // };
 
   async function approveFile(productId: string) {
     try {
@@ -1028,11 +1032,10 @@ export default function WorkingProduct({
               <table>
                 <thead>
                   <tr>
-                    <th>ID</th>
+                    <th>File ID</th>
                     <th>Produto ID</th>
+                    <th>Nome do produto</th>
                     <th>Nome do arquivo</th>
-                    <th>Tamanho</th>
-                    {/* <th>Usuário</th> */}
                     <th>Data</th>
                     <th>Status</th>
                     <th></th>
@@ -1041,7 +1044,7 @@ export default function WorkingProduct({
 
                 <tbody>
                   {taskFiles && taskFiles?.length > 0 ? (
-                    taskFiles?.map((row: FilesMap) => (
+                    taskFiles?.map((row: FilesMap, index: number) => (
                       <tr key={row.task_file_id}>
                         <td>
                           <div className="id-column">
@@ -1051,9 +1054,8 @@ export default function WorkingProduct({
                         <td>
                           {row.products_delivery_id !== '' ? row.products_delivery_id : '-----'}
                         </td>
+                        <td>{productsNames[index]}</td>
                         <td>{row.file_name}</td>
-                        <td>{formatBytes(row.size)}</td>
-                        {/* <td style={{ textTransform: 'capitalize' }}>Criação</td> */}
                         <td style={{ textTransform: 'capitalize' }}>
                           {moment(row.created).format('DD/MM/YYYY')}
                         </td>

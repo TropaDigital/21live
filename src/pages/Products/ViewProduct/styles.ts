@@ -159,11 +159,15 @@ export const TimeLineIcon = styled.div`
   position: relative;
   z-index: 10;
 
-  width: 32px;
-  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
 
   border-radius: 50px;
   background: var(--gray-200);
+
+  &.actual {
+    background: var(--warning-400);
+  }
 
   &.checked {
     background: var(--success-600);
@@ -342,7 +346,7 @@ export const FileProductList = styled.div`
   flex-direction: column;
   gap: 24px;
 
-  min-width: 900px;
+  min-width: 1200px;
   margin-top: -20px;
   margin-left: -20px;
   margin-right: -20px;

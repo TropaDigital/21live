@@ -975,6 +975,8 @@ export default function CreateTasks() {
 
       if (createStep === 1 && tasksType === 'horas' && !taskEdit) {
         setProductsModal(true);
+      } else if (createStep === 1 && tasksType === 'produto' && !taskEdit) {
+        setDisplayQuantity(true);
       } else if (createStep === 2 && tasksType === 'horas') {
         if (splitDeliveries && DTODelivery.length <= 1) {
           throw new Error('Entregas dívidas não podem ter somente uma entrega');
@@ -1701,7 +1703,8 @@ export default function CreateTasks() {
         setSelectedProject(selectedInfos[0]);
         handleChangeInput(e);
         if (selectedInfos[0].listavel === 'false') {
-          setDisplayQuantity(true);
+          // setDisplayQuantity(true);
+          setProductsArray([]);
           getSingleProduct(e.target.value);
         }
       }
@@ -1998,21 +2001,34 @@ export default function CreateTasks() {
   };
 
   const addProductOnDelivery = (product: any, value: number) => {
-    const modifiedObject = { ...product, quantity: 1 };
+    const newProduct = {
+      category: product.category,
+      description: product.description,
+      flag: product.flag,
+      minutes: product.minutes,
+      minutes_creation: product.minutes_creation,
+      minutes_essay: product.minutes_essay,
+      service: product.service,
+      job_service_id: product.job_service_id,
+      size: product.size,
+      type: product.type,
+      quantity: 1
+    };
+
     const productIndex = productsDeliveriesModal.indexDelivery - 1;
 
     setDTODelivery((current: any) =>
       current.map((obj: DeliveryProps, index: number) => {
         if (index === productIndex) {
           const existingProductCount = obj.deliveryProducts.filter(
-            (item) => item.job_service_id === modifiedObject.job_service_id
+            (item) => item.job_service_id === newProduct.job_service_id
           ).length;
 
           const productsToAdd = Math.max(0, value - existingProductCount);
 
           const updatedProducts = [
             ...obj.deliveryProducts,
-            ...Array.from({ length: productsToAdd }, (_, i) => ({ ...modifiedObject }))
+            ...Array.from({ length: productsToAdd }, (_, i) => ({ ...newProduct }))
           ];
 
           return { ...obj, deliveryProducts: updatedProducts };
@@ -2023,7 +2039,12 @@ export default function CreateTasks() {
   };
 
   const addObject = (newObject: any, count: number) => {
-    const modifiedObject = { ...newObject, quantity: 1 };
+    const { service_category_id, ...modifiedObject } = {
+      ...newObject,
+      quantity: 1,
+      service_category_id: undefined
+    };
+    // const modifiedObject = { ...newObject, quantity: 1 };
 
     setProductsArray((prevObjects) => {
       const existingObjectCount = prevObjects.filter(
@@ -2940,6 +2961,7 @@ export default function CreateTasks() {
                 onClick={() => {
                   setDisplayQuantity(false);
                   getSingleProduct(selectedProject?.project_product_id);
+                  setCreateStep(createStep + 1);
                 }}
               >
                 Adicionar quantidade

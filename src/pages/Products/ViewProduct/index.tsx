@@ -197,6 +197,23 @@ export default function ViewProductsDeliveries() {
     ? timeLineData.steps.filter((obj) => Number(obj.step) < Number(actualStep))
     : [];
 
+  const productsNames: string[] = dataTask?.files.map((file: any) => {
+    const matchingDelivery = dataTask?.deliverys.find((delivery: any) =>
+      delivery.products.some(
+        (product: any) => product.products_delivery_id === file.products_delivery_id
+      )
+    );
+
+    if (matchingDelivery) {
+      const matchingProduct = matchingDelivery.products.find(
+        (product: any) => product.products_delivery_id === file.products_delivery_id
+      );
+      return matchingProduct ? matchingProduct.service : '';
+    }
+
+    return '';
+  });
+
   // const checkAllFinished: any[] = dataProducts.products.every(
   //   (product: any) => product.status === 'Concluida'
   // );
@@ -1514,39 +1531,22 @@ export default function ViewProductsDeliveries() {
             />
           )}
 
-          {/* {dataTask?.status !== 'Concluida' &&
-            typeOfPlay === 'schedule' &&
-            selectedProduct === '' && (
-              <HeaderOpenTask
-                title={titleInfos}
-                disableButton={true}
-                goBack
-                buttonType="send"
-                sendToNext={() => checkFlow('next')}
-                nextStepInfo={timeLineData}
-                backFlow={() => setModalReturnFlow(true)}
-              />
-            )} */}
-
-          {dataProducts?.status === 'Concluida' &&
-            dataTask?.status !== 'Concluida' &&
-            typeOfPlay === 'schedule' &&
-            selectedProduct !== '' && (
-              <HeaderOpenTask
-                title={titleInfos}
-                disableButton={false}
-                goBack
-                buttonType={
-                  // uploadClient && dataTask?.files.length < 1 && dataTask?.status !== 'Avaliada'
-                  //   ? 'client'
-                  //   : 'send'
-                  uploadClient ? 'client' : 'send'
-                }
-                sendToNext={() => checkFlow('next')}
-                nextStepInfo={timeLineData}
-                backFlow={() => setModalReturnFlow(true)}
-              />
-            )}
+          {dataTask?.status !== 'Concluida' && !viewProduct && typeOfPlay === 'schedule' && (
+            <HeaderOpenTask
+              title={titleInfos}
+              disableButton={false}
+              goBack
+              buttonType={
+                // uploadClient && dataTask?.files.length < 1 && dataTask?.status !== 'Avaliada'
+                //   ? 'client'
+                //   : 'send'
+                uploadClient ? 'client' : 'send'
+              }
+              sendToNext={() => checkFlow('next')}
+              nextStepInfo={timeLineData}
+              backFlow={() => setModalReturnFlow(true)}
+            />
+          )}
 
           {dataTask?.status !== 'Concluida' &&
             selectedProduct === '' &&
@@ -1556,11 +1556,7 @@ export default function ViewProductsDeliveries() {
                 title={titleInfos}
                 disableButton={false}
                 goBack
-                buttonType={
-                  uploadClient && dataTask?.files.length < 1 && dataTask?.status !== 'Avaliada'
-                    ? 'client'
-                    : 'send'
-                }
+                buttonType={uploadClient ? 'client' : 'send'}
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
                 backFlow={() => setModalReturnFlow(true)}
@@ -1603,7 +1599,7 @@ export default function ViewProductsDeliveries() {
 
           {dataProducts?.status !== 'Concluida' &&
             dataTask?.status !== 'Concluida' &&
-            selectedProduct !== '' &&
+            viewProduct &&
             typeOfPlay === 'schedule' &&
             !finalCard && (
               <HeaderOpenTask
@@ -1742,7 +1738,15 @@ export default function ViewProductsDeliveries() {
                 taskHistory &&
                 taskHistory.map((row: TaskHistoryProps, index: number) => (
                   <TimelineStep key={index}>
-                    <TimeLineIcon className={row.step <= timeLineData.currentStep ? 'checked' : ''}>
+                    <TimeLineIcon
+                      className={
+                        row.step === timeLineData.currentStep && dataTask?.status !== 'Concluida'
+                          ? 'actual'
+                          : row.step <= timeLineData.currentStep
+                          ? 'checked'
+                          : ''
+                      }
+                    >
                       {Number(row.step) >= Number(timeLineData.currentStep) &&
                         dataTask?.status !== 'Concluida' && <div className="dot"></div>}
 
@@ -1759,12 +1763,15 @@ export default function ViewProductsDeliveries() {
                       {row.step > timeLineData.currentStep && (
                         <div className="info-title">Próxima etapa:</div>
                       )} */}
-                      <div className="timeline-info">{row.name} - </div>
-                      <div className="info-title">
-                        {row.time_line.length > 0
-                          ? moment(row.time_line[0]?.created).format('DD/MM/YYYY')
-                          : ''}
-                      </div>
+                      <div className="timeline-info">{row.name}</div>
+                      {row.time_line.length > 0 ? (
+                        <div className="info-title">
+                          {' '}
+                          - {moment(row.time_line[0]?.created).format('DD/MM/YYYY')}
+                        </div>
+                      ) : (
+                        ''
+                      )}
 
                       {row.time_line.length > 0 ? (
                         <TimelineExtraInfo>
@@ -2329,15 +2336,15 @@ export default function ViewProductsDeliveries() {
                         <th></th>
                         <th>File ID</th>
                         <th>Produto ID</th>
+                        <th>Nome do produto</th>
                         <th>Nome do arquivo</th>
-                        <th>Tamanho</th>
                         <th>Data</th>
                         <th>Detalhes</th>
                       </tr>
                     </thead>
 
                     <tbody>
-                      {dataTask?.files.map((row: TaskFile) => (
+                      {dataTask?.files.map((row: TaskFile, index: number) => (
                         <tr key={row.task_file_id}>
                           <td>
                             <CheckboxDefault
@@ -2355,8 +2362,8 @@ export default function ViewProductsDeliveries() {
                           </td>
                           <td>#{row.task_file_id}</td>
                           <td>{row.products_delivery_id}</td>
+                          <td>{productsNames[index]}</td>
                           <td>{row.file_name.split('-').pop()}</td>
-                          <td>{row.size}</td>
                           <td>{moment(row.created).format('DD/MM/YYYY - hh:mm')}h</td>
                           <td>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
