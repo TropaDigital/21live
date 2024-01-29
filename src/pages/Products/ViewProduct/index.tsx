@@ -1531,7 +1531,7 @@ export default function ViewProductsDeliveries() {
             />
           )}
 
-          {dataTask?.status !== 'Concluida' && !viewProduct && typeOfPlay === 'schedule' && (
+          {/* {dataTask?.status !== 'Concluida' && !viewProduct && typeOfPlay === 'schedule' && (
             <HeaderOpenTask
               title={titleInfos}
               disableButton={false}
@@ -1546,10 +1546,10 @@ export default function ViewProductsDeliveries() {
               nextStepInfo={timeLineData}
               backFlow={() => setModalReturnFlow(true)}
             />
-          )}
+          )} */}
 
           {dataTask?.status !== 'Concluida' &&
-            selectedProduct === '' &&
+            !viewProduct &&
             typeOfPlay === 'schedule' &&
             !finalCard && (
               <HeaderOpenTask

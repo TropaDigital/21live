@@ -278,7 +278,7 @@ export default function InfoDeliveries({
     getParams();
     // console.log('log deliverysArray =>', deliveriesArray);
     // console.log('log dataArray =>', data);
-    // console.log('log projectInfo =>', projectInfo);
+    console.log('log projectInfo =>', projectInfo);
   }, []);
 
   return (
@@ -288,7 +288,7 @@ export default function InfoDeliveries({
           <FormTitle>Produtos</FormTitle>
           {projectInfo.listavel === 'true' && (
             <TotalHours>
-              Total de horas iniciais: <span>{projectInfo?.tempo_restante}</span>
+              Total de horas iniciais: <span>{projectInfo?.tempo_inicial}</span>
               Total de horas restantes:{' '}
               <div
                 className={
