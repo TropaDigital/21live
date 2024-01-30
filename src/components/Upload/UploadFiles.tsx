@@ -24,6 +24,7 @@ export interface UploadedFilesProps {
   key: string;
   size: number;
   file_name: string;
+  original_name: string;
   isNew: boolean;
   loading: boolean;
 }
