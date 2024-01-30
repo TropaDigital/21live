@@ -272,6 +272,7 @@ export interface TaskFile {
   bucket: string;
   created: string;
   file_name: string;
+  original_name: string;
   key: string;
   last_archive: string;
   products_delivery_id: string;
