@@ -1319,7 +1319,6 @@ export default function CreateTasks() {
     //   );
     // }
   };
-
   const handleCheckQuantity = (quantity: any, product: IProduct) => {
     // console.log('log do product check quantity', quantity, product);
     const totalProductTime = multiplyTime(product.minutes, quantity);
@@ -1402,8 +1401,9 @@ export default function CreateTasks() {
   const handleOnSubmit = useCallback(async () => {
     try {
       const fileArray = uploadedFiles.map(
-        (row: { bucket: any; file_name: any; key: any; size: any }) => ({
+        (row: { bucket: any; file_name: any; key: any; size: any; original_name: any }) => ({
           file_name: row.file_name,
+          original_name: row.original_name,
           bucket: row.bucket,
           key: row.key,
           size: row.size
