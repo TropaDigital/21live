@@ -104,7 +104,7 @@ export default function ListFluxo() {
           name: ''
         });
 
-        navigate(`/fluxo/editar/${formData.name.replaceAll(' ', '_')}`, {
+        navigate(`/fluxo/editar/${formData.name.replaceAll(/[\s/]/g, '_')}`, {
           state: { id: response.data.result, name: formData.name }
         });
       } catch (e: any) {
@@ -211,7 +211,7 @@ export default function ListFluxo() {
                           <ButtonTable
                             typeButton="edit"
                             onClick={() =>
-                              navigate(`/fluxo/editar/${row.name.replaceAll(' ', '_')}`, {
+                              navigate(`/fluxo/editar/${row.name.replaceAll(/[\s/]/g, '_')}`, {
                                 state: { id: row.flow_id, name: row.name }
                               })
                             }

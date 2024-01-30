@@ -264,6 +264,7 @@ export default function ListMeeting() {
         const files = uploadedFiles.map((row) => ({
           bucket: row.bucket,
           file_name: row.file_name,
+          original_name: row.original_name,
           key: row.key,
           size: row.size,
           url: row.url
@@ -478,10 +479,6 @@ export default function ListMeeting() {
     }
     return count;
   };
-
-  useEffect(() => {
-    console.log('log do filters =>', filter);
-  }, [filter]);
 
   return (
     <Container>
