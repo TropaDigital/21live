@@ -139,6 +139,7 @@ interface FilesMap {
   bucket: string;
   created: string;
   file_name: string;
+  original_name: string;
   key: string;
   last_archive: string;
   products_delivery_id: string;
@@ -505,6 +506,7 @@ export default function WorkingProduct({
       const uploadInfos = {
         task_id: taskId,
         file_name: uploadedFiles[0].file_name,
+        original_name: uploadedFiles[0].original_name,
         size: uploadedFiles[0].size,
         key: uploadedFiles[0].key,
         bucket: uploadedFiles[0].bucket,
@@ -546,6 +548,7 @@ export default function WorkingProduct({
       const uploadInfos = {
         task_id: taskId,
         file_name: uploadedFiles[0].file_name,
+        original_name: uploadedFiles[0].original_name,
         size: uploadedFiles[0].size,
         key: uploadedFiles[0].key,
         bucket: uploadedFiles[0].bucket,
@@ -594,6 +597,7 @@ export default function WorkingProduct({
       const uploadInfos = {
         task_id: taskId,
         file_name: uploadedFiles[0].file_name,
+        original_name: uploadedFiles[0].original_name,
         size: uploadedFiles[0].size,
         key: uploadedFiles[0].key,
         bucket: uploadedFiles[0].bucket,
@@ -650,7 +654,7 @@ export default function WorkingProduct({
       const urlResponse = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = urlResponse;
-      link.setAttribute('download', `${file.file_name}`);
+      link.setAttribute('download', `${file.original_name}`);
 
       setLoading(true);
 
@@ -1055,7 +1059,7 @@ export default function WorkingProduct({
                           {row.products_delivery_id !== '' ? row.products_delivery_id : '-----'}
                         </td>
                         <td>{productsNames[index]}</td>
-                        <td>{row.file_name}</td>
+                        <td>{row.original_name}</td>
                         <td style={{ textTransform: 'capitalize' }}>
                           {moment(row.created).format('DD/MM/YYYY')}
                         </td>
