@@ -1393,6 +1393,7 @@ export default function ViewProductsDeliveries() {
             const uploadInfos = {
               task_id: dataTask?.task_id,
               file_name: responseFile.data.result.file_name,
+              original_name: responseFile.data.result.original_name,
               size: responseFile.data.result.size,
               key: responseFile.data.result.key,
               bucket: responseFile.data.result.bucket,
@@ -1472,6 +1473,7 @@ export default function ViewProductsDeliveries() {
             const uploadInfos = {
               task_id: dataTask?.task_id,
               file_name: responseFile.data.result.file_name,
+              original_name: responseFile.data.result.original_name,
               size: responseFile.data.result.size,
               key: responseFile.data.result.key,
               bucket: responseFile.data.result.bucket,
