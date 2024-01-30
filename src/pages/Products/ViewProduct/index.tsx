@@ -1004,7 +1004,8 @@ export default function ViewProductsDeliveries() {
         checkType === 'next' &&
         dataTask?.files.length > 0 &&
         dataTask?.status !== 'Aguardando Aprovação' &&
-        dataTask?.status !== 'Avaliada'
+        dataTask?.status !== 'Avaliada' &&
+        dataTask?.status !== 'Em Andamento'
       ) {
         setModalTenantApprove(true);
       } else if (checkType === 'next' && !finalCard) {
