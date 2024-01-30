@@ -39,6 +39,7 @@ interface UpdateFileData {
   loading?: boolean;
   ETag?: string;
   file_name?: string;
+  original_name?: string;
   folder?: string;
   size?: string;
 }
@@ -151,6 +152,7 @@ export default function UploadFiles({
         bucket: response.data.result.bucket,
         key: response.data.result.key,
         file_name: response.data.result.file_name,
+        original_name: response.data.result.original_name,
         size: response.data.result.size,
         folder: response.data.result.folder,
         loading: loading

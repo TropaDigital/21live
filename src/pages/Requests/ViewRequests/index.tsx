@@ -116,6 +116,7 @@ interface InteractionProps {
   annex: string;
   annex_title: string;
   avatar: string;
+  bucket: string;
   created: string;
   message: string;
   reply_id: string;
@@ -130,6 +131,7 @@ interface InteractionProps {
 interface ModalProps {
   isOpen: boolean;
   path: string;
+  bucket: string;
 }
 
 interface ModalInteractionProps {
@@ -155,7 +157,8 @@ export default function ViewRequest() {
   const [requestData, setRequestData] = useState<TicketProps>();
   const [modalImage, setModalImage] = useState<ModalProps>({
     isOpen: false,
-    path: ''
+    path: '',
+    bucket: ''
   });
   const [modalNewInteraction, setModalNewInteraction] = useState<ModalInteractionProps>({
     isOpen: false,
@@ -166,6 +169,7 @@ export default function ViewRequest() {
       annex: '',
       annex_title: '',
       avatar: '',
+      bucket: '',
       created: '',
       message: '',
       reply_id: '',
@@ -255,6 +259,7 @@ export default function ViewRequest() {
             annex: '',
             annex_title: '',
             avatar: '',
+            bucket: '',
             created: '',
             message: '',
             reply_id: '',
@@ -505,11 +510,13 @@ export default function ViewRequest() {
                             <div
                               className="image"
                               style={{
-                                backgroundImage: `url(https://app.21live.com.br/public/files/tickets/${requestData.ticket_id}/${row.path})`
+                                backgroundImage: `url(https://${row.bucket}.s3.amazonaws.com/tickets/${requestData?.ticket_id}/${row.path})`
                               }}
                             ></div>
                             <HoverIconButton
-                              onClick={() => setModalImage({ isOpen: true, path: row.path })}
+                              onClick={() =>
+                                setModalImage({ isOpen: true, path: row.path, bucket: row.bucket })
+                              }
                             >
                               <FaSearchPlus />
                             </HoverIconButton>
@@ -606,10 +613,16 @@ export default function ViewRequest() {
                             <PublicImageWrapper>
                               <MessageUserWrapper
                                 style={{
-                                  backgroundImage: `url(https://app.21live.com.br/public/files/tickets/${requestData?.ticket_id}/${row.annex})`
+                                  backgroundImage: `url(https://${row.bucket}.s3.amazonaws.com/tickets/${requestData?.ticket_id}/${row.annex})`
                                 }}
                                 className="image-interaction"
-                                onClick={() => setModalImage({ isOpen: true, path: row.annex })}
+                                onClick={() =>
+                                  setModalImage({
+                                    isOpen: true,
+                                    path: row.annex,
+                                    bucket: row.bucket
+                                  })
+                                }
                               />
                             </PublicImageWrapper>
                           )}
@@ -617,7 +630,7 @@ export default function ViewRequest() {
                             <DocViewer
                               documents={[
                                 {
-                                  uri: `https://app.21live.com.br/public/files/tickets/${requestData?.ticket_id}/${row.annex}`,
+                                  uri: `https://${row.bucket}.s3.amazonaws.com/tickets/${requestData?.ticket_id}/${row.annex}`,
                                   fileType: 'pptx'
                                 }
                               ]}
@@ -684,16 +697,19 @@ export default function ViewRequest() {
       {/* Modal image preview */}
       <ModalDefault
         isOpen={modalImage.isOpen}
-        title={'Image'}
-        onOpenChange={() => setModalImage({ isOpen: false, path: '' })}
+        title={'Preview Image'}
+        onOpenChange={() => setModalImage({ isOpen: false, path: '', bucket: '' })}
         maxWidth="80%"
       >
         <ModalImage
           style={{
-            backgroundImage: `url(https://app.21live.com.br/public/files/tickets/${requestData?.ticket_id}/${modalImage.path})`
+            backgroundImage: `url(https://${modalImage.bucket}.s3.amazonaws.com/tickets/${requestData?.ticket_id}/${modalImage.path})`
           }}
         >
-          <div className="close-button" onClick={() => setModalImage({ isOpen: false, path: '' })}>
+          <div
+            className="close-button"
+            onClick={() => setModalImage({ isOpen: false, path: '', bucket: '' })}
+          >
             <MdClose />
           </div>
         </ModalImage>
@@ -712,6 +728,7 @@ export default function ViewRequest() {
               annex: '',
               annex_title: '',
               avatar: '',
+              bucket: '',
               created: '',
               message: '',
               reply_id: '',
@@ -757,6 +774,7 @@ export default function ViewRequest() {
                     annex: '',
                     annex_title: '',
                     avatar: '',
+                    bucket: '',
                     created: '',
                     message: '',
                     reply_id: '',

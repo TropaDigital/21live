@@ -869,8 +869,8 @@ export default function ViewProductsDeliveries() {
       if (response.data.status === 'success') {
         setUploadedFiles([]);
         setModalUpload(false);
-        // getTaskInfos();
-        navigate('/minhas-tarefas');
+        getTaskInfos();
+        // navigate('/minhas-tarefas');
       }
 
       // console.log('log do response do saveUpload', response.data.result);
@@ -967,7 +967,8 @@ export default function ViewProductsDeliveries() {
         setUploadedFiles([]);
         setModalFinalFile(false);
         setToClientConfirmation(false);
-        navigate('/minhas-tarefas');
+        getTaskInfos();
+        // navigate('/minhas-tarefas');
         // setTimeout(() => {
         // }, 1500);
       }
@@ -1391,7 +1392,6 @@ export default function ViewProductsDeliveries() {
             const uploadInfos = {
               task_id: dataTask?.task_id,
               file_name: responseFile.data.result.file_name,
-              original_name: responseFile.data.result.original_name,
               size: responseFile.data.result.size,
               key: responseFile.data.result.key,
               bucket: responseFile.data.result.bucket,
@@ -1471,7 +1471,6 @@ export default function ViewProductsDeliveries() {
             const uploadInfos = {
               task_id: dataTask?.task_id,
               file_name: responseFile.data.result.file_name,
-              original_name: responseFile.data.result.original_name,
               size: responseFile.data.result.size,
               key: responseFile.data.result.key,
               bucket: responseFile.data.result.bucket,
