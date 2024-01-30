@@ -1060,7 +1060,11 @@ export default function WorkingProduct({
                           {row.products_delivery_id !== '' ? row.products_delivery_id : '-----'}
                         </td>
                         <td>{productsNames[index]}</td>
-                        <td>{row.original_name}</td>
+                        <td>
+                          {row.original_name !== ''
+                            ? row.original_name
+                            : row.file_name.split('-').pop()}
+                        </td>
                         <td style={{ textTransform: 'capitalize' }}>
                           {moment(row.created).format('DD/MM/YYYY')}
                         </td>
