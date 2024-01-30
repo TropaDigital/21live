@@ -285,11 +285,15 @@ export const TimeLineIcon = styled.div`
   position: relative;
   z-index: 10;
 
-  width: 32px;
-  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
 
   border-radius: 50px;
   background: var(--gray-200);
+
+  &.actual {
+    background: var(--warning-400);
+  }
 
   &.checked {
     background: var(--success-600);

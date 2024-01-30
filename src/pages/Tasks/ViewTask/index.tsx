@@ -759,7 +759,15 @@ export default function ViewTask() {
                 taskHistory &&
                 taskHistory.map((row: TaskHistoryProps, index: number) => (
                   <TimelineStep key={index}>
-                    <TimeLineIcon className={row.step <= timeLineData.currentStep ? 'checked' : ''}>
+                    <TimeLineIcon
+                      className={
+                        row.step === timeLineData.currentStep && dataTask?.status !== 'Concluida'
+                          ? 'actual'
+                          : row.step <= timeLineData.currentStep
+                          ? 'checked'
+                          : ''
+                      }
+                    >
                       {Number(row.step) >= Number(timeLineData.currentStep) &&
                         dataTask?.status !== 'Concluida' && <div className="dot"></div>}
 
