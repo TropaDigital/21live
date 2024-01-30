@@ -2370,7 +2370,11 @@ export default function ViewProductsDeliveries() {
                           <td>#{row.task_file_id}</td>
                           <td>{row.products_delivery_id}</td>
                           <td>{productsNames[index]}</td>
-                          <td>{row.file_name.split('-').pop()}</td>
+                          <td>
+                            {row.original_name !== ''
+                              ? row.original_name
+                              : row.file_name.split('-').pop()}
+                          </td>
                           <td>{moment(row.created).format('DD/MM/YYYY - hh:mm')}h</td>
                           <td>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
