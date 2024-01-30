@@ -244,6 +244,7 @@ export default function WorkingProduct({
       bucket: '',
       created: '',
       file_name: '',
+      original_name: '',
       key: '',
       task_file_id: '',
       task_id: '',
@@ -506,7 +507,6 @@ export default function WorkingProduct({
       const uploadInfos = {
         task_id: taskId,
         file_name: uploadedFiles[0].file_name,
-        original_name: uploadedFiles[0].original_name,
         size: uploadedFiles[0].size,
         key: uploadedFiles[0].key,
         bucket: uploadedFiles[0].bucket,
@@ -548,7 +548,6 @@ export default function WorkingProduct({
       const uploadInfos = {
         task_id: taskId,
         file_name: uploadedFiles[0].file_name,
-        original_name: uploadedFiles[0].original_name,
         size: uploadedFiles[0].size,
         key: uploadedFiles[0].key,
         bucket: uploadedFiles[0].bucket,
@@ -597,7 +596,6 @@ export default function WorkingProduct({
       const uploadInfos = {
         task_id: taskId,
         file_name: uploadedFiles[0].file_name,
-        original_name: uploadedFiles[0].original_name,
         size: uploadedFiles[0].size,
         key: uploadedFiles[0].key,
         bucket: uploadedFiles[0].bucket,
@@ -1111,6 +1109,7 @@ export default function WorkingProduct({
                                     bucket: row.bucket,
                                     created: row.created,
                                     file_name: row.file_name,
+                                    original_name: row.original_name,
                                     key: row.key,
                                     task_file_id: row.task_file_id,
                                     task_id: row.task_id,
@@ -1432,7 +1431,7 @@ export default function WorkingProduct({
       {/* Modal to preview image */}
       <ModalDefault
         isOpen={previewImage.isOpen}
-        title={previewImage.imageInfos.file_name}
+        title={previewImage.imageInfos.original_name}
         onOpenChange={() =>
           setPreviewImage({
             isOpen: false,
@@ -1440,6 +1439,7 @@ export default function WorkingProduct({
               bucket: '',
               created: '',
               file_name: '',
+              original_name: '',
               key: '',
               task_file_id: '',
               task_id: '',
@@ -1466,6 +1466,7 @@ export default function WorkingProduct({
                       bucket: '',
                       created: '',
                       file_name: '',
+                      original_name: '',
                       key: '',
                       task_file_id: '',
                       task_id: '',
