@@ -34,7 +34,6 @@ import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
 import { Table } from '../../../components/Table';
 import ModalDefault from '../../../components/Ui/ModalDefault';
 import UploadFiles from '../../../components/Upload/UploadFiles';
-import { ModalImage } from '../../Requests/ViewRequests/styles';
 import UploadFilesTicket from '../../../components/UploadTicket/UploadFilex';
 import UploadFinalFile from '../../../components/UploadFinal/UploadFinalFiles';
 
@@ -54,6 +53,7 @@ import {
   EssayInfo,
   FilesTableWrapper,
   FooterSection,
+  ImageWrapper,
   InfoFile,
   InputChat,
   InputField,
@@ -1452,7 +1452,7 @@ export default function WorkingProduct({
       >
         <>
           {previewImage.imageInfos.file_name.split('.').pop() !== 'pdf' && (
-            <ModalImage
+            <ImageWrapper
               style={{
                 backgroundImage: `url(https://${previewImage.imageInfos.bucket}.s3.amazonaws.com/${previewImage.imageInfos.key})`
               }}
@@ -1479,7 +1479,7 @@ export default function WorkingProduct({
               >
                 <MdClose />
               </div>
-            </ModalImage>
+            </ImageWrapper>
           )}
 
           {previewImage.imageInfos.file_name.split('.').pop() === 'pdf' && (

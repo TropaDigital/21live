@@ -616,3 +616,41 @@ export const InfoFile = styled.div`
     background: var(--warning-100);
   }
 `;
+
+export const ImageWrapper = styled.div`
+  width: 70vw;
+  height: 80vh;
+
+  /* border: 2px solid var(--primary); */
+  border-radius: 12px;
+
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+
+  position: relative;
+
+  .close-button {
+    width: 20px;
+    height: 20px;
+    transition: all 0.3s;
+    cursor: pointer;
+
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    svg {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--gray-500);
+    }
+
+    &:hover {
+      transform: scale(1.3);
+      svg {
+        color: var(--Danger);
+      }
+    }
+  }
+`;
