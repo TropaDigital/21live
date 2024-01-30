@@ -571,14 +571,13 @@ export default function CreateProject() {
 
   async function sendFilesOfProject() {
     try {
-      const files = uploadedFiles.map(
-        (row: { bucket: any; file_name: any; key: any; size: any }) => ({
-          file_name: row.file_name,
-          bucket: row.bucket,
-          key: row.key,
-          size: row.size
-        })
-      );
+      const files = uploadedFiles.map((row: any) => ({
+        file_name: row.file_name,
+        original_name: row.original_name,
+        bucket: row.bucket,
+        key: row.key,
+        size: row.size
+      }));
 
       const upload = {
         folder: 'projects',
@@ -588,7 +587,7 @@ export default function CreateProject() {
 
       setLoading(true);
 
-      const response = await api.post(`/archive/insert`, upload);
+      const response = await api.post(`/archive/upload`, upload);
 
       if (response.data.status === 'success') {
         navigate('/projetos');
