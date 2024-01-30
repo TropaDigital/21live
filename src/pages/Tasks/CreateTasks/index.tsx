@@ -2938,7 +2938,7 @@ export default function CreateTasks() {
                   <div className="category">{row.size}</div>
                   <div className="quantity">
                     <SelectDefault
-                      label="Quantidade"
+                      label=""
                       name="quantity_info"
                       value={singleProductQuantity}
                       onChange={handleSingleProductQuantity}

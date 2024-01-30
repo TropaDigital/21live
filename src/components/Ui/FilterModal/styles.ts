@@ -10,4 +10,15 @@ export const CloseButton = styled.button`
   margin-right: 44px;
   margin-top: 32px;
   background: var(--background-primary);
+
+  svg {
+    transition: all 0.3s;
+    color: var(--gray-400);
+  }
+
+  &:hover {
+    svg {
+      color: var(--Danger);
+    }
+  }
 `;

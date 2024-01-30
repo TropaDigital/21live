@@ -78,7 +78,7 @@ export default function FilterModal({
           {closeBtn && (
             <Dialog.Close asChild>
               <CloseButton>
-                <BiX size={30} color="#868E96" />
+                <BiX size={30} />
               </CloseButton>
             </Dialog.Close>
           )}

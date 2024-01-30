@@ -407,6 +407,9 @@ export const FilePreview = styled.div`
 
     &:hover {
       transform: scale(1.3);
+      svg {
+        color: var(--Danger);
+      }
     }
   }
 `;
