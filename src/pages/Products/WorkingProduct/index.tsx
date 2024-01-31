@@ -507,6 +507,7 @@ export default function WorkingProduct({
       const uploadInfos = {
         task_id: taskId,
         file_name: uploadedFiles[0].file_name,
+        original_name: uploadedFiles[0].original_name,
         size: uploadedFiles[0].size,
         key: uploadedFiles[0].key,
         bucket: uploadedFiles[0].bucket,
@@ -548,6 +549,7 @@ export default function WorkingProduct({
       const uploadInfos = {
         task_id: taskId,
         file_name: uploadedFiles[0].file_name,
+        original_name: uploadedFiles[0].original_name,
         size: uploadedFiles[0].size,
         key: uploadedFiles[0].key,
         bucket: uploadedFiles[0].bucket,
@@ -596,6 +598,7 @@ export default function WorkingProduct({
       const uploadInfos = {
         task_id: taskId,
         file_name: uploadedFiles[0].file_name,
+        original_name: uploadedFiles[0].original_name,
         size: uploadedFiles[0].size,
         key: uploadedFiles[0].key,
         bucket: uploadedFiles[0].bucket,
@@ -1057,7 +1060,11 @@ export default function WorkingProduct({
                           {row.products_delivery_id !== '' ? row.products_delivery_id : '-----'}
                         </td>
                         <td>{productsNames[index]}</td>
-                        <td>{row.original_name}</td>
+                        <td>
+                          {row.original_name !== ''
+                            ? row.original_name
+                            : row.file_name.split('-').pop()}
+                        </td>
                         <td style={{ textTransform: 'capitalize' }}>
                           {moment(row.created).format('DD/MM/YYYY')}
                         </td>
