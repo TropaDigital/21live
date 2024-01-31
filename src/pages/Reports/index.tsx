@@ -28,15 +28,13 @@ import { IoMdDownload } from 'react-icons/io';
 // Libraries
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-
-// Images
-// import Logo from '../../assets/logo-21BRZ.png';
+import moment from 'moment';
 
 interface ReportProps {
   client: string;
   contract: string;
-  month: string;
-  year: string;
+  date_start: string;
+  date_end: string;
 }
 
 interface JobList {
@@ -165,7 +163,12 @@ export default function MonthlyReport() {
 
           <ReportMonth>
             <div className="title-info">21BRZ</div>
-            <div className="month">Mês: Março/2023</div>
+            <div className="month">
+              Data inicial: {moment(reportInfos.date_start).format('DD/MM/YYYY')}
+            </div>
+            <div className="month">
+              Data final: {moment(reportInfos.date_end).format('DD/MM/YYYY')}
+            </div>
           </ReportMonth>
         </ReportHeader>
 
@@ -173,7 +176,10 @@ export default function MonthlyReport() {
           <InfoCards className="light">
             <div className="card-title">
               OVERVIEW PERÍODO
-              <span>DE 01/03/2023 a 31/03/2023</span>
+              <span>
+                DE {moment(reportInfos.date_start).format('DD/MM/YYYY')} a{' '}
+                {moment(reportInfos.date_end).format('DD/MM/YYYY')}
+              </span>
             </div>
 
             <BulletPointInfos>
