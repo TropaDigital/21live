@@ -413,7 +413,7 @@ legend {
 .PopoverContent {
   border-radius: 4px;
   padding: 20px;
-  width: 260px;
+  width: fit-content;
   max-height: 60vh;
   overflow-y: auto;
   background-color: white;
@@ -451,16 +451,20 @@ legend {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--violet11);
+  color: var(--gray-500);
+  background-color: transparent;
   position: absolute;
   top: 5px;
   right: 5px;
+
+  transition: all .3s;
 }
 .PopoverClose:hover {
-  background-color: var(--violet4);
+  transform: scale(1.3);
+  color: var(--Danger);
 }
 .PopoverClose:focus {
-  box-shadow: 0 0 0 2px var(--violet7);
+  /* box-shadow: 0 0 0 2px var(--violet7); */
 }
 
 .IconButtonPopover {
@@ -602,26 +606,6 @@ legend {
   box-shadow: 0 0 0 2px ar(--gray-600);
 }
 
-.PopoverClose {
-  font-family: inherit;
-  border-radius: 100%;
-  height: 25px;
-  width: 25px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--violet11);
-  position: absolute;
-  top: 5px;
-  right: 5px;
-}
-.PopoverClose:hover {
-  background-color: var(--gray-600);
-}
-.PopoverClose:focus {
-  box-shadow: 0 0 0 2px ar(--gray-600);
-}
-
 .IconButtonPopover {
   font-family: inherit;
   border-radius: 100%;
@@ -660,6 +644,8 @@ legend {
 .avatar-al {
   display: flex;
   align-items: center;
+  gap: 4px;
+  min-width: 300px;
   width: fit-content;
   height: 2.37rem;
   border-radius: 50%;
