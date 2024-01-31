@@ -19,6 +19,7 @@ interface FileListProps {
     key: string;
     size: number;
     file_name: string;
+    original_name: string;
     loading: boolean;
   }>;
   onDelete: (id: string) => void;
@@ -38,9 +39,9 @@ const FileList = ({ files, onDelete }: FileListProps) => (
           </Preview>
           <div>
             {uploadedFile.error ? (
-              <strong className="error">{uploadedFile.file_name}</strong>
+              <strong className="error">{uploadedFile.original_name}</strong>
             ) : (
-              <strong>{uploadedFile.file_name}</strong>
+              <strong>{uploadedFile.original_name}</strong>
             )}
             <span>
               {uploadedFile.size}
