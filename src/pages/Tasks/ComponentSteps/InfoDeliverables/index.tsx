@@ -278,7 +278,7 @@ export default function InfoDeliveries({
     getParams();
     // console.log('log deliverysArray =>', deliveriesArray);
     // console.log('log dataArray =>', data);
-    console.log('log projectInfo =>', projectInfo);
+    // console.log('log projectInfo =>', projectInfo);
   }, []);
 
   return (
@@ -307,7 +307,8 @@ export default function InfoDeliveries({
             <TotalHours>
               Quantidade:{' '}
               <span>
-                {projectInfo.quantidade_restante}/{projectInfo.quantidade_inicial}
+                {projectInfo.quantidade_inicial - projectInfo.quantidade_restante + data.length}/
+                {projectInfo.quantidade_inicial}
               </span>
             </TotalHours>
           )}
