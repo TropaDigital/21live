@@ -437,6 +437,7 @@ export default function CreateTasks() {
 
   useEffect(() => {
     if (location.state !== null && location.state.ticket_id) {
+      // console.log('log do locationState =>', location.state);
       getProjects(location.state.tenant_id);
 
       setDTOForm((prevState: any) => ({
@@ -450,6 +451,14 @@ export default function CreateTasks() {
       setDTOForm((prevState: any) => ({
         ...prevState,
         ['title']: location.state.title
+      }));
+      setDTOForm((prevState: any) => ({
+        ...prevState,
+        ['description']: location.state.info
+      }));
+      setDTOForm((prevState: any) => ({
+        ...prevState,
+        ['requester_id']: location.state.userId
       }));
     }
 
