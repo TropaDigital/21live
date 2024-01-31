@@ -1,6 +1,6 @@
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // Icons
 import { IconArrowLeft } from '../../assets/icons';
@@ -9,6 +9,8 @@ import { BiPlus } from 'react-icons/bi';
 
 // Styles
 import { BackButton, HeaderRequestWrapper, RequestHeaderTitle, RightSideHeader } from './styles';
+
+// Components
 import ButtonDefault from '../Buttons/ButtonDefault';
 
 interface HeaderRequestProps {
@@ -25,6 +27,8 @@ interface TicketInfos {
   tenant_id: string | undefined;
   ticket_id: string | undefined;
   title: string | undefined;
+  info: string | undefined;
+  userId: string | undefined;
 }
 
 export default function HeaderRequest({ title, ticketInfos }: HeaderRequestProps) {
