@@ -64,6 +64,9 @@ import { ServicesProps } from '../../types';
 import TaskTable from '../../components/Ui/TaskTable';
 import useDebouncedCallback from '../../hooks/useDebounced';
 import { subtractTime } from '../../utils/convertTimes';
+import { BiCalendar } from 'react-icons/bi';
+import { InputDefault } from '../../components/Inputs/InputDefault';
+import { useToast } from '../../hooks/toast';
 
 // interface DashType {
 //   typeDash: 'admin' | 'executive' | 'traffic' | 'operator' | '';
@@ -109,13 +112,14 @@ interface TaskConclude {
 interface ReportForm {
   client: string;
   contract: string;
-  month: string;
-  year: string;
+  date_start: string;
+  date_end: string;
 }
 
 export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { addToast } = useToast();
   const [filter, setFilter] = useState({
     fromDate: '',
     toDate: ''
@@ -123,8 +127,8 @@ export default function Dashboard() {
   const { formData, handleOnChange, setFormValue, setData } = useForm({
     client: '',
     contract: '',
-    month: '',
-    year: ''
+    date_start: '',
+    date_end: ''
   } as ReportForm);
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const [dataProjects, setDataProjects] = useState<ServicesProps[]>([]);
@@ -145,6 +149,7 @@ export default function Dashboard() {
   const { data: dataTasks, pages } = useFetch<any[]>(
     `my-tasks?search=${search.replace(/[^\w ]/g, '')}&page=${selected}`
   );
+  const [errorsForm, setErrorsForms] = useState<{ [key: string]: boolean }>({});
 
   const clientsOptions = dataClient?.map((row) => {
     return {
@@ -537,7 +542,7 @@ export default function Dashboard() {
       // Total:
       //   data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[3]?.quantidade_tarefas : 0,
       Total: 40,
-      fill: '#E2F2FF'
+      fill: '#c8e5fd'
     },
     {
       // name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[4]?.name : '???',
@@ -1204,24 +1209,91 @@ export default function Dashboard() {
     getProjects(select.value);
     setInitialValue(select);
     setFormValue('client', select.value);
+    setErrorsForms({});
+  };
+
+  const removeError = (fieldName: string) => {
+    setErrorsForms((prevErrors) => {
+      const updatedErrors = { ...prevErrors };
+      delete updatedErrors[fieldName];
+      return updatedErrors;
+    });
+  };
+
+  const addError = (fieldName: string, errorMessage: string) => {
+    setErrorsForms((prevErrors) => ({
+      ...prevErrors,
+      [fieldName]: true
+    }));
+
+    addToast({
+      title: 'Atenção',
+      description: errorMessage,
+      type: 'warning'
+    });
   };
 
   const handleGenerateReport = () => {
-    console.log('log para gerar relatório', formData);
-    navigate('/relatorio', { state: formData });
-    setModalReport(false);
-    setData({
-      client: '',
-      contract: '',
-      month: '',
-      year: ''
-    });
-    setInitialValue({
-      value: '',
-      label: '',
-      image: '',
-      color: ''
-    });
+    try {
+      if (formData.client === '') {
+        throw addError('client', 'Cliente é obrigatório!');
+      } else {
+        removeError('client');
+      }
+
+      if (formData.contract === '') {
+        throw addError('contract', 'Projeto/Contrato é obrigatório!');
+      } else {
+        removeError('contract');
+      }
+
+      if (formData.date_start === '') {
+        throw addError('date_start', 'Data inicial é obrigatória!');
+      } else {
+        removeError('date_start');
+      }
+
+      if (formData.date_end === '') {
+        throw addError('date_end', 'Data final é obrigatória!');
+      } else {
+        removeError('date_end');
+      }
+
+      if (Object.keys(errorsForm).length === 0) {
+        navigate('/relatorio', { state: formData });
+
+        setModalReport(false);
+
+        setInitialValue({
+          value: '',
+          label: '',
+          image: '',
+          color: ''
+        });
+
+        setData({
+          client: '',
+          contract: '',
+          date_start: '',
+          date_end: ''
+        });
+      }
+    } catch (error: any) {
+      console.log('log error report', error);
+      // if (error.message) {
+      //   addToast({
+      //     title: 'Atenção',
+      //     description: error?.message,
+      //     type: 'warning'
+      //   });
+      // } else {
+      //   addToast({
+      //     title: 'Atenção',
+      //     description: error,
+      //     type: 'warning'
+      //   });
+      // }
+    }
   };
 
   const handleCancelReport = () => {
@@ -1229,8 +1301,8 @@ export default function Dashboard() {
     setData({
       client: '',
       contract: '',
-      month: '',
-      year: ''
+      date_start: '',
+      date_end: ''
     });
     setInitialValue({
       value: '',
@@ -1238,6 +1310,7 @@ export default function Dashboard() {
       image: '',
       color: ''
     });
+    setErrorsForms({});
   };
 
   function getTenYears() {
@@ -1259,7 +1332,8 @@ export default function Dashboard() {
 
   // useEffect(() => {
   //   console.log('log do formData =>', formData);
-  // }, [formData]);
+  //   console.log('log errorForm =>', errorsForm);
+  // }, [formData, errorsForm]);
 
   return (
     <Container>
@@ -2768,6 +2842,9 @@ export default function Dashboard() {
               value={initialValue.value !== '' ? initialValue : null}
               onChange={handleClientSelected}
               placeholder={'Selecione o cliente...'}
+              error={
+                errorsForm.client || errorsForm.allFields ? 'Cliente é obrigatório!' : undefined
+              }
             />
           </ModalField>
 
@@ -2776,7 +2853,11 @@ export default function Dashboard() {
               label="Projeto/Contrato"
               name="contract"
               value={formData.contract}
-              onChange={handleOnChange}
+              onChange={(e) => {
+                handleOnChange(e);
+                removeError('contract');
+              }}
+              error={errorsForm.contract || errorsForm.allFields ? 'Contrato é obrigatório!' : ''}
             >
               {dataProjects?.map((row: any) => (
                 <option key={row.project_product_id} value={row.project_product_id}>
@@ -2787,10 +2868,27 @@ export default function Dashboard() {
           </ModalField>
 
           <ModalField>
-            <SelectDefault
+            <InputDefault
+              label="Data inicial"
+              placeholder="00/00/0000"
+              name="date_start"
+              type="date"
+              max={'9999-12-31'}
+              icon={BiCalendar}
+              onChange={(e) => {
+                handleOnChange(e);
+                removeError('date_start');
+              }}
+              value={formData.date_start}
+              // onKeyDown={handleKeyDown}
+              error={
+                errorsForm.date_start || errorsForm.allFields ? 'Data inicial é obrigatória!' : ''
+              }
+            />
+            {/* <SelectDefault
               label="Mês"
               name="month"
-              value={formData.month}
+              value={formData.date_start}
               onChange={handleOnChange}
             >
               {monthsArray?.map((row: any) => (
@@ -2798,15 +2896,35 @@ export default function Dashboard() {
                   {row.month_name}
                 </option>
               ))}
-            </SelectDefault>
+            </SelectDefault> */}
 
-            <SelectDefault label="Ano" name="year" value={formData.year} onChange={handleOnChange}>
+            {/* <SelectDefault
+              label="Ano"
+              name="year"
+              value={formData.date_end}
+              onChange={handleOnChange}
+            >
               {ten_years?.map((row: any) => (
                 <option key={row} value={row}>
                   {row}
                 </option>
               ))}
-            </SelectDefault>
+            </SelectDefault> */}
+            <InputDefault
+              label="Data final"
+              placeholder="00/00/0000"
+              name="date_end"
+              type="date"
+              max={'9999-12-31'}
+              icon={BiCalendar}
+              onChange={(e) => {
+                handleOnChange(e);
+                removeError('date_end');
+              }}
+              value={formData.date_end}
+              // onKeyDown={handleKeyDown}
+              error={errorsForm.date_end || errorsForm.allFields ? 'Data final obrigatória' : ''}
+            />
           </ModalField>
 
           <ModalButtons>
