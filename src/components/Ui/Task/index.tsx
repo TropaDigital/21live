@@ -1,5 +1,4 @@
 // Icons
-import { BiFlag } from 'react-icons/bi';
 import { FiMoreHorizontal } from 'react-icons/fi';
 
 // Utils
@@ -75,7 +74,7 @@ export default function Task({ data }: DataTaskProps) {
 
           <FieldGroupTask>
             <div className="sectionAvatarTask">
-              <Avatar data={data.team ? data.team : avatarAll} />
+              <Avatar data={data.team ? data.team : []} />
             </div>
 
             <div className="sectionDataTask">
