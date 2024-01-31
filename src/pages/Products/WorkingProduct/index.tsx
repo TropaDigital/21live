@@ -854,7 +854,7 @@ export default function WorkingProduct({
                 <ButtonDefault
                   typeButton="lightWhite"
                   isOutline
-                  onClick={() => navigate('/tarefas')}
+                  onClick={() => navigate('/minhas-tarefas')}
                 >
                   Descartar
                 </ButtonDefault>
