@@ -999,16 +999,18 @@ export default function ViewProductsDeliveries() {
       setLoading(true);
       if (hasToDismemberTask && checkType !== 'back' && !hasDismemberedProduct) {
         setModalDismemberment(true);
+        console.log('log do checkFlow 1');
       } else if (
         uploadClient &&
         checkType === 'next' &&
         dataTask?.files.length > 0 &&
         dataTask?.status !== 'Aguardando Aprovação' &&
-        dataTask?.status !== 'Avaliada' &&
-        dataTask?.status !== 'Em Andamento'
+        dataTask?.status !== 'Avaliada'
       ) {
         setModalTenantApprove(true);
+        console.log('log do checkFlow 2');
       } else if (checkType === 'next' && !finalCard) {
+        console.log('log do checkFlow 3');
         const response = await api.get(
           `/flow-function?step=${Number(actualStep) + 1}&flow_id=${dataTask?.flow_id}`
         );
