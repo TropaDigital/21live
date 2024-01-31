@@ -226,6 +226,14 @@ export default function ViewProductsDeliveries() {
 
   const hasToDismemberTask = dataTask?.files?.some((obj: any) => obj.status === 'fail');
 
+  const hasProductsBeenEvaluated =
+    dataTask?.deliverys &&
+    dataTask.deliverys.every((delivery: any) =>
+      delivery.products?.every((product: any) => product.status_interaction !== '')
+    );
+
+  // const hasMissingFilesToApprove = dataTask?.deliverys.some(hasProductsBeenEvaluated);
+
   const fetchClockInfo = useCallback(async () => {
     try {
       const response = await api.get(`/clock/verify`);
@@ -999,18 +1007,19 @@ export default function ViewProductsDeliveries() {
       setLoading(true);
       if (hasToDismemberTask && checkType !== 'back' && !hasDismemberedProduct) {
         setModalDismemberment(true);
-        console.log('log do checkFlow 1');
+        console.log('log do checkFlow 1 - Dismember');
       } else if (
         uploadClient &&
         checkType === 'next' &&
         dataTask?.files.length > 0 &&
         dataTask?.status !== 'Aguardando Aprovação' &&
-        dataTask?.status !== 'Avaliada'
+        dataTask?.status !== 'Avaliada' &&
+        !hasProductsBeenEvaluated
       ) {
         setModalTenantApprove(true);
-        console.log('log do checkFlow 2');
+        console.log('log do checkFlow 2 - Tenant approve');
       } else if (checkType === 'next' && !finalCard) {
-        console.log('log do checkFlow 3');
+        console.log('log do checkFlow 3 - Flow function');
         const response = await api.get(
           `/flow-function?step=${Number(actualStep) + 1}&flow_id=${dataTask?.flow_id}`
         );
@@ -1037,10 +1046,10 @@ export default function ViewProductsDeliveries() {
         if (dataTask.ticket_id !== '' && mandatoryUpload) {
           setModalFinalFile(true);
         }
-        if (dataTask.ticket_id !== '' && !mandatoryUpload) {
+        if (dataTask?.ticket_id !== '' && !mandatoryUpload) {
           handleUploadApproved();
         }
-        if (dataTask.ticket_id === '') {
+        if (dataTask?.ticket_id === '') {
           handleConcludeTask();
         }
       }
@@ -1388,6 +1397,8 @@ export default function ViewProductsDeliveries() {
 
           fileData.append('archive', newFile);
           fileData.append('ticket_id', dataTask?.ticket_id);
+          fileData.append('original_name', imageUrl.original_name);
+          console.log('log do originalName (upload tenant) =>', imageUrl.original_name);
 
           const responseFile = await api.post('/archive/upload/ticket', fileData);
 
@@ -1464,6 +1475,8 @@ export default function ViewProductsDeliveries() {
           const newFile: any = new File([blob], imageUrl.file_name, { type: blob.type });
 
           fileData.append('archive', newFile);
+          fileData.append('original_name', imageUrl.original_name);
+          console.log('log do originalName (upload Approved) =>', imageUrl.original_name);
           // fileData.append('task_file_id', imageUrl.task_file_id);
 
           const responseFile = await api.post(
@@ -1565,7 +1578,7 @@ export default function ViewProductsDeliveries() {
                 title={titleInfos}
                 disableButton={false}
                 goBack
-                buttonType={uploadClient ? 'client' : 'send'}
+                buttonType={uploadClient && !hasProductsBeenEvaluated ? 'client' : 'send'}
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
                 backFlow={() => setModalReturnFlow(true)}
@@ -1615,7 +1628,7 @@ export default function ViewProductsDeliveries() {
                 title={titleInfos}
                 disableButton={false}
                 goBack
-                buttonType={uploadClient ? 'client' : 'send'}
+                buttonType={uploadClient && !hasProductsBeenEvaluated ? 'client' : 'send'}
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
                 backFlow={() => setModalReturnFlow(true)}
