@@ -110,7 +110,8 @@ interface TaskConclude {
 }
 
 interface ReportForm {
-  client: string;
+  client_id: string;
+  client_name: string;
   contract: string;
   date_start: string;
   date_end: string;
@@ -124,8 +125,9 @@ export default function Dashboard() {
     fromDate: '',
     toDate: ''
   });
-  const { formData, handleOnChange, setFormValue, setData } = useForm({
-    client: '',
+  const { formData, handleOnChange, setData } = useForm({
+    client_id: '',
+    client_name: '',
     contract: '',
     date_start: '',
     date_end: ''
@@ -220,58 +222,58 @@ export default function Dashboard() {
   // console.log('log do data dashboard =>', data);
   // console.log('log do user =>', user.permissions);
 
-  const monthsArray = [
-    {
-      id: '01',
-      month_name: 'Janeiro'
-    },
-    {
-      id: '02',
-      month_name: 'Fevereiro'
-    },
-    {
-      id: '03',
-      month_name: 'Março'
-    },
-    {
-      id: '04',
-      month_name: 'Abril'
-    },
-    {
-      id: '05',
-      month_name: 'Maio'
-    },
-    {
-      id: '06',
-      month_name: 'Junho'
-    },
-    {
-      id: '07',
-      month_name: 'Julho'
-    },
-    {
-      id: '08',
-      month_name: 'Agosto'
-    },
-    {
-      id: '09',
-      month_name: 'Setembro'
-    },
-    {
-      id: '10',
-      month_name: 'Outubro'
-    },
-    {
-      id: '11',
-      month_name: 'Novembro'
-    },
-    {
-      id: '12',
-      month_name: 'Dezembro'
-    }
-  ];
+  // const monthsArray = [
+  //   {
+  //     id: '01',
+  //     month_name: 'Janeiro'
+  //   },
+  //   {
+  //     id: '02',
+  //     month_name: 'Fevereiro'
+  //   },
+  //   {
+  //     id: '03',
+  //     month_name: 'Março'
+  //   },
+  //   {
+  //     id: '04',
+  //     month_name: 'Abril'
+  //   },
+  //   {
+  //     id: '05',
+  //     month_name: 'Maio'
+  //   },
+  //   {
+  //     id: '06',
+  //     month_name: 'Junho'
+  //   },
+  //   {
+  //     id: '07',
+  //     month_name: 'Julho'
+  //   },
+  //   {
+  //     id: '08',
+  //     month_name: 'Agosto'
+  //   },
+  //   {
+  //     id: '09',
+  //     month_name: 'Setembro'
+  //   },
+  //   {
+  //     id: '10',
+  //     month_name: 'Outubro'
+  //   },
+  //   {
+  //     id: '11',
+  //     month_name: 'Novembro'
+  //   },
+  //   {
+  //     id: '12',
+  //     month_name: 'Dezembro'
+  //   }
+  // ];
 
-  const ten_years = getTenYears();
+  // const ten_years = getTenYears();
 
   // const dataStatusAll = [
   //   {
@@ -1208,7 +1210,13 @@ export default function Dashboard() {
   const handleClientSelected = (select: any) => {
     getProjects(select.value);
     setInitialValue(select);
-    setFormValue('client', select.value);
+    setData({
+      client_id: select.value,
+      client_name: select.label,
+      contract: formData.contract,
+      date_start: formData.date_start,
+      date_end: formData.date_end
+    });
     setErrorsForms({});
   };
 
@@ -1235,7 +1243,7 @@ export default function Dashboard() {
 
   const handleGenerateReport = () => {
     try {
-      if (formData.client === '') {
+      if (formData.client_id === '') {
         throw addError('client', 'Cliente é obrigatório!');
       } else {
         removeError('client');
@@ -1272,7 +1280,8 @@ export default function Dashboard() {
         });
 
         setData({
-          client: '',
+          client_id: '',
+          client_name: '',
           contract: '',
           date_start: '',
           date_end: ''
@@ -1299,7 +1308,8 @@ export default function Dashboard() {
   const handleCancelReport = () => {
     setModalReport(false);
     setData({
-      client: '',
+      client_id: '',
+      client_name: '',
       contract: '',
       date_start: '',
       date_end: ''
@@ -1313,15 +1323,15 @@ export default function Dashboard() {
     setErrorsForms({});
   };
 
-  function getTenYears() {
-    const currentYear = new Date().getFullYear();
-    const lastTenYears = [];
+  // function getTenYears() {
+  //   const currentYear = new Date().getFullYear();
+  //   const lastTenYears = [];
 
-    for (let i = currentYear; i > currentYear - 10; i--) {
-      lastTenYears.push(i);
-    }
-    return lastTenYears;
-  }
+  //   for (let i = currentYear; i > currentYear - 10; i--) {
+  //     lastTenYears.push(i);
+  //   }
+  //   return lastTenYears;
+  // }
 
   const handleNavigateTask = (infos: any) => {
     const taskId = infos?.task?.task_id;
