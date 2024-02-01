@@ -39,7 +39,7 @@ export const ClientLogo = styled.div<LogoProps>`
   justify-content: center;
   width: 140px;
   height: 140px;
-  background: ${({ bgColor }) => (bgColor ? bgColor : 'black')};
+  background: ${({ bgColor }) => (bgColor ? bgColor : 'transparent')};
   border-radius: 8px;
 
   .logo-img {

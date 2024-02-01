@@ -50,6 +50,9 @@ import {
   ModalProductsWrapper,
   ModalReturnFlow,
   ModalUploadWrapper,
+  ProductAndMotiveInfos,
+  ProductAndMotiveLi,
+  ProductsAndMotivesWrapper,
   RightInfosCard,
   RightInfosTitle,
   SelectProductField,
@@ -133,6 +136,7 @@ export default function ViewProductsDeliveries() {
   const [filesToTenantApprove, setFilesToTenantApprove] = useState<TaskFile[]>([]);
   const [showClock, setShowClock] = useState<boolean>(false);
   const [taskHistory, setTaskHistory] = useState<TaskHistoryProps[]>();
+  const [modalReturnAllRejected, setModalReturnAllRejected] = useState<boolean>(false);
 
   const [previewImage, setPreviewImage] = useState({
     isOpen: false,
@@ -225,6 +229,23 @@ export default function ViewProductsDeliveries() {
   const hasDismemberedProduct = dataTask?.deliverys.some(hasDismemberedProductInDeliveries);
 
   const hasToDismemberTask = dataTask?.files?.some((obj: any) => obj.status === 'fail');
+
+  const hasProductsBeenEvaluated =
+    dataTask?.deliverys &&
+    dataTask.deliverys.every((delivery: any) =>
+      delivery.products?.every((product: any) => product.status_interaction !== '')
+    );
+
+  const hasTicketInteraction: any[] = dataTask?.files.filter(
+    (obj: any) => obj.ticket_interaction_id !== ''
+  );
+
+  const hasAllBeenRejected =
+    hasTicketInteraction?.length > 0
+      ? hasTicketInteraction?.filter((obj: any) => obj.status === 'fail')
+      : [];
+
+  // const hasMissingFilesToApprove = dataTask?.deliverys.some(hasProductsBeenEvaluated);
 
   const fetchClockInfo = useCallback(async () => {
     try {
@@ -997,18 +1018,33 @@ export default function ViewProductsDeliveries() {
   async function checkFlow(checkType: string) {
     try {
       setLoading(true);
-      if (hasToDismemberTask && checkType !== 'back' && !hasDismemberedProduct) {
+      if (hasAllBeenRejected.length >= dataProducts?.products.length) {
+        setModalReturnAllRejected(true);
+
+        // const updatedReturnInfos = dataProducts?.products.map((item: any) => {
+        //   return item.fail_reason;
+        // });
+
+        // setReturnInfos({
+        //   returnMotive: updatedReturnInfos,
+        //   chosenStep: ''
+        // });
+        console.log('log do checkFlow 1 - Dismember all');
+      } else if (hasToDismemberTask && checkType !== 'back' && !hasDismemberedProduct) {
         setModalDismemberment(true);
+        console.log('log do checkFlow 2 - Dismember');
       } else if (
         uploadClient &&
         checkType === 'next' &&
         dataTask?.files.length > 0 &&
         dataTask?.status !== 'Aguardando Aprovação' &&
         dataTask?.status !== 'Avaliada' &&
-        dataTask?.status !== 'Em Andamento'
+        !hasProductsBeenEvaluated
       ) {
         setModalTenantApprove(true);
+        console.log('log do checkFlow 3 - Tenant approve');
       } else if (checkType === 'next' && !finalCard) {
+        console.log('log do checkFlow 4 - Flow function');
         const response = await api.get(
           `/flow-function?step=${Number(actualStep) + 1}&flow_id=${dataTask?.flow_id}`
         );
@@ -1035,10 +1071,10 @@ export default function ViewProductsDeliveries() {
         if (dataTask.ticket_id !== '' && mandatoryUpload) {
           setModalFinalFile(true);
         }
-        if (dataTask.ticket_id !== '' && !mandatoryUpload) {
+        if (dataTask?.ticket_id !== '' && !mandatoryUpload) {
           handleUploadApproved();
         }
-        if (dataTask.ticket_id === '') {
+        if (dataTask?.ticket_id === '') {
           handleConcludeTask();
         }
       }
@@ -1168,6 +1204,7 @@ export default function ViewProductsDeliveries() {
     const selectedStep = timeLineData?.steps.filter((obj) => obj.step === returnInfos.chosenStep);
 
     checkFlow('back');
+    setModalReturnAllRejected(false);
 
     // console.log('log do selectedStep =>', selectedStep);
   };
@@ -1195,8 +1232,23 @@ export default function ViewProductsDeliveries() {
       }
 
       setLoading(false);
-    } catch (error) {
+    } catch (error: any) {
       console.log('log return task error', error);
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
       setLoading(false);
     }
   }
@@ -1207,6 +1259,14 @@ export default function ViewProductsDeliveries() {
       returnMotive: ''
     });
     setModalReturnFlow(false);
+  };
+
+  const handleCancelReturnReject = () => {
+    setReturnInfos({
+      chosenStep: '',
+      returnMotive: ''
+    });
+    setModalReturnAllRejected(false);
   };
 
   const handleSelectProduct = () => {
@@ -1386,6 +1446,8 @@ export default function ViewProductsDeliveries() {
 
           fileData.append('archive', newFile);
           fileData.append('ticket_id', dataTask?.ticket_id);
+          fileData.append('original_name', imageUrl.original_name);
+          console.log('log do originalName (upload tenant) =>', imageUrl.original_name);
 
           const responseFile = await api.post('/archive/upload/ticket', fileData);
 
@@ -1393,7 +1455,7 @@ export default function ViewProductsDeliveries() {
             const uploadInfos = {
               task_id: dataTask?.task_id,
               file_name: responseFile.data.result.file_name,
-              original_name: responseFile.data.result.original_name,
+              original_name: imageUrl.original_name,
               size: responseFile.data.result.size,
               key: responseFile.data.result.key,
               bucket: responseFile.data.result.bucket,
@@ -1462,6 +1524,8 @@ export default function ViewProductsDeliveries() {
           const newFile: any = new File([blob], imageUrl.file_name, { type: blob.type });
 
           fileData.append('archive', newFile);
+          fileData.append('original_name', imageUrl.original_name);
+          console.log('log do originalName (upload Approved) =>', imageUrl.original_name);
           // fileData.append('task_file_id', imageUrl.task_file_id);
 
           const responseFile = await api.post(
@@ -1473,7 +1537,7 @@ export default function ViewProductsDeliveries() {
             const uploadInfos = {
               task_id: dataTask?.task_id,
               file_name: responseFile.data.result.file_name,
-              original_name: responseFile.data.result.original_name,
+              original_name: imageUrl.original_name,
               size: responseFile.data.result.size,
               key: responseFile.data.result.key,
               bucket: responseFile.data.result.bucket,
@@ -1499,13 +1563,7 @@ export default function ViewProductsDeliveries() {
 
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
-    // console.log('log do selectedProducts', selectedProduct);
-    // console.log('log do next step', nextStep);
-    // console.log('log do upload', uploadIsTrue);
-    // console.log('log do final card', finalCard);
-    // console.log('log dataTask', dataTask);
-    // console.log('log dataProducts =>', dataProducts);
-  }, [selectedProduct, typeOfPlay, nextStep, uploadIsTrue, finalCard, dataTask, dataProducts]);
+  }, [typeOfPlay]);
 
   return (
     <ContainerDefault>
@@ -1563,7 +1621,7 @@ export default function ViewProductsDeliveries() {
                 title={titleInfos}
                 disableButton={false}
                 goBack
-                buttonType={uploadClient ? 'client' : 'send'}
+                buttonType={uploadClient && !hasProductsBeenEvaluated ? 'client' : 'send'}
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
                 backFlow={() => setModalReturnFlow(true)}
@@ -1613,7 +1671,7 @@ export default function ViewProductsDeliveries() {
                 title={titleInfos}
                 disableButton={false}
                 goBack
-                buttonType={uploadClient ? 'client' : 'send'}
+                buttonType={uploadClient && !hasProductsBeenEvaluated ? 'client' : 'send'}
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
                 backFlow={() => setModalReturnFlow(true)}
@@ -1771,7 +1829,14 @@ export default function ViewProductsDeliveries() {
                         <div className="info-title">Próxima etapa:</div>
                       )} */}
                       <div className="timeline-info">{row.name}</div>
-                      {row.time_line.length > 0 ? (
+                      {row.time_line.length > 0 &&
+                      row.time_line.some((item) => item.action === 'Concluiu Entrega') ? (
+                        <div className="info-title">
+                          {' '}
+                          - {moment(row.time_line[0]?.created).format('DD/MM/YYYY')}
+                        </div>
+                      ) : row.time_line.length > 0 &&
+                        row.time_line.some((item) => item.action === 'Criou Ticket') ? (
                         <div className="info-title">
                           {' '}
                           - {moment(row.time_line[0]?.created).format('DD/MM/YYYY')}
@@ -1780,11 +1845,36 @@ export default function ViewProductsDeliveries() {
                         ''
                       )}
 
-                      {row.time_line.length > 0 ? (
+                      {row.time_line.length > 0 &&
+                      row.time_line.some((item) => item.action === 'Concluiu Entrega') ? (
                         <TimelineExtraInfo>
                           Concluído por:{' '}
-                          {row.time_line.length > 1 ? row.time_line[1].name : row.time_line[0].name}
-                          <div>as {moment(row.time_line[0].created).format('HH:mm')}h</div>
+                          {row.time_line.length > 1
+                            ? row.time_line.find((item) => item.action === 'Concluiu Entrega')?.name
+                            : row.time_line[0].name}
+                          <div>
+                            as{' '}
+                            {moment(
+                              row.time_line.find((item) => item.action === 'Concluiu Entrega')
+                                ?.created
+                            ).format('HH:mm')}
+                            h
+                          </div>
+                        </TimelineExtraInfo>
+                      ) : row.time_line.length > 0 &&
+                        row.time_line.some((item) => item.action === 'Criou Ticket') ? (
+                        <TimelineExtraInfo>
+                          Ticket criado por:{' '}
+                          {row.time_line.length > 1
+                            ? row.time_line.find((item) => item.action === 'Criou Ticket')?.name
+                            : row.time_line[0].name}
+                          <div>
+                            as{' '}
+                            {moment(
+                              row.time_line.find((item) => item.action === 'Criou Ticket')?.created
+                            ).format('HH:mm')}
+                            h
+                          </div>
                         </TimelineExtraInfo>
                       ) : (
                         ''
@@ -1960,7 +2050,15 @@ export default function ViewProductsDeliveries() {
       {/* Modal User without schedule */}
       <ModalDefault
         isOpen={modalWithoutSchedule}
-        onOpenChange={() => setModalWithoutSchedule(false)}
+        onOpenChange={() => {
+          setModalWithoutSchedule(false);
+          setSelectedInitalUser({
+            function: '',
+            name: '',
+            tasks: 0,
+            user_id: ''
+          });
+        }}
         title="Escolha o usuário que receberá a tarefa"
       >
         <UsersWrapper>
@@ -2320,6 +2418,82 @@ export default function ViewProductsDeliveries() {
             </ButtonDefault>
           </ModalButtons>
         </ModalProductsWrapper>
+      </ModalDefault>
+
+      {/* Modal inform dismemberment with all rejected */}
+      <ModalDefault
+        isOpen={modalReturnAllRejected}
+        onOpenChange={handleCancelReturnReject}
+        title="Necessário retornar etapa"
+      >
+        <ModalReturnFlow>
+          <TextInfo>
+            <span>Atenção!</span>
+            <span>
+              Todos os produtos foram recusados, é necessário retornar a etapa para correção.
+            </span>
+          </TextInfo>
+
+          <SelectDefault
+            label="Escolha a etapa"
+            name="chosenStep"
+            onChange={handleChooseStepAndMotive}
+            value={returnInfos.chosenStep}
+          >
+            {stepsToReturn?.map((row: StepTimeline) => (
+              <option key={row.card_id} value={row.step}>
+                {row.name}
+              </option>
+            ))}
+          </SelectDefault>
+
+          <ProductsAndMotivesWrapper>
+            <div className="list-title">Lista com produtos recusados e motivos</div>
+            {dataProducts?.products.map((row: any) => (
+              <ProductAndMotiveLi key={row.products_delivery_id}>
+                <ProductAndMotiveInfos>
+                  <div className="product id">
+                    <span>ID:</span> #{String(row.products_delivery_id).padStart(3, '0')}
+                  </div>
+                  <div className="product name">
+                    {' '}
+                    <span>Produto:</span> {row.service}
+                  </div>
+                  <div className="product motive">
+                    <span>Motivo:</span>
+                    <div className="info" dangerouslySetInnerHTML={{ __html: row.fail_reason }} />
+                  </div>
+                </ProductAndMotiveInfos>
+              </ProductAndMotiveLi>
+            ))}
+          </ProductsAndMotivesWrapper>
+
+          <TextAreaDefault
+            label="Descreva o motivo para retornar"
+            placeholder="Digite o motivo..."
+            name="returnMotive"
+            onChange={handleChooseStepAndMotive}
+            value={returnInfos.returnMotive}
+            required
+          />
+
+          <div className="modal-buttons">
+            <ButtonDefault typeButton="dark" isOutline onClick={handleCancelReturnReject}>
+              Descartar
+            </ButtonDefault>
+            <ButtonDefault
+              typeButton={
+                returnInfos.chosenStep === '' || returnInfos.returnMotive === ''
+                  ? 'blocked'
+                  : 'primary'
+              }
+              onClick={handleBackFlow}
+              disabled={returnInfos.chosenStep === '' || returnInfos.returnMotive === ''}
+            >
+              Retornar
+            </ButtonDefault>
+          </div>
+        </ModalReturnFlow>
       </ModalDefault>
 
       {/* Modal Tenant approve */}

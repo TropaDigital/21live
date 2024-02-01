@@ -302,7 +302,9 @@ export default function ViewRequest() {
   const ticketInfos = {
     tenant_id: requestData?.tenant_id,
     ticket_id: requestData?.ticket_id,
-    title: requestData?.title
+    title: requestData?.title,
+    info: requestData?.info,
+    userId: requestData?.user_id
   };
 
   // async function downloadProposal() {

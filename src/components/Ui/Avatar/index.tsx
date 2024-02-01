@@ -3,7 +3,8 @@
 // import { useEffect, useState } from 'react';
 
 // Icons
-import { BiPlusCircle, BiXCircle } from 'react-icons/bi';
+import { BiPlusCircle } from 'react-icons/bi';
+import { MdClose } from 'react-icons/md';
 
 // Any
 import * as Popover from '@radix-ui/react-popover';
@@ -17,7 +18,7 @@ import AvatarDefault from './avatarDefault';
 interface PropsAvatar {
   name: string;
   avatar: any;
-  isOnline: boolean;
+  function: boolean;
   user_id: any;
 }
 
@@ -76,10 +77,7 @@ export default function Avatar({ data }: Props) {
                     </p>
                     <ul className="listAllAvatars">
                       {allAvatar.map((row) => (
-                        <li
-                          key={row.user_id}
-                          className={`avatar-al ${row.isOnline ? 'isOnline' : ''}`}
-                        >
+                        <li key={row.user_id} className={`avatar-al`}>
                           {row.avatar ? (
                             <div
                               style={{
@@ -90,13 +88,13 @@ export default function Avatar({ data }: Props) {
                           ) : (
                             <AvatarDefault url={row.avatar} name={row.name} />
                           )}
-                          <h2>{row.name}</h2>
+                          <h2>{row.name}</h2> - <p>{row.function}</p>
                         </li>
                       ))}
                     </ul>
                   </div>
                   <Popover.Close className="PopoverClose" aria-label="Close">
-                    <BiXCircle />
+                    <MdClose />
                   </Popover.Close>
                   <Popover.Arrow className="PopoverArrow" />
                 </Popover.Content>

@@ -264,6 +264,9 @@ export default function ProductTable({
                           ? 'status finished'
                           : row.status === 'Desmembrada'
                           ? 'status break'
+                          : row.status === 'Aguardando Aprovação' &&
+                            row.status_interaction === 'pass'
+                          ? 'status finished'
                           : 'status'
                       }
                     >
@@ -271,8 +274,12 @@ export default function ProductTable({
                         ? 'Em progresso'
                         : row.status === 'Concluida'
                         ? 'Concluída'
-                        : row.status === 'Aguardando Aprovação'
+                        : row.status === 'Aguardando Aprovação' && row.status_interaction === ''
                         ? 'Aguardando Aprovação'
+                        : row.status === 'Aguardando Aprovação' && row.status_interaction === 'wait'
+                        ? 'Aguardando Aprovação'
+                        : row.status === 'Aguardando Aprovação' && row.status_interaction === 'pass'
+                        ? 'Aprovado'
                         : row.status === 'Desmembrada'
                         ? 'Reprovado'
                         : 'Pendente'}
@@ -286,20 +293,26 @@ export default function ProductTable({
                     )}
                   </div>
                 </td>
-                {uploadEnabled && row.status !== 'Desmembrada' && row.status !== 'Concluida' && (
-                  <td onClick={() => uploadProduct(row)}>
-                    <div className="upload">
-                      <FaUpload />
-                    </div>
-                  </td>
-                )}
-                {uploadEnabled && (row.status === 'Desmembrada' || row.status === 'Concluida') && (
-                  <td>
-                    <div className="upload block">
-                      <FaUpload />
-                    </div>
-                  </td>
-                )}
+                {uploadEnabled &&
+                  row.status !== 'Desmembrada' &&
+                  row.status !== 'Concluida' &&
+                  row.status_interaction === '' && (
+                    <td onClick={() => uploadProduct(row)}>
+                      <div className="upload">
+                        <FaUpload />
+                      </div>
+                    </td>
+                  )}
+                {uploadEnabled &&
+                  (row.status === 'Desmembrada' ||
+                    row.status === 'Concluida' ||
+                    row.status_interaction !== '') && (
+                    <td>
+                      <div className="upload block">
+                        <FaUpload />
+                      </div>
+                    </td>
+                  )}
               </tr>
             </tbody>
           ))}
