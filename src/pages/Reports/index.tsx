@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // React
 import { useLocation } from 'react-router-dom';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // Styles
 import {
@@ -24,11 +25,19 @@ import { TableDefault } from '../../components/TableDefault';
 
 // Icons
 import { IoMdDownload } from 'react-icons/io';
+import { MdOutlineImageNotSupported } from 'react-icons/md';
 
 // Libraries
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import moment from 'moment';
+
+// Hooks
+import { useToast } from '../../hooks/toast';
+
+// Services
+import api from '../../services/api';
+import Loader from '../../components/LoaderSpin';
 
 interface ReportProps {
   client: string;
@@ -37,20 +46,130 @@ interface ReportProps {
   date_end: string;
 }
 
-interface JobList {
-  job_title: string;
+interface JobListProps {
+  task_id: string;
+  title: string;
+  tenant_id: string;
+  project_product_id: string;
+  flow_id: string;
+  description: string;
+  creation_description: string;
+  creation_date_end: string;
+  copywriting_description: string;
+  copywriting_date_end: string;
+  step: string;
+  created: string;
+  updated: string;
+  deleted: string;
+  type: string;
+  total_time: string;
   status: string;
-  start_date: string;
-  end_date: string;
-  total_hours: string;
+  time_consumed: string;
+  type_play: string;
+  user_id: string;
+  urgent: string;
+  ticket_id: string;
+  start_job: string;
+  end_job: string;
+  organization_id: string;
+  requester_id: string;
+  parent_id: string;
+  return_id: string;
+}
+
+interface ReportFullInfoProps {
+  overview_periodo: {
+    tarefa_concluida_qtd: string;
+    tarefa_concluida_tempo: string;
+    tarefa_em_andamento_qtd: string;
+    tarefa_em_andamento_tempo: string;
+    projeto_tempo_consumido: string;
+    reunioes_qtd: string;
+  };
+  resumo_contrato: {
+    inicio: string;
+    fim: string;
+    categoria: string;
+    total_horas: string;
+    produtos: ProductsArray[];
+  };
+  lista_jobs_entregue: [];
+  lista_jobs_aguardando: [];
+}
+
+interface ProductsArray {
+  project_product_id: string;
+  job_service_id: string;
+  project_id: string;
+  service: string;
+  description: string;
+  type: string;
+  size: string;
+  flag: string;
+  minutes: string;
+  quantity: string;
+  quantity_initial: string;
+  period: string;
+  minutes_initial: string;
+  minutes_creation: string;
+  minutes_essay: string;
+  minutes_total: string;
 }
 
 export default function MonthlyReport() {
   const location = useLocation();
   const inputRef = useRef<any>(null);
+  const { addToast } = useToast();
 
   const reportInfos: ReportProps = location.state;
   console.log('log reportInfos =>', reportInfos);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [dataInfoReport, setDataInfoReport] = useState<ReportFullInfoProps>({
+    overview_periodo: {
+      tarefa_concluida_qtd: '',
+      tarefa_concluida_tempo: '',
+      tarefa_em_andamento_qtd: '',
+      tarefa_em_andamento_tempo: '',
+      projeto_tempo_consumido: '',
+      reunioes_qtd: ''
+    },
+    resumo_contrato: {
+      inicio: '',
+      fim: '',
+      categoria: '',
+      total_horas: '',
+      produtos: []
+    },
+    lista_jobs_aguardando: [],
+    lista_jobs_entregue: []
+  });
+
+  async function getReportFullInfos() {
+    try {
+      setLoading(true);
+      const response = await api.get(
+        `/report?tenant_id=${reportInfos.client}&date_start=${reportInfos.date_start}&date_end=${reportInfos.date_end}&project_id=${reportInfos.contract}`
+      );
+
+      setDataInfoReport(response.data.result);
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log do error getting report', error);
+      addToast({
+        title: 'Atenção',
+        description: error.message,
+        type: 'warning'
+      });
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (reportInfos) {
+      getReportFullInfos();
+    }
+  }, []);
 
   // print Dash to PDF
   const printDocument = () => {
@@ -65,79 +184,6 @@ export default function MonthlyReport() {
     });
   };
 
-  const jobList = [
-    {
-      job_title: 'Job X 1',
-      status: 'concluido',
-      start_date: '12/10/2023',
-      end_date: '15/10/2023',
-      total_hours: '01:23:26'
-    },
-    {
-      job_title: 'Job X 2',
-      status: 'concluido',
-      start_date: '15/10/2023',
-      end_date: '18/10/2023',
-      total_hours: '03:14:33'
-    },
-    {
-      job_title: 'Job X 3',
-      status: 'concluido',
-      start_date: '13/10/2023',
-      end_date: '19/10/2023',
-      total_hours: '12:01:41'
-    },
-    {
-      job_title: 'Job X 4',
-      status: 'concluido',
-      start_date: '17/10/2023',
-      end_date: '21/10/2023',
-      total_hours: '07:45:22'
-    },
-    {
-      job_title: 'Job X 5',
-      status: 'concluido',
-      start_date: '13/10/2023',
-      end_date: '21/10/2023',
-      total_hours: '05:23:26'
-    },
-    {
-      job_title: 'Job X 6',
-      status: 'concluido',
-      start_date: '12/10/2023',
-      end_date: '15/10/2023',
-      total_hours: '01:23:26'
-    },
-    {
-      job_title: 'Job X 7',
-      status: 'concluido',
-      start_date: '12/10/2023',
-      end_date: '15/10/2023',
-      total_hours: '01:23:26'
-    },
-    {
-      job_title: 'Job X 8',
-      status: 'concluido',
-      start_date: '12/10/2023',
-      end_date: '15/10/2023',
-      total_hours: '01:23:26'
-    },
-    {
-      job_title: 'Job X 9',
-      status: 'concluido',
-      start_date: '12/10/2023',
-      end_date: '15/10/2023',
-      total_hours: '01:23:26'
-    },
-    {
-      job_title: 'Job X 10',
-      status: 'concluido',
-      start_date: '12/10/2023',
-      end_date: '15/10/2023',
-      total_hours: '01:23:26'
-    }
-  ];
-
   return (
     <ContainerDefault>
       <HeaderPage title="Relatório">
@@ -147,140 +193,185 @@ export default function MonthlyReport() {
         </ButtonDefault>
       </HeaderPage>
 
-      <ReportWrapper ref={inputRef}>
-        <ReportHeader>
-          <ClientWrapper>
-            <ClientLogo bgColor="">
-              {/* <div className="logo-img" style={{ backgroundImage: `url(${Logo})` }}></div> */}
-            </ClientLogo>
-            <ClientInfos>
-              <div className="report-title">Reporte mensal</div>
-              <div className="client-name">Cliente: TEREX</div>
-              <div className="infos">Contato: Bruno Picini</div>
-              <div className="infos">Atendimento: Mike Magalhães</div>
-            </ClientInfos>
-          </ClientWrapper>
+      {loading && <Loader />}
 
-          <ReportMonth>
-            <div className="title-info">21BRZ</div>
-            <div className="month">
-              Data inicial: {moment(reportInfos.date_start).format('DD/MM/YYYY')}
-            </div>
-            <div className="month">
-              Data final: {moment(reportInfos.date_end).format('DD/MM/YYYY')}
-            </div>
-          </ReportMonth>
-        </ReportHeader>
+      {!loading && (
+        <ReportWrapper ref={inputRef}>
+          {/* Header Tenant infos */}
+          <ReportHeader>
+            <ClientWrapper>
+              <ClientLogo bgColor="">
+                <MdOutlineImageNotSupported size={68} />
+                {/* <div className="logo-img" style={{ backgroundImage: `url(${Logo})` }}></div> */}
+              </ClientLogo>
+              <ClientInfos>
+                <div className="report-title">Reporte mensal</div>
+                <div className="client-name">Cliente: ???</div>
+                <div className="infos">Contato: ???</div>
+                <div className="infos">Atendimento: ???</div>
+              </ClientInfos>
+            </ClientWrapper>
 
-        <ReportCards>
-          <InfoCards className="light">
-            <div className="card-title">
-              OVERVIEW PERÍODO
-              <span>
-                DE {moment(reportInfos.date_start).format('DD/MM/YYYY')} a{' '}
-                {moment(reportInfos.date_end).format('DD/MM/YYYY')}
-              </span>
-            </div>
+            <ReportMonth>
+              <div className="title-info">???</div>
+              <div className="month">
+                Data inicial: {moment(reportInfos.date_start).format('DD/MM/YYYY')}
+              </div>
+              <div className="month">
+                Data final: {moment(reportInfos.date_end).format('DD/MM/YYYY')}
+              </div>
+            </ReportMonth>
+          </ReportHeader>
 
-            <BulletPointInfos>
-              <div className="bullet">
-                Total jobs entregues: <span>32</span>
-              </div>
-              <div className="bullet">
-                Total horas: <span>26h</span>
-              </div>
-              <div className="bullet">
-                Jobs em andamento: <span>4</span>
-              </div>
-              <div className="bullet">
-                Horas Jobs em andamento: <span>2:21</span>
-              </div>
-              <div className="bullet">
-                Saldo horas contrato: <span>3:39</span>
+          {/* Cards Light and Dark */}
+          <ReportCards>
+            <InfoCards className="light">
+              <div className="card-title">
+                OVERVIEW PERÍODO
+                <span>
+                  DE {moment(reportInfos.date_start).format('DD/MM/YYYY')} a{' '}
+                  {moment(reportInfos.date_end).format('DD/MM/YYYY')}
+                </span>
               </div>
 
-              <div className="bullet space">
-                Reuniões realizadas: <span>3</span>
+              <BulletPointInfos>
+                <div className="bullet">
+                  Total jobs entregues:{' '}
+                  <span>{dataInfoReport?.overview_periodo?.tarefa_concluida_qtd}</span>
+                </div>
+                <div className="bullet">
+                  Total horas:{' '}
+                  <span>
+                    {dataInfoReport?.overview_periodo?.tarefa_concluida_tempo.split(':')[0]}H
+                  </span>
+                </div>
+                <div className="bullet">
+                  Jobs em andamento:{' '}
+                  <span>{dataInfoReport?.overview_periodo?.tarefa_em_andamento_qtd}</span>
+                </div>
+                <div className="bullet">
+                  Horas Jobs em andamento:{' '}
+                  <span>
+                    {dataInfoReport?.overview_periodo?.tarefa_em_andamento_tempo?.split(':')[0]}H
+                  </span>
+                </div>
+                <div className="bullet">
+                  Saldo horas contrato:{' '}
+                  <span>
+                    {dataInfoReport?.overview_periodo?.projeto_tempo_consumido?.split(':')[0]}H
+                  </span>
+                </div>
+
+                <div className="bullet space">
+                  Reuniões realizadas: <span>{dataInfoReport?.overview_periodo.reunioes_qtd}</span>
+                </div>
+                <div className="bullet">
+                  Tempo médio aprovação cliente: <span>? dias</span>
+                </div>
+              </BulletPointInfos>
+            </InfoCards>
+
+            <InfoCards className="dark">
+              <div className="card-title">RESUMO CONTRATO</div>
+              <div className="info-line">
+                Inicio: {moment(dataInfoReport?.resumo_contrato.inicio).format('DD/MM/YY')}
               </div>
-              <div className="bullet">
-                Tempo médio aprovação cliente: <span>7 dias</span>
+              <div className="info-line">Tipo: {dataInfoReport?.resumo_contrato?.categoria}</div>
+              <div className="info-line">
+                Total horas contrato: {dataInfoReport?.resumo_contrato?.total_horas?.split(':')[0]}H
               </div>
-            </BulletPointInfos>
-          </InfoCards>
 
-          <InfoCards className="dark">
-            <div className="card-title">RESUMO CONTRATO</div>
-            <div className="info-line">Inicio: 01/02/2022</div>
-            <div className="info-line">Tipo: FEE</div>
-            <div className="info-line">Total horas contrato: 30H</div>
+              <div className="card-subtitle">PRODUTOS:</div>
+              <BulletPointInfos>
+                {dataInfoReport?.resumo_contrato?.produtos?.slice(0, 5).map((row) => (
+                  <div className="bullet" key={row.project_product_id}>
+                    {row.service}
+                  </div>
+                ))}
+              </BulletPointInfos>
+            </InfoCards>
+          </ReportCards>
 
-            <div className="card-subtitle">PRODUTOS:</div>
-            <BulletPointInfos>
-              <div className="bullet">Produto 01</div>
-              <div className="bullet">Produto 02</div>
-              <div className="bullet">Produto 03</div>
-              <div className="bullet">Produto 04</div>
-              <div className="bullet">Produto 05</div>
-            </BulletPointInfos>
-          </InfoCards>
-        </ReportCards>
+          {/* Jobs finished */}
+          <ReportCardTable>
+            <div className="card-title">LISTA DE JOBS NO PERÍODO</div>
 
-        <ReportCardTable>
-          <div className="card-title">LISTA DE JOBS NO PERÍODO</div>
-
-          <TableDefault title="" titleSize="14px" titleWeight="700" titleColor="#222">
-            <thead>
-              <tr>
-                <th>Job</th>
-                <th>Status</th>
-                <th>Data Inicio</th>
-                <th>Data Final</th>
-                <th>Total Horas</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {jobList.slice(0, 5).map((row: JobList, index: any) => (
-                <tr key={index}>
-                  <td>{row.job_title}</td>
-                  <td>Entregue</td>
-                  <td>{row.start_date}</td>
-                  <td>{row.end_date}</td>
-                  <td>{row.total_hours}</td>
+            <TableDefault title="" titleSize="14px" titleWeight="700" titleColor="#222">
+              <thead>
+                <tr>
+                  <th>Job</th>
+                  <th>Status</th>
+                  <th>Data Inicio</th>
+                  <th>Data Final</th>
+                  <th>Total Horas</th>
                 </tr>
-              ))}
-            </tbody>
-          </TableDefault>
-        </ReportCardTable>
+              </thead>
 
-        <ReportCardTable>
-          <div className="card-title">JOBS PENDENTES DE APROVAÇÃO CLIENTE</div>
+              {dataInfoReport?.lista_jobs_entregue?.length > 0 && (
+                <tbody>
+                  {/* {jobList.slice(0, 5).map((row: JobListProps, index: any) => ( */}
+                  {dataInfoReport?.lista_jobs_entregue?.map((row: JobListProps, index: any) => (
+                    <tr key={index}>
+                      <td>{row.title}</td>
+                      <td>Entregue</td>
+                      <td>{moment(row.start_job).format('DD/MM/YYYY')}</td>
+                      <td>{moment(row.updated).format('DD/MM/YYYY')}</td>
+                      <td>{row.time_consumed}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              )}
 
-          <TableDefault title="" titleSize="14px" titleWeight="700" titleColor="#222">
-            <thead>
-              <tr>
-                <th>Job</th>
-                <th>Status</th>
-                <th>Data Inicio</th>
-                <th>Data Final</th>
-                <th>Total Horas</th>
-              </tr>
-            </thead>
+              {dataInfoReport?.lista_jobs_entregue?.length <= 0 && (
+                <tbody>
+                  <tr>
+                    <td colSpan={5}>Sem tarefas concluídas no período</td>
+                  </tr>
+                </tbody>
+              )}
+            </TableDefault>
+          </ReportCardTable>
 
-            <tbody>
-              {jobList.slice(0, 5).map((row: JobList, index: any) => (
-                <tr key={index}>
-                  <td>{row.job_title}</td>
-                  <td>Pendente</td>
-                  <td>{row.start_date}</td>
-                  <td>-</td>
-                  <td>{row.total_hours}</td>
+          {/* Jobs awaiting */}
+          <ReportCardTable>
+            <div className="card-title">JOBS PENDENTES DE APROVAÇÃO CLIENTE</div>
+
+            <TableDefault title="" titleSize="14px" titleWeight="700" titleColor="#222">
+              <thead>
+                <tr>
+                  <th>Job</th>
+                  <th>Status</th>
+                  <th>Data Inicio</th>
+                  <th>Data Final</th>
+                  <th>Total Horas</th>
                 </tr>
-              ))}
-            </tbody>
-          </TableDefault>
-        </ReportCardTable>
-      </ReportWrapper>
+              </thead>
+
+              {dataInfoReport?.lista_jobs_aguardando?.length > 0 && (
+                <tbody>
+                  {dataInfoReport?.lista_jobs_aguardando?.map((row: JobListProps, index: any) => (
+                    <tr key={index}>
+                      <td>{row.title}</td>
+                      <td>Pendente</td>
+                      <td>{moment(row.start_job).format('DD/MM/YYYY')}</td>
+                      <td>-</td>
+                      <td>{row.time_consumed}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              )}
+
+              {dataInfoReport?.lista_jobs_aguardando?.length <= 0 && (
+                <tbody>
+                  <tr>
+                    <td colSpan={6}>Sem tarefas pendentes no período</td>
+                  </tr>
+                </tbody>
+              )}
+            </TableDefault>
+          </ReportCardTable>
+        </ReportWrapper>
+      )}
     </ContainerDefault>
   );
 }
