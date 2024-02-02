@@ -78,6 +78,7 @@ import 'moment/dist/locale/pt-br';
 // Hooks
 import { useToast } from '../../../hooks/toast';
 import { useStopWatch } from '../../../hooks/stopWatch';
+import { useAuth } from '../../../hooks/AuthContext';
 
 // Types
 import { StepTimeline, TaskFile, TaskHistoryProps, UploadedFilesProps } from '../../../types';
@@ -98,6 +99,7 @@ interface ReturnProps {
 export default function ViewProductsDeliveries() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { addToast } = useToast();
   const { stop } = useStopWatch();
   const { id } = useParams();
@@ -173,7 +175,11 @@ export default function ViewProductsDeliveries() {
   };
 
   const data = {
-    estimatedTime: dataTask?.total_time
+    estimatedTime: user.permissions.includes('jobs_tasks_essay')
+      ? dataProducts?.time_essay
+      : user.permissions.includes('jobs_tasks_execute')
+      ? dataProducts?.time_creation
+      : dataTask?.total_time
   };
 
   const InputsTask = {
@@ -1018,7 +1024,12 @@ export default function ViewProductsDeliveries() {
   async function checkFlow(checkType: string) {
     try {
       setLoading(true);
-      if (hasAllBeenRejected.length >= dataProducts?.products.length) {
+      if (
+        hasAllBeenRejected.length >= dataProducts?.products.length &&
+        dataTask.status !== 'Alteração Externa' &&
+        dataTask?.status !== 'Aguardando Aprovação' &&
+        dataTask?.status !== 'Avaliada'
+      ) {
         setModalReturnAllRejected(true);
 
         // const updatedReturnInfos = dataProducts?.products.map((item: any) => {
@@ -1030,7 +1041,14 @@ export default function ViewProductsDeliveries() {
         //   chosenStep: ''
         // });
         console.log('log do checkFlow 1 - Dismember all');
-      } else if (hasToDismemberTask && checkType !== 'back' && !hasDismemberedProduct) {
+      } else if (
+        hasToDismemberTask &&
+        checkType !== 'back' &&
+        dataTask.status !== 'Alteração Externa' &&
+        dataTask?.status !== 'Aguardando Aprovação' &&
+        dataTask?.status !== 'Avaliada' &&
+        !hasDismemberedProduct
+      ) {
         setModalDismemberment(true);
         console.log('log do checkFlow 2 - Dismember');
       } else if (
@@ -1447,6 +1465,7 @@ export default function ViewProductsDeliveries() {
           fileData.append('archive', newFile);
           fileData.append('ticket_id', dataTask?.ticket_id);
           fileData.append('original_name', imageUrl.original_name);
+          fileData.append('task_file_id', imageUrl.task_file_id);
           console.log('log do originalName (upload tenant) =>', imageUrl.original_name);
 
           const responseFile = await api.post('/archive/upload/ticket', fileData);
@@ -1525,7 +1544,6 @@ export default function ViewProductsDeliveries() {
 
           fileData.append('archive', newFile);
           fileData.append('original_name', imageUrl.original_name);
-          console.log('log do originalName (upload Approved) =>', imageUrl.original_name);
           // fileData.append('task_file_id', imageUrl.task_file_id);
 
           const responseFile = await api.post(
@@ -1563,7 +1581,8 @@ export default function ViewProductsDeliveries() {
 
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
-  }, [typeOfPlay]);
+    console.log('log dataProducts =>', dataProducts);
+  }, [typeOfPlay, dataProducts]);
 
   return (
     <ContainerDefault>
@@ -2549,7 +2568,7 @@ export default function ViewProductsDeliveries() {
                               ? row.original_name
                               : row.file_name.split('-').pop()}
                           </td>
-                          <td>{moment(row.created).format('DD/MM/YYYY - hh:mm')}h</td>
+                          <td>{moment(row.created).format('DD/MM/YYYY - HH:mm')}h</td>
                           <td>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                               <ViewFile
