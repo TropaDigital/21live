@@ -74,6 +74,15 @@ export const Container = styled.div`
         border-bottom: 1px solid var(--primary-200);
       }
     }
+
+    tbody > tr {
+      &:hover {
+        td {
+          background-color: var(--primary-050);
+          z-index: 1;
+        }
+      }
+    }
   }
 `;
 
