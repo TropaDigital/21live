@@ -76,6 +76,9 @@ export default function SummaryTasks({
   const [deliveryArrayHours, setDeliveryArrayHours] = useState<any>('');
   const [totalArrayHours, setTotalArrayHours] = useState<any>('');
 
+  const [showBigText, setShowBigText] = useState<boolean>(false);
+  const [showBigCreation, setShowBigCreation] = useState<boolean>(false);
+
   const productsHoursArray = selectedProducts?.flatMap((row: any) => {
     return row?.minutes;
   });
@@ -151,6 +154,17 @@ export default function SummaryTasks({
   }, [totalArrayHours]);
 
   useEffect(() => {
+    const stringLengthCopy = taskSummary?.copywriting_description?.length;
+    const stringLengthCreation = taskSummary?.creation_description.length;
+
+    const showCopyBig = stringLengthCopy > 70;
+    const showCreationBig = stringLengthCreation > 70;
+
+    setShowBigText(showCopyBig);
+    setShowBigCreation(showCreationBig);
+  }, [taskSummary?.copywriting_description, taskSummary?.creation_description]);
+
+  useEffect(() => {
     // console.log('log do deliveryArrayHours', deliveryArrayHours);
     // console.log('log do totalArrayHours', totalArrayHours);
     // console.log('log do selectedProducts', selectedProducts);
@@ -213,33 +227,59 @@ export default function SummaryTasks({
               </SummaryTaskInfo>
             )}
 
-            <SummaryTaskInfo>
-              <div className="title-info">
-                Input {parameters.input_name !== '' ? parameters.input_name : 'Pré-requisito'}:
-              </div>
-              <div className="info">
+            {!showBigText && (
+              <SummaryTaskInfo>
+                <div className="title-info">
+                  Input {parameters.input_name !== '' ? parameters.input_name : 'Pré-requisito'}:
+                </div>
+                <div className="info">
+                  <div
+                    className="description-info"
+                    dangerouslySetInnerHTML={{ __html: taskSummary?.copywriting_description }}
+                  />
+                </div>
+              </SummaryTaskInfo>
+            )}
+
+            {showBigText && (
+              <SummaryTaskDescription>
+                <div className="description-title">
+                  Input {parameters.input_name !== '' ? parameters.input_name : 'Pré-requisito'}:
+                </div>
                 <div
                   className="description-info"
                   dangerouslySetInnerHTML={{ __html: taskSummary?.copywriting_description }}
                 />
-              </div>
-            </SummaryTaskInfo>
+              </SummaryTaskDescription>
+            )}
 
-            <SummaryTaskInfo>
-              <div className="title-info">Input de atividade:</div>
-              <div className="info">
+            {!showBigCreation && (
+              <SummaryTaskInfo>
+                <div className="title-info">Input de Atividade / Criação:</div>
+                <div className="info">
+                  <div
+                    className="description-info"
+                    dangerouslySetInnerHTML={{
+                      __html: taskSummary?.creation_description
+                    }}
+                  />
+                </div>
+              </SummaryTaskInfo>
+            )}
+
+            {showBigCreation && (
+              <SummaryTaskDescription>
+                <div className="description-title">Input de Atividade / Criação:</div>
                 <div
                   className="description-info"
-                  dangerouslySetInnerHTML={{
-                    __html: taskSummary?.creation_description
-                  }}
+                  dangerouslySetInnerHTML={{ __html: taskSummary?.creation_description }}
                 />
-              </div>
-            </SummaryTaskInfo>
+              </SummaryTaskDescription>
+            )}
 
             {taskSummary?.description !== '' && (
               <SummaryTaskDescription>
-                <div className="description-title">Contexto geral</div>
+                <div className="description-title">Contexto geral:</div>
                 <div
                   className="description-info"
                   dangerouslySetInnerHTML={{ __html: taskSummary?.description }}

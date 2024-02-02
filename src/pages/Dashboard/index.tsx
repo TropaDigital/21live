@@ -1197,7 +1197,7 @@ export default function Dashboard() {
 
   async function getProjects(tenantId: string) {
     try {
-      const response = await api.get(`project-products/${tenantId}`);
+      const response = await api.get(`/project/tenant/${tenantId}`);
 
       if (response.data.status === 'success') {
         setDataProjects(response.data.result);
@@ -2870,8 +2870,8 @@ export default function Dashboard() {
               error={errorsForm.contract || errorsForm.allFields ? 'Contrato é obrigatório!' : ''}
             >
               {dataProjects?.map((row: any) => (
-                <option key={row.project_product_id} value={row.project_product_id}>
-                  {row.select}
+                <option key={row.project_id} value={row.project_id}>
+                  {row.title}
                 </option>
               ))}
             </SelectDefault>
