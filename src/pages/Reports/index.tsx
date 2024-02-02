@@ -40,7 +40,8 @@ import api from '../../services/api';
 import Loader from '../../components/LoaderSpin';
 
 interface ReportProps {
-  client: string;
+  client_id: string;
+  client_name: string;
   contract: string;
   date_start: string;
   date_end: string;
@@ -122,7 +123,6 @@ export default function MonthlyReport() {
   const { addToast } = useToast();
 
   const reportInfos: ReportProps = location.state;
-  console.log('log reportInfos =>', reportInfos);
   const [loading, setLoading] = useState<boolean>(false);
   const [dataInfoReport, setDataInfoReport] = useState<ReportFullInfoProps>({
     overview_periodo: {
@@ -148,7 +148,7 @@ export default function MonthlyReport() {
     try {
       setLoading(true);
       const response = await api.get(
-        `/report?tenant_id=${reportInfos.client}&date_start=${reportInfos.date_start}&date_end=${reportInfos.date_end}&project_id=${reportInfos.contract}`
+        `/report?tenant_id=${reportInfos.client_id}&date_start=${reportInfos.date_start}&date_end=${reportInfos.date_end}&project_id=${reportInfos.contract}`
       );
 
       setDataInfoReport(response.data.result);
@@ -166,12 +166,13 @@ export default function MonthlyReport() {
   }
 
   useEffect(() => {
+    // console.log('log reportInfos =>', reportInfos);
     if (reportInfos) {
       getReportFullInfos();
     }
   }, []);
 
-  // print Dash to PDF
+  // print Report to PDF
   const printDocument = () => {
     html2canvas(inputRef.current).then((canvas) => {
       const imgData: any = canvas.toDataURL('image/png');
@@ -206,7 +207,7 @@ export default function MonthlyReport() {
               </ClientLogo>
               <ClientInfos>
                 <div className="report-title">Reporte mensal</div>
-                <div className="client-name">Cliente: ???</div>
+                <div className="client-name">Cliente: {reportInfos.client_name}</div>
                 <div className="infos">Contato: ???</div>
                 <div className="infos">Atendimento: ???</div>
               </ClientInfos>
