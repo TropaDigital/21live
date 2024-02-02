@@ -874,8 +874,11 @@ export default function ViewProductsDeliveries() {
     if (!finalCard && !uploadClient) {
       setModalUpload(true);
     }
-    if ((finalCard && enableUpload) || uploadClient) {
+    if (finalCard && enableUpload) {
       setModalFinalFile(true);
+    }
+    if (uploadClient && dataTask.files.length > 0) {
+      setModalTenantApprove(true);
     }
   };
 
@@ -1026,25 +1029,18 @@ export default function ViewProductsDeliveries() {
       setLoading(true);
       if (
         hasAllBeenRejected.length >= dataProducts?.products.length &&
-        dataTask.status !== 'Alteração Externa' &&
+        checkType === 'next' &&
         dataTask?.status !== 'Aguardando Aprovação' &&
-        dataTask?.status !== 'Avaliada'
+        uploadClient
       ) {
         setModalReturnAllRejected(true);
 
-        // const updatedReturnInfos = dataProducts?.products.map((item: any) => {
-        //   return item.fail_reason;
-        // });
-
-        // setReturnInfos({
-        //   returnMotive: updatedReturnInfos,
-        //   chosenStep: ''
-        // });
         console.log('log do checkFlow 1 - Dismember all');
       } else if (
         hasToDismemberTask &&
-        checkType !== 'back' &&
+        checkType === 'next' &&
         dataTask.status !== 'Alteração Externa' &&
+        dataTask.status !== 'Alteração Interna' &&
         dataTask?.status !== 'Aguardando Aprovação' &&
         dataTask?.status !== 'Avaliada' &&
         !hasDismemberedProduct
@@ -1581,8 +1577,7 @@ export default function ViewProductsDeliveries() {
 
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
-    console.log('log dataProducts =>', dataProducts);
-  }, [typeOfPlay, dataProducts]);
+  }, [typeOfPlay]);
 
   return (
     <ContainerDefault>
