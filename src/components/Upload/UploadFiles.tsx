@@ -63,6 +63,7 @@ interface UploadProps {
   loading?: boolean;
   setLoading?: any;
   folderInfo: string;
+  task_file_id?: string;
 }
 
 export default function UploadFiles({
@@ -72,7 +73,8 @@ export default function UploadFiles({
   isDisabed,
   loading,
   setLoading,
-  folderInfo
+  folderInfo,
+  task_file_id
 }: UploadProps) {
   // const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
   // const size = partial({base: 2, standard: "jedec"});
@@ -136,6 +138,9 @@ export default function UploadFiles({
       data.append('archive', uploadedFile.file);
       data.append('tenant', tenant);
       data.append('folder', folderInfo);
+      if (task_file_id) {
+        data.append('task_file_id', task_file_id);
+      }
 
       const response = await api.post('/archive/upload', data, {
         onUploadProgress: (event: any) => {
