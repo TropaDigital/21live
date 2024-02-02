@@ -435,17 +435,26 @@ export default function ListProjects() {
             <tbody>
               {dataProject?.map((row) => (
                 <tr key={row.project_id}>
-                  <td>#{String(row.project_id).padStart(5, '0')}</td>
+                  <td style={{ cursor: 'pointer' }} onClick={() => handleOpenModal(row)}>
+                    #{String(row.project_id).padStart(5, '0')}
+                  </td>
                   <td style={{ cursor: 'pointer' }} onClick={() => handleOpenModal(row)}>
                     {row.title}
                   </td>
-                  <td style={{ textTransform: 'capitalize' }}>{row.client_name}</td>
+                  <td
+                    style={{ textTransform: 'capitalize', cursor: 'pointer' }}
+                    onClick={() => handleOpenModal(row)}
+                  >
+                    {row.client_name}
+                  </td>
                   <td
                     style={{
                       padding: '14px',
                       width: '140px',
-                      textAlign: 'left'
+                      textAlign: 'left',
+                      cursor: 'pointer'
                     }}
+                    onClick={() => handleOpenModal(row)}
                   >
                     <span style={{ marginBottom: '4px', display: 'block' }}>
                       {row.time.startsWith('0') ? row.time?.replace('0', '') : row.time}
@@ -465,13 +474,21 @@ export default function ListProjects() {
                       onColor="#0046B5"
                     />
                   </td>
-                  <td>
+                  <td style={{ cursor: 'pointer' }} onClick={() => handleOpenModal(row)}>
                     <Avatar data={row.team} />
                   </td>
-                  <td style={{ minWidth: '150px' }}>
+                  <td
+                    style={{ minWidth: '150px', cursor: 'pointer' }}
+                    onClick={() => handleOpenModal(row)}
+                  >
                     {moment(row.date_start).format('DD/MM/YYYY')}
                   </td>
-                  <td style={{ minWidth: '150px' }}>{moment(row.date_end).format('DD/MM/YYYY')}</td>
+                  <td
+                    style={{ minWidth: '150px', cursor: 'pointer' }}
+                    onClick={() => handleOpenModal(row)}
+                  >
+                    {moment(row.date_end).format('DD/MM/YYYY')}
+                  </td>
                   <td>
                     <div className="fieldTableClients">
                       <ButtonTable typeButton="view" onClick={() => handleOpenModal(row)} />
