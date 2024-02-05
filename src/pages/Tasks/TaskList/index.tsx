@@ -366,14 +366,18 @@ export default function TaskList() {
                       <td
                         style={{
                           display: 'table-cell',
-                          paddingRight: '0.5rem'
+                          paddingRight: '0.5rem',
+                          cursor: 'pointer'
                         }}
+                        onClick={() => handleViewTask(row.task_id)}
                       >
                         <FiCornerDownRight color="var(--primary)" size={'1rem'} /> #
                         {String(row.task_id).padStart(5, '0')}
                       </td>
                     ) : (
-                      <td>#{String(row.task_id).padStart(5, '0')}</td>
+                      <td style={{ cursor: 'pointer' }} onClick={() => handleViewTask(row.task_id)}>
+                        #{String(row.task_id).padStart(5, '0')}
+                      </td>
                     )}
                     <td
                       style={{ textTransform: 'capitalize', cursor: 'pointer' }}
@@ -384,8 +388,10 @@ export default function TaskList() {
                     <td
                       style={{
                         width: '180px',
-                        textAlign: 'left'
+                        textAlign: 'left',
+                        cursor: 'pointer'
                       }}
+                      onClick={() => handleViewTask(row.task_id)}
                     >
                       <span style={{ marginBottom: '4px', display: 'block' }}>
                         {row.time_consumed}
@@ -397,8 +403,10 @@ export default function TaskList() {
                         restHours={convertToMilliseconds(row.time_consumed)}
                       />
                     </td>
-                    <td>{row.total_time !== 'undefined' ? row.total_time : '00:00:00'}</td>
-                    <td>
+                    <td style={{ cursor: 'pointer' }} onClick={() => handleViewTask(row.task_id)}>
+                      {row.total_time !== 'undefined' ? row.total_time : '00:00:00'}
+                    </td>
+                    <td style={{ cursor: 'pointer' }} onClick={() => handleViewTask(row.task_id)}>
                       <StatusTable
                         className={
                           row.status === 'Em Andamento'
@@ -425,7 +433,9 @@ export default function TaskList() {
                           : 'Pendente'}
                       </StatusTable>
                     </td>
-                    <td>{row.tenant}</td>
+                    <td style={{ cursor: 'pointer' }} onClick={() => handleViewTask(row.task_id)}>
+                      {row.tenant}
+                    </td>
                     {/* <td>
                       <Avatar data={avatarAll} />
                     </td> */}
