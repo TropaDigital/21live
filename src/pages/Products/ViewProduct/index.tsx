@@ -1031,6 +1031,7 @@ export default function ViewProductsDeliveries() {
         hasAllBeenRejected.length >= dataProducts?.products.length &&
         checkType === 'next' &&
         dataTask?.status !== 'Aguardando Aprovação' &&
+        dataTask.status !== 'Alteração Externa' &&
         uploadClient
       ) {
         setModalReturnAllRejected(true);
@@ -2523,7 +2524,7 @@ export default function ViewProductsDeliveries() {
 
           <FileProductList>
             {!toClientConfirmation && (
-              <>
+              <div style={{ width: '1000px' }}>
                 <Table>
                   <table>
                     <thead>
@@ -2627,7 +2628,7 @@ export default function ViewProductsDeliveries() {
                       </div>
                     </FilePreview>
                   )}
-              </>
+              </div>
             )}
 
             {toClientConfirmation && (
