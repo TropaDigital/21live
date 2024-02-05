@@ -66,7 +66,7 @@ import {
   TimelineInfo,
   TimelineStep
 } from './styles';
-import { DownloadIcon, ViewFile } from '../WorkingProduct/styles';
+import { ButtonIcon } from '../WorkingProduct/styles';
 
 // Services
 import api from '../../../services/api';
@@ -249,6 +249,11 @@ export default function ViewProductsDeliveries() {
   const hasAllBeenRejected =
     hasTicketInteraction?.length > 0
       ? hasTicketInteraction?.filter((obj: any) => obj.status === 'fail')
+      : [];
+
+  const hasAllBeenAccepted =
+    hasTicketInteraction?.length > 0
+      ? hasTicketInteraction?.filter((obj: any) => obj.status === 'pass')
       : [];
 
   // const hasMissingFilesToApprove = dataTask?.deliverys.some(hasProductsBeenEvaluated);
@@ -880,6 +885,9 @@ export default function ViewProductsDeliveries() {
     if (uploadClient && dataTask.files.length > 0) {
       setModalTenantApprove(true);
     }
+    if (uploadClient && dataTask.files.length <= 0) {
+      setModalFinalFile(true);
+    }
   };
 
   async function handleSaveUpload() {
@@ -1029,6 +1037,7 @@ export default function ViewProductsDeliveries() {
       setLoading(true);
       if (
         hasAllBeenRejected.length >= dataProducts?.products.length &&
+        hasAllBeenAccepted.length < dataProducts?.products.length &&
         checkType === 'next' &&
         dataTask?.status !== 'Aguardando Aprovação' &&
         dataTask.status !== 'Alteração Externa' &&
@@ -2567,7 +2576,8 @@ export default function ViewProductsDeliveries() {
                           <td>{moment(row.created).format('DD/MM/YYYY - HH:mm')}h</td>
                           <td>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                              <ViewFile
+                              <ButtonIcon
+                                className="view"
                                 onClick={() =>
                                   setPreviewImage({
                                     isOpen: true,
@@ -2586,11 +2596,11 @@ export default function ViewProductsDeliveries() {
                                 }
                               >
                                 <BiShow size={20} />
-                              </ViewFile>
+                              </ButtonIcon>
 
-                              <DownloadIcon onClick={() => downloadFile(row)}>
+                              <ButtonIcon className="download" onClick={() => downloadFile(row)}>
                                 <FaDownload />
-                              </DownloadIcon>
+                              </ButtonIcon>
                             </div>
                           </td>
                         </tr>
