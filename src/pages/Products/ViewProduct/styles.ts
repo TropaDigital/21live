@@ -346,7 +346,7 @@ export const FileProductList = styled.div`
   flex-direction: column;
   gap: 24px;
 
-  min-width: 1200px;
+  min-width: fit-content;
   margin-top: -20px;
   margin-left: -20px;
   margin-right: -20px;
