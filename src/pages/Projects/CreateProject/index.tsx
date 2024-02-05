@@ -629,9 +629,10 @@ export default function CreateProject() {
     navigate('/projetos');
   };
 
-  // useEffect(() => {
-  //   console.log('log do DTO FORM =>', DTOForm);
-  // }, [DTOForm]);
+  useEffect(() => {
+    // console.log('log do DTO FORM =>', DTOForm);
+    console.log('log do Data team =>', dataTeam);
+  }, [DTOForm, dataTeam]);
 
   return (
     <Container>
@@ -870,7 +871,10 @@ export default function CreateProject() {
                 <TeamInput>
                   <InputMultipleSelect
                     name="members"
-                    options={dataTeam?.map((row) => ({ value: row.user_id, label: row.name }))}
+                    options={dataTeam?.map((row) => ({
+                      value: row.user_id,
+                      label: `${row.name} - ${row.function}`
+                    }))}
                     label="Equipe do projeto"
                     onChange={(option) => onChange(option)}
                     defaultValue={defaultOptionsTeam?.map((row) => ({

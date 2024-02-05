@@ -1234,13 +1234,13 @@ export default function WorkingProduct({
                 <div className="top-infos">
                   <div className="field-names">
                     Quem solicitou:{' '}
-                    <span>{row.requester_name === 'Sistema' ? 'Cliente' : row.requester_name}</span>
+                    <span>{row.requester_name === 'Sistema' ? 'Cliente' : row.returner_name}</span>
                   </div>
                   {/* <div className="field-names">
                     Etapa que retornou: <span>{row.step}</span>
                   </div> */}
                   <div className="field-names">
-                    Para quem retornou: <span>{row.returner_name}</span>
+                    Para quem retornou: <span>{row.requester_name}</span>
                   </div>
                 </div>
 
