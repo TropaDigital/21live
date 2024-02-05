@@ -474,7 +474,7 @@ export default function ListProjects() {
                       onColor="#0046B5"
                     />
                   </td>
-                  <td style={{ cursor: 'pointer' }} onClick={() => handleOpenModal(row)}>
+                  <td>
                     <Avatar data={row.team} />
                   </td>
                   <td

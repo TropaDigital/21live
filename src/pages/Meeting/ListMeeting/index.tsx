@@ -628,13 +628,21 @@ export default function ListMeeting() {
                   <tbody>
                     {data?.map((row) => (
                       <tr key={row.meeting_id}>
-                        <td>#{String(row.meeting_id).padStart(5, '0')}</td>
+                        <td style={{ cursor: 'pointer' }} onClick={() => handleOpenViewInfos(row)}>
+                          #{String(row.meeting_id).padStart(5, '0')}
+                        </td>
                         <td style={{ cursor: 'pointer' }} onClick={() => handleOpenViewInfos(row)}>
                           {row.title}
                         </td>
-                        <td>{row.cliente}</td>
-                        <td>{row.responsavel}</td>
-                        <td>{moment(row.date).format('DD/MM/YYYY')}</td>
+                        <td style={{ cursor: 'pointer' }} onClick={() => handleOpenViewInfos(row)}>
+                          {row.cliente}
+                        </td>
+                        <td style={{ cursor: 'pointer' }} onClick={() => handleOpenViewInfos(row)}>
+                          {row.responsavel}
+                        </td>
+                        <td style={{ cursor: 'pointer' }} onClick={() => handleOpenViewInfos(row)}>
+                          {moment(row.date).format('DD/MM/YYYY')}
+                        </td>
                         <td>
                           <div className="fieldTableClients">
                             <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
@@ -753,7 +761,10 @@ export default function ListMeeting() {
           <FieldDefault>
             <InputMultipleSelect
               name="members"
-              options={selectedTeam?.map((row) => ({ value: row.user_id, label: row.name }))}
+              options={selectedTeam?.map((row) => ({
+                value: row.user_id,
+                label: `${row.name} - ${row.function}`
+              }))}
               label="Participantes"
               isDisabled={formData.user_id ? false : true}
               onChange={(option) => onChange(option)}

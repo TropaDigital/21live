@@ -79,8 +79,14 @@ export default function Task({ data }: DataTaskProps) {
 
             <div className="sectionDataTask">
               <DataSpan>
-                {data.end_job !== '' && moment(data.end_job).format('DD/MMM')}
-                {data.end_job === '' && 'Tarefa livre'}
+                {data.end_job !== '' && data.end_job !== '0000-00-00 00:00:00'
+                  ? moment(data?.end_job).format('DD/MMM')
+                  : data.end_job === '0000-00-00 00:00:00'
+                  ? moment(data?.creation_date_end).format('DD/MMM/YYYY')
+                  : 'Tarefa livre'}
+                {/* {data.end_job === '0000-00-00 00:00:00' &&
+                  moment(data?.creation_date_end).format('DD/MMM')}
+                {data.end_job === '' && 'Tarefa livre'} */}
               </DataSpan>
               {/* <button className="buttonFlagTask">
                 <BiFlag color="#6C757D" size={18} />

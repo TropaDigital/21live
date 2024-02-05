@@ -118,7 +118,9 @@ export default function Clients() {
             <tbody>
               {data?.map((row: TenantProps) => (
                 <tr key={row.tenant_id}>
-                  <td>#{row.tenant_id}</td>
+                  <td style={{ cursor: 'pointer' }} onClick={() => handleNavigate(row)}>
+                    #{row.tenant_id}
+                  </td>
                   <td style={{ cursor: 'pointer' }} onClick={() => handleNavigate(row)}>
                     <LogoContainer>
                       <div
