@@ -40,6 +40,7 @@ import UploadFinalFile from '../../../components/UploadFinal/UploadFinalFiles';
 // Styles
 import {
   ButtonApproveReject,
+  ButtonIcon,
   ButtonsWrapper,
   CardChangeInfos,
   CardChangesWrapper,
@@ -48,7 +49,6 @@ import {
   ChatSendButton,
   ChatUserImg,
   CheckboxWrapper,
-  DownloadIcon,
   EssayField,
   EssayInfo,
   FilesTableWrapper,
@@ -67,7 +67,6 @@ import {
   TaskTab,
   UserMessage,
   UserMessageInfo,
-  ViewFile,
   WorkSection
 } from './styles';
 
@@ -684,6 +683,42 @@ export default function WorkingProduct({
     }
   }
 
+  async function handleDeleteFile(fileId: string) {
+    try {
+      setLoading(true);
+
+      const response = await api.delete(`/task/delete-file/${fileId}`);
+
+      if (response.data.status === 'success') {
+        addToast({
+          title: 'Sucesso',
+          description: 'Arquivo excluído com sucesso',
+          type: 'success'
+        });
+        updateInfos();
+      }
+
+      setLoading(false);
+    } catch (error: any) {
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
+      setLoading(false);
+    }
+  }
+
   function findCardNameByStep(data: any[], targetStep: string): string | null {
     const foundCard = data.find((obj: any) => obj.step === targetStep);
 
@@ -1108,7 +1143,8 @@ export default function WorkingProduct({
                               </InfoFile>
                             )}
 
-                            <ViewFile
+                            <ButtonIcon
+                              className="view"
                               onClick={() =>
                                 setPreviewImage({
                                   isOpen: true,
@@ -1128,11 +1164,18 @@ export default function WorkingProduct({
                               }
                             >
                               <BiShow size={20} />
-                            </ViewFile>
+                            </ButtonIcon>
 
-                            <DownloadIcon onClick={() => downloadFile(row)}>
+                            <ButtonIcon className="download" onClick={() => downloadFile(row)}>
                               <FaDownload />
-                            </DownloadIcon>
+                            </ButtonIcon>
+
+                            <ButtonIcon
+                              className="delete"
+                              onClick={() => handleDeleteFile(row.task_file_id)}
+                            >
+                              <BiTrash size={20} />
+                            </ButtonIcon>
                           </div>
                           {/* {productsInfo?.file_status === 'pass' && (
                               <div className="fieldTableClients">                               

@@ -345,7 +345,7 @@ export const StatusTable = styled.div`
   }
 `;
 
-export const DownloadIcon = styled.div`
+export const ButtonIcon = styled.div`
   display: grid;
   place-items: center;
 
@@ -363,39 +363,35 @@ export const DownloadIcon = styled.div`
     fill: #344054;
   }
 
-  &:hover {
-    svg {
-      fill: #0046b5;
-      stroke: #0046b5;
+  &.delete {
+    &:hover {
+      svg {
+        fill: var(--error-700);
+        /* stroke: #0046b5; */
+      }
+      background: var(--error-100);
+      color: #fff;
     }
-    background: #e2f2ff;
-    color: #fff;
-  }
-`;
-
-export const ViewFile = styled.div`
-  display: grid;
-  place-items: center;
-
-  background: transparent;
-  border: none;
-  border-radius: 4px;
-  padding: 8px;
-  height: 36px;
-  width: 36px;
-  transition: all 0.35s ease;
-
-  cursor: pointer;
-
-  svg {
-    fill: #344054;
   }
 
-  &:hover {
-    svg {
-      fill: var(--secundary-900);
+  &.download {
+    &:hover {
+      svg {
+        fill: #0046b5;
+        stroke: #0046b5;
+      }
+      background: var(--primary-100);
+      color: #fff;
     }
-    background: var(--secundary-100);
+  }
+
+  &.view {
+    &:hover {
+      svg {
+        fill: var(--secundary-900);
+      }
+      background: var(--secundary-100);
+    }
   }
 `;
 
