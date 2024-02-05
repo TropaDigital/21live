@@ -257,12 +257,16 @@ export default function Requests() {
               <tbody>
                 {data?.map((row: any, index: number) => (
                   <tr key={index}>
-                    <td>#{String(row.ticket_id).padStart(5, '0')}</td>
+                    <td onClick={() => handleViewRequest(row)} style={{ cursor: 'pointer' }}>
+                      #{String(row.ticket_id).padStart(5, '0')}
+                    </td>
                     <td onClick={() => handleViewRequest(row)} style={{ cursor: 'pointer' }}>
                       {row.title}
                     </td>
-                    <td>{row.media_name}</td>
-                    <td>
+                    <td onClick={() => handleViewRequest(row)} style={{ cursor: 'pointer' }}>
+                      {row.media_name}
+                    </td>
+                    <td onClick={() => handleViewRequest(row)} style={{ cursor: 'pointer' }}>
                       <div
                         className={
                           row.status === 'Em Análise'
@@ -295,12 +299,22 @@ export default function Requests() {
                           : 'Aguardando Aprovação'}
                       </div>
                     </td>
-                    <td>{row.user_name}</td>
-                    <td>{row.organization_name}</td>
-                    <td style={{ minWidth: '150px' }}>
+                    <td onClick={() => handleViewRequest(row)} style={{ cursor: 'pointer' }}>
+                      {row.user_name}
+                    </td>
+                    <td onClick={() => handleViewRequest(row)} style={{ cursor: 'pointer' }}>
+                      {row.organization_name}
+                    </td>
+                    <td
+                      style={{ minWidth: '150px', cursor: 'pointer' }}
+                      onClick={() => handleViewRequest(row)}
+                    >
                       {moment(row.created).format('DD/MM/YYYY')}
                     </td>
-                    <td style={{ minWidth: '150px' }}>
+                    <td
+                      style={{ minWidth: '150px', cursor: 'pointer' }}
+                      onClick={() => handleViewRequest(row)}
+                    >
                       {row.finished ? moment(row.finished).format('DD/MM/YYYY') : 'A concluir'}
                     </td>
                     <td>
