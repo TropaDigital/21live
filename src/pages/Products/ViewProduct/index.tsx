@@ -1052,7 +1052,6 @@ export default function ViewProductsDeliveries() {
         dataTask.status !== 'Alteração Externa' &&
         dataTask.status !== 'Alteração Interna' &&
         dataTask?.status !== 'Aguardando Aprovação' &&
-        dataTask?.status !== 'Avaliada' &&
         !hasDismemberedProduct
       ) {
         setModalDismemberment(true);

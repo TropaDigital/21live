@@ -202,9 +202,36 @@ export default function ListFluxo() {
                 <tbody>
                   {data?.map((row) => (
                     <tr key={row.flow_id}>
-                      <td>#{String(row.flow_id).padStart(5, '0')}</td>
-                      <td>{row.name}</td>
-                      <td>{row.steps}</td>
+                      <td
+                        style={{ cursor: 'pointer' }}
+                        onClick={() =>
+                          navigate(`/fluxo/${row.flow_id}`, {
+                            state: { id: row.flow_id, name: row.name }
+                          })
+                        }
+                      >
+                        #{String(row.flow_id).padStart(5, '0')}
+                      </td>
+                      <td
+                        style={{ cursor: 'pointer' }}
+                        onClick={() =>
+                          navigate(`/fluxo/${row.flow_id}`, {
+                            state: { id: row.flow_id, name: row.name }
+                          })
+                        }
+                      >
+                        {row.name}
+                      </td>
+                      <td
+                        style={{ cursor: 'pointer' }}
+                        onClick={() =>
+                          navigate(`/fluxo/${row.flow_id}`, {
+                            state: { id: row.flow_id, name: row.name }
+                          })
+                        }
+                      >
+                        {row.steps}
+                      </td>
                       {/* <td>5</td> */}
                       <td>
                         <div className="fieldTableClients">
