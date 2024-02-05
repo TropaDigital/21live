@@ -936,11 +936,18 @@ export default function Services() {
             <tbody>
               {data?.map((row) => (
                 <tr key={row.job_service_id}>
-                  <td>#{String(row.job_service_id).padStart(5, '0')}</td>
+                  <td style={{ cursor: 'pointer' }} onClick={() => handleOnShowProduct(row)}>
+                    #{String(row.job_service_id).padStart(5, '0')}
+                  </td>
                   <td style={{ cursor: 'pointer' }} onClick={() => handleOnShowProduct(row)}>
                     {row.service}
                   </td>
-                  <td style={{ textTransform: 'capitalize' }}>{row.category}</td>
+                  <td
+                    style={{ textTransform: 'capitalize', cursor: 'pointer' }}
+                    onClick={() => handleOnShowProduct(row)}
+                  >
+                    {row.category}
+                  </td>
                   <td>
                     <Switch
                       onChange={() => handleList(row.job_service_id)}
