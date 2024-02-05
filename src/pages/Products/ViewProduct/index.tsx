@@ -134,7 +134,7 @@ export default function ViewProductsDeliveries() {
   const [showHoursBack, setShowHoursBack] = useState<boolean>(false);
   const [modalProducts, setModalProducts] = useState<boolean>(false);
   const [modalDismemberment, setModalDismemberment] = useState<boolean>(false);
-  const [modalTenantApprove, setModalTenantApprove] = useState<boolean>(false);
+  const [modalTenantApprove, setModalTenantApprove] = useState<boolean>(true);
   const [filesToTenantApprove, setFilesToTenantApprove] = useState<TaskFile[]>([]);
   const [showClock, setShowClock] = useState<boolean>(false);
   const [taskHistory, setTaskHistory] = useState<TaskHistoryProps[]>();
@@ -1052,7 +1052,6 @@ export default function ViewProductsDeliveries() {
         dataTask.status !== 'Alteração Externa' &&
         dataTask.status !== 'Alteração Interna' &&
         dataTask?.status !== 'Aguardando Aprovação' &&
-        dataTask?.status !== 'Avaliada' &&
         !hasDismemberedProduct
       ) {
         setModalDismemberment(true);
