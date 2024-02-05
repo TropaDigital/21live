@@ -134,7 +134,7 @@ export default function ViewProductsDeliveries() {
   const [showHoursBack, setShowHoursBack] = useState<boolean>(false);
   const [modalProducts, setModalProducts] = useState<boolean>(false);
   const [modalDismemberment, setModalDismemberment] = useState<boolean>(false);
-  const [modalTenantApprove, setModalTenantApprove] = useState<boolean>(true);
+  const [modalTenantApprove, setModalTenantApprove] = useState<boolean>(false);
   const [filesToTenantApprove, setFilesToTenantApprove] = useState<TaskFile[]>([]);
   const [showClock, setShowClock] = useState<boolean>(false);
   const [taskHistory, setTaskHistory] = useState<TaskHistoryProps[]>();
