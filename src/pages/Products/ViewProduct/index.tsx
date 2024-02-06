@@ -91,6 +91,7 @@ import {
 
 // Utils
 import { UsersNoSchedule } from '../../../utils/models';
+import { ModalProductWrapper } from '../styles';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -100,6 +101,32 @@ interface TimelineProps {
 interface ReturnProps {
   chosenStep: string;
   returnMotive: string;
+}
+
+interface ProductProps {
+  products_delivery_id: string;
+  delivery_id: string;
+  service: string;
+  description: string;
+  reason_change: string;
+  type: string;
+  size: string;
+  flag: string;
+  minutes: string;
+  quantity: string;
+  period: string;
+  category: string;
+  job_service_id: string;
+  status: string;
+  minutes_consumed: string;
+  minutes_creation: string;
+  minutes_essay: string;
+  ticket_interaction_id: string;
+  essay: string;
+  task_file_id: string;
+  product_return_id: string;
+  file_status: string;
+  status_interaction: string;
 }
 
 export default function ViewProductsDeliveries() {
@@ -145,6 +172,7 @@ export default function ViewProductsDeliveries() {
   const [showClock, setShowClock] = useState<boolean>(false);
   const [taskHistory, setTaskHistory] = useState<TaskHistoric>();
   const [modalReturnAllRejected, setModalReturnAllRejected] = useState<boolean>(false);
+  const [modalPreviewImage, setModalPreviewImage] = useState<boolean>(false);
 
   const [previewImage, setPreviewImage] = useState({
     isOpen: false,
@@ -254,9 +282,19 @@ export default function ViewProductsDeliveries() {
       delivery.products?.every((product: any) => product.status_interaction !== '')
     );
 
-  const hasTicketInteraction: any[] = dataTask?.files.filter(
-    (obj: any) => obj.ticket_interaction_id !== ''
-  );
+  // const hasTicketInteraction: any[] = dataTask?.files.filter(
+  //   (obj: any) => obj.ticket_interaction_id !== ''
+  // );
+  const hasTicketInteraction: any[] = [];
+  const files: any[] = dataTask?.files.toReversed();
+  files?.map((obj: any) => {
+    if (
+      obj.ticket_interaction_id !== '' &&
+      !hasTicketInteraction.some((e) => e.products_delivery_id === obj.products_delivery_id)
+    ) {
+      hasTicketInteraction.push(obj);
+    }
+  });
 
   const hasAllBeenRejected =
     hasTicketInteraction?.length > 0
@@ -1596,9 +1634,18 @@ export default function ViewProductsDeliveries() {
     }
   }
 
+  const handleShowFiles = (product: ProductProps) => {
+    console.log('log do product selected =>', product);
+    if (product.task_file_id !== '') {
+      setModalPreviewImage(true);
+    }
+  };
+
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
-  }, [typeOfPlay]);
+    console.log('log do files', files);
+    console.log('log ticket', hasTicketInteraction);
+  }, [typeOfPlay, files, hasTicketInteraction]);
 
   return (
     <ContainerDefault>
@@ -2058,6 +2105,7 @@ export default function ViewProductsDeliveries() {
               typeOfWorkFinished={dataTask?.type_play}
               typeOfPlay={typeOfPlay}
               uploadProduct={handleUploadForProduct}
+              viewFile={handleShowFiles}
               uploadEnabled={enableUpload}
             />
           )}
@@ -2706,6 +2754,17 @@ export default function ViewProductsDeliveries() {
             </ModalButtons>
           )}
         </FileProductsWrapper>
+      </ModalDefault>
+
+      {/* Modal preview file */}
+      <ModalDefault
+        isOpen={modalPreviewImage}
+        onOpenChange={() => setModalPreviewImage(false)}
+        title="Preview dos arquivos"
+      >
+        <ModalProductWrapper>
+          <div>Preview de image</div>
+        </ModalProductWrapper>
       </ModalDefault>
     </ContainerDefault>
   );
