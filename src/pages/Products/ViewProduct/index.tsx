@@ -81,7 +81,13 @@ import { useStopWatch } from '../../../hooks/stopWatch';
 import { useAuth } from '../../../hooks/AuthContext';
 
 // Types
-import { StepTimeline, TaskFile, TaskHistoryProps, UploadedFilesProps } from '../../../types';
+import {
+  StepTimeline,
+  TaskFile,
+  TaskHistoric,
+  TaskHistoryProps,
+  UploadedFilesProps
+} from '../../../types';
 
 // Utils
 import { UsersNoSchedule } from '../../../utils/models';
@@ -137,7 +143,7 @@ export default function ViewProductsDeliveries() {
   const [modalTenantApprove, setModalTenantApprove] = useState<boolean>(false);
   const [filesToTenantApprove, setFilesToTenantApprove] = useState<TaskFile[]>([]);
   const [showClock, setShowClock] = useState<boolean>(false);
-  const [taskHistory, setTaskHistory] = useState<TaskHistoryProps[]>();
+  const [taskHistory, setTaskHistory] = useState<TaskHistoric>();
   const [modalReturnAllRejected, setModalReturnAllRejected] = useState<boolean>(false);
 
   const [previewImage, setPreviewImage] = useState({
@@ -172,6 +178,12 @@ export default function ViewProductsDeliveries() {
     typeTask: dataTask?.project_category,
     quantityTask: '',
     contract_task: dataTask?.product_period
+  };
+
+  const allTimes = {
+    time_essay: dataProducts?.time_essay,
+    time_creation: dataProducts?.time_creation,
+    total_time: dataTask?.total_time
   };
 
   const data = {
@@ -1824,7 +1836,7 @@ export default function ViewProductsDeliveries() {
               {!hideTimeLine &&
                 timeLineData &&
                 taskHistory &&
-                taskHistory.map((row: TaskHistoryProps, index: number) => (
+                taskHistory.steps.map((row: TaskHistoryProps, index: number) => (
                   <TimelineStep key={index}>
                     <TimeLineIcon
                       className={
@@ -1864,6 +1876,12 @@ export default function ViewProductsDeliveries() {
                           {' '}
                           - {moment(row.time_line[0]?.created).format('DD/MM/YYYY')}
                         </div>
+                      ) : row.time_line.length > 0 &&
+                        row.time_line.some((item) => item.action === 'Atualmente com a Tarefa') ? (
+                        <div className="info-title">
+                          {' '}
+                          - {moment(row.time_line[0]?.created).format('DD/MM/YYYY')}
+                        </div>
                       ) : (
                         ''
                       )}
@@ -1899,6 +1917,23 @@ export default function ViewProductsDeliveries() {
                             h
                           </div>
                         </TimelineExtraInfo>
+                      ) : row.time_line.length > 0 &&
+                        row.time_line.some((item) => item.action === 'Atualmente com a Tarefa') ? (
+                        <TimelineExtraInfo>
+                          Trabalhando:{' '}
+                          {row.time_line.length > 1
+                            ? row.time_line.find(
+                                (item) => item.action === 'Atualmente com a Tarefa'
+                              )?.name
+                            : row.time_line[0].name}
+                          <div>
+                            as{' '}
+                            {moment(
+                              row.time_line.find((item) => item.action === 'Criou Ticket')?.created
+                            ).format('HH:mm')}
+                            h
+                          </div>
+                        </TimelineExtraInfo>
                       ) : (
                         ''
                       )}
@@ -1920,10 +1955,10 @@ export default function ViewProductsDeliveries() {
                 <div className="info-description">{dataTask?.time_consumed}</div>
               </TaskInfoField>
 
-              {/* <TaskInfoField>
-                <div className="info-title">Responsável:</div>
-                <div className="info-description">Qual???</div>
-              </TaskInfoField> */}
+              <TaskInfoField>
+                <div className="info-title">Fluxo:</div>
+                <div className="info-description">{dataTask?.flow}</div>
+              </TaskInfoField>
 
               <TaskInfoField>
                 <div className="info-title">Etapa:</div>
@@ -2060,7 +2095,7 @@ export default function ViewProductsDeliveries() {
         <ScheduleUser
           task_title={dataTask?.title}
           taskId={dataTask?.task_id}
-          estimated_time={dataTask?.total_time}
+          estimated_time={allTimes}
           flow={dataTask?.flow_id}
           project_product_id={dataTask?.project_product_id}
           step={showHoursBack ? returnInfos.chosenStep : Number(dataTask?.step) + 1}
