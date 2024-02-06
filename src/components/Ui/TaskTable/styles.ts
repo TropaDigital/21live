@@ -10,12 +10,42 @@ export const TaskContainer = styled.div`
 export const TaskFilter = styled.div`
   display: flex;
   align-items: flex-end;
+  justify-content: space-between;
   gap: 24px;
   width: 100%;
   height: 92px;
   box-sizing: border-box;
 
   padding: 24px;
+
+  .groupTable {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    h2 {
+      font-weight: var(--weight-semibold);
+      font-size: var(--text-small-lg);
+      color: var(--gray-900);
+
+      strong {
+        font-weight: var(--weight-medium);
+        font-size: var(--text-small-xs);
+        color: var(--primary-700);
+
+        background-color: var(--primary-050);
+        padding: 3px 10px;
+        border-radius: 16px;
+        margin-left: 8px;
+      }
+    }
+
+    span {
+      font-weight: var(--weight-regular);
+      font-size: var(--text-small-sm);
+      color: var(--gray-500);
+    }
+  }
 
   .search-field {
     max-width: 280px;

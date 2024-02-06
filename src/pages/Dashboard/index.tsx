@@ -2828,6 +2828,7 @@ export default function Dashboard() {
             taskSelected={handleNavigateTask}
             pages={pages}
             pageSelected={setSelected}
+            orderSelected={() => ''}
           />
         </SectionDefault>
       )}

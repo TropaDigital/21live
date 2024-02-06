@@ -81,10 +81,17 @@ import { useStopWatch } from '../../../hooks/stopWatch';
 import { useAuth } from '../../../hooks/AuthContext';
 
 // Types
-import { StepTimeline, TaskFile, TaskHistoryProps, UploadedFilesProps } from '../../../types';
+import {
+  StepTimeline,
+  TaskFile,
+  TaskHistoric,
+  TaskHistoryProps,
+  UploadedFilesProps
+} from '../../../types';
 
 // Utils
 import { UsersNoSchedule } from '../../../utils/models';
+import { ModalProductWrapper } from '../styles';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -94,6 +101,32 @@ interface TimelineProps {
 interface ReturnProps {
   chosenStep: string;
   returnMotive: string;
+}
+
+interface ProductProps {
+  products_delivery_id: string;
+  delivery_id: string;
+  service: string;
+  description: string;
+  reason_change: string;
+  type: string;
+  size: string;
+  flag: string;
+  minutes: string;
+  quantity: string;
+  period: string;
+  category: string;
+  job_service_id: string;
+  status: string;
+  minutes_consumed: string;
+  minutes_creation: string;
+  minutes_essay: string;
+  ticket_interaction_id: string;
+  essay: string;
+  task_file_id: string;
+  product_return_id: string;
+  file_status: string;
+  status_interaction: string;
 }
 
 export default function ViewProductsDeliveries() {
@@ -137,8 +170,12 @@ export default function ViewProductsDeliveries() {
   const [modalTenantApprove, setModalTenantApprove] = useState<boolean>(false);
   const [filesToTenantApprove, setFilesToTenantApprove] = useState<TaskFile[]>([]);
   const [showClock, setShowClock] = useState<boolean>(false);
-  const [taskHistory, setTaskHistory] = useState<TaskHistoryProps[]>();
+  const [taskHistory, setTaskHistory] = useState<TaskHistoric>();
   const [modalReturnAllRejected, setModalReturnAllRejected] = useState<boolean>(false);
+  const [modalPreviewImage, setModalPreviewImage] = useState<any>({
+    isOpen: false,
+    productId: ''
+  });
 
   const [previewImage, setPreviewImage] = useState({
     isOpen: false,
@@ -154,6 +191,10 @@ export default function ViewProductsDeliveries() {
       url: ''
     }
   });
+
+  const oneFile = dataTask?.files.find(
+    (file: any) => file.products_delivery_id === modalPreviewImage.productId
+  );
 
   let userInfos = {
     next_user: '',
@@ -172,6 +213,12 @@ export default function ViewProductsDeliveries() {
     typeTask: dataTask?.project_category,
     quantityTask: '',
     contract_task: dataTask?.product_period
+  };
+
+  const allTimes = {
+    time_essay: dataProducts?.time_essay,
+    time_creation: dataProducts?.time_creation,
+    total_time: dataTask?.total_time
   };
 
   const data = {
@@ -242,9 +289,19 @@ export default function ViewProductsDeliveries() {
       delivery.products?.every((product: any) => product.status_interaction !== '')
     );
 
-  const hasTicketInteraction: any[] = dataTask?.files.filter(
-    (obj: any) => obj.ticket_interaction_id !== ''
-  );
+  // const hasTicketInteraction: any[] = dataTask?.files.filter(
+  //   (obj: any) => obj.ticket_interaction_id !== ''
+  // );
+  const hasTicketInteraction: any[] = [];
+  const files: any[] = dataTask?.files.toReversed();
+  files?.map((obj: any) => {
+    if (
+      obj.ticket_interaction_id !== '' &&
+      !hasTicketInteraction.some((e) => e.products_delivery_id === obj.products_delivery_id)
+    ) {
+      hasTicketInteraction.push(obj);
+    }
+  });
 
   const hasAllBeenRejected =
     hasTicketInteraction?.length > 0
@@ -1584,6 +1641,16 @@ export default function ViewProductsDeliveries() {
     }
   }
 
+  const handleShowFiles = (product: ProductProps) => {
+    console.log('log do product selected =>', product);
+    if (product.task_file_id !== '') {
+      setModalPreviewImage({
+        isOpen: true,
+        productId: product.products_delivery_id
+      });
+    }
+  };
+
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
   }, [typeOfPlay]);
@@ -1824,7 +1891,7 @@ export default function ViewProductsDeliveries() {
               {!hideTimeLine &&
                 timeLineData &&
                 taskHistory &&
-                taskHistory.map((row: TaskHistoryProps, index: number) => (
+                taskHistory.steps.map((row: TaskHistoryProps, index: number) => (
                   <TimelineStep key={index}>
                     <TimeLineIcon
                       className={
@@ -1864,6 +1931,12 @@ export default function ViewProductsDeliveries() {
                           {' '}
                           - {moment(row.time_line[0]?.created).format('DD/MM/YYYY')}
                         </div>
+                      ) : row.time_line.length > 0 &&
+                        row.time_line.some((item) => item.action === 'Atualmente com a Tarefa') ? (
+                        <div className="info-title">
+                          {' '}
+                          - {moment(row.time_line[0]?.created).format('DD/MM/YYYY')}
+                        </div>
                       ) : (
                         ''
                       )}
@@ -1899,6 +1972,23 @@ export default function ViewProductsDeliveries() {
                             h
                           </div>
                         </TimelineExtraInfo>
+                      ) : row.time_line.length > 0 &&
+                        row.time_line.some((item) => item.action === 'Atualmente com a Tarefa') ? (
+                        <TimelineExtraInfo>
+                          Trabalhando:{' '}
+                          {row.time_line.length > 1
+                            ? row.time_line.find(
+                                (item) => item.action === 'Atualmente com a Tarefa'
+                              )?.name
+                            : row.time_line[0].name}
+                          <div>
+                            as{' '}
+                            {moment(
+                              row.time_line.find((item) => item.action === 'Criou Ticket')?.created
+                            ).format('HH:mm')}
+                            h
+                          </div>
+                        </TimelineExtraInfo>
                       ) : (
                         ''
                       )}
@@ -1920,10 +2010,10 @@ export default function ViewProductsDeliveries() {
                 <div className="info-description">{dataTask?.time_consumed}</div>
               </TaskInfoField>
 
-              {/* <TaskInfoField>
-                <div className="info-title">Responsável:</div>
-                <div className="info-description">Qual???</div>
-              </TaskInfoField> */}
+              <TaskInfoField>
+                <div className="info-title">Fluxo:</div>
+                <div className="info-description">{dataTask?.flow}</div>
+              </TaskInfoField>
 
               <TaskInfoField>
                 <div className="info-title">Etapa:</div>
@@ -2023,6 +2113,7 @@ export default function ViewProductsDeliveries() {
               typeOfWorkFinished={dataTask?.type_play}
               typeOfPlay={typeOfPlay}
               uploadProduct={handleUploadForProduct}
+              viewFile={handleShowFiles}
               uploadEnabled={enableUpload}
             />
           )}
@@ -2060,7 +2151,7 @@ export default function ViewProductsDeliveries() {
         <ScheduleUser
           task_title={dataTask?.title}
           taskId={dataTask?.task_id}
-          estimated_time={dataTask?.total_time}
+          estimated_time={allTimes}
           flow={dataTask?.flow_id}
           project_product_id={dataTask?.project_product_id}
           step={showHoursBack ? returnInfos.chosenStep : Number(dataTask?.step) + 1}
@@ -2671,6 +2762,145 @@ export default function ViewProductsDeliveries() {
             </ModalButtons>
           )}
         </FileProductsWrapper>
+      </ModalDefault>
+
+      {/* Modal preview file */}
+      <ModalDefault
+        isOpen={modalPreviewImage.isOpen}
+        onOpenChange={() =>
+          setModalPreviewImage({
+            isOpen: false,
+            productId: ''
+          })
+        }
+        title="Preview dos arquivos"
+      >
+        <ModalProductsWrapper>
+          {dataTask?.files.filter(
+            (file: any) => file.products_delivery_id === modalPreviewImage.productId
+          ).length > 1 && (
+            <FileProductList>
+              <div style={{ width: '1000px' }}>
+                <Table>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>File ID</th>
+                        <th>Produto ID</th>
+                        <th>Nome do produto</th>
+                        <th>Nome do arquivo</th>
+                        <th>Data</th>
+                        <th>Detalhes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {dataTask?.files
+                        .filter(
+                          (file: any) => file.products_delivery_id === modalPreviewImage.productId
+                        )
+                        .map((row: TaskFile, index: number) => (
+                          <tr key={row.task_file_id}>
+                            <td>#{row.task_file_id}</td>
+                            <td>{row.products_delivery_id}</td>
+                            <td>{productsNames[index]}</td>
+                            <td>
+                              {row.original_name !== ''
+                                ? row.original_name
+                                : row.file_name.split('-').pop()}
+                            </td>
+                            <td>{moment(row.created).format('DD/MM/YYYY - HH:mm')}h</td>
+                            <td>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <ButtonIcon
+                                  className="view"
+                                  onClick={() =>
+                                    setPreviewImage({
+                                      isOpen: true,
+                                      imageInfos: {
+                                        bucket: row.bucket,
+                                        created: row.created,
+                                        file_name: row.file_name,
+                                        key: row.key,
+                                        task_file_id: row.task_file_id,
+                                        task_id: row.task_id,
+                                        size: row.size,
+                                        updated: row.updated,
+                                        url: row.url
+                                      }
+                                    })
+                                  }
+                                >
+                                  <BiShow size={20} />
+                                </ButtonIcon>
+
+                                <ButtonIcon className="download" onClick={() => downloadFile(row)}>
+                                  <FaDownload />
+                                </ButtonIcon>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </Table>
+                {previewImage.isOpen &&
+                  previewImage.imageInfos.file_name.split('.').pop() !== 'pdf' && (
+                    <FilePreview
+                      style={{
+                        backgroundImage: `url(https://${previewImage.imageInfos.bucket}.s3.amazonaws.com/${previewImage.imageInfos.key})`
+                      }}
+                    >
+                      <div
+                        className="close-button"
+                        onClick={() =>
+                          setPreviewImage({
+                            isOpen: false,
+                            imageInfos: {
+                              bucket: '',
+                              created: '',
+                              file_name: '',
+                              key: '',
+                              task_file_id: '',
+                              task_id: '',
+                              size: '',
+                              updated: '',
+                              url: ''
+                            }
+                          })
+                        }
+                      >
+                        <MdClose />
+                      </div>
+                    </FilePreview>
+                  )}
+              </div>
+            </FileProductList>
+          )}
+
+          {dataTask?.files.filter(
+            (file: any) => file.products_delivery_id === modalPreviewImage.productId
+          ).length === 1 && (
+            <div style={{ width: '900px' }}>
+              <FilePreview
+                style={{
+                  backgroundImage: `url(https://${oneFile?.bucket}.s3.amazonaws.com/${oneFile?.key})`
+                }}
+              >
+                <div
+                  className="close-button"
+                  onClick={() =>
+                    setModalPreviewImage({
+                      isOpen: false,
+                      productId: ''
+                    })
+                  }
+                >
+                  <MdClose />
+                </div>
+              </FilePreview>
+            </div>
+          )}
+        </ModalProductsWrapper>
       </ModalDefault>
     </ContainerDefault>
   );

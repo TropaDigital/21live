@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 
 // Icons
 import { IconText } from '../../../assets/icons';
-import { BiPencil } from 'react-icons/bi';
+import { BiPencil, BiShow } from 'react-icons/bi';
 
 // Styles
 import {
@@ -35,19 +35,6 @@ import { BsChatText } from 'react-icons/bs';
 import ModalDefault from '../ModalDefault';
 import ButtonDefault from '../../Buttons/ButtonDefault';
 
-// interface Product {
-//   id: string;
-//   title: string;
-//   consumedTime: string;
-//   estimatedTime: string;
-//   description: string;
-//   format: string;
-//   formatType: string;
-//   type: string;
-//   status: string;
-//   copywriting_date_end: string;
-// }
-
 interface ProductTableProps {
   data: any;
   timeData: any;
@@ -59,6 +46,7 @@ interface ProductTableProps {
   typeOfPlay: string;
   uploadEnabled: boolean;
   uploadProduct: (value: any) => void;
+  viewFile: (value: any) => void;
 }
 
 export default function ProductTable({
@@ -71,7 +59,8 @@ export default function ProductTable({
   typeOfWorkFinished,
   typeOfPlay,
   uploadProduct,
-  uploadEnabled
+  uploadEnabled,
+  viewFile
 }: ProductTableProps) {
   const { user } = useAuth();
   const [workFor, setWorkFor] = useState<string>('schedule');
@@ -154,6 +143,7 @@ export default function ProductTable({
               <th>I/D</th>
               <th>Tipo</th>
               <th>Status</th>
+              <th>Arquivos</th>
               {uploadEnabled && <th>Upload</th>}
             </tr>
           </thead>
@@ -291,6 +281,11 @@ export default function ProductTable({
                         <BsChatText size={20} />
                       </MotiveBtn>
                     )}
+                  </div>
+                </td>
+                <td onClick={() => viewFile(row)}>
+                  <div className={row.task_file_id !== '' ? 'view' : 'view block'}>
+                    <BiShow size={20} />
                   </div>
                 </td>
                 {uploadEnabled &&

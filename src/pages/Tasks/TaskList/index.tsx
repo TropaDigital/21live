@@ -358,8 +358,7 @@ export default function TaskList() {
               </tr>
             </thead>
             <tbody>
-              {data !== null &&
-                data?.length > 0 &&
+              {data !== null && data?.length > 0 ? (
                 data?.map((row) => (
                   <tr key={row.task_id} className={row.parent_id !== '' ? 'parent' : ''}>
                     {row.parent_id !== '' ? (
@@ -483,7 +482,14 @@ export default function TaskList() {
                       </div>
                     </td>
                   </tr>
-                ))}
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={7} style={{ textAlign: 'center' }}>
+                    Sem tarefas
+                  </td>
+                </tr>
+              )}
             </tbody>
 
             <tfoot>

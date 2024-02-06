@@ -374,8 +374,8 @@ export const FilePreview = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 450px;
-  height: 270px;
+  width: 600px;
+  height: 400px;
 
   margin: 0 auto;
 

@@ -631,7 +631,7 @@ export default function CreateProject() {
 
   useEffect(() => {
     // console.log('log do DTO FORM =>', DTOForm);
-    console.log('log do Data team =>', dataTeam);
+    // console.log('log do Data team =>', dataTeam);
   }, [DTOForm, dataTeam]);
 
   return (

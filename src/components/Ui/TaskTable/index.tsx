@@ -35,6 +35,8 @@ import Pagination from '../../Pagination';
 
 // Hooks
 import { useAuth } from '../../../hooks/AuthContext';
+import { FilterGroup } from '../../Table/styles';
+import { ButtonsFilter, FilterButton } from '../../../pages/Meeting/ListMeeting/styles';
 
 interface TableProps {
   data: any;
@@ -45,6 +47,7 @@ interface TableProps {
   taskSelected: any;
   pages: any;
   pageSelected: any;
+  orderSelected: (value: any) => void;
 }
 
 export default function TaskTable({
@@ -54,15 +57,21 @@ export default function TaskTable({
   searchInfo,
   taskSelected,
   pages,
-  pageSelected
+  pageSelected,
+  orderSelected
 }: TableProps) {
   const { user } = useAuth();
   const arrayData = Object.entries(data);
   const [selectedPage, setSelectedPage] = useState<number>(1);
+  const [filterOrder, setFilterOrder] = useState('desc');
 
   useEffect(() => {
     pageSelected(selectedPage);
   }, [selectedPage]);
+
+  useEffect(() => {
+    orderSelected(filterOrder);
+  }, [filterOrder]);
 
   const handleGoToDelivery = (taskInfos: any, taskIndex: any) => {
     const allTaskInfo = {
@@ -75,22 +84,53 @@ export default function TaskTable({
   return (
     <TaskContainer>
       <TaskFilter>
-        <InputDefault
-          label=""
-          name="search"
-          placeholder="Buscar..."
-          onChange={(event) => searchInput(event.target.value)}
-          value={searchInfo}
-          icon={BiSearchAlt}
-          isLoading={loading}
-          className="search-field"
-        />
+        <div className="groupTable">
+          <h2>
+            Lista de tarefas{' '}
+            {pages !== null && pages?.total > 0 ? (
+              <strong>
+                {pages?.total <= 1 ? `${pages?.total} tarefa` : `${pages?.total} tarefas`}{' '}
+              </strong>
+            ) : (
+              <strong>0 tarefa</strong>
+            )}
+          </h2>
+        </div>
 
-        {/* <ButtonDefault typeButton="lightWhite" isOutline onClick={addFilter}>
-          <BiFilter />
-          Ordenar por
-        </ButtonDefault> */}
+        <div>
+          <InputDefault
+            label=""
+            name="search"
+            placeholder="Buscar..."
+            onChange={(event) => searchInput(event.target.value)}
+            value={searchInfo}
+            icon={BiSearchAlt}
+            isLoading={loading}
+            className="search-field"
+          />
+        </div>
       </TaskFilter>
+
+      <FilterGroup>
+        <ButtonsFilter>
+          <FilterButton
+            onClick={() => {
+              setFilterOrder('desc');
+            }}
+            className={filterOrder === 'desc' ? 'selected' : ''}
+          >
+            Mais recente
+          </FilterButton>
+          <FilterButton
+            onClick={() => {
+              setFilterOrder('asc');
+            }}
+            className={filterOrder === 'asc' ? 'selected' : ''}
+          >
+            Mais antigo
+          </FilterButton>
+        </ButtonsFilter>
+      </FilterGroup>
 
       {arrayData?.map((row: any, index: number) => (
         <TaskDateWrapper key={index}>
@@ -244,7 +284,9 @@ export default function TaskTable({
 
             <tbody>
               <tr>
-                <td colSpan={9}>Sem tarefa</td>
+                <td colSpan={9} style={{ textAlign: 'center' }}>
+                  Sem tarefas
+                </td>
               </tr>
             </tbody>
           </table>

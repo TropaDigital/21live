@@ -56,7 +56,7 @@ import { useToast } from '../../../hooks/toast';
 
 // Utils
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
-import { StepTimeline, TaskHistoryProps } from '../../../types';
+import { StepTimeline, TaskHistoric, TaskHistoryProps } from '../../../types';
 import Loader from '../../../components/LoaderSpin';
 import { MdClose } from 'react-icons/md';
 
@@ -119,7 +119,7 @@ export default function ViewTask() {
   const [deliveryProduct, setDeliveryProduct] = useState<ProductsProps[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<any>('');
   const [visualizationType, setVisualizationType] = useState<string>('deliveries');
-  const [taskHistory, setTaskHistory] = useState<TaskHistoryProps[]>();
+  const [taskHistory, setTaskHistory] = useState<TaskHistoric>();
 
   const titleInfos = {
     idNumber: dataTask?.task_id,
@@ -757,7 +757,7 @@ export default function ViewTask() {
               {!hideTimeLine &&
                 timeLineData &&
                 taskHistory &&
-                taskHistory.map((row: TaskHistoryProps, index: number) => (
+                taskHistory.steps.map((row: TaskHistoryProps, index: number) => (
                   <TimelineStep key={index}>
                     <TimeLineIcon
                       className={
@@ -771,10 +771,8 @@ export default function ViewTask() {
                       {Number(row.step) >= Number(timeLineData.currentStep) &&
                         dataTask?.status !== 'Concluida' && <div className="dot"></div>}
 
-                      {Number(row.step) < Number(timeLineData.currentStep) &&
-                        dataTask?.status !== 'Concluida' && <IconBigCheck />}
-
-                      {dataTask?.status === 'Concluida' && <IconBigCheck />}
+                      {(Number(row.step) < Number(timeLineData.currentStep) ||
+                        dataTask?.status === 'Concluida') && <IconBigCheck />}
                     </TimeLineIcon>
                     <TimelineInfo>
                       {/* {row.step < timeLineData.currentStep && (
@@ -786,17 +784,76 @@ export default function ViewTask() {
                       {row.step > timeLineData.currentStep && (
                         <div className="info-title">Próxima etapa:</div>
                       )} */}
-                      <div className="timeline-info">{row.name} - </div>
-                      <div className="info-title">
-                        {row.time_line.length > 0
-                          ? moment(row.time_line[0]?.created).format('DD/MM/YYYY')
-                          : ''}
-                      </div>
+                      <div className="timeline-info">{row.name}</div>
+                      {row.time_line.length > 0 &&
+                      row.time_line.some((item) => item.action === 'Concluiu Entrega') ? (
+                        <div className="info-title">
+                          {' '}
+                          - {moment(row.time_line[0]?.created).format('DD/MM/YYYY')}
+                        </div>
+                      ) : row.time_line.length > 0 &&
+                        row.time_line.some((item) => item.action === 'Criou Ticket') ? (
+                        <div className="info-title">
+                          {' '}
+                          - {moment(row.time_line[0]?.created).format('DD/MM/YYYY')}
+                        </div>
+                      ) : row.time_line.length > 0 &&
+                        row.time_line.some((item) => item.action === 'Atualmente com a Tarefa') ? (
+                        <div className="info-title">
+                          {' '}
+                          - {moment(row.time_line[0]?.created).format('DD/MM/YYYY')}
+                        </div>
+                      ) : (
+                        ''
+                      )}
 
-                      {row.time_line.length > 0 ? (
+                      {row.time_line.length > 0 &&
+                      row.time_line.some((item) => item.action === 'Concluiu Entrega') ? (
                         <TimelineExtraInfo>
-                          Concluído por: {row.time_line[0].name}
-                          <div>as {moment(row.time_line[0].created).format('HH:mm')}h</div>
+                          Concluído por:{' '}
+                          {row.time_line.length > 1
+                            ? row.time_line.find((item) => item.action === 'Concluiu Entrega')?.name
+                            : row.time_line[0].name}
+                          <div>
+                            as{' '}
+                            {moment(
+                              row.time_line.find((item) => item.action === 'Concluiu Entrega')
+                                ?.created
+                            ).format('HH:mm')}
+                            h
+                          </div>
+                        </TimelineExtraInfo>
+                      ) : row.time_line.length > 0 &&
+                        row.time_line.some((item) => item.action === 'Criou Ticket') ? (
+                        <TimelineExtraInfo>
+                          Ticket criado por:{' '}
+                          {row.time_line.length > 1
+                            ? row.time_line.find((item) => item.action === 'Criou Ticket')?.name
+                            : row.time_line[0].name}
+                          <div>
+                            as{' '}
+                            {moment(
+                              row.time_line.find((item) => item.action === 'Criou Ticket')?.created
+                            ).format('HH:mm')}
+                            h
+                          </div>
+                        </TimelineExtraInfo>
+                      ) : row.time_line.length > 0 &&
+                        row.time_line.some((item) => item.action === 'Atualmente com a Tarefa') ? (
+                        <TimelineExtraInfo>
+                          Trabalhando:{' '}
+                          {row.time_line.length > 1
+                            ? row.time_line.find(
+                                (item) => item.action === 'Atualmente com a Tarefa'
+                              )?.name
+                            : row.time_line[0].name}
+                          <div>
+                            as{' '}
+                            {moment(
+                              row.time_line.find((item) => item.action === 'Criou Ticket')?.created
+                            ).format('HH:mm')}
+                            h
+                          </div>
                         </TimelineExtraInfo>
                       ) : (
                         ''
@@ -817,6 +874,11 @@ export default function ViewTask() {
               <TaskInfoField>
                 <div className="info-title">Tempo consumido:</div>
                 <div className="info-description">{dataTask?.time_consumed}</div>
+              </TaskInfoField>
+
+              <TaskInfoField>
+                <div className="info-title">Fluxo:</div>
+                <div className="info-description">{dataTask?.flow}</div>
               </TaskInfoField>
 
               <TaskInfoField>

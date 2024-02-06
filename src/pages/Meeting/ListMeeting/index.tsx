@@ -661,6 +661,14 @@ export default function ListMeeting() {
                         </td>
                       </tr>
                     ))}
+
+                    {data && data.length <= 0 && (
+                      <tr>
+                        <td colSpan={6} style={{ textAlign: 'center' }}>
+                          Sem atas
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
 
                   <tfoot>
