@@ -504,6 +504,14 @@ export default function ListProjects() {
                   </td>
                 </tr>
               ))}
+
+              {dataProject && dataProject?.length <= 0 && (
+                <tr>
+                  <td colSpan={9} style={{ textAlign: 'center' }}>
+                    Sem projetos
+                  </td>
+                </tr>
+              )}
             </tbody>
 
             <tfoot>
