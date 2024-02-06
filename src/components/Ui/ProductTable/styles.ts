@@ -172,6 +172,45 @@ export const ProductsTable = styled.div`
     }
 
     &:hover {
+      background-color: var(--warning-100);
+
+      svg {
+        color: var(--warning-600);
+      }
+    }
+
+    &.block {
+      cursor: not-allowed;
+
+      &:hover {
+        background-color: var(--error-200);
+
+        svg {
+          color: var(--error-500);
+        }
+      }
+    }
+  }
+
+  .view {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+
+    background: transparent;
+    border-radius: 4px;
+
+    transition: all 0.3s;
+
+    cursor: pointer;
+
+    svg {
+      color: var(--gray-700);
+    }
+
+    &:hover {
       background-color: var(--success-100);
 
       svg {
