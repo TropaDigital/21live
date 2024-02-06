@@ -172,7 +172,10 @@ export default function ViewProductsDeliveries() {
   const [showClock, setShowClock] = useState<boolean>(false);
   const [taskHistory, setTaskHistory] = useState<TaskHistoric>();
   const [modalReturnAllRejected, setModalReturnAllRejected] = useState<boolean>(false);
-  const [modalPreviewImage, setModalPreviewImage] = useState<boolean>(false);
+  const [modalPreviewImage, setModalPreviewImage] = useState<any>({
+    isOpen: false,
+    productId: ''
+  });
 
   const [previewImage, setPreviewImage] = useState({
     isOpen: false,
@@ -188,6 +191,10 @@ export default function ViewProductsDeliveries() {
       url: ''
     }
   });
+
+  const oneFile = dataTask?.files.find(
+    (file: any) => file.products_delivery_id === modalPreviewImage.productId
+  );
 
   let userInfos = {
     next_user: '',
@@ -1637,15 +1644,16 @@ export default function ViewProductsDeliveries() {
   const handleShowFiles = (product: ProductProps) => {
     console.log('log do product selected =>', product);
     if (product.task_file_id !== '') {
-      setModalPreviewImage(true);
+      setModalPreviewImage({
+        isOpen: true,
+        productId: product.products_delivery_id
+      });
     }
   };
 
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
-    console.log('log do files', files);
-    console.log('log ticket', hasTicketInteraction);
-  }, [typeOfPlay, files, hasTicketInteraction]);
+  }, [typeOfPlay]);
 
   return (
     <ContainerDefault>
@@ -2758,13 +2766,141 @@ export default function ViewProductsDeliveries() {
 
       {/* Modal preview file */}
       <ModalDefault
-        isOpen={modalPreviewImage}
-        onOpenChange={() => setModalPreviewImage(false)}
+        isOpen={modalPreviewImage.isOpen}
+        onOpenChange={() =>
+          setModalPreviewImage({
+            isOpen: false,
+            productId: ''
+          })
+        }
         title="Preview dos arquivos"
       >
-        <ModalProductWrapper>
-          <div>Preview de image</div>
-        </ModalProductWrapper>
+        <ModalProductsWrapper>
+          {dataTask?.files.filter(
+            (file: any) => file.products_delivery_id === modalPreviewImage.productId
+          ).length > 1 && (
+            <FileProductList>
+              <div style={{ width: '1000px' }}>
+                <Table>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>File ID</th>
+                        <th>Produto ID</th>
+                        <th>Nome do produto</th>
+                        <th>Nome do arquivo</th>
+                        <th>Data</th>
+                        <th>Detalhes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {dataTask?.files
+                        .filter(
+                          (file: any) => file.products_delivery_id === modalPreviewImage.productId
+                        )
+                        .map((row: TaskFile, index: number) => (
+                          <tr key={row.task_file_id}>
+                            <td>#{row.task_file_id}</td>
+                            <td>{row.products_delivery_id}</td>
+                            <td>{productsNames[index]}</td>
+                            <td>
+                              {row.original_name !== ''
+                                ? row.original_name
+                                : row.file_name.split('-').pop()}
+                            </td>
+                            <td>{moment(row.created).format('DD/MM/YYYY - HH:mm')}h</td>
+                            <td>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <ButtonIcon
+                                  className="view"
+                                  onClick={() =>
+                                    setPreviewImage({
+                                      isOpen: true,
+                                      imageInfos: {
+                                        bucket: row.bucket,
+                                        created: row.created,
+                                        file_name: row.file_name,
+                                        key: row.key,
+                                        task_file_id: row.task_file_id,
+                                        task_id: row.task_id,
+                                        size: row.size,
+                                        updated: row.updated,
+                                        url: row.url
+                                      }
+                                    })
+                                  }
+                                >
+                                  <BiShow size={20} />
+                                </ButtonIcon>
+
+                                <ButtonIcon className="download" onClick={() => downloadFile(row)}>
+                                  <FaDownload />
+                                </ButtonIcon>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </Table>
+                {previewImage.isOpen &&
+                  previewImage.imageInfos.file_name.split('.').pop() !== 'pdf' && (
+                    <FilePreview
+                      style={{
+                        backgroundImage: `url(https://${previewImage.imageInfos.bucket}.s3.amazonaws.com/${previewImage.imageInfos.key})`
+                      }}
+                    >
+                      <div
+                        className="close-button"
+                        onClick={() =>
+                          setPreviewImage({
+                            isOpen: false,
+                            imageInfos: {
+                              bucket: '',
+                              created: '',
+                              file_name: '',
+                              key: '',
+                              task_file_id: '',
+                              task_id: '',
+                              size: '',
+                              updated: '',
+                              url: ''
+                            }
+                          })
+                        }
+                      >
+                        <MdClose />
+                      </div>
+                    </FilePreview>
+                  )}
+              </div>
+            </FileProductList>
+          )}
+
+          {dataTask?.files.filter(
+            (file: any) => file.products_delivery_id === modalPreviewImage.productId
+          ).length === 1 && (
+            <div style={{ width: '900px' }}>
+              <FilePreview
+                style={{
+                  backgroundImage: `url(https://${oneFile?.bucket}.s3.amazonaws.com/${oneFile?.key})`
+                }}
+              >
+                <div
+                  className="close-button"
+                  onClick={() =>
+                    setModalPreviewImage({
+                      isOpen: false,
+                      productId: ''
+                    })
+                  }
+                >
+                  <MdClose />
+                </div>
+              </FilePreview>
+            </div>
+          )}
+        </ModalProductsWrapper>
       </ModalDefault>
     </ContainerDefault>
   );

@@ -254,31 +254,62 @@ export default function ScheduleUser({
           ? estimated_time.time_essay
           : estimated_time.total_time;
 
-      const response = await api.get(
-        `/task/verify-agenda?user_id=${user}&date=${date}&total_time=${timeValue}`
-      );
-      if (response.data.result.agenda.length > 0) {
-        // const newTaskItem = {
-        //   start: response.data.result.start_job,
-        //   end: response.data.result.end_job,
-        //   title: task_title,
-        //   type: 'new'
-        // };
+      if (!manualOverrideDate) {
+        const response = await api.get(
+          `/task/verify-agenda?user_id=${user}&date=${date}&total_time=${timeValue}`
+        );
+        if (response.data.result.agenda.length > 0) {
+          // const newTaskItem = {
+          //   start: response.data.result.start_job,
+          //   end: response.data.result.end_job,
+          //   title: task_title,
+          //   type: 'new'
+          // };
 
-        setResponseScheduleInfos({
-          start_job: response.data.result.start_job,
-          end_job: response.data.result.end_job,
-          user_id: user
-        });
+          setResponseScheduleInfos({
+            start_job: response.data.result.start_job,
+            end_job: response.data.result.end_job,
+            user_id: user
+          });
 
-        addNewObjectToAgenda(DTOTaskSelect.user_selected, response.data.result.agenda);
-        setCheckAvailability(true);
-      } else {
-        addToast({
-          type: 'warning',
-          title: 'Aviso',
-          description: response.data.result.message
-        });
+          addNewObjectToAgenda(DTOTaskSelect.user_selected, response.data.result.agenda);
+          setCheckAvailability(true);
+        } else {
+          addToast({
+            type: 'warning',
+            title: 'Aviso',
+            description: response.data.result.message
+          });
+        }
+      }
+
+      if (manualOverrideDate) {
+        const response = await api.get(
+          `/task/verify-agenda?user_id=${user}&date=${date}&total_time=${time}`
+        );
+        if (response.data.result.agenda.length > 0) {
+          // const newTaskItem = {
+          //   start: response.data.result.start_job,
+          //   end: response.data.result.end_job,
+          //   title: task_title,
+          //   type: 'new'
+          // };
+
+          setResponseScheduleInfos({
+            start_job: response.data.result.start_job,
+            end_job: response.data.result.end_job,
+            user_id: user
+          });
+
+          addNewObjectToAgenda(DTOTaskSelect.user_selected, response.data.result.agenda);
+          setCheckAvailability(true);
+        } else {
+          addToast({
+            type: 'warning',
+            title: 'Aviso',
+            description: response.data.result.message
+          });
+        }
       }
     } catch (error: any) {
       console.log('log do error verify', error);
