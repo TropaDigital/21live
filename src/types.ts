@@ -285,6 +285,11 @@ export interface TaskFile {
   url: string;
 }
 
+export interface TaskHistoric {
+  flow_name: string;
+  steps: TaskHistoryProps[];
+}
+
 export interface TaskHistoryProps {
   step: string;
   name: string;

@@ -435,6 +435,18 @@ export default function CreateTasks() {
     (obj: any) => obj.project_product_id === location?.state?.project_product_id
   );
 
+  const allEstimatedTime = {
+    time_essay: estimatedTime,
+    time_creation: estimatedTime,
+    total_time: estimatedTime
+  };
+
+  const allEstimatedHours = {
+    time_essay: selectedProject?.tempo_restante,
+    time_creation: selectedProject?.tempo_restante,
+    total_time: selectedProject?.tempo_restante
+  };
+
   useEffect(() => {
     if (location.state !== null && location.state.ticket_id) {
       // console.log('log do locationState =>', location.state);
@@ -2827,7 +2839,7 @@ export default function CreateTasks() {
           <ScheduleUser
             task_title={DTOForm.title}
             taskId={DTOForm?.task_id}
-            estimated_time={tasksType === 'horas' ? estimatedTime : selectedProject?.tempo_restante}
+            estimated_time={tasksType === 'horas' ? allEstimatedTime : allEstimatedHours}
             flow={DTOForm.flow_id}
             project_product_id={DTOForm.project_product_id}
             limitDate={DTOForm.copywriting_date_end}

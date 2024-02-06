@@ -75,7 +75,11 @@ interface ScheduleProps {
 interface TaskExchangeProps {
   task_title: string;
   taskId: string;
-  estimated_time: string;
+  estimated_time: {
+    time_essay: string;
+    time_creation: string;
+    total_time: string;
+  };
   flow: string;
   project_product_id: string;
   step?: string | number | any;
@@ -243,8 +247,15 @@ export default function ScheduleUser({
 
   async function checkIfIsAvaliable(user: any, date: any, time: any) {
     try {
+      const timeValue =
+        dataUserSchedule[0].function === 'Criação'
+          ? estimated_time.time_creation
+          : dataUserSchedule[0].function === 'Redação'
+          ? estimated_time.time_essay
+          : estimated_time.total_time;
+
       const response = await api.get(
-        `/task/verify-agenda?user_id=${user}&date=${date}&total_time=${time}`
+        `/task/verify-agenda?user_id=${user}&date=${date}&total_time=${timeValue}`
       );
       if (response.data.result.agenda.length > 0) {
         // const newTaskItem = {
@@ -290,7 +301,14 @@ export default function ScheduleUser({
   }
 
   const handleSetEstimatedTime = (value: string) => {
-    if (value > estimated_time) {
+    const timeValue =
+      dataUserSchedule[0].function === 'Criação'
+        ? estimated_time.time_creation
+        : dataUserSchedule[0].function === 'Redação'
+        ? estimated_time.time_essay
+        : estimated_time.total_time;
+
+    if (value > timeValue) {
       addToast({
         type: 'warning',
         title: 'Aviso',
@@ -305,9 +323,9 @@ export default function ScheduleUser({
     handleOnChange('scheduleDay', moment(dinamicDate).format('YYYY-MM-DD'));
   }, [dayCounter]);
 
-  // useEffect(() => {
-  //   console.log('log do DTO', DTOTaskSelect);
-  // }, [DTOTaskSelect]);
+  useEffect(() => {
+    console.log('log userSchedule', dataUserSchedule);
+  }, [dataUserSchedule]);
 
   return (
     <ScheduleWrapper>
@@ -322,7 +340,13 @@ export default function ScheduleUser({
             {!manualOverrideDate && (
               <SubtitleInfo>
                 <div className="title">Tempo estimado:</div>
-                <div className="info">{estimated_time ? estimated_time : '--:--:--'}</div>
+                <div className="info">
+                  {dataUserSchedule[0]?.function === 'Criação'
+                    ? estimated_time.time_creation
+                    : dataUserSchedule[0]?.function === 'Redação'
+                    ? estimated_time.time_essay
+                    : estimated_time.total_time}
+                </div>
               </SubtitleInfo>
             )}
             {manualOverrideDate && (
@@ -437,7 +461,7 @@ export default function ScheduleUser({
                     checkIfIsAvaliable(
                       DTOTaskSelect.user_selected,
                       `${DTOTaskSelect.scheduleDay} ${DTOTaskSelect.starterHour}`,
-                      estimated_time
+                      '00:00:00'
                     )
                   }
                 >
