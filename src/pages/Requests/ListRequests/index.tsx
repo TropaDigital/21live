@@ -324,6 +324,14 @@ export default function Requests() {
                     </td>
                   </tr>
                 ))}
+
+                {data && data.length <= 0 && (
+                  <tr>
+                    <td colSpan={9} style={{ textAlign: 'center' }}>
+                      Sem solicitações
+                    </td>
+                  </tr>
+                )}
               </tbody>
 
               <tfoot>
