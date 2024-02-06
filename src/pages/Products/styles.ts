@@ -21,6 +21,25 @@ export const EstimatedTimeInputs = styled.div`
   align-items: center;
   gap: 8px;
   max-width: 220px;
+  position: relative;
+
+  &.error {
+    border: 1px solid var(--Danger);
+    border-radius: 6px;
+  }
+
+  .error-creation {
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    margin-left: 230px;
+
+    color: var(--input-error);
+        font-size: var(--text-small-sm);
+        font-weight: var(--weight-medium);
+  }
 `;
 
 export const ModalProductWrapper = styled.div`

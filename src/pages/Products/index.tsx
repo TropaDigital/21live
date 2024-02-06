@@ -117,22 +117,32 @@ interface FilterProps {
   [key: string]: string; // Index signature
 }
 
+interface StateErrorProps {
+  [key: string]: any;
+}
+
 export default function Services() {
   const { addToast } = useToast();
   const { parameters, getParams } = useParamsHook();
-  const { formData, setData, handleOnChange, handleOnChangeSwitch, handleOnChangeMinutes } =
-    useForm({
-      service: '',
-      description: '',
-      type: '',
-      size: '',
-      minutes: '',
-      minutes_creation: '',
-      minutes_essay: '',
-      service_category_id: '',
-      flag: 'false',
-      job_service_id: ''
-    } as FormDataProps);
+  const {
+    formData,
+    setData,
+    setFormValue,
+    handleOnChange,
+    handleOnChangeSwitch,
+    handleOnChangeMinutes
+  } = useForm({
+    service: '',
+    description: '',
+    type: '',
+    size: '',
+    minutes: '',
+    minutes_creation: '',
+    minutes_essay: '',
+    service_category_id: '',
+    flag: 'false',
+    job_service_id: ''
+  } as FormDataProps);
   const [modal, setModal] = useState({
     isOpen: false,
     type: ''
@@ -204,6 +214,16 @@ export default function Services() {
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const checkboxWrapperRef = useRef<HTMLDivElement>(null);
   const [modalFilters, setModalFilters] = useState<boolean>(false);
+  const [error, setError] = useState<StateErrorProps>({});
+
+  function setErrorInput(value: any, message: any) {
+    if (!message) {
+      delete error[value];
+    }
+
+    setError({ ...error, [value]: message });
+    return message;
+  }
 
   const handleOnCancel = useCallback(() => {
     setModal({
@@ -213,6 +233,7 @@ export default function Services() {
     setData({
       service: '',
       description: '',
+      flag: 'false',
       type: '',
       size: '',
       minutes: '',
@@ -226,6 +247,7 @@ export default function Services() {
       hours: '00',
       minutes: '00'
     });
+    setError({});
   }, [setData]);
 
   const handleOnEdit = (item: FormDataProps) => {
@@ -520,17 +542,10 @@ export default function Services() {
           size,
           tenant_id
         } = formData;
-        const newFormData = {
-          service,
-          description,
-          service_category_id,
-          flag,
-          type,
-          size,
-          minutes_creation,
-          minutes_essay,
-          tenant_id
-        };
+
+        if (flag === '') {
+          setFormValue('flag', 'false');
+        }
 
         if (formData.flag === 'true' && modal.type === 'Novo produto') {
           const newFormData = {
@@ -570,7 +585,35 @@ export default function Services() {
             title: 'Sucesso',
             description: 'Produto salvo com sucesso!'
           });
-        } else if (formData.flag !== 'true' && modal.type === 'Novo produto') {
+        } else if (formData.flag === 'false' && modal.type === 'Novo produto') {
+          const newFormData = {
+            service,
+            description,
+            service_category_id,
+            flag,
+            type,
+            size,
+            minutes_creation,
+            minutes_essay,
+            tenant_id
+          };
+
+          if (minutes_creation === undefined || minutes_creation === '') {
+            throw setErrorInput('minutes_creation', 'Campo Tempo Atividade é obrigatório!');
+          } else {
+            setErrorInput('minutes_creation', undefined);
+          }
+
+          if (minutes_essay === undefined || minutes_essay === '' || minutes_essay === '00:00:00') {
+            throw setErrorInput(
+              'minutes_essay',
+              `Campo Tempo ${parameters.input_name} é obrigatório!`
+            );
+          } else {
+            setErrorInput('minutes_essay', undefined);
+          }
+
+          console.log('log newFormData - flag false =>', newFormData);
           await api.post('services', newFormData);
           addToast({
             type: 'success',
@@ -578,6 +621,18 @@ export default function Services() {
             description: 'Produto criado com sucesso!'
           });
         } else {
+          const newFormData = {
+            service,
+            description,
+            service_category_id,
+            flag,
+            type,
+            size,
+            minutes_creation,
+            minutes_essay,
+            tenant_id
+          };
+
           await api.put(`services/${formData.job_service_id}`, newFormData);
           addToast({
             type: 'success',
@@ -590,7 +645,21 @@ export default function Services() {
         fetchData();
       } catch (e: any) {
         // Exibir erro
-        if (e.response.data.result.length !== 0) {
+        console.log('log do erro', e);
+
+        if (e === 'Campo é obrigatório!') {
+          addToast({
+            type: 'danger',
+            title: 'ATENÇÃO',
+            description: e
+          });
+        } else if (e === `Campo Tempo ${parameters.input_name} é obrigatório!`) {
+          addToast({
+            type: 'danger',
+            title: 'ATENÇÃO',
+            description: e
+          });
+        } else if (e.response.data.result.length !== 0) {
           e.response.data.result.map((row: any) => {
             addToast({
               type: 'danger',
@@ -627,22 +696,28 @@ export default function Services() {
     const { name, value } = event.target;
     if (name === 'hours_creation') {
       setEstimatedTimeCreation({ hours: value, minutes: estimatedTimeCreation.minutes });
+      setErrorInput('minutes_creation', undefined);
     }
     if (name === 'minutes_creation') {
       if (value > 59) {
         setEstimatedTimeCreation({ hours: estimatedTimeCreation.hours, minutes: '59' });
+        setErrorInput('minutes_creation', undefined);
       } else {
         setEstimatedTimeCreation({ hours: estimatedTimeCreation.hours, minutes: value });
+        setErrorInput('minutes_creation', undefined);
       }
     }
     if (name === 'hours_essay') {
       setEstimatedTimeEssay({ hours: value, minutes: estimatedTimeEssay.minutes });
+      setErrorInput('minutes_essay', undefined);
     }
     if (name === 'minutes_essay') {
       if (value > 59) {
         setEstimatedTimeEssay({ hours: estimatedTimeEssay.hours, minutes: '59' });
+        setErrorInput('minutes_essay', undefined);
       } else {
         setEstimatedTimeEssay({ hours: estimatedTimeEssay.hours, minutes: value });
+        setErrorInput('minutes_essay', undefined);
       }
     }
   };
@@ -805,310 +880,340 @@ export default function Services() {
 
       {isFetching && <Loader />}
 
-      <Table>
-        <TableHead>
-          <div className="groupTable">
-            {typeList === 'produtos' && (
-              <h2>
-                Lista de produtos{' '}
-                {pages !== null && pages?.total > 0 ? (
+      {!isFetching && (
+        <Table>
+          <TableHead>
+            <div className="groupTable">
+              {typeList === 'produtos' && (
+                <h2>
+                  Lista de produtos{' '}
+                  {pages !== null && pages?.total > 0 ? (
+                    <strong>
+                      {pages?.total <= 1 ? `${pages?.total} produto` : `${pages?.total} produtos`}
+                    </strong>
+                  ) : (
+                    <strong>0 produto</strong>
+                  )}
+                </h2>
+              )}
+              {typeList === 'kits' && (
+                <h2>
+                  Lista de kits{' '}
                   <strong>
-                    {pages?.total <= 1 ? `${pages?.total} produto` : `${pages?.total} produtos`}
+                    {pageKits.total} {pageKits.total === 1 ? 'kit' : 'kits'}
                   </strong>
-                ) : (
-                  <strong>0 produto</strong>
-                )}
-              </h2>
-            )}
-            {typeList === 'kits' && (
-              <h2>
-                Lista de kits{' '}
-                <strong>
-                  {pageKits.total} {pageKits.total === 1 ? 'kit' : 'kits'}
-                </strong>
-              </h2>
-            )}
-            {typeList === 'categories' && (
-              <h2>
-                Lista de categorias{' '}
-                <strong>
-                  {pageCategory.total} {pageCategory.total === 1 ? 'categoria' : 'categorias'}
-                </strong>
-              </h2>
-            )}
-            {/* <span>Acompanhe seus produtos e serviços pré-cadastrados</span> */}
-          </div>
-
-          <FieldGroup style={{ justifyContent: 'flex-end' }}>
-            <FieldTogleButton>
-              <ButtonDefault
-                onClick={() => handleOnTypeList('produtos')}
-                typeButton={typeList === 'produtos' ? 'lightWhite' : 'light'}
-                style={{ height: '100%', fontSize: '12px' }}
-              >
-                Produtos
-              </ButtonDefault>
-              <ButtonDefault
-                onClick={() => handleOnTypeList('kits')}
-                typeButton={typeList === 'kits' ? 'lightWhite' : 'light'}
-                style={{ height: '100%', fontSize: '12px' }}
-              >
-                Kits
-              </ButtonDefault>
-              <ButtonDefault
-                onClick={() => handleOnTypeList('categories')}
-                typeButton={typeList === 'categories' ? 'lightWhite' : 'light'}
-                style={{ height: '100%', fontSize: '12px' }}
-              >
-                Categorias
-              </ButtonDefault>
-            </FieldTogleButton>
-
-            <div style={{ maxWidth: '280px' }}>
-              <InputDefault
-                label=""
-                name="search"
-                placeholder="Buscar..."
-                onChange={(event) => {
-                  setSearchTerm(event.target.value);
-                  debouncedCallback(event.target.value);
-                }}
-                value={searchTerm}
-                icon={BiSearchAlt}
-                isLoading={isLoading}
-              />
+                </h2>
+              )}
+              {typeList === 'categories' && (
+                <h2>
+                  Lista de categorias{' '}
+                  <strong>
+                    {pageCategory.total} {pageCategory.total === 1 ? 'categoria' : 'categorias'}
+                  </strong>
+                </h2>
+              )}
+              {/* <span>Acompanhe seus produtos e serviços pré-cadastrados</span> */}
             </div>
 
-            {!hasFilters && (
-              <ButtonDefault typeButton="danger" isOutline onClick={handleClearFilters}>
-                <div className="close-icon">
-                  <BiX size={30} />
-                </div>
-                Limpar filtros
+            <FieldGroup style={{ justifyContent: 'flex-end' }}>
+              <FieldTogleButton>
+                <ButtonDefault
+                  onClick={() => handleOnTypeList('produtos')}
+                  typeButton={typeList === 'produtos' ? 'lightWhite' : 'light'}
+                  style={{ height: '100%', fontSize: '12px' }}
+                >
+                  Produtos
+                </ButtonDefault>
+                <ButtonDefault
+                  onClick={() => handleOnTypeList('kits')}
+                  typeButton={typeList === 'kits' ? 'lightWhite' : 'light'}
+                  style={{ height: '100%', fontSize: '12px' }}
+                >
+                  Kits
+                </ButtonDefault>
+                <ButtonDefault
+                  onClick={() => handleOnTypeList('categories')}
+                  typeButton={typeList === 'categories' ? 'lightWhite' : 'light'}
+                  style={{ height: '100%', fontSize: '12px' }}
+                >
+                  Categorias
+                </ButtonDefault>
+              </FieldTogleButton>
+
+              <div style={{ maxWidth: '280px' }}>
+                <InputDefault
+                  label=""
+                  name="search"
+                  placeholder="Buscar..."
+                  onChange={(event) => {
+                    setSearchTerm(event.target.value);
+                    debouncedCallback(event.target.value);
+                  }}
+                  value={searchTerm}
+                  icon={BiSearchAlt}
+                  isLoading={isLoading}
+                />
+              </div>
+
+              {!hasFilters && (
+                <ButtonDefault typeButton="danger" isOutline onClick={handleClearFilters}>
+                  <div className="close-icon">
+                    <BiX size={30} />
+                  </div>
+                  Limpar filtros
+                </ButtonDefault>
+              )}
+
+              <ButtonDefault
+                typeButton="lightWhite"
+                isOutline
+                onClick={() => setModalFilters(true)}
+              >
+                <BiFilter />
+                Filtros
               </ButtonDefault>
-            )}
+            </FieldGroup>
+          </TableHead>
+          {!hasFilters && (
+            <FilterGroup>
+              <FilterTotal>
+                <div className="filter-title">Filtros ({countNonEmptyProperties()}):</div>
+                {filter.category !== '' ? <span>Categoria</span> : ''}
+                {filter.type !== '' ? <span>Tipo</span> : ''}
+              </FilterTotal>
 
-            <ButtonDefault typeButton="lightWhite" isOutline onClick={() => setModalFilters(true)}>
-              <BiFilter />
-              Filtros
-            </ButtonDefault>
-          </FieldGroup>
-        </TableHead>
-        {!hasFilters && (
-          <FilterGroup>
-            <FilterTotal>
-              <div className="filter-title">Filtros ({countNonEmptyProperties()}):</div>
-              {filter.category !== '' ? <span>Categoria</span> : ''}
-              {filter.type !== '' ? <span>Tipo</span> : ''}
-            </FilterTotal>
+              <AppliedFilter>
+                {filter.category !== '' ? (
+                  <div className="filter-title">
+                    Categoria: <span>{filter.category}</span>
+                  </div>
+                ) : (
+                  ''
+                )}
 
-            <AppliedFilter>
-              {filter.category !== '' ? (
-                <div className="filter-title">
-                  Categoria: <span>{filter.category}</span>
-                </div>
-              ) : (
-                ''
-              )}
+                {filter.type !== '' ? (
+                  <div className="filter-title">
+                    Tipo: <span>{filter.type}</span>
+                  </div>
+                ) : (
+                  ''
+                )}
+              </AppliedFilter>
+            </FilterGroup>
+          )}
+          {typeList === 'produtos' && (
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Produto</th>
+                  <th>Categoria</th>
+                  <th>Chamar produtos</th>
+                  <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
+                </tr>
+              </thead>
 
-              {filter.type !== '' ? (
-                <div className="filter-title">
-                  Tipo: <span>{filter.type}</span>
-                </div>
-              ) : (
-                ''
-              )}
-            </AppliedFilter>
-          </FilterGroup>
-        )}
-        {typeList === 'produtos' && (
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Produto</th>
-                <th>Categoria</th>
-                <th>Chamar produtos</th>
-                <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
-              </tr>
-            </thead>
+              <tbody>
+                {data?.map((row) => (
+                  <tr key={row.job_service_id}>
+                    <td style={{ cursor: 'pointer' }} onClick={() => handleOnShowProduct(row)}>
+                      #{String(row.job_service_id).padStart(5, '0')}
+                    </td>
+                    <td style={{ cursor: 'pointer' }} onClick={() => handleOnShowProduct(row)}>
+                      {row.service}
+                    </td>
+                    <td
+                      style={{ textTransform: 'capitalize', cursor: 'pointer' }}
+                      onClick={() => handleOnShowProduct(row)}
+                    >
+                      {row.category}
+                    </td>
+                    <td>
+                      <Switch
+                        onChange={() => handleList(row.job_service_id)}
+                        // checked={
+                        //   listSelected.includes(row.job_service_id) || row.flag === 'true' ? true : false
+                        // }
+                        checked={row.flag === 'true' ? true : false}
+                        uncheckedIcon={false}
+                        checkedIcon={false}
+                        onColor="#0046B5"
+                      />
+                    </td>
+                    <td>
+                      <div className="fieldTableClients">
+                        <ButtonTable typeButton="view" onClick={() => handleOnShowProduct(row)} />
+                        <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
+                        <Alert
+                          title="Atenção"
+                          subtitle="Certeza que gostaria de deletar este Produto? Ao excluir a ação não poderá ser desfeita."
+                          confirmButton={() => handleOnDelete(row.job_service_id)}
+                        >
+                          <ButtonTable typeButton="delete" />
+                        </Alert>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
 
-            <tbody>
-              {data?.map((row) => (
-                <tr key={row.job_service_id}>
-                  <td style={{ cursor: 'pointer' }} onClick={() => handleOnShowProduct(row)}>
-                    #{String(row.job_service_id).padStart(5, '0')}
-                  </td>
-                  <td style={{ cursor: 'pointer' }} onClick={() => handleOnShowProduct(row)}>
-                    {row.service}
-                  </td>
-                  <td
-                    style={{ textTransform: 'capitalize', cursor: 'pointer' }}
-                    onClick={() => handleOnShowProduct(row)}
-                  >
-                    {row.category}
-                  </td>
-                  <td>
-                    <Switch
-                      onChange={() => handleList(row.job_service_id)}
-                      // checked={
-                      //   listSelected.includes(row.job_service_id) || row.flag === 'true' ? true : false
-                      // }
-                      checked={row.flag === 'true' ? true : false}
-                      uncheckedIcon={false}
-                      checkedIcon={false}
-                      onColor="#0046B5"
+                {data && data.length <= 0 && (
+                  <tr>
+                    <td colSpan={5} style={{ textAlign: 'center' }}>
+                      Sem produtos
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+
+              <tfoot>
+                <tr>
+                  <td colSpan={100}>
+                    <Pagination
+                      total={pages.total}
+                      perPage={pages.perPage}
+                      currentPage={selected}
+                      lastPage={pages.lastPage}
+                      onClickPage={(e) => setSelected(e)}
                     />
                   </td>
-                  <td>
-                    <div className="fieldTableClients">
-                      <ButtonTable typeButton="view" onClick={() => handleOnShowProduct(row)} />
-                      <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
-                      <Alert
-                        title="Atenção"
-                        subtitle="Certeza que gostaria de deletar este Produto? Ao excluir a ação não poderá ser desfeita."
-                        confirmButton={() => handleOnDelete(row.job_service_id)}
-                      >
-                        <ButtonTable typeButton="delete" />
-                      </Alert>
-                    </div>
+                </tr>
+              </tfoot>
+            </table>
+          )}
+          {typeList === 'kits' && (
+            <TableKits>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Título</th>
+                  <th>Qtd. Produtos</th>
+                  <th>Descrição</th>
+                  <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {dataKits?.map((row) => (
+                  <tr key={row.pack_id}>
+                    <td>{row.pack_id}</td>
+                    <td>{row.title}</td>
+                    <td>{row?.services?.length}</td>
+                    <td className="fieldLongText">
+                      {/* <Switch
+                        onChange={() => handleList(row.job_service_id)}
+                        // checked={
+                        //   listSelected.includes(row.job_service_id) || row.flag === 'true' ? true : false
+                        // }
+                        checked={row.flag === 'true' ? true : false}
+                        uncheckedIcon={false}
+                        checkedIcon={false}
+                        onColor="#0046B5"
+                      /> */}
+                      {row?.description}
+                    </td>
+                    <td>
+                      <div className="fieldTableClients">
+                        <ButtonTable typeButton="view" onClick={() => handleOnViewKit(row)} />
+                        <ButtonTable typeButton="edit" onClick={() => handleOnEditKit(row)} />
+                        <Alert
+                          title="Atenção"
+                          subtitle="Certeza que gostaria de deletar este Kit? Ao excluir a ação não poderá ser desfeita."
+                          confirmButton={() => handleOnDeleteKit(row)}
+                        >
+                          <ButtonTable typeButton="delete" />
+                        </Alert>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+
+                {dataKits && dataKits.length <= 0 && (
+                  <tr>
+                    <td colSpan={5} style={{ textAlign: 'center' }}>
+                      Sem kits
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+
+              <tfoot>
+                <tr>
+                  <td colSpan={100}>
+                    <Pagination
+                      total={pageKits.total}
+                      perPage={pageKits.perPage}
+                      currentPage={selectedKitPage}
+                      lastPage={pageKits.lastPage}
+                      onClickPage={(e) => setSelectedKitPage(e)}
+                    />
                   </td>
                 </tr>
-              ))}
-            </tbody>
+              </tfoot>
+            </TableKits>
+          )}
+          {typeList === 'categories' && (
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nome</th>
+                  {/* <th>Categoria</th>
+                  <th>Listar produtos</th> */}
+                  <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
+                </tr>
+              </thead>
 
-            <tfoot>
-              <tr>
-                <td colSpan={100}>
-                  <Pagination
-                    total={pages.total}
-                    perPage={pages.perPage}
-                    currentPage={selected}
-                    lastPage={pages.lastPage}
-                    onClickPage={(e) => setSelected(e)}
-                  />
-                </td>
-              </tr>
-            </tfoot>
-          </table>
-        )}
-        {typeList === 'kits' && (
-          <TableKits>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Título</th>
-                <th>Qtd. Produtos</th>
-                <th>Descrição</th>
-                <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
-              </tr>
-            </thead>
+              <tbody>
+                {dataCategory?.map((row) => (
+                  <tr key={row.service_category_id}>
+                    <td>#{String(row.service_category_id).padStart(5, '0')}</td>
+                    <td style={{ cursor: 'pointer' }} onClick={() => ''}>
+                      {row.category}
+                    </td>
+                    {/* <td style={{ textTransform: 'capitalize' }}>{row.category}</td> */}
+                    {/* <td></td> */}
+                    <td>
+                      <div className="fieldTableClients">
+                        {/* <ButtonTable typeButton="view" onClick={() => handleOnShowProduct(row)} /> */}
+                        <ButtonTable typeButton="edit" onClick={() => handleEditCategory(row)} />
+                        <Alert
+                          title="Atenção"
+                          subtitle="Certeza que gostaria de deletar este Produto? Ao excluir a ação não poderá ser desfeita."
+                          confirmButton={() => handleDeleteCategory(row.service_category_id)}
+                        >
+                          <ButtonTable typeButton="delete" />
+                        </Alert>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
 
-            <tbody>
-              {dataKits?.map((row) => (
-                <tr key={row.pack_id}>
-                  <td>{row.pack_id}</td>
-                  <td>{row.title}</td>
-                  <td>{row?.services?.length}</td>
-                  <td className="fieldLongText">
-                    {/* <Switch
-                      onChange={() => handleList(row.job_service_id)}
-                      // checked={
-                      //   listSelected.includes(row.job_service_id) || row.flag === 'true' ? true : false
-                      // }
-                      checked={row.flag === 'true' ? true : false}
-                      uncheckedIcon={false}
-                      checkedIcon={false}
-                      onColor="#0046B5"
-                    /> */}
-                    {row?.description}
-                  </td>
-                  <td>
-                    <div className="fieldTableClients">
-                      <ButtonTable typeButton="view" onClick={() => handleOnViewKit(row)} />
-                      <ButtonTable typeButton="edit" onClick={() => handleOnEditKit(row)} />
-                      <Alert
-                        title="Atenção"
-                        subtitle="Certeza que gostaria de deletar este Kit? Ao excluir a ação não poderá ser desfeita."
-                        confirmButton={() => handleOnDeleteKit(row)}
-                      >
-                        <ButtonTable typeButton="delete" />
-                      </Alert>
-                    </div>
+                {dataCategory && dataCategory.length <= 0 && (
+                  <tr>
+                    <td colSpan={3} style={{ textAlign: 'center' }}>
+                      Sem categorias
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+
+              <tfoot>
+                <tr>
+                  <td colSpan={100}>
+                    <Pagination
+                      total={pageCategory.total}
+                      perPage={pageCategory.perPage}
+                      currentPage={selected}
+                      lastPage={pageCategory.lastPage}
+                      onClickPage={(e) => setSelected(e)}
+                    />
                   </td>
                 </tr>
-              ))}
-            </tbody>
-
-            <tfoot>
-              <tr>
-                <td colSpan={100}>
-                  <Pagination
-                    total={pageKits.total}
-                    perPage={pageKits.perPage}
-                    currentPage={selectedKitPage}
-                    lastPage={pageKits.lastPage}
-                    onClickPage={(e) => setSelectedKitPage(e)}
-                  />
-                </td>
-              </tr>
-            </tfoot>
-          </TableKits>
-        )}
-        {typeList === 'categories' && (
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                {/* <th>Categoria</th>
-                <th>Listar produtos</th> */}
-                <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {dataCategory?.map((row) => (
-                <tr key={row.service_category_id}>
-                  <td>#{String(row.service_category_id).padStart(5, '0')}</td>
-                  <td style={{ cursor: 'pointer' }} onClick={() => ''}>
-                    {row.category}
-                  </td>
-                  {/* <td style={{ textTransform: 'capitalize' }}>{row.category}</td> */}
-                  {/* <td></td> */}
-                  <td>
-                    <div className="fieldTableClients">
-                      {/* <ButtonTable typeButton="view" onClick={() => handleOnShowProduct(row)} /> */}
-                      <ButtonTable typeButton="edit" onClick={() => handleEditCategory(row)} />
-                      <Alert
-                        title="Atenção"
-                        subtitle="Certeza que gostaria de deletar este Produto? Ao excluir a ação não poderá ser desfeita."
-                        confirmButton={() => handleDeleteCategory(row.service_category_id)}
-                      >
-                        <ButtonTable typeButton="delete" />
-                      </Alert>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-
-            <tfoot>
-              <tr>
-                <td colSpan={100}>
-                  <Pagination
-                    total={pageCategory.total}
-                    perPage={pageCategory.perPage}
-                    currentPage={selected}
-                    lastPage={pageCategory.lastPage}
-                    onClickPage={(e) => setSelected(e)}
-                  />
-                </td>
-              </tr>
-            </tfoot>
-          </table>
-        )}
-      </Table>
+              </tfoot>
+            </table>
+          )}
+        </Table>
+      )}
 
       {/* Modal create product*/}
       <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
@@ -1203,7 +1308,7 @@ export default function Services() {
             />
           </FieldDefault>
 
-          {formData.flag !== 'true' && (
+          {formData.flag === 'false' && (
             <div>
               {modal.type.includes('Editar produto') && (
                 <FieldDefault>
@@ -1218,8 +1323,8 @@ export default function Services() {
 
               <FieldDefault>
                 <EstimatedTime>
-                  <span>Tempo estimado de atividade (Horas : Minutos)</span>
-                  <EstimatedTimeInputs>
+                  <span>Tempo estimado de Atividade (Horas : Minutos)</span>
+                  <EstimatedTimeInputs className={error.minutes_creation ? 'error' : ''}>
                     <InputDefault
                       label=""
                       name="hours_creation"
@@ -1244,6 +1349,9 @@ export default function Services() {
                       icon={BiTime}
                       required
                     />
+                    {error.minutes_creation && (
+                      <div className="error-creation">Campo obrigatório</div>
+                    )}
                   </EstimatedTimeInputs>
                 </EstimatedTime>
               </FieldDefault>
@@ -1255,7 +1363,7 @@ export default function Services() {
                     {parameters.input_name !== '' ? parameters.input_name : 'redação'} (Horas :
                     Minutos)
                   </span>
-                  <EstimatedTimeInputs>
+                  <EstimatedTimeInputs className={error.minutes_essay ? 'error' : ''}>
                     <InputDefault
                       label=""
                       name="hours_essay"
@@ -1280,6 +1388,7 @@ export default function Services() {
                       icon={BiTime}
                       required
                     />
+                    {error.minutes_essay && <div className="error-creation">Campo obrigatório</div>}
                   </EstimatedTimeInputs>
                 </EstimatedTime>
               </FieldDefault>
