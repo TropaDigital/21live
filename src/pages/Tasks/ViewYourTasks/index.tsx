@@ -1,6 +1,6 @@
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // Components
 import HeaderPage from '../../../components/HeaderPage';
@@ -51,6 +51,7 @@ export default function ViewTaskList() {
   const { data, pages, isFetching } = useFetch<any[]>(
     `my-tasks?search=${search.replace(/[^\w ]/g, '')}&page=${selected}`
   );
+  const [taskOrder, setTaskOrder] = useState<string>('');
 
   const handleFilters = () => {
     console.log('log do filters on task');
@@ -94,6 +95,7 @@ export default function ViewTaskList() {
           taskSelected={handleNavigateTask}
           pages={pages}
           pageSelected={setSelected}
+          orderSelected={setTaskOrder}
         />
       )}
     </ContainerDefault>
