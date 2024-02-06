@@ -262,6 +262,14 @@ export default function ListFluxo() {
                       </td>
                     </tr>
                   ))}
+
+                  {data && data.length <= 0 && (
+                    <tr>
+                      <td colSpan={4} style={{ textAlign: 'center' }}>
+                        Sem fluxos
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
 
                 <tfoot>
