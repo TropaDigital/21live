@@ -425,7 +425,7 @@ export default function ListProjects() {
                 <th>Título</th>
                 <th>Cliente</th>
                 <th>Tempo</th>
-                <th>Status</th>
+                <th>Ativo / Inativo</th>
                 <th>Equipe</th>
                 <th>Data de criação</th>
                 <th>Entrega estimada</th>
