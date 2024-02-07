@@ -436,21 +436,21 @@ export default function CreateTasks() {
   );
 
   const allEstimatedTime = {
-    time_essay: estimatedTime,
-    time_creation: estimatedTime,
+    time_essay: productsArray[0]?.minutes_essay,
+    time_creation: productsArray[0]?.minutes_creation,
     total_time: estimatedTime
   };
-
-  const allEstimatedHours = {
-    time_essay: selectedProject?.tempo_restante,
-    time_creation: selectedProject?.tempo_restante,
-    total_time: selectedProject?.tempo_restante
-  };
-
+  
   useEffect(() => {
     if (location.state !== null && location.state.ticket_id) {
       // console.log('log do locationState =>', location.state);
       getProjects(location.state.tenant_id);
+
+      // const entriesObject = Object.entries(location.state);
+      // const descriptionObject = entriesObject
+      //   .map(([key, value]) => `${key}: ${value}`)
+      //   .join('<br/>');
+      // console.log('log do descriptionObject =>', descriptionObject);
 
       setDTOForm((prevState: any) => ({
         ...prevState,
@@ -2423,7 +2423,7 @@ export default function CreateTasks() {
                   taskType={tasksType}
                   updateTask={location.state !== null && location.state.task_id}
                   handleTicket={handleGenerateTicket}
-                  estimatedtotalTime={() => ''}
+                  estimatedtotalTime={setEstimatedTime}
                   taskFiles={uploadedFiles}
                   ticketAsk={ticketAsk}
                   splitDeliveries={splitDeliveries}
@@ -2839,7 +2839,7 @@ export default function CreateTasks() {
           <ScheduleUser
             task_title={DTOForm.title}
             taskId={DTOForm?.task_id}
-            estimated_time={tasksType === 'horas' ? allEstimatedTime : allEstimatedHours}
+            estimated_time={allEstimatedTime}
             flow={DTOForm.flow_id}
             project_product_id={DTOForm.project_product_id}
             limitDate={DTOForm.copywriting_date_end}

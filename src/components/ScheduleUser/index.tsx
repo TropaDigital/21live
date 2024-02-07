@@ -354,10 +354,6 @@ export default function ScheduleUser({
     handleOnChange('scheduleDay', moment(dinamicDate).format('YYYY-MM-DD'));
   }, [dayCounter]);
 
-  useEffect(() => {
-    console.log('log userSchedule', dataUserSchedule);
-  }, [dataUserSchedule]);
-
   return (
     <ScheduleWrapper>
       {!loading && (

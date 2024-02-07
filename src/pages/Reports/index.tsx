@@ -14,7 +14,8 @@ import {
   ReportCards,
   InfoCards,
   BulletPointInfos,
-  ReportCardTable
+  ReportCardTable,
+  HeaderBtns
 } from './styles';
 
 // Components
@@ -26,6 +27,7 @@ import { TableDefault } from '../../components/TableDefault';
 // Icons
 import { IoMdDownload } from 'react-icons/io';
 import { MdOutlineImageNotSupported } from 'react-icons/md';
+import { IoMailOutline } from 'react-icons/io5';
 
 // Libraries
 import html2canvas from 'html2canvas';
@@ -122,6 +124,7 @@ export default function MonthlyReport() {
   const inputRef = useRef<any>(null);
   const { addToast } = useToast();
 
+  const todayDate = new Date();
   const reportInfos: ReportProps = location.state;
   const [loading, setLoading] = useState<boolean>(false);
   const [dataInfoReport, setDataInfoReport] = useState<ReportFullInfoProps>({
@@ -172,7 +175,7 @@ export default function MonthlyReport() {
     }
   }, []);
 
-  // print Report to PDF
+  // print and download
   const printDocument = () => {
     html2canvas(inputRef.current).then((canvas) => {
       const imgData: any = canvas.toDataURL('image/png');
@@ -181,17 +184,70 @@ export default function MonthlyReport() {
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
       pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, 'FAST');
-      pdf.save('report.pdf');
+      pdf.save(`report-${moment(todayDate).format('YYYY-MM-DD')}.pdf`);
     });
+  };
+
+  // print and send report
+  const printAndSend = async () => {
+    const canvas = await html2canvas(inputRef.current);
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF();
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, 'FAST');
+
+    const blob = pdf.output('blob');
+
+    const formData = new FormData();
+    formData.append('file', blob, `report-${moment(todayDate).format('YYYY-MM-DD')}.pdf`);
+
+    try {
+      setLoading(true);
+
+      const response = await api.post('YOUR_ENDPOINT_URL', formData);
+      console.log('File uploaded successfully', response);
+
+      setLoading(false);
+    } catch (error: any) {
+      console.error('Error uploading file', error);
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            type: 'danger',
+            title: 'ATENÇÃO',
+            description: row.error
+          });
+        });
+      } else {
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: error.response.data.message
+        });
+      }
+      setLoading(false);
+    }
+
+    // Optionally, you can download the file locally
+    pdf.save(`report-${moment(todayDate).format('YYYY-MM-DD')}.pdf`);
   };
 
   return (
     <ContainerDefault>
       <HeaderPage title="Relatório">
-        <ButtonDefault typeButton="primary" isOutline onClick={printDocument}>
-          Download
-          <IoMdDownload />
-        </ButtonDefault>
+        <HeaderBtns>
+          <ButtonDefault typeButton="success" isOutline onClick={printAndSend}>
+            Enviar por email
+            <IoMailOutline />
+          </ButtonDefault>
+
+          <ButtonDefault typeButton="primary" isOutline onClick={printDocument}>
+            Download
+            <IoMdDownload />
+          </ButtonDefault>
+        </HeaderBtns>
       </HeaderPage>
 
       {loading && <Loader />}

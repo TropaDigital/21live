@@ -48,13 +48,16 @@ export function CardDataDash({ type, data, description }: Props) {
     <Container type={type}>
       <div className="info">
         <span>{description}</span>
-        <CountUp start={0} end={data} delay={0}>
-          {({ countUpRef }) => (
-            <div>
-              <span className="numberCard" ref={countUpRef} />
-            </div>
-          )}
-        </CountUp>
+        {description !== 'Total de horas disponíveis' && (
+          <CountUp start={0} end={data} delay={0}>
+            {({ countUpRef }) => (
+              <div>
+                <span className="numberCard" ref={countUpRef} />
+              </div>
+            )}
+          </CountUp>
+        )}
+        {description === 'Total de horas disponíveis' && <span className="numberCard">{data}</span>}
       </div>
       <div className="info-icon">{icons[type || 'info']}</div>
     </Container>
