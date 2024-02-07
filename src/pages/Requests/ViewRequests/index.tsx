@@ -304,7 +304,33 @@ export default function ViewRequest() {
     ticket_id: requestData?.ticket_id,
     title: requestData?.title,
     info: requestData?.info,
-    userId: requestData?.user_id
+    userId: requestData?.user_id,
+    ticket_cat_id: requestData?.ticket_cat_id,
+    ticket_status_id: requestData?.ticket_status_id,
+    organization_id: requestData?.organization_id,
+    media_id: requestData?.media_id,
+    width: requestData?.width,
+    height: requestData?.height,
+    target: requestData?.target,
+    obs: requestData?.obs,
+    file_format: requestData?.file_format,
+    workminutes: requestData?.workminutes,
+    deadline: requestData?.deadline,
+    created: requestData?.created,
+    updated: requestData?.updated,
+    finished: requestData?.finished,
+    tenant_name: requestData?.tenant_name,
+    user_name: requestData?.user_name,
+    status: requestData?.status,
+    organization_name: requestData?.organization_name,
+    media_name: requestData?.media_name,
+    measure: requestData?.measure,
+    value: requestData?.value,
+    media_cat_id: requestData?.midia_cat_title,
+    midia_cat_title: requestData?.midia_cat_title,
+    files: requestData?.files,
+    interactions: requestData?.interactions,
+    fields: requestData?.fields
   };
 
   // async function downloadProposal() {
@@ -421,15 +447,17 @@ export default function ViewRequest() {
                         </div>
                       )}
 
-                      <InfoSideCard>
-                        <div className="side-title">Informações que devem estar na peça:</div>
-                        <div
-                          className="side-info"
-                          dangerouslySetInnerHTML={{
-                            __html: requestData?.info ? requestData?.info : ''
-                          }}
-                        />
-                      </InfoSideCard>
+                      {requestData && requestData?.info !== '' && (
+                        <InfoSideCard>
+                          <div className="side-title">Informações que devem estar na peça:</div>
+                          <div
+                            className="side-info"
+                            dangerouslySetInnerHTML={{
+                              __html: requestData.info
+                            }}
+                          />
+                        </InfoSideCard>
+                      )}
 
                       {requestData?.target !== '' && (
                         <InfoSideCard>
