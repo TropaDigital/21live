@@ -4,6 +4,12 @@ interface LogoProps {
   bgColor: string;
 }
 
+export const HeaderBtns = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
 export const ReportWrapper = styled.div`
   display: flex;
   flex-direction: column;
