@@ -73,12 +73,19 @@ import { useToast } from '../../hooks/toast';
 // }
 
 interface JobsList {
-  id_job: number;
-  client_name: string;
-  team: string;
-  job_name: string;
-  job_status: string;
-  job_type: string;
+  flow: string;
+  natureza: string;
+  status: string;
+  task: string;
+  task_id: string;
+  tenant: string;
+  tenant_id: string;
+  // id_job: number;
+  // client_name: string;
+  // team: string;
+  // job_name: string;
+  // job_status: string;
+  // job_type: string;
 }
 
 interface TopFeeSpot {
@@ -115,6 +122,32 @@ interface ReportForm {
   contract: string;
   date_start: string;
   date_end: string;
+}
+
+interface OverviewTenant {
+  tenant_id: string;
+  name: string;
+  quantidade_tarefas: string;
+  total_tempo: string;
+  livre: number;
+  hora: number;
+  produto: number;
+  em_andamento: number;
+  pendente: number;
+  concluido: number;
+  finalizada: number;
+  aguardando_aprovacao: string;
+  meetings: string;
+  contratos_fee: {
+    total_tempo: string;
+    tempo_consumido: string;
+    saldo: string;
+  };
+  contratos_spot: {
+    total_tempo: string;
+    tempo_consumido: string;
+    saldo: string;
+  };
 }
 
 export default function Dashboard() {
@@ -275,364 +308,187 @@ export default function Dashboard() {
 
   // const ten_years = getTenYears();
 
-  // const dataStatusAll = [
-  //   {
-  //     name: 'Atrasada',
-  //     Total: data ? data.tarefas_quantidade.por_status.atrasada : 0,
-  //     fill: '#D92D20'
-  //   },
-  //   {
-  //     name: 'Pendente',
-  //     Total: data ? data.tarefas_quantidade.por_status.pendente : 0,
-  //     fill: '#FDB022'
-  //   },
-  //   {
-  //     name: 'Criação',
-  //     Total: data ? data.tarefas_quantidade.por_status.em_andamento : 0,
-  //     fill: '#0045B5'
-  //   },
-  //   {
-  //     name: 'Entregue',
-  //     Total: data ? data.tarefas_quantidade.por_status.concluido : 0,
-  //     fill: '#00A063'
-  //   }
-  //   // {
-  //   //   name: 'Cancelado',
-  //   //   pv: data ? data.tarefas_quantidade.por_status.concluido : 0,
-  //   //   fill: '#D92D20'
-  //   // },
-  // ];
-
-  const jobsData = [
-    {
-      id_job: 0,
-      client_name: '?????',
-      job_name: '?????',
-      job_flow: '?????',
-      job_status: '?????'
-    },
-    {
-      id_job: 1,
-      client_name: '?????',
-      job_name: '?????',
-      job_flow: '?????',
-      job_status: '?????'
-    },
-    {
-      id_job: 2,
-      client_name: '?????',
-      job_name: '?????',
-      job_flow: 'Mídia',
-      job_status: '?????'
-    },
-    {
-      id_job: 3,
-      client_name: '?????',
-      job_name: '?????',
-      job_flow: '?????',
-      job_status: '?????'
-    },
-    {
-      id_job: 4,
-      client_name: '?????',
-      job_name: '?????',
-      job_flow: '?????',
-      job_status: '?????'
-    },
-    {
-      id_job: 7,
-      client_name: 'Phoenix Co.',
-      job_name: 'Project Alpha',
-      job_flow: 'Development',
-      job_status: 'In Progress'
-    },
-    {
-      id_job: 12,
-      client_name: 'Stellar Innovations',
-      job_name: 'Design Challenge',
-      job_flow: 'Creative',
-      job_status: 'Pending Approval'
-    },
-    {
-      id_job: 19,
-      client_name: 'Quantum Dynamics',
-      job_name: 'Quantum Research',
-      job_flow: 'Research',
-      job_status: 'Awaiting Review'
-    },
-    {
-      id_job: 25,
-      client_name: 'Galactic Systems',
-      job_name: 'Space Exploration',
-      job_flow: 'Mission Planning',
-      job_status: 'Scheduled'
-    },
-    {
-      id_job: 31,
-      client_name: 'Tech Nexus',
-      job_name: 'AI Integration',
-      job_flow: 'Implementation',
-      job_status: 'Completed'
-    }
-  ];
-
-  const jobsAwaitingClient = [
-    {
-      id_job: 0,
-      client_name:
-        data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[0]?.name : '',
-      job_name: data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[0]?.title : '',
-      job_status: 'Pendente de envio'
-    },
-    {
-      id_job: 1,
-      client_name:
-        data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[1]?.name : '',
-      job_name: data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[1]?.title : '',
-      job_status: 'Pendente de envio'
-    },
-    {
-      id_job: 2,
-      client_name:
-        data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[2]?.name : '',
-      job_name: data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[2]?.title : '',
-      job_status: 'Pendente de envio'
-    },
-    {
-      id_job: 3,
-      client_name:
-        data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[3]?.name : '',
-      job_name: data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[3]?.title : '',
-      job_status: 'Pendente de envio'
-    },
-    {
-      id_job: 4,
-      client_name:
-        data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[4]?.name : '',
-      job_name: data && dashType === 'executive' ? data.tarefas_aguardando_aprovacao[4]?.title : '',
-      job_status: 'Pendente de envio'
-    }
-  ];
-
   const jobsAwaitingClientAdmin = [
     {
       id_job: 0,
-      // client_name:
-      //   data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[0]?.tenant_name : '???',
-      client_name: 'Takao',
-      // job_name: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[0]?.title : '???',
-      job_name: 'Redes Sociais',
-      // job_service: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[0]?.name : ''
-      job_service: 'Mike'
+      client_name:
+        data && dashType === 'admin' ? data?.tarefas_aguardando_aprovacao[0]?.tenant_name : '???',
+      job_name: data && dashType === 'admin' ? data?.tarefas_aguardando_aprovacao[0]?.title : '???',
+      job_service: data && dashType === 'admin' ? data?.tarefas_aguardando_aprovacao[0]?.name : ''
     },
     {
       id_job: 1,
-      // client_name:
-      //   data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[1]?.tenant_name : '???',
-      client_name: 'Diolaser',
-      // job_name: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[1]?.title : '???',
-      job_name: 'Posts',
-      // job_service: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[1]?.name : ''
-      job_service: 'Vitor'
+      client_name:
+        data && dashType === 'admin' ? data?.tarefas_aguardando_aprovacao[1]?.tenant_name : '???',
+      job_name: data && dashType === 'admin' ? data?.tarefas_aguardando_aprovacao[1]?.title : '???',
+      job_service: data && dashType === 'admin' ? data?.tarefas_aguardando_aprovacao[1]?.name : ''
     },
     {
       id_job: 2,
-      // client_name:
-      //   data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[2]?.tenant_name : '???',
-      client_name: 'Titan',
-      // job_name: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[2]?.title : '???',
-      job_name: 'Banners Pascoa',
-      // job_service: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[2]?.name : ''
-      job_service: 'Adriano'
+      client_name:
+        data && dashType === 'admin' ? data?.tarefas_aguardando_aprovacao[2]?.tenant_name : '???',
+      job_name: data && dashType === 'admin' ? data?.tarefas_aguardando_aprovacao[2]?.title : '???',
+      job_service: data && dashType === 'admin' ? data?.tarefas_aguardando_aprovacao[2]?.name : ''
     },
     {
       id_job: 3,
-      // client_name:
-      //   data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[3]?.tenant_name : '???',
-      client_name: 'Blue Dental',
-      // job_name: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[3]?.title : '???',
-      job_name: 'Tarefa 22',
-      // job_service: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[3]?.name : ''
-      job_service: 'Fernanda'
+      client_name:
+        data && dashType === 'admin' ? data?.tarefas_aguardando_aprovacao[3]?.tenant_name : '???',
+      job_name: data && dashType === 'admin' ? data?.tarefas_aguardando_aprovacao[3]?.title : '???',
+      job_service: data && dashType === 'admin' ? data?.tarefas_aguardando_aprovacao[3]?.name : ''
     },
     {
       id_job: 4,
-      // client_name:
-      //   data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[4]?.tenant_name : '???',
-      client_name: 'Iveco',
-      // job_name: data && dashType === 'admin' ? data.tarefas_aguardando_aprovacao[4]?.title : '???',
-      job_name: 'Posts agendados',
-      job_service: 'Michael'
+      client_name:
+        data && dashType === 'admin' ? data?.tarefas_aguardando_aprovacao[4]?.tenant_name : '???',
+      job_name: data && dashType === 'admin' ? data?.tarefas_aguardando_aprovacao[4]?.title : '???',
+      job_service: data && dashType === 'admin' ? data?.tarefas_aguardando_aprovacao[4]?.name : ''
     }
   ];
 
   const jobsAwaitingToBeSend = [
     {
       id_job: 0,
-      // client_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.tenant_name : '',
-      client_name: 'Metso',
-      // job_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.title : '',
-      job_name: 'Tarefa 01',
-      // job_service: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.name : ''
-      job_service: 'Michael'
+      client_name:
+        data && dashType === 'admin' ? data?.tarefas_pendentes_envio[0]?.tenant_name : '',
+      job_name: data && dashType === 'admin' ? data?.tarefas_pendentes_envio[0]?.title : '',
+      job_service: data && dashType === 'admin' ? data?.tarefas_pendentes_envio[0]?.name : ''
     },
     {
       id_job: 1,
-      // client_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.tenant_name : '',
-      client_name: 'Terex',
-      // job_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.title : '',
-      job_name: 'Tarefa X',
-      // job_service: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.name : ''
-      job_service: 'Amanda'
+      client_name:
+        data && dashType === 'admin' ? data?.tarefas_pendentes_envio[0]?.tenant_name : '',
+      job_name: data && dashType === 'admin' ? data?.tarefas_pendentes_envio[0]?.title : '',
+      job_service: data && dashType === 'admin' ? data?.tarefas_pendentes_envio[0]?.name : ''
     },
     {
       id_job: 2,
-      // client_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.tenant_name : '',
-      client_name: 'Linkbelt',
-      // job_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.title : '',
-      job_name: 'Banner',
-      // job_service: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.name : ''
-      job_service: 'Fernanda'
+      client_name:
+        data && dashType === 'admin' ? data?.tarefas_pendentes_envio[0]?.tenant_name : '',
+      job_name: data && dashType === 'admin' ? data?.tarefas_pendentes_envio[0]?.title : '',
+      job_service: data && dashType === 'admin' ? data?.tarefas_pendentes_envio[0]?.name : ''
     },
     {
       id_job: 3,
-      // client_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.tenant_name : '',
-      client_name: '21BRZ',
-      // job_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.title : '',
-      job_name: 'Post Instagram',
-      // job_service: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.name : ''
-      job_service: 'Jonathan'
+      client_name:
+        data && dashType === 'admin' ? data?.tarefas_pendentes_envio[0]?.tenant_name : '',
+      job_name: data && dashType === 'admin' ? data?.tarefas_pendentes_envio[0]?.title : '',
+      job_service: data && dashType === 'admin' ? data?.tarefas_pendentes_envio[0]?.name : ''
     },
     {
       id_job: 4,
-      // client_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.tenant_name : '',
-      client_name: 'Leve Brisa',
-      // job_name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.title : '',
-      job_name: 'Redes Sociais',
-      // job_service: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.name : ''
-      job_service: 'Anderson'
+      client_name:
+        data && dashType === 'admin' ? data?.tarefas_pendentes_envio[0]?.tenant_name : '',
+      job_name: data && dashType === 'admin' ? data?.tarefas_pendentes_envio[0]?.title : '',
+      job_service: data && dashType === 'admin' ? data?.tarefas_pendentes_envio[0]?.name : ''
     }
   ];
 
   const topFeeTenantJobs = [
     {
-      // name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[0]?.name : '???',
-      name: '21BRZ',
-      // Total: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[0]?.quantidade_tarefas : 0,
-      Total: 59,
+      name: data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee[0]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data?.clientes_fee?.top_tenant_fee[0]?.quantidade_tarefas
+          : 0,
       fill: '#59B7FF'
     },
     {
-      // name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[1]?.name : '???',
-      name: 'ATHLETA BRASIL',
-      // Total:
-      //   data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[1]?.quantidade_tarefas : 0,
-      Total: 53,
+      name: data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee[1]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data?.clientes_fee?.top_tenant_fee[1]?.quantidade_tarefas
+          : 0,
       fill: '#0045B5'
     },
     {
-      // name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[2]?.name : '???',
-      name: 'Metso',
-      // Total:
-      //   data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[2]?.quantidade_tarefas : 0,
-      Total: 47,
+      name: data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee[2]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data?.clientes_fee?.top_tenant_fee[2]?.quantidade_tarefas
+          : 0,
       fill: '#0077E6'
     },
     {
-      // name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[3]?.name : '???',
-      name: 'Takao',
-      // Total:
-      //   data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[3]?.quantidade_tarefas : 0,
-      Total: 40,
+      name: data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee[3]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data?.clientes_fee?.top_tenant_fee[3]?.quantidade_tarefas
+          : 0,
       fill: '#c8e5fd'
     },
     {
-      // name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[4]?.name : '???',
-      name: 'CNH Industrial',
-      // Total:
-      //   data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee[4]?.quantidade_tarefas : 0,
-      Total: 27,
+      name: data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee[4]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data?.clientes_fee?.top_tenant_fee[4]?.quantidade_tarefas
+          : 0,
       fill: '#0065D4'
     }
   ];
 
   const topFeeTenantHours = [
     {
-      // name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[0]?.name : '???',
-      name: '21BRZ',
-      // Total:
-      //   data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[0]?.total_tempo : 0,
-      Total: 120,
+      name:
+        data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[0]?.name : '???',
+      Total:
+        data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[0]?.total_tempo : 0,
       fill: '#59B7FF'
     },
     {
-      // name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[1]?.name : '???',
-      name: 'Metso',
-      // Total:
-      //   data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[1]?.total_tempo : 0,
-      Total: 92,
+      name:
+        data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[1]?.name : '???',
+      Total:
+        data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[1]?.total_tempo : 0,
       fill: '#0045B5'
     },
     {
-      // name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[2]?.name : '???',
-      name: 'Blue Dental',
-      // Total:
-      //   data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[2]?.total_tempo : 0,
-      Total: 67,
+      name:
+        data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[2]?.name : '???',
+      Total:
+        data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[2]?.total_tempo : 0,
       fill: '#0077E6'
     },
     {
-      // name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[3]?.name : '???',
-      name: 'Iveco',
-      // Total:
-      //   data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[3]?.total_tempo : 0,
-      Total: 55,
+      name:
+        data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[3]?.name : '???',
+      Total:
+        data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[3]?.total_tempo : 0,
       fill: '#E2F2FF'
     },
     {
-      // name: data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[4]?.name : '???',
-      name: 'Takao',
-      // Total:
-      //   data && dashType === 'admin' ? data.clientes_fee?.top_tenant_fee_horas[4]?.total_tempo : 0,
-      Total: 47,
+      name:
+        data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[4]?.name : '???',
+      Total:
+        data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[4]?.total_tempo : 0,
       fill: '#0065D4'
     }
   ];
 
   const topInternalChangesHours = [
     {
-      // name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[0]?.name : '???',
-      name: 'Nexpro',
-      // Total: data && dashType === 'admin' ? data.top_alteracao_interna_horas[0]?.total_time : 0,
-      Total: 170,
+      name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[0]?.name : '???',
+      Total: data && dashType === 'admin' ? data.top_alteracao_interna_horas[0]?.total_time : 0,
       fill: '#59B7FF'
     },
     {
-      // name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[1]?.name : '???',
-      name: '21BRZ',
-      // Total: data && dashType === 'admin' ? data.top_alteracao_interna_horas[1]?.total_time : 0,
-      Total: 143,
+      name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[1]?.name : '???',
+      Total: data && dashType === 'admin' ? data.top_alteracao_interna_horas[1]?.total_time : 0,
       fill: '#0045B5'
     },
     {
-      // name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[2]?.name : '???',
-      name: 'Terex',
-      // Total: data && dashType === 'admin' ? data.top_alteracao_interna_horas[2]?.total_time : 0,
-      Total: 127,
+      name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[2]?.name : '???',
+      Total: data && dashType === 'admin' ? data.top_alteracao_interna_horas[2]?.total_time : 0,
       fill: '#0077E6'
     },
     {
-      // name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[3]?.name : '???',
-      name: 'Titan',
-      // Total: data && dashType === 'admin' ? data.top_alteracao_interna_horas[3]?.total_time : 0,
-      Total: 90,
+      name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[3]?.name : '???',
+      Total: data && dashType === 'admin' ? data.top_alteracao_interna_horas[3]?.total_time : 0,
       fill: '#E2F2FF'
     },
     {
-      // name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[4]?.name : '???',
-      name: 'CNH Industrial',
-      // Total: data && dashType === 'admin' ? data.top_alteracao_interna_horas[4]?.total_time : 0,
-      Total: 77,
+      name: data && dashType === 'admin' ? data.top_alteracao_interna_horas[4]?.name : '???',
+      Total: data && dashType === 'admin' ? data.top_alteracao_interna_horas[4]?.total_time : 0,
       fill: '#0065D4'
     }
   ];
@@ -668,136 +524,162 @@ export default function Dashboard() {
 
   const topSpotJobs = [
     {
-      // name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[0]?.name : '???',
-      name: 'Metso',
-      // Total:
-      //   data && dashType === 'admin'
-      //     ? data.clientes_spot?.top_tenant_spot[0]?.quantidade_tarefas
-      //     : 0,
-      Total: 22,
+      name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[0]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data.clientes_spot?.top_tenant_spot[0]?.quantidade_tarefas
+          : 0,
       fill: '#59B7FF'
     },
     {
-      // name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[1]?.name : '???',
-      name: 'Iveco',
-      // Total:
-      //   data && dashType === 'admin'
-      //     ? data.clientes_spot?.top_tenant_spot[1]?.quantidade_tarefas
-      //     : 0,
-      Total: 19,
+      name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[1]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data.clientes_spot?.top_tenant_spot[1]?.quantidade_tarefas
+          : 0,
       fill: '#0045B5'
     },
     {
-      // name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[2]?.name : '???',
-      name: 'CNH Industrial',
-      // Total:
-      //   data && dashType === 'admin'
-      //     ? data.clientes_spot?.top_tenant_spot[2]?.quantidade_tarefas
-      //     : 0,
-      Total: 18,
+      name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[2]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data.clientes_spot?.top_tenant_spot[2]?.quantidade_tarefas
+          : 0,
       fill: '#0077E6'
     },
     {
-      // name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[3]?.name : '???',
-      name: 'Blue Dental',
-      // Total:
-      //   data && dashType === 'admin'
-      //     ? data.clientes_spot?.top_tenant_spot[3]?.quantidade_tarefas
-      //     : 0,
-      Total: 15,
+      name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[3]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data.clientes_spot?.top_tenant_spot[3]?.quantidade_tarefas
+          : 0,
       fill: '#E2F2FF'
     },
     {
-      // name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[4]?.name : '???',
-      name: 'LinkBelt',
-      // Total:
-      //   data && dashType === 'admin'
-      //     ? data.clientes_spot?.top_tenant_spot[4]?.quantidade_tarefas
-      //     : 0,
-      Total: 12,
+      name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[4]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data.clientes_spot?.top_tenant_spot[4]?.quantidade_tarefas
+          : 0,
       fill: '#0065D4'
     }
   ];
 
-  const topClientFeeDetails = [
+  const topTenantJobs = [
     {
-      client_name: '21BRZ',
-      atendimento: 'Mike',
-      tempo_total: '122:00:00',
-      consumido: '22:00:00',
-      balance_hours: '100'
+      name: data && dashType === 'executive' ? data?.top_clientes.top_tenant_qtd[0]?.name : '???',
+      Total:
+        data && dashType === 'executive'
+          ? data?.top_clientes.top_tenant_qtd[0]?.quantidade_tarefas
+          : 0,
+      fill: '#59B7FF'
     },
     {
-      client_name: 'ATHLETABRASIL',
-      atendimento: 'Amanda',
-      tempo_total: '112:00:00',
-      consumido: '34:00:00',
-      balance_hours: '78'
+      name: data && dashType === 'executive' ? data?.top_clientes.top_tenant_qtd[1]?.name : '???',
+      Total:
+        data && dashType === 'executive'
+          ? data?.top_clientes.top_tenant_qtd[1]?.quantidade_tarefas
+          : 0,
+      fill: '#0045B5'
     },
     {
-      client_name: 'Metso',
-      atendimento: 'Vitor',
-      tempo_total: '99:00:00',
-      consumido: '33:00:00',
-      balance_hours: '66'
+      name: data && dashType === 'executive' ? data?.top_clientes.top_tenant_qtd[2]?.name : '???',
+      Total:
+        data && dashType === 'executive'
+          ? data?.top_clientes.top_tenant_qtd[2]?.quantidade_tarefas
+          : 0,
+      fill: '#0077E6'
     },
     {
-      client_name: 'Nexpro',
-      atendimento: 'Fernanda',
-      tempo_total: '88:00:00',
-      consumido: '25:00:00',
-      balance_hours: '63'
+      name: data && dashType === 'executive' ? data?.top_clientes.top_tenant_qtd[3]?.name : '???',
+      Total:
+        data && dashType === 'executive'
+          ? data?.top_clientes.top_tenant_qtd[3]?.quantidade_tarefas
+          : 0,
+      fill: '#E2F2FF'
     },
     {
-      client_name: 'Takao',
-      atendimento: 'Mike',
-      tempo_total: '59:00:00',
-      consumido: '60:00:00',
-      balance_hours: '46'
+      name: data && dashType === 'executive' ? data?.top_clientes.top_tenant_qtd[4]?.name : '???',
+      Total:
+        data && dashType === 'executive'
+          ? data?.top_clientes.top_tenant_qtd[4]?.quantidade_tarefas
+          : 0,
+      fill: '#0065D4'
     }
   ];
 
-  const topTenantJobs = [{}];
+  const topTenantHours = [
+    {
+      name: data && dashType === 'executive' ? data?.top_clientes.top_tenant_horas[0]?.name : '???',
+      Total:
+        data && dashType === 'executive'
+          ? data?.top_clientes.top_tenant_horas[0]?.quantidade_tarefas
+          : 0,
+      fill: '#59B7FF'
+    },
+    {
+      name: data && dashType === 'executive' ? data?.top_clientes.top_tenant_horas[1]?.name : '???',
+      Total:
+        data && dashType === 'executive'
+          ? data?.top_clientes.top_tenant_horas[1]?.quantidade_tarefas
+          : 0,
+      fill: '#0045B5'
+    },
+    {
+      name: data && dashType === 'executive' ? data?.top_clientes.top_tenant_horas[2]?.name : '???',
+      Total:
+        data && dashType === 'executive'
+          ? data?.top_clientes.top_tenant_horas[2]?.quantidade_tarefas
+          : 0,
+      fill: '#0077E6'
+    },
+    {
+      name: data && dashType === 'executive' ? data?.top_clientes.top_tenant_horas[3]?.name : '???',
+      Total:
+        data && dashType === 'executive'
+          ? data?.top_clientes.top_tenant_horas[3]?.quantidade_tarefas
+          : 0,
+      fill: '#E2F2FF'
+    },
+    {
+      name: data && dashType === 'executive' ? data?.top_clientes.top_tenant_horas[4]?.name : '???',
+      Total:
+        data && dashType === 'executive'
+          ? data?.top_clientes.top_tenant_horas[4]?.quantidade_tarefas
+          : 0,
+      fill: '#0065D4'
+    }
+  ];
 
   const topInternalChange = [
     {
       tenant_id: data && dashType === 'admin' ? data.top_alteracao_interna[0]?.tenant_id : 0,
-      // name: data && dashType === 'admin' ? data.top_alteracao_interna[0]?.name : '----',
-      name: 'Takao',
-      // Total: data && dashType === 'admin' ? data.top_alteracao_interna[0]?.qtd_tarefas : 0,
-      Total: 13,
+      name: data && dashType === 'admin' ? data.top_alteracao_interna[0]?.name : '----',
+      Total: data && dashType === 'admin' ? data.top_alteracao_interna[0]?.qtd_tarefas : 0,
       fill: '#59B7FF'
     },
     {
       tenant_id: data && dashType === 'admin' ? data.top_alteracao_interna[1]?.tenant_id : 0,
-      // name: data && dashType === 'admin' ? data.top_alteracao_interna[1]?.name : '----',
-      name: 'LinkBelt',
-      // Total: data && dashType === 'admin' ? data.top_alteracao_interna[1]?.qtd_tarefas : 0,
-      Total: 22,
+      name: data && dashType === 'admin' ? data.top_alteracao_interna[1]?.name : '----',
+      Total: data && dashType === 'admin' ? data.top_alteracao_interna[1]?.qtd_tarefas : 0,
       fill: '#0045B5'
     },
     {
       tenant_id: data && dashType === 'admin' ? data.top_alteracao_interna[2]?.tenant_id : 0,
-      // name: data && dashType === 'admin' ? data.top_alteracao_interna[2]?.name : '----',
-      name: 'ATHLETA BRASIL',
-      // Total: data && dashType === 'admin' ? data.top_alteracao_interna[2]?.qtd_tarefas : 0,
-      Total: 11,
+      name: data && dashType === 'admin' ? data.top_alteracao_interna[2]?.name : '----',
+      Total: data && dashType === 'admin' ? data.top_alteracao_interna[2]?.qtd_tarefas : 0,
       fill: '#0077E6'
     },
     {
       tenant_id: data && dashType === 'admin' ? data.top_alteracao_interna[3]?.tenant_id : 0,
-      // name: data && dashType === 'admin' ? data.top_alteracao_interna[3]?.name : '----',
-      name: 'Iveco',
-      // Total: data && dashType === 'admin' ? data.top_alteracao_interna[3]?.qtd_tarefas : 0,
-      Total: 8,
+      name: data && dashType === 'admin' ? data.top_alteracao_interna[3]?.name : '----',
+      Total: data && dashType === 'admin' ? data.top_alteracao_interna[3]?.qtd_tarefas : 0,
       fill: '#E2F2FF'
     },
     {
       tenant_id: data && dashType === 'admin' ? data.top_alteracao_interna[4]?.tenant_id : 0,
-      // name: data && dashType === 'admin' ? data.top_alteracao_interna[4]?.name : '----',
-      name: 'Nexpro',
-      // Total: data && dashType === 'admin' ? data.top_alteracao_interna[4]?.qtd_tarefas : 0,
-      Total: 15,
+      name: data && dashType === 'admin' ? data.top_alteracao_interna[4]?.name : '----',
+      Total: data && dashType === 'admin' ? data.top_alteracao_interna[4]?.qtd_tarefas : 0,
       fill: '#0065D4'
     }
   ];
@@ -805,109 +687,87 @@ export default function Dashboard() {
   const topExternalChange = [
     {
       tenant_id: data && dashType === 'admin' ? data.top_alteracao_externa[0]?.tenant_id : 0,
-      // name: data && dashType === 'admin' ? data.top_alteracao_externa[0]?.name : '----',
-      name: 'Leve Brisa',
-      // Total: data && dashType === 'admin' ? data.top_alteracao_externa[0]?.qtd_tarefas : 0,
-      Total: 57,
+      name: data && dashType === 'admin' ? data.top_alteracao_externa[0]?.name : '----',
+      Total: data && dashType === 'admin' ? data.top_alteracao_externa[0]?.qtd_tarefas : 0,
       fill: '#59B7FF'
     },
     {
       tenant_id: data && dashType === 'admin' ? data.top_alteracao_externa[1]?.tenant_id : 0,
-      // name: data && dashType === 'admin' ? data.top_alteracao_externa[1]?.name : '----',
-      name: 'Blue Dental',
-      // Total: data && dashType === 'admin' ? data.top_alteracao_externa[1]?.qtd_tarefas : 0,
-      Total: 50,
+      name: data && dashType === 'admin' ? data.top_alteracao_externa[1]?.name : '----',
+      Total: data && dashType === 'admin' ? data.top_alteracao_externa[1]?.qtd_tarefas : 0,
       fill: '#0045B5'
     },
     {
       tenant_id: data && dashType === 'admin' ? data.top_alteracao_externa[2]?.tenant_id : 0,
-      // name: data && dashType === 'admin' ? data.top_alteracao_externa[2]?.name : '----',
-      name: 'Diolaser',
-      // Total: data && dashType === 'admin' ? data.top_alteracao_externa[2]?.qtd_tarefas : 0,
-      Total: 44,
+      name: data && dashType === 'admin' ? data.top_alteracao_externa[2]?.name : '----',
+      Total: data && dashType === 'admin' ? data.top_alteracao_externa[2]?.qtd_tarefas : 0,
       fill: '#0077E6'
     },
     {
       tenant_id: data && dashType === 'admin' ? data.top_alteracao_externa[3]?.tenant_id : 0,
-      // name: data && dashType === 'admin' ? data.top_alteracao_externa[3]?.name : '----',
-      name: 'Metso',
-      // Total: data && dashType === 'admin' ? data.top_alteracao_externa[3]?.qtd_tarefas : 0,
-      Total: 35,
+      name: data && dashType === 'admin' ? data.top_alteracao_externa[3]?.name : '----',
+      Total: data && dashType === 'admin' ? data.top_alteracao_externa[3]?.qtd_tarefas : 0,
       fill: '#E2F2FF'
     },
     {
       tenant_id: data && dashType === 'admin' ? data.top_alteracao_externa[4]?.tenant_id : 0,
-      // name: data && dashType === 'admin' ? data.top_alteracao_externa[4]?.name : '----',
-      name: 'Iveco',
-      // Total: data && dashType === 'admin' ? data.top_alteracao_externa[4]?.qtd_tarefas : 0,
-      Total: 30,
+      name: data && dashType === 'admin' ? data.top_alteracao_externa[4]?.name : '----',
+      Total: data && dashType === 'admin' ? data.top_alteracao_externa[4]?.qtd_tarefas : 0,
       fill: '#0065D4'
     }
   ];
 
   const topSpotTenantHours = [
     {
-      // name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[0]?.name : '???',
-      name: 'Takao',
-      // Total:
-      //   data && dashType === 'admin'
-      //     ? data.clientes_spot?.top_tenant_spot_horas[0]?.total_tempo
-      //     : 0,
-      Total: 83,
+      name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[0]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data.clientes_spot?.top_tenant_spot_horas[0]?.total_tempo
+          : 0,
       fill: '#59B7FF'
     },
     {
-      // name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[1]?.name : '???',
-      name: 'LinkBelt',
-      // Total:
-      //   data && dashType === 'admin'
-      //     ? data.clientes_spot?.top_tenant_spot_horas[1]?.total_tempo
-      //     : 0,
-      Total: 79,
+      name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[1]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data.clientes_spot?.top_tenant_spot_horas[1]?.total_tempo
+          : 0,
       fill: '#0045B5'
     },
     {
-      // name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[2]?.name : '???',
-      name: 'Nexpro',
-      // Total:
-      //   data && dashType === 'admin'
-      //     ? data.clientes_spot?.top_tenant_spot_horas[2]?.total_tempo
-      //     : 0,
-      Total: 69,
+      name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[2]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data.clientes_spot?.top_tenant_spot_horas[2]?.total_tempo
+          : 0,
       fill: '#0077E6'
     },
     {
-      // name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[3]?.name : '???',
-      name: '21BRZ',
-      // Total:
-      //   data && dashType === 'admin'
-      //     ? data.clientes_spot?.top_tenant_spot_horas[3]?.total_tempo
-      //     : 0,
-      Total: 57,
+      name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[3]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data.clientes_spot?.top_tenant_spot_horas[3]?.total_tempo
+          : 0,
       fill: '#E2F2FF'
     },
     {
-      // name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[4]?.name : '???',
-      name: 'Metso',
-      // Total:
-      //   data && dashType === 'admin'
-      //     ? data.clientes_spot?.top_tenant_spot_horas[4]?.quantidade_tarefas
-      //     : 0,
-      Total: 29,
+      name: data && dashType === 'admin' ? data.clientes_spot?.top_tenant_spot[4]?.name : '???',
+      Total:
+        data && dashType === 'admin'
+          ? data.clientes_spot?.top_tenant_spot_horas[4]?.quantidade_tarefas
+          : 0,
       fill: '#0065D4'
     }
   ];
 
   const topCardsDataManager: CardsData[] = [
     {
-      // data: data ? data.total_clientes : 0,
-      data: 37,
+      data: data ? data.total_clientes : 0,
       type: 'success',
       title: 'Total de clientes'
     },
     {
-      // data: data ? data.total_jobs : 0,
-      data: 21,
+      data: data ? data.total_jobs : 0,
       type: 'jobs',
       title: 'Total Jobs'
     },
@@ -917,38 +777,32 @@ export default function Dashboard() {
       title: 'Alt. internas'
     },
     {
-      // data: data ? data.alteracao_externa : 0,
-      data: 8,
+      data: data ? data.alteracao_externa : 0,
       type: 'danger',
       title: 'Alt. externas'
     },
     {
-      // data: data ? data.equipe : 0,
-      data: 12,
+      data: data ? data.equipe : 0,
       type: 'team',
       title: 'Equipes'
     },
     {
-      // data: data ? data.contratos_fee : 0,
-      data: 8,
+      data: data ? data.contratos_fee : 0,
       type: 'jobFee',
       title: 'Jobs FEE contrato'
     },
     {
-      // data: data ? data.contratos_spot : 0,
-      data: 16,
+      data: data ? data.contratos_spot : 0,
       type: 'jobSpot',
       title: 'Jobs SPOT'
     },
     {
-      // data: data ? data.novos_contratos_fee : 0,
-      data: 3,
+      data: data ? data.novos_contratos_fee : 0,
       type: 'newFee',
       title: 'Novos FEE contrato'
     },
     {
-      // data: data ? data.novos_contratos_spot : 0,
-      data: 5,
+      data: data ? data.novos_contratos_spot : 0,
       type: 'newSpot',
       title: 'Novos Jobs SPOT'
     }
@@ -956,22 +810,22 @@ export default function Dashboard() {
 
   const topCardsDataExecutive: CardsData[] = [
     {
-      data: 42,
+      data: dashType === 'executive' && data ? data.total_clientes : 0,
       type: 'success',
       title: 'Total de clientes'
     },
     {
-      data: 443,
+      data: dashType === 'executive' && data ? data.tarefas_pendentes_envio_qtd : 0,
       type: 'danger',
       title: 'Pendentes de envio'
     },
     {
-      data: 46,
+      data: dashType === 'executive' && data ? data.tarefas_aguardando_aprovacao_qtd : 0,
       type: 'info',
       title: 'Aguardando aprovação'
     },
     {
-      data: 12,
+      data: dashType === 'executive' && data ? data.ticket_pendentes : 0,
       type: 'warning',
       title: 'Tick. pendentes'
     }
@@ -979,17 +833,17 @@ export default function Dashboard() {
 
   const topCardsDataTrafic: CardsData[] = [
     {
-      data: 554,
+      data: dashType === 'traffic' && data ? data.tarefas_totais : 0,
       type: 'jobs',
       title: 'Total de pautas'
     },
     {
-      data: 290,
+      data: dashType === 'traffic' && data ? data.horas_totais.split(':')[0] : 0,
       type: 'warning',
       title: 'Total de horas'
     },
     {
-      data: 130,
+      data: dashType === 'traffic' && data ? data.tempo_disponivel : 0,
       type: 'warning',
       title: 'Total de horas disponíveis'
     }
@@ -998,200 +852,55 @@ export default function Dashboard() {
   const userCards: UserCardProps[] = [
     {
       userInfos: {
-        // user_name: data && dashType === 'admin' ? data.top_users[0]?.name : '',
-        user_name: 'Amanda',
-        // clientsNumber: data && dashType === 'admin' ? data.top_users[0]?.clientes : 0,
-        clientsNumber: 12,
+        user_name: data && dashType === 'admin' ? data.top_users[0]?.name : '',
+        clientsNumber: data && dashType === 'admin' ? data.top_users[0]?.clientes : 0,
         avatar: PersonTest
       },
       tableData: {
         totalJobs: data && dashType === 'admin' ? data.top_users[0]?.tarefas_total : 0,
-        // pendingSend: data && dashType === 'admin' ? data.top_users[0]?.pendente : 0,
-        pendingSend: 2,
+        pendingSend: data && dashType === 'admin' ? data.top_users[0]?.pendente : 0,
         pendingApro: data && dashType === 'admin' ? data.top_users[0]?.aguardando_aprovacao : 0,
         approved: data && dashType === 'admin' ? data.top_users[0]?.entregue : 0
       },
       mensalReport: {
-        // reunions: data && dashType === 'admin' ? data.top_users[0]?.reuniao : 0,
-        reunions: 3,
+        reunions: data && dashType === 'admin' ? data.top_users[0]?.reuniao : 0,
         reports: '4'
       }
     },
     {
       userInfos: {
-        // user_name: data && dashType === 'admin' ? data.top_users[1]?.name : '',
-        user_name: 'Jonathan',
-        // clientsNumber: data && dashType === 'admin' ? data.top_users[1]?.clientes : 0,
-        clientsNumber: 10,
+        user_name: data && dashType === 'admin' ? data.top_users[1]?.name : '',
+        clientsNumber: data && dashType === 'admin' ? data.top_users[1]?.clientes : 0,
         avatar: PersonTest
       },
       tableData: {
         totalJobs: data && dashType === 'admin' ? data.top_users[1]?.tarefas_total : 0,
         pendingSend: data && dashType === 'admin' ? data.top_users[1]?.pendente : 0,
-        // pendingApro: data && dashType === 'admin' ? data.top_users[1]?.aguardando_aprovacao : 0,
-        pendingApro: 2,
+        pendingApro: data && dashType === 'admin' ? data.top_users[1]?.aguardando_aprovacao : 0,
         approved: data && dashType === 'admin' ? data.top_users[1]?.entregue : 0
       },
 
       mensalReport: {
-        // reunions: data && dashType === 'admin' ? data.top_users[1]?.reuniao : 0,
-        reunions: 1,
+        reunions: data && dashType === 'admin' ? data.top_users[1]?.reuniao : 0,
         reports: '1'
       }
     },
     {
       userInfos: {
-        // user_name: data && dashType === 'admin' ? data.top_users[2]?.name : '',
-        user_name: 'Camila',
-        // clientsNumber: data && dashType === 'admin' ? data.top_users[2]?.clientes : 0,
-        clientsNumber: 7,
+        user_name: data && dashType === 'admin' ? data.top_users[2]?.name : '',
+        clientsNumber: data && dashType === 'admin' ? data.top_users[2]?.clientes : 0,
         avatar: PersonTest
       },
       tableData: {
         totalJobs: data && dashType === 'admin' ? data.top_users[2]?.tarefas_total : 0,
-        // pendingSend: data && dashType === 'admin' ? data.top_users[2]?.pendente : 0,
-        pendingSend: 1,
-        // pendingApro: data && dashType === 'admin' ? data.top_users[2]?.aguardando_aprovacao : 0,
-        pendingApro: 1,
-        // approved: data && dashType === 'admin' ? data.top_users[2]?.entregue : 0
-        approved: 1
+        pendingSend: data && dashType === 'admin' ? data.top_users[2]?.pendente : 0,
+        pendingApro: data && dashType === 'admin' ? data.top_users[2]?.aguardando_aprovacao : 0,
+        approved: data && dashType === 'admin' ? data.top_users[2]?.entregue : 0
       },
       mensalReport: {
-        // reunions: data && dashType === 'admin' ? data.top_users[2]?.reuniao : 0,
-        reunions: 2,
+        reunions: data && dashType === 'admin' ? data.top_users[2]?.reuniao : 0,
         reports: '1'
       }
-    }
-  ];
-
-  const jobsDataList: JobsList[] = [
-    {
-      id_job: 0,
-      client_name: 'Terex',
-      team: 'Marina',
-      job_name: 'Post no Insta',
-      job_status: 'Em andamento',
-      job_type: 'Criação do zero'
-    },
-    {
-      id_job: 1,
-      client_name: 'Tropa',
-      team: 'Daniel',
-      job_name: 'Planejamento',
-      job_status: 'Em andamento',
-      job_type: 'Alteração cliente'
-    },
-    {
-      id_job: 2,
-      client_name: 'Takao',
-      team: 'Marcos',
-      job_name: 'Planejamento',
-      job_status: 'Em andamento',
-      job_type: 'Alteração interna'
-    },
-    {
-      id_job: 3,
-      client_name: 'Iveco',
-      team: 'Milena',
-      job_name: 'Projeto X',
-      job_status: 'Em andamento',
-      job_type: 'Criação do zero'
-    },
-    {
-      id_job: 4,
-      client_name: 'Emerson',
-      team: 'Derick',
-      job_name: 'Job X',
-      job_status: 'Em andamento',
-      job_type: 'Criação do zero'
-    },
-    {
-      id_job: 5,
-      client_name: 'Emerson',
-      team: 'Beatriz',
-      job_name: 'Post no Insta',
-      job_status: 'Em andamento',
-      job_type: 'Criação do zero'
-    },
-    {
-      id_job: 6,
-      client_name: 'Tropa',
-      team: 'Derick',
-      job_name: 'Planejamento',
-      job_status: 'Na fila',
-      job_type: 'Criação do zero'
-    },
-    {
-      id_job: 7,
-      client_name: 'Takao',
-      team: 'Milena',
-      job_name: 'Planejamento',
-      job_status: 'Na fila',
-      job_type: 'Alteração interna'
-    },
-    {
-      id_job: 8,
-      client_name: 'Iveco',
-      team: 'Daniel',
-      job_name: 'Planejamento',
-      job_status: 'Na fila',
-      job_type: 'Criação do zero'
-    },
-    {
-      id_job: 9,
-      client_name: 'Genie',
-      team: 'Marina',
-      job_name: 'Job Y',
-      job_status: 'Na fila',
-      job_type: 'Criação do zero'
-    }
-  ];
-
-  const jobsListIndividual = [
-    {
-      id_job: 0,
-      client_name: 'Terex',
-      job_name: 'Post no Insta',
-      job_status: 'Em andamento',
-      job_type: 'Criação do zero'
-    },
-    {
-      id_job: 1,
-      client_name: 'Tropa',
-      job_name: 'Planejamento',
-      job_status: 'Em andamento',
-      job_type: 'Alteração cliente'
-    },
-    {
-      id_job: 2,
-      client_name: 'Takao',
-      job_name: 'Planejamento',
-      job_status: 'Em andamento',
-      job_type: 'Alteração interna'
-    },
-    {
-      id_job: 3,
-      client_name: 'Iveco',
-      job_name: 'Projeto X',
-      job_status: 'Em andamento',
-      job_type: 'Criação do zero'
-    },
-    {
-      id_job: 4,
-      client_name: 'Emerson',
-      job_name: 'Job X',
-      job_status: 'Em andamento',
-      job_type: 'Criação do zero'
-    }
-  ];
-
-  const rankingCreativeTeam = [
-    {
-      id_creative: 0,
-      name: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.tenant_name : '',
-      job_total: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.title : '',
-      hours_total: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.name : '',
-      jobs_no_change: data && dashType === 'admin' ? data.tarefas_pendentes_envio[0]?.name : ''
     }
   ];
 
@@ -1590,8 +1299,7 @@ export default function Dashboard() {
             <tbody>
               {data &&
                 dashType === 'admin' &&
-                // data?.top_fee_inverso.slice(0, 10).map((row: TopFeeSpot, index: number) => (
-                topClientFeeDetails.map((row: TopFeeSpot, index: number) => (
+                data?.top_fee_inverso.slice(0, 10).map((row: TopFeeSpot, index: number) => (
                   <tr key={index}>
                     <td>{row.client_name}</td>
                     <td>{row.atendimento ? row.atendimento : '-----'}</td>
@@ -1634,8 +1342,7 @@ export default function Dashboard() {
             <tbody>
               {data &&
                 dashType === 'admin' &&
-                // data.top_spot_inverso.map((row: TopFeeSpot, index: number) => (
-                topClientFeeDetails.map((row: TopFeeSpot, index: number) => (
+                data.top_spot_inverso.map((row: TopFeeSpot, index: number) => (
                   <tr key={index}>
                     <td>{row.client_name}</td>
                     <td>{row.atendimento ? row.atendimento : '-----'}</td>
@@ -1717,8 +1424,7 @@ export default function Dashboard() {
                 </thead>
 
                 <tbody>
-                  {/* {topExternalChangeHours.map((row, index: number) => ( */}
-                  {topInternalChangesHours.map((row, index: number) => (
+                  {topExternalChangeHours.map((row, index: number) => (
                     <tr key={index}>
                       <td>{row.name ? row.name : '-----'}</td>
                       <td>{row.Total ? row.Total : 0}</td>
@@ -2039,7 +1745,7 @@ export default function Dashboard() {
           </CardBase>
 
           {/* Monitoramento Atendimento */}
-          {/* <CardBase>
+          <CardBase>
             <div className="card-title">Monitoramento Do Time - Ranking Atendimento</div>
 
             <TableDefault title="" titleSize="14px" titleWeight="700" titleColor="#222">
@@ -2091,10 +1797,10 @@ export default function Dashboard() {
                 </tr>
               </tbody>
             </TableDefault>
-          </CardBase> */}
+          </CardBase>
 
           {/* Monitoramento criativo */}
-          {/* <CardBase>
+          <CardBase>
             <div className="card-title">Monitoramento Do Time - Ranking Criativo</div>
 
             <TableDefault title="" titleSize="14px" titleWeight="700" titleColor="#222">
@@ -2109,18 +1815,20 @@ export default function Dashboard() {
               </thead>
 
               <tbody>
-                {data.time_criacao.map((row: any) => (
+                {data.time_criacao.map((row: any, index: number) => (
                   <tr key={row.user_id}>
-                    <td>1º</td>
-                    <td>?????</td>
-                    <td>??</td>
-                    <td>???H</td>
-                    <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
+                    <td>{index + 1}º</td>
+                    <td>{row.name}</td>
+                    <td>{row.total_tarefas}</td>
+                    <td>{row.total_tempo}H</td>
+                    <td style={{ color: '#00BFA5', fontWeight: '700' }}>
+                      {row.aprovadas_sem_revisao}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </TableDefault>
-          </CardBase> */}
+          </CardBase>
 
           {/* Monitoramento jobs entregues */}
           <TableDefault
@@ -2171,7 +1879,7 @@ export default function Dashboard() {
           </TableDefault>
 
           {/* Performance por cliente - Tabela */}
-          {/* <TableDefault
+          <TableDefault
             title="Performance por cliente"
             titleSize="14px"
             titleWeight="700"
@@ -2218,10 +1926,10 @@ export default function Dashboard() {
                 <td>?????</td>
               </tr>
             </tbody>
-          </TableDefault> */}
+          </TableDefault>
 
           {/* Performance por cliente */}
-          {/* <CardBase>
+          <CardBase>
             <div className="title-with-back">CLIENTE: JEEP</div>
 
             <BulletsClientWrapper>
@@ -2288,7 +1996,7 @@ export default function Dashboard() {
                 </div>
               </BulletPointInfos>
             </BulletsClientWrapper>
-          </CardBase> */}
+          </CardBase>
         </SectionDefault>
       )}
 
@@ -2324,7 +2032,7 @@ export default function Dashboard() {
               </thead>
 
               <tbody>
-                {jobsData.slice(0, 5).map((row) => (
+                {data?.tarefas_pendentes_envio.slice(0, 5).map((row: any) => (
                   <tr key={row.id_job}>
                     <td>{row.client_name}</td>
                     <td>{row.job_name}</td>
@@ -2359,7 +2067,7 @@ export default function Dashboard() {
               </thead>
 
               <tbody>
-                {jobsAwaitingClient.map((row) => (
+                {data?.tarefas_aguardando_aprovacao.slice(0, 5).map((row: any) => (
                   <tr key={row.id_job}>
                     <td>{row.client_name}</td>
                     <td>{row.job_name}</td>
@@ -2395,11 +2103,11 @@ export default function Dashboard() {
               </thead>
 
               <tbody>
-                {jobsData.map((row) => (
-                  <tr key={row.id_job}>
-                    <td>{row.client_name}</td>
-                    <td>{row.job_name}</td>
-                    <td>{row.job_flow}</td>
+                {data.performace_tenant.map((row: any, index: number) => (
+                  <tr key={index}>
+                    <td>{row.tenant}</td>
+                    <td>{row.task}</td>
+                    <td>{row.flow}</td>
                     <td
                       style={{
                         display: 'flex',
@@ -2409,7 +2117,7 @@ export default function Dashboard() {
                         height: '49px'
                       }}
                     >
-                      {row.job_status}
+                      {row.status}
                     </td>
                   </tr>
                 ))}
@@ -2418,74 +2126,76 @@ export default function Dashboard() {
           </CardBase>
 
           {/* Performance por Cliente */}
-          <CardBase>
-            <div className="title-with-back">CLIENTE: JEEP</div>
+          {data?.overview_best_tenants.map((row: OverviewTenant, index: number) => (
+            <CardBase key={index}>
+              <div className="title-with-back">CLIENTE: {row.name}</div>
 
-            <BulletsClientWrapper>
-              <BulletPointInfos>
-                <div className="bullet">
-                  Total jobs: <span>32</span>
-                </div>
-                <div className="bullet">
-                  Total horas: <span>26h</span>
-                </div>
-                <div className="bullet">
-                  Alteração interna: <span>12</span>
-                </div>
-                <div className="bullet">
-                  Alteração cliente: <span>11</span>
-                </div>
-                <div className="bullet">
-                  Reuniões: <span>3</span>
-                </div>
-                <div className="bullet">
-                  Reposts enviados: <span>3</span>
-                </div>
-              </BulletPointInfos>
-
-              <BulletPointInfos>
-                <div className="bullet">
-                  Jobs em andamento: <span>3</span>
-                </div>
-                <div className="bullet">
-                  Pendente de aprovação: <span>21</span>
-                </div>
-                <div className="bullet">
-                  Pendente de envio: <span>11</span>
-                </div>
-                <div className="bullet">
-                  Tempo médio de aprovação: <span>3 dias</span>
-                </div>
-              </BulletPointInfos>
-
-              <BulletPointInfos>
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '12px',
-                    marginBottom: '22px'
-                  }}
-                >
+              <BulletsClientWrapper>
+                <BulletPointInfos>
                   <div className="bullet">
-                    Contrato Fee: <span>40h</span>
+                    Total jobs: <span>{row.quantidade_tarefas}</span>
                   </div>
                   <div className="bullet">
-                    Saldo Contrato: <span>14h</span>
+                    Total horas: <span>{row.hora}h</span>
                   </div>
-                </div>
+                  <div className="bullet">
+                    Alteração interna: <span>???</span>
+                  </div>
+                  <div className="bullet">
+                    Alteração cliente: <span>???</span>
+                  </div>
+                  <div className="bullet">
+                    Reuniões: <span>{row.meetings}</span>
+                  </div>
+                  <div className="bullet">
+                    Reports enviados: <span>???</span>
+                  </div>
+                </BulletPointInfos>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <BulletPointInfos>
                   <div className="bullet">
-                    Contrato Spot: <span>4h</span>
+                    Jobs em andamento: <span>{row.em_andamento}</span>
                   </div>
                   <div className="bullet">
-                    Saldo Spot: <span>1h</span>
+                    Pendente de aprovação: <span>{row.aguardando_aprovacao}</span>
                   </div>
-                </div>
-              </BulletPointInfos>
-            </BulletsClientWrapper>
-          </CardBase>
+                  <div className="bullet">
+                    Pendente de envio: <span>{row.pendente}</span>
+                  </div>
+                  <div className="bullet">
+                    Tempo médio de aprovação: <span>??? dias</span>
+                  </div>
+                </BulletPointInfos>
+
+                <BulletPointInfos>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '12px',
+                      marginBottom: '22px'
+                    }}
+                  >
+                    <div className="bullet">
+                      Contrato Fee: <span>{row.contratos_fee.total_tempo}</span>
+                    </div>
+                    <div className="bullet">
+                      Saldo Contrato: <span>{row.contratos_fee.saldo}</span>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div className="bullet">
+                      Contrato Spot: <span>{row.contratos_spot.total_tempo}</span>
+                    </div>
+                    <div className="bullet">
+                      Saldo Spot: <span>{row.contratos_spot.saldo}</span>
+                    </div>
+                  </div>
+                </BulletPointInfos>
+              </BulletsClientWrapper>
+            </CardBase>
+          ))}
 
           {/* Top clientes Jobs/Horas */}
           <CardBase>
@@ -2498,7 +2208,12 @@ export default function Dashboard() {
                 title="Top clientes (Jobs)"
                 height=""
               />
-              <BarChartGrafic data={[]} isVertical={true} title="Top clientes (Horas)" height="" />
+              <BarChartGrafic
+                data={topTenantHours}
+                isVertical={true}
+                title="Top clientes (Horas)"
+                height=""
+              />
             </div>
           </CardBase>
         </SectionDefault>
@@ -2538,11 +2253,11 @@ export default function Dashboard() {
               </thead>
 
               <tbody>
-                {jobsDataList?.map((row: JobsList) => (
-                  <tr key={row.id_job}>
-                    <td>{row.client_name}</td>
-                    <td>{row.team}</td>
-                    <td>{row.job_name}</td>
+                {data.listagem_de_jobs?.map((row: JobsList) => (
+                  <tr key={row.task_id}>
+                    <td>{row.tenant}</td>
+                    <td>???</td>
+                    <td>{row.task}</td>
                     <td
                       style={{
                         display: 'flex',
@@ -2554,17 +2269,17 @@ export default function Dashboard() {
                     >
                       <JobStatus
                         className={
-                          row.job_status === 'Em andamento'
+                          row.status === 'Em andamento'
                             ? 'status progress'
-                            : row.job_status === 'Na fila'
+                            : row.status === 'Na Fila'
                             ? 'status'
                             : 'status finished'
                         }
                       >
-                        {row.job_status}
+                        {row.status}
                       </JobStatus>
                     </td>
-                    <td>{row.job_type}</td>
+                    <td>{row.natureza}</td>
                   </tr>
                 ))}
               </tbody>
@@ -2574,13 +2289,14 @@ export default function Dashboard() {
           {/* Monitoramento do time individual */}
           <CardBase>
             <div className="card-title">Monitoramento do time individual</div>
-            {[0, 1].map((row: any, index: number) => (
+            {data?.monitoramento_time_individual.map((row: any, index: number) => (
               <UserTeamCard key={index}>
                 <div className="user-section">
                   <div className="user-image" style={{ backgroundImage: `url(${PersonTest})` }} />
                   <div className="user-infos">
-                    Marina Chriguer
-                    <span>Clientes alocados: 12</span>
+                    {row.name}
+                    {/* <span>Clientes alocados: {row.alocados}</span> */}
+                    <span>Clientes alocados: ??</span>
                   </div>
                 </div>
 
@@ -2596,7 +2312,7 @@ export default function Dashboard() {
                     </thead>
 
                     <tbody>
-                      {jobsListIndividual?.map((row) => (
+                      {row.tarefas?.map((row: any) => (
                         <tr key={row.id_job}>
                           <td>{row.client_name}</td>
                           <td>{row.job_name}</td>
@@ -2631,7 +2347,7 @@ export default function Dashboard() {
                 <UserJobs>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <NumberCard height_size={'155px'}>
-                      <CountUp start={0} end={122} delay={0}>
+                      <CountUp start={0} end={row.total_hours} delay={0}>
                         {({ countUpRef }) => (
                           <div>
                             <span className="numberCard" ref={countUpRef} />
@@ -2679,113 +2395,93 @@ export default function Dashboard() {
             </thead>
 
             <tbody>
-              <tr>
-                <td>21 Live | Cliente</td>
-                <td>Amanda</td>
-                <td>Teste</td>
-                <td>Entregue</td>
-                <td>3</td>
-                <td>5H</td>
-                <td>4H</td>
-                <td>15/10/2023</td>
-                <td>17/10/2023</td>
-              </tr>
-              <tr>
-                <td>Metso</td>
-                <td>Beatriz</td>
-                <td>Ticket teste</td>
-                <td>Entregue</td>
-                <td>2</td>
-                <td>3H</td>
-                <td>3H</td>
-                <td>15/10/2023</td>
-                <td>18/10/2023</td>
-              </tr>
-              <tr>
-                <td>Iveco</td>
-                <td>Luana</td>
-                <td>TS-TSK-02-TICKET</td>
-                <td>Entregue</td>
-                <td>5</td>
-                <td>1H</td>
-                <td>
-                  <TdColor className="color">3H</TdColor>
-                </td>
-                <td>12/10/2023</td>
-                <td>16/10/2023</td>
-              </tr>
+              {data?.jobs_finalizados.map((row: any, index: number) => (
+                <tr key={index}>
+                  <td>21 Live | Cliente</td>
+                  <td>Amanda</td>
+                  <td>Teste</td>
+                  <td>Entregue</td>
+                  <td>3</td>
+                  <td>5H</td>
+                  <td>4H</td>
+                  <td>15/10/2023</td>
+                  <td>17/10/2023</td>
+                </tr>
+              ))}
             </tbody>
           </TableDefault>
 
           {/* Performance por cliente */}
-          <CardBase>
-            <div className="title-with-back">CLIENTE: JEEP</div>
+          {data?.overview_best_tenants.map((row: OverviewTenant, index: number) => (
+            <CardBase key={index}>
+              <div className="title-with-back">CLIENTE: {row.name}</div>
 
-            <BulletsClientWrapper>
-              <BulletPointInfos>
-                <div className="bullet">
-                  Total jobs: <span>32</span>
-                </div>
-                <div className="bullet">
-                  Total horas: <span>26h</span>
-                </div>
-                <div className="bullet">
-                  Alteração interna: <span>12</span>
-                </div>
-                <div className="bullet">
-                  Alteração cliente: <span>11</span>
-                </div>
-                <div className="bullet">
-                  Reuniões: <span>3</span>
-                </div>
-                <div className="bullet">
-                  Reposts enviados: <span>3</span>
-                </div>
-              </BulletPointInfos>
-
-              <BulletPointInfos>
-                <div className="bullet">
-                  Jobs em andamento: <span>3</span>
-                </div>
-                <div className="bullet">
-                  Pendente de aprovação: <span>21</span>
-                </div>
-                <div className="bullet">
-                  Pendente de envio: <span>11</span>
-                </div>
-                <div className="bullet">
-                  Tempo médio de aprovação: <span>3 dias</span>
-                </div>
-              </BulletPointInfos>
-
-              <BulletPointInfos>
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '12px',
-                    marginBottom: '22px'
-                  }}
-                >
+              <BulletsClientWrapper>
+                <BulletPointInfos>
                   <div className="bullet">
-                    Contrato Fee: <span>40h</span>
+                    Total jobs: <span>{row.quantidade_tarefas}</span>
                   </div>
                   <div className="bullet">
-                    Saldo Contrato: <span>14h</span>
+                    Total horas: <span>{row.hora}h</span>
                   </div>
-                </div>
+                  <div className="bullet">
+                    Alteração interna: <span>???</span>
+                  </div>
+                  <div className="bullet">
+                    Alteração cliente: <span>???</span>
+                  </div>
+                  <div className="bullet">
+                    Reuniões: <span>{row.meetings}</span>
+                  </div>
+                  <div className="bullet">
+                    Reports enviados: <span>???</span>
+                  </div>
+                </BulletPointInfos>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <BulletPointInfos>
                   <div className="bullet">
-                    Contrato Spot: <span>4h</span>
+                    Jobs em andamento: <span>{row.em_andamento}</span>
                   </div>
                   <div className="bullet">
-                    Saldo Spot: <span>1h</span>
+                    Pendente de aprovação: <span>{row.aguardando_aprovacao}</span>
                   </div>
-                </div>
-              </BulletPointInfos>
-            </BulletsClientWrapper>
-          </CardBase>
+                  <div className="bullet">
+                    Pendente de envio: <span>{row.pendente}</span>
+                  </div>
+                  <div className="bullet">
+                    Tempo médio de aprovação: <span>??? dias</span>
+                  </div>
+                </BulletPointInfos>
+
+                <BulletPointInfos>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '12px',
+                      marginBottom: '22px'
+                    }}
+                  >
+                    <div className="bullet">
+                      Contrato Fee: <span>{row.contratos_fee.total_tempo}</span>
+                    </div>
+                    <div className="bullet">
+                      Saldo Contrato: <span>{row.contratos_fee.saldo}</span>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div className="bullet">
+                      Contrato Spot: <span>{row.contratos_spot.total_tempo}</span>
+                    </div>
+                    <div className="bullet">
+                      Saldo Spot: <span>{row.contratos_spot.saldo}</span>
+                    </div>
+                  </div>
+                </BulletPointInfos>
+              </BulletsClientWrapper>
+            </CardBase>
+          ))}
         </SectionDefault>
       )}
 
@@ -2804,14 +2500,30 @@ export default function Dashboard() {
           {/* Top cards */}
           <OperatorTopWrapper>
             <SmallCardsWrapper>
-              <CardDataDash data={32} type="jobSpot" description="Pautas entregues" />
-              <CardDataDash data={112} type="creation" description="Horas de criação" />
-              <CardDataDash data={6} type="info" description="Alt. Internas" />
-              <CardDataDash data={8} type="danger" description="Alt. Clientes" />
-              <CardDataDash data={12} type="warning" description="Horas disponíveis" />
-              <CardDataDash data={4} type="jobs" description="Jobs na fila" />
-              <CardDataDash data={12} type="newFee" description="Total de produtos" />
-              <CardDataDash data={23} type="warning" description="Total horas na fila" />
+              <CardDataDash data={999} type="jobSpot" description="Pautas entregues" />
+              <CardDataDash
+                data={data?.horas_realizadas.split(':')[0]}
+                type="creation"
+                description="Horas de criação"
+              />
+              <CardDataDash
+                data={data?.alteracao_interna}
+                type="info"
+                description="Alt. Internas"
+              />
+              <CardDataDash
+                data={data?.alteracao_externa}
+                type="danger"
+                description="Alt. Clientes"
+              />
+              <CardDataDash data={999} type="warning" description="Horas disponíveis" />
+              <CardDataDash data={data?.jobs_na_fila} type="jobs" description="Jobs na fila" />
+              <CardDataDash data={data?.produtos} type="newFee" description="Total de produtos" />
+              <CardDataDash
+                data={data?.horas_na_fila.split(':')[0]}
+                type="warning"
+                description="Total horas na fila"
+              />
             </SmallCardsWrapper>
           </OperatorTopWrapper>
 
