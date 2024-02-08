@@ -216,6 +216,7 @@ export default function CreateTasks() {
   const [error, setError] = useState<StateProps>({});
   const [errorCategory, setErrorCategory] = useState<any[]>([]);
   const [errorDeliveryDate, setErrorDeliveryDate] = useState<any[]>([]);
+  const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
   // const [addDeliveries, setAddDeliveries] = useState<boolean>(false);
   // const newDate = new Date();
   const [DTOForm, setDTOForm] = useState<ITaskCreate>({
@@ -456,6 +457,18 @@ export default function CreateTasks() {
         ...prevState,
         ['tenant_id']: location.state.tenant_id
       }));
+
+      const selectedClient: any = dataClient?.filter(
+        (obj: any) => obj.tenant_id === location.state.tenant_id
+      );
+
+      if (selectedClient) {
+        setSelectedSummaryInfos((prevState: any) => ({
+          ...prevState,
+          ['client']: selectedClient[0]
+        }));
+      }
+
       setDTOForm((prevState: any) => ({
         ...prevState,
         ['ticket_id']: location.state.ticket_id
@@ -490,7 +503,7 @@ export default function CreateTasks() {
 
     const ticketInfo = localStorage.getItem('@live:ticket');
     setTicketAsk(ticketInfo);
-  }, [location]);
+  }, [location, dataClient]);
 
   useEffect(() => {
     if (DTOForm.tenant_id && createStep === 1) {
@@ -1340,6 +1353,7 @@ export default function CreateTasks() {
     //   );
     // }
   };
+
   const handleCheckQuantity = (quantity: any, product: IProduct) => {
     // console.log('log do product check quantity', quantity, product);
     const totalProductTime = multiplyTime(product.minutes, quantity);
@@ -1510,6 +1524,8 @@ export default function CreateTasks() {
           delete createNewData.ticket_id;
         }
 
+        setLoadingSubmit(true);
+
         if (location.state !== null && location.state.task_id) {
           await api.put(`tasks/${location.state.task_id}`, createNewData);
         } else {
@@ -1559,6 +1575,8 @@ export default function CreateTasks() {
         if (ticket_id === '') {
           delete createNewData.ticket_id;
         }
+
+        setLoadingSubmit(true);
 
         if (location.state !== null && location.state.task_id) {
           await api.put(`tasks/${location.state.task_id}`, createNewData);
@@ -1613,6 +1631,8 @@ export default function CreateTasks() {
             delete createNewData.requester_id;
           }
 
+          setLoadingSubmit(true);
+
           if (location.state !== null && location.state.task_id) {
             await api.put(`tasks/${location.state.task_id}`, createNewData);
           } else {
@@ -1665,6 +1685,8 @@ export default function CreateTasks() {
             delete createNewData.ticket_id;
           }
 
+          setLoadingSubmit(true);
+
           if (location.state !== null && location.state.task_id) {
             await api.put(`tasks/${location.state.task_id}`, createNewData);
           } else {
@@ -1678,6 +1700,7 @@ export default function CreateTasks() {
         title: 'Sucesso',
         description: 'Tarefa criada com sucesso!'
       });
+      setLoadingSubmit(false);
       navigate('/tarefas');
 
       // setFinishModal(true);
@@ -2908,6 +2931,7 @@ export default function CreateTasks() {
                   handleSetUserWithoutSchedule();
                   setModalWithoutSchedule(false);
                 }}
+                loading={loadingSubmit}
               >
                 Escolher
               </ButtonDefault>
