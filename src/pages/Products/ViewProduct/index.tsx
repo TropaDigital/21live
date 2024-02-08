@@ -1646,8 +1646,8 @@ export default function ViewProductsDeliveries() {
   }
 
   const handleShowFiles = (product: ProductProps) => {
-    console.log('log do product selected =>', product);
-    if (product.task_file_id !== '') {
+    // console.log('log do product selected =>', product);
+    if (dataTask?.files.length > 0) {
       setModalPreviewImage({
         isOpen: true,
         productId: product.products_delivery_id
@@ -2118,6 +2118,7 @@ export default function ViewProductsDeliveries() {
               typeOfPlay={typeOfPlay}
               uploadProduct={handleUploadForProduct}
               viewFile={handleShowFiles}
+              fileList={dataTask?.files}
               uploadEnabled={enableUpload}
             />
           )}
