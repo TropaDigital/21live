@@ -718,7 +718,7 @@ export default function ListMeeting() {
             <SelectImage
               label={'Cliente'}
               dataOptions={clientsOptions}
-              value={formData.tenent_id}
+              value={formData.tenant_id}
               onChange={handleChangeClient}
               placeholder={'Selecione o cliente...'}
             />

@@ -81,6 +81,7 @@ interface DTOProps {
   products: [];
   time: string;
   email: string;
+  client_name?: string;
   team: [];
 }
 
@@ -749,7 +750,9 @@ export default function CreateProject() {
 
                     <SummaryTaskInfo>
                       <div className="title-info">Cliente:</div>
-                      <div className="info">{selectedClient.name}</div>
+                      <div className="info">
+                        {selectedClient?.name ? selectedClient?.name : DTOForm?.client_name}
+                      </div>
                     </SummaryTaskInfo>
 
                     <SummaryTaskInfo>
@@ -759,7 +762,9 @@ export default function CreateProject() {
 
                     <SummaryTaskInfo>
                       <div className="title-info">Tipo do contrato:</div>
-                      <div className="info">{DTOForm?.contract_type}</div>
+                      <div className="info">
+                        {DTOForm?.contract_type === 'product' ? 'PRODUTO' : DTOForm?.contract_type}
+                      </div>
                     </SummaryTaskInfo>
 
                     <SummaryTaskInfo>
@@ -879,7 +884,7 @@ export default function CreateProject() {
                     onChange={(option) => onChange(option)}
                     defaultValue={defaultOptionsTeam?.map((row) => ({
                       value: row.user_id,
-                      label: row.name
+                      label: `${row.name} - ${row.function}`
                     }))}
                     alert="Selecione pelo menos um membro para a equipe"
                   />
@@ -898,6 +903,7 @@ export default function CreateProject() {
                   </ButtonDefault>
                   <ButtonDefault
                     onClick={handleOnSubmit}
+                    loading={loading}
                     typeButton={loading ? 'blocked' : 'primary'}
                     disabled={loading}
                   >

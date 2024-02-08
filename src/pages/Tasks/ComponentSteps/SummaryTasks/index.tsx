@@ -152,9 +152,12 @@ export default function SummaryTasks({
   useEffect(() => {
     if (deliveryArrayHours.length > 0) {
       estimatedtotalTime(totalArrayHours);
-    } else {
-      estimatedtotalTime(sumTimes(productsHoursArray));
     }
+    // else {
+    //   console.log('log do productHours =>', productsHoursArray);
+    //   console.log('log do selectedProds =>', selectedProducts);
+    //   // estimatedtotalTime(sumTimes(productsHoursArray));
+    // }
   }, [totalArrayHours]);
 
   useEffect(() => {
