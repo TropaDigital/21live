@@ -1105,6 +1105,7 @@ export default function ViewProductsDeliveries() {
         console.log('log do checkFlow 1 - Dismember all');
       } else if (
         hasToDismemberTask &&
+        !mandatoryUpload &&
         checkType === 'next' &&
         dataTask.status !== 'Alteração Externa' &&
         dataTask.status !== 'Alteração Interna' &&
@@ -1168,11 +1169,13 @@ export default function ViewProductsDeliveries() {
           setModalSendToUser(true);
           setShowHoursBack(true);
           setModalReturnFlow(false);
+          stop();
         }
         if (response.data.result[0].show_hours === 'false') {
           handleNextUser('back');
           setShowHoursBack(true);
           setModalReturnFlow(false);
+          stop();
         }
       }
 
@@ -1308,6 +1311,7 @@ export default function ViewProductsDeliveries() {
       const response = await api.put(`/task/return-task`, returnParams);
 
       if (response.data.status === 'success') {
+        stop();
         navigate('/minhas-tarefas');
       }
 
