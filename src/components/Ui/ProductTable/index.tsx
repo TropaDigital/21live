@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react';
 // Icons
 import { IconText } from '../../../assets/icons';
 import { BiPencil, BiShow } from 'react-icons/bi';
+import { FaUpload } from 'react-icons/fa';
+import { BsChatText } from 'react-icons/bs';
 
 // Styles
 import {
@@ -30,8 +32,8 @@ import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 
 // Hooks
 import { useAuth } from '../../../hooks/AuthContext';
-import { FaUpload } from 'react-icons/fa';
-import { BsChatText } from 'react-icons/bs';
+
+// Components
 import ModalDefault from '../ModalDefault';
 import ButtonDefault from '../../Buttons/ButtonDefault';
 
@@ -47,6 +49,7 @@ interface ProductTableProps {
   uploadEnabled: boolean;
   uploadProduct: (value: any) => void;
   viewFile: (value: any) => void;
+  fileList?: any[];
 }
 
 export default function ProductTable({
@@ -60,7 +63,8 @@ export default function ProductTable({
   typeOfPlay,
   uploadProduct,
   uploadEnabled,
-  viewFile
+  viewFile,
+  fileList
 }: ProductTableProps) {
   const { user } = useAuth();
   const [workFor, setWorkFor] = useState<string>('schedule');
@@ -284,7 +288,16 @@ export default function ProductTable({
                   </div>
                 </td>
                 <td onClick={() => viewFile(row)}>
-                  <div className={row.task_file_id !== '' ? 'view' : 'view block'}>
+                  <div
+                    className={
+                      fileList &&
+                      fileList.filter(
+                        (obj: any) => obj.products_delivery_id === row.products_delivery_id
+                      ).length > 0
+                        ? 'view'
+                        : 'view block'
+                    }
+                  >
                     <BiShow size={20} />
                   </div>
                 </td>
