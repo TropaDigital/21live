@@ -429,13 +429,13 @@ export default function WorkingProduct({
     }
   }
 
-  const handleShowLogs = () => {
-    if (logIsOn) {
+  const handleShowLogs = (e: any) => {
+    if (e.target.checked) {
+      setLogIsOn(true);
+      getComments('system');
+    } else {
       setLogIsOn(false);
       getComments('');
-    } else {
-      getComments('system');
-      setLogIsOn(true);
     }
   };
 
@@ -763,7 +763,7 @@ export default function WorkingProduct({
         <TaskTab
           onClick={(e: any) => {
             setSelectedTab(e.target.innerText);
-            getComments('system');
+            getComments('');
           }}
           className={selectedTab === 'Comentários' ? 'active' : ''}
         >
