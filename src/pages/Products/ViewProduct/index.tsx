@@ -313,6 +313,16 @@ export default function ViewProductsDeliveries() {
       ? hasTicketInteraction?.filter((obj: any) => obj.status === 'pass')
       : [];
 
+  let conditionExtra = true;
+
+  hasAllBeenRejected.map((obj: any) => {
+    files.map((prod: any) => {
+      if (prod.status === '' && prod.created > obj.created) {
+        conditionExtra = false;
+      }
+    });
+  });
+
   // const hasMissingFilesToApprove = dataTask?.deliverys.some(hasProductsBeenEvaluated);
 
   const fetchClockInfo = useCallback(async () => {
@@ -1098,6 +1108,7 @@ export default function ViewProductsDeliveries() {
         checkType === 'next' &&
         dataTask?.status !== 'Aguardando Aprovação' &&
         dataTask.status !== 'Alteração Externa' &&
+        conditionExtra &&
         uploadClient
       ) {
         setModalReturnAllRejected(true);
@@ -1110,6 +1121,7 @@ export default function ViewProductsDeliveries() {
         dataTask.status !== 'Alteração Externa' &&
         dataTask.status !== 'Alteração Interna' &&
         dataTask?.status !== 'Aguardando Aprovação' &&
+        conditionExtra &&
         !hasDismemberedProduct
       ) {
         setModalDismemberment(true);
@@ -1657,7 +1669,9 @@ export default function ViewProductsDeliveries() {
 
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
-  }, [typeOfPlay]);
+    // console.log('log allRejected', hasAllBeenRejected);
+    // console.log('log ticket', hasTicketInteraction);
+  }, [typeOfPlay, hasAllBeenRejected, hasTicketInteraction]);
 
   return (
     <ContainerDefault>
