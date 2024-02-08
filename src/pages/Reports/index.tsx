@@ -27,7 +27,7 @@ import { TableDefault } from '../../components/TableDefault';
 // Icons
 import { IoMdDownload } from 'react-icons/io';
 import { MdOutlineImageNotSupported } from 'react-icons/md';
-import { IoMailOutline } from 'react-icons/io5';
+import { FiSend } from 'react-icons/fi';
 
 // Libraries
 import html2canvas from 'html2canvas';
@@ -239,8 +239,8 @@ export default function MonthlyReport() {
       <HeaderPage title="Relatório">
         <HeaderBtns>
           <ButtonDefault typeButton="success" isOutline onClick={printAndSend}>
-            Enviar por email
-            <IoMailOutline />
+            Enviar para a área do Cliente
+            <FiSend />
           </ButtonDefault>
 
           <ButtonDefault typeButton="primary" isOutline onClick={printDocument}>
