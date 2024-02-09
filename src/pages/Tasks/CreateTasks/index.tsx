@@ -447,11 +447,17 @@ export default function CreateTasks() {
       // console.log('log do locationState =>', location.state);
       getProjects(location.state.tenant_id);
 
-      // const entriesObject = Object.entries(location.state);
-      // const descriptionObject = entriesObject
-      //   .map(([key, value]) => `${key}: ${value}`)
-      //   .join('<br/>');
-      // console.log('log do descriptionObject =>', descriptionObject);
+      const { interactions, fields, files, ...otherFields } = location.state;
+
+      const filteredEntries = Object.entries(otherFields).filter(([key, value]) => {
+        return value !== null && value !== undefined && value !== '';
+      });
+
+      const descriptionObject = filteredEntries
+        .map(([key, value]) => `${key}: ${value}`)
+        .join('<br/><br/>');
+
+      console.log('log do descriptionObject =>', descriptionObject);
 
       setDTOForm((prevState: any) => ({
         ...prevState,
@@ -479,7 +485,7 @@ export default function CreateTasks() {
       }));
       setDTOForm((prevState: any) => ({
         ...prevState,
-        ['description']: location.state.info
+        ['description']: descriptionObject
       }));
       setDTOForm((prevState: any) => ({
         ...prevState,
