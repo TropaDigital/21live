@@ -363,17 +363,6 @@ export const ButtonIcon = styled.div`
     fill: #344054;
   }
 
-  &.delete {
-    &:hover {
-      svg {
-        fill: var(--error-700);
-        /* stroke: #0046b5; */
-      }
-      background: var(--error-100);
-      color: #fff;
-    }
-  }
-
   &.download {
     &:hover {
       svg {

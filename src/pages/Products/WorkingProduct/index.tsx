@@ -84,6 +84,8 @@ import { formatBytes } from '../../../utils/convertBytes';
 // types
 import { StepTimeline, UploadedFilesProps } from '../../../types';
 import { MotiveInfos } from '../../../components/Ui/ProductTable/styles';
+import Alert from '../../../components/Ui/Alert';
+import ButtonTable from '../../../components/Buttons/ButtonTable';
 
 interface WorkingProductProps {
   productDeliveryId?: any;
@@ -1170,12 +1172,13 @@ export default function WorkingProduct({
                               <FaDownload />
                             </ButtonIcon>
 
-                            <ButtonIcon
-                              className="delete"
-                              onClick={() => handleDeleteFile(row.task_file_id)}
+                            <Alert
+                              title="Atenção"
+                              subtitle="Certeza que gostaria de deletar este arquivo? Ao excluir esta ação não poderá ser desfeita."
+                              confirmButton={() => handleDeleteFile(row.task_id)}
                             >
-                              <BiTrash size={20} />
-                            </ButtonIcon>
+                              <ButtonTable typeButton="delete" />
+                            </Alert>
                           </div>
                           {/* {productsInfo?.file_status === 'pass' && (
                               <div className="fieldTableClients">                               

@@ -47,6 +47,7 @@ interface ReportProps {
   contract: string;
   date_start: string;
   date_end: string;
+  requesters: [];
 }
 
 interface JobListProps {
@@ -98,6 +99,13 @@ interface ReportFullInfoProps {
   };
   lista_jobs_entregue: [];
   lista_jobs_aguardando: [];
+  tenant: {
+    bucket: string;
+    name: string;
+    colormain: string;
+    colorsecond: string;
+    colorhigh: string;
+  };
 }
 
 interface ProductsArray {
@@ -144,7 +152,14 @@ export default function MonthlyReport() {
       produtos: []
     },
     lista_jobs_aguardando: [],
-    lista_jobs_entregue: []
+    lista_jobs_entregue: [],
+    tenant: {
+      name: '',
+      bucket: '',
+      colorhigh: '',
+      colormain: '',
+      colorsecond: ''
+    }
   });
 
   async function getReportFullInfos() {
@@ -177,6 +192,7 @@ export default function MonthlyReport() {
 
   // print and download
   const printDocument = () => {
+    setLoading(true);
     html2canvas(inputRef.current).then((canvas) => {
       const imgData: any = canvas.toDataURL('image/png');
       const pdf = new jsPDF();
@@ -186,6 +202,7 @@ export default function MonthlyReport() {
       pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, 'FAST');
       pdf.save(`report-${moment(todayDate).format('YYYY-MM-DD')}.pdf`);
     });
+    setLoading(false);
   };
 
   // print and send report
@@ -202,16 +219,33 @@ export default function MonthlyReport() {
 
     const formData = new FormData();
     formData.append('file', blob, `report-${moment(todayDate).format('YYYY-MM-DD')}.pdf`);
+    formData.append('tenant_id', reportInfos.client_id);
 
     try {
       setLoading(true);
 
-      const response = await api.post('YOUR_ENDPOINT_URL', formData);
+      const response = await api.post('/archive/report', formData);
       console.log('File uploaded successfully', response);
+
+      const reportBody = {
+        users: reportInfos.requesters,
+        url: response.data.result.url,
+        tenant_id: reportInfos.client_id
+      };
+
+      const responseSend = await api.post(`/report/send`, reportBody);
+
+      if (responseSend.data.status === 'success') {
+        addToast({
+          type: 'success',
+          title: 'SUCESSO',
+          description: 'Report enviado com sucesso!'
+        });
+      }
 
       setLoading(false);
     } catch (error: any) {
-      console.error('Error uploading file', error);
+      console.error('Error send report', error);
       if (error.response.data.result.length !== 0) {
         error.response.data.result.map((row: any) => {
           addToast({
@@ -257,20 +291,32 @@ export default function MonthlyReport() {
           {/* Header Tenant infos */}
           <ReportHeader>
             <ClientWrapper>
-              <ClientLogo bgColor="">
-                <MdOutlineImageNotSupported size={68} />
-                {/* <div className="logo-img" style={{ backgroundImage: `url(${Logo})` }}></div> */}
+              <ClientLogo bgColor={dataInfoReport.tenant.colormain}>
+                {dataInfoReport.tenant.bucket !== '' &&
+                dataInfoReport.tenant.bucket !== undefined ? (
+                  <div
+                    className="logo-img"
+                    style={{
+                      backgroundImage: `url(https://${dataInfoReport.tenant.bucket}.s3.amazonaws.com/tenant/logo.png)`
+                    }}
+                  ></div>
+                ) : (
+                  <MdOutlineImageNotSupported
+                    size={68}
+                    color={`#${dataInfoReport.tenant.colorsecond}`}
+                  />
+                )}
               </ClientLogo>
               <ClientInfos>
                 <div className="report-title">Reporte mensal</div>
                 <div className="client-name">Cliente: {reportInfos.client_name}</div>
-                <div className="infos">Contato: ???</div>
-                <div className="infos">Atendimento: ???</div>
+                <div className="infos">Contato: -----</div>
+                <div className="infos">Atendimento: -----</div>
               </ClientInfos>
             </ClientWrapper>
 
             <ReportMonth>
-              <div className="title-info">???</div>
+              <div className="title-info">21BRZ</div>
               <div className="month">
                 Data inicial: {moment(reportInfos.date_start).format('DD/MM/YYYY')}
               </div>

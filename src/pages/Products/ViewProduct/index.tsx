@@ -1481,7 +1481,7 @@ export default function ViewProductsDeliveries() {
       const urlResponse = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = urlResponse;
-      link.setAttribute('download', `${file.file_name}`);
+      link.setAttribute('download', `${file.original_name}`);
 
       setLoading(true);
 

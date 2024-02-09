@@ -439,7 +439,7 @@ export default function ListMeeting() {
       const urlResponse = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = urlResponse;
-      link.setAttribute('download', `${file.key.split('-').pop()}`);
+      link.setAttribute('download', `${file.original_name}`);
       document.body.appendChild(link);
       link.click();
 
@@ -778,7 +778,7 @@ export default function ListMeeting() {
               onChange={(option) => onChange(option)}
               defaultValue={defaultOptionsTeam?.map((row) => ({
                 value: row.user_id,
-                label: row.name
+                label: `${row.name} - ${row.function}`
               }))}
               alert="Selecione pelo menos um Responsável"
               error={errors?.members}
