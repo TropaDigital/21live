@@ -223,6 +223,9 @@ export default function ScheduleUser({
     const newDTO: any = DTOTaskSelect;
     newDTO[name] = value;
     setDTOTaskSelect({ ...newDTO });
+    if (name === 'starterHour') {
+      setCheckAvailability(false);
+    }
 
     if (name === 'user_selected') {
       getUserSchedule();
@@ -274,6 +277,12 @@ export default function ScheduleUser({
 
           addNewObjectToAgenda(DTOTaskSelect.user_selected, response.data.result.agenda);
           setCheckAvailability(true);
+
+          addToast({
+            type: 'success',
+            title: 'Sucesso',
+            description: 'Usuário disponível no horário escolhido!'
+          });
         } else {
           addToast({
             type: 'warning',
@@ -303,6 +312,11 @@ export default function ScheduleUser({
 
           addNewObjectToAgenda(DTOTaskSelect.user_selected, response.data.result.agenda);
           setCheckAvailability(true);
+          addToast({
+            type: 'success',
+            title: 'Sucesso',
+            description: 'Usuário disponível no horário escolhido!'
+          });
         } else {
           addToast({
             type: 'warning',
@@ -381,7 +395,7 @@ export default function ScheduleUser({
                 <div className="hour-label">Tempo estimado:</div>
                 <TimePicker
                   onChange={(value: any) => handleSetEstimatedTime(value)}
-                  // onChange={() => ''}
+                  // onChange={(value: any) => setManualEstimatedTime(value)}
                   value={manualEstimatedTime}
                   clearIcon={null}
                   clockIcon={null}
@@ -391,6 +405,14 @@ export default function ScheduleUser({
                 />
               </EstimatedTimeSelector>
             )}
+
+            <div style={{ color: '#FF0000', fontWeight: 'bold' }}>
+              {dataUserSchedule[0]?.function === 'Criação'
+                ? estimated_time.time_creation
+                : dataUserSchedule[0]?.function === 'Redação'
+                ? estimated_time.time_essay
+                : estimated_time.total_time}
+            </div>
 
             <button className="close" onClick={closeModal}>
               <IconClose />
