@@ -8,6 +8,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/AuthContext';
 import { useFetch } from '../../hooks/useFetch';
 import useForm from '../../hooks/useForm';
+import useDebouncedCallback from '../../hooks/useDebounced';
+import { useToast } from '../../hooks/toast';
 
 // Components
 import { CardWelcomeDash } from '../../components/Cards/CardWelcomeDash';
@@ -24,6 +26,9 @@ import SelectImage from '../../components/Inputs/SelectWithImage';
 import { SelectDefault } from '../../components/Inputs/SelectDefault';
 import { ModalButtons } from '../Tasks/ViewTask/styles';
 import ButtonDefault from '../../components/Buttons/ButtonDefault';
+import TaskTable from '../../components/Ui/TaskTable';
+import { InputDefault } from '../../components/Inputs/InputDefault';
+import InputMultipleSelect from '../../components/Inputs/InputMultipleSelect';
 
 // Styles
 import {
@@ -58,15 +63,13 @@ import api from '../../services/api';
 
 // Utils
 import { TenantProps } from '../../utils/models';
+import { subtractTime } from '../../utils/convertTimes';
 
 // Types
 import { ServicesProps } from '../../types';
-import TaskTable from '../../components/Ui/TaskTable';
-import useDebouncedCallback from '../../hooks/useDebounced';
-import { subtractTime } from '../../utils/convertTimes';
+
+// Icons
 import { BiCalendar } from 'react-icons/bi';
-import { InputDefault } from '../../components/Inputs/InputDefault';
-import { useToast } from '../../hooks/toast';
 
 // interface DashType {
 //   typeDash: 'admin' | 'executive' | 'traffic' | 'operator' | '';
@@ -122,6 +125,7 @@ interface ReportForm {
   contract: string;
   date_start: string;
   date_end: string;
+  requesters: [];
 }
 
 interface OverviewTenant {
@@ -150,6 +154,15 @@ interface OverviewTenant {
   };
 }
 
+interface RequesterProps {
+  user_id: string;
+  name: string;
+  username: string;
+  email: string;
+  tenant_id: string;
+  avatar: string;
+}
+
 export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -158,12 +171,13 @@ export default function Dashboard() {
     fromDate: '',
     toDate: ''
   });
-  const { formData, handleOnChange, setData } = useForm({
+  const { formData, handleOnChange, setData, setFormValue } = useForm({
     client_id: '',
     client_name: '',
     contract: '',
     date_start: '',
-    date_end: ''
+    date_end: '',
+    requesters: []
   } as ReportForm);
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const [dataProjects, setDataProjects] = useState<ServicesProps[]>([]);
@@ -185,6 +199,7 @@ export default function Dashboard() {
     `my-tasks?search=${search.replace(/[^\w ]/g, '')}&page=${selected}`
   );
   const [errorsForm, setErrorsForms] = useState<{ [key: string]: boolean }>({});
+  const [requestersData, setRequestersData] = useState<RequesterProps[]>([]);
 
   const clientsOptions = dataClient?.map((row) => {
     return {
@@ -194,6 +209,10 @@ export default function Dashboard() {
       color: row.colormain
     };
   });
+
+  const defaultOptionsTeam = requestersData?.filter((item) =>
+    formData?.requesters.some((member: any) => member.user_id === item.user_id)
+  );
 
   const [initialValue, setInitialValue] = useState({
     value: '',
@@ -916,17 +935,36 @@ export default function Dashboard() {
     }
   }
 
+  async function getRequesters(tenantId: string) {
+    try {
+      const response = await api.get(`/user/${tenantId}`);
+
+      if (response.data.status === 'success') {
+        setRequestersData(response.data.result);
+      }
+    } catch (error: any) {
+      console.log('log get projects', error);
+    }
+  }
+
   const handleClientSelected = (select: any) => {
     getProjects(select.value);
+    getRequesters(select.value);
     setInitialValue(select);
     setData({
       client_id: select.value,
       client_name: select.label,
       contract: formData.contract,
       date_start: formData.date_start,
-      date_end: formData.date_end
+      date_end: formData.date_end,
+      requesters: formData.requesters
     });
     setErrorsForms({});
+  };
+
+  const onChange = (option: any) => {
+    const dataOption = option.map((row: any) => ({ user_id: row.value }));
+    setFormValue('requesters', dataOption);
   };
 
   const removeError = (fieldName: string) => {
@@ -976,6 +1014,12 @@ export default function Dashboard() {
         removeError('date_end');
       }
 
+      if (formData.requesters.length === 0) {
+        throw addError('requesters', 'Clientes solicitante são obrigatórios!');
+      } else {
+        removeError('requesters');
+      }
+
       if (Object.keys(errorsForm).length === 0) {
         navigate('/relatorio', { state: formData });
 
@@ -993,7 +1037,8 @@ export default function Dashboard() {
           client_name: '',
           contract: '',
           date_start: '',
-          date_end: ''
+          date_end: '',
+          requesters: []
         });
       }
     } catch (error: any) {
@@ -2648,6 +2693,47 @@ export default function Dashboard() {
               // onKeyDown={handleKeyDown}
               error={errorsForm.date_end || errorsForm.allFields ? 'Data final obrigatória' : ''}
             />
+          </ModalField>
+
+          <ModalField>
+            <InputMultipleSelect
+              name="members"
+              options={requestersData?.map((row) => ({
+                value: row.user_id,
+                label: row.name
+              }))}
+              label="Participantes"
+              isDisabled={formData.requesters ? false : true}
+              onChange={(option) => onChange(option)}
+              defaultValue={defaultOptionsTeam?.map((row) => ({
+                value: row.user_id,
+                label: row.name
+              }))}
+              alert="Selecione pelo menos um Responsável"
+              error={
+                errorsForm.requesters || errorsForm.allFields
+                  ? 'Clientes solicitantes são obrigatórios!'
+                  : ''
+              }
+            />
+            {/* <SelectDefault
+              label="Solicitante"
+              name="requesters"
+              value={formData.requesters}
+              onChange={(e) => {
+                handleOnChange(e);
+                removeError('requesters');
+              }}
+              error={
+                errorsForm.requesters || errorsForm.allFields ? 'Solicitante é obrigatório!' : ''
+              }
+            >
+              {requestersData?.map((row) => (
+                <option key={row.user_id} value={row.tenant_id}>
+                  {row.name}
+                </option>
+              ))}
+            </SelectDefault> */}
           </ModalField>
 
           <ModalButtons>
