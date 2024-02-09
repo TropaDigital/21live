@@ -1121,6 +1121,7 @@ export default function ViewProductsDeliveries() {
         dataTask.status !== 'Alteração Externa' &&
         dataTask.status !== 'Alteração Interna' &&
         dataTask?.status !== 'Aguardando Aprovação' &&
+        dataProducts?.products.length > 1 &&
         conditionExtra &&
         !hasDismemberedProduct
       ) {
