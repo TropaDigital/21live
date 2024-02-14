@@ -60,3 +60,29 @@ export const FilterTasks = styled.div`
   align-items: center;
   gap: 12px;
 `;
+
+export const CopyButton = styled.div`
+  display: grid;
+  place-items: center;
+
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  padding: 8px;
+  height: 36px;
+  width: 36px;
+  transition: all 0.35s ease;
+
+  cursor: pointer;
+
+  svg {
+    fill: #344054;
+  }
+
+  &:hover {
+    svg {
+      fill: var(--secundary-900);
+    }
+    background: var(--secundary-100);
+  }
+`;
