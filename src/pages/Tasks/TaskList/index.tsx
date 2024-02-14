@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 // Icons
-import { BiFilter, BiPlus, BiSearchAlt, BiX } from 'react-icons/bi';
+import { BiCopy, BiFilter, BiPlus, BiSearchAlt, BiX } from 'react-icons/bi';
 import { FiFlag } from 'react-icons/fi';
 import { IconContext } from 'react-icons';
 import { FiCornerDownRight } from 'react-icons/fi';
@@ -50,7 +50,7 @@ import api from '../../../services/api';
 import moment from 'moment';
 
 // Styles
-import { ModalShowTaskWrapper, Flag, StatusTable, FilterTasks } from './styles';
+import { ModalShowTaskWrapper, Flag, StatusTable, FilterTasks, CopyButton } from './styles';
 import { useAuth } from '../../../hooks/AuthContext';
 
 interface FilterProps {
@@ -244,6 +244,18 @@ export default function TaskList() {
       }
     }
     return count;
+  };
+
+  const handleCopyTask = (task: any) => {
+    const taskInfos = {
+      title: task.title,
+      description: task.description,
+      copywriting_description: task.copywriting_description,
+      creation_description: task.creation_description,
+      type: task.type,
+      copy: true
+    };
+    navigate('/criar-tarefa', { state: taskInfos });
   };
 
   return (
@@ -470,6 +482,9 @@ export default function TaskList() {
                             handleEditTask(row);
                           }}
                         />
+                        <CopyButton onClick={() => handleCopyTask(row)}>
+                          <BiCopy size={20} />
+                        </CopyButton>
                         {user.permissions.includes('jobs_tasks_manager') && (
                           <Alert
                             title="Atenção"

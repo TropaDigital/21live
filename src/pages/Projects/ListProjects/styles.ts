@@ -97,3 +97,39 @@ export const ViewFileBtn = styled.button`
     }
   }
 `;
+
+export const ProjectStatus = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 4px 8px;
+  width: fit-content;
+  border-radius: 35px;
+  background: var(--warning-100);
+
+  color: var(--warning-700);
+  font-size: var(--text-small-sm);
+  font-weight: var(--weight-medium);
+
+  &.progress {
+    background: var(--primary-050);
+    color: var(--primary-700);
+  }
+
+  &.finished {
+    background: var(--secundary-100);
+    color: var(--secundary-700);
+  }
+
+  &.overdue {
+    background: var(--error-100);
+    color: var(--error-700);
+  }
+`;
+
+export const FilterProjects = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;

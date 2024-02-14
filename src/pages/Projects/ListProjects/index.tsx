@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 // Icons
-import { BiPlus, BiSearchAlt, BiShow } from 'react-icons/bi';
+import { BiFilter, BiPlus, BiSearchAlt, BiShow, BiX } from 'react-icons/bi';
 import { FaDownload } from 'react-icons/fa';
 import { MdClose } from 'react-icons/md';
 
@@ -42,7 +42,11 @@ import { FilterGroup, TableHead } from '../../../components/Table/styles';
 import Alert from '../../../components/Ui/Alert';
 import ModalDefault from '../../../components/Ui/ModalDefault';
 import ProgressBar from '../../../components/Ui/ProgressBar';
-import { ContainerDefault } from '../../../components/UiElements/styles';
+import {
+  AppliedFilter,
+  ContainerDefault,
+  FilterTotal
+} from '../../../components/UiElements/styles';
 import Avatar from '../../../components/Ui/Avatar';
 import Loader from '../../../components/LoaderSpin';
 import { ModalImage } from '../../Requests/ViewRequests/styles';
@@ -59,12 +63,23 @@ import {
   DownloadFileBtn,
   FileInfo,
   FileList,
+  FilterProjects,
   ModalShowProjectWrapper,
+  ProjectStatus,
   ViewFileBtn
 } from './styles';
+import FilterModal from '../../../components/Ui/FilterModal';
 
 interface StateProps {
   [key: string]: any;
+}
+
+interface FilterProps {
+  fromDate: string;
+  toDate: string;
+  client: string;
+  category: string;
+  [key: string]: string | any; // Index signature
 }
 
 export default function ListProjects() {
@@ -109,6 +124,13 @@ export default function ListProjects() {
     (search: string) => setSearch(search),
     700
   );
+  const [modalFilters, setModalFilters] = useState<boolean>(false);
+  const [filter, setFilter] = useState<FilterProps>({
+    fromDate: '',
+    toDate: '',
+    client: '',
+    category: ''
+  });
 
   // const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
   // const [error, setError] = useState<StateProps>({});
@@ -124,7 +146,7 @@ export default function ListProjects() {
     isFetching,
     pages
   } = useFetch<IProjectCreate[]>(
-    `project?search=${search.replace(/[^\w ]/g, '')}&page=${selected}`
+    `project?search=${search.replace(/[^\w ]/g, '')}&page=${selected}&tenant=${filter.client}`
   );
   // const [listSelected, setListSelected] = useState<any[]>([]);
 
@@ -354,6 +376,45 @@ export default function ListProjects() {
     }
   }
 
+  const [clientFilter, setClientFilter] = useState({
+    value: '',
+    label: '',
+    image: '',
+    color: ''
+  });
+
+  const handleClearFilters = () => {
+    setFilter({
+      fromDate: '',
+      toDate: '',
+      client: '',
+      category: ''
+    });
+    setModalFilters(false);
+  };
+
+  const hasFilters = Object.values(filter).every(
+    (obj) => obj === null || obj === '' || obj === false
+  );
+
+  const handleApplyFilters = (filters: any) => {
+    setFilter(filters);
+    setModalFilters(false);
+  };
+
+  const countNonEmptyProperties = () => {
+    let count = 0;
+    for (const key in filter) {
+      if (Object.prototype.hasOwnProperty.call(filter, key)) {
+        // Check if the property is not empty or null
+        if (filter[key] !== '' && filter[key] !== null) {
+          count++;
+        }
+      }
+    }
+    return count;
+  };
+
   return (
     <ContainerDefault>
       <HeaderPage title="Projetos">
@@ -368,7 +429,7 @@ export default function ListProjects() {
 
       {!isFetching && (
         <Table>
-          <TableHead>
+          <TableHead style={{ width: 'calc(100vw - 260px)' }}>
             <div className="groupTable">
               <h2>
                 Lista de projetos
@@ -382,7 +443,7 @@ export default function ListProjects() {
               </h2>
             </div>
 
-            <div>
+            <FilterProjects>
               <InputDefault
                 label=""
                 name="search"
@@ -396,8 +457,71 @@ export default function ListProjects() {
                 isLoading={isLoading}
                 className="search-field"
               />
-            </div>
+
+              {!hasFilters && (
+                <ButtonDefault typeButton="danger" isOutline onClick={handleClearFilters}>
+                  <div className="close-icon">
+                    <BiX size={30} />
+                  </div>
+                  Limpar filtros
+                </ButtonDefault>
+              )}
+
+              <ButtonDefault
+                typeButton="lightWhite"
+                isOutline
+                onClick={() => setModalFilters(true)}
+              >
+                <BiFilter />
+                Filtros
+              </ButtonDefault>
+            </FilterProjects>
           </TableHead>
+
+          {!hasFilters && (
+            <FilterGroup style={{ width: 'calc(100vw - 260px)' }}>
+              <FilterTotal>
+                <div className="filter-title">Filtros ({countNonEmptyProperties()}):</div>
+                {filter.client !== '' ? <span>Cliente</span> : ''}
+                {filter.category !== '' ? <span>Tipo</span> : ''}
+                {filter.fromDate !== '' ? <span>Data</span> : ''}
+              </FilterTotal>
+
+              <AppliedFilter>
+                {filter.client !== '' ? (
+                  <div className="filter-title">
+                    Cliente: <span>{clientFilter.label}</span>
+                  </div>
+                ) : (
+                  ''
+                )}
+
+                {filter.category !== '' ? (
+                  <div className="filter-title">
+                    Tipo: <span style={{ textTransform: 'uppercase' }}>{filter.category}</span>
+                  </div>
+                ) : (
+                  ''
+                )}
+
+                {filter.fromDate !== '' ? (
+                  <div className="filter-title">
+                    Data inicial: <span>{moment(filter.fromDate).format('DD/MM/YYYY')}</span>
+                  </div>
+                ) : (
+                  ''
+                )}
+
+                {filter.toDate !== '' ? (
+                  <div className="filter-title">
+                    Data final: <span>{moment(filter.toDate).format('DD/MM/YYYY')}</span>
+                  </div>
+                ) : (
+                  ''
+                )}
+              </AppliedFilter>
+            </FilterGroup>
+          )}
           {/* <FilterGroup>
             <InputDefault
               label=""
@@ -423,13 +547,24 @@ export default function ListProjects() {
               <tr>
                 <th>ID</th>
                 <th>Título</th>
+                <th>FEE/SPOT</th>
                 <th>Cliente</th>
                 <th>Tempo</th>
                 <th>Ativo / Inativo</th>
                 <th>Equipe</th>
                 <th>Data de criação</th>
                 <th>Entrega estimada</th>
-                <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
+                <th>Status</th>
+                <th
+                  style={{
+                    display: 'grid',
+                    placeItems: 'center',
+                    color: '#F9FAFB',
+                    minHeight: '64px'
+                  }}
+                >
+                  -
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -440,6 +575,12 @@ export default function ListProjects() {
                   </td>
                   <td style={{ cursor: 'pointer' }} onClick={() => handleOpenModal(row)}>
                     {row.title}
+                  </td>
+                  <td
+                    style={{ cursor: 'pointer', textTransform: 'uppercase' }}
+                    onClick={() => handleOpenModal(row)}
+                  >
+                    {row.category}
                   </td>
                   <td
                     style={{ textTransform: 'capitalize', cursor: 'pointer' }}
@@ -488,6 +629,27 @@ export default function ListProjects() {
                     onClick={() => handleOpenModal(row)}
                   >
                     {moment(row.date_end).format('DD/MM/YYYY')}
+                  </td>
+                  <td style={{ cursor: 'pointer' }} onClick={() => handleOpenModal(row)}>
+                    <ProjectStatus
+                      className={
+                        row.status === 'Em Andamento'
+                          ? 'status progress'
+                          : row.status === 'Concluida'
+                          ? 'status finished'
+                          : row.status === 'Vencido'
+                          ? 'status overdue'
+                          : 'status'
+                      }
+                    >
+                      {row.status === 'Em Andamento'
+                        ? 'Em progresso'
+                        : row.status === 'Concluida'
+                        ? 'Concluído'
+                        : row.status === 'Stand By'
+                        ? 'Stand By'
+                        : 'Vencido'}
+                    </ProjectStatus>
                   </td>
                   <td>
                     <div className="fieldTableClients">
@@ -766,6 +928,17 @@ export default function ListProjects() {
           )}
         </ModalShowProjectWrapper>
       </ModalDefault>
+
+      {/* Modal filters */}
+      <FilterModal
+        isOpen={modalFilters}
+        closeBtn={true}
+        onOpenChange={() => setModalFilters(!modalFilters)}
+        applyFilters={handleApplyFilters}
+        clearFilters={handleClearFilters}
+        clientSelected={setClientFilter}
+        filterType="project"
+      />
     </ContainerDefault>
   );
 }

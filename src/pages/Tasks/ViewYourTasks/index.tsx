@@ -48,10 +48,10 @@ export default function ViewTaskList() {
     (search: string) => setSearch(search),
     700
   );
-  const { data, pages, isFetching } = useFetch<any[]>(
-    `my-tasks?search=${search.replace(/[^\w ]/g, '')}&page=${selected}`
-  );
   const [taskOrder, setTaskOrder] = useState<string>('');
+  const { data, pages, isFetching } = useFetch<any[]>(
+    `my-tasks?search=${search.replace(/[^\w ]/g, '')}&page=${selected}&order=${taskOrder}`
+  );
 
   const handleFilters = () => {
     console.log('log do filters on task');

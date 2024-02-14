@@ -773,7 +773,7 @@ export default function ListMeeting() {
                 value: row.user_id,
                 label: `${row.name} - ${row.function}`
               }))}
-              label="Participantes"
+              label="Solicitantes"
               isDisabled={formData.user_id ? false : true}
               onChange={(option) => onChange(option)}
               defaultValue={defaultOptionsTeam?.map((row) => ({

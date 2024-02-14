@@ -193,7 +193,7 @@ export default function MonthlyReport() {
   // print and download
   const printDocument = () => {
     setLoading(true);
-    html2canvas(inputRef.current).then((canvas) => {
+    html2canvas(inputRef.current, { useCORS: true, allowTaint: true }).then((canvas) => {
       const imgData: any = canvas.toDataURL('image/png');
       const pdf = new jsPDF();
       const imgProps = pdf.getImageProperties(imgData);
