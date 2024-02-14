@@ -1974,74 +1974,76 @@ export default function Dashboard() {
           </TableDefault>
 
           {/* Performance por cliente */}
-          <CardBase>
-            <div className="title-with-back">CLIENTE: JEEP</div>
+          {data?.overview_best_tenants.map((row: OverviewTenant, index: number) => (
+            <CardBase key={index}>
+              <div className="title-with-back">CLIENTE: {row.name}</div>
 
-            <BulletsClientWrapper>
-              <BulletPointInfos>
-                <div className="bullet">
-                  Total jobs: <span>??</span>
-                </div>
-                <div className="bullet">
-                  Total horas: <span>??h</span>
-                </div>
-                <div className="bullet">
-                  Alteração interna: <span>??</span>
-                </div>
-                <div className="bullet">
-                  Alteração cliente: <span>??</span>
-                </div>
-                <div className="bullet">
-                  Reuniões: <span>??</span>
-                </div>
-                <div className="bullet">
-                  Reposts enviados: <span>??</span>
-                </div>
-              </BulletPointInfos>
-
-              <BulletPointInfos>
-                <div className="bullet">
-                  Jobs em andamento: <span>??</span>
-                </div>
-                <div className="bullet">
-                  Pendente de aprovação: <span>??</span>
-                </div>
-                <div className="bullet">
-                  Pendente de envio: <span>??</span>
-                </div>
-                <div className="bullet">
-                  Tempo médio de aprovação: <span>?? dias</span>
-                </div>
-              </BulletPointInfos>
-
-              <BulletPointInfos>
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '12px',
-                    marginBottom: '22px'
-                  }}
-                >
+              <BulletsClientWrapper>
+                <BulletPointInfos>
                   <div className="bullet">
-                    Contrato Fee: <span>??h</span>
+                    Total jobs: <span>{row.quantidade_tarefas}</span>
                   </div>
                   <div className="bullet">
-                    Saldo Contrato: <span>??h</span>
+                    Total horas: <span>{row.hora}h</span>
                   </div>
-                </div>
+                  <div className="bullet">
+                    Alteração interna: <span>???</span>
+                  </div>
+                  <div className="bullet">
+                    Alteração cliente: <span>???</span>
+                  </div>
+                  <div className="bullet">
+                    Reuniões: <span>{row.meetings}</span>
+                  </div>
+                  <div className="bullet">
+                    Reports enviados: <span>???</span>
+                  </div>
+                </BulletPointInfos>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <BulletPointInfos>
                   <div className="bullet">
-                    Contrato Spot: <span>?h</span>
+                    Jobs em andamento: <span>{row.em_andamento}</span>
                   </div>
                   <div className="bullet">
-                    Saldo Spot: <span>?h</span>
+                    Pendente de aprovação: <span>{row.aguardando_aprovacao}</span>
                   </div>
-                </div>
-              </BulletPointInfos>
-            </BulletsClientWrapper>
-          </CardBase>
+                  <div className="bullet">
+                    Pendente de envio: <span>{row.pendente}</span>
+                  </div>
+                  <div className="bullet">
+                    Tempo médio de aprovação: <span>??? dias</span>
+                  </div>
+                </BulletPointInfos>
+
+                <BulletPointInfos>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '12px',
+                      marginBottom: '22px'
+                    }}
+                  >
+                    <div className="bullet">
+                      Contrato Fee: <span>{row.contratos_fee.total_tempo}</span>
+                    </div>
+                    <div className="bullet">
+                      Saldo Contrato: <span>{row.contratos_fee.saldo}</span>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div className="bullet">
+                      Contrato Spot: <span>{row.contratos_spot.total_tempo}</span>
+                    </div>
+                    <div className="bullet">
+                      Saldo Spot: <span>{row.contratos_spot.saldo}</span>
+                    </div>
+                  </div>
+                </BulletPointInfos>
+              </BulletsClientWrapper>
+            </CardBase>
+          ))}
         </SectionDefault>
       )}
 
@@ -2702,7 +2704,7 @@ export default function Dashboard() {
                 value: row.user_id,
                 label: row.name
               }))}
-              label="Participantes"
+              label="Solicitantes"
               isDisabled={formData.requesters ? false : true}
               onChange={(option) => onChange(option)}
               defaultValue={defaultOptionsTeam?.map((row) => ({
