@@ -507,6 +507,36 @@ export default function CreateTasks() {
       }
     }
 
+    if (location.state !== null && location.state?.copy) {
+      setDTOForm((prevState: any) => ({
+        ...prevState,
+        ['title']: location.state.title
+      }));
+
+      setDTOForm((prevState: any) => ({
+        ...prevState,
+        ['description']: location.state.description
+      }));
+
+      setDTOForm((prevState: any) => ({
+        ...prevState,
+        ['copywriting_description']: location.state.copywriting_description
+      }));
+
+      setDTOForm((prevState: any) => ({
+        ...prevState,
+        ['creation_description']: location.state.creation_description
+      }));
+
+      // if (location.state.typeTask === 'Hora') {
+      //   setTasksType('horas');
+      // } else if (location.state.typeTask === 'Produto') {
+      //   setTasksType('produto');
+      // } else {
+      //   setTasksType('livre');
+      // }
+    }
+
     const ticketInfo = localStorage.getItem('@live:ticket');
     setTicketAsk(ticketInfo);
   }, [location, dataClient]);
@@ -1910,6 +1940,18 @@ export default function CreateTasks() {
       } else if (infoOrganizationsProjects[0]?.tipo !== 'product') {
         setTasksType('livre');
       }
+    } else if (
+      DTOForm.project_product_id !== '' &&
+      location.state !== null &&
+      !user?.organizations
+    ) {
+      if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel === 'true') {
+        setTasksType('horas');
+      } else if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel !== 'true') {
+        setTasksType('produto');
+      } else if (infoProjects[0]?.tipo !== 'product') {
+        setTasksType('livre');
+      }
     } else {
       if (location.state?.type === 'Produto') {
         setTasksType('produto');
@@ -2155,6 +2197,11 @@ export default function CreateTasks() {
   // useEffect(() => {
   //   console.log('log do location', location.state);
   // }, [location]);
+
+  useEffect(() => {
+    console.log('log taskEdit', taskEdit);
+    console.log('log typeTask', tasksType);
+  }, [taskEdit, tasksType]);
 
   return (
     <>
