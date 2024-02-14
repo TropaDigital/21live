@@ -49,8 +49,10 @@ export const ClientLogo = styled.div<LogoProps>`
   border-radius: 8px;
 
   .logo-img {
-    background-size: cover;
+    background-size: contain;
     background-repeat: no-repeat;
+    background-position-x: center;
+    background-position-y: center;
     width: 90%;
     height: 90%;
   }

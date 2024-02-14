@@ -11,6 +11,7 @@ import FilterProduct from '../../FilterProduct';
 import FilterTeam from '../../FilterTeam';
 import FilterMeeting from '../../FilterMeeting';
 import FilterDash from '../../FilterDash';
+import FilterProject from '../../FilterProject';
 
 interface Props {
   isOpen: boolean;
@@ -74,6 +75,13 @@ export default function FilterModal({
           )}
           {filterType === 'dash' && (
             <FilterDash applyFilters={applyFilters} clearFilters={clearFilters} />
+          )}
+          {filterType === 'project' && (
+            <FilterProject
+              applyFilters={applyFilters}
+              clearFilters={clearFilters}
+              selectedClient={clientSelected}
+            />
           )}
           {closeBtn && (
             <Dialog.Close asChild>

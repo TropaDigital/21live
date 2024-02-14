@@ -78,7 +78,7 @@ export const Container = styled.div`
     tbody > tr {
       &:hover {
         td {
-          background-color: var(--primary-050);
+          background-color: var(--gray-100);
           z-index: 1;
         }
       }
