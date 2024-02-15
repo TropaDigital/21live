@@ -40,6 +40,11 @@ import { SwitchField } from './styles';
 
 // Libraries
 import Switch from 'react-switch';
+import Loader from '../../../components/LoaderSpin';
+
+// Images
+import PandaLoader from '../../../assets/LoadingPanda.gif';
+import ModalLoader from '../../../components/Ui/ModalLoader';
 
 interface OfficeProps {
   function_id: number;
@@ -79,10 +84,11 @@ export default function ListOffice() {
     (search: string) => setSearch(search),
     700
   );
-  const { data, fetchData } = useFetch<OfficeProps[]>(
+  const { data, fetchData, isFetching } = useFetch<OfficeProps[]>(
     `function?search=${search.replace(/[^\w ]/g, '')}`
   );
   const [showHours, setShowHours] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     getParams();
@@ -142,6 +148,8 @@ export default function ListOffice() {
   const handleOnSubmit = useCallback(
     async (event: any) => {
       try {
+        setLoading(true);
+
         event.preventDefault();
 
         const { function: asFunction, description, show_hours, deduct_hours } = formData;
@@ -174,6 +182,7 @@ export default function ListOffice() {
         }
         handleOnCancel();
         fetchData();
+        setLoading(false);
       } catch (e: any) {
         if (e.response.data.result.length !== 0) {
           e.response.data.result.map((row: any) => {
@@ -190,6 +199,8 @@ export default function ListOffice() {
             type: 'danger'
           });
         }
+
+        setLoading(false);
       }
     },
     [formData, addToast, fetchData, handleOnCancel, modal]
@@ -222,77 +233,82 @@ export default function ListOffice() {
         </ButtonDefault>
       </HeaderPage>
 
-      <SectionDefault>
-        <ContentDefault>
-          <FieldGroupFormDefault>
-            <InputDefault
-              label="Busca"
-              name="search"
-              placeholder="Buscar..."
-              onChange={(event) => {
-                setSearchTerm(event.target.value);
-                debouncedCallback(event.target.value);
-              }}
-              value={searchTerm}
-              icon={BiSearchAlt}
-              isLoading={isLoading}
-            />
-          </FieldGroupFormDefault>
-        </ContentDefault>
-        <div style={{ margin: '-24px -30px' }}>
-          <Table>
-            <TableHead>
-              <div className="groupTable">
-                <h2>Lista de cargos</h2>
-              </div>
-            </TableHead>
-            <table>
-              <thead>
-                <tr style={{ whiteSpace: 'nowrap' }}>
-                  <th>ID</th>
-                  <th>Cargo</th>
-                  <th>Descrição</th>
-                  <th>Exibe horas</th>
-                  <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
-                </tr>
-              </thead>
+      {isFetching && <Loader />}
 
-              <tbody>
-                {data?.map((row) => (
-                  <tr key={row.function_id}>
-                    <td>#{String(row.function_id).padStart(5, '0')}</td>
-                    <td>{row.function}</td>
-                    <td>{row.description}</td>
-                    <td>
-                      <div style={{ paddingLeft: '20px' }}>
-                        <CheckboxDefault
-                          label=""
-                          name=""
-                          onChange={() => ''}
-                          checked={row.show_hours === 'true' ? true : false}
-                        />
-                      </div>
-                    </td>
-                    <td>
-                      <div className="fieldTableClients">
-                        <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
-                        <Alert
-                          title="Atenção"
-                          subtitle="Certeza que gostaria de deletar este Serviço? Ao excluir a acão não poderá ser desfeita."
-                          confirmButton={() => handleOnDelete(row.function_id)}
-                        >
-                          <ButtonTable typeButton="delete" />
-                        </Alert>
-                      </div>
-                    </td>
+      {!isFetching && (
+        <SectionDefault>
+          <ContentDefault>
+            <FieldGroupFormDefault>
+              <InputDefault
+                label="Busca"
+                name="search"
+                placeholder="Buscar..."
+                onChange={(event) => {
+                  setSearchTerm(event.target.value);
+                  debouncedCallback(event.target.value);
+                }}
+                value={searchTerm}
+                icon={BiSearchAlt}
+                isLoading={isLoading}
+              />
+            </FieldGroupFormDefault>
+          </ContentDefault>
+          <div style={{ margin: '-24px -30px' }}>
+            <Table>
+              <TableHead>
+                <div className="groupTable">
+                  <h2>Lista de cargos</h2>
+                </div>
+              </TableHead>
+              <table>
+                <thead>
+                  <tr style={{ whiteSpace: 'nowrap' }}>
+                    <th>ID</th>
+                    <th>Cargo</th>
+                    <th>Descrição</th>
+                    <th>Exibe horas</th>
+                    <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </Table>
-        </div>
-      </SectionDefault>
+                </thead>
 
+                <tbody>
+                  {data?.map((row) => (
+                    <tr key={row.function_id}>
+                      <td>#{String(row.function_id).padStart(5, '0')}</td>
+                      <td>{row.function}</td>
+                      <td>{row.description}</td>
+                      <td>
+                        <div style={{ paddingLeft: '20px' }}>
+                          <CheckboxDefault
+                            label=""
+                            name=""
+                            onChange={() => ''}
+                            checked={row.show_hours === 'true' ? true : false}
+                          />
+                        </div>
+                      </td>
+                      <td>
+                        <div className="fieldTableClients">
+                          <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
+                          <Alert
+                            title="Atenção"
+                            subtitle="Certeza que gostaria de deletar este Serviço? Ao excluir a acão não poderá ser desfeita."
+                            confirmButton={() => handleOnDelete(row.function_id)}
+                          >
+                            <ButtonTable typeButton="delete" />
+                          </Alert>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </Table>
+          </div>
+        </SectionDefault>
+      )}
+
+      {/* Modal new office */}
       <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
         <form onSubmit={handleOnSubmit}>
           <FieldDefault>
@@ -356,6 +372,9 @@ export default function ListOffice() {
           </FooterModal>
         </form>
       </ModalDefault>
+
+      {/* Modal loading submit */}
+      <ModalLoader isOpen={loading} />
     </ContainerDefault>
   );
 }
