@@ -91,6 +91,7 @@ import api from '../../../services/api';
 import moment from 'moment';
 import { SelectDefault } from '../../../components/Inputs/SelectDefault';
 import { MdClose } from 'react-icons/md';
+import ModalLoader from '../../../components/Ui/ModalLoader';
 
 interface StateProps {
   [key: string]: any;
@@ -1756,6 +1757,7 @@ export default function CreateTasks() {
           description: e.response.data.message
         });
       }
+      setLoadingSubmit(false);
     }
   }, [DTOForm]);
 
@@ -2197,11 +2199,6 @@ export default function CreateTasks() {
   // useEffect(() => {
   //   console.log('log do location', location.state);
   // }, [location]);
-
-  useEffect(() => {
-    console.log('log taskEdit', taskEdit);
-    console.log('log typeTask', tasksType);
-  }, [taskEdit, tasksType]);
 
   return (
     <>
@@ -2920,6 +2917,7 @@ export default function CreateTasks() {
             project_product_id={DTOForm.project_product_id}
             limitDate={DTOForm.copywriting_date_end}
             user_alocated={handleScheduleUser}
+            loadingSubmit={loadingSubmit}
             closeModal={() => setSelectUserModal(false)}
           />
         </ModalDefault>
@@ -3067,6 +3065,9 @@ export default function CreateTasks() {
             </AddProductButton>
           </ProductsModalWrapper>
         </ModalDefault>
+
+        {/* Modal loading submit */}
+        <ModalLoader isOpen={loadingSubmit} />
       </ContainerWrapper>
     </>
   );
