@@ -198,6 +198,20 @@ export const UserMessageInfo = styled.div`
     font-weight: var(--weight-bold);
     text-transform: uppercase;
   }
+
+  .delete {
+    cursor: pointer;
+
+    svg {
+      transition: all 0.3s;
+    }
+
+    &:hover {
+      svg {
+        color: var(--Danger);
+      }
+    }
+  }
 `;
 
 export const UserMessage = styled.div`
