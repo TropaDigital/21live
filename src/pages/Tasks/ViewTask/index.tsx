@@ -9,6 +9,7 @@ import { FaArrowLeft, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { IconBigCheck } from '../../../assets/icons';
 import { BiArrowBack } from 'react-icons/bi';
 import { FiCornerDownRight } from 'react-icons/fi';
+import { MdClose } from 'react-icons/md';
 
 // Components
 import HeaderOpenTask from '../../../components/HeaderTaskPage';
@@ -18,6 +19,7 @@ import { TasksTable } from '../../../components/Ui/TaskTable/styles';
 import ProgressBar from '../../../components/Ui/ProgressBar';
 import WorkingProduct from '../../Products/WorkingProduct';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
+import ModalLoader from '../../../components/Ui/ModalLoader';
 
 // Styles
 import {
@@ -56,9 +58,9 @@ import { useToast } from '../../../hooks/toast';
 
 // Utils
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
+
+// Types
 import { StepTimeline, TaskHistoric, TaskHistoryProps } from '../../../types';
-import Loader from '../../../components/LoaderSpin';
-import { MdClose } from 'react-icons/md';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -247,8 +249,6 @@ export default function ViewTask() {
 
   return (
     <ContainerDefault>
-      {loading && <Loader />}
-
       {!loading && (
         <TaskInfoWrapper>
           <HeaderOpenTask
@@ -928,6 +928,9 @@ export default function ViewTask() {
           </ShowInfosButton>
         </TaskInfoWrapper>
       )}
+
+      {/* Modal loading submit */}
+      <ModalLoader isOpen={loading} />
     </ContainerDefault>
   );
 }
