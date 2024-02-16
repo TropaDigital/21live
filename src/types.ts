@@ -65,6 +65,7 @@ export interface IProjectCreate {
   time?: string | any;
   time_consumed?: string | any;
   status?: string | any;
+  status_fake?: string | any;
   products?: Array<IProduct> | any;
   files?: Array<IDocProject> | any;
   team?: string | any;
