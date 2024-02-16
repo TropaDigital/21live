@@ -113,6 +113,8 @@ export default function InfoGeral({
           value={data.title}
           onChange={handleInputChange}
           error={error?.title}
+          maxLength={60}
+          alert="Máximo de 60 caracteres"
         />
         {!user?.organizations && (
           <div style={{ flex: '1' }}>

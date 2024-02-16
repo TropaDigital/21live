@@ -38,6 +38,7 @@ import UploadFiles from '../../../components/Upload/UploadFiles';
 import UploadFinalFile from '../../../components/UploadFinal/UploadFinalFiles';
 import Loader from '../../../components/LoaderSpin';
 import { Table } from '../../../components/Table';
+import ModalLoader from '../../../components/Ui/ModalLoader';
 
 // Styles
 import {
@@ -91,7 +92,6 @@ import {
 
 // Utils
 import { UsersNoSchedule } from '../../../utils/models';
-import { ModalProductWrapper } from '../styles';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -140,6 +140,7 @@ export default function ViewProductsDeliveries() {
   const openRightRef = useRef<any>();
   const [modalSendToUser, setModalSendToUser] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingData, setLoadingData] = useState<boolean>(false);
   const [playingForSchedule, setPlayingForSchedule] = useState<boolean>(false);
   const [hideRightCard, setHideRightCard] = useState<string>('show');
   const [dataTask, setDataTask] = useState<any>();
@@ -221,17 +222,19 @@ export default function ViewProductsDeliveries() {
     total_time: dataTask?.total_time
   };
 
-  const data = {
-    estimatedTime: user.permissions.includes('jobs_tasks_essay')
-      ? dataProducts?.time_essay
-      : user.permissions.includes('jobs_tasks_execute')
-      ? dataProducts?.time_creation
-      : dataTask?.total_time
-  };
-
   const InputsTask = {
     copywriting_description: dataTask?.copywriting_description,
     creation_description: dataTask?.creation_description
+  };
+
+  const myTaskShowHours = location.state.task.show_hours;
+  const taskDeductHours = location.state.task.deduct_hours;
+
+  const allEstimatedTime = {
+    time_consumed: dataTask?.time_consumed,
+    time_creation: dataProducts?.time_creation,
+    time_essay: dataProducts?.time_essay,
+    total_time: dataTask?.total_time
   };
 
   const actualDate = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
@@ -348,7 +351,7 @@ export default function ViewProductsDeliveries() {
 
     async function getClockIsOpen() {
       try {
-        setLoading(true);
+        setLoadingData(true);
 
         if (typeOfPlay === 'schedule') {
           const response = await api.get(
@@ -443,10 +446,10 @@ export default function ViewProductsDeliveries() {
           }
         }
 
-        setLoading(false);
+        setLoadingData(false);
       } catch (error) {
         console.log('log error rescue clock', error);
-        setLoading(false);
+        setLoadingData(false);
       }
     }
 
@@ -455,7 +458,7 @@ export default function ViewProductsDeliveries() {
 
   async function getTaskInfos() {
     try {
-      setLoading(true);
+      setLoadingData(true);
       const response = await api.get(`/tasks/${id}`);
       // console.log('log do response get task', response.data.result);
 
@@ -463,7 +466,7 @@ export default function ViewProductsDeliveries() {
         setDataTask(response.data.result[0]);
       }
 
-      setLoading(false);
+      setLoadingData(false);
     } catch (error: any) {
       console.log('log do error getting task', error);
       addToast({
@@ -471,12 +474,13 @@ export default function ViewProductsDeliveries() {
         description: error.message,
         type: 'warning'
       });
-      setLoading(false);
+      setLoadingData(false);
     }
   }
 
   useEffect(() => {
     getTaskInfos();
+    console.log('log do location =>', location.state);
   }, []);
 
   useEffect(() => {
@@ -509,14 +513,14 @@ export default function ViewProductsDeliveries() {
 
     async function getTaskHistory() {
       try {
-        setLoading(true);
+        setLoadingData(true);
         const response = await api.get(`/task/historic/${id}`);
         setTaskHistory(response.data.result);
 
-        setLoading(false);
+        setLoadingData(false);
       } catch (error: any) {
         console.log('log timeline error', error);
-        setLoading(false);
+        setLoadingData(false);
       }
     }
 
@@ -959,6 +963,8 @@ export default function ViewProductsDeliveries() {
 
   async function handleSaveUpload() {
     try {
+      setLoading(true);
+
       const uploadInfos = {
         task_id: dataTask?.task_id,
         file_name: uploadedFiles[0].file_name,
@@ -978,6 +984,8 @@ export default function ViewProductsDeliveries() {
         // navigate('/minhas-tarefas');
       }
 
+      setLoading(false);
+
       // console.log('log do response do saveUpload', response.data.result);
     } catch (error: any) {
       console.log('log save upload for product', error);
@@ -996,11 +1004,14 @@ export default function ViewProductsDeliveries() {
           type: 'danger'
         });
       }
+      setLoading(false);
     }
   }
 
   async function handleSaveUploadFinal() {
     try {
+      setLoading(true);
+
       const uploadInfos = {
         task_id: dataTask?.task_id,
         file_name: uploadedFiles[0].file_name,
@@ -1029,6 +1040,8 @@ export default function ViewProductsDeliveries() {
         handleConcludeTask();
       }
 
+      setLoading(false);
+
       // console.log('log do response do saveUpload', response.data.result);
     } catch (error: any) {
       console.log('log save upload final file', error);
@@ -1047,11 +1060,15 @@ export default function ViewProductsDeliveries() {
           type: 'danger'
         });
       }
+
+      setLoading(false);
     }
   }
 
   async function handleSaveUploadClient() {
     try {
+      setLoading(true);
+
       const uploadInfos = {
         task_id: dataTask?.task_id,
         file_name: uploadedFiles[0].file_name,
@@ -1078,6 +1095,8 @@ export default function ViewProductsDeliveries() {
         // }, 1500);
       }
 
+      setLoading(false);
+
       // console.log('log do response do saveUpload', response.data.result);
     } catch (error: any) {
       console.log('log save upload tenant file', error);
@@ -1096,6 +1115,8 @@ export default function ViewProductsDeliveries() {
           type: 'danger'
         });
       }
+
+      setLoading(false);
     }
   }
 
@@ -1162,13 +1183,13 @@ export default function ViewProductsDeliveries() {
           handleNextUser('next');
         }
       } else if (checkType === 'next' && finalCard) {
-        if (dataTask.ticket_id !== '' && mandatoryUpload) {
+        if (dataTask.ticket_id !== '' && dataTask.ticket_id !== '0' && mandatoryUpload) {
           setModalFinalFile(true);
         }
-        if (dataTask?.ticket_id !== '' && !mandatoryUpload) {
+        if (dataTask?.ticket_id !== '' && dataTask.ticket_id !== '0' && !mandatoryUpload) {
           handleUploadApproved();
         }
-        if (dataTask?.ticket_id === '') {
+        if (dataTask?.ticket_id === '' && dataTask.ticket_id !== '0') {
           handleConcludeTask();
         }
       }
@@ -1676,9 +1697,9 @@ export default function ViewProductsDeliveries() {
 
   return (
     <ContainerDefault>
-      {loading && <Loader />}
+      {loadingData && <Loader />}
 
-      {!loading && (
+      {!loadingData && (
         <DeliveryWrapper>
           {/* {uploadClient && (
             <HeaderOpenTask
@@ -2108,7 +2129,13 @@ export default function ViewProductsDeliveries() {
             {dataTask?.status !== 'Concluida' && showClock && (
               <CardTaskPlay
                 cardTitle={state.isRunning ? 'Atividade iniciada' : 'Iniciar atividade'}
-                dataTime={data ? data?.estimatedTime : '00:00:00'}
+                dataTime={
+                  allEstimatedTime && myTaskShowHours && taskDeductHours === 'creation'
+                    ? allEstimatedTime.time_creation
+                    : taskDeductHours === 'essay'
+                    ? allEstimatedTime.time_essay
+                    : allEstimatedTime.total_time
+                }
                 blockPlay={typeOfPlay === 'product' && !viewProduct ? true : false}
                 handlePlay={handlePlayingType}
               />
@@ -2178,6 +2205,7 @@ export default function ViewProductsDeliveries() {
           user_alocated={handleAssignTask}
           closeModal={() => setModalSendToUser(false)}
           manualOverrideDate={showHoursBack}
+          loadingSubmit={loading}
         />
       </ModalDefault>
 
@@ -2246,6 +2274,7 @@ export default function ViewProductsDeliveries() {
             {!showHoursBack && (
               <ButtonDefault
                 typeButton="primary"
+                loading={loading}
                 onClick={() => {
                   handleSetUserWithoutSchedule();
                   setModalWithoutSchedule(false);
@@ -2258,6 +2287,7 @@ export default function ViewProductsDeliveries() {
             {showHoursBack && (
               <ButtonDefault
                 typeButton="primary"
+                loading={loading}
                 onClick={() => {
                   handleReturnTask({
                     user_id: selectedInitialUser?.user_id,
@@ -2305,7 +2335,7 @@ export default function ViewProductsDeliveries() {
             >
               Cancelar
             </ButtonDefault>
-            <ButtonDefault typeButton="primary" onClick={handleSaveUpload}>
+            <ButtonDefault loading={loading} typeButton="primary" onClick={handleSaveUpload}>
               Salvar
             </ButtonDefault>
           </div>
@@ -2374,7 +2404,7 @@ export default function ViewProductsDeliveries() {
                 Cancelar
               </ButtonDefault>
 
-              <ButtonDefault typeButton="primary" onClick={handleSaveUploadFinal}>
+              <ButtonDefault loading={loading} typeButton="primary" onClick={handleSaveUploadFinal}>
                 OK
               </ButtonDefault>
             </div>
@@ -2433,7 +2463,11 @@ export default function ViewProductsDeliveries() {
                 Cancelar
               </ButtonDefault>
 
-              <ButtonDefault typeButton="primary" onClick={handleSaveUploadClient}>
+              <ButtonDefault
+                loading={loading}
+                typeButton="primary"
+                onClick={handleSaveUploadClient}
+              >
                 Confirmar
               </ButtonDefault>
             </div>
@@ -2547,7 +2581,7 @@ export default function ViewProductsDeliveries() {
           </TextInfo>
 
           <ModalButtons>
-            <ButtonDefault typeButton="warning" onClick={handleDismemberment}>
+            <ButtonDefault loading={loading} typeButton="warning" onClick={handleDismemberment}>
               OK
             </ButtonDefault>
           </ModalButtons>
@@ -2765,7 +2799,13 @@ export default function ViewProductsDeliveries() {
               <ButtonDefault typeButton="dark" isOutline onClick={handleCancelSendToTenant}>
                 Descartar
               </ButtonDefault>
-              <ButtonDefault typeButton="primary" onClick={() => setToClientConfirmation(true)}>
+              <ButtonDefault
+                typeButton={filesToTenantApprove.length <= 0 ? 'blocked' : 'primary'}
+                disabled={filesToTenantApprove.length <= 0}
+                onClick={() =>
+                  filesToTenantApprove.length > 0 ? setToClientConfirmation(true) : ''
+                }
+              >
                 Salvar
               </ButtonDefault>
             </ModalButtons>
@@ -2776,7 +2816,7 @@ export default function ViewProductsDeliveries() {
               <ButtonDefault typeButton="dark" isOutline onClick={handleCancelSendToTenant}>
                 Cancelar
               </ButtonDefault>
-              <ButtonDefault typeButton="primary" onClick={handleUploadTenant}>
+              <ButtonDefault loading={loading} typeButton="primary" onClick={handleUploadTenant}>
                 Enviar
               </ButtonDefault>
             </ModalButtons>
@@ -2922,6 +2962,9 @@ export default function ViewProductsDeliveries() {
           )}
         </ModalProductsWrapper>
       </ModalDefault>
+
+      {/* Modal loading submit */}
+      <ModalLoader isOpen={loading} />
     </ContainerDefault>
   );
 }

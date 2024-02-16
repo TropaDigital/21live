@@ -87,6 +87,7 @@ interface TaskExchangeProps {
   user_alocated: (value: any) => void;
   closeModal: () => void;
   manualOverrideDate?: boolean;
+  loadingSubmit?: boolean;
 }
 
 // interface NewTaskItem {
@@ -106,7 +107,8 @@ export default function ScheduleUser({
   step,
   user_alocated,
   closeModal,
-  manualOverrideDate
+  manualOverrideDate,
+  loadingSubmit
 }: TaskExchangeProps) {
   const { addToast } = useToast();
   const [DTOTaskSelect, setDTOTaskSelect] = useState<ScheduleProps>({
@@ -536,6 +538,7 @@ export default function ScheduleUser({
 
               {checkAvailability && (
                 <ButtonDefault
+                  loading={loadingSubmit}
                   typeButton={DTOTaskSelect.user_selected ? 'primary' : 'blocked'}
                   onClick={() => user_alocated(responseScheduleInfos)}
                 >

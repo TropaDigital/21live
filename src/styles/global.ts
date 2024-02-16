@@ -290,6 +290,47 @@ legend {
     outline: none;
   }
 
+  .DialogOverlayLoader {
+    background-color: rgba(0, 0, 0, 0.7);
+    position: fixed;
+    inset: 0;
+    animation: overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 2;
+  }
+
+  .DialogContentLoader {
+    background-color: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    max-width: 90vw;
+    max-height: 95vh;
+    overflow-y: auto;
+    padding: 20px;
+    animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 2;
+
+    ::-webkit-scrollbar {
+      width: 0.4rem;
+      border-radius: 0.5rem;
+      background-color: hsl(220, 8%, 76%);
+
+      &-thumb {
+        background-color: hsl(220, 8%, 64%);
+        border-radius: 0.5rem;
+
+        &:hover {
+          background-color: hsl(220, 8%, 54%);
+        }
+      }
+    }
+  }
+  .DialogContentLoader:focus {
+    outline: none;
+  }
+
   .DialogTitle {
     font-size: var(--text-small-xl);
     font-weight: var(--weight-bold);

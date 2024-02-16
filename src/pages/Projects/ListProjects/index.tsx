@@ -146,7 +146,9 @@ export default function ListProjects() {
     isFetching,
     pages
   } = useFetch<IProjectCreate[]>(
-    `project?search=${search.replace(/[^\w ]/g, '')}&page=${selected}&tenant=${filter.client}`
+    `project?search=${search.replace(/[^\w ]/g, '')}&page=${selected}&tenant=${
+      filter.client
+    }&date_start=${filter.fromDate}&date_end=${filter.toDate}&category=${filter.category}`
   );
   // const [listSelected, setListSelected] = useState<any[]>([]);
 

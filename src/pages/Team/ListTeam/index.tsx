@@ -76,6 +76,7 @@ import {
   TabsWrapper
 } from './styles';
 import FilterModal from '../../../components/Ui/FilterModal';
+import ModalLoader from '../../../components/Ui/ModalLoader';
 
 interface UserProps {
   avatar: string;
@@ -222,6 +223,8 @@ export default function Team() {
   const handleOnSubmit = useCallback(
     async (event: any) => {
       try {
+        setLoading(true);
+
         event.preventDefault();
 
         // Inserir lógica
@@ -249,6 +252,8 @@ export default function Team() {
         });
         handleOnCancel();
         fetchData();
+
+        setLoading(false);
       } catch (e: any) {
         // Exibir erro
         addToast({
@@ -256,6 +261,8 @@ export default function Team() {
           title: 'ATENÇÃO',
           description: e.response.data.message
         });
+
+        setLoading(false);
       }
     },
     [formData, addToast, fetchData, handleOnCancel, modal]
@@ -851,7 +858,7 @@ export default function Team() {
             <ButtonDefault typeButton="dark" isOutline onClick={handleOnCancel}>
               Descartar
             </ButtonDefault>
-            <ButtonDefault typeButton="primary" isOutline type="submit">
+            <ButtonDefault loading={loading} typeButton="primary" isOutline type="submit">
               Salvar
             </ButtonDefault>
           </FooterModal>
@@ -1309,7 +1316,7 @@ export default function Team() {
               <ButtonDefault typeButton="lightWhite" isOutline onClick={handleOnCancelWorkload}>
                 Cancelar
               </ButtonDefault>
-              <ButtonDefault typeButton="primary" onClick={handleSubmitWorkDays}>
+              <ButtonDefault loading={loading} typeButton="primary" onClick={handleSubmitWorkDays}>
                 Salvar
               </ButtonDefault>
             </ModalButtons>
@@ -1320,13 +1327,16 @@ export default function Team() {
               <ButtonDefault typeButton="lightWhite" isOutline onClick={handleOnCancelWorkload}>
                 Cancelar
               </ButtonDefault>
-              <ButtonDefault typeButton="primary" onClick={handleSubmit}>
+              <ButtonDefault loading={loading} typeButton="primary" onClick={handleSubmit}>
                 Salvar
               </ButtonDefault>
             </ModalButtons>
           )}
         </ModalWrapper>
       </ModalDefault>
+
+      {/* Modal loading submit */}
+      <ModalLoader isOpen={loading} />
 
       {/* Modal filters */}
       <FilterModal

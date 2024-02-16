@@ -49,6 +49,7 @@ import {
 } from '../Tasks/ComponentSteps/SummaryTasks/styles';
 import Loader from '../../components/LoaderSpin';
 import FilterModal from '../../components/Ui/FilterModal';
+import ModalLoader from '../../components/Ui/ModalLoader';
 
 // Styles
 import {
@@ -215,6 +216,7 @@ export default function Services() {
   const checkboxWrapperRef = useRef<HTMLDivElement>(null);
   const [modalFilters, setModalFilters] = useState<boolean>(false);
   const [error, setError] = useState<StateErrorProps>({});
+  const [loading, setLoading] = useState<boolean>(false);
 
   function setErrorInput(value: any, message: any) {
     if (!message) {
@@ -412,6 +414,7 @@ export default function Services() {
   const handleOnCreateKit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     try {
       e.preventDefault();
+      setLoading(true);
 
       const formData = new FormData(e?.currentTarget);
       const data = Object.fromEntries(formData);
@@ -434,18 +437,23 @@ export default function Services() {
       });
 
       getKitData();
+
+      setLoading(false);
     } catch (err: any) {
       addToast({
         type: 'danger',
         title: 'ATENÇÃO',
         description: err.message
       });
+
+      setLoading(false);
     }
   };
 
   const handleOnUpdateKit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     try {
       e.preventDefault();
+      setLoading(true);
 
       const formData = new FormData(e?.currentTarget);
       const data = Object.fromEntries(formData);
@@ -467,12 +475,15 @@ export default function Services() {
         title: 'Sucesso',
         description: 'Kit foi atualizado!'
       });
+
+      setLoading(false);
     } catch (err: any) {
       addToast({
         type: 'danger',
         title: 'ATENÇÃO',
         description: err.message
       });
+      setLoading(false);
     }
   };
 
@@ -529,6 +540,8 @@ export default function Services() {
   const handleOnSubmit = useCallback(
     async (event: any) => {
       try {
+        setLoading(true);
+
         event.preventDefault();
 
         const {
@@ -643,6 +656,8 @@ export default function Services() {
 
         handleOnCancel();
         fetchData();
+
+        setLoading(false);
       } catch (e: any) {
         // Exibir erro
         console.log('log do erro', e);
@@ -674,6 +689,8 @@ export default function Services() {
             type: 'danger'
           });
         }
+
+        setLoading(false);
         // addToast({
         //   type: 'danger',
         //   title: 'ATENÇÃO',
@@ -757,6 +774,8 @@ export default function Services() {
     async (event: any) => {
       try {
         event.preventDefault();
+        setLoading(true);
+
         const newCategory = {
           category: category
         };
@@ -778,12 +797,16 @@ export default function Services() {
         setCategory('');
         fetchData();
         getCategory();
+
+        setLoading(false);
       } catch (e: any) {
         addToast({
           type: 'danger',
           title: 'ATENÇÃO',
           description: e.response.data.message
         });
+
+        setLoading(false);
       }
     },
     [addToast, category]
@@ -792,7 +815,10 @@ export default function Services() {
   const editCategory = useCallback(
     async (event: any) => {
       try {
+        setLoading(true);
+
         event.preventDefault();
+
         const newCategory = {
           service_category_id: modalCategory.category_id,
           category: category
@@ -815,12 +841,16 @@ export default function Services() {
         setCategory('');
         fetchData();
         getCategory();
+
+        setLoading(false);
       } catch (e: any) {
         addToast({
           type: 'danger',
           title: 'ATENÇÃO',
           description: e.response.data.message
         });
+
+        setLoading(false);
       }
     },
     [addToast, category]
@@ -1399,7 +1429,7 @@ export default function Services() {
             <ButtonDefault typeButton="dark" isOutline onClick={handleOnCancel}>
               Descartar
             </ButtonDefault>
-            <ButtonDefault typeButton="primary" isOutline type="submit">
+            <ButtonDefault loading={loading} typeButton="primary" isOutline type="submit">
               Salvar
             </ButtonDefault>
           </FooterModal>
@@ -1563,7 +1593,7 @@ export default function Services() {
             <ButtonDefault typeButton="dark" isOutline onClick={handleOnOpenChangeViewKit}>
               Descartar
             </ButtonDefault>
-            <ButtonDefault typeButton="primary" isOutline type="submit">
+            <ButtonDefault loading={loading} typeButton="primary" isOutline type="submit">
               Salvar
             </ButtonDefault>
           </FooterModal>
@@ -1685,6 +1715,7 @@ export default function Services() {
                 typeButton="primary"
                 isOutline
                 type="button"
+                loading={loading}
                 onClick={(e: any) => createCategory(e)}
               >
                 Salvar
@@ -1696,6 +1727,7 @@ export default function Services() {
                 typeButton="primary"
                 isOutline
                 type="button"
+                loading={loading}
                 onClick={(e: any) => editCategory(e)}
               >
                 Atualizar
@@ -1714,6 +1746,9 @@ export default function Services() {
         clearFilters={handleClearFilters}
         filterType="product"
       />
+
+      {/* Modal loading submit */}
+      <ModalLoader isOpen={loading} />
     </ContainerDefault>
   );
 }

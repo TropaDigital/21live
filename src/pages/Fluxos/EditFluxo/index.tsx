@@ -24,6 +24,7 @@ import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import HeaderPage from '../../../components/HeaderPage';
 import CardFluxo from '../../../components/Ui/CardFluxo';
 import { SectionDefault } from '../../../components/UiElements/styles';
+import ModalLoader from '../../../components/Ui/ModalLoader';
 
 // Styles
 import { Container, ContentEditFluxo, HeaderEditPlus } from './styled';
@@ -41,6 +42,7 @@ export default function EditFluxo() {
   const navigate = useNavigate();
   const location = useLocation();
   const [state, setState] = useLocalStorage('COLUMN', []);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const { data: dataTeam } = useFetch<OfficeProps[]>(`function`);
   // const { data: dataTeam } = useFetch<UserProps[]>(`team?page=${1}&search=${''}`);
@@ -87,6 +89,8 @@ export default function EditFluxo() {
 
   async function saveFluxo() {
     try {
+      setLoading(true);
+
       const response = await api.post('/card', column);
       setState(response.data.result);
       setColumn(response.data.result);
@@ -98,6 +102,8 @@ export default function EditFluxo() {
         });
         // navigate('/fluxo');
       }
+
+      setLoading(false);
     } catch (err: any) {
       console.log('ERR =>', err);
       if (err.response.data.result.length !== 0) {
@@ -115,6 +121,8 @@ export default function EditFluxo() {
           type: 'danger'
         });
       }
+
+      setLoading(false);
     }
   }
 
@@ -165,7 +173,7 @@ export default function EditFluxo() {
             <BiShow />
             Visualizar
           </ButtonDefault>
-          <ButtonDefault typeButton="success" onClick={checkCards}>
+          <ButtonDefault loading={loading} typeButton="success" onClick={checkCards}>
             <BiSave />
             Salvar
           </ButtonDefault>
@@ -238,6 +246,9 @@ export default function EditFluxo() {
            );
          } */}
       </SectionDefault>
+
+      {/* Modal loading submit */}
+      <ModalLoader isOpen={loading} />
     </Container>
   );
 }
