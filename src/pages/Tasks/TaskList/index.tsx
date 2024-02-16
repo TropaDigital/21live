@@ -14,6 +14,7 @@ import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useFetch } from '../../../hooks/useFetch';
 import { useToast } from '../../../hooks/toast';
 import { useParamsHook } from '../../../hooks/useParams';
+import { useAuth } from '../../../hooks/AuthContext';
 
 // Components
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
@@ -37,8 +38,8 @@ import {
   SummaryTaskInfo
 } from '../ComponentSteps/SummaryTasks/styles';
 import ProgressBar from '../../../components/Ui/ProgressBar';
-import Loader from '../../../components/LoaderSpin';
 import FilterModal from '../../../components/Ui/FilterModal';
+import ModalLoader from '../../../components/Ui/ModalLoader';
 
 // Utils
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
@@ -51,7 +52,6 @@ import moment from 'moment';
 
 // Styles
 import { ModalShowTaskWrapper, Flag, StatusTable, FilterTasks, CopyButton } from './styles';
-import { useAuth } from '../../../hooks/AuthContext';
 
 interface FilterProps {
   status: string;
@@ -268,8 +268,6 @@ export default function TaskList() {
           </ButtonDefault>
         </Link>
       </HeaderPage>
-
-      {isFetching && <Loader />}
 
       {!isFetching && (
         <Table>
@@ -590,6 +588,9 @@ export default function TaskList() {
           </Summary>
         </ModalShowTaskWrapper>
       </ModalDefault>
+
+      {/* Modal loading submit */}
+      <ModalLoader isOpen={isFetching} />
 
       {/* Modal filters */}
       <FilterModal

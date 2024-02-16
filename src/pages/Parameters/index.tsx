@@ -6,8 +6,8 @@ import { useState, useEffect } from 'react';
 import HeaderPage from '../../components/HeaderPage';
 import { InputDefault } from '../../components/Inputs/InputDefault';
 import { ContainerDefault } from '../../components/UiElements/styles';
-import Loader from '../../components/LoaderSpin';
 import ButtonDefault from '../../components/Buttons/ButtonDefault';
+import ModalLoader from '../../components/Ui/ModalLoader';
 
 // Styles
 import { FieldsLine, ParametersTitle, ParametersWrapper, SaveButtons } from './styles';
@@ -188,8 +188,6 @@ export default function Parameters() {
     <ContainerDefault>
       <HeaderPage title="Parâmetros" subTitle="Escolha os nomes para os principais parâmetros" />
 
-      {loading && <Loader />}
-
       {!loading && (
         <>
           {/* Input params */}
@@ -258,6 +256,9 @@ export default function Parameters() {
           </ParametersWrapper>
         </>
       )}
+
+      {/* Modal loading submit */}
+      <ModalLoader isOpen={loading} />
     </ContainerDefault>
   );
 }

@@ -17,7 +17,7 @@ import ModalDefault from '../../../components/Ui/ModalDefault';
 import { ModalButtons } from '../ViewTask/styles';
 import { InputDefault } from '../../../components/Inputs/InputDefault';
 import { SelectDefault } from '../../../components/Inputs/SelectDefault';
-import Loader from '../../../components/LoaderSpin';
+import ModalLoader from '../../../components/Ui/ModalLoader';
 
 // Styles
 import {
@@ -345,8 +345,6 @@ export default function CreateTaksWithRefused() {
   return (
     <RefusedWrapper>
       <HeaderPage title="Criar tarefa (com produtos recusados)" />
-
-      {loading && <Loader />}
 
       {!loading && (
         <FormWrapper>
@@ -719,6 +717,9 @@ export default function CreateTaksWithRefused() {
           </ModalButtons>
         </ModalTaskWrapper>
       </ModalDefault>
+
+      {/* Modal loading submit */}
+      <ModalLoader isOpen={loading} />
 
       {/* Modal Schedule user */}
       {/* <ModalDefault

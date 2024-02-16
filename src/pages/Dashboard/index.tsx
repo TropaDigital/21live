@@ -17,7 +17,6 @@ import BarChartGrafic from '../../components/GraphicsChart/BarChartGrafic';
 import { TableDefault } from '../../components/TableDefault';
 import { ContainerGroupTable, SectionDefault } from '../../components/UiElements/styles';
 import TopCardsDash, { CardsData } from '../../components/Cards/DashboardTopCards';
-import Loader from '../../components/LoaderSpin';
 import UserPerformanceCard, { UserCardProps } from '../../components/Cards/UserPerformanceCard';
 import { CardDataDash } from '../../components/Cards/CardDataDash';
 import FilterModal from '../../components/Ui/FilterModal';
@@ -29,6 +28,7 @@ import ButtonDefault from '../../components/Buttons/ButtonDefault';
 import TaskTable from '../../components/Ui/TaskTable';
 import { InputDefault } from '../../components/Inputs/InputDefault';
 import InputMultipleSelect from '../../components/Inputs/InputMultipleSelect';
+import ModalLoader from '../../components/Ui/ModalLoader';
 
 // Styles
 import {
@@ -44,7 +44,6 @@ import {
   OperatorTopWrapper,
   SmallCardsWrapper,
   HoursTable,
-  TdColor,
   BulletPointInfos,
   BulletsClientWrapper,
   ModalReportWrapper,
@@ -122,6 +121,7 @@ interface TaskConclude {
 interface ReportForm {
   client_id: string;
   client_name: string;
+  contact_names: [];
   contract: string;
   date_start: string;
   date_end: string;
@@ -171,13 +171,15 @@ export default function Dashboard() {
     fromDate: '',
     toDate: ''
   });
-  const { formData, handleOnChange, setData, setFormValue } = useForm({
+  const { formData, handleOnChange, setData } = useForm({
     client_id: '',
     client_name: '',
+    contact_name: '',
     contract: '',
     date_start: '',
     date_end: '',
-    requesters: []
+    requesters: [],
+    contact_names: []
   } as ReportForm);
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const [dataProjects, setDataProjects] = useState<ServicesProps[]>([]);
@@ -236,11 +238,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     function getDayFromOneMonthAgo() {
-      const currentDate = moment();
-
-      const oneMonthAgo = currentDate.subtract(1, 'month');
-
-      return oneMonthAgo;
+      return moment().subtract(1, 'month');
     }
 
     const dayFromOneMonthAgo = getDayFromOneMonthAgo();
@@ -957,14 +955,25 @@ export default function Dashboard() {
       contract: formData.contract,
       date_start: formData.date_start,
       date_end: formData.date_end,
-      requesters: formData.requesters
+      requesters: formData.requesters,
+      contact_names: formData.contact_names
     });
     setErrorsForms({});
   };
 
   const onChange = (option: any) => {
     const dataOption = option.map((row: any) => ({ user_id: row.value }));
-    setFormValue('requesters', dataOption);
+    const dataNames = option.map((row: any) => ({ name: row.label }));
+
+    setData({
+      client_id: formData.client_id,
+      client_name: formData.client_name,
+      contract: formData.contract,
+      date_start: formData.date_start,
+      date_end: formData.date_end,
+      requesters: dataOption,
+      contact_names: dataNames
+    });
   };
 
   const removeError = (fieldName: string) => {
@@ -1035,10 +1044,12 @@ export default function Dashboard() {
         setData({
           client_id: '',
           client_name: '',
+          contact_name: '',
           contract: '',
           date_start: '',
           date_end: '',
-          requesters: []
+          requesters: [],
+          contact_names: []
         });
       }
     } catch (error: any) {
@@ -1092,6 +1103,42 @@ export default function Dashboard() {
     navigate(`/entregas/${infos.task.task_id}`, { state: taskId });
   };
 
+  const handlePreviousPeriod = (period: string) => {
+    if (period === 'year') {
+      setData({
+        client_id: formData.client_id,
+        client_name: formData.client_name,
+        contract: formData.contract,
+        date_start: moment().subtract(1, 'year').format('YYYY-MM-DD'),
+        date_end: moment().format('YYYY-MM-DD'),
+        requesters: formData.requesters,
+        contact_names: formData.contact_names
+      });
+    }
+    if (period === 'month') {
+      setData({
+        client_id: formData.client_id,
+        client_name: formData.client_name,
+        contract: formData.contract,
+        date_start: moment().subtract(1, 'month').format('YYYY-MM-DD'),
+        date_end: moment().format('YYYY-MM-DD'),
+        requesters: formData.requesters,
+        contact_names: formData.contact_names
+      });
+    }
+    if (period === 'week') {
+      setData({
+        client_id: formData.client_id,
+        client_name: formData.client_name,
+        contract: formData.contract,
+        date_start: moment().subtract(1, 'week').format('YYYY-MM-DD'),
+        date_end: moment().format('YYYY-MM-DD'),
+        requesters: formData.requesters,
+        contact_names: formData.contact_names
+      });
+    }
+  };
+
   const hasFilters = Object.values(filter).every((obj) => obj === null || obj === '');
 
   // useEffect(() => {
@@ -1101,13 +1148,11 @@ export default function Dashboard() {
 
   return (
     <Container>
-      {dashType === '' && (
+      {/* {dashType === '' && (
         <div>
           <Loader />
         </div>
-      )}
-
-      {isFetching && <Loader />}
+      )} */}
 
       {/* Dash Gestor */}
       {dashType === 'admin' && !isFetching && (
@@ -2602,6 +2647,9 @@ export default function Dashboard() {
         filterType="dash"
       />
 
+      {/* Modal loading submit */}
+      <ModalLoader isOpen={isFetching} />
+
       {/* Modal report */}
       <ModalDefault isOpen={modalReport} onOpenChange={handleCancelReport} title="Gerar relatório">
         <ModalReportWrapper>
@@ -2638,73 +2686,13 @@ export default function Dashboard() {
           </ModalField>
 
           <ModalField>
-            <InputDefault
-              label="Data inicial"
-              placeholder="00/00/0000"
-              name="date_start"
-              type="date"
-              max={'9999-12-31'}
-              icon={BiCalendar}
-              onChange={(e) => {
-                handleOnChange(e);
-                removeError('date_start');
-              }}
-              value={formData.date_start}
-              // onKeyDown={handleKeyDown}
-              error={
-                errorsForm.date_start || errorsForm.allFields ? 'Data inicial é obrigatória!' : ''
-              }
-            />
-            {/* <SelectDefault
-              label="Mês"
-              name="month"
-              value={formData.date_start}
-              onChange={handleOnChange}
-            >
-              {monthsArray?.map((row: any) => (
-                <option key={row.id} value={row.month_name}>
-                  {row.month_name}
-                </option>
-              ))}
-            </SelectDefault> */}
-
-            {/* <SelectDefault
-              label="Ano"
-              name="year"
-              value={formData.date_end}
-              onChange={handleOnChange}
-            >
-              {ten_years?.map((row: any) => (
-                <option key={row} value={row}>
-                  {row}
-                </option>
-              ))}
-            </SelectDefault> */}
-            <InputDefault
-              label="Data final"
-              placeholder="00/00/0000"
-              name="date_end"
-              type="date"
-              max={'9999-12-31'}
-              icon={BiCalendar}
-              onChange={(e) => {
-                handleOnChange(e);
-                removeError('date_end');
-              }}
-              value={formData.date_end}
-              // onKeyDown={handleKeyDown}
-              error={errorsForm.date_end || errorsForm.allFields ? 'Data final obrigatória' : ''}
-            />
-          </ModalField>
-
-          <ModalField>
             <InputMultipleSelect
               name="members"
               options={requestersData?.map((row) => ({
                 value: row.user_id,
                 label: row.name
               }))}
-              label="Solicitantes"
+              label="Cliente solicitante"
               isDisabled={formData.requesters ? false : true}
               onChange={(option) => onChange(option)}
               defaultValue={defaultOptionsTeam?.map((row) => ({
@@ -2736,6 +2724,69 @@ export default function Dashboard() {
                 </option>
               ))}
             </SelectDefault> */}
+          </ModalField>
+
+          <ModalField>
+            <div className="period">Sugestões de período:</div>
+            <ButtonDefault
+              typeButton="primary"
+              isOutline
+              onClick={() => handlePreviousPeriod('year')}
+            >
+              Ultimo ano
+            </ButtonDefault>
+
+            <ButtonDefault
+              typeButton="primary"
+              isOutline
+              onClick={() => handlePreviousPeriod('month')}
+            >
+              Ultimo Mês
+            </ButtonDefault>
+
+            <ButtonDefault
+              typeButton="primary"
+              isOutline
+              onClick={() => handlePreviousPeriod('week')}
+            >
+              Ultima Semana
+            </ButtonDefault>
+          </ModalField>
+
+          <ModalField>
+            <InputDefault
+              label="Data inicial"
+              placeholder="00/00/0000"
+              name="date_start"
+              type="date"
+              max={'9999-12-31'}
+              icon={BiCalendar}
+              onChange={(e) => {
+                handleOnChange(e);
+                removeError('date_start');
+              }}
+              value={formData.date_start}
+              // onKeyDown={handleKeyDown}
+              error={
+                errorsForm.date_start || errorsForm.allFields ? 'Data inicial é obrigatória!' : ''
+              }
+            />
+
+            <InputDefault
+              label="Data final"
+              placeholder="00/00/0000"
+              name="date_end"
+              type="date"
+              max={'9999-12-31'}
+              icon={BiCalendar}
+              onChange={(e) => {
+                handleOnChange(e);
+                removeError('date_end');
+              }}
+              value={formData.date_end}
+              // onKeyDown={handleKeyDown}
+              error={errorsForm.date_end || errorsForm.allFields ? 'Data final obrigatória' : ''}
+            />
           </ModalField>
 
           <ModalButtons>

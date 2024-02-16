@@ -8,12 +8,12 @@ import { BiPlus, BiSearchAlt } from 'react-icons/bi';
 // Components
 import ButtonDefault from '../../components/Buttons/ButtonDefault';
 import HeaderPage from '../../components/HeaderPage';
-import Loader from '../../components/LoaderSpin';
 import { Table } from '../../components/Table';
 import { TableHead } from '../../components/Table/styles';
 import { InputDefault } from '../../components/Inputs/InputDefault';
 import Pagination from '../../components/Pagination';
 import ButtonTable from '../../components/Buttons/ButtonTable';
+import ModalLoader from '../../components/Ui/ModalLoader';
 
 // Styles
 import { Container, LogoContainer } from './styles';
@@ -68,8 +68,6 @@ export default function Clients() {
           Novo Cliente
         </ButtonDefault>
       </HeaderPage>
-
-      {isFetching && <Loader />}
 
       {!isFetching && (
         <Table>
@@ -163,6 +161,9 @@ export default function Clients() {
           </table>
         </Table>
       )}
+
+      {/* Modal loading submit */}
+      <ModalLoader isOpen={isFetching} />
     </Container>
   );
 }

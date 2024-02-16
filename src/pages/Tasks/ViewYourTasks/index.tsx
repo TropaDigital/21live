@@ -1,12 +1,12 @@
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 // Components
 import HeaderPage from '../../../components/HeaderPage';
 import { ContainerDefault } from '../../../components/UiElements/styles';
 import TaskTable from '../../../components/Ui/TaskTable';
-import Loader from '../../../components/LoaderSpin';
+import ModalLoader from '../../../components/Ui/ModalLoader';
 
 // Hooks
 import useDebouncedCallback from '../../../hooks/useDebounced';
@@ -85,8 +85,6 @@ export default function ViewTaskList() {
     <ContainerDefault>
       <HeaderPage title="Minhas tarefas" />
 
-      {isFetching && <Loader />}
-
       {!isFetching && (
         <TaskTable
           data={data ? data : []}
@@ -103,6 +101,9 @@ export default function ViewTaskList() {
           orderSelected={setTaskOrder}
         />
       )}
+
+      {/* Modal loading submit */}
+      <ModalLoader isOpen={isFetching} />
     </ContainerDefault>
   );
 }

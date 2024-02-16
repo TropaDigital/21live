@@ -47,7 +47,6 @@ import {
   SummaryInfoWrapper,
   SummaryTaskInfo
 } from '../Tasks/ComponentSteps/SummaryTasks/styles';
-import Loader from '../../components/LoaderSpin';
 import FilterModal from '../../components/Ui/FilterModal';
 import ModalLoader from '../../components/Ui/ModalLoader';
 
@@ -908,8 +907,6 @@ export default function Services() {
         </>
       </HeaderPage>
 
-      {isFetching && <Loader />}
-
       {!isFetching && (
         <Table>
           <TableHead>
@@ -1748,7 +1745,7 @@ export default function Services() {
       />
 
       {/* Modal loading submit */}
-      <ModalLoader isOpen={loading} />
+      <ModalLoader isOpen={loading || isFetching} />
     </ContainerDefault>
   );
 }
