@@ -33,6 +33,7 @@ import {
 } from '../../../components/UiElements/styles';
 import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
 import { SelectDefault } from '../../../components/Inputs/SelectDefault';
+import ModalLoader from '../../../components/Ui/ModalLoader';
 
 // Styles
 // import { PermissionsList, PermissionsTitle, PermissionsWrapper } from './styles';
@@ -40,11 +41,6 @@ import { SwitchField } from './styles';
 
 // Libraries
 import Switch from 'react-switch';
-import Loader from '../../../components/LoaderSpin';
-
-// Images
-import PandaLoader from '../../../assets/LoadingPanda.gif';
-import ModalLoader from '../../../components/Ui/ModalLoader';
 
 interface OfficeProps {
   function_id: number;
@@ -233,8 +229,6 @@ export default function ListOffice() {
         </ButtonDefault>
       </HeaderPage>
 
-      {isFetching && <Loader />}
-
       {!isFetching && (
         <SectionDefault>
           <ContentDefault>
@@ -374,7 +368,7 @@ export default function ListOffice() {
       </ModalDefault>
 
       {/* Modal loading submit */}
-      <ModalLoader isOpen={loading} />
+      <ModalLoader isOpen={loading || isFetching} />
     </ContainerDefault>
   );
 }
