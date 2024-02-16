@@ -11,7 +11,6 @@ import { ContainerDefault } from '../../../components/UiElements/styles';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import ModalDefault from '../../../components/Ui/ModalDefault';
 import WrapperEditor from '../../../components/WrapperEditor';
-import Loader from '../../../components/LoaderSpin';
 import AvatarDefault from '../../../components/Ui/Avatar/avatarDefault';
 
 // Icons
@@ -154,7 +153,6 @@ export default function ViewRequest() {
   const { user } = useAuth();
   const { addToast } = useToast();
   const [loading, setLoading] = useState<boolean>(false);
-  const [loadingData, setLoadingData] = useState<boolean>(false);
   const [selectedCardInfo, setSelectedCardInfo] = useState<string>('');
   const [requestData, setRequestData] = useState<TicketProps>();
   const [modalImage, setModalImage] = useState<ModalProps>({
@@ -193,7 +191,7 @@ export default function ViewRequest() {
 
   async function getTicketInfos(ticketId: string) {
     try {
-      setLoadingData(true);
+      setLoading(true);
 
       const response = await api.get(`/ticket?id=${ticketId}`);
 
@@ -201,7 +199,7 @@ export default function ViewRequest() {
         setRequestData(response.data.result[0]);
       }
 
-      setLoadingData(false);
+      setLoading(false);
     } catch (error: any) {
       console.log('log do error getting ticket', error);
 
@@ -220,7 +218,7 @@ export default function ViewRequest() {
           description: error.response.data.message
         });
       }
-      setLoadingData(false);
+      setLoading(false);
     }
   }
 
@@ -357,9 +355,7 @@ export default function ViewRequest() {
 
   return (
     <ContainerDefault>
-      {loadingData && <Loader />}
-
-      {!loadingData && (
+      {!loading && (
         <>
           <HeaderRequest title={titleData} ticketInfos={ticketInfos} />
 

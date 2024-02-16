@@ -48,8 +48,9 @@ import {
   FilterTotal
 } from '../../../components/UiElements/styles';
 import Avatar from '../../../components/Ui/Avatar';
-import Loader from '../../../components/LoaderSpin';
 import { ModalImage } from '../../Requests/ViewRequests/styles';
+import FilterModal from '../../../components/Ui/FilterModal';
+import ModalLoader from '../../../components/Ui/ModalLoader';
 
 // Styles
 import { Summary } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
@@ -68,7 +69,6 @@ import {
   ProjectStatus,
   ViewFileBtn
 } from './styles';
-import FilterModal from '../../../components/Ui/FilterModal';
 
 interface StateProps {
   [key: string]: any;
@@ -79,6 +79,7 @@ interface FilterProps {
   toDate: string;
   client: string;
   category: string;
+  status: string;
   [key: string]: string | any; // Index signature
 }
 
@@ -129,7 +130,8 @@ export default function ListProjects() {
     fromDate: '',
     toDate: '',
     client: '',
-    category: ''
+    category: '',
+    status: ''
   });
 
   // const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
@@ -148,7 +150,9 @@ export default function ListProjects() {
   } = useFetch<IProjectCreate[]>(
     `project?search=${search.replace(/[^\w ]/g, '')}&page=${selected}&tenant=${
       filter.client
-    }&date_start=${filter.fromDate}&date_end=${filter.toDate}&category=${filter.category}`
+    }&date_start=${filter.fromDate}&date_end=${filter.toDate}&category=${
+      filter.category
+    }&status_fake=${filter.status}`
   );
   // const [listSelected, setListSelected] = useState<any[]>([]);
 
@@ -390,7 +394,8 @@ export default function ListProjects() {
       fromDate: '',
       toDate: '',
       client: '',
-      category: ''
+      category: '',
+      status: ''
     });
     setModalFilters(false);
   };
@@ -427,7 +432,6 @@ export default function ListProjects() {
           </ButtonDefault>
         </Link>
       </HeaderPage>
-      {isFetching && <Loader />}
 
       {!isFetching && (
         <Table>
@@ -487,6 +491,7 @@ export default function ListProjects() {
                 {filter.client !== '' ? <span>Cliente</span> : ''}
                 {filter.category !== '' ? <span>Tipo</span> : ''}
                 {filter.fromDate !== '' ? <span>Data</span> : ''}
+                {filter.status !== '' ? <span>Status</span> : ''}
               </FilterTotal>
 
               <AppliedFilter>
@@ -517,6 +522,14 @@ export default function ListProjects() {
                 {filter.toDate !== '' ? (
                   <div className="filter-title">
                     Data final: <span>{moment(filter.toDate).format('DD/MM/YYYY')}</span>
+                  </div>
+                ) : (
+                  ''
+                )}
+
+                {filter.status !== '' ? (
+                  <div className="filter-title">
+                    Status: <span style={{ textTransform: 'capitalize' }}>{filter.status}</span>
                   </div>
                 ) : (
                   ''
@@ -635,20 +648,20 @@ export default function ListProjects() {
                   <td style={{ cursor: 'pointer' }} onClick={() => handleOpenModal(row)}>
                     <ProjectStatus
                       className={
-                        row.status === 'Em Andamento'
+                        row.status_fake === 'Em Progresso'
                           ? 'status progress'
-                          : row.status === 'Concluida'
+                          : row.status_fake === 'Concluido'
                           ? 'status finished'
-                          : row.status === 'Vencido'
+                          : row.status_fake === 'Vencido'
                           ? 'status overdue'
                           : 'status'
                       }
                     >
-                      {row.status === 'Em Andamento'
-                        ? 'Em progresso'
-                        : row.status === 'Concluida'
+                      {row.status_fake === 'Em Progresso'
+                        ? 'Em andamento'
+                        : row.status_fake === 'Concluido'
                         ? 'Concluído'
-                        : row.status === 'Stand By'
+                        : row.status_fake === 'Stand By'
                         ? 'Stand By'
                         : 'Vencido'}
                     </ProjectStatus>
@@ -930,6 +943,9 @@ export default function ListProjects() {
           )}
         </ModalShowProjectWrapper>
       </ModalDefault>
+
+      {/* Modal loading submit */}
+      <ModalLoader isOpen={isFetching} />
 
       {/* Modal filters */}
       <FilterModal

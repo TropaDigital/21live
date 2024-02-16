@@ -51,7 +51,8 @@ import { Table } from '../../../components/Table';
 import { FilterGroup, TableHead } from '../../../components/Table/styles';
 import Pagination from '../../../components/Pagination';
 import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
-import Loader from '../../../components/LoaderSpin';
+import FilterModal from '../../../components/Ui/FilterModal';
+import ModalLoader from '../../../components/Ui/ModalLoader';
 
 // Libraries
 import moment from 'moment';
@@ -75,8 +76,6 @@ import {
   SelectedTab,
   TabsWrapper
 } from './styles';
-import FilterModal from '../../../components/Ui/FilterModal';
-import ModalLoader from '../../../components/Ui/ModalLoader';
 
 interface UserProps {
   avatar: string;
@@ -604,8 +603,6 @@ export default function Team() {
           </ButtonDefault> */}
         </>
       </HeaderPage>
-
-      {isFetching && <Loader />}
 
       {!isFetching && (
         <SectionDefault>
@@ -1336,7 +1333,7 @@ export default function Team() {
       </ModalDefault>
 
       {/* Modal loading submit */}
-      <ModalLoader isOpen={loading} />
+      <ModalLoader isOpen={loading || isFetching} />
 
       {/* Modal filters */}
       <FilterModal

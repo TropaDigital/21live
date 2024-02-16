@@ -23,7 +23,6 @@ import HeaderPage from '../../components/HeaderPage';
 import { ContainerDefault } from '../../components/UiElements/styles';
 import ButtonDefault from '../../components/Buttons/ButtonDefault';
 import { TableDefault } from '../../components/TableDefault';
-import Loader from '../../components/LoaderSpin';
 
 // Icons
 import { IoMdDownload } from 'react-icons/io';
@@ -45,6 +44,7 @@ import ModalLoader from '../../components/Ui/ModalLoader';
 interface ReportProps {
   client_id: string;
   client_name: string;
+  contact_names: [];
   contract: string;
   date_start: string;
   date_end: string;
@@ -136,7 +136,6 @@ export default function MonthlyReport() {
   const todayDate = new Date();
   const reportInfos: ReportProps = location.state;
   const [loading, setLoading] = useState<boolean>(false);
-  const [loadingData, setLoadingData] = useState<boolean>(false);
   const [dataInfoReport, setDataInfoReport] = useState<ReportFullInfoProps>({
     overview_periodo: {
       tarefa_concluida_qtd: '',
@@ -166,14 +165,14 @@ export default function MonthlyReport() {
 
   async function getReportFullInfos() {
     try {
-      setLoadingData(true);
+      setLoading(true);
       const response = await api.get(
         `/report?tenant_id=${reportInfos.client_id}&date_start=${reportInfos.date_start}&date_end=${reportInfos.date_end}&project_id=${reportInfos.contract}`
       );
 
       setDataInfoReport(response.data.result);
 
-      setLoadingData(false);
+      setLoading(false);
     } catch (error: any) {
       console.log('log do error getting report', error);
       addToast({
@@ -181,7 +180,7 @@ export default function MonthlyReport() {
         description: error.message,
         type: 'warning'
       });
-      setLoadingData(false);
+      setLoading(false);
     }
   }
 
@@ -287,9 +286,7 @@ export default function MonthlyReport() {
         </HeaderBtns>
       </HeaderPage>
 
-      {loadingData && <Loader />}
-
-      {!loadingData && (
+      {!loading && (
         <ReportWrapper ref={inputRef}>
           {/* Header Tenant infos */}
           <ReportHeader>
@@ -313,7 +310,12 @@ export default function MonthlyReport() {
               <ClientInfos>
                 <div className="report-title">Reporte mensal</div>
                 <div className="client-name">Cliente: {reportInfos.client_name}</div>
-                <div className="infos">Contato: -----</div>
+                <div className="infos">
+                  Contato:{' '}
+                  {reportInfos.contact_names.map((row: any, index: number) => {
+                    return <span key={index}>{(index ? ', ' : '') + row.name}</span>;
+                  })}
+                </div>
                 <div className="infos">Atendimento: -----</div>
               </ClientInfos>
             </ClientWrapper>
@@ -347,9 +349,7 @@ export default function MonthlyReport() {
                 </div>
                 <div className="bullet">
                   Total horas:{' '}
-                  <span>
-                    {dataInfoReport?.overview_periodo?.tarefa_concluida_tempo.split(':')[0]}H
-                  </span>
+                  <span>{dataInfoReport?.overview_periodo?.tarefa_concluida_tempo}</span>
                 </div>
                 <div className="bullet">
                   Jobs em andamento:{' '}
@@ -357,15 +357,11 @@ export default function MonthlyReport() {
                 </div>
                 <div className="bullet">
                   Horas Jobs em andamento:{' '}
-                  <span>
-                    {dataInfoReport?.overview_periodo?.tarefa_em_andamento_tempo?.split(':')[0]}H
-                  </span>
+                  <span>{dataInfoReport?.overview_periodo?.tarefa_em_andamento_tempo}</span>
                 </div>
                 <div className="bullet">
                   Saldo horas contrato:{' '}
-                  <span>
-                    {dataInfoReport?.overview_periodo?.projeto_tempo_consumido?.split(':')[0]}H
-                  </span>
+                  <span>{dataInfoReport?.overview_periodo?.projeto_tempo_consumido}</span>
                 </div>
 
                 <div className="bullet space">
@@ -384,14 +380,14 @@ export default function MonthlyReport() {
               </div>
               <div className="info-line">Tipo: {dataInfoReport?.resumo_contrato?.categoria}</div>
               <div className="info-line">
-                Total horas contrato: {dataInfoReport?.resumo_contrato?.total_horas?.split(':')[0]}H
+                Total horas contrato: {dataInfoReport?.resumo_contrato?.total_horas}
               </div>
 
               <div className="card-subtitle">PRODUTOS:</div>
               <BulletPointInfos>
                 {dataInfoReport?.resumo_contrato?.produtos?.slice(0, 5).map((row) => (
                   <div className="bullet" key={row.project_product_id}>
-                    {row.service}
+                    {row.service} / {row.minutes} / {row.quantity}
                   </div>
                 ))}
               </BulletPointInfos>

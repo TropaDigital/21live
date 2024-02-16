@@ -41,7 +41,6 @@ import UploadFiles from '../../../components/Upload/UploadFiles';
 import WrapperEditor from '../../../components/WrapperEditor';
 import Pagination from '../../../components/Pagination';
 import SelectImage from '../../../components/Inputs/SelectWithImage';
-import Loader from '../../../components/LoaderSpin';
 import FilterModal from '../../../components/Ui/FilterModal';
 import ModalLoader from '../../../components/Ui/ModalLoader';
 
@@ -497,8 +496,6 @@ export default function ListMeeting() {
           Nova Ata/Reunião
         </ButtonDefault>
       </HeaderPage>
-
-      {isFetching && <Loader />}
 
       {!isFetching && (
         <SectionDefault>
@@ -957,7 +954,7 @@ export default function ListMeeting() {
       </ModalDefault>
 
       {/* Modal loading submit */}
-      <ModalLoader isOpen={loading} />
+      <ModalLoader isOpen={loading || isFetching} />
 
       {/* Modal filters */}
       <FilterModal

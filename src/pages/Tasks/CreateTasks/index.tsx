@@ -363,6 +363,7 @@ export default function CreateTasks() {
     minValue: 1
   });
   const [singleProductQuantity, setSingleProductQuantity] = useState<number>(1);
+  const [cancelModal, setCancelModal] = useState<boolean>(false);
 
   const numbers = Array.from(
     { length: quantityProductInfos?.maxValue - quantityProductInfos?.minValue + 1 },
@@ -445,7 +446,7 @@ export default function CreateTasks() {
   
   useEffect(() => {
     if (location.state !== null && location.state.ticket_id) {
-      // console.log('log do locationState =>', location.state);
+      console.log('log do locationState =>', location.state);
       getProjects(location.state.tenant_id);
 
       const { interactions, fields, files, ...otherFields } = location.state;
@@ -457,8 +458,6 @@ export default function CreateTasks() {
       const descriptionObject = filteredEntries
         .map(([key, value]) => `${key}: ${value}`)
         .join('<br/><br/>');
-
-      console.log('log do descriptionObject =>', descriptionObject);
 
       setDTOForm((prevState: any) => ({
         ...prevState,
@@ -1308,20 +1307,7 @@ export default function CreateTasks() {
   };
 
   const handleOnCancel = () => {
-    // setDTOForm({
-    //   tenant_id: '',
-    //   project_id: '',
-    //   title: '',
-    //   contract_type: '',
-    //   date_start: '',
-    //   date_end: '',
-    //   description: '',
-    //   products: [],
-    //   files: []
-    // } as IProjectCreate);
-    // setUploadedFiles([]);
-    // setProductsArray([]);
-    setError({});
+    setCancelModal(true);
   };
 
   const handleProductsDeliveries = (field: string, value: string, productId: any) => {
@@ -2510,16 +2496,11 @@ export default function CreateTasks() {
         {createStep !== 5 && tasksType !== 'livre' && (
           <Footer>
             <>
-              <Link to={'/tarefas'}>
-                <ButtonDefault
-                  typeButton="primary"
-                  isOutline
-                  type="button"
-                  onClick={handleOnCancel}
-                >
-                  Descartar
-                </ButtonDefault>
-              </Link>
+              <ButtonDefault typeButton="primary" isOutline type="button" onClick={handleOnCancel}>
+                Descartar
+              </ButtonDefault>
+              {/* <Link to={'/tarefas'}>
+              </Link> */}
 
               <div className="fieldGroup">
                 {createStep !== 1 && (
@@ -3063,6 +3044,26 @@ export default function CreateTasks() {
                 Adicionar quantidade
               </ButtonDefault>
             </AddProductButton>
+          </ProductsModalWrapper>
+        </ModalDefault>
+
+        {/* Modal discard changes */}
+        <ModalDefault
+          isOpen={cancelModal}
+          onOpenChange={() => setCancelModal(false)}
+          title="Descartar alterações"
+        >
+          <ProductsModalWrapper>
+            <div>Deseja realmente descartar as alterações?</div>
+
+            <ModalButtons>
+              <ButtonDefault typeButton="dark" isOutline onClick={() => setCancelModal(false)}>
+                Cancelar
+              </ButtonDefault>
+              <ButtonDefault typeButton="danger" onClick={() => navigate('/tarefas')}>
+                Descartar
+              </ButtonDefault>
+            </ModalButtons>
           </ProductsModalWrapper>
         </ModalDefault>
 

@@ -36,6 +36,7 @@ interface SelectedFilters {
   toDate: string;
   client: string;
   category: string;
+  status: string;
 }
 
 export default function FilterProject({ applyFilters, clearFilters, selectedClient }: FilterProps) {
@@ -60,7 +61,8 @@ export default function FilterProject({ applyFilters, clearFilters, selectedClie
     fromDate: '',
     toDate: '',
     client: '',
-    category: ''
+    category: '',
+    status: ''
   });
 
   const handleAddFilters: HandleOnChange = (event) => {
@@ -73,7 +75,8 @@ export default function FilterProject({ applyFilters, clearFilters, selectedClie
       fromDate: '',
       toDate: '',
       client: '',
-      category: ''
+      category: '',
+      status: ''
     });
     clearFilters();
   };
@@ -151,6 +154,22 @@ export default function FilterProject({ applyFilters, clearFilters, selectedClie
             <option value="spot">SPOT</option>
           </SelectDefault>
         </div>
+
+        {/* <div style={{ maxHeight: '62px' }}>
+          <SelectDefault
+            label="Status"
+            placeholder="Selecione"
+            name="status"
+            onChange={handleAddFilters}
+            value={choosenFilters.status}
+            required
+          >
+            <option value="Em Progresso">Em andamento</option>
+            <option value="Concluido">Concluído</option>
+            <option value="Stand By">Stand by</option>
+            <option value="Vencido">Vencido</option>
+          </SelectDefault>
+        </div> */}
       </FilterOptions>
 
       <FilterButtons>

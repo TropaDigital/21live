@@ -20,7 +20,7 @@ import {
 } from '../../../components/UiElements/styles';
 import { Table } from '../../../components/Table';
 import Pagination from '../../../components/Pagination';
-import Loader from '../../../components/LoaderSpin';
+import ModalLoader from '../../../components/Ui/ModalLoader';
 
 // Hooks
 import useDebouncedCallback from '../../../hooks/useDebounced';
@@ -120,8 +120,6 @@ export default function Requests() {
   return (
     <ContainerDefault>
       <HeaderPage title="Solicitações" />
-
-      {isFetching && <Loader />}
 
       {!isFetching && (
         <RequestsWrapper>
@@ -351,6 +349,9 @@ export default function Requests() {
           </Table>
         </RequestsWrapper>
       )}
+
+      {/* Modal loading submit */}
+      <ModalLoader isOpen={isFetching} />
 
       <FilterModal
         isOpen={modalFilters}
