@@ -36,7 +36,6 @@ import { SelectDefault } from '../../../components/Inputs/SelectDefault';
 import { TextAreaDefault } from '../../../components/Inputs/TextAreaDefault';
 import UploadFiles from '../../../components/Upload/UploadFiles';
 import UploadFinalFile from '../../../components/UploadFinal/UploadFinalFiles';
-import Loader from '../../../components/LoaderSpin';
 import { Table } from '../../../components/Table';
 import ModalLoader from '../../../components/Ui/ModalLoader';
 
@@ -140,7 +139,6 @@ export default function ViewProductsDeliveries() {
   const openRightRef = useRef<any>();
   const [modalSendToUser, setModalSendToUser] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [loadingData, setLoadingData] = useState<boolean>(false);
   const [playingForSchedule, setPlayingForSchedule] = useState<boolean>(false);
   const [hideRightCard, setHideRightCard] = useState<string>('show');
   const [dataTask, setDataTask] = useState<any>();
@@ -351,7 +349,7 @@ export default function ViewProductsDeliveries() {
 
     async function getClockIsOpen() {
       try {
-        setLoadingData(true);
+        setLoading(true);
 
         if (typeOfPlay === 'schedule') {
           const response = await api.get(
@@ -446,10 +444,10 @@ export default function ViewProductsDeliveries() {
           }
         }
 
-        setLoadingData(false);
+        setLoading(false);
       } catch (error) {
         console.log('log error rescue clock', error);
-        setLoadingData(false);
+        setLoading(false);
       }
     }
 
@@ -458,7 +456,7 @@ export default function ViewProductsDeliveries() {
 
   async function getTaskInfos() {
     try {
-      setLoadingData(true);
+      setLoading(true);
       const response = await api.get(`/tasks/${id}`);
       // console.log('log do response get task', response.data.result);
 
@@ -466,7 +464,7 @@ export default function ViewProductsDeliveries() {
         setDataTask(response.data.result[0]);
       }
 
-      setLoadingData(false);
+      setLoading(false);
     } catch (error: any) {
       console.log('log do error getting task', error);
       addToast({
@@ -474,7 +472,7 @@ export default function ViewProductsDeliveries() {
         description: error.message,
         type: 'warning'
       });
-      setLoadingData(false);
+      setLoading(false);
     }
   }
 
@@ -513,14 +511,14 @@ export default function ViewProductsDeliveries() {
 
     async function getTaskHistory() {
       try {
-        setLoadingData(true);
+        setLoading(true);
         const response = await api.get(`/task/historic/${id}`);
         setTaskHistory(response.data.result);
 
-        setLoadingData(false);
+        setLoading(false);
       } catch (error: any) {
         console.log('log timeline error', error);
-        setLoadingData(false);
+        setLoading(false);
       }
     }
 
@@ -1697,9 +1695,7 @@ export default function ViewProductsDeliveries() {
 
   return (
     <ContainerDefault>
-      {loadingData && <Loader />}
-
-      {!loadingData && (
+      {!loading && (
         <DeliveryWrapper>
           {/* {uploadClient && (
             <HeaderOpenTask
