@@ -36,6 +36,10 @@ import ModalDefault from '../../../components/Ui/ModalDefault';
 import UploadFiles from '../../../components/Upload/UploadFiles';
 import UploadFilesTicket from '../../../components/UploadTicket/UploadFilex';
 import UploadFinalFile from '../../../components/UploadFinal/UploadFinalFiles';
+import { MotiveInfos } from '../../../components/Ui/ProductTable/styles';
+import Alert from '../../../components/Ui/Alert';
+import ButtonTable from '../../../components/Buttons/ButtonTable';
+import ModalLoader from '../../../components/Ui/ModalLoader';
 
 // Styles
 import {
@@ -83,9 +87,6 @@ import { formatBytes } from '../../../utils/convertBytes';
 
 // types
 import { StepTimeline, UploadedFilesProps } from '../../../types';
-import { MotiveInfos } from '../../../components/Ui/ProductTable/styles';
-import Alert from '../../../components/Ui/Alert';
-import ButtonTable from '../../../components/Buttons/ButtonTable';
 
 interface WorkingProductProps {
   productDeliveryId?: any;
@@ -213,6 +214,7 @@ export default function WorkingProduct({
   const { addToast } = useToast();
   const { parameters, getParams } = useParamsHook();
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingData, setLoadingData] = useState<boolean>(false);
   const [selectedTab, setSelectedTab] = useState<string>('Inputs');
   const [notifications, setNotifications] = useState<boolean>(false);
   const [chatMessage, setChatMessage] = useState<string>('');
@@ -278,7 +280,7 @@ export default function WorkingProduct({
 
   async function getComments(filter: string) {
     try {
-      setLoading(true);
+      setLoadingData(true);
       if (filter === '') {
         const response = await api.get(`/tasks/comment/${taskId}`);
         setDataComments(response.data.result);
@@ -289,7 +291,7 @@ export default function WorkingProduct({
         setDataComments(response.data.result);
       }
 
-      setLoading(false);
+      setLoadingData(false);
     } catch (error: any) {
       if (error.response.data.result.length !== 0) {
         error.response.data.result.map((row: any) => {
@@ -306,7 +308,7 @@ export default function WorkingProduct({
           type: 'danger'
         });
       }
-      setLoading(false);
+      setLoadingData(false);
     }
   }
 
@@ -505,6 +507,8 @@ export default function WorkingProduct({
 
   async function handleSaveUpload() {
     try {
+      setLoading(true);
+
       const uploadInfos = {
         task_id: taskId,
         file_name: uploadedFiles[0].file_name,
@@ -524,6 +528,8 @@ export default function WorkingProduct({
         // navigate('/minhas-tarefas');
       }
 
+      setLoading(false);
+
       console.log('log do response do saveUpload', response.data.result);
     } catch (error: any) {
       console.log('log save upload for product', error);
@@ -542,11 +548,15 @@ export default function WorkingProduct({
           type: 'danger'
         });
       }
+
+      setLoading(false);
     }
   }
 
   async function handleSaveUploadFinal() {
     try {
+      setLoading(true);
+
       const uploadInfos = {
         task_id: taskId,
         file_name: uploadedFiles[0].file_name,
@@ -573,6 +583,8 @@ export default function WorkingProduct({
         // navigate('/minhas-tarefas');
       }
 
+      setLoading(false);
+
       console.log('log do response do saveUpload', response.data.result);
     } catch (error: any) {
       console.log('log save upload final file', error);
@@ -591,11 +603,15 @@ export default function WorkingProduct({
           type: 'danger'
         });
       }
+
+      setLoading(false);
     }
   }
 
   async function handleSaveUploadClient() {
     try {
+      setLoading(true);
+
       const uploadInfos = {
         task_id: taskId,
         file_name: uploadedFiles[0].file_name,
@@ -622,6 +638,8 @@ export default function WorkingProduct({
         // }, 1500);
       }
 
+      setLoading(false);
+
       console.log('log do response do saveUpload', response.data.result);
     } catch (error: any) {
       console.log('log save upload tenant file', error);
@@ -640,6 +658,8 @@ export default function WorkingProduct({
           type: 'danger'
         });
       }
+
+      setLoading(false);
     }
   }
 
@@ -1001,15 +1021,17 @@ export default function WorkingProduct({
                           <div className="user-name">{message.name}</div>
                           <div className="date-message">{moment(message.created).fromNow()}</div>
                           {message.user_id !== '1' && (
-                            <div
-                              style={{ cursor: 'pointer' }}
-                              onClick={() => handleDeleteComment(message.task_comment_id)}
+                            <Alert
+                              title="Atenção"
+                              subtitle="Certeza que gostaria de deletar este comentário? Ao excluir esta ação não poderá ser desfeita."
+                              confirmButton={() => handleDeleteComment(message.task_comment_id)}
                             >
-                              <BiTrash />
-                            </div>
+                              <div className="delete">
+                                <BiTrash />
+                              </div>
+                            </Alert>
                           )}
                         </UserMessageInfo>
-
                         <UserMessage>{message.comment}</UserMessage>
                       </MessageInfos>
                     </>
@@ -1022,12 +1044,15 @@ export default function WorkingProduct({
                         <UserMessageInfo>
                           <div className="user-name">{message.name}</div>
                           <div className="date-message">{moment(message.created).fromNow()}</div>
-                          <div
-                            style={{ cursor: 'pointer' }}
-                            onClick={() => handleDeleteComment(message.task_comment_id)}
+                          <Alert
+                            title="Atenção"
+                            subtitle="Certeza que gostaria de deletar este comentário? Ao excluir esta ação não poderá ser desfeita."
+                            confirmButton={() => handleDeleteComment(message.task_comment_id)}
                           >
-                            <BiTrash />
-                          </div>
+                            <div className="delete">
+                              <BiTrash />
+                            </div>
+                          </Alert>
                         </UserMessageInfo>
 
                         <UserMessage>{message.comment}</UserMessage>
@@ -1325,7 +1350,7 @@ export default function WorkingProduct({
             <ButtonDefault typeButton="lightWhite" isOutline onClick={() => setModalUpload(false)}>
               Cancelar
             </ButtonDefault>
-            <ButtonDefault typeButton="primary" onClick={handleSaveUpload}>
+            <ButtonDefault loading={loading} typeButton="primary" onClick={handleSaveUpload}>
               Salvar
             </ButtonDefault>
           </div>
@@ -1457,7 +1482,7 @@ export default function WorkingProduct({
                 Cancelar
               </ButtonDefault>
 
-              <ButtonDefault typeButton="primary" onClick={handleSaveUploadFinal}>
+              <ButtonDefault loading={loading} typeButton="primary" onClick={handleSaveUploadFinal}>
                 OK
               </ButtonDefault>
             </div>
@@ -1473,7 +1498,11 @@ export default function WorkingProduct({
                 Cancelar
               </ButtonDefault>
 
-              <ButtonDefault typeButton="primary" onClick={handleSaveUploadClient}>
+              <ButtonDefault
+                loading={loading}
+                typeButton="primary"
+                onClick={handleSaveUploadClient}
+              >
                 Salvar
               </ButtonDefault>
             </div>
@@ -1562,6 +1591,9 @@ export default function WorkingProduct({
           </div>
         </MotiveInfos>
       </ModalDefault>
+
+      {/* Modal loading submit */}
+      <ModalLoader isOpen={loading} />
     </ContainerDefault>
   );
 }

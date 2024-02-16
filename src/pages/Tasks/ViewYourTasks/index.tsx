@@ -48,7 +48,7 @@ export default function ViewTaskList() {
     (search: string) => setSearch(search),
     700
   );
-  const [taskOrder, setTaskOrder] = useState<string>('');
+  const [taskOrder, setTaskOrder] = useState<string>('desc');
   const { data, pages, isFetching } = useFetch<any[]>(
     `my-tasks?search=${search.replace(/[^\w ]/g, '')}&page=${selected}&order=${taskOrder}`
   );
@@ -62,8 +62,13 @@ export default function ViewTaskList() {
     // const taskId = infos?.task?.task_id;
     // navigate(`/entregas/${infos.task.task_id}`, { state: taskId });
     if (infos.task.deliverys.length > 1) {
-      const taskId = infos?.task?.task_id;
-      navigate(`/entregas/${infos.task.task_id}`, { state: taskId });
+      // const taskId = infos?.task?.task_id;
+      const taskDetails = {
+        delivery: infos.task.deliverys[0],
+        task: infos.task,
+        task_index: infos.task_index
+      };
+      navigate(`/entregas/${infos.task.task_id}`, { state: taskDetails });
     }
 
     if (infos.task.deliverys.length <= 1) {

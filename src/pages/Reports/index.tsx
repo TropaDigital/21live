@@ -23,6 +23,7 @@ import HeaderPage from '../../components/HeaderPage';
 import { ContainerDefault } from '../../components/UiElements/styles';
 import ButtonDefault from '../../components/Buttons/ButtonDefault';
 import { TableDefault } from '../../components/TableDefault';
+import Loader from '../../components/LoaderSpin';
 
 // Icons
 import { IoMdDownload } from 'react-icons/io';
@@ -39,7 +40,7 @@ import { useToast } from '../../hooks/toast';
 
 // Services
 import api from '../../services/api';
-import Loader from '../../components/LoaderSpin';
+import ModalLoader from '../../components/Ui/ModalLoader';
 
 interface ReportProps {
   client_id: string;
@@ -135,6 +136,7 @@ export default function MonthlyReport() {
   const todayDate = new Date();
   const reportInfos: ReportProps = location.state;
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingData, setLoadingData] = useState<boolean>(false);
   const [dataInfoReport, setDataInfoReport] = useState<ReportFullInfoProps>({
     overview_periodo: {
       tarefa_concluida_qtd: '',
@@ -164,14 +166,14 @@ export default function MonthlyReport() {
 
   async function getReportFullInfos() {
     try {
-      setLoading(true);
+      setLoadingData(true);
       const response = await api.get(
         `/report?tenant_id=${reportInfos.client_id}&date_start=${reportInfos.date_start}&date_end=${reportInfos.date_end}&project_id=${reportInfos.contract}`
       );
 
       setDataInfoReport(response.data.result);
 
-      setLoading(false);
+      setLoadingData(false);
     } catch (error: any) {
       console.log('log do error getting report', error);
       addToast({
@@ -179,7 +181,7 @@ export default function MonthlyReport() {
         description: error.message,
         type: 'warning'
       });
-      setLoading(false);
+      setLoadingData(false);
     }
   }
 
@@ -207,7 +209,7 @@ export default function MonthlyReport() {
 
   // print and send report
   const printAndSend = async () => {
-    const canvas = await html2canvas(inputRef.current);
+    const canvas = await html2canvas(inputRef.current, { useCORS: true, allowTaint: true });
     const imgData = canvas.toDataURL('image/png');
     const pdf = new jsPDF();
     const imgProps = pdf.getImageProperties(imgData);
@@ -246,6 +248,7 @@ export default function MonthlyReport() {
       setLoading(false);
     } catch (error: any) {
       console.error('Error send report', error);
+      setLoading(false);
       if (error.response.data.result.length !== 0) {
         error.response.data.result.map((row: any) => {
           addToast({
@@ -272,7 +275,7 @@ export default function MonthlyReport() {
     <ContainerDefault>
       <HeaderPage title="Relatório">
         <HeaderBtns>
-          <ButtonDefault typeButton="success" isOutline onClick={printAndSend}>
+          <ButtonDefault typeButton="success" isOutline onClick={printAndSend} loading={loading}>
             Enviar para a área do Cliente
             <FiSend />
           </ButtonDefault>
@@ -284,9 +287,9 @@ export default function MonthlyReport() {
         </HeaderBtns>
       </HeaderPage>
 
-      {loading && <Loader />}
+      {loadingData && <Loader />}
 
-      {!loading && (
+      {!loadingData && (
         <ReportWrapper ref={inputRef}>
           {/* Header Tenant infos */}
           <ReportHeader>
@@ -475,6 +478,9 @@ export default function MonthlyReport() {
           </ReportCardTable>
         </ReportWrapper>
       )}
+
+      {/* Modal loading submit */}
+      <ModalLoader isOpen={loading} />
     </ContainerDefault>
   );
 }

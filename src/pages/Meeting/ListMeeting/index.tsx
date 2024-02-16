@@ -43,6 +43,7 @@ import Pagination from '../../../components/Pagination';
 import SelectImage from '../../../components/Inputs/SelectWithImage';
 import Loader from '../../../components/LoaderSpin';
 import FilterModal from '../../../components/Ui/FilterModal';
+import ModalLoader from '../../../components/Ui/ModalLoader';
 
 // Styles
 import {
@@ -258,6 +259,7 @@ export default function ListMeeting() {
   const handleOnSubmit = useCallback(
     async (event: any) => {
       try {
+        setLoading(true);
         event.preventDefault();
 
         // Inserir lógica
@@ -312,6 +314,8 @@ export default function ListMeeting() {
         setUploadedFiles([]);
         setText('');
         fetchData();
+
+        setLoading(false);
       } catch (e: any) {
         // Exibir erro
         console.log('ERROR =>', e);
@@ -322,6 +326,8 @@ export default function ListMeeting() {
         });
 
         setErrors(getValidationErrors(e.response.data.result));
+
+        setLoading(false);
       }
     },
     [uploadedFiles, formData, text, modal.type, addToast, setData, fetchData]
@@ -824,7 +830,7 @@ export default function ListMeeting() {
             <ButtonDefault typeButton="dark" isOutline onClick={handleOnCancel}>
               Descartar
             </ButtonDefault>
-            <ButtonDefault typeButton="primary" isOutline type="submit">
+            <ButtonDefault loading={loading} typeButton="primary" isOutline type="submit">
               Salvar
             </ButtonDefault>
           </FooterModal>
@@ -949,6 +955,9 @@ export default function ListMeeting() {
           )}
         </ModalInfosWrapper>
       </ModalDefault>
+
+      {/* Modal loading submit */}
+      <ModalLoader isOpen={loading} />
 
       {/* Modal filters */}
       <FilterModal

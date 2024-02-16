@@ -71,6 +71,7 @@ import api from '../../../services/api';
 // Hooks
 import { useToast } from '../../../hooks/toast';
 import { useAuth } from '../../../hooks/AuthContext';
+import ModalLoader from '../../../components/Ui/ModalLoader';
 
 interface TicketProps {
   ticket_id: string;
@@ -153,6 +154,7 @@ export default function ViewRequest() {
   const { user } = useAuth();
   const { addToast } = useToast();
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingData, setLoadingData] = useState<boolean>(false);
   const [selectedCardInfo, setSelectedCardInfo] = useState<string>('');
   const [requestData, setRequestData] = useState<TicketProps>();
   const [modalImage, setModalImage] = useState<ModalProps>({
@@ -191,7 +193,7 @@ export default function ViewRequest() {
 
   async function getTicketInfos(ticketId: string) {
     try {
-      setLoading(true);
+      setLoadingData(true);
 
       const response = await api.get(`/ticket?id=${ticketId}`);
 
@@ -199,7 +201,7 @@ export default function ViewRequest() {
         setRequestData(response.data.result[0]);
       }
 
-      setLoading(false);
+      setLoadingData(false);
     } catch (error: any) {
       console.log('log do error getting ticket', error);
 
@@ -218,7 +220,7 @@ export default function ViewRequest() {
           description: error.response.data.message
         });
       }
-      setLoading(false);
+      setLoadingData(false);
     }
   }
 
@@ -355,9 +357,9 @@ export default function ViewRequest() {
 
   return (
     <ContainerDefault>
-      {loading && <Loader />}
+      {loadingData && <Loader />}
 
-      {!loading && (
+      {!loadingData && (
         <>
           <HeaderRequest title={titleData} ticketInfos={ticketInfos} />
 
@@ -840,11 +842,14 @@ export default function ViewRequest() {
             setLoading={setLoading}
           /> */}
 
-          <ButtonDefault typeButton="primary" onClick={() => handleSubmit()}>
+          <ButtonDefault loading={loading} typeButton="primary" onClick={() => handleSubmit()}>
             Salvar
           </ButtonDefault>
         </ModalInteractionWrapper>
       </ModalDefault>
+
+      {/* Modal loading submit */}
+      <ModalLoader isOpen={loading} />
     </ContainerDefault>
   );
 }

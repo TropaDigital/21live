@@ -36,6 +36,7 @@ import {
   SummaryTaskInfo
 } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 import InputMultipleSelect from '../../../components/Inputs/InputMultipleSelect';
+import ModalLoader from '../../../components/Ui/ModalLoader';
 
 // Styles
 import {
@@ -989,6 +990,7 @@ export default function CreateProject() {
         </Footer>
       )}
 
+      {/* Modal send files */}
       <ModalDefault
         isOpen={finishModal}
         onOpenChange={() => setFinishModal(false)}
@@ -1054,6 +1056,9 @@ export default function CreateProject() {
           )}
         </FinishModal>
       </ModalDefault>
+
+      {/* Modal loading submit */}
+      <ModalLoader isOpen={loading} />
     </Container>
   );
 }

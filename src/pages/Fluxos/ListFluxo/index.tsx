@@ -26,6 +26,7 @@ import { Table } from '../../../components/Table';
 import { TableHead } from '../../../components/Table/styles';
 import Pagination from '../../../components/Pagination';
 import Loader from '../../../components/LoaderSpin';
+import ModalLoader from '../../../components/Ui/ModalLoader';
 
 // Styles
 import {
@@ -43,6 +44,7 @@ export default function ListFluxo() {
   });
 
   const [modal, setModal] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [selected, setSelected] = useState(1);
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -88,6 +90,7 @@ export default function ListFluxo() {
   const handleOnSubmit = useCallback(
     async (event: any) => {
       try {
+        setLoading(true);
         event.preventDefault();
 
         const response = await api.post('flow', formData);
@@ -107,6 +110,8 @@ export default function ListFluxo() {
         navigate(`/fluxo/editar/${formData.name.replaceAll(/[\s/]/g, '_')}`, {
           state: { id: response.data.result, name: formData.name }
         });
+
+        setLoading(false);
       } catch (e: any) {
         if (e.response.data.result.length !== 0) {
           e.response.data.result.map((row: any) => {
@@ -123,6 +128,8 @@ export default function ListFluxo() {
             description: e.response.data.message
           });
         }
+
+        setLoading(false);
       }
     },
     [formData, addToast, fetchData, modal, setData, navigate]
@@ -291,6 +298,7 @@ export default function ListFluxo() {
         </SectionDefault>
       )}
 
+      {/* Modal create flow */}
       <ModalDefault isOpen={modal} title={'Novo Fluxo'} onOpenChange={handleOnCancel}>
         <form onSubmit={handleOnSubmit}>
           <FieldDefault>
@@ -313,6 +321,9 @@ export default function ListFluxo() {
           </FooterModal>
         </form>
       </ModalDefault>
+
+      {/* Modal loading submit */}
+      <ModalLoader isOpen={loading} />
     </ContainerDefault>
   );
 }
