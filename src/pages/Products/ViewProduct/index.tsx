@@ -222,17 +222,19 @@ export default function ViewProductsDeliveries() {
     total_time: dataTask?.total_time
   };
 
-  const data = {
-    estimatedTime: user.permissions.includes('jobs_tasks_essay')
-      ? dataProducts?.time_essay
-      : user.permissions.includes('jobs_tasks_execute')
-      ? dataProducts?.time_creation
-      : dataTask?.total_time
-  };
-
   const InputsTask = {
     copywriting_description: dataTask?.copywriting_description,
     creation_description: dataTask?.creation_description
+  };
+
+  const myTaskShowHours = location.state.task.show_hours;
+  const taskDeductHours = location.state.task.deduct_hours;
+
+  const allEstimatedTime = {
+    time_consumed: dataTask?.time_consumed,
+    time_creation: dataProducts?.time_creation,
+    time_essay: dataProducts?.time_essay,
+    total_time: dataTask?.total_time
   };
 
   const actualDate = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
@@ -2127,7 +2129,13 @@ export default function ViewProductsDeliveries() {
             {dataTask?.status !== 'Concluida' && showClock && (
               <CardTaskPlay
                 cardTitle={state.isRunning ? 'Atividade iniciada' : 'Iniciar atividade'}
-                dataTime={data ? data?.estimatedTime : '00:00:00'}
+                dataTime={
+                  allEstimatedTime && myTaskShowHours && taskDeductHours === 'creation'
+                    ? allEstimatedTime.time_creation
+                    : taskDeductHours === 'essay'
+                    ? allEstimatedTime.time_essay
+                    : allEstimatedTime.total_time
+                }
                 blockPlay={typeOfPlay === 'product' && !viewProduct ? true : false}
                 handlePlay={handlePlayingType}
               />
