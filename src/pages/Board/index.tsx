@@ -9,7 +9,7 @@ import HeaderFlow from '../../components/HeaderFlowPage';
 import Column from '../../components/Ui/Column';
 import ScrollAreas from '../../components/Ui/ScrollAreas';
 import Task from '../../components/Ui/Task';
-import Loader from '../../components/LoaderSpin';
+import ModalLoader from '../../components/Ui/ModalLoader';
 
 // Styles
 import { Container, ContentBoard } from './styles';
@@ -121,8 +121,6 @@ export default function Board() {
     <Container>
       <HeaderFlow title={location.state.name} backButton={() => navigate(-1)} />
 
-      {isFetching && <Loader />}
-
       {!isFetching && (
         <ScrollAreas>
           <ContentBoard>
@@ -136,6 +134,9 @@ export default function Board() {
           </ContentBoard>
         </ScrollAreas>
       )}
+
+      {/* Modal loading submit */}
+      <ModalLoader isOpen={isFetching} />
     </Container>
   );
 }
