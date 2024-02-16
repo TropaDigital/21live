@@ -25,7 +25,6 @@ import ModalDefault from '../../../components/Ui/ModalDefault';
 import { Table } from '../../../components/Table';
 import { TableHead } from '../../../components/Table/styles';
 import Pagination from '../../../components/Pagination';
-import Loader from '../../../components/LoaderSpin';
 import ModalLoader from '../../../components/Ui/ModalLoader';
 
 // Styles
@@ -143,8 +142,6 @@ export default function ListFluxo() {
           Novo Fluxo
         </ButtonDefault>
       </HeaderPage>
-
-      {isFetching && <Loader />}
 
       {!isFetching && (
         <SectionDefault>
@@ -323,7 +320,7 @@ export default function ListFluxo() {
       </ModalDefault>
 
       {/* Modal loading submit */}
-      <ModalLoader isOpen={loading} />
+      <ModalLoader isOpen={loading || isFetching} />
     </ContainerDefault>
   );
 }
