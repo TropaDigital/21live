@@ -129,7 +129,7 @@ export default function CreateProject() {
   const [sendFiles, setSendFiles] = useState<boolean>(false);
   const [projectId, setProjectId] = useState<string>('');
   const [editProject, setEditProject] = useState<boolean>(false);
-
+  const [cancelModal, setCancelModal] = useState<boolean>(false);
   const { data: dataTeam } = useFetch<TeamProps[]>('team');
 
   const defaultOptionsTeam = dataTeam?.filter((item) =>
@@ -347,19 +347,20 @@ export default function CreateProject() {
   };
 
   const handleOnCancel = () => {
-    setDTOForm({
-      tenant_id: '',
-      project_id: '',
-      title: '',
-      contract_type: '',
-      date_start: '',
-      date_end: '',
-      description: '',
-      products: []
-    } as DTOProps);
-    setUploadedFiles([]);
-    setProductsArray([]);
-    setError({});
+    setCancelModal(true);
+    // setDTOForm({
+    //   tenant_id: '',
+    //   project_id: '',
+    //   title: '',
+    //   contract_type: '',
+    //   date_start: '',
+    //   date_end: '',
+    //   description: '',
+    //   products: []
+    // } as DTOProps);
+    // setUploadedFiles([]);
+    // setProductsArray([]);
+    // setError({});
   };
 
   const handleOnSubmit = useCallback(
@@ -952,16 +953,9 @@ export default function CreateProject() {
 
           {!showSave && (
             <>
-              <Link to={'/projetos'}>
-                <ButtonDefault
-                  typeButton="primary"
-                  isOutline
-                  type="button"
-                  onClick={handleOnCancel}
-                >
-                  Descartar
-                </ButtonDefault>
-              </Link>
+              <ButtonDefault typeButton="primary" isOutline type="button" onClick={handleOnCancel}>
+                Descartar
+              </ButtonDefault>
 
               <div className="fieldGroup">
                 {createStep !== 1 && (
@@ -1054,6 +1048,26 @@ export default function CreateProject() {
               </FinishModalButtons>
             </>
           )}
+        </FinishModal>
+      </ModalDefault>
+
+      {/* Modal discard changes */}
+      <ModalDefault
+        isOpen={cancelModal}
+        onOpenChange={() => setCancelModal(false)}
+        title="Descartar alterações"
+      >
+        <FinishModal>
+          <div>Deseja realmente descartar as alterações?</div>
+
+          <FinishModalButtons>
+            <ButtonDefault typeButton="dark" isOutline onClick={() => setCancelModal(false)}>
+              Cancelar
+            </ButtonDefault>
+            <ButtonDefault typeButton="danger" onClick={() => navigate('/projetos')}>
+              Descartar
+            </ButtonDefault>
+          </FinishModalButtons>
         </FinishModal>
       </ModalDefault>
 
