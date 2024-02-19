@@ -1121,7 +1121,14 @@ export default function ViewProductsDeliveries() {
   async function checkFlow(checkType: string) {
     try {
       setLoading(true);
-      if (
+      if (checkMandatoryUpload() && mandatoryUpload) {
+        addToast({
+          title: 'Aviso',
+          description: 'Upload obrigatório antes de avançar!',
+          type: 'warning'
+        });
+        console.log('log do checkFlow 1 - Upload obrigatório');
+      } else if (
         hasAllBeenRejected.length >= dataProducts?.products.length &&
         hasAllBeenAccepted.length < dataProducts?.products.length &&
         checkType === 'next' &&
@@ -1132,7 +1139,7 @@ export default function ViewProductsDeliveries() {
       ) {
         setModalReturnAllRejected(true);
 
-        console.log('log do checkFlow 1 - Dismember all');
+        console.log('log do checkFlow 2 - Dismember all');
       } else if (
         hasToDismemberTask &&
         !mandatoryUpload &&
@@ -1145,7 +1152,7 @@ export default function ViewProductsDeliveries() {
         !hasDismemberedProduct
       ) {
         setModalDismemberment(true);
-        console.log('log do checkFlow 2 - Dismember');
+        console.log('log do checkFlow 3 - Dismember');
       } else if (
         uploadClient &&
         checkType === 'next' &&
@@ -1155,9 +1162,9 @@ export default function ViewProductsDeliveries() {
         !hasProductsBeenEvaluated
       ) {
         setModalTenantApprove(true);
-        console.log('log do checkFlow 3 - Tenant approve');
+        console.log('log do checkFlow 4 - Tenant approve');
       } else if (checkType === 'next' && !finalCard) {
-        console.log('log do checkFlow 4 - Flow function');
+        console.log('log do checkFlow 5 - Flow function');
         const response = await api.get(
           `/flow-function?step=${Number(actualStep) + 1}&flow_id=${dataTask?.flow_id}`
         );
@@ -1181,14 +1188,28 @@ export default function ViewProductsDeliveries() {
           handleNextUser('next');
         }
       } else if (checkType === 'next' && finalCard) {
-        if (dataTask.ticket_id !== '' && dataTask.ticket_id !== '0' && mandatoryUpload) {
+        if (
+          dataTask.ticket_id !== '' &&
+          dataTask?.ticket_id !== '0' &&
+          mandatoryUpload &&
+          dataTask.files.length > 1
+        ) {
+          console.log('checkFlow 6 - Final card + mandatory upload');
           setModalFinalFile(true);
         }
-        if (dataTask?.ticket_id !== '' && dataTask.ticket_id !== '0' && !mandatoryUpload) {
-          handleUploadApproved();
+        if (dataTask?.ticket_id !== '' && dataTask?.ticket_id !== '0' && !mandatoryUpload) {
+          console.log('checkFlow 6 - Final card without mandatory upload');
+          // handleUploadApproved();
         }
-        if (dataTask?.ticket_id === '' && dataTask.ticket_id !== '0') {
-          handleConcludeTask();
+        if (
+          dataTask?.ticket_id === '' &&
+          dataTask?.ticket_id === '0' &&
+          dataTask.files.length > 1
+        ) {
+          // abrir modal para selecionar os arquivos para pasta jobs
+          // if () {
+          // }
+          // handleConcludeTask();
         }
       }
 
@@ -1464,7 +1485,7 @@ export default function ViewProductsDeliveries() {
     }
   }
 
-  const compareArrays = () => {
+  const compareFilesAndProducts = () => {
     const matchingItems: any[] = [];
     dataTask?.deliverys?.map((item1: any) => {
       item1?.products?.map((product1: any) => {
@@ -1480,7 +1501,7 @@ export default function ViewProductsDeliveries() {
   };
 
   const checkMandatoryUpload = () => {
-    if (compareArrays().length < dataProducts?.products?.length) {
+    if (compareFilesAndProducts().length < dataProducts?.products?.length) {
       return true;
     } else {
       return false;
@@ -1691,7 +1712,9 @@ export default function ViewProductsDeliveries() {
     // console.log('log do type of play', typeOfPlay);
     // console.log('log allRejected', hasAllBeenRejected);
     // console.log('log ticket', hasTicketInteraction);
-  }, [typeOfPlay, hasAllBeenRejected, hasTicketInteraction]);
+    console.log('log compareFilesAndProducts', compareFilesAndProducts());
+    console.log('log checkMandatory', checkMandatoryUpload());
+  }, [typeOfPlay]);
 
   return (
     <ContainerDefault>
