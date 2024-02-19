@@ -82,3 +82,16 @@ export const Container = styled.div<ContainerProps>`
     }
   }
 `;
+
+export const HoursWrapperCounter = styled.div`
+  display: flex;
+  align-items: center;
+
+  .hours-points {
+    font-size: var(--text-headline-md);
+    font-weight: var(--weight-semibold);
+    color: var(--gray-800);
+    line-height: 36px;
+    margin-bottom: 4px;
+  }
+`;
