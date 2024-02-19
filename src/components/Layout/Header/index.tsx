@@ -228,7 +228,7 @@ export default function Header({ handleOnMenu, modalActive }: HeaderProps) {
       </SectionProfile>
       <SectionPopUpHeader menuUser={menuUser} ref={userMenuRef}>
         <ul>
-          <li>
+          {/* <li>
             <button
               onClick={() => {
                 navigate('/perfil');
@@ -238,7 +238,7 @@ export default function Header({ handleOnMenu, modalActive }: HeaderProps) {
               <BiUser size={24} color="#6C757D" />
               Meu perfil
             </button>
-          </li>
+          </li> */}
           <li>
             <button
               onClick={() => {
