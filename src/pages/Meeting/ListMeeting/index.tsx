@@ -309,7 +309,7 @@ export default function ListMeeting() {
         addToast({
           type: 'success',
           title: 'Sucesso',
-          description: 'Serviço cadastrado com sucesso!'
+          description: 'Ata de reunião criada com sucesso!'
         });
 
         setModal({
@@ -503,7 +503,7 @@ export default function ListMeeting() {
 
   return (
     <Container>
-      <HeaderPage title="Atas e Reuniões">
+      <HeaderPage title="Atas de reuniões">
         <ButtonDefault
           typeButton="success"
           onClick={() => setModal({ ...modal, ['isOpen']: true })}
