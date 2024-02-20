@@ -64,7 +64,7 @@ export default function UserPerformanceCard({ userInfos, tableData, mensalReport
       </GraphicsCard>
 
       <MensalReport>
-        <div className="report-bold">Report mensal</div>
+        <div className="report-bold">Report</div>
         <div className="report-info">{mensalReport.reports ? mensalReport.reports : '-----'}</div>
         <div className="report-bold">Reuniões</div>
         <div className="report-info">{mensalReport.reunions}</div>

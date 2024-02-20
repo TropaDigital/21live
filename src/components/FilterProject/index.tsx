@@ -41,7 +41,7 @@ interface SelectedFilters {
 
 export default function FilterProject({ applyFilters, clearFilters, selectedClient }: FilterProps) {
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
-  const [initialValue, setInitialValue] = useState({
+  const [initialValue, setInitialValue] = useState<any>({
     value: '',
     label: '',
     image: '',
@@ -134,7 +134,7 @@ export default function FilterProject({ applyFilters, clearFilters, selectedClie
             <SelectImage
               label={'Cliente'}
               dataOptions={clientsOptions}
-              value={initialValue}
+              value={initialValue.value !== '' ? initialValue : null}
               onChange={handleAddClientFilter}
               placeholder={'Selecione o cliente...'}
             />

@@ -1200,7 +1200,7 @@ export default function WorkingProduct({
                             <Alert
                               title="Atenção"
                               subtitle="Certeza que gostaria de deletar este arquivo? Ao excluir esta ação não poderá ser desfeita."
-                              confirmButton={() => handleDeleteFile(row.task_id)}
+                              confirmButton={() => handleDeleteFile(row.task_file_id)}
                             >
                               <ButtonTable typeButton="delete" />
                             </Alert>

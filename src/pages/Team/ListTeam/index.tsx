@@ -610,7 +610,16 @@ export default function Team() {
             <Table>
               <TableHead>
                 <div className="groupTable">
-                  <h2>Equipes</h2>
+                  <h2>
+                    Equipe{' '}
+                    {pages !== null && pages?.total > 0 ? (
+                      <strong>
+                        {pages?.total <= 1 ? `${pages?.total} usuário` : `${pages?.total} usuários`}{' '}
+                      </strong>
+                    ) : (
+                      <strong>0 usuário</strong>
+                    )}
+                  </h2>
                 </div>
 
                 <FilterTeamWrapper>

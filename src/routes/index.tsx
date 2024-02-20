@@ -180,14 +180,14 @@ function RoutesAll() {
           }
         />
 
-        <Route
+        {/* <Route
           path="/perfil"
           element={
             <PrivateRoutes>
               <Profile />
             </PrivateRoutes>
           }
-        />
+        /> */}
 
         <Route
           path="/produtos"

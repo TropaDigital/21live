@@ -197,8 +197,9 @@ export default function Dashboard() {
     (search: string) => setSearch(search),
     700
   );
+  const [taskOrder, setTaskOrder] = useState<string>('desc');
   const { data: dataTasks, pages } = useFetch<any[]>(
-    `my-tasks?search=${search.replace(/[^\w ]/g, '')}&page=${selected}`
+    `my-tasks?search=${search.replace(/[^\w ]/g, '')}&page=${selected}&order=${taskOrder}`
   );
   const [errorsForm, setErrorsForms] = useState<{ [key: string]: boolean }>({});
   const [requestersData, setRequestersData] = useState<RequesterProps[]>([]);
@@ -446,36 +447,31 @@ export default function Dashboard() {
 
   const topFeeTenantHours = [
     {
-      name:
-        data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[0]?.name : '???',
+      name: data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[0]?.name : '',
       Total:
         data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[0]?.total_tempo : 0,
       fill: '#59B7FF'
     },
     {
-      name:
-        data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[1]?.name : '???',
+      name: data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[1]?.name : '',
       Total:
         data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[1]?.total_tempo : 0,
       fill: '#0045B5'
     },
     {
-      name:
-        data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[2]?.name : '???',
+      name: data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[2]?.name : '',
       Total:
         data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[2]?.total_tempo : 0,
       fill: '#0077E6'
     },
     {
-      name:
-        data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[3]?.name : '???',
+      name: data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[3]?.name : '',
       Total:
         data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[3]?.total_tempo : 0,
       fill: '#E2F2FF'
     },
     {
-      name:
-        data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[4]?.name : '???',
+      name: data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[4]?.name : '',
       Total:
         data && dashType === 'admin' ? data?.clientes_fee?.top_tenant_fee_horas[4]?.total_tempo : 0,
       fill: '#0065D4'
@@ -850,17 +846,17 @@ export default function Dashboard() {
 
   const topCardsDataTrafic: CardsData[] = [
     {
-      data: dashType === 'traffic' && data ? data.tarefas_totais : 0,
+      data: dashType === 'traffic' && data ? data?.tarefas_totais : 0,
       type: 'jobs',
       title: 'Total de pautas'
     },
     {
-      data: dashType === 'traffic' && data ? data.horas_totais.split(':')[0] : 0,
+      data: dashType === 'traffic' && data ? data?.horas_totais : 0,
       type: 'warning',
       title: 'Total de horas'
     },
     {
-      data: dashType === 'traffic' && data ? data.tempo_disponivel : 0,
+      data: dashType === 'traffic' && data ? data?.tempo_disponivel : 0,
       type: 'warning',
       title: 'Total de horas disponíveis'
     }
@@ -1198,8 +1194,8 @@ export default function Dashboard() {
                 <tbody>
                   {topFeeTenantHours.map((row, index: number) => (
                     <tr key={index}>
-                      <td>{row.name ? row.name : '-----'}</td>
-                      <td>{row.Total ? row.Total : 0}H</td>
+                      <td>{row.name ? row.name : ' '}</td>
+                      <td>{row.Total ? row.Total : ' '}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -1232,8 +1228,8 @@ export default function Dashboard() {
                 <tbody>
                   {topSpotTenantHours.map((row, index: number) => (
                     <tr key={index}>
-                      <td>{row.name ? row.name : '-----'}</td>
-                      <td>{row.Total ? row.Total : 0}H</td>
+                      <td>{row.name ? row.name : ''}</td>
+                      <td>{row.Total ? row.Total : ''}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -1267,9 +1263,9 @@ export default function Dashboard() {
               <tbody>
                 {jobsAwaitingToBeSend?.slice(0, 5).map((row) => (
                   <tr key={row.id_job}>
-                    <td>{row.client_name ? row.client_name : '-----'}</td>
+                    <td>{row.client_name ? row.client_name : ''}</td>
                     <td>
-                      {row.job_service ? row.job_service : '-----'}
+                      {row.job_service ? row.job_service : ''}
                       {/* {new Intl.NumberFormat('pt-BR', {
                         style: 'currency',
                         currency: 'BRL'
@@ -1284,7 +1280,7 @@ export default function Dashboard() {
                         height: '49px'
                       }}
                     >
-                      {row.job_name ? row.job_name : '-----'}
+                      {row.job_name ? row.job_name : ''}
                       {/* <JobStatus
                         className={
                           row.job_status === 'Pendente de envio'
@@ -1319,9 +1315,9 @@ export default function Dashboard() {
               <tbody>
                 {jobsAwaitingClientAdmin.slice(0, 5).map((row) => (
                   <tr key={row.id_job}>
-                    <td>{row.client_name ? row.client_name : '-----'}</td>
+                    <td>{row.client_name ? row.client_name : ''}</td>
                     <td>
-                      {row.job_service ? row.job_service : '-----'}
+                      {row.job_service ? row.job_service : ''}
                       {/* {new Intl.NumberFormat('pt-BR', {
                         style: 'currency',
                         currency: 'BRL'
@@ -1336,7 +1332,7 @@ export default function Dashboard() {
                         height: '49px'
                       }}
                     >
-                      {row.job_name ? row.job_name : '-----'}
+                      {row.job_name ? row.job_name : ''}
                       {/* <JobStatus
                         className={
                           row.job_status === 'Pendente de envio'
@@ -1393,11 +1389,9 @@ export default function Dashboard() {
                   <tr key={index}>
                     <td>{row.client_name}</td>
                     <td>{row.atendimento ? row.atendimento : '-----'}</td>
-                    <td style={{ color: '#00BFA5', fontWeight: '700' }}>
-                      {row.tempo_total.split(':')[0]}H
-                    </td>
+                    <td style={{ color: '#00BFA5', fontWeight: '700' }}>{row.tempo_total}</td>
                     <td>
-                      <HoursTable>{row.consumido.split(':')[0]}H</HoursTable>
+                      <HoursTable>{row.consumido}</HoursTable>
                     </td>
                     <td>
                       <HoursTable
@@ -1436,11 +1430,9 @@ export default function Dashboard() {
                   <tr key={index}>
                     <td>{row.client_name}</td>
                     <td>{row.atendimento ? row.atendimento : '-----'}</td>
-                    <td style={{ color: '#00BFA5', fontWeight: '700' }}>
-                      {row.tempo_total.split(':')[0]}H
-                    </td>
+                    <td style={{ color: '#00BFA5', fontWeight: '700' }}>{row.tempo_total}</td>
                     <td>
-                      <HoursTable>{row.consumido.split(':')[0]}H</HoursTable>
+                      <HoursTable>{row.consumido}</HoursTable>
                     </td>
                     <td>
                       <HoursTable
@@ -1487,8 +1479,8 @@ export default function Dashboard() {
                 <tbody>
                   {topInternalChangesHours.map((row, index: number) => (
                     <tr key={index}>
-                      <td>{row.name ? row.name : '-----'}</td>
-                      <td>{row.Total ? row.Total : 0}H</td>
+                      <td>{row.name ? row.name : ''}</td>
+                      <td>{row.Total ? row.Total : ''}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -1516,8 +1508,8 @@ export default function Dashboard() {
                 <tbody>
                   {topExternalChangeHours.map((row, index: number) => (
                     <tr key={index}>
-                      <td>{row.name ? row.name : '-----'}</td>
-                      <td>{row.Total ? row.Total : 0}</td>
+                      <td>{row.name ? row.name : ''}</td>
+                      <td>{row.Total ? row.Total : ''}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -1854,35 +1846,35 @@ export default function Dashboard() {
                   <td>1º</td>
                   <td>?????</td>
                   <td>?????</td>
-                  <td>?????H</td>
+                  <td>?????</td>
                   <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
                 </tr>
                 <tr>
                   <td>2º</td>
                   <td>?????</td>
                   <td>??</td>
-                  <td>??H</td>
+                  <td>??</td>
                   <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
                 </tr>
                 <tr>
                   <td>3º</td>
                   <td>?????</td>
                   <td>??</td>
-                  <td>???H</td>
+                  <td>???</td>
                   <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
                 </tr>
                 <tr>
                   <td>4º</td>
                   <td>?????</td>
                   <td>??</td>
-                  <td>???H</td>
+                  <td>???</td>
                   <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
                 </tr>
                 <tr>
                   <td>5º</td>
                   <td>?????</td>
                   <td>??</td>
-                  <td>???H</td>
+                  <td>???</td>
                   <td style={{ color: '#00BFA5', fontWeight: '700' }}>??</td>
                 </tr>
               </tbody>
@@ -1910,7 +1902,7 @@ export default function Dashboard() {
                     <td>{index + 1}º</td>
                     <td>{row.name}</td>
                     <td>{row.total_tarefas}</td>
-                    <td>{row.total_tempo}H</td>
+                    <td>{row.total_tempo}</td>
                     <td style={{ color: '#00BFA5', fontWeight: '700' }}>
                       {row.aprovadas_sem_revisao}
                     </td>
@@ -1951,16 +1943,8 @@ export default function Dashboard() {
                     <td>{row.tarefa}</td>
                     <td>{row.status}</td>
                     <td>{row.qts_pausas}</td>
-                    <td style={{ minWidth: '125px' }}>
-                      {row.hora_estimada.split(':')[0] === '00'
-                        ? 0
-                        : row.hora_estimada.split(':')[0]}
-                      H
-                    </td>
-                    <td style={{ minWidth: '125px' }}>
-                      {row.hora_real.split(':')[0] === '00' ? 0 : row.hora_real.split(':')[0]}H:
-                      {row.hora_real.split(':')[1]}m
-                    </td>
+                    <td style={{ minWidth: '125px' }}>{row.hora_estimada}</td>
+                    <td style={{ minWidth: '125px' }}>{row.hora_real}</td>
                     <td>{moment(row.data_inicio).format('DD/MM/YYYY')}</td>
                     <td>{moment(row.data_final).format('DD/MM/YYYY')}</td>
                   </tr>
@@ -2029,7 +2013,7 @@ export default function Dashboard() {
                     Total jobs: <span>{row.quantidade_tarefas}</span>
                   </div>
                   <div className="bullet">
-                    Total horas: <span>{row.hora}h</span>
+                    Total horas: <span>{row.hora}</span>
                   </div>
                   <div className="bullet">
                     Alteração interna: <span>???</span>
@@ -2228,7 +2212,7 @@ export default function Dashboard() {
                     Total jobs: <span>{row.quantidade_tarefas}</span>
                   </div>
                   <div className="bullet">
-                    Total horas: <span>{row.hora}h</span>
+                    Total horas: <span>{row.hora}</span>
                   </div>
                   <div className="bullet">
                     Alteração interna: <span>???</span>
@@ -2514,7 +2498,7 @@ export default function Dashboard() {
                     Total jobs: <span>{row.quantidade_tarefas}</span>
                   </div>
                   <div className="bullet">
-                    Total horas: <span>{row.hora}h</span>
+                    Total horas: <span>{row.hora}</span>
                   </div>
                   <div className="bullet">
                     Alteração interna: <span>???</span>
@@ -2594,7 +2578,7 @@ export default function Dashboard() {
             <SmallCardsWrapper>
               <CardDataDash data={999} type="jobSpot" description="Pautas entregues" />
               <CardDataDash
-                data={data?.horas_realizadas.split(':')[0]}
+                data={data?.horas_realizadas}
                 type="creation"
                 description="Horas de criação"
               />
@@ -2612,7 +2596,7 @@ export default function Dashboard() {
               <CardDataDash data={data?.jobs_na_fila} type="jobs" description="Jobs na fila" />
               <CardDataDash data={data?.produtos} type="newFee" description="Total de produtos" />
               <CardDataDash
-                data={data?.horas_na_fila.split(':')[0]}
+                data={data?.horas_na_fila}
                 type="warning"
                 description="Total horas na fila"
               />
@@ -2632,7 +2616,7 @@ export default function Dashboard() {
             taskSelected={handleNavigateTask}
             pages={pages}
             pageSelected={setSelected}
-            orderSelected={() => ''}
+            orderSelected={setTaskOrder}
           />
         </SectionDefault>
       )}
