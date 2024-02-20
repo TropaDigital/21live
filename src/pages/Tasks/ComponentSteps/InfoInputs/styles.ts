@@ -4,6 +4,8 @@ export const InputTaskWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
+
+  max-width: calc(100vw - 260px);
 `;
 
 export const InputField = styled.div`
