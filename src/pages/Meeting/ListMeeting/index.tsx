@@ -49,6 +49,7 @@ import {
   ButtonsFilter,
   Container,
   DownloadFileBtn,
+  FieldEditor,
   FileInfo,
   FilesWrapper,
   FilterButton,
@@ -831,13 +832,13 @@ export default function ListMeeting() {
             />
           </FieldDefault>
 
-          <FieldDefault>
+          <FieldEditor>
             <WrapperEditor
               mentionData={mentionList}
               value={text}
               handleOnDescription={(value: any) => setText(value)}
             />
-          </FieldDefault>
+          </FieldEditor>
 
           <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
             <ButtonDefault typeButton="dark" isOutline onClick={handleOnCancel}>
