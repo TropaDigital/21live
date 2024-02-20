@@ -211,12 +211,16 @@ export default function ListMeeting() {
   });
 
   const handleChangeClient = (clientInfos: any) => {
-    // const selectedIndex = event.target.selectedIndex;
-    // const selectedId = parseInt(event.target.options[selectedIndex].value);
-    // const selectedItem = dataClient?.find((item: any) => Number(item.tenant_id) === selectedId);
-
     setFormValue('tenant_id', clientInfos.value);
+    setInitialValue(clientInfos);
   };
+
+  const [initialValue, setInitialValue] = useState({
+    value: '',
+    label: '',
+    image: '',
+    color: ''
+  });
 
   const onChange = (option: any) => {
     const dataOption = option.map((row: any) => ({ user_id: row.value }));
@@ -241,6 +245,12 @@ export default function ListMeeting() {
     setUploadedFiles([]);
     setText('');
     setErrors({});
+    setInitialValue({
+      value: '',
+      label: '',
+      image: '',
+      color: ''
+    });
     // fetchData();
   };
 
@@ -248,6 +258,12 @@ export default function ListMeeting() {
     setData(data);
     setUploadedFiles(data.files);
     setText(data.description);
+
+    const selectedClient = clientsOptions?.filter((obj) => obj.value === data.tenant_id);
+
+    if (selectedClient !== undefined) {
+      setInitialValue(selectedClient[0]);
+    }
 
     setModal({
       isOpen: true,
@@ -721,7 +737,7 @@ export default function ListMeeting() {
             <SelectImage
               label={'Cliente'}
               dataOptions={clientsOptions}
-              value={formData.tenant_id}
+              value={initialValue.value !== '' ? initialValue : null}
               onChange={handleChangeClient}
               placeholder={'Selecione o cliente...'}
             />
