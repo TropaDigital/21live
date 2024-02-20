@@ -567,8 +567,8 @@ export default function ListProjects() {
                 <th>Tempo</th>
                 <th>Ativo / Inativo</th>
                 <th>Equipe</th>
-                <th>Data de criação</th>
-                <th>Entrega estimada</th>
+                <th>Data inicial</th>
+                <th>Data inicial</th>
                 <th>Status</th>
                 <th
                   style={{
@@ -808,7 +808,7 @@ export default function ListProjects() {
                   )}
 
                   <SummaryTaskDescription>
-                    <div className="description-title">Contexto geral</div>
+                    <div className="description-title">Observações:</div>
                     <div
                       className="description-info"
                       dangerouslySetInnerHTML={{ __html: modalShowProject.project.description }}
