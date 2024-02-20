@@ -116,7 +116,7 @@ export default function FilterMeeting({
             <SelectImage
               label={'Cliente'}
               dataOptions={clientsOptions}
-              value={initialValue}
+              value={initialValue.value !== '' ? initialValue : null}
               onChange={handleAddClientFilter}
               placeholder={'Selecione o cliente...'}
             />
