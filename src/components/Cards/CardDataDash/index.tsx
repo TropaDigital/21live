@@ -9,11 +9,11 @@ import { IconBranch, IconGroup } from '../../../assets/icons';
 import { IoHammerOutline } from 'react-icons/io5';
 
 // Styles
-import { Container } from './styles';
+import { Container, HoursWrapperCounter } from './styles';
 import { MdPlace } from 'react-icons/md';
 
 interface Props {
-  data: number;
+  data: number | any;
   type?:
     | 'success'
     | 'danger'
@@ -48,16 +48,49 @@ export function CardDataDash({ type, data, description }: Props) {
     <Container type={type}>
       <div className="info">
         <span>{description}</span>
-        {description !== 'Total de horas disponíveis' && (
-          <CountUp start={0} end={data} delay={0}>
-            {({ countUpRef }) => (
-              <div>
-                <span className="numberCard" ref={countUpRef} />
-              </div>
-            )}
-          </CountUp>
+        {description !== 'Total de horas disponíveis' &&
+          description !== 'Horas de criação' &&
+          description !== 'Total horas na fila' &&
+          description !== 'Total de horas' && (
+            <CountUp start={0} end={data} delay={0}>
+              {({ countUpRef }) => (
+                <div>
+                  <span className="numberCard" ref={countUpRef} />
+                </div>
+              )}
+            </CountUp>
+          )}
+
+        {(description === 'Total de horas disponíveis' ||
+          description === 'Horas de criação' ||
+          description === 'Total horas na fila' ||
+          description === 'Total de horas') && (
+          <HoursWrapperCounter>
+            <CountUp start={0} end={Number(data.split(':')[0])} delay={0}>
+              {({ countUpRef }) => (
+                <div>
+                  <span className="numberCard" ref={countUpRef} />
+                </div>
+              )}
+            </CountUp>
+            <div className="hours-points">:</div>
+            <CountUp start={0} end={Number(data.split(':')[1])} delay={0}>
+              {({ countUpRef }) => (
+                <div>
+                  <span className="numberCard" ref={countUpRef} />
+                </div>
+              )}
+            </CountUp>
+            <div className="hours-points">:</div>
+            <CountUp start={0} end={Number(data.split(':')[2])} delay={0}>
+              {({ countUpRef }) => (
+                <div>
+                  <span className="numberCard" ref={countUpRef} />
+                </div>
+              )}
+            </CountUp>
+          </HoursWrapperCounter>
         )}
-        {description === 'Total de horas disponíveis' && <span className="numberCard">{data}</span>}
       </div>
       <div className="info-icon">{icons[type || 'info']}</div>
     </Container>
