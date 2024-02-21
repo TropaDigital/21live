@@ -16,6 +16,7 @@ import ButtonDefault from '../Buttons/ButtonDefault';
 interface HeaderRequestProps {
   title: TitleProps;
   ticketInfos: TicketInfos;
+  hasTask: boolean;
 }
 
 interface TitleProps {
@@ -31,7 +32,7 @@ interface TicketInfos {
   userId: string | undefined;
 }
 
-export default function HeaderRequest({ title, ticketInfos }: HeaderRequestProps) {
+export default function HeaderRequest({ title, ticketInfos, hasTask }: HeaderRequestProps) {
   const navigate = useNavigate();
 
   const handleBaseTask = () => {
@@ -56,10 +57,12 @@ export default function HeaderRequest({ title, ticketInfos }: HeaderRequestProps
           </div>
         </RequestHeaderTitle>
 
-        <ButtonDefault typeButton="primary" onClick={handleBaseTask}>
-          <BiPlus />
-          Usar como base para tarefa
-        </ButtonDefault>
+        {!hasTask && (
+          <ButtonDefault typeButton="primary" onClick={handleBaseTask}>
+            <BiPlus />
+            Usar como base para tarefa
+          </ButtonDefault>
+        )}
       </RightSideHeader>
     </HeaderRequestWrapper>
   );
