@@ -620,6 +620,8 @@ export default function CreateProject() {
     } else if (e.target.name === 'date_start' || e.target.name === 'date_end') {
       if (moment(e.target.value).isAfter('2019-12-31')) {
         handleChangeInput(e);
+      } else {
+        setDTOForm({ ...DTOForm, [e.target.name]: '' });
       }
       // console.log(`log ${e.target.name}`, e.target.value, e.target.name);
     } else {
