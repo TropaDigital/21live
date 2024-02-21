@@ -94,6 +94,8 @@ export const InputField = styled.div`
   flex-direction: column;
   gap: 8px;
 
+  max-width: calc(100vw - 280px);
+
   &.error {
     border: 2px solid var(--input-error);
     border-radius: 4px;
@@ -583,6 +585,8 @@ export const EssayField = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+
+  max-width: calc(100vw - 280px);
 
   .ProseMirror {
     min-height: 260px;

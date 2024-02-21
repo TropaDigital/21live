@@ -87,6 +87,44 @@ export default function EditFluxo() {
     }
   };
 
+  async function saveFluxoAutomatic() {
+    try {
+      // setLoading(true);
+
+      const response = await api.post('/card', column);
+      setState(response.data.result);
+      setColumn(response.data.result);
+      if (response.data.status === 'success') {
+        addToast({
+          title: 'Sucesso',
+          description: 'Fluxo salvo com sucesso!',
+          type: 'success'
+        });
+      }
+
+      // setLoading(false);
+    } catch (err: any) {
+      console.log('ERR =>', err);
+      if (err.response.data.result.length !== 0) {
+        err.response.data.result.map((row: any) => {
+          addToast({
+            type: 'danger',
+            title: 'ATENÇÃO',
+            description: row.error
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: err.response.data.message,
+          type: 'danger'
+        });
+      }
+
+      // setLoading(false);
+    }
+  }
+
   async function saveFluxo() {
     try {
       setLoading(true);
@@ -100,7 +138,7 @@ export default function EditFluxo() {
           description: 'Fluxo salvo com sucesso!',
           type: 'success'
         });
-        // navigate('/fluxo');
+        navigate('/fluxo');
       }
 
       setLoading(false);
@@ -201,7 +239,7 @@ export default function EditFluxo() {
               handleOnClick={() => addColumn(user.user_id, location.state.id)}
               handleOnPosition={(newIndex) => moveObject(newIndex, index)}
               handleOnDelete={() => deleteFluxo(row.card_id)}
-              handleOnsave={saveFluxo}
+              handleOnsave={saveFluxoAutomatic}
               onUpdate={(id, name, value) => updateParcialColumn(id, name, value)}
               errorField={errorMissingResponsible}
             />

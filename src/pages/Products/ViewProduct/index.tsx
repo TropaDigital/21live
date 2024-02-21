@@ -476,9 +476,32 @@ export default function ViewProductsDeliveries() {
     }
   }
 
+  async function getTimelineData() {
+    try {
+      const response = await api.get(`task/timeline/${id}`);
+      setTimelineData(response.data.result);
+    } catch (error: any) {
+      console.log('log timeline error', error);
+    }
+  }
+
+  async function getTaskHistory() {
+    try {
+      setLoading(true);
+      const response = await api.get(`/task/historic/${id}`);
+      setTaskHistory(response.data.result);
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log timeline error', error);
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
     getTaskInfos();
-    console.log('log do location =>', location.state);
+    getTimelineData();
+    getTaskHistory();
   }, []);
 
   useEffect(() => {
@@ -500,30 +523,9 @@ export default function ViewProductsDeliveries() {
     setTimeData(timeDataInfo);
     setDataProducts(dataTask?.deliverys[0]);
 
-    async function getTimelineData() {
-      try {
-        const response = await api.get(`task/timeline/${id}`);
-        setTimelineData(response.data.result);
-      } catch (error: any) {
-        console.log('log timeline error', error);
-      }
+    if (dataTask?.deliverys[0].products.length === 1) {
+      setViewProduct(true);
     }
-
-    async function getTaskHistory() {
-      try {
-        setLoading(true);
-        const response = await api.get(`/task/historic/${id}`);
-        setTaskHistory(response.data.result);
-
-        setLoading(false);
-      } catch (error: any) {
-        console.log('log timeline error', error);
-        setLoading(false);
-      }
-    }
-
-    getTimelineData();
-    getTaskHistory();
   }, [dataTask]);
 
   useEffect(() => {
@@ -1712,8 +1714,6 @@ export default function ViewProductsDeliveries() {
     // console.log('log do type of play', typeOfPlay);
     // console.log('log allRejected', hasAllBeenRejected);
     // console.log('log ticket', hasTicketInteraction);
-    console.log('log compareFilesAndProducts', compareFilesAndProducts());
-    console.log('log checkMandatory', checkMandatoryUpload());
   }, [typeOfPlay]);
 
   return (

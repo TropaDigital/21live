@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 // React
 import { useState, useCallback, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 // Hooks
 import { useToast } from '../../../hooks/toast';
@@ -617,6 +617,11 @@ export default function CreateProject() {
       );
       setSelectedClient(selectedClientInfos[0]);
       handleChangeInput(e);
+    } else if (e.target.name === 'date_start' || e.target.name === 'date_end') {
+      if (moment(e.target.value).isAfter('2019-12-31')) {
+        handleChangeInput(e);
+      }
+      // console.log(`log ${e.target.name}`, e.target.value, e.target.name);
     } else {
       handleChangeInput(e);
     }
@@ -780,7 +785,7 @@ export default function CreateProject() {
                     </SummaryTaskInfo>
 
                     <SummaryTaskDescription>
-                      <div className="description-title">Contexto geral</div>
+                      <div className="description-title">Observações</div>
                       <div
                         className="description-info"
                         dangerouslySetInnerHTML={{ __html: DTOForm?.description }}
@@ -842,38 +847,40 @@ export default function CreateProject() {
               <div
                 style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '446px' }}
               >
-                <Summary className="small" style={{ background: 'var(--background-primary)' }}>
-                  <div className="title small">Resumo do contrato</div>
-                  <SummaryContractCard>
-                    <div className="products">
-                      {productsArray.length >= 2
-                        ? `${productsArray.length} Produtos`
-                        : `${productsArray.length} Produto`}
-                    </div>
-                  </SummaryContractCard>
-                  <SummaryContractCard>
-                    <div className="hours">
-                      Horas por produto
-                      <strong>{sumTimes(productsHours)}</strong>
-                    </div>
-                  </SummaryContractCard>
-                  {/* {productsArray.some((obj) => obj.service.toLowerCase() === 'hora de criação') && (
+                {DTOForm.contract_type !== 'free' && (
+                  <Summary className="small" style={{ background: 'var(--background-primary)' }}>
+                    <div className="title small">Resumo do contrato</div>
                     <SummaryContractCard>
-                      <div className="hours">
-                        Horas de criação
-                        <strong>
-                          {totalCreateHours > 9 ? totalCreateHours : `0${totalCreateHours}`}
-                          :00:00
-                        </strong>
+                      <div className="products">
+                        {productsArray.length >= 2
+                          ? `${productsArray.length} Produtos`
+                          : `${productsArray.length} Produto`}
                       </div>
                     </SummaryContractCard>
-                  )} */}
-                  <SummaryContractCard>
-                    <div className="total">
-                      Total <div>{sumTimes(productsHours)}</div>
-                    </div>
-                  </SummaryContractCard>
-                </Summary>
+                    <SummaryContractCard>
+                      <div className="hours">
+                        Horas por produto
+                        <strong>{sumTimes(productsHours)}</strong>
+                      </div>
+                    </SummaryContractCard>
+                    {/* {productsArray.some((obj) => obj.service.toLowerCase() === 'hora de criação') && (
+                      <SummaryContractCard>
+                        <div className="hours">
+                          Horas de criação
+                          <strong>
+                            {totalCreateHours > 9 ? totalCreateHours : `0${totalCreateHours}`}
+                            :00:00
+                          </strong>
+                        </div>
+                      </SummaryContractCard>
+                    )} */}
+                    <SummaryContractCard>
+                      <div className="total">
+                        Total <div>{sumTimes(productsHours)}</div>
+                      </div>
+                    </SummaryContractCard>
+                  </Summary>
+                )}
 
                 <TeamInput>
                   <InputMultipleSelect

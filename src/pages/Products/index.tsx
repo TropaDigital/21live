@@ -488,12 +488,12 @@ export default function Services() {
 
   const validateForm = (formData: Partial<IDataKit>): string | void => {
     if (!formData?.title) return 'Título é obrigatório';
-    if (!formData?.description?.trim()) return 'Descrição é obrigatória';
+    // if (!formData?.description?.trim()) return 'Descrição é obrigatória';
     if (!formData?.services) return 'Produtos é obrigatório';
 
-    if (formData?.description?.length < 3) {
-      return 'Descrição deve ter no mínimo 3 caracteres';
-    }
+    // if (formData?.description?.length < 3) {
+    //   return 'Descrição deve ter no mínimo 3 caracteres';
+    // }
 
     if (formData?.services?.length <= 1) {
       return 'Selecione pelo menos dois produtos';
@@ -1263,7 +1263,7 @@ export default function Services() {
               name="description"
               onChange={handleOnChange}
               value={formData.description}
-              required
+              // required
             />
           </FieldDefault>
 

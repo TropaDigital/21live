@@ -2656,24 +2656,15 @@ export default function CreateTasks() {
                       }
                       infosReceived={row}
                       handleQuantity={(value: any) => handleCheckQuantity(value, row)}
-                      clearQuantity={() => ''}
-                      disabledInput={
-                        productsArray?.filter((obj) => obj.job_service_id === row.job_service_id)
-                          .length > 0
-                          ? false
-                          : true
-                      }
+                      clearQuantity={() => handleOnChangeCheckbox(row)}
+                      // disabledInput={
+                      //   productsArray?.filter((obj) => obj.job_service_id === row.job_service_id)
+                      //     .length > 0
+                      //     ? false
+                      //     : true
+                      // }
+                      disabledInput={false}
                     />
-                    {/* <QuantityCounter
-                      handleQuantity={handleProductQuantity}
-                      rowQuantity={row}
-                      clearQuantity={handleClearQuantity}
-                      receiveQuantity={
-                        productsArray?.filter((obj) => obj.job_service_id === row.job_service_id).length > 0
-                          ? 1
-                          : 0
-                      }
-                    /> */}
                   </div>
                 </Product>
               ))}

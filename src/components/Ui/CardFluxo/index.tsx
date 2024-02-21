@@ -220,15 +220,16 @@ export default function CardFluxo({
               checked={data.necessary_responsible === 'true' ? true : false}
             />
           </FieldDefault> */}
-
-          <FieldDefault style={{ marginBottom: '8px' }}>
-            <CheckboxDefault
-              label="Aprovação do Cliente"
-              name="tenant_approve"
-              onChange={handleOnChangeCheckbox}
-              checked={data.tenant_approve === 'true' ? true : false}
-            />
-          </FieldDefault>
+          {data.final_card !== 'true' && (
+            <FieldDefault style={{ marginBottom: '8px' }}>
+              <CheckboxDefault
+                label="Aprovação do Cliente"
+                name="tenant_approve"
+                onChange={handleOnChangeCheckbox}
+                checked={data.tenant_approve === 'true' ? true : false}
+              />
+            </FieldDefault>
+          )}
 
           <FieldDefault style={{ marginBottom: '8px' }}>
             <SelectDefault

@@ -261,6 +261,12 @@ export default function WorkingProduct({
     (obj: any) => obj.products_delivery_id === modalRejectedInfo.motive
   );
 
+  useEffect(() => {
+    if (localStorage.getItem('uploadTab') === 'yes') {
+      setSelectedTab('Arquivos');
+    }
+  }, [taskFiles]);
+
   const productsNames: any[] =
     taskFiles?.map((file: any) => {
       const matchingProduct = allProducts?.find(
@@ -525,6 +531,7 @@ export default function WorkingProduct({
         setUploadedFiles([]);
         setModalUpload(false);
         updateInfos();
+        localStorage.setItem('uploadTab', 'yes');
         // navigate('/minhas-tarefas');
       }
 
@@ -764,6 +771,7 @@ export default function WorkingProduct({
           onClick={(e: any) => {
             setSelectedTab(e.target.innerText);
             setLogIsOn(false);
+            localStorage.removeItem('uploadTab');
           }}
           className={selectedTab === 'Inputs' ? 'active' : ''}
         >
@@ -775,6 +783,7 @@ export default function WorkingProduct({
           onClick={(e: any) => {
             setSelectedTab(e.target.innerText);
             setLogIsOn(false);
+            localStorage.removeItem('uploadTab');
           }}
           className={selectedTab === 'Redação' ? 'active' : ''}
         >
@@ -786,6 +795,7 @@ export default function WorkingProduct({
           onClick={(e: any) => {
             setSelectedTab(e.target.innerText);
             getComments('');
+            localStorage.removeItem('uploadTab');
           }}
           className={selectedTab === 'Comentários' ? 'active' : ''}
         >
@@ -809,6 +819,7 @@ export default function WorkingProduct({
           onClick={(e: any) => {
             setSelectedTab(e.target.innerText);
             setLogIsOn(false);
+            localStorage.removeItem('uploadTab');
           }}
           className={selectedTab === 'Alterações' ? 'active' : ''}
         >
@@ -873,7 +884,7 @@ export default function WorkingProduct({
       <WorkSection>
         {selectedTab === 'Inputs' &&
           user.permissions.includes('jobs_tasks_execute') &&
-          productInfos.status !== 'Concluida' && (
+          productInfos?.status !== 'Concluida' && (
             <>
               <div
                 style={{
@@ -923,7 +934,7 @@ export default function WorkingProduct({
           )}
 
         {selectedTab === 'Inputs' &&
-          (productInfos.status === 'Concluida' ||
+          (productInfos?.status === 'Concluida' ||
             !user.permissions.includes('jobs_tasks_execute')) && (
             <>
               <div
@@ -1531,6 +1542,7 @@ export default function WorkingProduct({
             }
           })
         }
+        maxWidth="90%"
       >
         <>
           {previewImage.imageInfos.file_name.split('.').pop() !== 'pdf' && (
@@ -1565,13 +1577,10 @@ export default function WorkingProduct({
           )}
 
           {previewImage.imageInfos.file_name.split('.').pop() === 'pdf' && (
-            <DocViewer
-              documents={[
-                {
-                  uri: `url(https://${previewImage.imageInfos.bucket}.s3.amazonaws.com/${previewImage.imageInfos.key})`,
-                  fileType: 'pdf'
-                }
-              ]}
+            <iframe
+              src={`https://${previewImage.imageInfos.bucket}.s3.amazonaws.com/${previewImage.imageInfos.key}`}
+              width={'1000px'}
+              height={'600px'}
             />
           )}
         </>

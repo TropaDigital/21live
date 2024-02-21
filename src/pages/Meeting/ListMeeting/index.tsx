@@ -49,6 +49,7 @@ import {
   ButtonsFilter,
   Container,
   DownloadFileBtn,
+  FieldEditor,
   FileInfo,
   FilesWrapper,
   FilterButton,
@@ -117,6 +118,12 @@ interface FilterProps {
   [key: string]: string; // Index signature
 }
 
+interface RequesterProps {
+  user_id: string;
+  name: string;
+  username: string;
+}
+
 export default function ListMeeting() {
   const { addToast } = useToast();
   const { formData, setFormValue, setData, handleOnChange, handleOnChangeCheckbox } = useForm({
@@ -157,13 +164,34 @@ export default function ListMeeting() {
   );
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
   const { data: dataTeam } = useFetch<TeamProps[]>(`team`);
+  const [requestersList, setRequestersList] = useState<RequesterProps[]>([]);
   const [modalFilters, setModalFilters] = useState<boolean>(false);
 
-  const selectedTeam = dataTeam?.filter((obj) => obj.user_id !== formData.user_id);
-  const defaultOptionsTeam = dataTeam?.filter((item) =>
+  // const selectedTeam = dataTeam?.filter((obj) => obj.user_id !== formData.user_id);
+  // const defaultOptionsTeam = dataTeam?.filter((item) =>
+  //   formData.members.some((member: any) => member.user_id === item.user_id)
+  // );
+  // const mentionList = dataTeam?.map((obj) => ({ id: obj.user_id, label: obj.username }));
+  const defaultOptionsTeam = requestersList?.filter((item) =>
     formData.members.some((member: any) => member.user_id === item.user_id)
   );
-  const mentionList = dataTeam?.map((obj) => ({ id: obj.user_id, label: obj.username }));
+
+  async function getRequesters(tenantId: string) {
+    try {
+      const response = await api.get(`/task/requester/${tenantId}`);
+      if (response.data.result.length > 0) {
+        setRequestersList(response.data.result);
+      }
+    } catch (error) {
+      console.log('log do get requesters', error);
+    }
+  }
+
+  useEffect(() => {
+    if (formData.tenant_id) {
+      getRequesters(formData.tenant_id);
+    }
+  }, [formData]);
 
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
   const [selected, setSelected] = useState(1);
@@ -309,7 +337,7 @@ export default function ListMeeting() {
         addToast({
           type: 'success',
           title: 'Sucesso',
-          description: 'Serviço cadastrado com sucesso!'
+          description: 'Ata de reunião criada com sucesso!'
         });
 
         setModal({
@@ -355,7 +383,7 @@ export default function ListMeeting() {
       addToast({
         type: 'success',
         title: 'Sucesso',
-        description: 'Ata/Reunição deletada com sucesso!'
+        description: 'Ata de reunião deletada com sucesso!'
       });
 
       setModal({
@@ -503,7 +531,7 @@ export default function ListMeeting() {
 
   return (
     <Container>
-      <HeaderPage title="Atas e Reuniões">
+      <HeaderPage title="Atas de reuniões">
         <ButtonDefault
           typeButton="success"
           onClick={() => setModal({ ...modal, ['isOpen']: true })}
@@ -785,19 +813,19 @@ export default function ListMeeting() {
             </SelectDefault>
           </FieldDefault>
 
-          <FieldDefault>
+          <FieldDefault style={{ maxWidth: '390px' }}>
             <InputMultipleSelect
               name="members"
-              options={selectedTeam?.map((row) => ({
+              options={requestersList?.map((row) => ({
                 value: row.user_id,
-                label: `${row.name} - ${row.function}`
+                label: row.name
               }))}
               label="Solicitantes"
-              isDisabled={formData.user_id ? false : true}
+              isDisabled={formData.tenant_id ? false : true}
               onChange={(option) => onChange(option)}
               defaultValue={defaultOptionsTeam?.map((row) => ({
                 value: row.user_id,
-                label: `${row.name} - ${row.function}`
+                label: row.name
               }))}
               alert="Selecione pelo menos um Responsável"
               error={errors?.members}
@@ -831,13 +859,13 @@ export default function ListMeeting() {
             />
           </FieldDefault>
 
-          <FieldDefault>
+          <FieldEditor>
             <WrapperEditor
-              mentionData={mentionList}
+              mentionData={[]}
               value={text}
               handleOnDescription={(value: any) => setText(value)}
             />
-          </FieldDefault>
+          </FieldEditor>
 
           <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
             <ButtonDefault typeButton="dark" isOutline onClick={handleOnCancel}>
