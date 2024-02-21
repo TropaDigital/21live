@@ -79,3 +79,22 @@ export const FiltersRequests = styled.div`
     height: 100%;
   }
 `;
+
+export const ButtonIcon = styled.div`
+  display: grid;
+  place-items: center;
+
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  padding: 8px;
+  height: 36px;
+  width: 36px;
+  transition: all 0.35s ease;
+
+  cursor: pointer;
+
+  svg {
+    fill: #f04438;
+  }
+`;

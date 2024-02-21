@@ -31,7 +31,8 @@ import ButtonTable from '../../../components/Buttons/ButtonTable';
 import moment from 'moment';
 
 // Styles
-import { FiltersRequests, RequestsWrapper } from './styles';
+import { ButtonIcon, FiltersRequests, RequestsWrapper } from './styles';
+import { FiFlag } from 'react-icons/fi';
 
 interface ChoosenFilters {
   code: string;
@@ -317,6 +318,11 @@ export default function Requests() {
                     </td>
                     <td>
                       <div className="fieldTableClients">
+                        {row.task_id && (
+                          <ButtonIcon>
+                            <FiFlag color={'#F04438'} />
+                          </ButtonIcon>
+                        )}
                         <ButtonTable typeButton="view" onClick={() => handleViewRequest(row)} />
                       </div>
                     </td>

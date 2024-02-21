@@ -251,3 +251,9 @@ export const FilterWrapper = styled.div`
   align-items: center;
   gap: 12px;
 `;
+
+export const FieldEditor = styled.div`
+  margin-bottom: 1.25rem;
+
+  max-width: calc(100vw - 800px);
+`;

@@ -4,7 +4,9 @@ interface Props {
   isDisabed?: boolean;
 }
 
-export const ContainerSteps = styled.div``;
+export const ContainerSteps = styled.div`
+  width: calc(100vw - 260px);
+`;
 
 export const Container = styled.div<Props>`
   ${(props) =>

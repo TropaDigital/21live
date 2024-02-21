@@ -4,6 +4,7 @@ export const HeaderRequestWrapper = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
+  min-height: 64px;
   height: fit-content;
 
   background: var(--gray-025);

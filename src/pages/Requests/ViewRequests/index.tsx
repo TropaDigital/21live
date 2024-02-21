@@ -74,6 +74,7 @@ import ModalLoader from '../../../components/Ui/ModalLoader';
 
 interface TicketProps {
   ticket_id: string;
+  task_id: string;
   tenant_id: string;
   ticket_cat_id: string;
   ticket_status_id: string;
@@ -357,7 +358,11 @@ export default function ViewRequest() {
     <ContainerDefault>
       {!loading && (
         <>
-          <HeaderRequest title={titleData} ticketInfos={ticketInfos} />
+          <HeaderRequest
+            title={titleData}
+            ticketInfos={ticketInfos}
+            hasTask={requestData?.task_id !== '' ? true : false}
+          />
 
           <ViewRequestWrapper>
             <RequestInfosCard>

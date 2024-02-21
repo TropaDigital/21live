@@ -567,8 +567,8 @@ export default function ListProjects() {
                 <th>Tempo</th>
                 <th>Ativo / Inativo</th>
                 <th>Equipe</th>
-                <th>Data de criação</th>
-                <th>Entrega estimada</th>
+                <th>Data inicial</th>
+                <th>Data final</th>
                 <th>Status</th>
                 <th
                   style={{
@@ -756,14 +756,14 @@ export default function ListProjects() {
                   </SummaryTaskInfo>
 
                   <SummaryTaskInfo>
-                    <div className="title-info">Data De Criação:</div>
+                    <div className="title-info">Data Inicial:</div>
                     <div className="info">
                       {moment(modalShowProject.project.date_start).format('DD/MM/YYYY')}
                     </div>
                   </SummaryTaskInfo>
 
                   <SummaryTaskInfo>
-                    <div className="title-info">Entrega Estimada:</div>
+                    <div className="title-info">Data Final:</div>
                     <div className="info">
                       {moment(modalShowProject.project.date_end).format('DD/MM/YYYY')}
                     </div>
@@ -808,7 +808,7 @@ export default function ListProjects() {
                   )}
 
                   <SummaryTaskDescription>
-                    <div className="description-title">Contexto geral</div>
+                    <div className="description-title">Observações:</div>
                     <div
                       className="description-info"
                       dangerouslySetInnerHTML={{ __html: modalShowProject.project.description }}

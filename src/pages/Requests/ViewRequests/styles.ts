@@ -559,7 +559,7 @@ export const ModalInteractionHeader = styled.div`
   align-items: center;
   justify-content: space-between;
 
-  width: 1000px;
+  /* width: 1000px; */
   height: 60px;
 
   border-bottom: 1px solid var(--gray-300);
@@ -592,5 +592,5 @@ export const ModalInteractionHeader = styled.div`
 `;
 
 export const ModalMessageInfo = styled.div`
-  width: 100%;
+  width: calc(100vw - 520px);
 `;
