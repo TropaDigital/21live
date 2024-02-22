@@ -361,7 +361,7 @@ export default function ViewRequest() {
           <HeaderRequest
             title={titleData}
             ticketInfos={ticketInfos}
-            hasTask={requestData?.task_id !== '' ? true : false}
+            taskId={requestData?.task_id}
           />
 
           <ViewRequestWrapper>
