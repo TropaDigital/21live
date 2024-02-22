@@ -175,6 +175,7 @@ export default function ViewProductsDeliveries() {
     isOpen: false,
     productId: ''
   });
+  const [modalSelectFinalFiles, setModalSelectFinalfiles] = useState<boolean>(false);
 
   const [previewImage, setPreviewImage] = useState({
     isOpen: false,
@@ -211,7 +212,7 @@ export default function ViewProductsDeliveries() {
     client_task: dataTask?.tenant,
     typeTask: dataTask?.project_category,
     quantityTask: '',
-    contract_task: dataTask?.product_period
+    contract_task: dataTask?.project
   };
 
   const allTimes = {
@@ -1190,25 +1191,45 @@ export default function ViewProductsDeliveries() {
           handleNextUser('next');
         }
       } else if (checkType === 'next' && finalCard) {
-        if (
-          dataTask.ticket_id !== '' &&
-          dataTask?.ticket_id !== '0' &&
-          mandatoryUpload &&
-          dataTask.files.length > 1
-        ) {
+        if (dataTask.ticket_id !== '' && dataTask?.ticket_id !== '0' && mandatoryUpload) {
           console.log('checkFlow 6 - Final card + mandatory upload');
           setModalFinalFile(true);
         }
-        if (dataTask?.ticket_id !== '' && dataTask?.ticket_id !== '0' && !mandatoryUpload) {
-          console.log('checkFlow 6 - Final card without mandatory upload');
+
+        if (
+          dataTask?.ticket_id !== '' &&
+          dataTask?.ticket_id !== '0' &&
+          !mandatoryUpload &&
+          dataTask?.files.length > 0
+        ) {
+          console.log('checkFlow 7 - Final card not mandatory upload');
+          setModalSelectFinalfiles(true);
           // handleUploadApproved();
         }
+
         if (
-          dataTask?.ticket_id === '' &&
-          dataTask?.ticket_id === '0' &&
-          dataTask.files.length > 1
+          dataTask?.ticket_id !== '' &&
+          dataTask?.ticket_id !== '0' &&
+          !mandatoryUpload &&
+          dataTask.files.length === 0 &&
+          dataProducts.products.length >= 1
         ) {
-          // abrir modal para selecionar os arquivos para pasta jobs
+          setModalFinalFile(true);
+          console.log('checkFlow 8 - Final card not mandatory upload +1 product');
+          // abrir modal para questionar sobre enviar sem arquivos
+          // if () {
+          // }
+          // handleConcludeTask();
+        }
+
+        if (
+          dataTask?.ticket_id !== '' &&
+          dataTask?.ticket_id !== '0' &&
+          !mandatoryUpload &&
+          dataTask.files.length === 0
+        ) {
+          console.log('checkFlow 9 - Final card check if upload or not');
+          // abrir modal para questionar sobre enviar sem arquivos
           // if () {
           // }
           // handleConcludeTask();
@@ -2980,6 +3001,166 @@ export default function ViewProductsDeliveries() {
             </div>
           )}
         </ModalProductsWrapper>
+      </ModalDefault>
+
+      {/* Modal to select files to final card */}
+      <ModalDefault
+        isOpen={modalSelectFinalFiles}
+        onOpenChange={() => setModalSelectFinalfiles(false)}
+        title="Escolha o arquivo final"
+      >
+        <FileProductsWrapper>
+          {!toClientConfirmation && (
+            <div className="title-list">Selecione o arquivo que deseja enviar.</div>
+          )}
+
+          <FileProductList>
+            {!toClientConfirmation && (
+              <div style={{ width: '1000px' }}>
+                <Table>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>File ID</th>
+                        <th>Produto ID</th>
+                        <th>Nome do produto</th>
+                        <th>Nome do arquivo</th>
+                        <th>Data</th>
+                        <th>Detalhes</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {dataTask?.files.map((row: TaskFile, index: number) => (
+                        <tr key={row.task_file_id}>
+                          <td>
+                            <CheckboxDefault
+                              label=""
+                              id="subtasks"
+                              checked={
+                                filesToTenantApprove.find(
+                                  (obj) => obj.task_file_id === row.task_file_id
+                                )
+                                  ? true
+                                  : false
+                              }
+                              onChange={() => handleSelectFile(row)}
+                            />
+                          </td>
+                          <td>#{row.task_file_id}</td>
+                          <td>{row.products_delivery_id}</td>
+                          <td>{productsNames[index]}</td>
+                          <td>
+                            {row.original_name !== ''
+                              ? row.original_name
+                              : row.file_name.split('-').pop()}
+                          </td>
+                          <td>{moment(row.created).format('DD/MM/YYYY - HH:mm')}h</td>
+                          <td>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              <ButtonIcon
+                                className="view"
+                                onClick={() =>
+                                  setPreviewImage({
+                                    isOpen: true,
+                                    imageInfos: {
+                                      bucket: row.bucket,
+                                      created: row.created,
+                                      file_name: row.file_name,
+                                      key: row.key,
+                                      task_file_id: row.task_file_id,
+                                      task_id: row.task_id,
+                                      size: row.size,
+                                      updated: row.updated,
+                                      url: row.url
+                                    }
+                                  })
+                                }
+                              >
+                                <BiShow size={20} />
+                              </ButtonIcon>
+
+                              <ButtonIcon className="download" onClick={() => downloadFile(row)}>
+                                <FaDownload />
+                              </ButtonIcon>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </Table>
+                {previewImage.isOpen &&
+                  previewImage.imageInfos.file_name.split('.').pop() !== 'pdf' && (
+                    <FilePreview
+                      style={{
+                        backgroundImage: `url(https://${previewImage.imageInfos.bucket}.s3.amazonaws.com/${previewImage.imageInfos.key})`
+                      }}
+                    >
+                      <div
+                        className="close-button"
+                        onClick={() =>
+                          setPreviewImage({
+                            isOpen: false,
+                            imageInfos: {
+                              bucket: '',
+                              created: '',
+                              file_name: '',
+                              key: '',
+                              task_file_id: '',
+                              task_id: '',
+                              size: '',
+                              updated: '',
+                              url: ''
+                            }
+                          })
+                        }
+                      >
+                        <MdClose />
+                      </div>
+                    </FilePreview>
+                  )}
+              </div>
+            )}
+
+            {toClientConfirmation && (
+              <div className="confirmation">
+                <span>Atenção:</span> <br />
+                O arquivo escolhido será enviado para a área do cliente. <br />
+                Essa ação não pode ser revertida.
+              </div>
+            )}
+          </FileProductList>
+
+          {!toClientConfirmation && (
+            <ModalButtons>
+              <ButtonDefault typeButton="dark" isOutline onClick={handleCancelSendToTenant}>
+                Descartar
+              </ButtonDefault>
+              <ButtonDefault
+                typeButton={filesToTenantApprove.length <= 0 ? 'blocked' : 'primary'}
+                disabled={filesToTenantApprove.length <= 0}
+                onClick={() =>
+                  filesToTenantApprove.length > 0 ? setToClientConfirmation(true) : ''
+                }
+              >
+                Salvar
+              </ButtonDefault>
+            </ModalButtons>
+          )}
+
+          {toClientConfirmation && (
+            <ModalButtons>
+              <ButtonDefault typeButton="dark" isOutline onClick={handleCancelSendToTenant}>
+                Cancelar
+              </ButtonDefault>
+              <ButtonDefault loading={loading} typeButton="primary" onClick={handleUploadTenant}>
+                Enviar
+              </ButtonDefault>
+            </ModalButtons>
+          )}
+        </FileProductsWrapper>
       </ModalDefault>
 
       {/* Modal loading submit */}
