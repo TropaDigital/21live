@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { BiCalendar, BiFilter, BiPlus, BiSearchAlt, BiShow, BiX } from 'react-icons/bi';
 
 // Services
@@ -61,6 +61,7 @@ import {
   ViewFileBtn
 } from './styles';
 import { ModalImage } from '../../Requests/ViewRequests/styles';
+import { FinishModal, FinishModalButtons } from '../../Projects/CreateProject/styles';
 
 // Libraries
 import moment from 'moment';
@@ -126,6 +127,7 @@ interface RequesterProps {
 
 export default function ListMeeting() {
   const { addToast } = useToast();
+  const formRef = useRef<any>();
   const { formData, setFormValue, setData, handleOnChange, handleOnChangeCheckbox } = useForm({
     title: '',
     tenant_id: '',
@@ -166,6 +168,7 @@ export default function ListMeeting() {
   const { data: dataTeam } = useFetch<TeamProps[]>(`team`);
   const [requestersList, setRequestersList] = useState<RequesterProps[]>([]);
   const [modalFilters, setModalFilters] = useState<boolean>(false);
+  const [cancelModal, setCancelModal] = useState<boolean>(false);
 
   // const selectedTeam = dataTeam?.filter((obj) => obj.user_id !== formData.user_id);
   // const defaultOptionsTeam = dataTeam?.filter((item) =>
@@ -529,6 +532,33 @@ export default function ListMeeting() {
     return count;
   };
 
+  const checkIfClickedOutside = (e: any) => {
+    if (formData.title !== '' && formRef.current && !formRef.current.contains(e.target)) {
+      setCancelModal(true);
+    }
+  };
+
+  useEffect(() => {
+    function handleOnBeforeUnload(event: BeforeUnloadEvent) {
+      event.preventDefault();
+      return (event.returnValue = '');
+    }
+
+    window.addEventListener('beforeunload', handleOnBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleOnBeforeUnload);
+    };
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('mousedown', checkIfClickedOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', checkIfClickedOutside);
+    };
+  }, [formData]);
+
   return (
     <Container>
       <HeaderPage title="Atas de reuniões">
@@ -747,8 +777,12 @@ export default function ListMeeting() {
       )}
 
       {/* Modal add Meeting */}
-      <ModalDefault isOpen={modal.isOpen} onOpenChange={handleOnCancel} title={modal.type}>
-        <form onSubmit={handleOnSubmit}>
+      <ModalDefault
+        isOpen={modal.isOpen}
+        onOpenChange={() => (formData.title !== '' ? checkIfClickedOutside : handleOnCancel())}
+        title={modal.type}
+      >
+        <form onSubmit={handleOnSubmit} ref={formRef}>
           <FieldDefault>
             <InputDefault
               label="Titulo"
@@ -995,6 +1029,28 @@ export default function ListMeeting() {
             </ModalImage>
           )}
         </ModalInfosWrapper>
+      </ModalDefault>
+
+      {/* Modal discard changes */}
+      <ModalDefault isOpen={cancelModal} onOpenChange={() => ''} title="Descartar alterações">
+        <FinishModal>
+          <div>Deseja realmente descartar as alterações?</div>
+
+          <FinishModalButtons>
+            <ButtonDefault typeButton="dark" isOutline onClick={() => setCancelModal(false)}>
+              Cancelar
+            </ButtonDefault>
+            <ButtonDefault
+              typeButton="danger"
+              onClick={() => {
+                handleOnCancel();
+                setCancelModal(false);
+              }}
+            >
+              Descartar
+            </ButtonDefault>
+          </FinishModalButtons>
+        </FinishModal>
       </ModalDefault>
 
       {/* Modal loading submit */}

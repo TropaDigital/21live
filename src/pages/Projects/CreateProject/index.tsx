@@ -1,7 +1,7 @@
 /* eslint-disable import-helpers/order-imports */
 /* eslint-disable react-hooks/exhaustive-deps */
 // React
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 // Hooks
@@ -98,6 +98,7 @@ export default function CreateProject() {
   const { addToast } = useToast();
   const { user } = useAuth();
   const location = useLocation();
+  const formRef = useRef<any>();
 
   const [createStep, setCreateStep] = useState<number>(1);
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
@@ -131,6 +132,7 @@ export default function CreateProject() {
   const [editProject, setEditProject] = useState<boolean>(false);
   const [cancelModal, setCancelModal] = useState<boolean>(false);
   const { data: dataTeam } = useFetch<TeamProps[]>('team');
+  const [pathSelected, setPathSelected] = useState<string>('');
 
   const defaultOptionsTeam = dataTeam?.filter((item) =>
     DTOForm.team.some((member: any) => member.user_id === item.user_id)
@@ -292,11 +294,17 @@ export default function CreateProject() {
         setErrorInput('date_start', undefined);
       }
 
-      // if (moment(date_start).isSameOrBefore(newDate) && !editProject) {
-      //   throw setErrorInput('date_start', 'Data inicial igual ou menor que a atual');
-      // } else {
-      //   setErrorInput('date_start', undefined);
-      // }
+      if (moment(date_start).isBefore('2020-01-01')) {
+        throw setErrorInput('date_start', 'Data inicial não permitida');
+      } else {
+        setErrorInput('date_start', undefined);
+      }
+
+      if (moment(date_end).isBefore('2020-01-01')) {
+        throw setErrorInput('date_end', 'Data final não permitida');
+      } else {
+        setErrorInput('date_end', undefined);
+      }
 
       if (date_end === '') {
         throw setErrorInput('date_end', 'Data final é obrigatório!');
@@ -361,6 +369,7 @@ export default function CreateProject() {
     // setUploadedFiles([]);
     // setProductsArray([]);
     // setError({});
+    setPathSelected('projetos');
   };
 
   const handleOnSubmit = useCallback(
@@ -620,6 +629,14 @@ export default function CreateProject() {
     } else if (e.target.name === 'date_start' || e.target.name === 'date_end') {
       if (moment(e.target.value).isAfter('2019-12-31')) {
         handleChangeInput(e);
+      } else {
+        addToast({
+          type: 'danger',
+          title: 'Atenção',
+          description: 'Data não permitida!'
+        });
+        handleChangeInput(e);
+        // setDTOForm({ ...DTOForm, [e.target.name]: '0000-00-00' });
       }
       // console.log(`log ${e.target.name}`, e.target.value, e.target.name);
     } else {
@@ -638,12 +655,45 @@ export default function CreateProject() {
   };
 
   useEffect(() => {
+    function handleOnBeforeUnload(event: BeforeUnloadEvent) {
+      event.preventDefault();
+      return (event.returnValue = '');
+    }
+
+    window.addEventListener('beforeunload', handleOnBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleOnBeforeUnload);
+    };
+  }, []);
+
+  useEffect(() => {
     // console.log('log do DTO FORM =>', DTOForm);
     // console.log('log do Data team =>', dataTeam);
   }, [DTOForm, dataTeam]);
 
+  useEffect(() => {
+    const checkIfClickedOutside = (e: any) => {
+      console.log('log do click =>', e.target.parentElement.href.split('/').pop());
+      setPathSelected(e.target.parentElement.href.split('/').pop());
+      if (
+        (DTOForm.title !== '' || DTOForm.tenant_id !== '') &&
+        formRef.current &&
+        !formRef.current.contains(e.target)
+      ) {
+        setCancelModal(true);
+      }
+    };
+
+    document.addEventListener('mousedown', checkIfClickedOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', checkIfClickedOutside);
+    };
+  }, [DTOForm]);
+
   return (
-    <Container>
+    <Container ref={formRef}>
       <HeaderStepsPage
         title="Criar novo projeto/contrato"
         backButton={createStep <= 1}
@@ -1071,7 +1121,7 @@ export default function CreateProject() {
             <ButtonDefault typeButton="dark" isOutline onClick={() => setCancelModal(false)}>
               Cancelar
             </ButtonDefault>
-            <ButtonDefault typeButton="danger" onClick={() => navigate('/projetos')}>
+            <ButtonDefault typeButton="danger" onClick={() => navigate(`/${pathSelected}`)}>
               Descartar
             </ButtonDefault>
           </FinishModalButtons>

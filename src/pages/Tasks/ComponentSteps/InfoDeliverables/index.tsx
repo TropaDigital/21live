@@ -345,7 +345,7 @@ export default function InfoDeliveries({
                         value={row.description}
                         maxLength={40}
                         type={'text'}
-                        disabled={descriptionText.inputId !== index}
+                        // disabled={descriptionText.inputId !== index}
                         onChange={(e: any) =>
                           setDescriptionText({
                             inputId: index,
@@ -354,14 +354,14 @@ export default function InfoDeliveries({
                         }
                         error={errorCategory?.description}
                       />
-                      <EditableFormat
+                      {/* <EditableFormat
                         className={descriptionText.inputId === index ? 'edit' : ''}
                         onClick={() => {
                           setDescriptionText({ inputId: index, text: '' });
                         }}
                       >
                         <BiPencil />
-                      </EditableFormat>
+                      </EditableFormat> */}
                     </div>
                   </td>
                   <td>
@@ -378,13 +378,13 @@ export default function InfoDeliveries({
                         name="format"
                         placeholder="128x190"
                         value={row.size}
-                        disabled={
-                          editFormat.productIndex === index && editFormat.editable ? false : true
-                        }
+                        // disabled={
+                        //   editFormat.productIndex === index && editFormat.editable ? false : true
+                        // }
                         onChange={(e: any) => setFormatType(e.target.value)}
                         error={errorCategory?.size}
                       />
-                      <EditableFormat
+                      {/* <EditableFormat
                         className={editFormat.productIndex === index ? 'edit' : ''}
                         onClick={() => {
                           setEditFormat({
@@ -395,7 +395,7 @@ export default function InfoDeliveries({
                         }}
                       >
                         <BiPencil />
-                      </EditableFormat>
+                      </EditableFormat> */}
                     </div>
                   </td>
                   <td style={{ minWidth: '220px' }}>
@@ -658,7 +658,7 @@ export default function InfoDeliveries({
                                 value={product.description}
                                 maxLength={40}
                                 type={'text'}
-                                disabled={descriptionText.inputId !== indexProduct}
+                                // disabled={descriptionText.inputId !== indexProduct}
                                 onChange={(e: any) =>
                                   handleDescriptionProduct(
                                     index,
@@ -669,14 +669,14 @@ export default function InfoDeliveries({
                                 }
                                 //   error={error?.date_start}
                               />
-                              <EditableFormat
+                              {/* <EditableFormat
                                 className={descriptionText.inputId === indexProduct ? 'edit' : ''}
                                 onClick={() => {
                                   setDescriptionText({ inputId: indexProduct, text: '' });
                                 }}
                               >
                                 <BiPencil />
-                              </EditableFormat>
+                              </EditableFormat> */}
                             </div>
                           </td>
                           <td>
@@ -693,11 +693,11 @@ export default function InfoDeliveries({
                                 name="format"
                                 placeholder="128x190"
                                 value={product.size}
-                                disabled={
-                                  editFormat.productIndex === indexProduct && editFormat.editable
-                                    ? false
-                                    : true
-                                }
+                                // disabled={
+                                //   editFormat.productIndex === indexProduct && editFormat.editable
+                                //     ? false
+                                //     : true
+                                // }
                                 onChange={(e: any) =>
                                   handleFormatProduct(
                                     index,
@@ -708,7 +708,7 @@ export default function InfoDeliveries({
                                 }
                                 //   error={error?.date_start}
                               />
-                              <EditableFormat
+                              {/* <EditableFormat
                                 className={editFormat.productIndex === indexProduct ? 'edit' : ''}
                                 onClick={() => {
                                   setEditFormat({
@@ -719,7 +719,7 @@ export default function InfoDeliveries({
                                 }}
                               >
                                 <BiPencil />
-                              </EditableFormat>
+                              </EditableFormat> */}
                             </div>
                           </td>
                           <td style={{ minWidth: '220px' }}>
@@ -925,7 +925,7 @@ export default function InfoDeliveries({
                                 value={product.description}
                                 maxLength={40}
                                 type={'text'}
-                                disabled={descriptionText.inputId !== product.job_service_id}
+                                // disabled={descriptionText.inputId !== product.job_service_id}
                                 onChange={(e: any) =>
                                   handleDescriptionProduct(
                                     index,
@@ -936,7 +936,7 @@ export default function InfoDeliveries({
                                 }
                                 //   error={error?.date_start}
                               />
-                              <EditableFormat
+                              {/* <EditableFormat
                                 className={
                                   descriptionText.inputId === product.job_service_id ? 'edit' : ''
                                 }
@@ -945,7 +945,7 @@ export default function InfoDeliveries({
                                 }}
                               >
                                 <BiPencil />
-                              </EditableFormat>
+                              </EditableFormat> */}
                             </div>
                           </td>
                           <td>
@@ -962,12 +962,12 @@ export default function InfoDeliveries({
                                 name="format"
                                 placeholder="128x190"
                                 value={product.size}
-                                disabled={
-                                  editFormat.productIndex === product.job_service_id &&
-                                  editFormat.editable
-                                    ? false
-                                    : true
-                                }
+                                // disabled={
+                                //   editFormat.productIndex === product.job_service_id &&
+                                //   editFormat.editable
+                                //     ? false
+                                //     : true
+                                // }
                                 onChange={(e: any) =>
                                   handleFormatProduct(
                                     index,
@@ -978,7 +978,7 @@ export default function InfoDeliveries({
                                 }
                                 //   error={error?.date_start}
                               />
-                              <EditableFormat
+                              {/* <EditableFormat
                                 className={
                                   editFormat.productIndex === product.job_service_id ? 'edit' : ''
                                 }
@@ -991,7 +991,7 @@ export default function InfoDeliveries({
                                 }}
                               >
                                 <BiPencil />
-                              </EditableFormat>
+                              </EditableFormat> */}
                             </div>
                           </td>
                           <td style={{ minWidth: '220px' }}>
