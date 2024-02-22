@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { IconArrowLeft } from '../../assets/icons';
 import { HiOutlineClipboard } from 'react-icons/hi';
 import { BiPlus } from 'react-icons/bi';
+import { FiSend } from 'react-icons/fi';
 
 // Styles
 import { BackButton, HeaderRequestWrapper, RequestHeaderTitle, RightSideHeader } from './styles';
@@ -16,7 +17,7 @@ import ButtonDefault from '../Buttons/ButtonDefault';
 interface HeaderRequestProps {
   title: TitleProps;
   ticketInfos: TicketInfos;
-  hasTask: boolean;
+  taskId: string | undefined;
 }
 
 interface TitleProps {
@@ -32,7 +33,7 @@ interface TicketInfos {
   userId: string | undefined;
 }
 
-export default function HeaderRequest({ title, ticketInfos, hasTask }: HeaderRequestProps) {
+export default function HeaderRequest({ title, ticketInfos, taskId }: HeaderRequestProps) {
   const navigate = useNavigate();
 
   const handleBaseTask = () => {
@@ -57,10 +58,17 @@ export default function HeaderRequest({ title, ticketInfos, hasTask }: HeaderReq
           </div>
         </RequestHeaderTitle>
 
-        {!hasTask && (
+        {taskId === '' && (
           <ButtonDefault typeButton="primary" onClick={handleBaseTask}>
             <BiPlus />
             Usar como base para tarefa
+          </ButtonDefault>
+        )}
+
+        {taskId !== '' && (
+          <ButtonDefault typeButton="primary" onClick={() => navigate(`/tarefa/${taskId}`)}>
+            <FiSend />
+            Ir para tarefa criada
           </ButtonDefault>
         )}
       </RightSideHeader>
