@@ -131,7 +131,7 @@ export default function ViewTask() {
     client_task: dataTask?.tenant,
     typeTask: dataTask?.project_category,
     quantityTask: '',
-    contract_task: dataTask?.product_period
+    contract_task: dataTask?.project
   };
 
   const InputsTask = {
@@ -180,10 +180,10 @@ export default function ViewTask() {
       }
     }
 
-    async function getTaskHistory() {
+    async function getTaskHistory(id: any) {
       try {
         setLoading(true);
-        const response = await api.get(`/task/historic/${location.state.id}`);
+        const response = await api.get(`/task/historic/${id}`);
         setTaskHistory(response.data.result);
 
         setLoading(false);
@@ -196,13 +196,13 @@ export default function ViewTask() {
     if (location.state !== null) {
       getTimelineData(location.state.id);
       getTaskInfos(location.state.id);
+      getTaskHistory(location.state.id);
     }
     if (location.state === null) {
       getTaskInfos(location.pathname.split('/')[2]);
       getTimelineData(location.pathname.split('/')[2]);
+      getTaskHistory(location.pathname.split('/')[2]);
     }
-
-    getTaskHistory();
   }, [location]);
 
   useEffect(() => {

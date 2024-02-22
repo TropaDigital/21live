@@ -1,6 +1,6 @@
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Icons
@@ -76,6 +76,7 @@ import {
   SelectedTab,
   TabsWrapper
 } from './styles';
+import { FinishModal, FinishModalButtons } from '../../Projects/CreateProject/styles';
 
 interface UserProps {
   avatar: string;
@@ -118,6 +119,7 @@ interface BreaksProps {
 export default function Team() {
   const { addToast } = useToast();
   const navigate = useNavigate();
+  const formRef = useRef<any>();
 
   const { formData, setData, handleOnChange } = useForm({
     name: '',
@@ -167,6 +169,7 @@ export default function Team() {
   const [changeBreakName, setChangeBreakName] = useState<string>('');
   const [modalFilters, setModalFilters] = useState<boolean>(false);
   const [selectedRole, setSelectedRole] = useState<OfficeProps[]>([]);
+  const [cancelModal, setCancelModal] = useState<boolean>(false);
 
   const handleOnCancel = useCallback(() => {
     setModal({
@@ -574,6 +577,35 @@ export default function Team() {
   const hasFilters = Object.values(filter).every((obj) => obj === null || obj === '');
 
   useEffect(() => {
+    function handleOnBeforeUnload(event: BeforeUnloadEvent) {
+      event.preventDefault();
+      return (event.returnValue = '');
+    }
+
+    window.addEventListener('beforeunload', handleOnBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleOnBeforeUnload);
+    };
+  }, []);
+
+  const checkIfClickedOutside = (e: any) => {
+    // console.log('log do click =>', e.target.parentElement.href.split('/').pop());
+    // setPathSelected(e.target.parentElement.href.split('/').pop());
+    if (formData.name !== '' && formRef.current && !formRef.current.contains(e.target)) {
+      setCancelModal(true);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', checkIfClickedOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', checkIfClickedOutside);
+    };
+  }, [formData]);
+
+  useEffect(() => {
     // console.log('log das pausas', selectedBreaks);
     // console.log('log dos workdays', workDays);
     // console.log('log do dia selecionado', selectedBreakDay);
@@ -737,8 +769,12 @@ export default function Team() {
       )}
 
       {/* Modal edit user */}
-      <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
-        <form onSubmit={handleOnSubmit}>
+      <ModalDefault
+        isOpen={modal.isOpen}
+        title={modal.type}
+        onOpenChange={formData.name !== '' ? checkIfClickedOutside : handleOnCancel}
+      >
+        <form onSubmit={handleOnSubmit} ref={formRef}>
           <FieldDefault>
             <InputDefault
               label="Nome do usuário"
@@ -1339,6 +1375,32 @@ export default function Team() {
             </ModalButtons>
           )}
         </ModalWrapper>
+      </ModalDefault>
+
+      {/* Modal discard changes */}
+      <ModalDefault
+        isOpen={cancelModal}
+        onOpenChange={() => setCancelModal(false)}
+        title="Descartar alterações"
+      >
+        <FinishModal>
+          <div>Deseja realmente descartar as alterações?</div>
+
+          <FinishModalButtons>
+            <ButtonDefault typeButton="dark" isOutline onClick={() => setCancelModal(false)}>
+              Cancelar
+            </ButtonDefault>
+            <ButtonDefault
+              typeButton="danger"
+              onClick={() => {
+                handleOnCancel();
+                setCancelModal(false);
+              }}
+            >
+              Descartar
+            </ButtonDefault>
+          </FinishModalButtons>
+        </FinishModal>
       </ModalDefault>
 
       {/* Modal loading submit */}

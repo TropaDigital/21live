@@ -102,8 +102,7 @@ export default function HeaderOpenTask({
           <TitleTopInfos>
             <div className="id">#{String(title.idNumber).padStart(5, '0')}</div>
             <div className="task-name">
-              | {title.numberTask !== '' ? `${String(title.numberTask).padStart(2, '0')} - ` : ''}
-              {title.titleTask}
+              | {title.titleTask}
               {/* - {title.monthTask} */}
             </div>
           </TitleTopInfos>

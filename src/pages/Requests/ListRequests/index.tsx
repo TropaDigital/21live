@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 // Icons
 import { BiFilter, BiSearchAlt, BiX } from 'react-icons/bi';
+import { FiFlag } from 'react-icons/fi';
 
 // Components
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
@@ -32,7 +33,6 @@ import moment from 'moment';
 
 // Styles
 import { ButtonIcon, FiltersRequests, RequestsWrapper } from './styles';
-import { FiFlag } from 'react-icons/fi';
 
 interface ChoosenFilters {
   code: string;
@@ -319,7 +319,7 @@ export default function Requests() {
                     <td>
                       <div className="fieldTableClients">
                         {row.task_id && (
-                          <ButtonIcon>
+                          <ButtonIcon onClick={() => navigate(`/tarefa/${row.task_id}`)}>
                             <FiFlag color={'#F04438'} />
                           </ButtonIcon>
                         )}
