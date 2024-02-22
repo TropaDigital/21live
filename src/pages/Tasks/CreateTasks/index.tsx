@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable import-helpers/order-imports */
 // React
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 // components
@@ -24,6 +24,8 @@ import ScheduleUser from '../../../components/ScheduleUser';
 import InfoFiles from '../ComponentSteps/InfoFiles';
 import { ProductsTable } from '../../../components/Ui/ProductTable/styles';
 import { ModalButtons } from '../ViewTask/styles';
+import { SelectDefault } from '../../../components/Inputs/SelectDefault';
+import ModalLoader from '../../../components/Ui/ModalLoader';
 
 // Styles
 import {
@@ -83,15 +85,13 @@ import {
 // Icons
 import { IconChecked, IconClose } from '../../../assets/icons';
 import { BiCalendar, BiSearchAlt } from 'react-icons/bi';
+import { MdClose } from 'react-icons/md';
 
 // Services
 import api from '../../../services/api';
 
 // Libraries
 import moment from 'moment';
-import { SelectDefault } from '../../../components/Inputs/SelectDefault';
-import { MdClose } from 'react-icons/md';
-import ModalLoader from '../../../components/Ui/ModalLoader';
 
 interface StateProps {
   [key: string]: any;
@@ -211,6 +211,7 @@ export default function CreateTasks() {
   const { addToast } = useToast();
   const { user } = useAuth();
   const location = useLocation();
+  const formRef = useRef<any>();
   const { parameters, getParams } = useParamsHook();
 
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
@@ -364,6 +365,7 @@ export default function CreateTasks() {
   });
   const [singleProductQuantity, setSingleProductQuantity] = useState<number>(1);
   const [cancelModal, setCancelModal] = useState<boolean>(false);
+  const [pathSelected, setPathSelected] = useState<string>('');
 
   const numbers = Array.from(
     { length: quantityProductInfos?.maxValue - quantityProductInfos?.minValue + 1 },
@@ -483,10 +485,10 @@ export default function CreateTasks() {
         ...prevState,
         ['title']: location.state.title
       }));
-      setDTOForm((prevState: any) => ({
-        ...prevState,
-        ['description']: descriptionObject
-      }));
+      // setDTOForm((prevState: any) => ({
+      //   ...prevState,
+      //   ['description']: descriptionObject
+      // }));
       setDTOForm((prevState: any) => ({
         ...prevState,
         ['requester_id']: location.state.userId
@@ -1021,6 +1023,12 @@ export default function CreateTasks() {
           setErrorInput('copywriting_date_end', undefined);
         }
 
+        if (moment(DTOForm.copywriting_date_end).isBefore('2020-01-01')) {
+          throw setErrorInput('copywriting_date_end', 'Data anterior a 2020 não permitida!');
+        } else {
+          setErrorInput('copywriting_date_end', undefined);
+        }
+
         // if (moment(DTOForm.copywriting_date_end).isSameOrBefore(newDate)) {
         //   throw setErrorInput('copywriting_date_end', 'Data de entrega é menor que a atual!');
         // } else {
@@ -1080,12 +1088,12 @@ export default function CreateTasks() {
           });
 
           DTODelivery.map((current: DeliveryProps) => {
-            if (current.creation_date_end === '' || current.creation_date_end === undefined) {
+            if (current.copywriting_date_end === '' || current.copywriting_date_end === undefined) {
               setErrorDeliveryDate((errorDeliveryDate: any) => [
                 ...errorDeliveryDate,
                 {
                   id: current.deliveryId,
-                  typeError: 'creation',
+                  typeError: 'copywriting',
                   error: 'Data da entrega não atribuida!'
                 }
               ]);
@@ -1098,17 +1106,29 @@ export default function CreateTasks() {
           });
 
           DTODelivery.map((current: DeliveryProps) => {
-            if (current.copywriting_date_end === '' || current.copywriting_date_end === undefined) {
+            if (current.creation_date_end === '' || current.creation_date_end === undefined) {
               setErrorDeliveryDate((errorDeliveryDate: any) => [
                 ...errorDeliveryDate,
                 {
                   id: current.deliveryId,
-                  typeError: 'copywriting',
+                  typeError: 'creation',
                   error: 'Data da entrega não atribuida!'
                 }
               ]);
               throw new Error('Data da entrega não atribuida!');
-            } else {
+            }
+            // else if (moment(current.creation_date_end).isBefore('2020-01-01')) {
+            //   setErrorDeliveryDate((errorDeliveryDate: any) => [
+            //     ...errorDeliveryDate,
+            //     {
+            //       id: current.deliveryId,
+            //       typeError: 'creation',
+            //       error: 'Data de atividade não pode ser anterior a 2020!'
+            //     }
+            //   ]);
+            //   throw new Error('Data de atividade não pode ser anterior a 2020!');
+            // }
+            else {
               setErrorDeliveryDate((prevState) =>
                 prevState.filter((delivery) => delivery.id !== current.deliveryId)
               );
@@ -1160,6 +1180,12 @@ export default function CreateTasks() {
             setErrorInput('copywriting_date_end', undefined);
           }
 
+          if (moment(DTOForm.copywriting_date_end).isBefore('2020-01-01')) {
+            throw setErrorInput('copywriting_date_end', 'Data anterior a 2020 não permitida!');
+          } else {
+            setErrorInput('copywriting_date_end', undefined);
+          }
+
           if (creation_date_end === '') {
             throw setErrorInput('creation_date_end', 'Data de Entrega de atividade é obrigatória!');
           } else {
@@ -1198,8 +1224,23 @@ export default function CreateTasks() {
             setErrorInput('copywriting_date_end', undefined);
           }
 
+          if (moment(DTOForm.copywriting_date_end).isBefore('2020-01-01')) {
+            throw setErrorInput('copywriting_date_end', 'Data anterior a 2020 não permitida!');
+          } else {
+            setErrorInput('copywriting_date_end', undefined);
+          }
+
           if (creation_date_end === '') {
             throw setErrorInput('creation_date_end', 'Data de Entrega de atividade é obrigatória!');
+          } else {
+            setErrorInput('creation_date_end', undefined);
+          }
+
+          if (moment(DTOForm.creation_date_end).isSameOrBefore(DTOForm.copywriting_date_end)) {
+            throw setErrorInput(
+              'creation_date_end',
+              `Data de entrega menor que a data de entrega ${parameters.input_name}`
+            );
           } else {
             setErrorInput('creation_date_end', undefined);
           }
@@ -1227,6 +1268,12 @@ export default function CreateTasks() {
       } else if (createStep === 2 && tasksType === 'produto') {
         if (DTOForm.copywriting_date_end === '') {
           throw setErrorInput('copywriting_date_end', 'Data de entrega não informada!');
+        } else {
+          setErrorInput('copywriting_date_end', undefined);
+        }
+
+        if (moment(DTOForm.copywriting_date_end).isBefore('2020-01-01')) {
+          throw setErrorInput('copywriting_date_end', 'Data anterior a 2020 não permitida!');
         } else {
           setErrorInput('copywriting_date_end', undefined);
         }
@@ -1308,6 +1355,7 @@ export default function CreateTasks() {
 
   const handleOnCancel = () => {
     setCancelModal(true);
+    setPathSelected('tarefas');
   };
 
   const handleProductsDeliveries = (field: string, value: string, productId: any) => {
@@ -1400,61 +1448,6 @@ export default function CreateTasks() {
       }
     }
   };
-
-  // const handleProductQuantityDeliveries = (value: any, product: any) => {
-  //   // console.log('log do modal number', productsDeliveriesModal.indexDelivery);
-  //   if (
-  //     DTODelivery[productsDeliveriesModal.indexDelivery - 1]?.deliveryProducts.filter(
-  //       (obj: any) => obj.job_service_id === product.job_service_id
-  //     ).length > 0
-  //   ) {
-  //     const currentProducts =
-  //       DTODelivery[productsDeliveriesModal.indexDelivery - 1].deliveryProducts;
-  //     const productIndex = currentProducts.findIndex(
-  //       (obj: any) => obj.job_service_id === product.job_service_id
-  //     );
-  //     const productToUpdate = currentProducts[productIndex];
-  //     const updatedProduct = {
-  //       ...productToUpdate,
-  //       quantity: value
-  //     };
-  //     currentProducts[productIndex] = updatedProduct;
-  //     setDTODelivery((current: any) =>
-  //       current.map((obj: DeliveryProps) => {
-  //         if (obj.deliveryProducts[productIndex] === productIndex) {
-  //           return { deliveryProducts: currentProducts };
-  //         }
-  //         return obj;
-  //       })
-  //     );
-  //   } else {
-  //     addToast({
-  //       type: 'warning',
-  //       title: 'ATENÇÃO',
-  //       description: 'Selecione o produto primeiro, depois a quantidade.'
-  //     });
-  //   }
-  // };
-
-  // const handleProductQuantity = (value: any, product: any) => {
-  //   // console.log('log do product adicionado', value, product);
-  //   if (productsArray.filter((obj) => obj.job_service_id === product.job_service_id).length > 0) {
-  //     setProductsArray((current) =>
-  //       current.map((obj) => {
-  //         if (obj.job_service_id === product.job_service_id) {
-  //           return { ...obj, quantity: value };
-  //         }
-  //         return obj;
-  //       })
-  //     );
-  //   } else {
-  //     addToast({
-  //       type: 'warning',
-  //       title: 'ATENÇÃO',
-  //       description: 'Selecione o produto primeiro, depois a quantidade.'
-  //     });
-  //   }
-  // };
 
   const handleOnSubmit = useCallback(async () => {
     try {
@@ -2142,6 +2135,39 @@ export default function CreateTasks() {
     });
   };
 
+  useEffect(() => {
+    function handleOnBeforeUnload(event: BeforeUnloadEvent) {
+      event.preventDefault();
+      return (event.returnValue = '');
+    }
+
+    window.addEventListener('beforeunload', handleOnBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleOnBeforeUnload);
+    };
+  }, []);
+
+  useEffect(() => {
+    const checkIfClickedOutside = (e: any) => {
+      console.log('log do click =>', e.target.parentElement.href.split('/').pop());
+      setPathSelected(e.target.parentElement.href.split('/').pop());
+      if (
+        (DTOForm.title !== '' || DTOForm.tenant_id !== '') &&
+        formRef.current &&
+        !formRef.current.contains(e.target)
+      ) {
+        setCancelModal(true);
+      }
+    };
+
+    document.addEventListener('mousedown', checkIfClickedOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', checkIfClickedOutside);
+    };
+  }, [DTOForm]);
+
   // useEffect(() => {
   //   console.log('log do tipo de task', tasksType);
   // }, [tasksType]);
@@ -2188,7 +2214,7 @@ export default function CreateTasks() {
 
   return (
     <>
-      <ContainerWrapper>
+      <ContainerWrapper ref={formRef}>
         <HeaderStepsPage
           title={
             location.state !== null && location.state.task_id
@@ -3051,7 +3077,7 @@ export default function CreateTasks() {
               <ButtonDefault typeButton="dark" isOutline onClick={() => setCancelModal(false)}>
                 Cancelar
               </ButtonDefault>
-              <ButtonDefault typeButton="danger" onClick={() => navigate('/tarefas')}>
+              <ButtonDefault typeButton="danger" onClick={() => navigate(`/${pathSelected}`)}>
                 Descartar
               </ButtonDefault>
             </ModalButtons>
