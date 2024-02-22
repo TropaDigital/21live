@@ -19,6 +19,7 @@ import { useToast } from '../../hooks/toast';
 import useDebouncedCallback from '../../hooks/useDebounced';
 import { useFetch } from '../../hooks/useFetch';
 import useForm from '../../hooks/useForm';
+import { useParamsHook } from '../../hooks/useParams';
 
 // Components
 import ButtonDefault from '../../components/Buttons/ButtonDefault';
@@ -62,7 +63,7 @@ import {
   ShowServicesContainer,
   TableKits
 } from './styles';
-import { useParamsHook } from '../../hooks/useParams';
+import { FinishModal, FinishModalButtons } from '../Projects/CreateProject/styles';
 
 interface ServicesProps {
   job_service_id?: number | string;
@@ -124,6 +125,7 @@ interface StateErrorProps {
 export default function Services() {
   const { addToast } = useToast();
   const { parameters, getParams } = useParamsHook();
+  const formRef = useRef<any>();
   const {
     formData,
     setData,
@@ -216,6 +218,7 @@ export default function Services() {
   const [modalFilters, setModalFilters] = useState<boolean>(false);
   const [error, setError] = useState<StateErrorProps>({});
   const [loading, setLoading] = useState<boolean>(false);
+  const [cancelModal, setCancelModal] = useState<boolean>(false);
 
   function setErrorInput(value: any, message: any) {
     if (!message) {
@@ -540,6 +543,7 @@ export default function Services() {
     async (event: any) => {
       try {
         setLoading(true);
+        console.log('log do submit =>', loading);
 
         event.preventDefault();
 
@@ -660,6 +664,7 @@ export default function Services() {
       } catch (e: any) {
         // Exibir erro
         console.log('log do erro', e);
+        setLoading(false);
 
         if (e === 'Campo é obrigatório!') {
           addToast({
@@ -882,6 +887,33 @@ export default function Services() {
     }
     return count;
   };
+
+  const checkIfClickedOutside = (e: any) => {
+    if (formData.service !== '' && formRef.current && !formRef.current.contains(e.target)) {
+      setCancelModal(true);
+    }
+  };
+
+  useEffect(() => {
+    function handleOnBeforeUnload(event: BeforeUnloadEvent) {
+      event.preventDefault();
+      return (event.returnValue = '');
+    }
+
+    window.addEventListener('beforeunload', handleOnBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleOnBeforeUnload);
+    };
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('mousedown', checkIfClickedOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', checkIfClickedOutside);
+    };
+  }, [formData]);
 
   return (
     <ContainerDefault>
@@ -1243,8 +1275,12 @@ export default function Services() {
       )}
 
       {/* Modal create product*/}
-      <ModalDefault isOpen={modal.isOpen} title={modal.type} onOpenChange={handleOnCancel}>
-        <form onSubmit={handleOnSubmit} style={{ minWidth: '500px' }}>
+      <ModalDefault
+        isOpen={modal.isOpen}
+        title={modal.type}
+        onOpenChange={() => (formData.service !== '' ? checkIfClickedOutside : handleOnCancel())}
+      >
+        <form onSubmit={handleOnSubmit} style={{ minWidth: '500px' }} ref={formRef}>
           <FieldDefault>
             <InputDefault
               label="Produto"
@@ -1743,6 +1779,28 @@ export default function Services() {
         clearFilters={handleClearFilters}
         filterType="product"
       />
+
+      {/* Modal discard changes */}
+      <ModalDefault isOpen={cancelModal} onOpenChange={() => ''} title="Descartar alterações">
+        <FinishModal>
+          <div>Deseja realmente descartar as alterações?</div>
+
+          <FinishModalButtons>
+            <ButtonDefault typeButton="dark" isOutline onClick={() => setCancelModal(false)}>
+              Cancelar
+            </ButtonDefault>
+            <ButtonDefault
+              typeButton="danger"
+              onClick={() => {
+                handleOnCancel();
+                setCancelModal(false);
+              }}
+            >
+              Descartar
+            </ButtonDefault>
+          </FinishModalButtons>
+        </FinishModal>
+      </ModalDefault>
 
       {/* Modal loading submit */}
       <ModalLoader isOpen={loading || isFetching} />
