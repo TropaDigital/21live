@@ -135,16 +135,21 @@ export default function ViewTask() {
   };
 
   const userProps = {
-    name: '',
-    avatar: ''
+    name: dataTask?.actual_user_name,
+    avatar: dataTask?.actual_user_avatar
   };
 
   const onlyOneProductInfo = {
-    title: '',
-    description: '',
-    size: '',
-    type: '',
-    reason_change: ''
+    title: deliveryProduct[0]?.service,
+    description: deliveryProduct[0]?.description,
+    size: deliveryProduct[0]?.size,
+    type: deliveryProduct[0]?.type,
+    reason_change:
+      deliveryProduct[0]?.reason_change === '1'
+        ? 'Criação'
+        : deliveryProduct[0]?.reason_change === '2'
+        ? 'Desmembramento'
+        : 'Alteração'
   };
 
   const InputsTask = {
@@ -266,9 +271,13 @@ export default function ViewTask() {
         <TaskInfoWrapper>
           <HeaderOpenTask
             title={titleInfos}
-            product={onlyOneProductInfo}
+            product={
+              visualizationType === 'product'
+                ? onlyOneProductInfo
+                : { title: '', type: '', size: '', description: '', reason_change: '' }
+            }
             disableButton={true}
-            avatar_infos={userProps}
+            avatar_infos={visualizationType === 'product' ? userProps : { name: '', avatar: '' }}
             goBack
             buttonType="send"
             nextStepInfo={timeLineData}
