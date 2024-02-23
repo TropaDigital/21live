@@ -127,11 +127,24 @@ export default function ViewTask() {
     idNumber: dataTask?.task_id,
     numberTask: '',
     titleTask: dataTask?.title,
-    monthTask: '',
     client_task: dataTask?.tenant,
     typeTask: dataTask?.project_category,
-    quantityTask: '',
-    contract_task: dataTask?.project
+    contract_task: dataTask?.project,
+    creator_user: dataTask?.creator?.name,
+    creator_time: dataTask?.created
+  };
+
+  const userProps = {
+    name: '',
+    avatar: ''
+  };
+
+  const onlyOneProductInfo = {
+    title: '',
+    description: '',
+    size: '',
+    type: '',
+    reason_change: ''
   };
 
   const InputsTask = {
@@ -253,7 +266,9 @@ export default function ViewTask() {
         <TaskInfoWrapper>
           <HeaderOpenTask
             title={titleInfos}
+            product={onlyOneProductInfo}
             disableButton={true}
+            avatar_infos={userProps}
             goBack
             buttonType="send"
             nextStepInfo={timeLineData}
