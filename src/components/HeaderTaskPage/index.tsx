@@ -155,13 +155,15 @@ export default function HeaderOpenTask({
           </HeaderProductInfos>
         )}
 
-        <AvatarButton>
-          <AvatarDefault url={avatar_infos.avatar} name={avatar_infos.name} />
+        {avatar_infos.name !== '' && (
+          <AvatarButton>
+            <AvatarDefault url={avatar_infos.avatar} name={avatar_infos.name} />
 
-          <div className="change-user">
-            <MdOutlineChangeCircle />
-          </div>
-        </AvatarButton>
+            <div className="change-user">
+              <MdOutlineChangeCircle />
+            </div>
+          </AvatarButton>
+        )}
 
         <RightButtons>
           {!hideButtonNext && nextStepInfo?.currentStep !== '1' && (
