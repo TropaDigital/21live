@@ -1326,7 +1326,7 @@ export default function CreateTasks() {
           setErrorInput('creation_description', undefined);
         }
         setCreateStep(createStep + 1);
-      } else if (createStep === 3 && tasksType === 'livre') {
+      } else if (createStep === 4 && tasksType === 'livre') {
         handleOnSubmit();
       } else {
         setCreateStep(createStep + 1);
