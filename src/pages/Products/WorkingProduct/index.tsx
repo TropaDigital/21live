@@ -969,7 +969,7 @@ export default function WorkingProduct({
         {selectedTab === 'Redação' && (
           <>
             {user.permissions.includes('jobs_tasks_essay') &&
-            productInfos.status !== 'Concluida' ? (
+            productInfos?.status !== 'Concluida' ? (
               <EssayField>
                 <WrapperEditor
                   value={essayInfo}
@@ -1086,7 +1086,7 @@ export default function WorkingProduct({
                 </ChatMessage>
               ))}
             </MessageList>
-            {!logIsOn && productInfos.status !== 'Concluida' && (
+            {!logIsOn && productInfos?.status !== 'Concluida' && (
               <InputChat>
                 <InputDefault
                   label=""

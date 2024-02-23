@@ -51,7 +51,7 @@ export const HeaderTitleInfos = styled.div`
   flex-direction: column;
   gap: 4px;
 
-  padding-left: 40px;
+  padding-left: 20px;
 `;
 
 export const TitleTopInfos = styled.div`
@@ -65,6 +65,7 @@ export const TitleTopInfos = styled.div`
 
   .task-name {
     color: var(--gray-900);
+    text-transform: capitalize;
   }
 
   font-size: var(--text-small-xl);
@@ -83,4 +84,59 @@ export const RightButtons = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
+`;
+
+export const HeaderProductInfos = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  padding-left: 20px;
+
+  border-left: 2px solid var(--gray-300);
+`;
+
+export const TitleProductInfos = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  .id {
+    color: var(--gray-500);
+  }
+
+  .product-name {
+    color: var(--gray-900);
+    text-transform: capitalize;
+  }
+
+  .product-description {
+    color: var(--gray-900);
+    font-size: var(--text-small-sm);
+    font-weight: var(--weight-medium);
+    text-transform: capitalize;
+  }
+
+  font-size: var(--text-small-md);
+  font-weight: var(--weight-semibold);
+`;
+
+export const AvatarButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px;
+  height: 40px;
+
+  background-color: transparent;
+  border-radius: 8px;
+
+  position: relative;
+
+  .change-user {
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+  }
 `;

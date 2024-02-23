@@ -204,15 +204,46 @@ export default function ViewProductsDeliveries() {
 
   const deliveryId = dataTask?.deliverys.filter((obj: any) => Number(obj.order) === 1);
 
+  const userProps = {
+    name: dataTask?.actual_user_name,
+    avatar: dataTask?.actual_user_avatar
+  };
+
   const titleInfos = {
     idNumber: dataTask?.task_id,
     numberTask: location?.state?.task_index ? location.state.task_index : 1,
     titleTask: dataTask?.title,
-    monthTask: '',
     client_task: dataTask?.tenant,
     typeTask: dataTask?.project_category,
-    quantityTask: '',
-    contract_task: dataTask?.project
+    contract_task: dataTask?.project,
+    creator_user: dataTask?.creator?.name,
+    creator_time: dataTask?.created
+  };
+
+  const onlyOneProductInfo = {
+    title: dataProducts?.products[0]?.service,
+    description: dataProducts?.products[0]?.description,
+    size: dataProducts?.products[0]?.size,
+    type: dataProducts?.products[0]?.type,
+    reason_change:
+      dataProducts?.products[0]?.reason_change === '1'
+        ? 'Criação'
+        : dataProducts?.products[0]?.reason_change === '2'
+        ? 'Desmembramento'
+        : 'Alteração'
+  };
+
+  const selectedProductInfo = {
+    title: selectedProduct?.productInfo?.service,
+    description: selectedProduct?.productInfo?.description,
+    size: selectedProduct?.productInfo?.size,
+    type: selectedProduct?.productInfo?.type,
+    reason_change:
+      selectedProduct?.productInfo?.reason_change === '1'
+        ? 'Criação'
+        : selectedProduct?.productInfo?.reason_change === '2'
+        ? 'Desmembramento'
+        : 'Alteração'
   };
 
   const allTimes = {
@@ -1734,7 +1765,6 @@ export default function ViewProductsDeliveries() {
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
     // console.log('log allRejected', hasAllBeenRejected);
-    // console.log('log ticket', hasTicketInteraction);
   }, [typeOfPlay]);
 
   return (
@@ -1757,6 +1787,12 @@ export default function ViewProductsDeliveries() {
           {dataTask?.status === 'Concluida' && (
             <HeaderOpenTask
               title={titleInfos}
+              product={
+                viewProduct
+                  ? onlyOneProductInfo || selectedProductInfo
+                  : { title: '', type: '', size: '', description: '', reason_change: '' }
+              }
+              avatar_infos={userProps}
               disableButton={true}
               goBack
               hideButtonNext={true}
@@ -1789,6 +1825,12 @@ export default function ViewProductsDeliveries() {
             !finalCard && (
               <HeaderOpenTask
                 title={titleInfos}
+                avatar_infos={userProps}
+                product={
+                  viewProduct
+                    ? onlyOneProductInfo || selectedProductInfo
+                    : { title: '', type: '', size: '', description: '', reason_change: '' }
+                }
                 disableButton={false}
                 goBack
                 buttonType={uploadClient && !hasProductsBeenEvaluated ? 'client' : 'send'}
@@ -1805,6 +1847,12 @@ export default function ViewProductsDeliveries() {
             finalCard && (
               <HeaderOpenTask
                 title={titleInfos}
+                avatar_infos={userProps}
+                product={
+                  viewProduct
+                    ? onlyOneProductInfo || selectedProductInfo
+                    : { title: '', type: '', size: '', description: '', reason_change: '' }
+                }
                 disableButton={false}
                 goBack
                 buttonType="finish"
@@ -1822,6 +1870,12 @@ export default function ViewProductsDeliveries() {
             finalCard && (
               <HeaderOpenTask
                 title={titleInfos}
+                avatar_infos={userProps}
+                product={
+                  viewProduct
+                    ? onlyOneProductInfo || selectedProductInfo
+                    : { title: '', type: '', size: '', description: '', reason_change: '' }
+                }
                 disableButton={false}
                 goBack
                 buttonType="finish"
@@ -1839,6 +1893,12 @@ export default function ViewProductsDeliveries() {
             !finalCard && (
               <HeaderOpenTask
                 title={titleInfos}
+                avatar_infos={userProps}
+                product={
+                  viewProduct
+                    ? onlyOneProductInfo || selectedProductInfo
+                    : { title: '', type: '', size: '', description: '', reason_change: '' }
+                }
                 disableButton={false}
                 goBack
                 buttonType={uploadClient && !hasProductsBeenEvaluated ? 'client' : 'send'}
@@ -1855,6 +1915,12 @@ export default function ViewProductsDeliveries() {
             finalCard && (
               <HeaderOpenTask
                 title={titleInfos}
+                avatar_infos={userProps}
+                product={
+                  viewProduct
+                    ? onlyOneProductInfo || selectedProductInfo
+                    : { title: '', type: '', size: '', description: '', reason_change: '' }
+                }
                 disableButton={false}
                 goBack
                 buttonType="finish"
@@ -1873,6 +1939,12 @@ export default function ViewProductsDeliveries() {
             finalCard && (
               <HeaderOpenTask
                 title={titleInfos}
+                avatar_infos={userProps}
+                product={
+                  viewProduct
+                    ? onlyOneProductInfo || selectedProductInfo
+                    : { title: '', type: '', size: '', description: '', reason_change: '' }
+                }
                 disableButton={typeOfPlay === 'product' ? false : true}
                 goBack
                 buttonType="finish"
@@ -1893,6 +1965,12 @@ export default function ViewProductsDeliveries() {
             finalCard && (
               <HeaderOpenTask
                 title={titleInfos}
+                avatar_infos={userProps}
+                product={
+                  viewProduct
+                    ? onlyOneProductInfo || selectedProductInfo
+                    : { title: '', type: '', size: '', description: '', reason_change: '' }
+                }
                 disableButton={true}
                 goBack
                 buttonType="finish"
@@ -1913,6 +1991,12 @@ export default function ViewProductsDeliveries() {
             finalCard && (
               <HeaderOpenTask
                 title={titleInfos}
+                avatar_infos={userProps}
+                product={
+                  viewProduct
+                    ? onlyOneProductInfo || selectedProductInfo
+                    : { title: '', type: '', size: '', description: '', reason_change: '' }
+                }
                 disableButton={true}
                 goBack
                 buttonType="finish"
@@ -1932,6 +2016,12 @@ export default function ViewProductsDeliveries() {
             !finalCard && (
               <HeaderOpenTask
                 title={titleInfos}
+                avatar_infos={userProps}
+                product={
+                  viewProduct
+                    ? onlyOneProductInfo || selectedProductInfo
+                    : { title: '', type: '', size: '', description: '', reason_change: '' }
+                }
                 disableButton={false}
                 goBack
                 buttonType="finish"
@@ -1947,6 +2037,12 @@ export default function ViewProductsDeliveries() {
             !finalCard && (
               <HeaderOpenTask
                 title={titleInfos}
+                avatar_infos={userProps}
+                product={
+                  viewProduct
+                    ? onlyOneProductInfo || selectedProductInfo
+                    : { title: '', type: '', size: '', description: '', reason_change: '' }
+                }
                 disableButton={false}
                 goBack
                 buttonType="finish"
