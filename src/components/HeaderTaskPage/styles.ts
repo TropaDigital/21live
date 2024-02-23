@@ -24,6 +24,7 @@ export const BackButton = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 40px;
   height: 100%;
   gap: 4px;
 

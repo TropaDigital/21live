@@ -557,6 +557,11 @@ export default function ViewProductsDeliveries() {
 
     if (dataTask?.deliverys[0].products.length === 1) {
       setViewProduct(true);
+      const taskCompleteInfo = {
+        productInfo: dataTask?.deliverys[0].products[0],
+        taskInfos: dataTask
+      };
+      setSelectedProduct(taskCompleteInfo);
     }
   }, [dataTask]);
 
