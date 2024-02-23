@@ -6,23 +6,33 @@ import { Link, useNavigate } from 'react-router-dom';
 // Icons
 import { IconArrowLeft } from '../../assets/icons';
 import { HiOutlineArrowRight } from 'react-icons/hi';
+import { MdOutlineChangeCircle } from 'react-icons/md';
 
 // Components
 import ButtonDefault from '../Buttons/ButtonDefault';
 
 // Styles
 import {
+  AvatarButton,
   BackButton,
   Container,
+  HeaderProductInfos,
   HeaderTitleInfos,
   RightButtons,
   RightSideHeader,
   TitleBottomInfos,
+  TitleProductInfos,
   TitleTopInfos
 } from './styles';
 
+// Libraries
+import moment from 'moment';
+import AvatarDefault from '../Ui/Avatar/avatarDefault';
+
 interface HeaderTaskProps {
   title: TitleProps;
+  product: ProductsProps;
+  avatar_infos: UserAvatarProps;
   backPage?: string;
   goBack?: boolean;
   buttonType?: 'finish' | 'send' | 'client';
@@ -39,11 +49,24 @@ interface TitleProps {
   idNumber: string;
   numberTask: string;
   titleTask: string;
-  monthTask: string;
   client_task: string;
   typeTask: string;
-  quantityTask: string;
   contract_task: string;
+  creator_user: string;
+  creator_time: string;
+}
+
+interface ProductsProps {
+  title: string;
+  description: string;
+  size: string;
+  type: string;
+  reason_change: string;
+}
+
+interface UserAvatarProps {
+  name: string;
+  avatar: string;
 }
 
 interface StepProps {
@@ -53,6 +76,7 @@ interface StepProps {
 
 export default function HeaderOpenTask({
   title,
+  product,
   backPage,
   goBack,
   buttonType,
@@ -62,7 +86,8 @@ export default function HeaderOpenTask({
   isInsideProduct,
   backToDelivery,
   backFlow,
-  hideButtonNext
+  hideButtonNext,
+  avatar_infos
 }: HeaderTaskProps) {
   const navigate = useNavigate();
   const [nextSteps, setNextSteps] = useState<StepProps>({
@@ -109,7 +134,36 @@ export default function HeaderOpenTask({
           <TitleBottomInfos>
             {title.client_task} / {title.typeTask} | {title.contract_task}
           </TitleBottomInfos>
+          <TitleBottomInfos>
+            <div className="user-infos">
+              Criado por: {title.creator_user} -{' '}
+              {moment(title.creator_time).format('DD/MM/YYYY - HH:mm')}h
+            </div>
+          </TitleBottomInfos>
         </HeaderTitleInfos>
+
+        {product.title !== '' && (
+          <HeaderProductInfos>
+            <TitleProductInfos>
+              <div className="product-name">{product.title} -</div>
+              <div className="product-description">{product.description}</div>
+            </TitleProductInfos>
+            <TitleBottomInfos>
+              {product.size} | {product.type}
+            </TitleBottomInfos>
+            <TitleBottomInfos>{product.reason_change}</TitleBottomInfos>
+          </HeaderProductInfos>
+        )}
+
+        {avatar_infos.name !== '' && (
+          <AvatarButton>
+            <AvatarDefault url={avatar_infos.avatar} name={avatar_infos.name} />
+
+            <div className="change-user">
+              <MdOutlineChangeCircle />
+            </div>
+          </AvatarButton>
+        )}
 
         <RightButtons>
           {!hideButtonNext && nextStepInfo?.currentStep !== '1' && (
