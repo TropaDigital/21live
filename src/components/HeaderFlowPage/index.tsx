@@ -2,14 +2,21 @@
 import { IconArrowLeft } from '../../assets/icons';
 
 // Styles
-import { Container, HeaderBackButton, SectionTitleHeader, TitleHeader } from './styles';
+import {
+  Container,
+  HeaderBackButton,
+  SectionActionsHeader,
+  SectionTitleHeader,
+  TitleHeader
+} from './styles';
 
 interface Props {
   title: string;
   backButton?: () => void;
+  children?: JSX.Element;
 }
 
-export default function HeaderFlow({ title, backButton }: Props) {
+export default function HeaderFlow({ title, backButton, children }: Props) {
   return (
     <Container>
       <SectionTitleHeader>
@@ -19,6 +26,8 @@ export default function HeaderFlow({ title, backButton }: Props) {
         </HeaderBackButton>
         <TitleHeader>{title}</TitleHeader>
       </SectionTitleHeader>
+
+      {children && <SectionActionsHeader>{children}</SectionActionsHeader>}
     </Container>
   );
 }
