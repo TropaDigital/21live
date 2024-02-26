@@ -17,6 +17,7 @@ import { TenantProps } from '../../utils/models';
 // Hooks
 import { useFetch } from '../../hooks/useFetch';
 import { CheckboxDefault } from '../Inputs/CheckboxDefault';
+import SelectReactDefault from '../Inputs/SelectReactDefault';
 
 type HandleOnChange = (
   event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>
@@ -31,11 +32,40 @@ interface FilterProps {
 interface SelectedFilters {
   client: any;
   status: any;
+  user: string;
+  user_name: string;
   sub_tasks: boolean;
+}
+
+interface UserProps {
+  avatar: string;
+  birthday: string;
+  cost_per_hour: string;
+  email: string;
+  friday?: any;
+  function: string;
+  function_id: number;
+  hiring_date: string;
+  monday?: any;
+  name: string;
+  phone: string;
+  saturday?: any;
+  sunday?: any;
+  tasks: number;
+  tenant_id: number;
+  thursday?: any;
+  tuesday?: any;
+  user_id: string;
+  username: string;
+  wednesday?: any;
+  journey?: string;
+  password: string;
+  confirmPassword: string;
 }
 
 export default function FilterTask({ applyFilters, clearFilters, selectedClient }: FilterProps) {
   const { data: dataClient } = useFetch<TenantProps[]>('tenant');
+  const { data: dataUsers } = useFetch<UserProps[]>(`team`);
   const [initialValue, setInitialValue] = useState<any>({
     value: '',
     label: '',
@@ -55,12 +85,20 @@ export default function FilterTask({ applyFilters, clearFilters, selectedClient 
   const [choosenFilters, setChoosenFilter] = useState<SelectedFilters>({
     client: '',
     status: '',
+    user: '',
+    user_name: '',
     sub_tasks: true
   });
+
+  const defaultOptionsTeam = dataUsers?.filter((member) => member.user_id === choosenFilters.user);
 
   const handleAddFilters: HandleOnChange = (event) => {
     const { name, value } = event.target;
     setChoosenFilter({ ...choosenFilters, [name]: value });
+  };
+
+  const handleAddUserFilter = (user: any) => {
+    setChoosenFilter({ ...choosenFilters, user: user.value, user_name: user.label });
   };
 
   const handleCheckFilter = (event: any) => {
@@ -77,6 +115,8 @@ export default function FilterTask({ applyFilters, clearFilters, selectedClient 
     setChoosenFilter({
       client: '',
       status: '',
+      user: '',
+      user_name: '',
       sub_tasks: false
     });
     clearFilters();
@@ -132,6 +172,22 @@ export default function FilterTask({ applyFilters, clearFilters, selectedClient 
             <option value="Alteração Interna">Alteração interna</option>
             <option value="Alteração Externa">Alteração externa</option>
           </SelectDefault>
+        </div>
+
+        <div style={{ maxHeight: '62px' }}>
+          <SelectReactDefault
+            label="Usuários"
+            dataOptions={dataUsers?.map((row: UserProps) => ({
+              value: row.user_id,
+              label: row.name
+            }))}
+            value={defaultOptionsTeam?.map((row) => ({
+              value: row.user_id,
+              label: row.name
+            }))}
+            onChange={handleAddUserFilter}
+            placeholder="Selecione o usuário..."
+          />
         </div>
 
         <div style={{ maxHeight: '62px' }}>
