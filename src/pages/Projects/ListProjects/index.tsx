@@ -80,6 +80,7 @@ interface FilterProps {
   client: string;
   category: string;
   status: string;
+  type: string;
   [key: string]: string | any; // Index signature
 }
 
@@ -131,7 +132,8 @@ export default function ListProjects() {
     toDate: '',
     client: '',
     category: '',
-    status: ''
+    status: '',
+    type: ''
   });
 
   // const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
@@ -152,7 +154,7 @@ export default function ListProjects() {
       filter.client
     }&date_start=${filter.fromDate}&date_end=${filter.toDate}&category=${
       filter.category
-    }&status_fake=${filter.status}`
+    }&status_fake=${filter.status}&type=${filter.type}`
   );
   // const [listSelected, setListSelected] = useState<any[]>([]);
 
@@ -395,7 +397,8 @@ export default function ListProjects() {
       toDate: '',
       client: '',
       category: '',
-      status: ''
+      status: '',
+      type: ''
     });
     setModalFilters(false);
   };
@@ -492,6 +495,7 @@ export default function ListProjects() {
                 {filter.category !== '' ? <span>Tipo</span> : ''}
                 {filter.fromDate !== '' ? <span>Data</span> : ''}
                 {filter.status !== '' ? <span>Status</span> : ''}
+                {filter.type !== '' ? <span>Ativo/Inativo</span> : ''}
               </FilterTotal>
 
               <AppliedFilter>
@@ -530,6 +534,15 @@ export default function ListProjects() {
                 {filter.status !== '' ? (
                   <div className="filter-title">
                     Status: <span style={{ textTransform: 'capitalize' }}>{filter.status}</span>
+                  </div>
+                ) : (
+                  ''
+                )}
+
+                {filter.type !== '' ? (
+                  <div className="filter-title">
+                    Ativo/Inativo:{' '}
+                    <span style={{ textTransform: 'capitalize' }}>{filter.type}</span>
                   </div>
                 ) : (
                   ''
@@ -708,6 +721,7 @@ export default function ListProjects() {
         </Table>
       )}
 
+      {/* Modal show project infos */}
       <ModalDefault
         isOpen={modalShowProject.isOpen}
         title={modalShowProject.type}
