@@ -801,9 +801,9 @@ export default function CreateTasks() {
   };
 
   const handleTaskDeliveries = (name: string, value: any) => {
-    if (name === 'dateStart') {
-      setDTOForm((prevState: any) => ({ ...prevState, ['copywriting_date_end']: value }));
-    }
+    // if (name === 'dateStart') {
+    //   setDTOForm((prevState: any) => ({ ...prevState, ['copywriting_date_end']: value }));
+    // }
     if (name === 'creationDate') {
       setDTOForm((prevState: any) => ({ ...prevState, ['creation_date_end']: value }));
     }
@@ -1087,23 +1087,23 @@ export default function CreateTasks() {
             }
           });
 
-          DTODelivery.map((current: DeliveryProps) => {
-            if (current.copywriting_date_end === '' || current.copywriting_date_end === undefined) {
-              setErrorDeliveryDate((errorDeliveryDate: any) => [
-                ...errorDeliveryDate,
-                {
-                  id: current.deliveryId,
-                  typeError: 'copywriting',
-                  error: 'Data da entrega não atribuida!'
-                }
-              ]);
-              throw new Error('Data da entrega não atribuida!');
-            } else {
-              setErrorDeliveryDate((prevState) =>
-                prevState.filter((delivery) => delivery.id !== current.deliveryId)
-              );
-            }
-          });
+          // DTODelivery.map((current: DeliveryProps) => {
+          //   if (current.copywriting_date_end === '' || current.copywriting_date_end === undefined) {
+          //     setErrorDeliveryDate((errorDeliveryDate: any) => [
+          //       ...errorDeliveryDate,
+          //       {
+          //         id: current.deliveryId,
+          //         typeError: 'copywriting',
+          //         error: 'Data da entrega não atribuida!'
+          //       }
+          //     ]);
+          //     throw new Error('Data da entrega não atribuida!');
+          //   } else {
+          //     setErrorDeliveryDate((prevState) =>
+          //       prevState.filter((delivery) => delivery.id !== current.deliveryId)
+          //     );
+          //   }
+          // });
 
           DTODelivery.map((current: DeliveryProps) => {
             if (current.creation_date_end === '' || current.creation_date_end === undefined) {
@@ -1116,19 +1116,17 @@ export default function CreateTasks() {
                 }
               ]);
               throw new Error('Data da entrega não atribuida!');
-            }
-            // else if (moment(current.creation_date_end).isBefore('2020-01-01')) {
-            //   setErrorDeliveryDate((errorDeliveryDate: any) => [
-            //     ...errorDeliveryDate,
-            //     {
-            //       id: current.deliveryId,
-            //       typeError: 'creation',
-            //       error: 'Data de atividade não pode ser anterior a 2020!'
-            //     }
-            //   ]);
-            //   throw new Error('Data de atividade não pode ser anterior a 2020!');
-            // }
-            else {
+            } else if (moment(current.creation_date_end).isBefore('2020-01-01')) {
+              setErrorDeliveryDate((errorDeliveryDate: any) => [
+                ...errorDeliveryDate,
+                {
+                  id: current.deliveryId,
+                  typeError: 'creation',
+                  error: 'Data de atividade não pode ser anterior a 2020!'
+                }
+              ]);
+              throw new Error('Data de atividade não pode ser anterior a 2020!');
+            } else {
               setErrorDeliveryDate((prevState) =>
                 prevState.filter((delivery) => delivery.id !== current.deliveryId)
               );
@@ -1174,16 +1172,16 @@ export default function CreateTasks() {
 
         if (!splitDeliveries && location.state !== null) {
           // console.log('log do DTODelivery', DTODelivery);
-          if (DTOForm.copywriting_date_end === '') {
-            throw setErrorInput('copywriting_date_end', 'Data de entrega não informada!');
-          } else {
-            setErrorInput('copywriting_date_end', undefined);
-          }
+          // if (DTOForm.copywriting_date_end === '') {
+          //   throw setErrorInput('copywriting_date_end', 'Data de entrega não informada!');
+          // } else {
+          //   setErrorInput('copywriting_date_end', undefined);
+          // }
 
-          if (moment(DTOForm.copywriting_date_end).isBefore('2020-01-01')) {
-            throw setErrorInput('copywriting_date_end', 'Data anterior a 2020 não permitida!');
+          if (moment(DTOForm.creation_date_end).isBefore('2020-01-01')) {
+            throw setErrorInput('creation_date_end', 'Data anterior a 2020 não permitida!');
           } else {
-            setErrorInput('copywriting_date_end', undefined);
+            setErrorInput('creation_date_end', undefined);
           }
 
           if (creation_date_end === '') {
@@ -1218,16 +1216,16 @@ export default function CreateTasks() {
         if (!splitDeliveries && location.state === null) {
           // console.log('log do DTODelivery', DTODelivery);
 
-          if (DTOForm.copywriting_date_end === '') {
-            throw setErrorInput('copywriting_date_end', 'Data de entrega não informada!');
-          } else {
-            setErrorInput('copywriting_date_end', undefined);
-          }
+          // if (DTOForm.copywriting_date_end === '') {
+          //   throw setErrorInput('copywriting_date_end', 'Data de entrega não informada!');
+          // } else {
+          //   setErrorInput('copywriting_date_end', undefined);
+          // }
 
-          if (moment(DTOForm.copywriting_date_end).isBefore('2020-01-01')) {
-            throw setErrorInput('copywriting_date_end', 'Data anterior a 2020 não permitida!');
+          if (moment(DTOForm.creation_date_end).isBefore('2020-01-01')) {
+            throw setErrorInput('creation_date_end', 'Data anterior a 2020 não permitida!');
           } else {
-            setErrorInput('copywriting_date_end', undefined);
+            setErrorInput('creation_date_end', undefined);
           }
 
           if (creation_date_end === '') {
@@ -1236,14 +1234,14 @@ export default function CreateTasks() {
             setErrorInput('creation_date_end', undefined);
           }
 
-          if (moment(DTOForm.creation_date_end).isSameOrBefore(DTOForm.copywriting_date_end)) {
-            throw setErrorInput(
-              'creation_date_end',
-              `Data de entrega menor que a data de entrega ${parameters.input_name}`
-            );
-          } else {
-            setErrorInput('creation_date_end', undefined);
-          }
+          // if (moment(DTOForm.creation_date_end).isSameOrBefore(DTOForm.copywriting_date_end)) {
+          //   throw setErrorInput(
+          //     'creation_date_end',
+          //     `Data de entrega menor que a data de entrega ${parameters.input_name}`
+          //   );
+          // } else {
+          //   setErrorInput('creation_date_end', undefined);
+          // }
 
           let hasError = false;
           productsArray.forEach((obj: any, index: number) => {
@@ -1266,20 +1264,26 @@ export default function CreateTasks() {
           }
         }
       } else if (createStep === 2 && tasksType === 'produto') {
-        if (DTOForm.copywriting_date_end === '') {
-          throw setErrorInput('copywriting_date_end', 'Data de entrega não informada!');
-        } else {
-          setErrorInput('copywriting_date_end', undefined);
-        }
+        // if (DTOForm.copywriting_date_end === '') {
+        //   throw setErrorInput('copywriting_date_end', 'Data de entrega não informada!');
+        // } else {
+        //   setErrorInput('copywriting_date_end', undefined);
+        // }
 
-        if (moment(DTOForm.copywriting_date_end).isBefore('2020-01-01')) {
-          throw setErrorInput('copywriting_date_end', 'Data anterior a 2020 não permitida!');
-        } else {
-          setErrorInput('copywriting_date_end', undefined);
-        }
+        // if (moment(DTOForm.copywriting_date_end).isBefore('2020-01-01')) {
+        //   throw setErrorInput('copywriting_date_end', 'Data anterior a 2020 não permitida!');
+        // } else {
+        //   setErrorInput('copywriting_date_end', undefined);
+        // }
 
         if (creation_date_end === '') {
           throw setErrorInput('creation_date_end', 'Data de Entrega de atividade é obrigatória!');
+        } else {
+          setErrorInput('creation_date_end', undefined);
+        }
+
+        if (moment(DTOForm.creation_date_end).isBefore('2020-01-01')) {
+          throw setErrorInput('creation_date_end', 'Data anterior a 2020 não permitida!');
         } else {
           setErrorInput('creation_date_end', undefined);
         }
@@ -1491,7 +1495,6 @@ export default function CreateTasks() {
           description,
           creation_description,
           creation_date_end,
-          copywriting_date_end,
           copywriting_description,
           step,
           end_job,
@@ -1565,7 +1568,6 @@ export default function CreateTasks() {
           description,
           creation_description,
           creation_date_end,
-          copywriting_date_end,
           copywriting_description,
           end_job,
           start_job,
@@ -1623,7 +1625,6 @@ export default function CreateTasks() {
             files: fileArray,
             creation_description,
             creation_date_end,
-            copywriting_date_end,
             copywriting_description,
             deadlines: deadlines,
             step,
@@ -2064,7 +2065,7 @@ export default function CreateTasks() {
   }, [DTOForm.flow_id, DTOForm.project_product_id]);
 
   useEffect(() => {
-    if (DTOForm.flow_id && DTOForm.project_product_id && DTOForm.ticket_id === '') {
+    if (DTOForm.flow_id && DTOForm.project_product_id && createStep === 1) {
       checkFlowAndProject();
     }
   }, [DTOForm.flow_id, DTOForm.project_product_id]);
@@ -2221,7 +2222,7 @@ export default function CreateTasks() {
               ? 'Editar tarefa'
               : 'Criar nova tarefa'
           }
-          backButton={createStep <= 1}
+          backButton={false}
           stepSelected={createStep}
           maxStep={tasksType === 'livre' ? 4 : 5}
           backPage="/tarefas"
@@ -2354,7 +2355,7 @@ export default function CreateTasks() {
                   <FormTitle style={{ marginTop: '38px' }}>Data da entrega</FormTitle>
                   <SplitDeliveries>
                     <Deliveries>
-                      <InputDefault
+                      {/* <InputDefault
                         label={`Entrega ${
                           parameters.input_name !== '' ? parameters.input_name : 'Pré-requisito'
                         }`}
@@ -2366,11 +2367,11 @@ export default function CreateTasks() {
                         onChange={(e) => handleTaskDeliveries('dateStart', e.target.value)}
                         value={DTOForm.copywriting_date_end}
                         error={error?.copywriting_date_end}
-                      />
+                      /> */}
 
                       <div style={{ width: !splitDeliveries ? '50%' : '180px' }}>
                         <InputDefault
-                          label="Entrega de Atividade / Criação"
+                          label="Data final de entrega cliente"
                           placeholder="00/00/0000"
                           name="creationDate"
                           type="date"
