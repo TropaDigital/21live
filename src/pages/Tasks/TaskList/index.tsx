@@ -56,6 +56,8 @@ import { ModalShowTaskWrapper, Flag, StatusTable, FilterTasks, CopyButton } from
 interface FilterProps {
   status: string;
   client: string;
+  user: string;
+  user_name: string;
   sub_tasks: boolean;
   [key: string]: string | any; // Index signature
 }
@@ -95,6 +97,8 @@ export default function TaskList() {
   const [filter, setFilter] = useState<FilterProps>({
     status: '',
     client: '',
+    user: '',
+    user_name: '',
     sub_tasks: true
   });
   const [selected, setSelected] = useState(1);
@@ -219,6 +223,8 @@ export default function TaskList() {
     setFilter({
       status: '',
       client: '',
+      user: '',
+      user_name: '',
       sub_tasks: false
     });
     setModalFilters(false);
@@ -324,6 +330,7 @@ export default function TaskList() {
                 <div className="filter-title">Filtros ({countNonEmptyProperties()}):</div>
                 {filter.client !== '' ? <span>Cliente</span> : ''}
                 {filter.status !== '' ? <span>Status</span> : ''}
+                {filter.user !== '' ? <span>Usuário</span> : ''}
                 {filter.sub_tasks ? <span>Subtarefas</span> : ''}
               </FilterTotal>
 
@@ -339,6 +346,14 @@ export default function TaskList() {
                 {filter.status !== '' ? (
                   <div className="filter-title">
                     Status: <span>{filter.status}</span>
+                  </div>
+                ) : (
+                  ''
+                )}
+
+                {filter.user !== '' ? (
+                  <div className="filter-title">
+                    Usuário: <span>{filter.user_name}</span>
                   </div>
                 ) : (
                   ''
@@ -361,6 +376,7 @@ export default function TaskList() {
                 <th>Título</th>
                 <th>Tempo utilizado</th>
                 <th>Tempo estimado</th>
+                <th>Produtos</th>
                 <th>Status</th>
                 <th>Cliente</th>
                 {/* <th>Equipe</th> */}
@@ -415,6 +431,7 @@ export default function TaskList() {
                     <td style={{ cursor: 'pointer' }} onClick={() => handleViewTask(row.task_id)}>
                       {row.total_time !== 'undefined' ? row.total_time : '00:00:00'}
                     </td>
+                    <td>???</td>
                     <td style={{ cursor: 'pointer' }} onClick={() => handleViewTask(row.task_id)}>
                       <StatusTable
                         className={
@@ -486,7 +503,7 @@ export default function TaskList() {
                         {user.permissions.includes('jobs_tasks_manager') && (
                           <Alert
                             title="Atenção"
-                            subtitle="Certeza que gostaria de deletar esta Tarefa? Ao excluir esta ação não poderá ser desfeita."
+                            subtitle="TODAS AS INFORMAÇÕES DESSA TAREFA SERÃO DELETADAS. NÃO SERÁ POSSÍVEL REVERTER ESTA AÇÃO!"
                             confirmButton={() => handleOnDelete(row.task_id)}
                           >
                             <ButtonTable typeButton="delete" />
