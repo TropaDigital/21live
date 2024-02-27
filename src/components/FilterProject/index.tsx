@@ -183,8 +183,8 @@ export default function FilterProject({ applyFilters, clearFilters, selectedClie
             value={choosenFilters.type}
             required
           >
-            <option value="Ativo">Ativo</option>
-            <option value="Inativo">Inativo</option>
+            <option value="true">Ativo</option>
+            <option value="false">Inativo</option>
           </SelectDefault>
         </div>
       </FilterOptions>
