@@ -154,7 +154,7 @@ export default function ListProjects() {
       filter.client
     }&date_start=${filter.fromDate}&date_end=${filter.toDate}&category=${
       filter.category
-    }&status_fake=${filter.status}&type=${filter.type}`
+    }&status_fake=${filter.status}&status=${filter.type}`
   );
   // const [listSelected, setListSelected] = useState<any[]>([]);
 
@@ -542,7 +542,9 @@ export default function ListProjects() {
                 {filter.type !== '' ? (
                   <div className="filter-title">
                     Ativo/Inativo:{' '}
-                    <span style={{ textTransform: 'capitalize' }}>{filter.type}</span>
+                    <span style={{ textTransform: 'capitalize' }}>
+                      {filter.type === 'true' ? 'Ativo' : 'Inativo'}
+                    </span>
                   </div>
                 ) : (
                   ''
