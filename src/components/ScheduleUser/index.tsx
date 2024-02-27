@@ -114,7 +114,7 @@ export default function ScheduleUser({
   const [DTOTaskSelect, setDTOTaskSelect] = useState<ScheduleProps>({
     scheduleDay: '',
     user_selected: '',
-    starterHour: '00:00:00'
+    starterHour: ''
   });
   const [dayCounter, setDayCounter] = useState<number>(0);
   const [dataUserSchedule, setDataUserSchedule] = useState<UserData[]>([]);
@@ -258,6 +258,15 @@ export default function ScheduleUser({
           : dataUserSchedule[0].function === 'Redação'
           ? estimated_time.time_essay
           : estimated_time.total_time;
+
+      if (DTOTaskSelect.starterHour === '' || DTOTaskSelect.starterHour === null) {
+        addToast({
+          type: 'warning',
+          title: 'ATENÇÃO',
+          description: 'Escolha a hora inicial antes consultar a disponibilidade!'
+        });
+        throw new Error();
+      }
 
       if (!manualOverrideDate) {
         const response = await api.get(
@@ -408,13 +417,13 @@ export default function ScheduleUser({
               </EstimatedTimeSelector>
             )}
 
-            <div style={{ color: '#FF0000', fontWeight: 'bold' }}>
+            {/* <div style={{ color: '#FF0000', fontWeight: 'bold' }}>
               {dataUserSchedule[0]?.function === 'Criação'
                 ? estimated_time.time_creation
                 : dataUserSchedule[0]?.function === 'Redação'
                 ? estimated_time.time_essay
                 : estimated_time.total_time}
-            </div>
+            </div> */}
 
             <button className="close" onClick={closeModal}>
               <IconClose />
@@ -506,8 +515,14 @@ export default function ScheduleUser({
               </div>
               {!checkAvailability && !manualOverrideDate && (
                 <ButtonDefault
-                  typeButton={DTOTaskSelect.user_selected ? 'primary' : 'blocked'}
-                  disabled={!DTOTaskSelect.user_selected ? true : false}
+                  typeButton={
+                    DTOTaskSelect.user_selected && DTOTaskSelect.starterHour !== ''
+                      ? 'primary'
+                      : 'blocked'
+                  }
+                  disabled={
+                    DTOTaskSelect.starterHour === '' && !DTOTaskSelect.user_selected ? true : false
+                  }
                   onClick={() =>
                     checkIfIsAvaliable(
                       DTOTaskSelect.user_selected,

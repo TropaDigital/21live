@@ -41,3 +41,21 @@ export const HeaderBackButton = styled.button`
 
   border-right: 1px solid var(--gray-300);
 `;
+
+export const SectionActionsHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  @media (max-width: 760px) {
+    width: 100%;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 560px) {
+    flex-direction: column;
+  }
+`;

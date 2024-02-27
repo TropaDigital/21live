@@ -1,27 +1,34 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
-export const Container = styled.div`
-
-`;
+export const Container = styled.div``;
 
 export const HeaderEditPlus = styled.div`
-  
   .titleEditFluxo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
     font-weight: 600;
     font-size: 20px;
-    color: #6C757D;
+    color: #6c757d;
 
-    >span {
+    > span {
       color: #444444;
+      cursor: pointer;
+    }
+
+    .editFlowName {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
   }
 
   .subTitleEditFluxo {
     font-weight: 400;
     font-size: 14px;
-    color: #6C757D;
+    color: #6c757d;
     margin-top: 4px;
-
   }
 `;
 
