@@ -37,6 +37,7 @@ interface SelectedFilters {
   client: string;
   category: string;
   status: string;
+  type: string;
 }
 
 export default function FilterProject({ applyFilters, clearFilters, selectedClient }: FilterProps) {
@@ -62,7 +63,8 @@ export default function FilterProject({ applyFilters, clearFilters, selectedClie
     toDate: '',
     client: '',
     category: '',
-    status: ''
+    status: '',
+    type: ''
   });
 
   const handleAddFilters: HandleOnChange = (event) => {
@@ -76,7 +78,8 @@ export default function FilterProject({ applyFilters, clearFilters, selectedClie
       toDate: '',
       client: '',
       category: '',
-      status: ''
+      status: '',
+      type: ''
     });
     clearFilters();
   };
@@ -144,7 +147,7 @@ export default function FilterProject({ applyFilters, clearFilters, selectedClie
         <div style={{ maxHeight: '62px' }}>
           <SelectDefault
             label="FEE/SPOT"
-            placeholder="Selecione"
+            placeholder="Selecione..."
             name="category"
             onChange={handleAddFilters}
             value={choosenFilters.category}
@@ -155,10 +158,10 @@ export default function FilterProject({ applyFilters, clearFilters, selectedClie
           </SelectDefault>
         </div>
 
-        {/* <div style={{ maxHeight: '62px' }}>
+        <div style={{ maxHeight: '62px' }}>
           <SelectDefault
             label="Status"
-            placeholder="Selecione"
+            placeholder="Selecione..."
             name="status"
             onChange={handleAddFilters}
             value={choosenFilters.status}
@@ -169,7 +172,21 @@ export default function FilterProject({ applyFilters, clearFilters, selectedClie
             <option value="Stand By">Stand by</option>
             <option value="Vencido">Vencido</option>
           </SelectDefault>
-        </div> */}
+        </div>
+
+        <div style={{ maxHeight: '62px' }}>
+          <SelectDefault
+            label="Ativo / Inativo"
+            placeholder="Selecione..."
+            name="type"
+            onChange={handleAddFilters}
+            value={choosenFilters.type}
+            required
+          >
+            <option value="true">Ativo</option>
+            <option value="false">Inativo</option>
+          </SelectDefault>
+        </div>
       </FilterOptions>
 
       <FilterButtons>

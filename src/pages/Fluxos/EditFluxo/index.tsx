@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 // React
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 // Icons
@@ -21,10 +21,11 @@ import { ColumnModel } from '../../../utils/models';
 
 // Components
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
-import HeaderPage from '../../../components/HeaderPage';
 import CardFluxo from '../../../components/Ui/CardFluxo';
 import { SectionDefault } from '../../../components/UiElements/styles';
 import ModalLoader from '../../../components/Ui/ModalLoader';
+import HeaderFlow from '../../../components/HeaderFlowPage';
+import { InputDefault } from '../../../components/Inputs/InputDefault';
 
 // Styles
 import { Container, ContentEditFluxo, HeaderEditPlus } from './styled';
@@ -41,6 +42,7 @@ export default function EditFluxo() {
   const { addToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
+  const titleRef = useRef<any>();
   const [state, setState] = useLocalStorage('COLUMN', []);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -53,12 +55,18 @@ export default function EditFluxo() {
     useColumn();
   const lengthCard = column.length;
   const [errorMissingResponsible, setErrorMissingResponsible] = useState<any[]>([]);
+  const [flowName, setFlowName] = useState<string>('');
+  const [editFlowName, setEditFlowName] = useState<boolean>(false);
 
   useEffect(() => {
     if (!isFetching) {
       setColumn(data);
     }
   }, [isFetching, data]);
+
+  useEffect(() => {
+    setFlowName(location.state.name);
+  }, [location]);
 
   const checkCards = () => {
     try {
@@ -188,9 +196,61 @@ export default function EditFluxo() {
     }
   }
 
+  async function updateFlowName() {
+    try {
+      setLoading(true);
+
+      const response = await api.put(`/flow/${location.state.id}`, { name: flowName });
+
+      if (response.data.status === 'success') {
+        addToast({
+          title: 'Sucesso',
+          description: 'Nome editado com sucesso!',
+          type: 'success'
+        });
+        setEditFlowName(false);
+      }
+
+      setLoading(false);
+    } catch (err: any) {
+      if (err.response.data.result.length !== 0) {
+        err.response.data.result.map((row: any) => {
+          addToast({
+            type: 'danger',
+            title: 'ATENÇÃO',
+            description: row.error
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: err.response.data.message,
+          type: 'danger'
+        });
+      }
+
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    const checkIfClickedOutside = (e: any) => {
+      if (editFlowName && titleRef.current && !titleRef.current.contains(e.target)) {
+        setEditFlowName(false);
+        setFlowName(location.state.name);
+      }
+    };
+
+    document.addEventListener('mousedown', checkIfClickedOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', checkIfClickedOutside);
+    };
+  }, [editFlowName]);
+
   return (
     <Container>
-      <HeaderPage title="Fluxos">
+      <HeaderFlow title="Fluxos" backButton={() => navigate(-1)}>
         <div
           style={{
             position: 'absolute',
@@ -216,12 +276,31 @@ export default function EditFluxo() {
             Salvar
           </ButtonDefault>
         </div>
-      </HeaderPage>
+      </HeaderFlow>
 
       <SectionDefault>
         <HeaderEditPlus>
-          <h1 className="titleEditFluxo">
-            Fase do fluxo <span>{location.state.name}</span>
+          <h1 className="titleEditFluxo" ref={titleRef}>
+            Fases do fluxo:{' '}
+            {!editFlowName && <span onClick={() => setEditFlowName(true)}>{flowName}</span>}
+            {editFlowName && (
+              <div className="editFlowName">
+                <InputDefault
+                  label=""
+                  name="flowName"
+                  placeholder=""
+                  value={flowName}
+                  onChange={(event) => {
+                    setFlowName(event.target.value);
+                  }}
+                  error={flowName === '' ? 'É necessário definir um nome para o fluxo!' : ''}
+                />
+
+                <ButtonDefault typeButton="primary" onClick={updateFlowName}>
+                  Salvar nome
+                </ButtonDefault>
+              </div>
+            )}
           </h1>
           <h3 className="subTitleEditFluxo">Adicione ou remova etapas do seu fluxo.</h3>
         </HeaderEditPlus>
