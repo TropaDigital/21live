@@ -58,6 +58,11 @@ interface FilterProps {
   client: string;
   user: string;
   user_name: string;
+  product: any;
+  product_name: string;
+  contract: string;
+  contract_name: string;
+  contract_type: string;
   sub_tasks: boolean;
   [key: string]: string | any; // Index signature
 }
@@ -99,6 +104,11 @@ export default function TaskList() {
     client: '',
     user: '',
     user_name: '',
+    product: '',
+    product_name: '',
+    contract: '',
+    contract_name: '',
+    contract_type: '',
     sub_tasks: true
   });
   const [selected, setSelected] = useState(1);
@@ -225,6 +235,11 @@ export default function TaskList() {
       client: '',
       user: '',
       user_name: '',
+      product: '',
+      product_name: '',
+      contract: '',
+      contract_name: '',
+      contract_type: '',
       sub_tasks: false
     });
     setModalFilters(false);
@@ -332,6 +347,9 @@ export default function TaskList() {
                 {filter.status !== '' ? <span>Status</span> : ''}
                 {filter.user !== '' ? <span>Usuário</span> : ''}
                 {filter.sub_tasks ? <span>Subtarefas</span> : ''}
+                {filter.product ? <span>Produto</span> : ''}
+                {filter.contract ? <span>Contrato</span> : ''}
+                {filter.contract_type ? <span>Tipo do contrato</span> : ''}
               </FilterTotal>
 
               <AppliedFilter>
@@ -362,6 +380,31 @@ export default function TaskList() {
                 {filter.sub_tasks ? (
                   <div className="filter-title">
                     Subtarefas: <span>Sim</span>
+                  </div>
+                ) : (
+                  ''
+                )}
+
+                {filter.product !== '' ? (
+                  <div className="filter-title">
+                    Produto: <span>{filter.product_name}</span>
+                  </div>
+                ) : (
+                  ''
+                )}
+
+                {filter.contract !== '' ? (
+                  <div className="filter-title">
+                    Contrato: <span>{filter.contract_name}</span>
+                  </div>
+                ) : (
+                  ''
+                )}
+
+                {filter.contract_type !== '' ? (
+                  <div className="filter-title">
+                    Tipo de contrato:{' '}
+                    <span>{filter.contract_type === 'free' ? 'Livre' : 'Por produto'}</span>
                   </div>
                 ) : (
                   ''
@@ -431,7 +474,7 @@ export default function TaskList() {
                     <td style={{ cursor: 'pointer' }} onClick={() => handleViewTask(row.task_id)}>
                       {row.total_time !== 'undefined' ? row.total_time : '00:00:00'}
                     </td>
-                    <td>???</td>
+                    <td>{row.products_quantity}</td>
                     <td style={{ cursor: 'pointer' }} onClick={() => handleViewTask(row.task_id)}>
                       <StatusTable
                         className={
