@@ -2028,7 +2028,12 @@ export default function CreateTasks() {
         }));
         setDTOForm((prevState: any) => ({
           ...prevState,
-          ['ticket_id']: '0'
+          ticket_id: '0'
+        }));
+      } else {
+        setDTOForm((prevState: any) => ({
+          ...prevState,
+          ticket_id: ''
         }));
       }
 
@@ -2037,6 +2042,20 @@ export default function CreateTasks() {
           type: 'success',
           title: 'Sucesso',
           description: 'Fluxo compativel com o projeto'
+        });
+        setDTOForm((prevState: any) => ({
+          ...prevState,
+          ticket_id: ''
+        }));
+      }
+
+      if (response.data.result.length > 0) {
+        response.data.result.map((row: any) => {
+          addToast({
+            type: 'danger',
+            title: 'ATENÇÃO',
+            description: row
+          });
         });
       }
     } catch (e: any) {
