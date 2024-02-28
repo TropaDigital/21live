@@ -100,6 +100,7 @@ interface TimelineProps {
 interface ReturnProps {
   chosenStep: string;
   returnMotive: string;
+  returnType: string;
 }
 
 interface ProductProps {
@@ -160,7 +161,8 @@ export default function ViewProductsDeliveries() {
   const [modalReturnFlow, setModalReturnFlow] = useState<boolean>(false);
   const [returnInfos, setReturnInfos] = useState<ReturnProps>({
     chosenStep: '',
-    returnMotive: ''
+    returnMotive: '',
+    returnType: ''
   });
   const [toClientConfirmation, setToClientConfirmation] = useState<boolean>(false);
   const [showHoursBack, setShowHoursBack] = useState<boolean>(false);
@@ -223,6 +225,7 @@ export default function ViewProductsDeliveries() {
   const onlyOneProductInfo = {
     title: dataProducts?.products[0]?.service,
     description: dataProducts?.products[0]?.description,
+    id: dataProducts?.products[0]?.products_delivery_id,
     size: dataProducts?.products[0]?.size,
     type: dataProducts?.products[0]?.type,
     reason_change:
@@ -236,6 +239,7 @@ export default function ViewProductsDeliveries() {
   const selectedProductInfo = {
     title: selectedProduct?.productInfo?.service,
     description: selectedProduct?.productInfo?.description,
+    id: selectedProduct?.productInfo?.products_delivery_id,
     size: selectedProduct?.productInfo?.size,
     type: selectedProduct?.productInfo?.type,
     reason_change:
@@ -286,6 +290,10 @@ export default function ViewProductsDeliveries() {
   const stepsToReturn: any[] = timeLineData
     ? timeLineData.steps.filter((obj) => Number(obj.step) < Number(actualStep))
     : [];
+
+  const stepsWithTenantApprove: any[] | undefined = timeLineData?.steps.filter(
+    (obj) => obj.tenant_approve === 'true'
+  );
 
   const productsNames: string[] = dataTask?.files.map((file: any) => {
     const matchingDelivery = dataTask?.deliverys.find((delivery: any) =>
@@ -1157,9 +1165,11 @@ export default function ViewProductsDeliveries() {
     }
   }
 
+  // Check to go back or next step
   async function checkFlow(checkType: string) {
     try {
       setLoading(true);
+
       if (checkMandatoryUpload() && mandatoryUpload) {
         addToast({
           title: 'Aviso',
@@ -1395,6 +1405,12 @@ export default function ViewProductsDeliveries() {
     setReturnInfos((prevState: any) => ({ ...prevState, [name]: value }));
   };
 
+  const handleChangeTypeOnReturn = (e: any) => {
+    const { name, value } = e.target;
+
+    setReturnInfos((prevState: any) => ({ ...prevState, [name]: value }));
+  };
+
   const handleBackFlow = () => {
     const selectedStep = timeLineData?.steps.filter((obj) => obj.step === returnInfos.chosenStep);
 
@@ -1414,7 +1430,8 @@ export default function ViewProductsDeliveries() {
         step: returnInfos.chosenStep,
         user_id: infos.user_id,
         start_job: infos.start_job,
-        end_job: infos.end_job
+        end_job: infos.end_job,
+        return_type: returnInfos.returnType
       };
 
       // console.log('log do returnParams =>', returnParams);
@@ -1452,7 +1469,8 @@ export default function ViewProductsDeliveries() {
   const handleCancelReturn = () => {
     setReturnInfos({
       chosenStep: '',
-      returnMotive: ''
+      returnMotive: '',
+      returnType: ''
     });
     setModalReturnFlow(false);
   };
@@ -1460,7 +1478,8 @@ export default function ViewProductsDeliveries() {
   const handleCancelReturnReject = () => {
     setReturnInfos({
       chosenStep: '',
-      returnMotive: ''
+      returnMotive: '',
+      returnType: ''
     });
     setModalReturnAllRejected(false);
   };
@@ -1794,8 +1813,10 @@ export default function ViewProductsDeliveries() {
               title={titleInfos}
               product={
                 viewProduct
-                  ? onlyOneProductInfo || selectedProductInfo
-                  : { title: '', type: '', size: '', description: '', reason_change: '' }
+                  ? dataProducts.products.length <= 1
+                    ? onlyOneProductInfo
+                    : selectedProductInfo
+                  : { title: '', type: '', size: '', description: '', reason_change: '', id: '' }
               }
               avatar_infos={userProps}
               disableButton={true}
@@ -1833,8 +1854,10 @@ export default function ViewProductsDeliveries() {
                 avatar_infos={userProps}
                 product={
                   viewProduct
-                    ? onlyOneProductInfo || selectedProductInfo
-                    : { title: '', type: '', size: '', description: '', reason_change: '' }
+                    ? dataProducts.products.length <= 1
+                      ? onlyOneProductInfo
+                      : selectedProductInfo
+                    : { title: '', type: '', size: '', description: '', reason_change: '', id: '' }
                 }
                 disableButton={false}
                 goBack
@@ -1855,8 +1878,10 @@ export default function ViewProductsDeliveries() {
                 avatar_infos={userProps}
                 product={
                   viewProduct
-                    ? onlyOneProductInfo || selectedProductInfo
-                    : { title: '', type: '', size: '', description: '', reason_change: '' }
+                    ? dataProducts.products.length <= 1
+                      ? onlyOneProductInfo
+                      : selectedProductInfo
+                    : { title: '', type: '', size: '', description: '', reason_change: '', id: '' }
                 }
                 disableButton={false}
                 goBack
@@ -1878,8 +1903,10 @@ export default function ViewProductsDeliveries() {
                 avatar_infos={userProps}
                 product={
                   viewProduct
-                    ? onlyOneProductInfo || selectedProductInfo
-                    : { title: '', type: '', size: '', description: '', reason_change: '' }
+                    ? dataProducts.products.length <= 1
+                      ? onlyOneProductInfo
+                      : selectedProductInfo
+                    : { title: '', type: '', size: '', description: '', reason_change: '', id: '' }
                 }
                 disableButton={false}
                 goBack
@@ -1901,8 +1928,10 @@ export default function ViewProductsDeliveries() {
                 avatar_infos={userProps}
                 product={
                   viewProduct
-                    ? onlyOneProductInfo || selectedProductInfo
-                    : { title: '', type: '', size: '', description: '', reason_change: '' }
+                    ? dataProducts.products.length <= 1
+                      ? onlyOneProductInfo
+                      : selectedProductInfo
+                    : { title: '', type: '', size: '', description: '', reason_change: '', id: '' }
                 }
                 disableButton={false}
                 goBack
@@ -1923,8 +1952,10 @@ export default function ViewProductsDeliveries() {
                 avatar_infos={userProps}
                 product={
                   viewProduct
-                    ? onlyOneProductInfo || selectedProductInfo
-                    : { title: '', type: '', size: '', description: '', reason_change: '' }
+                    ? dataProducts.products.length <= 1
+                      ? onlyOneProductInfo
+                      : selectedProductInfo
+                    : { title: '', type: '', size: '', description: '', reason_change: '', id: '' }
                 }
                 disableButton={false}
                 goBack
@@ -1947,8 +1978,10 @@ export default function ViewProductsDeliveries() {
                 avatar_infos={userProps}
                 product={
                   viewProduct
-                    ? onlyOneProductInfo || selectedProductInfo
-                    : { title: '', type: '', size: '', description: '', reason_change: '' }
+                    ? dataProducts.products.length <= 1
+                      ? onlyOneProductInfo
+                      : selectedProductInfo
+                    : { title: '', type: '', size: '', description: '', reason_change: '', id: '' }
                 }
                 disableButton={typeOfPlay === 'product' ? false : true}
                 goBack
@@ -1973,8 +2006,10 @@ export default function ViewProductsDeliveries() {
                 avatar_infos={userProps}
                 product={
                   viewProduct
-                    ? onlyOneProductInfo || selectedProductInfo
-                    : { title: '', type: '', size: '', description: '', reason_change: '' }
+                    ? dataProducts.products.length <= 1
+                      ? onlyOneProductInfo
+                      : selectedProductInfo
+                    : { title: '', type: '', size: '', description: '', reason_change: '', id: '' }
                 }
                 disableButton={true}
                 goBack
@@ -1999,8 +2034,10 @@ export default function ViewProductsDeliveries() {
                 avatar_infos={userProps}
                 product={
                   viewProduct
-                    ? onlyOneProductInfo || selectedProductInfo
-                    : { title: '', type: '', size: '', description: '', reason_change: '' }
+                    ? dataProducts.products.length <= 1
+                      ? onlyOneProductInfo
+                      : selectedProductInfo
+                    : { title: '', type: '', size: '', description: '', reason_change: '', id: '' }
                 }
                 disableButton={true}
                 goBack
@@ -2024,8 +2061,10 @@ export default function ViewProductsDeliveries() {
                 avatar_infos={userProps}
                 product={
                   viewProduct
-                    ? onlyOneProductInfo || selectedProductInfo
-                    : { title: '', type: '', size: '', description: '', reason_change: '' }
+                    ? dataProducts.products.length <= 1
+                      ? onlyOneProductInfo
+                      : selectedProductInfo
+                    : { title: '', type: '', size: '', description: '', reason_change: '', id: '' }
                 }
                 disableButton={false}
                 goBack
@@ -2045,8 +2084,10 @@ export default function ViewProductsDeliveries() {
                 avatar_infos={userProps}
                 product={
                   viewProduct
-                    ? onlyOneProductInfo || selectedProductInfo
-                    : { title: '', type: '', size: '', description: '', reason_change: '' }
+                    ? dataProducts.products.length <= 1
+                      ? onlyOneProductInfo
+                      : selectedProductInfo
+                    : { title: '', type: '', size: '', description: '', reason_change: '', id: '' }
                 }
                 disableButton={false}
                 goBack
@@ -2623,6 +2664,18 @@ export default function ViewProductsDeliveries() {
         title="Para qual etapa deseja retornar?"
       >
         <ModalReturnFlow>
+          {stepsWithTenantApprove && stepsWithTenantApprove?.length < 1 && (
+            <SelectDefault
+              label="Escolha o tipo da alteração"
+              name="returnType"
+              onChange={handleChangeTypeOnReturn}
+              value={returnInfos.returnType}
+            >
+              <option value="1">Alteração Interna</option>
+              <option value="2">Alteração Externa</option>
+            </SelectDefault>
+          )}
+
           <SelectDefault
             label="Escolha a etapa"
             name="chosenStep"
@@ -2651,12 +2704,18 @@ export default function ViewProductsDeliveries() {
             </ButtonDefault>
             <ButtonDefault
               typeButton={
-                returnInfos.chosenStep === '' || returnInfos.returnMotive === ''
+                returnInfos.chosenStep === '' ||
+                returnInfos.returnMotive === '' ||
+                returnInfos.returnType === ''
                   ? 'blocked'
                   : 'primary'
               }
               onClick={handleBackFlow}
-              disabled={returnInfos.chosenStep === '' || returnInfos.returnMotive === ''}
+              disabled={
+                returnInfos.chosenStep === '' ||
+                returnInfos.returnMotive === '' ||
+                returnInfos.returnType === ''
+              }
             >
               Retornar
             </ButtonDefault>

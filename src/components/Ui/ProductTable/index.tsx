@@ -168,17 +168,13 @@ export default function ProductTable({
                     row.status !== 'Desmembrada' ? productSelected(row) : productSelected('task')
                   }
                 >
-                  {user.permissions.includes('jobs_tasks_essay') && (
+                  {/* {user.permissions.includes('jobs_tasks_essay') && (
                     <div className="flex info">
                       <IconText /> {row.service}
                     </div>
-                  )}
+                  )} */}
 
-                  {user.permissions.includes('jobs_tasks_execute') && (
-                    <div className="flex info">
-                      <BiPencil /> {row.service}
-                    </div>
-                  )}
+                  <div className="flex info">{row.service}</div>
                 </td>
                 {workFor === 'product' && (
                   <>
@@ -287,20 +283,21 @@ export default function ProductTable({
                     )}
                   </div>
                 </td>
-                <td onClick={() => viewFile(row)}>
-                  <div
-                    className={
-                      fileList &&
-                      fileList.filter(
-                        (obj: any) => obj.products_delivery_id === row.products_delivery_id
-                      ).length > 0
-                        ? 'view'
-                        : 'view block'
-                    }
-                  >
-                    <BiShow size={20} />
-                  </div>
-                </td>
+                {fileList &&
+                fileList.filter((obj: any) => obj.products_delivery_id === row.products_delivery_id)
+                  .length > 0 ? (
+                  <td onClick={() => viewFile(row)}>
+                    <div className="view">
+                      <BiShow size={20} />
+                    </div>
+                  </td>
+                ) : (
+                  <td>
+                    <div className="view block">
+                      <BiShow size={20} />
+                    </div>
+                  </td>
+                )}
                 {uploadEnabled &&
                   row.status !== 'Desmembrada' &&
                   row.status !== 'Concluida' &&

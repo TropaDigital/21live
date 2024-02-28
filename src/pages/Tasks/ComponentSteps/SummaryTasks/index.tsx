@@ -523,11 +523,13 @@ export default function SummaryTasks({
               <div className="item-hours">
                 Total de itens: <span>{selectedProducts?.length}</span>
               </div>
-              <div className="splitter"></div>
               {taskType !== 'livre' && (
-                <div className="item-hours">
-                  Horas estimadas <span>{sumTimes(productsHoursArray)}</span>
-                </div>
+                <>
+                  <div className="splitter" />
+                  <div className="item-hours">
+                    Horas estimadas <span>{sumTimes(productsHoursArray)}</span>
+                  </div>
+                </>
               )}
             </>
           )}

@@ -17,7 +17,8 @@ import {
   UserCard,
   UserFields,
   UserInfosCard,
-  UserTable
+  UserTable,
+  UserTitle
 } from './styles';
 
 // Icons
@@ -130,6 +131,7 @@ export default function ScheduleUser({
   const dinamicDate = moment().startOf('day').add(dayCounter, 'days').format('YYYY-MM-DD HH:mm:ss');
   const starterDate = moment(dinamicDate).startOf('day').format('YYYY-MM-DD HH:mm:ss');
   const finishDate = moment(dinamicDate).format('YYYY-MM-DD') + 'T24:00:00';
+  const [outsideUsers, setOutsideUsers] = useState<boolean>(false);
 
   async function getUserSchedule() {
     try {
@@ -138,7 +140,9 @@ export default function ScheduleUser({
       const response = await api.get(
         `/task/next?flow=${flow}&project_product_id=${project_product_id}&step=${
           step ? step : 1
-        }&date=${moment(dinamicDate).format('YYYY-MM-DD')}&task_id=${taskId}`
+        }&date=${moment(dinamicDate).format('YYYY-MM-DD')}&task_id=${taskId}&ignore_project=${
+          outsideUsers ? 'true' : 'false'
+        }`
       );
 
       if (response.data.result.length > 0) {
@@ -225,6 +229,7 @@ export default function ScheduleUser({
     const newDTO: any = DTOTaskSelect;
     newDTO[name] = value;
     setDTOTaskSelect({ ...newDTO });
+
     if (name === 'starterHour') {
       setCheckAvailability(false);
     }
@@ -234,6 +239,10 @@ export default function ScheduleUser({
       setCheckAvailability(false);
     }
   }
+
+  useEffect(() => {
+    getUserSchedule();
+  }, [outsideUsers]);
 
   const handleDayOfUSer = (value: any) => {
     setDayCounter(dayCounter + value);
@@ -417,7 +426,7 @@ export default function ScheduleUser({
               </EstimatedTimeSelector>
             )}
 
-            {/* <div style={{ color: '#FF0000', fontWeight: 'bold' }}>
+            {/* <div>
               {dataUserSchedule[0]?.function === 'Criação'
                 ? estimated_time.time_creation
                 : dataUserSchedule[0]?.function === 'Redação'
@@ -447,7 +456,18 @@ export default function ScheduleUser({
 
           <ScheduleTable>
             <UserTable>
-              <div className="user-title">Usuário</div>
+              <UserTitle>
+                <div className="user-title">Usuário</div>
+                <div className="ext-users">
+                  <CheckboxDefault
+                    label=""
+                    name="outsiders"
+                    onChange={() => setOutsideUsers(outsideUsers ? false : true)}
+                    checked={outsideUsers}
+                  />
+                  users fora do contrato
+                </div>
+              </UserTitle>
               {dataUserSchedule?.map((row: UserData) => (
                 <UserCard key={row.user_id}>
                   <CheckboxDefault
@@ -457,7 +477,9 @@ export default function ScheduleUser({
                     checked={DTOTaskSelect.user_selected === row.user_id ? true : false}
                   />
                   <UserInfosCard>
-                    <div className="user-name">{row.name}</div>
+                    <div className="user-name">
+                      {row.name.split(' ')[0]} {row.name.split(' ')[1]}
+                    </div>
                     <div className="working-hours">
                       Jornada:{' '}
                       <span>
