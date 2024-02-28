@@ -59,7 +59,7 @@ interface TitleProps {
 interface ProductsProps {
   title: string;
   description: string;
-  id: string;
+  id: any;
   size: string;
   type: string;
   reason_change: string;
