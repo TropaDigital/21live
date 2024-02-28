@@ -116,7 +116,9 @@ export default function TaskList() {
   const { data, pages, fetchData, isFetching } = useFetch<any[]>(
     `tasks?search=${search.replace(/[^\w ]/g, '')}&page=${selected}&status=${
       filter.status
-    }&tenant=${filter.client}&sub_tasks=${filter.sub_tasks}`
+    }&tenant=${filter.client}&sub_tasks=${filter.sub_tasks}&user_id=${filter.user}&project_id=${
+      filter.contract
+    }&project_product_id=${filter.product}`
   );
   const [searchTerm, setSearchTerm] = useState('');
   const { isLoading, debouncedCallback } = useDebouncedCallback(
