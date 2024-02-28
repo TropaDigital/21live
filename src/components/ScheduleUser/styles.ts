@@ -165,23 +165,42 @@ export const UserTable = styled.div`
   display: flex;
   flex-direction: column;
 
-  width: 211px;
+  width: 240px;
 
   /* box-shadow: 8px 0 10px -1px #eaecf0; */
+`;
+
+export const UserTitle = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  padding: 12px;
+  border-right: 2px solid var(--gray-200);
+  border-bottom: 2px solid var(--gray-200);
 
   .user-title {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    padding: 12px 24px;
-    height: 60px;
+
+    padding-left: 12px;
 
     color: var(--gray-500);
     font-size: var(--text-small-xs);
     font-weight: var(--weight-medium);
+  }
 
-    border-right: 2px solid var(--gray-200);
-    border-bottom: 2px solid var(--gray-200);
+  .ext-users {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    padding-left: 12px;
+
+    color: var(--gray-500);
+    font-size: var(--text-small-xs);
+    font-weight: var(--weight-medium);
   }
 `;
 
@@ -191,7 +210,7 @@ export const UserCard = styled.div`
   justify-content: center;
   gap: 12px;
 
-  width: 211px;
+  width: 240px;
   height: 72px;
 
   border-right: 2px solid var(--gray-200);

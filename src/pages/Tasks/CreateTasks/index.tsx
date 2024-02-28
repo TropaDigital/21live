@@ -233,7 +233,6 @@ export default function CreateTasks() {
     creation_description: '',
     creation_date_end: '',
     copywriting_description: '',
-    copywriting_date_end: '',
     deadlines: [],
     files: [],
     user_id: '',
@@ -1017,16 +1016,16 @@ export default function CreateTasks() {
       // }
 
       if (tasksType === 'livre' && createStep === 2) {
-        if (DTOForm.copywriting_date_end === '') {
-          throw setErrorInput('copywriting_date_end', 'Data de entrega não informada!');
+        if (DTOForm.creation_date_end === '') {
+          throw setErrorInput('creation_date_end', 'Data de entrega não informada!');
         } else {
-          setErrorInput('copywriting_date_end', undefined);
+          setErrorInput('creation_date_end', undefined);
         }
 
-        if (moment(DTOForm.copywriting_date_end).isBefore('2020-01-01')) {
-          throw setErrorInput('copywriting_date_end', 'Data anterior a 2020 não permitida!');
+        if (moment(DTOForm.creation_date_end).isBefore('2020-01-01')) {
+          throw setErrorInput('creation_date_end', 'Data anterior a 2020 não permitida!');
         } else {
-          setErrorInput('copywriting_date_end', undefined);
+          setErrorInput('creation_date_end', undefined);
         }
 
         // if (moment(DTOForm.copywriting_date_end).isSameOrBefore(newDate)) {
@@ -2057,6 +2056,10 @@ export default function CreateTasks() {
             description: row
           });
         });
+        setDTOForm((prevState: any) => ({
+          ...prevState,
+          flow_id: ''
+        }));
       }
     } catch (e: any) {
       if (e.message === 'Existem divergencias entre o projeto e o fluxo alocado') {
@@ -2079,6 +2082,10 @@ export default function CreateTasks() {
           title: 'ATENÇÃO',
           description: e.response.data.message
         });
+        setDTOForm((prevState: any) => ({
+          ...prevState,
+          flow_id: ''
+        }));
       }
     }
   }, [DTOForm.flow_id, DTOForm.project_product_id]);

@@ -142,6 +142,7 @@ export default function ViewTask() {
   const onlyOneProductInfo = {
     title: deliveryProduct[0]?.service,
     description: deliveryProduct[0]?.description,
+    id: deliveryProduct[0]?.products_delivery_id,
     size: deliveryProduct[0]?.size,
     type: deliveryProduct[0]?.type,
     reason_change:
@@ -274,7 +275,7 @@ export default function ViewTask() {
             product={
               visualizationType === 'product'
                 ? onlyOneProductInfo
-                : { title: '', type: '', size: '', description: '', reason_change: '' }
+                : { title: '', type: '', size: '', description: '', reason_change: '', id: '' }
             }
             disableButton={true}
             avatar_infos={visualizationType === 'product' ? userProps : { name: '', avatar: '' }}
