@@ -59,6 +59,7 @@ interface TitleProps {
 interface ProductsProps {
   title: string;
   description: string;
+  id: string;
   size: string;
   type: string;
   reason_change: string;
@@ -145,7 +146,9 @@ export default function HeaderOpenTask({
         {product.title !== '' && (
           <HeaderProductInfos>
             <TitleProductInfos>
-              <div className="product-name">{product.title} -</div>
+              <div className="product-name">
+                #{product.id} | {product.title} -
+              </div>
               <div className="product-description">{product.description}</div>
             </TitleProductInfos>
             <TitleBottomInfos>
