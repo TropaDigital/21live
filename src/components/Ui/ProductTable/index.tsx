@@ -41,10 +41,7 @@ interface ProductTableProps {
   data: any;
   timeData: any;
   workForProduct: any;
-  isPlayingForSchedule: boolean;
   productSelected: any;
-  isFinished?: boolean;
-  typeOfWorkFinished?: string;
   typeOfPlay: string;
   uploadEnabled: boolean;
   uploadProduct: (value: any) => void;
@@ -56,10 +53,7 @@ export default function ProductTable({
   data,
   timeData,
   workForProduct,
-  isPlayingForSchedule,
   productSelected,
-  isFinished,
-  typeOfWorkFinished,
   typeOfPlay,
   uploadProduct,
   uploadEnabled,
@@ -94,40 +88,6 @@ export default function ProductTable({
         <ProductTitle>Produtos para entrega</ProductTitle>
         <div>-</div>
         <ProductDate>{moment(data?.date_end).format('DD/MM/YYYY')}</ProductDate>
-        {!isPlayingForSchedule && (
-          <>
-            <div>-</div>
-            {!isFinished && (
-              <ProductSelect>
-                <Switch
-                  onChange={() => handleWorkFor(workFor === 'product' ? 'schedule' : 'product')}
-                  checked={workFor === 'product' ? true : false}
-                  uncheckedIcon={false}
-                  checkedIcon={false}
-                  onColor="#0046B5"
-                  width={40}
-                  height={21}
-                />
-                Trabalhar por produto
-              </ProductSelect>
-            )}
-
-            {isFinished && (
-              <ProductSelect>
-                <Switch
-                  onChange={() => ''}
-                  checked={typeOfWorkFinished === 'delivery' ? false : true}
-                  uncheckedIcon={false}
-                  checkedIcon={false}
-                  onColor="#0046B5"
-                  width={40}
-                  height={21}
-                />
-                Trabalhar por produto
-              </ProductSelect>
-            )}
-          </>
-        )}
       </ProductTitleInfos>
 
       <ProductsTable>
@@ -135,7 +95,7 @@ export default function ProductTable({
           <thead>
             <tr>
               <th>ID</th>
-              <th>Tarefa</th>
+              <th>Produto</th>
               {workFor === 'product' && (
                 <>
                   <th>Tempo consumido</th>
