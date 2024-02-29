@@ -8,19 +8,6 @@ export const ContainerSteps = styled.div`
   width: calc(100vw - 260px);
 `;
 
-export const Container = styled.div<Props>`
-  ${(props) =>
-    props.isDisabed &&
-    css`
-      opacity: 0.4;
-      background: #e2e8f0;
-      cursor: not-allowed;
-    `}
-
-  width: 100%;
-  height: 100%;
-`;
-
 export const ContainerInfoProducts = styled.div`
   display: flex;
   flex-direction: column;
@@ -164,4 +151,25 @@ export const BoxProductProject = styled.button`
       }
     }
   }
+`;
+
+export const CreateTicketOption = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  flex: 1;
+`;
+
+export const Container = styled.div<Props>`
+  ${(props) =>
+    props.isDisabed &&
+    css`
+      opacity: 0.4;
+      background: #e2e8f0;
+      cursor: not-allowed;
+    `}
+
+  width: 100%;
+  height: 100%;
 `;
