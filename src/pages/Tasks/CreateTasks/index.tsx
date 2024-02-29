@@ -365,6 +365,10 @@ export default function CreateTasks() {
   const [singleProductQuantity, setSingleProductQuantity] = useState<number>(1);
   const [cancelModal, setCancelModal] = useState<boolean>(false);
   const [pathSelected, setPathSelected] = useState<string>('');
+  const [contractDates, setContractDates] = useState<any>({
+    startDate: '',
+    endDate: ''
+  });
 
   const numbers = Array.from(
     { length: quantityProductInfos?.maxValue - quantityProductInfos?.minValue + 1 },
@@ -2015,9 +2019,9 @@ export default function CreateTasks() {
       const response = await api.get(
         `/verify-flow?project_product_id=${DTOForm.project_product_id}&flow_id=${DTOForm.flow_id}`
       );
-      if (response.data.result === 'Existem divergencias entre o projeto e o fluxo alocado') {
-        throw new Error('Existem divergencias entre o projeto e o fluxo alocado');
-      }
+      // if (response.data.result === 'Existem divergencias entre o projeto e o fluxo alocado') {
+      //   throw new Error('Existem divergencias entre o projeto e o fluxo alocado');
+      // }
 
       if (response.data.result.gen_ticket) {
         setWarningModal(true);
@@ -2263,6 +2267,8 @@ export default function CreateTasks() {
                 dataProjects={dataProjects}
                 dataFlow={dataFlow}
                 handleInputChange={selectedProjectInfos}
+                handleTicket={handleGenerateTicket}
+                ticketAsk={ticketAsk}
                 clients={dataClient}
                 error={error}
               />
@@ -2288,6 +2294,8 @@ export default function CreateTasks() {
                 dataProjects={organizationProjects}
                 dataFlow={dataFlow}
                 handleInputChange={selectedProjectInfos}
+                handleTicket={handleGenerateTicket}
+                ticketAsk={ticketAsk}
                 organizations={dataOrganizations}
                 error={error}
               />
@@ -2476,10 +2484,8 @@ export default function CreateTasks() {
                     summaryExtrainfos={selectedSummaryInfos}
                     taskType={tasksType}
                     updateTask={location.state !== null && location.state.task_id}
-                    handleTicket={handleGenerateTicket}
                     estimatedtotalTime={() => ''}
                     taskFiles={uploadedFiles}
-                    ticketAsk={ticketAsk}
                     error={error}
                     splitDeliveries={splitDeliveries}
                   />
@@ -2513,10 +2519,8 @@ export default function CreateTasks() {
                   summaryExtrainfos={selectedSummaryInfos}
                   taskType={tasksType}
                   updateTask={location.state !== null && location.state.task_id}
-                  handleTicket={handleGenerateTicket}
                   estimatedtotalTime={setEstimatedTime}
                   taskFiles={uploadedFiles}
-                  ticketAsk={ticketAsk}
                   splitDeliveries={splitDeliveries}
                   error={error}
                 />
@@ -2534,10 +2538,8 @@ export default function CreateTasks() {
                   summaryExtrainfos={selectedSummaryInfos}
                   taskType={tasksType}
                   updateTask={location.state !== null && location.state.task_id}
-                  handleTicket={handleGenerateTicket}
                   estimatedtotalTime={setEstimatedTime}
                   taskFiles={uploadedFiles}
-                  ticketAsk={ticketAsk}
                   splitDeliveries={splitDeliveries}
                   error={error}
                 />
