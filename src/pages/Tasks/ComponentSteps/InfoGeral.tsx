@@ -16,8 +16,13 @@ import SelectImage from '../../../components/Inputs/SelectWithImage';
 import api from '../../../services/api';
 
 // Hooks
-// import { useToast } from '../../../hooks/toast';
 import { useAuth } from '../../../hooks/AuthContext';
+
+// Styles
+import { CreateTicketOption } from './styles';
+
+// Libraries
+import Switch from 'react-switch';
 
 interface FormProps {
   [key: string]: any;
@@ -31,6 +36,8 @@ interface Props {
   clients?: TenantProps[] | null;
   organizations?: OrganizationsProps[] | null;
   error: FormProps;
+  handleTicket: (value: any) => void;
+  ticketAsk: string | null;
 }
 
 interface FlowProps {
@@ -54,7 +61,9 @@ export default function InfoGeral({
   handleInputChange,
   clients,
   organizations,
-  error
+  error,
+  handleTicket,
+  ticketAsk
 }: Props) {
   const { user } = useAuth();
   // const { addToast } = useToast();
@@ -238,8 +247,19 @@ export default function InfoGeral({
         </SelectDefault>
       </FlexLine>
 
-      {requestersList.length > 0 && (
-        <FlexLine>
+      <FlexLine>
+        <CreateTicketOption>
+          <Switch
+            onChange={handleTicket}
+            checked={data.gen_ticket === 'true' ? true : false}
+            uncheckedIcon={false}
+            checkedIcon={false}
+            onColor="#0046B5"
+            className="switch-ticket"
+          />
+          <div>Gerar ticket</div>
+        </CreateTicketOption>
+        {(requestersList.length > 0 || data.gen_ticket === 'true') && (
           <div style={{ flex: '1' }}>
             <SelectDefault
               label="Solicitante"
@@ -255,9 +275,8 @@ export default function InfoGeral({
               ))}
             </SelectDefault>
           </div>
-          <div style={{ flex: '1' }}></div>
-        </FlexLine>
-      )}
+        )}
+      </FlexLine>
 
       {/* Select responsável flow */}
       {/* {flowsManagers.length > 0 && (
