@@ -140,7 +140,6 @@ export default function ViewProductsDeliveries() {
   const openRightRef = useRef<any>();
   const [modalSendToUser, setModalSendToUser] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [playingForSchedule, setPlayingForSchedule] = useState<boolean>(false);
   const [hideRightCard, setHideRightCard] = useState<string>('show');
   const [dataTask, setDataTask] = useState<any>();
   const [dataProducts, setDataProducts] = useState<any>();
@@ -391,48 +390,106 @@ export default function ViewProductsDeliveries() {
       try {
         setLoading(true);
 
-        if (typeOfPlay === 'schedule') {
-          const response = await api.get(
-            `/clock/consumed?delivery_id=${deliveryId[0]?.delivery_id}`
-          );
-          if (response.data.result.play === true) {
-            setPlayingForSchedule(true);
-            setInitialTime({
-              isRunning: true,
-              elapsedTime: response.data.result.diff / 1000
-            });
-            setTaskInfo({
-              idNumber: dataTask?.task_id,
-              numberTask: location.state?.task_index,
-              titleTask: dataTask?.title,
-              monthTask: '',
-              client_task: dataTask?.tenant,
-              typeTask: dataTask?.project_category,
-              quantityTask: '',
-              contract_task: dataTask?.product_period
-            });
-          } else {
-            setInitialTime({
-              isRunning: false,
-              elapsedTime: response.data.result.diff / 1000
-            });
-            setTaskInfo({
-              idNumber: dataTask?.task_id,
-              numberTask: location.state?.task_index,
-              titleTask: dataTask?.title,
-              monthTask: '',
-              client_task: dataTask?.tenant,
-              typeTask: dataTask?.project_category,
-              quantityTask: '',
-              contract_task: dataTask?.product_period
-            });
-          }
-        }
+        // if (typeOfPlay === 'schedule') {
+        //   const response = await api.get(
+        //     `/clock/consumed?delivery_id=${deliveryId[0]?.delivery_id}`
+        //   );
+        //   if (response.data.result.play === true) {
+        //     setPlayingForSchedule(true);
+        //     setInitialTime({
+        //       isRunning: true,
+        //       elapsedTime: response.data.result.diff / 1000
+        //     });
+        //     setTaskInfo({
+        //       idNumber: dataTask?.task_id,
+        //       numberTask: location.state?.task_index,
+        //       titleTask: dataTask?.title,
+        //       monthTask: '',
+        //       client_task: dataTask?.tenant,
+        //       typeTask: dataTask?.project_category,
+        //       quantityTask: '',
+        //       contract_task: dataTask?.product_period
+        //     });
+        //   } else {
+        //     setInitialTime({
+        //       isRunning: false,
+        //       elapsedTime: response.data.result.diff / 1000
+        //     });
+        //     setTaskInfo({
+        //       idNumber: dataTask?.task_id,
+        //       numberTask: location.state?.task_index,
+        //       titleTask: dataTask?.title,
+        //       monthTask: '',
+        //       client_task: dataTask?.tenant,
+        //       typeTask: dataTask?.project_category,
+        //       quantityTask: '',
+        //       contract_task: dataTask?.product_period
+        //     });
+        //   }
+        // }
 
-        if (typeOfPlay === 'product' && selectedProduct === '') {
+        // if (typeOfPlay === 'product' && selectedProduct === '') {
+        //   setInitialTime({
+        //     isRunning: false,
+        //     elapsedTime: 0
+        //   });
+        //   setTaskInfo({
+        //     idNumber: dataTask?.task_id,
+        //     numberTask: location.state?.task_index,
+        //     titleTask: dataTask?.title,
+        //     monthTask: '',
+        //     client_task: dataTask?.tenant,
+        //     typeTask: dataTask?.project_category,
+        //     quantityTask: '',
+        //     contract_task: dataTask?.product_period
+        //   });
+        // }
+
+        // if (typeOfPlay === 'product' && selectedProduct !== '') {
+        //   const response = await api.get(
+        //     `/clock/consumed?products_delivery_id=${selectedProduct?.productInfo?.products_delivery_id}`
+        //   );
+        //   if (response.data.result.play === true) {
+        //     setPlayingForSchedule(true);
+        //     setInitialTime({
+        //       isRunning: true,
+        //       elapsedTime: response.data.result.diff / 1000
+        //     });
+        //     setTaskInfo({
+        //       idNumber: dataTask?.task_id,
+        //       numberTask: location.state?.task_index,
+        //       titleTask: dataTask?.title,
+        //       monthTask: '',
+        //       client_task: dataTask?.tenant,
+        //       typeTask: dataTask?.project_category,
+        //       quantityTask: '',
+        //       contract_task: dataTask?.product_period
+        //     });
+        //   } else {
+        //     setInitialTime({
+        //       isRunning: false,
+        //       elapsedTime: response.data.result.diff / 1000
+        //     });
+        //     setTaskInfo({
+        //       idNumber: dataTask?.task_id,
+        //       numberTask: location.state?.task_index,
+        //       titleTask: dataTask?.title,
+        //       monthTask: '',
+        //       client_task: dataTask?.tenant,
+        //       typeTask: dataTask?.project_category,
+        //       quantityTask: '',
+        //       contract_task: dataTask?.product_period
+        //     });
+        //   }
+        // }
+
+        const response = await api.get(
+          `/clock/consumed?products_delivery_id=${selectedProduct?.productInfo?.products_delivery_id}`
+        );
+        if (response.data.result.play === true) {
           setInitialTime({
-            isRunning: false,
-            elapsedTime: 0
+            isRunning: true,
+            elapsedTime: response.data.result.diff / 1000
           });
           setTaskInfo({
             idNumber: dataTask?.task_id,
@@ -444,44 +501,21 @@ export default function ViewProductsDeliveries() {
             quantityTask: '',
             contract_task: dataTask?.product_period
           });
-        }
-
-        if (typeOfPlay === 'product' && selectedProduct !== '') {
-          const response = await api.get(
-            `/clock/consumed?products_delivery_id=${selectedProduct?.productInfo?.products_delivery_id}`
-          );
-          if (response.data.result.play === true) {
-            setPlayingForSchedule(true);
-            setInitialTime({
-              isRunning: true,
-              elapsedTime: response.data.result.diff / 1000
-            });
-            setTaskInfo({
-              idNumber: dataTask?.task_id,
-              numberTask: location.state?.task_index,
-              titleTask: dataTask?.title,
-              monthTask: '',
-              client_task: dataTask?.tenant,
-              typeTask: dataTask?.project_category,
-              quantityTask: '',
-              contract_task: dataTask?.product_period
-            });
-          } else {
-            setInitialTime({
-              isRunning: false,
-              elapsedTime: response.data.result.diff / 1000
-            });
-            setTaskInfo({
-              idNumber: dataTask?.task_id,
-              numberTask: location.state?.task_index,
-              titleTask: dataTask?.title,
-              monthTask: '',
-              client_task: dataTask?.tenant,
-              typeTask: dataTask?.project_category,
-              quantityTask: '',
-              contract_task: dataTask?.product_period
-            });
-          }
+        } else {
+          setInitialTime({
+            isRunning: false,
+            elapsedTime: response.data.result.diff / 1000
+          });
+          setTaskInfo({
+            idNumber: dataTask?.task_id,
+            numberTask: location.state?.task_index,
+            titleTask: dataTask?.title,
+            monthTask: '',
+            client_task: dataTask?.tenant,
+            typeTask: dataTask?.project_category,
+            quantityTask: '',
+            contract_task: dataTask?.product_period
+          });
         }
 
         setLoading(false);
@@ -548,9 +582,9 @@ export default function ViewProductsDeliveries() {
     // setDataTask(location.state.task);
     // console.log('log do params =>', id);
 
-    if (dataTask?.type_play === 'delivery') {
-      setTypeOfPlay('schedule');
-    }
+    // if (dataTask?.type_play === 'delivery') {
+    //   setTypeOfPlay('schedule');
+    // }
 
     if (dataTask?.type_play === 'product') {
       setTypeOfPlay('product');
@@ -583,15 +617,15 @@ export default function ViewProductsDeliveries() {
   }, [timeLineData]);
 
   const handlePlayingType = () => {
-    if (typeOfPlay === 'schedule') {
-      setPlayingForSchedule(true);
-      handleSwitchPlayType(false);
-      handleStartPlayingTime('schedule');
-    }
+    // if (typeOfPlay === 'schedule') {
+    //   setPlayingForSchedule(true);
+    //   handleSwitchPlayType(false);
+    //   handleStartPlayingTime('schedule');
+    // }
 
     if (typeOfPlay === 'product' && selectedProduct !== '') {
-      setPlayingForSchedule(false);
-      handleSwitchPlayType(true);
+      // setPlayingForSchedule(false);
+      // handleSwitchPlayType(true);
       handleStartPlayingTime('product');
     }
 
@@ -606,40 +640,40 @@ export default function ViewProductsDeliveries() {
   };
 
   const handleStartPlayingTime = async (value: string) => {
-    if (value === 'schedule') {
-      const taskClock = {
-        task_id: dataTask?.task_id,
-        delivery_id: deliveryId[0].delivery_id
-      };
+    // if (value === 'schedule') {
+    //   const taskClock = {
+    //     task_id: dataTask?.task_id,
+    //     delivery_id: deliveryId[0].delivery_id
+    //   };
 
-      handleClock(taskClock);
+    //   handleClock(taskClock);
 
-      try {
-        setLoading(true);
-        const responseClock = await api.post(`/clock`, taskClock);
-        // console.log('log do responseClock', responseClock);
-        setLoading(false);
-      } catch (error: any) {
-        console.log('log do error play', error);
+    //   try {
+    //     setLoading(true);
+    //     const responseClock = await api.post(`/clock`, taskClock);
+    //     // console.log('log do responseClock', responseClock);
+    //     setLoading(false);
+    //   } catch (error: any) {
+    //     console.log('log do error play', error);
 
-        if (error.response.data.result.length !== 0) {
-          error.response.data.result.map((row: any) => {
-            addToast({
-              title: 'Atenção',
-              description: row.error,
-              type: 'warning'
-            });
-          });
-        } else {
-          addToast({
-            title: 'Atenção',
-            description: error.response.data.message,
-            type: 'danger'
-          });
-        }
-        setLoading(false);
-      }
-    }
+    //     if (error.response.data.result.length !== 0) {
+    //       error.response.data.result.map((row: any) => {
+    //         addToast({
+    //           title: 'Atenção',
+    //           description: row.error,
+    //           type: 'warning'
+    //         });
+    //       });
+    //     } else {
+    //       addToast({
+    //         title: 'Atenção',
+    //         description: error.response.data.message,
+    //         type: 'danger'
+    //       });
+    //     }
+    //     setLoading(false);
+    //   }
+    // }
 
     if (value === 'product') {
       const taskClock = {
@@ -697,25 +731,26 @@ export default function ViewProductsDeliveries() {
           type: 'warning'
         });
       }
-    } else {
-      const playType = {
-        task_id: dataTask?.task_id,
-        type_play: 'delivery'
-      };
-      try {
-        const response = await api.post(`/task/switch-play`, playType);
-        // console.log('log do response task/switch-play', response.data.result);
-        if (response.data.result === 1) {
-          setTypeOfPlay('schedule');
-        }
-      } catch (error: any) {
-        addToast({
-          title: 'Atenção',
-          description: 'Tarefa iniciada, não alterar o tipo do play',
-          type: 'warning'
-        });
-      }
     }
+    // else {
+    //   const playType = {
+    //     task_id: dataTask?.task_id,
+    //     type_play: 'delivery'
+    //   };
+    //   try {
+    //     const response = await api.post(`/task/switch-play`, playType);
+    //     // console.log('log do response task/switch-play', response.data.result);
+    //     if (response.data.result === 1) {
+    //       setTypeOfPlay('schedule');
+    //     }
+    //   } catch (error: any) {
+    //     addToast({
+    //       title: 'Atenção',
+    //       description: 'Tarefa iniciada, não alterar o tipo do play',
+    //       type: 'warning'
+    //     });
+    //   }
+    // }
   };
 
   const handleNavigateProduct = (type: string, infoProduct: any) => {
@@ -788,24 +823,24 @@ export default function ViewProductsDeliveries() {
         }
       }
 
-      if (dataTask?.status !== 'Concluida' && typeOfPlay === 'schedule') {
-        const response = await api.put(
-          `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
-          next_user
-        );
-        // console.log('log do response', response.data.result);
+      // if (dataTask?.status !== 'Concluida' && typeOfPlay === 'schedule') {
+      //   const response = await api.put(
+      //     `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
+      //     next_user
+      //   );
+      //   // console.log('log do response', response.data.result);
 
-        if (response.data.result === 1) {
-          addToast({
-            title: 'Sucesso',
-            description: 'Tarefa avançou para a próxima etapa.',
-            type: 'success'
-          });
-          stop();
-          navigate('/minhas-tarefas');
-          localStorage.removeItem('stopwatchState');
-        }
-      }
+      //   if (response.data.result === 1) {
+      //     addToast({
+      //       title: 'Sucesso',
+      //       description: 'Tarefa avançou para a próxima etapa.',
+      //       type: 'success'
+      //     });
+      //     stop();
+      //     navigate('/minhas-tarefas');
+      //     localStorage.removeItem('stopwatchState');
+      //   }
+      // }
 
       if (dataTask?.status !== 'Concluida' && selectedProduct !== '' && typeOfPlay === 'product') {
         if (selectedProduct.status !== 'Concluida') {
@@ -839,11 +874,11 @@ export default function ViewProductsDeliveries() {
       }
 
       if (dataTask?.status !== 'Concluida' && selectedProduct === '' && typeOfPlay === 'product') {
-        addToast({
-          title: 'Aviso',
-          description: 'Conclua todos os produtos para conseguir avançar.',
-          type: 'warning'
-        });
+        // addToast({
+        //   title: 'Aviso',
+        //   description: 'Conclua todos os produtos para conseguir avançar.',
+        //   type: 'warning'
+        // });
 
         const response = await api.put(
           `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
@@ -1219,19 +1254,20 @@ export default function ViewProductsDeliveries() {
         );
 
         if (response.data.result[0].show_hours === 'true') {
-          if (
-            dataTask?.status !== 'Concluida' &&
-            selectedProduct === '' &&
-            typeOfPlay === 'product'
-          ) {
-            addToast({
-              title: 'Aviso',
-              description: 'Conclua todos os produtos para conseguir avançar.',
-              type: 'warning'
-            });
-          } else {
-            setModalSendToUser(true);
-          }
+          // if (
+          //   dataTask?.status !== 'Concluida' &&
+          //   selectedProduct === '' &&
+          //   typeOfPlay === 'product'
+          // ) {
+          //   addToast({
+          //     title: 'Aviso',
+          //     description: 'Conclua todos os produtos para conseguir avançar.',
+          //     type: 'warning'
+          //   });
+          // } else {
+          //   setModalSendToUser(true);
+          // }
+          setModalSendToUser(true);
         }
         if (response.data.result[0].show_hours === 'false') {
           handleNextUser('next');
@@ -1845,7 +1881,7 @@ export default function ViewProductsDeliveries() {
             />
           )} */}
 
-          {dataTask?.status !== 'Concluida' &&
+          {/* {dataTask?.status !== 'Concluida' &&
             !viewProduct &&
             typeOfPlay === 'schedule' &&
             !finalCard && (
@@ -1866,9 +1902,9 @@ export default function ViewProductsDeliveries() {
                 nextStepInfo={timeLineData}
                 backFlow={() => setModalReturnFlow(true)}
               />
-            )}
+            )} */}
 
-          {dataProducts?.status !== 'Concluida' &&
+          {/* {dataProducts?.status !== 'Concluida' &&
             dataTask?.status !== 'Concluida' &&
             selectedProduct === '' &&
             typeOfPlay === 'schedule' &&
@@ -1891,9 +1927,9 @@ export default function ViewProductsDeliveries() {
                 nextStepInfo={timeLineData}
                 backFlow={() => setModalReturnFlow(true)}
               />
-            )}
+            )} */}
 
-          {dataProducts?.status !== 'Concluida' &&
+          {/* {dataProducts?.status !== 'Concluida' &&
             dataTask?.status !== 'Concluida' &&
             selectedProduct !== '' &&
             typeOfPlay === 'schedule' &&
@@ -1916,9 +1952,9 @@ export default function ViewProductsDeliveries() {
                 nextStepInfo={timeLineData}
                 backFlow={() => setModalReturnFlow(true)}
               />
-            )}
+            )} */}
 
-          {dataProducts?.status !== 'Concluida' &&
+          {/* {dataProducts?.status !== 'Concluida' &&
             dataTask?.status !== 'Concluida' &&
             viewProduct &&
             typeOfPlay === 'schedule' &&
@@ -1940,7 +1976,7 @@ export default function ViewProductsDeliveries() {
                 nextStepInfo={timeLineData}
                 backFlow={() => setModalReturnFlow(true)}
               />
-            )}
+            )} */}
 
           {dataProducts?.status !== 'Concluida' &&
             dataTask?.status !== 'Concluida' &&
@@ -1959,7 +1995,7 @@ export default function ViewProductsDeliveries() {
                 }
                 disableButton={false}
                 goBack
-                buttonType="finish"
+                buttonType="send"
                 // sendToNext={handleConcludeTask}
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
@@ -1985,7 +2021,7 @@ export default function ViewProductsDeliveries() {
                 }
                 disableButton={typeOfPlay === 'product' ? false : true}
                 goBack
-                buttonType="finish"
+                buttonType="send"
                 // sendToNext={handleConcludeTask}
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
@@ -2013,7 +2049,7 @@ export default function ViewProductsDeliveries() {
                 }
                 disableButton={true}
                 goBack
-                buttonType="finish"
+                buttonType="send"
                 // sendToNext={handleConcludeTask}
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
@@ -2041,7 +2077,7 @@ export default function ViewProductsDeliveries() {
                 }
                 disableButton={true}
                 goBack
-                buttonType="finish"
+                buttonType="send"
                 // sendToNext={handleConcludeTask}
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
@@ -2068,7 +2104,7 @@ export default function ViewProductsDeliveries() {
                 }
                 disableButton={false}
                 goBack
-                buttonType="finish"
+                buttonType="send"
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
                 backFlow={() => setModalReturnFlow(true)}
@@ -2091,7 +2127,7 @@ export default function ViewProductsDeliveries() {
                 }
                 disableButton={false}
                 goBack
-                buttonType="finish"
+                buttonType="send"
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
                 backToDelivery={() => {
@@ -2259,14 +2295,7 @@ export default function ViewProductsDeliveries() {
               </TaskInfoField>
 
               <TaskInfoField>
-                <div className="info-title">Data inicial:</div>
-                <div className="info-description">
-                  {moment(dataTask?.copywriting_date_end).format('DD/MM/YYYY')}
-                </div>
-              </TaskInfoField>
-
-              <TaskInfoField>
-                <div className="info-title">Data final:</div>
+                <div className="info-title">Data final de entrega ao cliente:</div>
                 <div className="info-description">
                   {moment(dataTask?.creation_date_end).format('DD/MM/YYYY')}
                 </div>
@@ -2295,7 +2324,7 @@ export default function ViewProductsDeliveries() {
               </CardWrapper>
             )}
 
-            {dataTask?.status !== 'Concluida' && !showClock && (
+            {dataTask?.status !== 'Concluida' && !showClock && !viewProduct && (
               <CardWrapper>
                 <CardTitle>Tempo utilizado</CardTitle>
                 <StopWatchTimer className="stopped">{dataTask?.time_consumed}</StopWatchTimer>
@@ -2308,7 +2337,37 @@ export default function ViewProductsDeliveries() {
               </CardWrapper>
             )}
 
-            {dataTask?.status !== 'Concluida' && showClock && (
+            {dataTask?.status !== 'Concluida' && !showClock && viewProduct && (
+              <CardWrapper>
+                <CardTitle>Tempo utilizado</CardTitle>
+                <StopWatchTimer className="stopped">{dataTask?.time_consumed}</StopWatchTimer>
+                <EstimatedTime>
+                  Tempo estimado:{' '}
+                  <span>
+                    {dataTask?.total_time !== 'undefined' ? dataTask?.total_time : 'Livre'}
+                  </span>
+                </EstimatedTime>
+              </CardWrapper>
+            )}
+
+            {dataTask?.status !== 'Concluida' && showClock && !viewProduct && (
+              <CardWrapper>
+                <CardTitle>Tempo utilizado</CardTitle>
+                <StopWatchTimer className="stopped">{dataTask?.time_consumed}</StopWatchTimer>
+                <EstimatedTime>
+                  Tempo estimado:{' '}
+                  <span>
+                    {allEstimatedTime && myTaskShowHours && taskDeductHours === 'creation'
+                      ? allEstimatedTime.time_creation
+                      : taskDeductHours === 'essay'
+                      ? allEstimatedTime.time_essay
+                      : allEstimatedTime.total_time}
+                  </span>
+                </EstimatedTime>
+              </CardWrapper>
+            )}
+
+            {dataTask?.status !== 'Concluida' && showClock && viewProduct && (
               <CardTaskPlay
                 cardTitle={state.isRunning ? 'Atividade iniciada' : 'Iniciar atividade'}
                 dataTime={
@@ -2335,10 +2394,7 @@ export default function ViewProductsDeliveries() {
               data={dataProducts}
               timeData={timeData}
               workForProduct={handleSwitchPlayType}
-              isPlayingForSchedule={playingForSchedule}
               productSelected={(value: any) => handleNavigateProduct('view', value)}
-              isFinished={dataTask?.status === 'Concluida' ? true : false}
-              typeOfWorkFinished={dataTask?.type_play}
               typeOfPlay={typeOfPlay}
               uploadProduct={handleUploadForProduct}
               viewFile={handleShowFiles}

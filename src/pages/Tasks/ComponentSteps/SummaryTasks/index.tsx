@@ -8,7 +8,6 @@ import ButtonDefault from '../../../../components/Buttons/ButtonDefault';
 
 // Styles
 import {
-  CreateTicketOption,
   DeliveriesTitle,
   DeliveriesWrapper,
   Summary,
@@ -47,8 +46,6 @@ interface TasksProps {
   error: FormProps;
   estimatedtotalTime: (value: any) => void;
   taskFiles: any[];
-  ticketAsk: string | null;
-  handleTicket: (value: any) => void;
   splitDeliveries: boolean;
 }
 
@@ -66,9 +63,7 @@ export default function SummaryTasks({
   taskType,
   updateTask,
   estimatedtotalTime,
-  handleTicket,
   taskFiles,
-  ticketAsk,
   splitDeliveries
 }: TasksProps) {
   const { user } = useAuth();
@@ -567,23 +562,6 @@ export default function SummaryTasks({
                   )}
                 </div>
               )}
-            </>
-          )}
-
-          {ticketAsk === 'ask' && taskSummary.ticket_id === '' && (
-            <>
-              <div className="splitter" />
-              <CreateTicketOption>
-                <Switch
-                  onChange={handleTicket}
-                  checked={taskSummary.gen_ticket === 'true' ? true : false}
-                  uncheckedIcon={false}
-                  checkedIcon={false}
-                  onColor="#0046B5"
-                  className="switch-ticket"
-                />
-                <div>Deseja gerar ticket</div>
-              </CreateTicketOption>
             </>
           )}
 

@@ -928,14 +928,7 @@ export default function ViewTask() {
               </TaskInfoField>
 
               <TaskInfoField>
-                <div className="info-title">Data inicial:</div>
-                <div className="info-description">
-                  {moment(dataTask?.copywriting_date_end).format('DD/MM/YYYY')}
-                </div>
-              </TaskInfoField>
-
-              <TaskInfoField>
-                <div className="info-title">Data final:</div>
+                <div className="info-title">Data final de entrega ao cliente:</div>
                 <div className="info-description">
                   {moment(dataTask?.creation_date_end).format('DD/MM/YYYY')}
                 </div>
