@@ -1105,8 +1105,8 @@ export default function Dashboard() {
         client_id: formData.client_id,
         client_name: formData.client_name,
         contract: formData.contract,
-        date_start: moment().subtract(1, 'year').format('YYYY-MM-DD'),
-        date_end: moment().format('YYYY-MM-DD'),
+        date_start: moment().subtract(1, 'year').startOf('year').format('YYYY-MM-DD'),
+        date_end: moment().subtract(1, 'year').endOf('year').format('YYYY-MM-DD'),
         requesters: formData.requesters,
         contact_names: formData.contact_names
       });
@@ -1116,8 +1116,9 @@ export default function Dashboard() {
         client_id: formData.client_id,
         client_name: formData.client_name,
         contract: formData.contract,
-        date_start: moment().subtract(1, 'month').format('YYYY-MM-DD'),
-        date_end: moment().format('YYYY-MM-DD'),
+        // date_start: moment().subtract(1, 'month').format('YYYY-MM-DD'),
+        date_start: moment().subtract(1, 'month').startOf('month').format('YYYY-MM-DD'),
+        date_end: moment().subtract(1, 'month').endOf('month').format('YYYY-MM-DD'),
         requesters: formData.requesters,
         contact_names: formData.contact_names
       });
@@ -1127,8 +1128,8 @@ export default function Dashboard() {
         client_id: formData.client_id,
         client_name: formData.client_name,
         contract: formData.contract,
-        date_start: moment().subtract(1, 'week').format('YYYY-MM-DD'),
-        date_end: moment().format('YYYY-MM-DD'),
+        date_start: moment().subtract(1, 'week').startOf('week').format('YYYY-MM-DD'),
+        date_end: moment().subtract(1, 'week').endOf('week').format('YYYY-MM-DD'),
         requesters: formData.requesters,
         contact_names: formData.contact_names
       });
@@ -1137,10 +1138,10 @@ export default function Dashboard() {
 
   const hasFilters = Object.values(filter).every((obj) => obj === null || obj === '');
 
-  // useEffect(() => {
-  //   console.log('log do formData =>', formData);
-  //   console.log('log errorForm =>', errorsForm);
-  // }, [formData, errorsForm]);
+  useEffect(() => {
+    // console.log('log do formData =>', formData);
+    // console.log('log errorForm =>', errorsForm);
+  }, [formData, errorsForm]);
 
   return (
     <Container>
