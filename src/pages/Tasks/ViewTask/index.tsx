@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 // Icons
 import { FaArrowLeft, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { IconBigCheck } from '../../../assets/icons';
-import { BiArrowBack } from 'react-icons/bi';
+import { BiArrowBack, BiCalendar } from 'react-icons/bi';
 import { FiCornerDownRight } from 'react-icons/fi';
 import { MdClose } from 'react-icons/md';
 
@@ -20,6 +20,7 @@ import ProgressBar from '../../../components/Ui/ProgressBar';
 import WorkingProduct from '../../Products/WorkingProduct';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import ModalLoader from '../../../components/Ui/ModalLoader';
+import { InputDefault } from '../../../components/Inputs/InputDefault';
 
 // Styles
 import {
@@ -108,6 +109,11 @@ interface ProductsProps {
   reason_change?: string;
 }
 
+interface UpdateDateProps {
+  isOn: boolean;
+  date_end: string;
+}
+
 export default function ViewTask() {
   const location = useLocation();
   const { addToast } = useToast();
@@ -122,6 +128,10 @@ export default function ViewTask() {
   const [selectedProduct, setSelectedProduct] = useState<any>('');
   const [visualizationType, setVisualizationType] = useState<string>('deliveries');
   const [taskHistory, setTaskHistory] = useState<TaskHistoric>();
+  const [updateDateTask, setUpdateDateTask] = useState<UpdateDateProps>({
+    isOn: false,
+    date_end: ''
+  });
 
   const titleInfos = {
     idNumber: dataTask?.task_id,
@@ -158,6 +168,41 @@ export default function ViewTask() {
     creation_description: dataTask?.creation_description
   };
 
+  async function getTaskInfos(id: any) {
+    try {
+      setLoading(true);
+      const response = await api.get(`/tasks/${id}`);
+      // console.log('log do response get task', response.data.result);
+
+      if (response.data.result.length > 0) {
+        setDataTask(response.data.result[0]);
+        setUpdateDateTask({
+          isOn: false,
+          date_end: response.data.result[0].creation_date_end
+        });
+      }
+
+      if (response.data.result[0].deliverys.length === 1) {
+        setVisualizationType('delivery-products');
+        setDeliveryProduct(response.data.result[0].deliverys[0].products);
+      }
+
+      if (response.data.result[0].parents?.length > 0) {
+        setVisualizationType('subtasks');
+      }
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log do error getting task', error);
+      addToast({
+        title: 'Atenção',
+        description: error.message,
+        type: 'warning'
+      });
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
     async function getTimelineData(id: any) {
       try {
@@ -165,37 +210,6 @@ export default function ViewTask() {
         setTimelineData(response.data.result);
       } catch (error: any) {
         console.log('log timeline error', error);
-      }
-    }
-
-    async function getTaskInfos(id: any) {
-      try {
-        setLoading(true);
-        const response = await api.get(`/tasks/${id}`);
-        // console.log('log do response get task', response.data.result);
-
-        if (response.data.result.length > 0) {
-          setDataTask(response.data.result[0]);
-        }
-
-        if (response.data.result[0].deliverys.length === 1) {
-          setVisualizationType('delivery-products');
-          setDeliveryProduct(response.data.result[0].deliverys[0].products);
-        }
-
-        if (response.data.result[0].parents?.length > 0) {
-          setVisualizationType('subtasks');
-        }
-
-        setLoading(false);
-      } catch (error: any) {
-        console.log('log do error getting task', error);
-        addToast({
-          title: 'Atenção',
-          description: error.message,
-          type: 'warning'
-        });
-        setLoading(false);
       }
     }
 
@@ -247,6 +261,78 @@ export default function ViewTask() {
     };
     navigate(`/tarefa/${taskId}`, { state: idTask });
   };
+
+  const handleKeyDown = (event: any) => {
+    if (event.key === 'Enter') {
+      setUpdateDateTask({
+        isOn: false,
+        date_end: event.target.value
+      });
+
+      handleUpdateDate();
+    }
+  };
+
+  const handleOnChangeDate = (event: any) => {
+    const { value } = event.target;
+
+    setUpdateDateTask((prevState: any) => ({ ...prevState, ['date_end']: value }));
+  };
+
+  async function handleUpdateDate() {
+    try {
+      setLoading(true);
+
+      const updateDate = {
+        creation_date_end: updateDateTask.date_end
+      };
+
+      const response = await api.put(`/task/date-update/${dataTask.task_id}`, updateDate);
+
+      if (response.data.status === 'success') {
+        setUpdateDateTask({
+          isOn: false,
+          date_end: updateDateTask.date_end
+        });
+
+        addToast({
+          title: 'Sucesso',
+          description: 'Data atualizada com sucesso!',
+          type: 'success'
+        });
+
+        if (location.state !== null) {
+          getTaskInfos(location.state.id);
+        }
+
+        if (location.state === null) {
+          getTaskInfos(location.pathname.split('/')[2]);
+        }
+      }
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log error update date', error);
+
+      setLoading(false);
+
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
+    }
+  }
 
   useEffect(() => {
     const checkIfClickedOutside = (e: any) => {
@@ -892,13 +978,15 @@ export default function ViewTask() {
               <TaskInfoField>
                 <div className="info-title">Tempo estimado:</div>
                 <div className="info-description">
-                  {dataTask?.total_time !== 'undefined' ? dataTask?.total_time : 'Livre'}
+                  {dataTask?.deliverys[0]?.total_time !== 'undefined'
+                    ? dataTask?.deliverys[0]?.total_time
+                    : 'Livre'}
                 </div>
               </TaskInfoField>
 
               <TaskInfoField>
                 <div className="info-title">Tempo consumido:</div>
-                <div className="info-description">{dataTask?.time_consumed}</div>
+                <div className="info-description">{dataTask?.deliverys[0]?.time_consumed}</div>
               </TaskInfoField>
 
               <TaskInfoField>
@@ -927,11 +1015,37 @@ export default function ViewTask() {
                 </div>
               </TaskInfoField>
 
-              <TaskInfoField>
+              <TaskInfoField
+                onClick={() =>
+                  setUpdateDateTask({
+                    isOn: true,
+                    date_end: updateDateTask.date_end
+                  })
+                }
+                style={{ cursor: 'pointer' }}
+              >
                 <div className="info-title">Data final de entrega ao cliente:</div>
-                <div className="info-description">
-                  {moment(dataTask?.creation_date_end).format('DD/MM/YYYY')}
-                </div>
+                {!updateDateTask.isOn && (
+                  <div className="info-description">
+                    {moment(dataTask?.creation_date_end).format('DD/MM/YYYY')}
+                  </div>
+                )}
+                {updateDateTask.isOn && (
+                  <div className="info-description">
+                    <InputDefault
+                      label=""
+                      placeholder="00/00/0000"
+                      name="creation_date_end"
+                      type="date"
+                      max={'9999-12-31'}
+                      icon={BiCalendar}
+                      onChange={handleOnChangeDate}
+                      value={updateDateTask.date_end}
+                      onKeyDown={handleKeyDown}
+                      error={updateDateTask.date_end === '' ? 'Data não permitida' : ''}
+                    />
+                  </div>
+                )}
               </TaskInfoField>
             </TasksInfos>
             <ArrowSection onClick={() => setHideRightCard('hide')}>
