@@ -175,7 +175,6 @@ export const UserTitle = styled.div`
   flex-direction: column;
   gap: 8px;
 
-  padding: 12px;
   border-right: 2px solid var(--gray-200);
   border-bottom: 2px solid var(--gray-200);
 
@@ -184,7 +183,8 @@ export const UserTitle = styled.div`
     align-items: center;
     justify-content: flex-start;
 
-    padding-left: 12px;
+    padding: 12px 24px;
+    height: 60px;
 
     color: var(--gray-500);
     font-size: var(--text-small-xs);

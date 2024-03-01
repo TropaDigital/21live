@@ -119,6 +119,7 @@ export default function ViewTask() {
   const { addToast } = useToast();
   const navigate = useNavigate();
   const openRightRef = useRef<any>();
+  const dateRef = useRef<any>();
   const [loading, setLoading] = useState<boolean>(false);
   const [hideRightCard, setHideRightCard] = useState<string>('show');
   const [dataTask, setDataTask] = useState<any>();
@@ -343,6 +344,13 @@ export default function ViewTask() {
       ) {
         setHideRightCard('hide');
       }
+
+      if (updateDateTask.isOn && dateRef.current && !dateRef.current.contains(e.target)) {
+        setUpdateDateTask({
+          isOn: false,
+          date_end: updateDateTask.date_end
+        });
+      }
     };
 
     document.addEventListener('mousedown', checkIfClickedOutside);
@@ -350,7 +358,7 @@ export default function ViewTask() {
     return () => {
       document.removeEventListener('mousedown', checkIfClickedOutside);
     };
-  }, [hideRightCard]);
+  }, [hideRightCard, updateDateTask]);
 
   return (
     <ContainerDefault>
@@ -1031,7 +1039,7 @@ export default function ViewTask() {
                   </div>
                 )}
                 {updateDateTask.isOn && (
-                  <div className="info-description">
+                  <div className="update-date" ref={dateRef}>
                     <InputDefault
                       label=""
                       placeholder="00/00/0000"
@@ -1044,6 +1052,22 @@ export default function ViewTask() {
                       onKeyDown={handleKeyDown}
                       error={updateDateTask.date_end === '' ? 'Data não permitida' : ''}
                     />
+
+                    <ButtonDefault
+                      typeButton={
+                        updateDateTask.date_end === '' || updateDateTask.date_end === null
+                          ? 'blocked'
+                          : 'primary'
+                      }
+                      onClick={handleUpdateDate}
+                      disabled={
+                        updateDateTask.date_end === '' || updateDateTask.date_end === null
+                          ? true
+                          : false
+                      }
+                    >
+                      OK
+                    </ButtonDefault>
                   </div>
                 )}
               </TaskInfoField>

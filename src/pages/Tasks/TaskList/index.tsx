@@ -118,7 +118,7 @@ export default function TaskList() {
       filter.status
     }&tenant=${filter.client}&sub_tasks=${filter.sub_tasks}&user_id=${filter.user}&project_id=${
       filter.contract
-    }&project_product_id=${filter.product}`
+    }&project_product_id=${filter.product}&contract_type=${filter.contract_type}`
   );
   const [searchTerm, setSearchTerm] = useState('');
   const { isLoading, debouncedCallback } = useDebouncedCallback(

@@ -2052,17 +2052,19 @@ export default function CreateTasks() {
   }, [submitState]);
 
   const handleGenerateTicket = (value: boolean) => {
-    if (value) {
-      setDTOForm((prevState: any) => ({
-        ...prevState,
-        ['gen_ticket']: 'true'
-      }));
-    }
-    if (!value) {
-      setDTOForm((prevState: any) => ({
-        ...prevState,
-        ['gen_ticket']: 'false'
-      }));
+    if (DTOForm.gen_ticket !== 'true') {
+      if (value) {
+        setDTOForm((prevState: any) => ({
+          ...prevState,
+          ['gen_ticket']: 'true'
+        }));
+      }
+      if (!value) {
+        setDTOForm((prevState: any) => ({
+          ...prevState,
+          ['gen_ticket']: 'false'
+        }));
+      }
     }
   };
 
@@ -2100,7 +2102,8 @@ export default function CreateTasks() {
         });
         setDTOForm((prevState: any) => ({
           ...prevState,
-          ticket_id: ''
+          ticket_id: '',
+          gen_ticket: ''
         }));
       }
 

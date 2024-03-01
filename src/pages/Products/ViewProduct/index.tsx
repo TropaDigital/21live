@@ -142,6 +142,7 @@ export default function ViewProductsDeliveries() {
   const { addToast } = useToast();
   const { stop } = useStopWatch();
   const { id } = useParams();
+  const dateRef = useRef<any>();
   const { state, setInitialTime, setTaskInfo, handleClock } = useStopWatch();
   const openRightRef = useRef<any>();
   const [modalSendToUser, setModalSendToUser] = useState<boolean>(false);
@@ -857,34 +858,39 @@ export default function ViewProductsDeliveries() {
       // }
 
       if (dataTask?.status !== 'Concluida' && selectedProduct !== '' && typeOfPlay === 'product') {
-        if (selectedProduct.status !== 'Concluida') {
-          const response = await api.put(
-            `/task/product-conclude/${selectedProduct?.productInfo.products_delivery_id}`
-          );
+        // if (selectedProduct.status !== 'Concluida') {
+        //   const response = await api.put(
+        //     `/task/product-conclude/${selectedProduct?.productInfo.products_delivery_id}`
+        //   );
 
-          if (response.data.result === 1) {
-            addToast({
-              title: 'Sucesso',
-              type: 'success',
-              description: 'Entrega finalizada com sucesso'
-            });
-            stop();
-            navigate('/minhas-tarefas');
-            localStorage.removeItem('stopwatchState');
-          }
-        } else {
-          const response = await api.put(
-            `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
-            next_user
-          );
-          // console.log('log do response', response.data.result);
+        //   if (response.data.result === 1) {
+        //     addToast({
+        //       title: 'Sucesso',
+        //       type: 'success',
+        //       description: 'Entrega finalizada com sucesso'
+        //     });
+        //     stop();
+        //     navigate('/minhas-tarefas');
+        //     localStorage.removeItem('stopwatchState');
+        //   }
+        // } else {
+        const response = await api.put(
+          `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
+          next_user
+        );
+        // console.log('log do response', response.data.result);
 
-          if (response.data.result === 1) {
-            navigate('/minhas-tarefas');
-            stop();
-            localStorage.removeItem('stopwatchState');
-          }
+        if (response.data.result === 1) {
+          addToast({
+            title: 'Sucesso',
+            description: 'Tarefa avançou para a próxima etapa.',
+            type: 'success'
+          });
+          navigate('/minhas-tarefas');
+          stop();
+          localStorage.removeItem('stopwatchState');
         }
+        // }
       }
 
       if (dataTask?.status !== 'Concluida' && selectedProduct === '' && typeOfPlay === 'product') {
@@ -1030,6 +1036,13 @@ export default function ViewProductsDeliveries() {
       ) {
         setHideRightCard('hide');
       }
+
+      if (updateDateTask.isOn && dateRef.current && !dateRef.current.contains(e.target)) {
+        setUpdateDateTask({
+          isOn: false,
+          date_end: updateDateTask.date_end
+        });
+      }
     };
 
     document.addEventListener('mousedown', checkIfClickedOutside);
@@ -1037,7 +1050,7 @@ export default function ViewProductsDeliveries() {
     return () => {
       document.removeEventListener('mousedown', checkIfClickedOutside);
     };
-  }, [hideRightCard]);
+  }, [hideRightCard, updateDateTask]);
 
   const handleUploadForProduct = (value: any) => {
     setProductForUpload(value);
@@ -2392,7 +2405,7 @@ export default function ViewProductsDeliveries() {
                   </div>
                 )}
                 {updateDateTask.isOn && (
-                  <div className="info-description">
+                  <div className="update-date" ref={dateRef}>
                     <InputDefault
                       label=""
                       placeholder="00/00/0000"
@@ -2405,6 +2418,22 @@ export default function ViewProductsDeliveries() {
                       onKeyDown={handleKeyDown}
                       error={updateDateTask.date_end === '' ? 'Data não permitida' : ''}
                     />
+
+                    <ButtonDefault
+                      typeButton={
+                        updateDateTask.date_end === '' || updateDateTask.date_end === null
+                          ? 'blocked'
+                          : 'primary'
+                      }
+                      onClick={handleUpdateDate}
+                      disabled={
+                        updateDateTask.date_end === '' || updateDateTask.date_end === null
+                          ? true
+                          : false
+                      }
+                    >
+                      OK
+                    </ButtonDefault>
                   </div>
                 )}
               </TaskInfoField>

@@ -237,6 +237,9 @@ export default function ScheduleUser({
     if (name === 'user_selected') {
       getUserSchedule();
       setCheckAvailability(false);
+      setTimeout(() => {
+        handleUserSelect(DTOTaskSelect.user_selected);
+      }, 500);
     }
   }
 
@@ -384,6 +387,14 @@ export default function ScheduleUser({
     }
   };
 
+  const handleUserSelect = (selectedUserId: string) => {
+    const selectedIndex = dataUserSchedule.findIndex((user) => user.user_id === selectedUserId);
+    if (selectedIndex !== -1) {
+      const selectedUser = dataUserSchedule.splice(selectedIndex, 1)[0];
+      setDataUserSchedule([selectedUser, ...dataUserSchedule]);
+    }
+  };
+
   useEffect(() => {
     handleOnChange('scheduleDay', moment(dinamicDate).format('YYYY-MM-DD'));
   }, [dayCounter]);
@@ -458,15 +469,6 @@ export default function ScheduleUser({
             <UserTable>
               <UserTitle>
                 <div className="user-title">Usuário</div>
-                <div className="ext-users">
-                  <CheckboxDefault
-                    label=""
-                    name="outsiders"
-                    onChange={() => setOutsideUsers(outsideUsers ? false : true)}
-                    checked={outsideUsers}
-                  />
-                  users fora do contrato
-                </div>
               </UserTitle>
               {dataUserSchedule?.map((row: UserData) => (
                 <UserCard key={row.user_id}>
@@ -505,6 +507,15 @@ export default function ScheduleUser({
               </div>
             </HoursTable>
           </ScheduleTable>
+
+          <div className="ext-users">
+            <CheckboxDefault
+              label="Mostrar todos"
+              name="outsiders"
+              onChange={() => setOutsideUsers(outsideUsers ? false : true)}
+              checked={outsideUsers}
+            />
+          </div>
 
           <ScheduleSelectUser>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
