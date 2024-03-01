@@ -109,6 +109,8 @@ interface ProjectProductProps {
   tempo_inicial: string;
   tempo_restante: string;
   tipo: string;
+  date_end: string;
+  date_start: string;
 }
 
 interface DeliveryUpdate {
@@ -286,7 +288,9 @@ export default function CreateTasks() {
     select: '',
     tempo_inicial: '',
     tempo_restante: '',
-    tipo: ''
+    tipo: '',
+    date_end: '',
+    date_start: ''
   });
   const [selectedSummaryInfos, setSelectedSummaryInfos] = useState<any>({
     client: {
@@ -438,6 +442,15 @@ export default function CreateTasks() {
   useEffect(() => {
     getParams();
   }, []);
+
+  useEffect(() => {
+    if (selectedProject) {
+      setContractDates({
+        startDate: selectedProject?.date_start,
+        endDate: selectedProject?.date_end
+      });
+    }
+  }, [selectedProject]);
 
   const selectedInfos: any[] = dataProjects?.filter(
     (obj: any) => obj.project_product_id === location?.state?.project_product_id
@@ -1026,8 +1039,20 @@ export default function CreateTasks() {
           setErrorInput('creation_date_end', undefined);
         }
 
-        if (moment(DTOForm.creation_date_end).isBefore('2020-01-01')) {
-          throw setErrorInput('creation_date_end', 'Data anterior a 2020 não permitida!');
+        if (moment(DTOForm.creation_date_end).isBefore(selectedProject.date_start)) {
+          throw setErrorInput(
+            'creation_date_end',
+            'Data anterior ao inicio do projeto não permitida!'
+          );
+        } else {
+          setErrorInput('creation_date_end', undefined);
+        }
+
+        if (moment(DTOForm.creation_date_end).isAfter(selectedProject.date_end)) {
+          throw setErrorInput(
+            'creation_date_end',
+            'Data posterior ao fim do projeto não permitida!'
+          );
         } else {
           setErrorInput('creation_date_end', undefined);
         }
@@ -1119,16 +1144,26 @@ export default function CreateTasks() {
                 }
               ]);
               throw new Error('Data da entrega não atribuida!');
-            } else if (moment(current.creation_date_end).isBefore('2020-01-01')) {
+            } else if (moment(current.creation_date_end).isBefore(selectedProject.date_start)) {
               setErrorDeliveryDate((errorDeliveryDate: any) => [
                 ...errorDeliveryDate,
                 {
                   id: current.deliveryId,
                   typeError: 'creation',
-                  error: 'Data de atividade não pode ser anterior a 2020!'
+                  error: 'Data anterior ao inicio do projeto não permitida!'
                 }
               ]);
-              throw new Error('Data de atividade não pode ser anterior a 2020!');
+              throw new Error('Data anterior ao inicio do projeto não permitida!');
+            } else if (moment(current.creation_date_end).isAfter(selectedProject.date_end)) {
+              setErrorDeliveryDate((errorDeliveryDate: any) => [
+                ...errorDeliveryDate,
+                {
+                  id: current.deliveryId,
+                  typeError: 'creation',
+                  error: 'Data posterior ao fim do projeto não permitida!'
+                }
+              ]);
+              throw new Error('Data posterior ao fim do projeto não permitida!');
             } else {
               setErrorDeliveryDate((prevState) =>
                 prevState.filter((delivery) => delivery.id !== current.deliveryId)
@@ -1174,21 +1209,20 @@ export default function CreateTasks() {
         }
 
         if (!splitDeliveries && location.state !== null) {
-          // console.log('log do DTODelivery', DTODelivery);
-          // if (DTOForm.copywriting_date_end === '') {
-          //   throw setErrorInput('copywriting_date_end', 'Data de entrega não informada!');
-          // } else {
-          //   setErrorInput('copywriting_date_end', undefined);
-          // }
-
-          if (moment(DTOForm.creation_date_end).isBefore('2020-01-01')) {
-            throw setErrorInput('creation_date_end', 'Data anterior a 2020 não permitida!');
+          if (moment(DTOForm.creation_date_end).isBefore(selectedProject.date_start)) {
+            throw setErrorInput(
+              'creation_date_end',
+              'Data anterior ao inicio do projeto não permitida!'
+            );
           } else {
             setErrorInput('creation_date_end', undefined);
           }
 
-          if (creation_date_end === '') {
-            throw setErrorInput('creation_date_end', 'Data de Entrega de atividade é obrigatória!');
+          if (moment(DTOForm.creation_date_end).isAfter(selectedProject.date_end)) {
+            throw setErrorInput(
+              'creation_date_end',
+              'Data posterior ao fim do projeto não permitida!'
+            );
           } else {
             setErrorInput('creation_date_end', undefined);
           }
@@ -1219,20 +1253,26 @@ export default function CreateTasks() {
         if (!splitDeliveries && location.state === null) {
           // console.log('log do DTODelivery', DTODelivery);
 
-          // if (DTOForm.copywriting_date_end === '') {
-          //   throw setErrorInput('copywriting_date_end', 'Data de entrega não informada!');
-          // } else {
-          //   setErrorInput('copywriting_date_end', undefined);
-          // }
-
-          if (moment(DTOForm.creation_date_end).isBefore('2020-01-01')) {
-            throw setErrorInput('creation_date_end', 'Data anterior a 2020 não permitida!');
+          if (DTOForm.creation_date_end === '') {
+            throw setErrorInput('creation_date_end', 'Data de entrega não informada!');
           } else {
             setErrorInput('creation_date_end', undefined);
           }
 
-          if (creation_date_end === '') {
-            throw setErrorInput('creation_date_end', 'Data de Entrega de atividade é obrigatória!');
+          if (moment(DTOForm.creation_date_end).isBefore(selectedProject.date_start)) {
+            throw setErrorInput(
+              'creation_date_end',
+              'Data anterior ao inicio do projeto não permitida!'
+            );
+          } else {
+            setErrorInput('creation_date_end', undefined);
+          }
+
+          if (moment(DTOForm.creation_date_end).isAfter(selectedProject.date_end)) {
+            throw setErrorInput(
+              'creation_date_end',
+              'Data posterior ao fim do projeto não permitida!'
+            );
           } else {
             setErrorInput('creation_date_end', undefined);
           }
@@ -1285,8 +1325,20 @@ export default function CreateTasks() {
           setErrorInput('creation_date_end', undefined);
         }
 
-        if (moment(DTOForm.creation_date_end).isBefore('2020-01-01')) {
-          throw setErrorInput('creation_date_end', 'Data anterior a 2020 não permitida!');
+        if (moment(DTOForm.creation_date_end).isBefore(selectedProject.date_start)) {
+          throw setErrorInput(
+            'creation_date_end',
+            'Data anterior ao inicio do projeto não permitida!'
+          );
+        } else {
+          setErrorInput('creation_date_end', undefined);
+        }
+
+        if (moment(DTOForm.creation_date_end).isAfter(selectedProject.date_end)) {
+          throw setErrorInput(
+            'creation_date_end',
+            'Data posterior ao fim do projeto não permitida!'
+          );
         } else {
           setErrorInput('creation_date_end', undefined);
         }

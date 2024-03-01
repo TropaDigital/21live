@@ -8,7 +8,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 // Icons
 import { FaArrowLeft, FaChevronDown, FaChevronUp, FaDownload } from 'react-icons/fa';
 import { IconBigCheck } from '../../../assets/icons';
-import { BiShow } from 'react-icons/bi';
+import { BiCalendar, BiShow } from 'react-icons/bi';
 import { MdClose } from 'react-icons/md';
 
 // Components
@@ -38,6 +38,7 @@ import UploadFiles from '../../../components/Upload/UploadFiles';
 import UploadFinalFile from '../../../components/UploadFinal/UploadFinalFiles';
 import { Table } from '../../../components/Table';
 import ModalLoader from '../../../components/Ui/ModalLoader';
+import { InputDefault } from '../../../components/Inputs/InputDefault';
 
 // Styles
 import {
@@ -129,6 +130,11 @@ interface ProductProps {
   status_interaction: string;
 }
 
+interface UpdateDateProps {
+  isOn: boolean;
+  date_end: string;
+}
+
 export default function ViewProductsDeliveries() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -177,6 +183,10 @@ export default function ViewProductsDeliveries() {
     productId: ''
   });
   const [modalSelectFinalFiles, setModalSelectFinalfiles] = useState<boolean>(false);
+  const [updateDateTask, setUpdateDateTask] = useState<UpdateDateProps>({
+    isOn: false,
+    date_end: ''
+  });
 
   const [previewImage, setPreviewImage] = useState({
     isOpen: false,
@@ -536,6 +546,10 @@ export default function ViewProductsDeliveries() {
 
       if (response.data.result.length > 0) {
         setDataTask(response.data.result[0]);
+        setUpdateDateTask({
+          isOn: false,
+          date_end: response.data.result[0].creation_date_end
+        });
       }
 
       setLoading(false);
@@ -1822,6 +1836,72 @@ export default function ViewProductsDeliveries() {
     }
   };
 
+  const handleKeyDown = (event: any) => {
+    if (event.key === 'Enter') {
+      setUpdateDateTask({
+        isOn: false,
+        date_end: event.target.value
+      });
+
+      handleUpdateDate();
+    }
+  };
+
+  const handleOnChangeDate = (event: any) => {
+    const { name, value } = event.target;
+
+    setUpdateDateTask((prevState: any) => ({ ...prevState, ['date_end']: value }));
+  };
+
+  async function handleUpdateDate() {
+    try {
+      setLoading(true);
+
+      const updateDate = {
+        creation_date_end: updateDateTask.date_end
+      };
+
+      const response = await api.put(`/task/date-update/${dataTask.task_id}`, updateDate);
+
+      if (response.data.status === 'success') {
+        setUpdateDateTask({
+          isOn: false,
+          date_end: updateDateTask.date_end
+        });
+
+        addToast({
+          title: 'Sucesso',
+          description: 'Data atualizada com sucesso!',
+          type: 'success'
+        });
+
+        getTaskInfos();
+      }
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log error update date', error);
+
+      setLoading(false);
+
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
+    }
+  }
+
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
     // console.log('log allRejected', hasAllBeenRejected);
@@ -2259,13 +2339,15 @@ export default function ViewProductsDeliveries() {
               <TaskInfoField>
                 <div className="info-title">Tempo estimado:</div>
                 <div className="info-description">
-                  {dataTask?.total_time !== 'undefined' ? dataTask?.total_time : 'Livre'}
+                  {dataTask?.deliverys[0]?.total_time !== 'undefined'
+                    ? dataTask?.deliverys[0]?.total_time
+                    : 'Livre'}
                 </div>
               </TaskInfoField>
 
               <TaskInfoField>
                 <div className="info-title">Tempo consumido:</div>
-                <div className="info-description">{dataTask?.time_consumed}</div>
+                <div className="info-description">{dataTask?.deliverys[0]?.time_consumed}</div>
               </TaskInfoField>
 
               <TaskInfoField>
@@ -2294,11 +2376,37 @@ export default function ViewProductsDeliveries() {
                 </div>
               </TaskInfoField>
 
-              <TaskInfoField>
+              <TaskInfoField
+                onClick={() =>
+                  setUpdateDateTask({
+                    isOn: true,
+                    date_end: updateDateTask.date_end
+                  })
+                }
+                style={{ cursor: 'pointer' }}
+              >
                 <div className="info-title">Data final de entrega ao cliente:</div>
-                <div className="info-description">
-                  {moment(dataTask?.creation_date_end).format('DD/MM/YYYY')}
-                </div>
+                {!updateDateTask.isOn && (
+                  <div className="info-description">
+                    {moment(dataTask?.creation_date_end).format('DD/MM/YYYY')}
+                  </div>
+                )}
+                {updateDateTask.isOn && (
+                  <div className="info-description">
+                    <InputDefault
+                      label=""
+                      placeholder="00/00/0000"
+                      name="creation_date_end"
+                      type="date"
+                      max={'9999-12-31'}
+                      icon={BiCalendar}
+                      onChange={handleOnChangeDate}
+                      value={updateDateTask.date_end}
+                      onKeyDown={handleKeyDown}
+                      error={updateDateTask.date_end === '' ? 'Data não permitida' : ''}
+                    />
+                  </div>
+                )}
               </TaskInfoField>
             </TasksInfos>
             <ArrowSection onClick={() => setHideRightCard('hide')}>
