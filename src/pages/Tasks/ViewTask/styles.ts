@@ -364,6 +364,12 @@ export const TaskInfoField = styled.div`
       color: var(--Danger);
     }
   }
+
+  .update-date {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 `;
 
 export const ModalWrapperList = styled.div`

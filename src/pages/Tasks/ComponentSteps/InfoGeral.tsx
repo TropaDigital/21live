@@ -259,7 +259,7 @@ export default function InfoGeral({
           />
           <div>Gerar ticket</div>
         </CreateTicketOption>
-        {(requestersList.length > 0 || data.gen_ticket === 'true') && (
+        {requestersList.length > 0 && data.gen_ticket === 'true' && data.ticket_id !== '' && (
           <div style={{ flex: '1' }}>
             <SelectDefault
               label="Solicitante"
