@@ -42,6 +42,7 @@ interface SelectedFilters {
   contract: string;
   contract_name: string;
   contract_type: string;
+  contract_subcategory: string;
   sub_tasks: boolean;
 }
 
@@ -102,6 +103,7 @@ export default function FilterTask({ applyFilters, clearFilters, selectedClient 
     contract: '',
     contract_name: '',
     contract_type: '',
+    contract_subcategory: '',
     sub_tasks: true
   });
 
@@ -161,6 +163,7 @@ export default function FilterTask({ applyFilters, clearFilters, selectedClient 
       contract: '',
       contract_name: '',
       contract_type: '',
+      contract_subcategory: '',
       sub_tasks: false
     });
     clearFilters();
@@ -281,6 +284,20 @@ export default function FilterTask({ applyFilters, clearFilters, selectedClient 
           >
             <option value="free">Livre</option>
             <option value="product">Por produto</option>
+          </SelectDefault>
+        </div>
+
+        <div style={{ maxHeight: '62px' }}>
+          <SelectDefault
+            label="FEE/SPOT"
+            placeholder="Selecione..."
+            name="contract_subcategory"
+            onChange={handleAddFilters}
+            value={choosenFilters.contract_subcategory}
+            required
+          >
+            <option value="fee">FEE</option>
+            <option value="spot">SPOT</option>
           </SelectDefault>
         </div>
 
