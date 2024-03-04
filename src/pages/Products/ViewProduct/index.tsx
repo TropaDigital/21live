@@ -8,7 +8,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 // Icons
 import { FaArrowLeft, FaChevronDown, FaChevronUp, FaDownload } from 'react-icons/fa';
 import { IconBigCheck } from '../../../assets/icons';
-import { BiCalendar, BiShow } from 'react-icons/bi';
+import { BiCalendar, BiShow, BiX } from 'react-icons/bi';
 import { MdClose } from 'react-icons/md';
 
 // Components
@@ -44,6 +44,7 @@ import { InputDefault } from '../../../components/Inputs/InputDefault';
 import {
   ArrowSection,
   CardsWrapper,
+  CloseButton,
   DeliveryWrapper,
   FilePreview,
   FileProductList,
@@ -61,11 +62,15 @@ import {
   TaskInfoField,
   TasksInfos,
   TextInfo,
+  TimeAndDates,
   TimeLine,
   TimeLineIcon,
+  TimeWrapper,
   TimelineExtraInfo,
   TimelineInfo,
-  TimelineStep
+  TimelineStep,
+  TotalTaskHours,
+  UserInfo
 } from './styles';
 import { ButtonIcon } from '../WorkingProduct/styles';
 
@@ -75,6 +80,7 @@ import api from '../../../services/api';
 // Libraries
 import moment from 'moment';
 import 'moment/dist/locale/pt-br';
+import Switch from 'react-switch';
 
 // Hooks
 import { useToast } from '../../../hooks/toast';
@@ -92,6 +98,7 @@ import {
 
 // Utils
 import { UsersNoSchedule } from '../../../utils/models';
+import TaskTable from '../../../components/Ui/TaskTable';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -133,6 +140,17 @@ interface ProductProps {
 interface UpdateDateProps {
   isOn: boolean;
   date_end: string;
+}
+
+interface UpdateHoursProps {
+  step_name: string;
+  user_name: string;
+  user_function: string;
+  description: string;
+  date_start: string;
+  date_end: string;
+  alocated_time: string;
+  active: boolean;
 }
 
 export default function ViewProductsDeliveries() {
@@ -188,6 +206,7 @@ export default function ViewProductsDeliveries() {
     isOn: false,
     date_end: ''
   });
+  const [modalUpdateHours, setModalUpdateHours] = useState<boolean>(false);
 
   const [previewImage, setPreviewImage] = useState({
     isOpen: false,
@@ -1915,10 +1934,28 @@ export default function ViewProductsDeliveries() {
     }
   }
 
+  const handleChangeHours = (e: any) => {
+    const { name, value } = e.target;
+    console.log('log do change hours', name, value);
+  };
+
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
     // console.log('log allRejected', hasAllBeenRejected);
   }, [typeOfPlay]);
+
+  const dataHourMock: UpdateHoursProps[] = [
+    {
+      step_name: 'Plan',
+      user_name: 'Danilo Fontes',
+      user_function: 'Gerente de projeto',
+      date_start: '2024-02-16 14:00:00',
+      date_end: '2024-02-16 16:00:00',
+      alocated_time: '2:00:00',
+      description: 'Esqueceu de dar o play',
+      active: true
+    }
+  ];
 
   return (
     <ContainerDefault>
@@ -2462,7 +2499,7 @@ export default function ViewProductsDeliveries() {
             )}
 
             {dataTask?.status !== 'Concluida' && !showClock && !viewProduct && (
-              <CardWrapper>
+              <CardWrapper onClick={() => setModalUpdateHours(true)}>
                 <CardTitle>Tempo utilizado</CardTitle>
                 <StopWatchTimer className="stopped">{dataTask?.time_consumed}</StopWatchTimer>
                 <EstimatedTime>
@@ -3514,6 +3551,132 @@ export default function ViewProductsDeliveries() {
             </ModalButtons>
           )}
         </FileProductsWrapper>
+      </ModalDefault>
+
+      {/* Modal change hours */}
+      <ModalDefault
+        isOpen={modalUpdateHours}
+        onOpenChange={() => setModalUpdateHours(false)}
+        title="Tempo na tarefa"
+      >
+        <TimeWrapper>
+          <CloseButton onClick={() => setModalUpdateHours(false)}>
+            <BiX size={30} />
+          </CloseButton>
+
+          <Table>
+            <table>
+              <thead>
+                <tr>
+                  <th>Etapa</th>
+                  <th>Colaborador</th>
+                  <th>Observação</th>
+                  <th>Início</th>
+                  <th>Final</th>
+                  <th>Tempo alocado</th>
+                  <th>Ativo</th>
+                  <th style={{ color: '#F9FAFB' }}>-</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {dataHourMock.map((row, index: number) => (
+                  <tr key={index}>
+                    <td>{row.step_name}</td>
+                    <td>
+                      <UserInfo>
+                        <div className="user-name">{row.user_name}</div>
+                        <div className="user-function">{row.user_function}</div>
+                      </UserInfo>
+                    </td>
+                    <td>
+                      <InputDefault
+                        label=""
+                        placeholder="Digite aqui..."
+                        name="description"
+                        value={row.description}
+                        onChange={handleChangeHours}
+                        error={''}
+                      />
+                    </td>
+                    <td>
+                      <InputDefault
+                        label=""
+                        placeholder="00/00/0000 00:00"
+                        name="date_start"
+                        type="datetime-local"
+                        max={'9999-12-31'}
+                        icon={BiCalendar}
+                        onChange={(e) => {
+                          handleChangeHours(e);
+                          // removeError('date_start');
+                        }}
+                        value={row.date_start}
+                        // onKeyDown={handleKeyDown}
+                        // error={
+                        //   errorsForm.date_start || errorsForm.allFields ? 'Data inicial é obrigatória!' : ''
+                        // }
+                      />
+                    </td>
+                    <td>
+                      <InputDefault
+                        label=""
+                        placeholder="00/00/0000 00:00"
+                        name="date_end"
+                        type="datetime-local"
+                        max={'9999-12-31'}
+                        icon={BiCalendar}
+                        onChange={(e) => {
+                          handleChangeHours(e);
+                          // removeError('date_start');
+                        }}
+                        value={row.date_end}
+                        // onKeyDown={handleKeyDown}
+                        // error={
+                        //   errorsForm.date_start || errorsForm.allFields ? 'Data inicial é obrigatória!' : ''
+                        // }
+                      />
+                    </td>
+                    <td>{row.alocated_time}</td>
+                    <td>
+                      <Switch
+                        onChange={() => console.log('log do switch button', row.description)}
+                        checked={row.active}
+                        uncheckedIcon={false}
+                        checkedIcon={false}
+                        onColor="#0046B5"
+                      />
+                    </td>
+                    <td>
+                      <ButtonDefault typeButton="primary">Salvar</ButtonDefault>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Table>
+
+          <TotalTaskHours>
+            <div className="total-task">Total tarefa</div>
+
+            <TimeAndDates>
+              <div className="card-info">
+                Início
+                <span>12/01/2024</span>
+              </div>
+
+              <div className="card-info">
+                Final
+                <span>13/01/2024</span>
+              </div>
+
+              <div className="card-info">
+                Tempo alocado:
+                <span>01:53:02</span>
+              </div>
+            </TimeAndDates>
+          </TotalTaskHours>
+        </TimeWrapper>
       </ModalDefault>
 
       {/* Modal loading submit */}
