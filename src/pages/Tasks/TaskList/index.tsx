@@ -52,6 +52,7 @@ import moment from 'moment';
 
 // Styles
 import { ModalShowTaskWrapper, Flag, StatusTable, FilterTasks, CopyButton } from './styles';
+import AvatarDefault from '../../../components/Ui/Avatar/avatarDefault';
 
 interface FilterProps {
   status: string;
@@ -63,6 +64,7 @@ interface FilterProps {
   contract: string;
   contract_name: string;
   contract_type: string;
+  contract_subcategory: string;
   sub_tasks: boolean;
   [key: string]: string | any; // Index signature
 }
@@ -109,6 +111,7 @@ export default function TaskList() {
     contract: '',
     contract_name: '',
     contract_type: '',
+    contract_subcategory: '',
     sub_tasks: true
   });
   const [selected, setSelected] = useState(1);
@@ -118,7 +121,9 @@ export default function TaskList() {
       filter.status
     }&tenant=${filter.client}&sub_tasks=${filter.sub_tasks}&user_id=${filter.user}&project_id=${
       filter.contract
-    }&project_product_id=${filter.product}&contract_type=${filter.contract_type}`
+    }&project_product_id=${filter.product}&contract_type=${
+      filter.contract_type
+    }&contract_category=${filter.contract_subcategory}`
   );
   const [searchTerm, setSearchTerm] = useState('');
   const { isLoading, debouncedCallback } = useDebouncedCallback(
@@ -242,6 +247,7 @@ export default function TaskList() {
       contract: '',
       contract_name: '',
       contract_type: '',
+      contract_subcategory: '',
       sub_tasks: false
     });
     setModalFilters(false);
@@ -352,6 +358,7 @@ export default function TaskList() {
                 {filter.product ? <span>Produto</span> : ''}
                 {filter.contract ? <span>Contrato</span> : ''}
                 {filter.contract_type ? <span>Tipo do contrato</span> : ''}
+                {filter.contract_subcategory ? <span>FEE/SPOT</span> : ''}
               </FilterTotal>
 
               <AppliedFilter>
@@ -411,6 +418,17 @@ export default function TaskList() {
                 ) : (
                   ''
                 )}
+
+                {filter.contract_subcategory !== '' ? (
+                  <div className="filter-title">
+                    FEE/SPOT:{' '}
+                    <span style={{ textTransform: 'uppercase' }}>
+                      {filter.contract_subcategory !== '' ? filter.contract_subcategory : ''}
+                    </span>
+                  </div>
+                ) : (
+                  ''
+                )}
               </AppliedFilter>
             </FilterGroup>
           )}
@@ -424,7 +442,7 @@ export default function TaskList() {
                 <th>Produtos</th>
                 <th>Status</th>
                 <th>Cliente</th>
-                {/* <th>Equipe</th> */}
+                <th>User</th>
                 <th style={{ color: '#F9FAFB' }}>-</th>
               </tr>
             </thead>
@@ -507,9 +525,9 @@ export default function TaskList() {
                     <td style={{ cursor: 'pointer' }} onClick={() => handleViewTask(row.task_id)}>
                       {row.tenant}
                     </td>
-                    {/* <td>
-                      <Avatar data={avatarAll} />
-                    </td> */}
+                    <td>
+                      <AvatarDefault url={row.actual_user_avatar} name={row.actual_user_name} />
+                    </td>
                     <td>
                       <div className="fieldTableClients">
                         <Flag
