@@ -324,6 +324,10 @@ export default function CreateProject() {
       //   setErrorInput('description', undefined);
       // }
 
+      if (createStep === 2 && productsArray.length === 0) {
+        throw 'Escolha pelo menos um produto antes de avançar';
+      }
+
       if (createStep < 3 && DTOForm.contract_type === 'free') {
         // console.log('log de um produto livre');
         setCreateStep(3);
@@ -998,7 +1002,7 @@ export default function CreateProject() {
                   setTimeout(() => {
                     setShowSave(false);
                     setSaveProducts('');
-                    setCreateStep(createStep + 1);
+                    setCreateStep(productsArray.length > 0 ? createStep + 1 : createStep);
                     setEditSelectedProducts(true);
                   }, 500);
                 }}
