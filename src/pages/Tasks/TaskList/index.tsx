@@ -441,6 +441,7 @@ export default function TaskList() {
                 <th>Tempo estimado</th>
                 <th>Produtos</th>
                 <th>Status</th>
+                <th>Contrato</th>
                 <th>Cliente</th>
                 <th>User</th>
                 <th style={{ color: '#F9FAFB' }}>-</th>
@@ -492,7 +493,11 @@ export default function TaskList() {
                       />
                     </td>
                     <td style={{ cursor: 'pointer' }} onClick={() => handleViewTask(row.task_id)}>
-                      {row.total_time !== 'undefined' ? row.total_time : '00:00:00'}
+                      {row.total_time !== 'undefined' && row.type !== 'Livre'
+                        ? row.total_time
+                        : row.type === 'Livre'
+                        ? 'Livre'
+                        : '00:00:00'}
                     </td>
                     <td>{row.products_quantity}</td>
                     <td style={{ cursor: 'pointer' }} onClick={() => handleViewTask(row.task_id)}>
@@ -522,6 +527,7 @@ export default function TaskList() {
                           : 'Pendente'}
                       </StatusTable>
                     </td>
+                    <td>{row.project}</td>
                     <td style={{ cursor: 'pointer' }} onClick={() => handleViewTask(row.task_id)}>
                       {row.tenant}
                     </td>
