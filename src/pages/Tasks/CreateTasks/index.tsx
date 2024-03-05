@@ -3001,6 +3001,8 @@ export default function CreateTasks() {
             user_alocated={handleScheduleUser}
             loadingSubmit={loadingSubmit}
             closeModal={() => setSelectUserModal(false)}
+            manualOverrideDate={tasksType === 'livre'}
+            taskType={tasksType === 'livre' ? 'Livre' : ''}
           />
         </ModalDefault>
 
