@@ -98,7 +98,6 @@ import {
 
 // Utils
 import { UsersNoSchedule } from '../../../utils/models';
-import TaskTable from '../../../components/Ui/TaskTable';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -290,15 +289,8 @@ export default function ViewProductsDeliveries() {
     creation_description: dataTask?.creation_description
   };
 
-  const myTaskShowHours = location.state.task.show_hours;
-  const taskDeductHours = location.state.task.deduct_hours;
-
-  const allEstimatedTime = {
-    time_consumed: dataTask?.time_consumed,
-    time_creation: dataProducts?.time_creation,
-    time_essay: dataProducts?.time_essay,
-    total_time: dataTask?.total_time
-  };
+  const myTaskShowHours = location?.state?.task?.show_hours;
+  const taskDeductHours = location?.state?.task?.deduct_hours;
 
   const actualDate = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
   const actualStep = timeLineData?.currentStep;
@@ -831,51 +823,6 @@ export default function ViewProductsDeliveries() {
         end_job: values.end_job
       };
 
-      if (dataTask?.type === 'Livre') {
-        const responseNextDate = await api.get(
-          `/task/nextdate=${moment(new Date()).format('YYYY-MM-DD')}&task_id=${dataTask?.task_id}`
-        );
-
-        const response = await api.get(`/task/next-user/${dataTask?.task_id}`);
-
-        if (response.data.result.length > 0) {
-          const payload = {
-            user_id: response.data.result[0].user_id,
-            task_id: dataTask?.task_id
-          };
-
-          const responseConclude = await api.put(`/task/send-for-evaluation`, payload);
-
-          addToast({
-            title: 'Sucesso',
-            description: 'Tarefa avançou para a próxima etapa.',
-            type: 'success'
-          });
-          stop();
-          navigate('/minhas-tarefas');
-          localStorage.removeItem('stopwatchState');
-        }
-      }
-
-      // if (dataTask?.status !== 'Concluida' && typeOfPlay === 'schedule') {
-      //   const response = await api.put(
-      //     `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
-      //     next_user
-      //   );
-      //   // console.log('log do response', response.data.result);
-
-      //   if (response.data.result === 1) {
-      //     addToast({
-      //       title: 'Sucesso',
-      //       description: 'Tarefa avançou para a próxima etapa.',
-      //       type: 'success'
-      //     });
-      //     stop();
-      //     navigate('/minhas-tarefas');
-      //     localStorage.removeItem('stopwatchState');
-      //   }
-      // }
-
       if (dataTask?.status !== 'Concluida' && selectedProduct !== '' && typeOfPlay === 'product') {
         // if (selectedProduct.status !== 'Concluida') {
         //   const response = await api.put(
@@ -959,23 +906,6 @@ export default function ViewProductsDeliveries() {
           // setHideRightCard('hide');
         }
       }
-
-      // if (
-      //   dataProducts?.status === 'Concluida' &&
-      //   selectedProduct === '' &&
-      //   typeOfPlay === 'product'
-      // ) {
-      //   const response = await api.put(
-      //     `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
-      //     next_user
-      //   );
-      //   console.log('log do response', response.data.result);
-
-      //   if (response.data.result === 1) {
-      //     navigate('/minhas-tarefas');
-      //     localStorage.removeItem('stopwatchState');
-      //   }
-      // }
 
       setLoading(false);
     } catch (error: any) {
@@ -1957,6 +1887,10 @@ export default function ViewProductsDeliveries() {
     }
   ];
 
+  // useEffect(() => {
+  //   console.log('log do location =>', location);
+  // }, [location]);
+
   return (
     <ContainerDefault>
       {!loading && (
@@ -2125,7 +2059,7 @@ export default function ViewProductsDeliveries() {
                 }
                 disableButton={false}
                 goBack
-                buttonType="send"
+                buttonType="finish"
                 // sendToNext={handleConcludeTask}
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
@@ -2151,7 +2085,7 @@ export default function ViewProductsDeliveries() {
                 }
                 disableButton={typeOfPlay === 'product' ? false : true}
                 goBack
-                buttonType="send"
+                buttonType="finish"
                 // sendToNext={handleConcludeTask}
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
@@ -2179,7 +2113,7 @@ export default function ViewProductsDeliveries() {
                 }
                 disableButton={true}
                 goBack
-                buttonType="send"
+                buttonType="finish"
                 // sendToNext={handleConcludeTask}
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
@@ -2189,7 +2123,7 @@ export default function ViewProductsDeliveries() {
               />
             )}
 
-          {dataProducts?.status !== 'Concluida' &&
+          {/* {dataProducts?.status !== 'Concluida' &&
             dataTask?.status !== 'Concluida' &&
             selectedProduct !== '' &&
             typeOfPlay === 'product' &&
@@ -2215,7 +2149,7 @@ export default function ViewProductsDeliveries() {
                 isInsideProduct={true}
                 backFlow={() => setModalReturnFlow(true)}
               />
-            )}
+            )} */}
 
           {dataProducts?.status !== 'Concluida' &&
             dataTask?.status !== 'Concluida' &&
@@ -2531,11 +2465,7 @@ export default function ViewProductsDeliveries() {
                 <EstimatedTime>
                   Tempo estimado:{' '}
                   <span>
-                    {allEstimatedTime && myTaskShowHours && taskDeductHours === 'creation'
-                      ? allEstimatedTime.time_creation
-                      : taskDeductHours === 'essay'
-                      ? allEstimatedTime.time_essay
-                      : allEstimatedTime.total_time}
+                    {dataTask?.total_time !== 'undefined' ? dataTask?.total_time : 'Livre'}
                   </span>
                 </EstimatedTime>
               </CardWrapper>
@@ -2545,11 +2475,13 @@ export default function ViewProductsDeliveries() {
               <CardTaskPlay
                 cardTitle={state.isRunning ? 'Atividade iniciada' : 'Iniciar atividade'}
                 dataTime={
-                  allEstimatedTime && myTaskShowHours && taskDeductHours === 'creation'
-                    ? allEstimatedTime.time_creation
-                    : taskDeductHours === 'essay'
-                    ? allEstimatedTime.time_essay
-                    : allEstimatedTime.total_time
+                  myTaskShowHours && taskDeductHours === 'creation' && dataTask?.type !== 'Livre'
+                    ? selectedProduct.productInfo.minutes_creation
+                    : taskDeductHours === 'essay' && dataTask?.type !== 'Livre'
+                    ? selectedProduct.productInfo.minutes_essay
+                    : dataTask?.type === 'Livre'
+                    ? ''
+                    : dataTask?.total_time
                 }
                 blockPlay={typeOfPlay === 'product' && !viewProduct ? true : false}
                 handlePlay={handlePlayingType}
@@ -2616,8 +2548,9 @@ export default function ViewProductsDeliveries() {
           step={showHoursBack ? returnInfos.chosenStep : Number(dataTask?.step) + 1}
           user_alocated={handleAssignTask}
           closeModal={() => setModalSendToUser(false)}
-          manualOverrideDate={showHoursBack}
+          manualOverrideDate={showHoursBack || dataTask?.type === 'Livre'}
           loadingSubmit={loading}
+          taskType={dataTask?.type}
         />
       </ModalDefault>
 
@@ -2932,23 +2865,39 @@ export default function ViewProductsDeliveries() {
             <ButtonDefault typeButton="dark" isOutline onClick={handleCancelReturn}>
               Descartar
             </ButtonDefault>
-            <ButtonDefault
-              typeButton={
-                returnInfos.chosenStep === '' ||
-                returnInfos.returnMotive === '' ||
-                returnInfos.returnType === ''
-                  ? 'blocked'
-                  : 'primary'
-              }
-              onClick={handleBackFlow}
-              disabled={
-                returnInfos.chosenStep === '' ||
-                returnInfos.returnMotive === '' ||
-                returnInfos.returnType === ''
-              }
-            >
-              Retornar
-            </ButtonDefault>
+            {stepsWithTenantApprove && stepsWithTenantApprove?.length < 1 && (
+              <ButtonDefault
+                typeButton={
+                  returnInfos.chosenStep === '' ||
+                  returnInfos.returnMotive === '' ||
+                  returnInfos.returnType === ''
+                    ? 'blocked'
+                    : 'primary'
+                }
+                onClick={handleBackFlow}
+                disabled={
+                  returnInfos.chosenStep === '' ||
+                  returnInfos.returnMotive === '' ||
+                  returnInfos.returnType === ''
+                }
+              >
+                Retornar
+              </ButtonDefault>
+            )}
+
+            {stepsWithTenantApprove && stepsWithTenantApprove?.length >= 1 && (
+              <ButtonDefault
+                typeButton={
+                  returnInfos.chosenStep === '' || returnInfos.returnMotive === ''
+                    ? 'blocked'
+                    : 'primary'
+                }
+                onClick={handleBackFlow}
+                disabled={returnInfos.chosenStep === '' || returnInfos.returnMotive === ''}
+              >
+                Retornar
+              </ButtonDefault>
+            )}
           </div>
         </ModalReturnFlow>
       </ModalDefault>
