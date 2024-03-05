@@ -138,7 +138,7 @@ export default function CardTaskPlay({
         </StopWatchTimer>
       </PlayTimer>
       <EstimatedTime>
-        Tempo estimado: <span>{dataTime !== 'undefined' ? dataTime : 'Livre'}</span>
+        Tempo estimado: <span>{dataTime !== '' ? dataTime : 'Livre'}</span>
       </EstimatedTime>
     </CardWrapper>
   );
