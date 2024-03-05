@@ -102,13 +102,13 @@ export default function EditFluxo() {
       const response = await api.post('/card', column);
       setState(response.data.result);
       setColumn(response.data.result);
-      if (response.data.status === 'success') {
-        addToast({
-          title: 'Sucesso',
-          description: 'Fluxo salvo com sucesso!',
-          type: 'success'
-        });
-      }
+      // if (response.data.status === 'success') {
+      //   addToast({
+      //     title: 'Sucesso',
+      //     description: 'Fluxo salvo com sucesso!',
+      //     type: 'success'
+      //   });
+      // }
 
       // setLoading(false);
     } catch (err: any) {
