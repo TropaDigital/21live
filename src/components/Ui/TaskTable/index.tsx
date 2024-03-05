@@ -206,7 +206,9 @@ export default function TaskTable({
                             </IconContext.Provider>
                           )}
                         </Flag>
-                        {task.total_time !== 'undefined' ? task.total_time : 'Livre'}
+                        {task.total_time !== 'undefined' && task.type !== 'Livre'
+                          ? task.total_time
+                          : 'Livre'}
                       </div>
                     </td>
                     <td style={{ textTransform: 'capitalize' }}>
