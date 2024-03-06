@@ -36,6 +36,7 @@ import formatTime from '../../../utils/convertSecondsToHours';
 
 // Services
 import api from '../../../services/api';
+import { BsTextLeft } from 'react-icons/bs';
 
 interface HeaderProps {
   handleOnMenu: () => void;
@@ -248,6 +249,17 @@ export default function Header({ handleOnMenu, modalActive }: HeaderProps) {
             >
               <IconGear />
               Parâmetros
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => {
+                setMenuUser(false);
+                navigate('/templates');
+              }}
+            >
+              <BsTextLeft size={24} color="#6C757D" />
+              Templates de pauta
             </button>
           </li>
           <li>
