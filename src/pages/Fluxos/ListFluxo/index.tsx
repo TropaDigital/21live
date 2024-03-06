@@ -14,6 +14,7 @@ import { useToast } from '../../../hooks/toast';
 import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useFetch } from '../../../hooks/useFetch';
 import useForm from '../../../hooks/useForm';
+import { useAuth } from '../../../hooks/AuthContext';
 
 // Components
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
@@ -38,6 +39,7 @@ import {
 export default function ListFluxo() {
   const navigate = useNavigate();
   const { addToast } = useToast();
+  const { user } = useAuth();
   const { formData, setData, handleOnChange } = useForm({
     name: ''
   });
@@ -136,12 +138,16 @@ export default function ListFluxo() {
 
   return (
     <ContainerDefault>
-      <HeaderPage title="Fluxos">
-        <ButtonDefault typeButton="success" onClick={() => setModal(!modal)}>
-          <BiPlus color="#fff" />
-          Novo Fluxo
-        </ButtonDefault>
-      </HeaderPage>
+      {user?.permissions?.includes('jobs_flow_add') && (
+        <HeaderPage title="Fluxos">
+          <ButtonDefault typeButton="success" onClick={() => setModal(!modal)}>
+            <BiPlus color="#fff" />
+            Novo Fluxo
+          </ButtonDefault>
+        </HeaderPage>
+      )}
+
+      {!user?.permissions?.includes('jobs_flow_add') && <HeaderPage title="Fluxos" />}
 
       {!isFetching && (
         <SectionDefault>
@@ -240,14 +246,6 @@ export default function ListFluxo() {
                       <td>
                         <div className="fieldTableClients">
                           <ButtonTable
-                            typeButton="edit"
-                            onClick={() =>
-                              navigate(`/fluxo/editar/${row.name.replaceAll(/[\s/]/g, '_')}`, {
-                                state: { id: row.flow_id, name: row.name }
-                              })
-                            }
-                          />
-                          <ButtonTable
                             typeButton="view"
                             onClick={() =>
                               navigate(`/fluxo/${row.flow_id}`, {
@@ -255,13 +253,26 @@ export default function ListFluxo() {
                               })
                             }
                           />
-                          <Alert
-                            title="Atenção"
-                            subtitle="Certeza que gostaria de remover esse fluxo? Ao excluir a acão não poderá ser desfeita."
-                            confirmButton={() => handleOnDelete(row.flow_id)}
-                          >
-                            <ButtonTable typeButton="delete" />
-                          </Alert>
+                          {user?.permissions?.includes('jobs_flow_edit') && (
+                            <ButtonTable
+                              typeButton="edit"
+                              onClick={() =>
+                                navigate(`/fluxo/editar/${row.name.replaceAll(/[\s/]/g, '_')}`, {
+                                  state: { id: row.flow_id, name: row.name }
+                                })
+                              }
+                            />
+                          )}
+
+                          {user?.permissions?.includes('jobs_flow_delete') && (
+                            <Alert
+                              title="Atenção"
+                              subtitle="Certeza que gostaria de remover esse fluxo? Ao excluir a acão não poderá ser desfeita."
+                              confirmButton={() => handleOnDelete(row.flow_id)}
+                            >
+                              <ButtonTable typeButton="delete" />
+                            </Alert>
+                          )}
                         </div>
                       </td>
                     </tr>
