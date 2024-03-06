@@ -27,6 +27,7 @@ import { useToast } from '../../../hooks/toast';
 import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useFetch } from '../../../hooks/useFetch';
 import useForm from '../../../hooks/useForm';
+import { useAuth } from '../../../hooks/AuthContext';
 
 // Components
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
@@ -118,6 +119,7 @@ interface BreaksProps {
 
 export default function Team() {
   const { addToast } = useToast();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const formRef = useRef<any>();
 
@@ -614,27 +616,31 @@ export default function Team() {
 
   return (
     <ContainerDefault>
-      <HeaderPage title="Equipe">
-        <>
-          <ButtonDefault typeButton="info" onClick={() => navigate('cargos')}>
-            <BiEdit color="#fff" />
-            Cargos
-          </ButtonDefault>
+      {user?.permissions?.includes('jobs_team_edit') && (
+        <HeaderPage title="Equipe">
+          <>
+            <ButtonDefault typeButton="info" onClick={() => navigate('cargos')}>
+              <BiEdit color="#fff" />
+              Cargos
+            </ButtonDefault>
 
-          {/* <ButtonDefault
-            typeButton="success"
-            onClick={() =>
-              setModal({
-                isOpen: !modal.isOpen,
-                type: 'Novo serviço'
-              })
-            }
-          >
-            <BiPlus color="#fff" />
-            Novo Usuário
-          </ButtonDefault> */}
-        </>
-      </HeaderPage>
+            {/* <ButtonDefault
+              typeButton="success"
+              onClick={() =>
+                setModal({
+                  isOpen: !modal.isOpen,
+                  type: 'Novo serviço'
+                })
+              }
+            >
+              <BiPlus color="#fff" />
+              Novo Usuário
+            </ButtonDefault> */}
+          </>
+        </HeaderPage>
+      )}
+
+      {!user?.permissions?.includes('jobs_team_edit') && <HeaderPage title="Equipe" />}
 
       {!isFetching && (
         <SectionDefault>
@@ -734,15 +740,26 @@ export default function Team() {
                       </td>
                       <td>
                         <div className="fieldTableClients">
-                          <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
-                          <ButtonTable typeButton="work" onClick={() => handleEditWorkload(row)} />
-                          <Alert
-                            title="Atenção"
-                            subtitle="Certeza que gostaria de deletar esta Equipe? Ao excluir a acão não poderá ser desfeita."
-                            confirmButton={() => handleOnDelete(row.function_id)}
-                          >
-                            <ButtonTable typeButton="delete" />
-                          </Alert>
+                          {user?.permissions?.includes('jobs_team_edit') && (
+                            <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
+                          )}
+
+                          {user?.permissions?.includes('jobs_team_edit') && (
+                            <ButtonTable
+                              typeButton="work"
+                              onClick={() => handleEditWorkload(row)}
+                            />
+                          )}
+
+                          {user?.permissions?.includes('jobs_team_delete') && (
+                            <Alert
+                              title="Atenção"
+                              subtitle="Certeza que gostaria de deletar esta Equipe? Ao excluir a acão não poderá ser desfeita."
+                              confirmButton={() => handleOnDelete(row.function_id)}
+                            >
+                              <ButtonTable typeButton="delete" />
+                            </Alert>
+                          )}
                         </div>
                       </td>
                     </tr>
