@@ -261,9 +261,11 @@ export default function ListProjects() {
 
   async function handleStatus(id: any) {
     try {
-      const response = await api.put(`/project/switch/${id}`);
-      console.log('log do response', response.data);
-      fetchProject();
+      if (user?.permissions?.includes('jobs_projects_edit')) {
+        const response = await api.put(`/project/switch/${id}`);
+        console.log('log do response', response.data);
+        fetchProject();
+      }
     } catch (error) {
       console.log('log do error', error);
     }
@@ -427,14 +429,18 @@ export default function ListProjects() {
 
   return (
     <ContainerDefault>
-      <HeaderPage title="Projetos">
-        <Link to={'/criar-projeto'}>
-          <ButtonDefault typeButton="success">
-            <BiPlus color="#fff" />
-            Adicionar Projeto
-          </ButtonDefault>
-        </Link>
-      </HeaderPage>
+      {user?.permissions?.includes('jobs_projects_add') && (
+        <HeaderPage title="Projetos">
+          <Link to={'/criar-projeto'}>
+            <ButtonDefault typeButton="success">
+              <BiPlus color="#fff" />
+              Adicionar Projeto
+            </ButtonDefault>
+          </Link>
+        </HeaderPage>
+      )}
+
+      {!user?.permissions?.includes('jobs_projects_add') && <HeaderPage title="Projetos" />}
 
       {!isFetching && (
         <Table>
@@ -684,14 +690,18 @@ export default function ListProjects() {
                   <td>
                     <div className="fieldTableClients">
                       <ButtonTable typeButton="view" onClick={() => handleOpenModal(row)} />
-                      <ButtonTable typeButton="edit" onClick={() => handleEditProject(row)} />
-                      <Alert
-                        title="Atenção"
-                        subtitle="Certeza que gostaria de deletar este Projeto? Ao excluir a ação não poderá ser desfeita."
-                        confirmButton={() => handleOnDelete(row.project_id)}
-                      >
-                        <ButtonTable typeButton="delete" />
-                      </Alert>
+                      {user?.permissions?.includes('jobs_projects_edit') && (
+                        <ButtonTable typeButton="edit" onClick={() => handleEditProject(row)} />
+                      )}
+                      {user?.permissions?.includes('jobs_projects_delete') && (
+                        <Alert
+                          title="Atenção"
+                          subtitle="Certeza que gostaria de deletar este Projeto? Ao excluir a ação não poderá ser desfeita."
+                          confirmButton={() => handleOnDelete(row.project_id)}
+                        >
+                          <ButtonTable typeButton="delete" />
+                        </Alert>
+                      )}
                     </div>
                   </td>
                 </tr>
