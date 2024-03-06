@@ -20,12 +20,10 @@ export const CardProduct = styled.div<CardProps>`
 export const CardTop = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 8px;
   width: 100%;
   height: 56px;
   padding: 16px 24px;
-
-  position: relative;
 `;
 
 export const CardBottom = styled.div`
@@ -49,6 +47,8 @@ export const ArrowButton = styled.button`
   width: 24px;
   height: 24px;
   background-color: transparent;
+
+  margin-left: auto;
 `;
 
 export const SwitchSelector = styled.div`
@@ -93,11 +93,6 @@ export const DeleteButton = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-
-  position: absolute;
-  top: 0;
-  right: 0;
-  margin-top: 15px;
 
   .delete {
     display: flex;
