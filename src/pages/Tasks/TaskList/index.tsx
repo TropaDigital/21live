@@ -289,14 +289,18 @@ export default function TaskList() {
 
   return (
     <ContainerDefault>
-      <HeaderPage title="Tarefas">
-        <Link to={'/criar-tarefa'}>
-          <ButtonDefault typeButton="success">
-            <BiPlus color="#fff" />
-            Nova tarefa
-          </ButtonDefault>
-        </Link>
-      </HeaderPage>
+      {user?.permissions?.includes('jobs_tasks_add') && (
+        <HeaderPage title="Tarefas">
+          <Link to={'/criar-tarefa'}>
+            <ButtonDefault typeButton="success">
+              <BiPlus color="#fff" />
+              Nova tarefa
+            </ButtonDefault>
+          </Link>
+        </HeaderPage>
+      )}
+
+      {!user?.permissions?.includes('jobs_tasks_add') && <HeaderPage title="Tarefas" />}
 
       {!isFetching && (
         <Table>
@@ -499,7 +503,9 @@ export default function TaskList() {
                         ? 'Livre'
                         : '00:00:00'}
                     </td>
-                    <td>{row.products_quantity}</td>
+                    <td style={{ cursor: 'pointer' }} onClick={() => handleViewTask(row.task_id)}>
+                      {row.products_quantity}
+                    </td>
                     <td style={{ cursor: 'pointer' }} onClick={() => handleViewTask(row.task_id)}>
                       <StatusTable
                         className={
@@ -527,11 +533,13 @@ export default function TaskList() {
                           : 'Pendente'}
                       </StatusTable>
                     </td>
-                    <td>{row.project}</td>
+                    <td style={{ cursor: 'pointer' }} onClick={() => handleViewTask(row.task_id)}>
+                      {row.project}
+                    </td>
                     <td style={{ cursor: 'pointer' }} onClick={() => handleViewTask(row.task_id)}>
                       {row.tenant}
                     </td>
-                    <td>
+                    <td style={{ cursor: 'pointer' }} onClick={() => handleViewTask(row.task_id)}>
                       <AvatarDefault url={row.actual_user_avatar} name={row.actual_user_name} />
                     </td>
                     <td>
@@ -560,15 +568,19 @@ export default function TaskList() {
                           typeButton="view"
                           onClick={() => handleViewTask(row.task_id)}
                         />
-                        <ButtonTable
-                          typeButton="edit"
-                          onClick={() => {
-                            handleEditTask(row);
-                          }}
-                        />
-                        <CopyButton onClick={() => handleCopyTask(row)}>
-                          <BiCopy size={20} />
-                        </CopyButton>
+                        {user?.permissions?.includes('jobs_tasks_edit') && (
+                          <ButtonTable
+                            typeButton="edit"
+                            onClick={() => {
+                              handleEditTask(row);
+                            }}
+                          />
+                        )}
+                        {user?.permissions?.includes('jobs_tasks_create') && (
+                          <CopyButton onClick={() => handleCopyTask(row)}>
+                            <BiCopy size={20} />
+                          </CopyButton>
+                        )}
                         {user.permissions.includes('jobs_tasks_manager') && (
                           <Alert
                             title="Atenção"
