@@ -462,3 +462,93 @@ export const ProductAndMotiveInfos = styled.div`
     }
   }
 `;
+
+export const TimeWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  position: relative;
+
+  > div {
+    padding: 0;
+
+    width: 85vw;
+
+    td {
+      padding: 8px 18px;
+    }
+  }
+`;
+
+export const UserInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  color: var(--gray-700);
+
+  .user-name {
+    font-size: var(--text-small-sm);
+    font-weight: var(--weight-medium);
+  }
+
+  .user-function {
+    font-weight: var(--weight-semibold);
+  }
+`;
+
+export const CloseButton = styled.button`
+  width: 24px;
+  height: 24px;
+
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-top: -40px;
+  background: var(--background-primary);
+
+  svg {
+    transition: all 0.3s;
+    color: var(--gray-400);
+  }
+
+  &:hover {
+    svg {
+      color: var(--Danger);
+    }
+  }
+`;
+
+export const TotalTaskHours = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .total-task {
+    color: var(--gray-700);
+    font-size: var(--text-small-xl);
+    font-weight: var(--weight-bold);
+  }
+`;
+
+export const TimeAndDates = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 48px;
+
+  .card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    color: var(--gray-700);
+    font-size: var(--text-small-sm);
+    font-weight: var(--weight-regular);
+
+    span {
+      font-size: var(--text-small-lg);
+      font-weight: var(--weight-bold);
+    }
+  }
+`;

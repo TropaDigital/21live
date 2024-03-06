@@ -191,13 +191,13 @@ export default function HeaderOpenTask({
           )}
           {disableButton && buttonType === 'finish' && !hideButtonNext && (
             <ButtonDefault typeButton="blocked">
-              Marcar entrega como concluída
+              Concluir tarefa
               <HiOutlineArrowRight />
             </ButtonDefault>
           )}
           {!disableButton && buttonType === 'finish' && !hideButtonNext && (
             <ButtonDefault typeButton="secondary" onClick={sendToNext}>
-              Marcar entrega como concluída
+              Concluir tarefa
               <HiOutlineArrowRight />
             </ButtonDefault>
           )}

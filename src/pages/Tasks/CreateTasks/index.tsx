@@ -464,7 +464,7 @@ export default function CreateTasks() {
   
   useEffect(() => {
     if (location.state !== null && location.state.ticket_id) {
-      console.log('log do locationState =>', location.state);
+      // console.log('log do locationState =>', location.state);
       getProjects(location.state.tenant_id);
 
       const { interactions, fields, files, ...otherFields } = location.state;
@@ -2077,7 +2077,7 @@ export default function CreateTasks() {
       //   throw new Error('Existem divergencias entre o projeto e o fluxo alocado');
       // }
 
-      if (response.data.result.gen_ticket) {
+      if (response.data.result.gen_ticket && DTOForm?.ticket_id === '') {
         setWarningModal(true);
         setDTOForm((prevState: any) => ({
           ...prevState,
@@ -2088,10 +2088,12 @@ export default function CreateTasks() {
           ticket_id: '0'
         }));
       } else {
-        setDTOForm((prevState: any) => ({
-          ...prevState,
-          ticket_id: ''
-        }));
+        if (DTOForm.ticket_id === '') {
+          setDTOForm((prevState: any) => ({
+            ...prevState,
+            ticket_id: ''
+          }));
+        }
       }
 
       if (response.data.result === 'Fluxo ok!') {
@@ -2102,7 +2104,6 @@ export default function CreateTasks() {
         });
         setDTOForm((prevState: any) => ({
           ...prevState,
-          ticket_id: '',
           gen_ticket: ''
         }));
       }
@@ -3001,6 +3002,8 @@ export default function CreateTasks() {
             user_alocated={handleScheduleUser}
             loadingSubmit={loadingSubmit}
             closeModal={() => setSelectUserModal(false)}
+            manualOverrideDate={tasksType === 'livre'}
+            taskType={tasksType === 'livre' ? 'Livre' : ''}
           />
         </ModalDefault>
 

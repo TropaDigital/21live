@@ -16,12 +16,14 @@ import {
   EstimatedHours,
   SwitchSelector,
   ContainerCard,
-  QuantitySelected
+  QuantitySelected,
+  DeleteButton
 } from './styles';
 
 // Utils
 import { multiplyTime } from '../../utils/convertTimes';
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { BiTrash } from 'react-icons/bi';
 
 interface ProductsProps {
   // handleOnDecrementQtd: (e: any) => void;
@@ -33,6 +35,7 @@ interface ProductsProps {
   contract_type: any;
   data: any;
   showSwitch: any;
+  handleOnDelete: (id: any) => void;
 }
 
 export default function CardProductsSelected({
@@ -41,7 +44,8 @@ export default function CardProductsSelected({
   title,
   contract_type,
   data,
-  showSwitch
+  showSwitch,
+  handleOnDelete
 }: ProductsProps) {
   const [openCard, setOpenCard] = useState<boolean>(true);
   // const [timeCounter, setTimeCounter] = useState<number>(0);
@@ -73,20 +77,27 @@ export default function CardProductsSelected({
   }, [contractType]);
 
   // useEffect(() => {
-  //   setTimeCounter(data.quantity);
+  // setTimeCounter(data.quantity);
   // }, []);
 
   return (
     <ContainerCard>
       <CardProduct openOptions={openCard}>
         <CardTop>
-          <CardProductTitle>
+          <CardProductTitle onClick={() => handleOptions(openCard)}>
             #{String(id).padStart(2, '0')} - {title}
           </CardProductTitle>
           <ArrowButton onClick={() => handleOptions(openCard)}>
             {!openCard ? <FiChevronDown /> : <FiChevronUp />}
           </ArrowButton>
+
+          <DeleteButton onClick={() => handleOnDelete(data.job_service_id)}>
+            <div className="delete">
+              <BiTrash size={20} />
+            </div>
+          </DeleteButton>
         </CardTop>
+
         <CardBottom>
           {showSwitch !== 'spot' && (
             <SwitchSelector>
