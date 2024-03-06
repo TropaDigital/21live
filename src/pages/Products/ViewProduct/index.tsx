@@ -1009,10 +1009,10 @@ export default function ViewProductsDeliveries() {
     if (finalCard && enableUpload) {
       setModalFinalFile(true);
     }
-    if (uploadClient && dataTask.files.length > 0) {
+    if (uploadClient && dataTask?.files.length > 0) {
       setModalTenantApprove(true);
     }
-    if (uploadClient && dataTask.files.length <= 0) {
+    if (uploadClient && dataTask?.files.length <= 0) {
       setModalFinalFile(true);
     }
   };
@@ -1652,6 +1652,7 @@ export default function ViewProductsDeliveries() {
   const handleCancelSendToTenant = () => {
     setToClientConfirmation(false);
     setModalTenantApprove(false);
+    setModalSelectFinalfiles(false);
     setFilesToTenantApprove([]);
   };
 
@@ -1692,12 +1693,14 @@ export default function ViewProductsDeliveries() {
             const response = await api.put(`/task/upload-tenant-approve`, uploadInfos);
 
             if (response.data.status === 'success') {
+              console.log('log do success upload');
               addToast({
                 title: 'Sucesso',
                 description: 'Arquivo enviado, aguarde a aprovação do cliente.',
                 type: 'success'
               });
               setModalTenantApprove(false);
+              setModalSelectFinalfiles(false);
               setToClientConfirmation(false);
               getTaskInfos();
               // setTimeout(() => {
@@ -3494,7 +3497,7 @@ export default function ViewProductsDeliveries() {
               <ButtonDefault typeButton="dark" isOutline onClick={handleCancelSendToTenant}>
                 Cancelar
               </ButtonDefault>
-              <ButtonDefault loading={loading} typeButton="primary" onClick={handleUploadTenant}>
+              <ButtonDefault loading={loading} typeButton="primary" onClick={handleUploadApproved}>
                 Enviar
               </ButtonDefault>
             </ModalButtons>
