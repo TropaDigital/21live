@@ -51,37 +51,37 @@ export default function Layout() {
               to: '/clientes',
               name: 'Clientes',
               icon: IconUsers,
-              identifier: 'jobs_tasks_manager'
+              identifier: 'jobs_clients_view'
             },
             {
               to: '/projetos',
               name: 'Projetos',
               icon: IconProjects,
-              identifier: 'jobs_projects'
+              identifier: 'jobs_projects_view'
             },
             {
               to: '/tarefas',
               name: 'Tarefas',
               icon: ClipboardTask,
-              identifier: 'jobs_tasks_manager'
+              identifier: 'jobs_tasks_view'
             },
             {
               to: '/minhas-tarefas',
               name: 'Minhas tarefas',
               icon: MyTasksIcon,
-              identifier: 'jobs_tasks_execute'
+              identifier: 'jobs_tasks_view'
             },
             {
               to: '/produtos',
               name: 'Produtos',
               icon: IconProducts,
-              identifier: 'jobs_products'
+              identifier: 'jobs_products_view'
             },
             {
               to: '/fluxo',
               name: 'Fluxos',
               icon: IconFlux,
-              identifier: 'jobs_flow'
+              identifier: 'jobs_flow_view'
             },
             {
               to: '/equipe',
@@ -99,7 +99,7 @@ export default function Layout() {
               to: '/solicitacoes',
               name: 'Solicitações',
               icon: TicketsIcon,
-              identifier: 'jobs_tickets'
+              identifier: 'ticket_cats_view'
             }
             // {
             //   to: '/minhas-tarefas',
