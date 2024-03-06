@@ -64,6 +64,7 @@ import {
   TableKits
 } from './styles';
 import { FinishModal, FinishModalButtons } from '../Projects/CreateProject/styles';
+import { useAuth } from '../../hooks/AuthContext';
 
 interface ServicesProps {
   job_service_id?: number | string;
@@ -124,6 +125,7 @@ interface StateErrorProps {
 
 export default function Services() {
   const { addToast } = useToast();
+  const { user } = useAuth();
   const { parameters, getParams } = useParamsHook();
   const formRef = useRef<any>();
   const {
@@ -917,27 +919,31 @@ export default function Services() {
 
   return (
     <ContainerDefault>
-      <HeaderPage title="Produtos">
-        <>
-          <ButtonDefault
-            typeButton="primary"
-            onClick={() =>
-              setModalCategory({
-                isOpen: !modal.isOpen,
-                title: 'Cadastrar nova categoria',
-                category_id: ''
-              })
-            }
-          >
-            <BiPlus color="#fff" />
-            Adicionar categoria
-          </ButtonDefault>
-          <ButtonDefault typeButton="success" onClick={handleOnOpenCreateModal}>
-            <BiPlus color="#fff" />
-            Adicionar {typeList === 'produtos' ? 'produto' : 'kit'}
-          </ButtonDefault>
-        </>
-      </HeaderPage>
+      {user?.permissions?.includes('jobs_products_add') && (
+        <HeaderPage title="Produtos">
+          <>
+            <ButtonDefault
+              typeButton="primary"
+              onClick={() =>
+                setModalCategory({
+                  isOpen: !modal.isOpen,
+                  title: 'Cadastrar nova categoria',
+                  category_id: ''
+                })
+              }
+            >
+              <BiPlus color="#fff" />
+              Adicionar categoria
+            </ButtonDefault>
+            <ButtonDefault typeButton="success" onClick={handleOnOpenCreateModal}>
+              <BiPlus color="#fff" />
+              Adicionar {typeList === 'produtos' ? 'produto' : 'kit'}
+            </ButtonDefault>
+          </>
+        </HeaderPage>
+      )}
+
+      {!user?.permissions?.includes('jobs_products_add') && <HeaderPage title="Produtos" />}
 
       {!isFetching && (
         <Table>
@@ -1102,14 +1108,19 @@ export default function Services() {
                     <td>
                       <div className="fieldTableClients">
                         <ButtonTable typeButton="view" onClick={() => handleOnShowProduct(row)} />
-                        <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
-                        <Alert
-                          title="Atenção"
-                          subtitle="Certeza que gostaria de deletar este Produto? Ao excluir a ação não poderá ser desfeita."
-                          confirmButton={() => handleOnDelete(row.job_service_id)}
-                        >
-                          <ButtonTable typeButton="delete" />
-                        </Alert>
+                        {user?.permissions?.includes('jobs_products_edit') && (
+                          <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
+                        )}
+
+                        {user?.permissions?.includes('jobs_projects_delete') && (
+                          <Alert
+                            title="Atenção"
+                            subtitle="Certeza que gostaria de deletar este Produto? Ao excluir a ação não poderá ser desfeita."
+                            confirmButton={() => handleOnDelete(row.job_service_id)}
+                          >
+                            <ButtonTable typeButton="delete" />
+                          </Alert>
+                        )}
                       </div>
                     </td>
                   </tr>
