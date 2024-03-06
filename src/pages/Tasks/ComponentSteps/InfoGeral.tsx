@@ -248,18 +248,20 @@ export default function InfoGeral({
       </FlexLine>
 
       <FlexLine>
-        <CreateTicketOption>
-          <Switch
-            onChange={handleTicket}
-            checked={data.gen_ticket === 'true' ? true : false}
-            uncheckedIcon={false}
-            checkedIcon={false}
-            onColor="#0046B5"
-            className="switch-ticket"
-          />
-          <div>Gerar ticket</div>
-        </CreateTicketOption>
-        {requestersList.length > 0 && data.gen_ticket === 'true' && data.ticket_id !== '' && (
+        {(data?.ticket_id === '' || data?.ticket_id === '0') && ticketAsk === 'ask' && (
+          <CreateTicketOption>
+            <Switch
+              onChange={handleTicket}
+              checked={data.gen_ticket === 'true' ? true : false}
+              uncheckedIcon={false}
+              checkedIcon={false}
+              onColor="#0046B5"
+              className="switch-ticket"
+            />
+            <div>Gerar ticket</div>
+          </CreateTicketOption>
+        )}
+        {data.ticket_id !== '' && (
           <div style={{ flex: '1' }}>
             <SelectDefault
               label="Solicitante"

@@ -174,7 +174,7 @@ export default function InfoProducts({
   }
 
   useEffect(() => {
-    if (dataFilter.length > 0) {
+    if (dataFilter?.length > 0) {
       okToSave(true);
     }
   }, [dataFilter]);
@@ -312,7 +312,7 @@ export default function InfoProducts({
                     </td>
                     <td>
                       <QuantityInput
-                        receiveQuantity={row.quantity ? row.quantity : 0}
+                        receiveQuantity={row.quantity && dataFilter?.length > 0 ? row.quantity : 0}
                         infosReceived={row}
                         handleQuantity={(value: any) => handleOnQuantity(row, value)}
                         clearQuantity={() => {
@@ -455,6 +455,7 @@ export default function InfoProducts({
               key={index}
               data={row}
               showSwitch={hideSwitch}
+              handleOnDelete={handleDeleteProducts}
             />
           ))}
         </WrapperCard>

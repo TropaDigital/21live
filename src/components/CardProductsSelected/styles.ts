@@ -10,7 +10,7 @@ export const CardProduct = styled.div<CardProps>`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  width: 340px;
+  /* width: 340px; */
   height: ${({ openOptions }) => (openOptions ? 'fit-content' : '56px')};
   /* background: var(--background-primary); */
   border-bottom: 1px solid var(--gray-200);
@@ -24,6 +24,8 @@ export const CardTop = styled.div`
   width: 100%;
   height: 56px;
   padding: 16px 24px;
+
+  position: relative;
 `;
 
 export const CardBottom = styled.div`
@@ -53,7 +55,7 @@ export const SwitchSelector = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  width: 100%;
+  width: fit-content;
   height: 30px;
 `;
 
@@ -85,4 +87,38 @@ export const QuantitySelected = styled.div`
   font-weight: var(--weight-regular);
 
   margin-top: -12px;
+`;
+
+export const DeleteButton = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-top: 15px;
+
+  .delete {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+
+    margin-left: auto;
+
+    color: var(--Danger);
+    font-size: var(--text-small-sm);
+    font-weight: var(--weight-medium);
+
+    svg {
+      transition: all 0.3s;
+      path {
+        fill: var(--Danger);
+      }
+      &:hover {
+        transform: scale(1.3);
+      }
+    }
+  }
 `;

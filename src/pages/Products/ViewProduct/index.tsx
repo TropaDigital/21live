@@ -8,7 +8,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 // Icons
 import { FaArrowLeft, FaChevronDown, FaChevronUp, FaDownload } from 'react-icons/fa';
 import { IconBigCheck } from '../../../assets/icons';
-import { BiCalendar, BiShow } from 'react-icons/bi';
+import { BiCalendar, BiShow, BiX } from 'react-icons/bi';
 import { MdClose } from 'react-icons/md';
 
 // Components
@@ -44,6 +44,7 @@ import { InputDefault } from '../../../components/Inputs/InputDefault';
 import {
   ArrowSection,
   CardsWrapper,
+  CloseButton,
   DeliveryWrapper,
   FilePreview,
   FileProductList,
@@ -61,11 +62,15 @@ import {
   TaskInfoField,
   TasksInfos,
   TextInfo,
+  TimeAndDates,
   TimeLine,
   TimeLineIcon,
+  TimeWrapper,
   TimelineExtraInfo,
   TimelineInfo,
-  TimelineStep
+  TimelineStep,
+  TotalTaskHours,
+  UserInfo
 } from './styles';
 import { ButtonIcon } from '../WorkingProduct/styles';
 
@@ -75,6 +80,7 @@ import api from '../../../services/api';
 // Libraries
 import moment from 'moment';
 import 'moment/dist/locale/pt-br';
+import Switch from 'react-switch';
 
 // Hooks
 import { useToast } from '../../../hooks/toast';
@@ -135,6 +141,17 @@ interface UpdateDateProps {
   date_end: string;
 }
 
+interface UpdateHoursProps {
+  step_name: string;
+  user_name: string;
+  user_function: string;
+  description: string;
+  date_start: string;
+  date_end: string;
+  alocated_time: string;
+  active: boolean;
+}
+
 export default function ViewProductsDeliveries() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -188,6 +205,7 @@ export default function ViewProductsDeliveries() {
     isOn: false,
     date_end: ''
   });
+  const [modalUpdateHours, setModalUpdateHours] = useState<boolean>(false);
 
   const [previewImage, setPreviewImage] = useState({
     isOpen: false,
@@ -271,15 +289,8 @@ export default function ViewProductsDeliveries() {
     creation_description: dataTask?.creation_description
   };
 
-  const myTaskShowHours = location.state.task.show_hours;
-  const taskDeductHours = location.state.task.deduct_hours;
-
-  const allEstimatedTime = {
-    time_consumed: dataTask?.time_consumed,
-    time_creation: dataProducts?.time_creation,
-    time_essay: dataProducts?.time_essay,
-    total_time: dataTask?.total_time
-  };
+  const myTaskShowHours = location?.state?.task?.show_hours;
+  const taskDeductHours = location?.state?.task?.deduct_hours;
 
   const actualDate = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
   const actualStep = timeLineData?.currentStep;
@@ -812,51 +823,6 @@ export default function ViewProductsDeliveries() {
         end_job: values.end_job
       };
 
-      if (dataTask?.type === 'Livre') {
-        const responseNextDate = await api.get(
-          `/task/nextdate=${moment(new Date()).format('YYYY-MM-DD')}&task_id=${dataTask?.task_id}`
-        );
-
-        const response = await api.get(`/task/next-user/${dataTask?.task_id}`);
-
-        if (response.data.result.length > 0) {
-          const payload = {
-            user_id: response.data.result[0].user_id,
-            task_id: dataTask?.task_id
-          };
-
-          const responseConclude = await api.put(`/task/send-for-evaluation`, payload);
-
-          addToast({
-            title: 'Sucesso',
-            description: 'Tarefa avançou para a próxima etapa.',
-            type: 'success'
-          });
-          stop();
-          navigate('/minhas-tarefas');
-          localStorage.removeItem('stopwatchState');
-        }
-      }
-
-      // if (dataTask?.status !== 'Concluida' && typeOfPlay === 'schedule') {
-      //   const response = await api.put(
-      //     `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
-      //     next_user
-      //   );
-      //   // console.log('log do response', response.data.result);
-
-      //   if (response.data.result === 1) {
-      //     addToast({
-      //       title: 'Sucesso',
-      //       description: 'Tarefa avançou para a próxima etapa.',
-      //       type: 'success'
-      //     });
-      //     stop();
-      //     navigate('/minhas-tarefas');
-      //     localStorage.removeItem('stopwatchState');
-      //   }
-      // }
-
       if (dataTask?.status !== 'Concluida' && selectedProduct !== '' && typeOfPlay === 'product') {
         // if (selectedProduct.status !== 'Concluida') {
         //   const response = await api.put(
@@ -940,23 +906,6 @@ export default function ViewProductsDeliveries() {
           // setHideRightCard('hide');
         }
       }
-
-      // if (
-      //   dataProducts?.status === 'Concluida' &&
-      //   selectedProduct === '' &&
-      //   typeOfPlay === 'product'
-      // ) {
-      //   const response = await api.put(
-      //     `/task/delivery-conclude/${deliveryId[0].delivery_id}`,
-      //     next_user
-      //   );
-      //   console.log('log do response', response.data.result);
-
-      //   if (response.data.result === 1) {
-      //     navigate('/minhas-tarefas');
-      //     localStorage.removeItem('stopwatchState');
-      //   }
-      // }
 
       setLoading(false);
     } catch (error: any) {
@@ -1915,10 +1864,32 @@ export default function ViewProductsDeliveries() {
     }
   }
 
+  const handleChangeHours = (e: any) => {
+    const { name, value } = e.target;
+    console.log('log do change hours', name, value);
+  };
+
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
     // console.log('log allRejected', hasAllBeenRejected);
   }, [typeOfPlay]);
+
+  const dataHourMock: UpdateHoursProps[] = [
+    {
+      step_name: 'Plan',
+      user_name: 'Danilo Fontes',
+      user_function: 'Gerente de projeto',
+      date_start: '2024-02-16 14:00:00',
+      date_end: '2024-02-16 16:00:00',
+      alocated_time: '2:00:00',
+      description: 'Esqueceu de dar o play',
+      active: true
+    }
+  ];
+
+  // useEffect(() => {
+  //   console.log('log do location =>', location);
+  // }, [location]);
 
   return (
     <ContainerDefault>
@@ -2088,7 +2059,7 @@ export default function ViewProductsDeliveries() {
                 }
                 disableButton={false}
                 goBack
-                buttonType="send"
+                buttonType="finish"
                 // sendToNext={handleConcludeTask}
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
@@ -2114,7 +2085,7 @@ export default function ViewProductsDeliveries() {
                 }
                 disableButton={typeOfPlay === 'product' ? false : true}
                 goBack
-                buttonType="send"
+                buttonType="finish"
                 // sendToNext={handleConcludeTask}
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
@@ -2142,7 +2113,7 @@ export default function ViewProductsDeliveries() {
                 }
                 disableButton={true}
                 goBack
-                buttonType="send"
+                buttonType="finish"
                 // sendToNext={handleConcludeTask}
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
@@ -2152,7 +2123,7 @@ export default function ViewProductsDeliveries() {
               />
             )}
 
-          {dataProducts?.status !== 'Concluida' &&
+          {/* {dataProducts?.status !== 'Concluida' &&
             dataTask?.status !== 'Concluida' &&
             selectedProduct !== '' &&
             typeOfPlay === 'product' &&
@@ -2178,7 +2149,7 @@ export default function ViewProductsDeliveries() {
                 isInsideProduct={true}
                 backFlow={() => setModalReturnFlow(true)}
               />
-            )}
+            )} */}
 
           {dataProducts?.status !== 'Concluida' &&
             dataTask?.status !== 'Concluida' &&
@@ -2462,7 +2433,7 @@ export default function ViewProductsDeliveries() {
             )}
 
             {dataTask?.status !== 'Concluida' && !showClock && !viewProduct && (
-              <CardWrapper>
+              <CardWrapper onClick={() => setModalUpdateHours(true)}>
                 <CardTitle>Tempo utilizado</CardTitle>
                 <StopWatchTimer className="stopped">{dataTask?.time_consumed}</StopWatchTimer>
                 <EstimatedTime>
@@ -2494,11 +2465,7 @@ export default function ViewProductsDeliveries() {
                 <EstimatedTime>
                   Tempo estimado:{' '}
                   <span>
-                    {allEstimatedTime && myTaskShowHours && taskDeductHours === 'creation'
-                      ? allEstimatedTime.time_creation
-                      : taskDeductHours === 'essay'
-                      ? allEstimatedTime.time_essay
-                      : allEstimatedTime.total_time}
+                    {dataTask?.total_time !== 'undefined' ? dataTask?.total_time : 'Livre'}
                   </span>
                 </EstimatedTime>
               </CardWrapper>
@@ -2508,11 +2475,13 @@ export default function ViewProductsDeliveries() {
               <CardTaskPlay
                 cardTitle={state.isRunning ? 'Atividade iniciada' : 'Iniciar atividade'}
                 dataTime={
-                  allEstimatedTime && myTaskShowHours && taskDeductHours === 'creation'
-                    ? allEstimatedTime.time_creation
-                    : taskDeductHours === 'essay'
-                    ? allEstimatedTime.time_essay
-                    : allEstimatedTime.total_time
+                  myTaskShowHours && taskDeductHours === 'creation' && dataTask?.type !== 'Livre'
+                    ? selectedProduct.productInfo.minutes_creation
+                    : taskDeductHours === 'essay' && dataTask?.type !== 'Livre'
+                    ? selectedProduct.productInfo.minutes_essay
+                    : dataTask?.type === 'Livre'
+                    ? ''
+                    : dataTask?.total_time
                 }
                 blockPlay={typeOfPlay === 'product' && !viewProduct ? true : false}
                 handlePlay={handlePlayingType}
@@ -2579,8 +2548,9 @@ export default function ViewProductsDeliveries() {
           step={showHoursBack ? returnInfos.chosenStep : Number(dataTask?.step) + 1}
           user_alocated={handleAssignTask}
           closeModal={() => setModalSendToUser(false)}
-          manualOverrideDate={showHoursBack}
+          manualOverrideDate={showHoursBack || dataTask?.type === 'Livre'}
           loadingSubmit={loading}
+          taskType={dataTask?.type}
         />
       </ModalDefault>
 
@@ -2895,23 +2865,39 @@ export default function ViewProductsDeliveries() {
             <ButtonDefault typeButton="dark" isOutline onClick={handleCancelReturn}>
               Descartar
             </ButtonDefault>
-            <ButtonDefault
-              typeButton={
-                returnInfos.chosenStep === '' ||
-                returnInfos.returnMotive === '' ||
-                returnInfos.returnType === ''
-                  ? 'blocked'
-                  : 'primary'
-              }
-              onClick={handleBackFlow}
-              disabled={
-                returnInfos.chosenStep === '' ||
-                returnInfos.returnMotive === '' ||
-                returnInfos.returnType === ''
-              }
-            >
-              Retornar
-            </ButtonDefault>
+            {stepsWithTenantApprove && stepsWithTenantApprove?.length < 1 && (
+              <ButtonDefault
+                typeButton={
+                  returnInfos.chosenStep === '' ||
+                  returnInfos.returnMotive === '' ||
+                  returnInfos.returnType === ''
+                    ? 'blocked'
+                    : 'primary'
+                }
+                onClick={handleBackFlow}
+                disabled={
+                  returnInfos.chosenStep === '' ||
+                  returnInfos.returnMotive === '' ||
+                  returnInfos.returnType === ''
+                }
+              >
+                Retornar
+              </ButtonDefault>
+            )}
+
+            {stepsWithTenantApprove && stepsWithTenantApprove?.length >= 1 && (
+              <ButtonDefault
+                typeButton={
+                  returnInfos.chosenStep === '' || returnInfos.returnMotive === ''
+                    ? 'blocked'
+                    : 'primary'
+                }
+                onClick={handleBackFlow}
+                disabled={returnInfos.chosenStep === '' || returnInfos.returnMotive === ''}
+              >
+                Retornar
+              </ButtonDefault>
+            )}
           </div>
         </ModalReturnFlow>
       </ModalDefault>
@@ -3514,6 +3500,132 @@ export default function ViewProductsDeliveries() {
             </ModalButtons>
           )}
         </FileProductsWrapper>
+      </ModalDefault>
+
+      {/* Modal change hours */}
+      <ModalDefault
+        isOpen={modalUpdateHours}
+        onOpenChange={() => setModalUpdateHours(false)}
+        title="Tempo na tarefa"
+      >
+        <TimeWrapper>
+          <CloseButton onClick={() => setModalUpdateHours(false)}>
+            <BiX size={30} />
+          </CloseButton>
+
+          <Table>
+            <table>
+              <thead>
+                <tr>
+                  <th>Etapa</th>
+                  <th>Colaborador</th>
+                  <th>Observação</th>
+                  <th>Início</th>
+                  <th>Final</th>
+                  <th>Tempo alocado</th>
+                  <th>Ativo</th>
+                  <th style={{ color: '#F9FAFB' }}>-</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {dataHourMock.map((row, index: number) => (
+                  <tr key={index}>
+                    <td>{row.step_name}</td>
+                    <td>
+                      <UserInfo>
+                        <div className="user-name">{row.user_name}</div>
+                        <div className="user-function">{row.user_function}</div>
+                      </UserInfo>
+                    </td>
+                    <td>
+                      <InputDefault
+                        label=""
+                        placeholder="Digite aqui..."
+                        name="description"
+                        value={row.description}
+                        onChange={handleChangeHours}
+                        error={''}
+                      />
+                    </td>
+                    <td>
+                      <InputDefault
+                        label=""
+                        placeholder="00/00/0000 00:00"
+                        name="date_start"
+                        type="datetime-local"
+                        max={'9999-12-31'}
+                        icon={BiCalendar}
+                        onChange={(e) => {
+                          handleChangeHours(e);
+                          // removeError('date_start');
+                        }}
+                        value={row.date_start}
+                        // onKeyDown={handleKeyDown}
+                        // error={
+                        //   errorsForm.date_start || errorsForm.allFields ? 'Data inicial é obrigatória!' : ''
+                        // }
+                      />
+                    </td>
+                    <td>
+                      <InputDefault
+                        label=""
+                        placeholder="00/00/0000 00:00"
+                        name="date_end"
+                        type="datetime-local"
+                        max={'9999-12-31'}
+                        icon={BiCalendar}
+                        onChange={(e) => {
+                          handleChangeHours(e);
+                          // removeError('date_start');
+                        }}
+                        value={row.date_end}
+                        // onKeyDown={handleKeyDown}
+                        // error={
+                        //   errorsForm.date_start || errorsForm.allFields ? 'Data inicial é obrigatória!' : ''
+                        // }
+                      />
+                    </td>
+                    <td>{row.alocated_time}</td>
+                    <td>
+                      <Switch
+                        onChange={() => console.log('log do switch button', row.description)}
+                        checked={row.active}
+                        uncheckedIcon={false}
+                        checkedIcon={false}
+                        onColor="#0046B5"
+                      />
+                    </td>
+                    <td>
+                      <ButtonDefault typeButton="primary">Salvar</ButtonDefault>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Table>
+
+          <TotalTaskHours>
+            <div className="total-task">Total tarefa</div>
+
+            <TimeAndDates>
+              <div className="card-info">
+                Início
+                <span>12/01/2024</span>
+              </div>
+
+              <div className="card-info">
+                Final
+                <span>13/01/2024</span>
+              </div>
+
+              <div className="card-info">
+                Tempo alocado:
+                <span>01:53:02</span>
+              </div>
+            </TimeAndDates>
+          </TotalTaskHours>
+        </TimeWrapper>
       </ModalDefault>
 
       {/* Modal loading submit */}

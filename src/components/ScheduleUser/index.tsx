@@ -85,6 +85,7 @@ interface TaskExchangeProps {
   project_product_id: string;
   step?: string | number | any;
   limitDate?: string;
+  taskType?: string;
   user_alocated: (value: any) => void;
   closeModal: () => void;
   manualOverrideDate?: boolean;
@@ -109,7 +110,8 @@ export default function ScheduleUser({
   user_alocated,
   closeModal,
   manualOverrideDate,
-  loadingSubmit
+  loadingSubmit,
+  taskType
 }: TaskExchangeProps) {
   const { addToast } = useToast();
   const [DTOTaskSelect, setDTOTaskSelect] = useState<ScheduleProps>({
@@ -239,7 +241,7 @@ export default function ScheduleUser({
       setCheckAvailability(false);
       setTimeout(() => {
         handleUserSelect(DTOTaskSelect.user_selected);
-      }, 500);
+      }, 1000);
     }
   }
 
@@ -376,7 +378,7 @@ export default function ScheduleUser({
         ? estimated_time.time_essay
         : estimated_time.total_time;
 
-    if (value > timeValue) {
+    if (value > timeValue && taskType !== 'Livre') {
       addToast({
         type: 'warning',
         title: 'Aviso',
