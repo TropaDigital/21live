@@ -552,3 +552,38 @@ export const TimeAndDates = styled.div`
     }
   }
 `;
+
+export const CardTimeInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  min-width: 264px;
+  width: '264px';
+  height: 166px;
+
+  background: var(--background-primary);
+  border: 1px solid var(--gray-200);
+  border-radius: 12px;
+
+  padding: 24px;
+
+  &.pointer {
+    cursor: pointer;
+  }
+`;
+
+export const DataInfos = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .prev-date {
+    color: var(--gray-900);
+    font-size: var(--text-small-xs);
+    font-weight: var(--weight-medium);
+    text-decoration: line-through;
+
+    padding-left: 8px;
+  }
+`;

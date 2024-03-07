@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 // React
 import React, { ButtonHTMLAttributes } from 'react';
 
@@ -5,15 +6,16 @@ import React, { ButtonHTMLAttributes } from 'react';
 import { Container } from './styles';
 
 // Icons
-import { BiCalendar, BiEdit, BiShow, BiTrash } from 'react-icons/bi';
+import { BiCalendar, BiCopy, BiEdit, BiShow, BiTrash } from 'react-icons/bi';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   loading?: boolean;
-  typeButton?: 'view' | 'delete' | 'edit' | 'work';
+  typeButton?: 'view' | 'delete' | 'edit' | 'work' | 'copy';
 }
 
 const icons = {
   view: <BiShow size={20} />,
+  copy: <BiCopy size={20} />,
   delete: <BiTrash size={20} />,
   edit: <BiEdit size={20} />,
   work: <BiCalendar size={20} />

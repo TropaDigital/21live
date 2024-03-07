@@ -128,12 +128,6 @@ export default function ProductTable({
                     row.status !== 'Desmembrada' ? productSelected(row) : productSelected('task')
                   }
                 >
-                  {/* {user.permissions.includes('jobs_tasks_essay') && (
-                    <div className="flex info">
-                      <IconText /> {row.service}
-                    </div>
-                  )} */}
-
                   <div className="flex info">{row.service}</div>
                 </td>
                 {workFor === 'product' && (

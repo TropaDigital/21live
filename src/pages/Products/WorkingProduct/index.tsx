@@ -804,28 +804,35 @@ export default function WorkingProduct({
           {notifications && <div className="notification" />}
         </TaskTab>
 
-        <TaskTab
-          onClick={(e: any) => {
-            setSelectedTab(e.target.innerText);
-            setLogIsOn(false);
-            console.log('log do text =>', e.target.innerText);
-          }}
-          className={selectedTab === 'Arquivos (produto)' ? 'active' : ''}
-        >
-          <BsFolder />
-          Arquivos (produto)
-        </TaskTab>
+        {taskFiles &&
+          taskFiles?.filter(
+            (obj: FilesMap) => obj.products_delivery_id === productInfos.products_delivery_id
+          ).length > 0 && (
+            <TaskTab
+              onClick={(e: any) => {
+                setSelectedTab(e.target.innerText);
+                setLogIsOn(false);
+                console.log('log do text =>', e.target.innerText);
+              }}
+              className={selectedTab === 'Arquivos (produto)' ? 'active' : ''}
+            >
+              <BsFolder />
+              Arquivos (produto)
+            </TaskTab>
+          )}
 
-        <TaskTab
-          onClick={(e: any) => {
-            setSelectedTab(e.target.innerText);
-            setLogIsOn(false);
-          }}
-          className={selectedTab === 'Arquivos (todos)' ? 'active' : ''}
-        >
-          <BsFolder />
-          Arquivos (todos)
-        </TaskTab>
+        {taskFiles && taskFiles.length > 0 && (
+          <TaskTab
+            onClick={(e: any) => {
+              setSelectedTab(e.target.innerText);
+              setLogIsOn(false);
+            }}
+            className={selectedTab === 'Arquivos (todos)' ? 'active' : ''}
+          >
+            <BsFolder />
+            Arquivos (todos)
+          </TaskTab>
+        )}
 
         <TaskTab
           onClick={(e: any) => {
@@ -846,7 +853,7 @@ export default function WorkingProduct({
           </button>
         )}
 
-        {selectedTab === 'Arquivos (produto)' && uploadEnabled && !finalCard && !uploadClient && (
+        {uploadEnabled && !finalCard && !uploadClient && (
           <ButtonsWrapper>
             {/* {sendToApprove && (
               <ButtonDefault typeButton="primary" onClick={toApprove}>
@@ -859,8 +866,7 @@ export default function WorkingProduct({
           </ButtonsWrapper>
         )}
 
-        {selectedTab === 'Arquivos (produto)' &&
-          uploadEnabled &&
+        {uploadEnabled &&
           (finalCard || uploadClient) &&
           productInfos?.status !== 'Concluida' &&
           productInfos?.status !== 'Desmembrada' &&
@@ -1136,157 +1142,157 @@ export default function WorkingProduct({
                 </thead>
 
                 <tbody>
-                  {taskFiles &&
-                  taskFiles?.length > 0 &&
-                  taskFiles.filter(
-                    (obj: FilesMap) =>
-                      obj.products_delivery_id === productInfos.products_delivery_id
-                  ).length > 0 ? (
-                    taskFiles.map((row: FilesMap, index: number) => (
-                      <tr key={row.task_file_id}>
-                        <td>
-                          <div className="id-column">
-                            #{String(row.task_file_id).padStart(2, '0')}
-                          </div>
-                        </td>
-                        <td>
-                          {row.products_delivery_id !== '' ? row.products_delivery_id : '-----'}
-                        </td>
-                        <td>{productsNames[index]}</td>
-                        <td>
-                          {row.original_name !== ''
-                            ? row.original_name
-                            : row.file_name.split('-').pop()}
-                        </td>
-                        <td style={{ textTransform: 'capitalize' }}>
-                          {moment(row.created).format('DD/MM/YYYY')}
-                        </td>
-                        <td>
-                          {row.products_delivery_id !== '' ? (
-                            <StatusTable
-                              className={
-                                row.status === 'fail'
-                                  ? 'status reject'
+                  {taskFiles && taskFiles?.length > 0 ? (
+                    taskFiles
+                      .filter(
+                        (obj: FilesMap) =>
+                          obj.products_delivery_id === productInfos.products_delivery_id
+                      )
+                      .map((row: FilesMap, index: number) => (
+                        <tr key={row.task_file_id}>
+                          <td>
+                            <div className="id-column">
+                              #{String(row.task_file_id).padStart(2, '0')}
+                            </div>
+                          </td>
+                          <td>
+                            {row.products_delivery_id !== '' ? row.products_delivery_id : '-----'}
+                          </td>
+                          <td>{productInfos.service}</td>
+                          <td>
+                            {row.original_name !== ''
+                              ? row.original_name
+                              : row.file_name.split('-').pop()}
+                          </td>
+                          <td style={{ textTransform: 'capitalize' }}>
+                            {moment(row.created).format('DD/MM/YYYY')}
+                          </td>
+                          <td>
+                            {row.products_delivery_id !== '' ? (
+                              <StatusTable
+                                className={
+                                  row.status === 'fail'
+                                    ? 'status reject'
+                                    : row.status === 'pass'
+                                    ? 'status accept'
+                                    : row.status === ''
+                                    ? ''
+                                    : 'status'
+                                }
+                              >
+                                {row.status === 'fail'
+                                  ? 'Reprovado'
                                   : row.status === 'pass'
-                                  ? 'status accept'
-                                  : row.status === ''
-                                  ? ''
-                                  : 'status'
-                              }
-                            >
-                              {row.status === 'fail'
-                                ? 'Reprovado'
-                                : row.status === 'pass'
-                                ? 'Aprovado'
-                                : row.status === 'await' || row.status === 'wait'
-                                ? 'Aguardando aprovação'
-                                : ''}
-                            </StatusTable>
-                          ) : (
-                            '-----'
-                          )}
-                        </td>
-                        <td>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            {row.status === 'fail' && (
-                              <InfoFile
+                                  ? 'Aprovado'
+                                  : row.status === 'await' || row.status === 'wait'
+                                  ? 'Aguardando aprovação'
+                                  : ''}
+                              </StatusTable>
+                            ) : (
+                              '-----'
+                            )}
+                          </td>
+                          <td>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              {row.status === 'fail' && (
+                                <InfoFile
+                                  onClick={() =>
+                                    setModalRejectedInfo({
+                                      isOpen: true,
+                                      motive: row.products_delivery_id
+                                    })
+                                  }
+                                >
+                                  <BsChatText size={20} />
+                                </InfoFile>
+                              )}
+
+                              <ButtonIcon
+                                className="view"
                                 onClick={() =>
-                                  setModalRejectedInfo({
+                                  setPreviewImage({
                                     isOpen: true,
-                                    motive: row.products_delivery_id
+                                    imageInfos: {
+                                      bucket: row.bucket,
+                                      created: row.created,
+                                      file_name: row.file_name,
+                                      original_name: row.original_name,
+                                      key: row.key,
+                                      task_file_id: row.task_file_id,
+                                      task_id: row.task_id,
+                                      size: row.size,
+                                      updated: row.updated,
+                                      url: row.url
+                                    }
                                   })
                                 }
                               >
-                                <BsChatText size={20} />
-                              </InfoFile>
-                            )}
+                                <BiShow size={20} />
+                              </ButtonIcon>
 
-                            <ButtonIcon
-                              className="view"
-                              onClick={() =>
-                                setPreviewImage({
-                                  isOpen: true,
-                                  imageInfos: {
-                                    bucket: row.bucket,
-                                    created: row.created,
-                                    file_name: row.file_name,
-                                    original_name: row.original_name,
-                                    key: row.key,
-                                    task_file_id: row.task_file_id,
-                                    task_id: row.task_id,
-                                    size: row.size,
-                                    updated: row.updated,
-                                    url: row.url
-                                  }
-                                })
-                              }
-                            >
-                              <BiShow size={20} />
-                            </ButtonIcon>
+                              <ButtonIcon className="download" onClick={() => downloadFile(row)}>
+                                <FaDownload />
+                              </ButtonIcon>
 
-                            <ButtonIcon className="download" onClick={() => downloadFile(row)}>
-                              <FaDownload />
-                            </ButtonIcon>
-
-                            <Alert
-                              title="Atenção"
-                              subtitle="Certeza que gostaria de deletar este arquivo? Ao excluir esta ação não poderá ser desfeita."
-                              confirmButton={() => handleDeleteFile(row.task_file_id)}
-                            >
-                              <ButtonTable typeButton="delete" />
-                            </Alert>
-                          </div>
-                          {/* {productsInfo?.file_status === 'pass' && (
+                              <Alert
+                                title="Atenção"
+                                subtitle="Certeza que gostaria de deletar este arquivo? Ao excluir esta ação não poderá ser desfeita."
+                                confirmButton={() => handleDeleteFile(row.task_file_id)}
+                              >
+                                <ButtonTable typeButton="delete" />
+                              </Alert>
+                            </div>
+                            {/* {productsInfo?.file_status === 'pass' && (
                               <div className="fieldTableClients">                               
                               </div>
                             )} */}
-                          {/* productsInfo?.file_status === 'await' && */}
-                          {isToApprove &&
-                            isToApprove[0].manager_approve === 'true' &&
-                            row.status === 'await' && (
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                {/* <DownloadIcon onClick={() => handleDownload(row)}>
+                            {/* productsInfo?.file_status === 'await' && */}
+                            {isToApprove &&
+                              isToApprove[0].manager_approve === 'true' &&
+                              row.status === 'await' && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  {/* <DownloadIcon onClick={() => handleDownload(row)}>
                                   <FaDownload />
                                 </DownloadIcon> */}
 
-                                <ButtonApproveReject
-                                  className="reject"
-                                  // onClick={() => disapproveFile(row.products_delivery_id)}
-                                  onClick={() =>
-                                    setModalApproveDisapprove({
-                                      isOpen: true,
-                                      productId: row.products_delivery_id,
-                                      approve: false,
-                                      disapprove: true
-                                    })
-                                  }
-                                >
-                                  <IoIosCloseCircleOutline />
+                                  <ButtonApproveReject
+                                    className="reject"
+                                    // onClick={() => disapproveFile(row.products_delivery_id)}
+                                    onClick={() =>
+                                      setModalApproveDisapprove({
+                                        isOpen: true,
+                                        productId: row.products_delivery_id,
+                                        approve: false,
+                                        disapprove: true
+                                      })
+                                    }
+                                  >
+                                    <IoIosCloseCircleOutline />
 
-                                  {/* <div className="hover-text">Reprovar</div> */}
-                                </ButtonApproveReject>
+                                    {/* <div className="hover-text">Reprovar</div> */}
+                                  </ButtonApproveReject>
 
-                                <ButtonApproveReject
-                                  className="check"
-                                  // onClick={() => approveFile(row.products_delivery_id)}
-                                  onClick={() =>
-                                    setModalApproveDisapprove({
-                                      isOpen: true,
-                                      productId: row.products_delivery_id,
-                                      approve: true,
-                                      disapprove: false
-                                    })
-                                  }
-                                >
-                                  <BsCheckCircle />
+                                  <ButtonApproveReject
+                                    className="check"
+                                    // onClick={() => approveFile(row.products_delivery_id)}
+                                    onClick={() =>
+                                      setModalApproveDisapprove({
+                                        isOpen: true,
+                                        productId: row.products_delivery_id,
+                                        approve: true,
+                                        disapprove: false
+                                      })
+                                    }
+                                  >
+                                    <BsCheckCircle />
 
-                                  {/* <div className="hover-text">Aprovar</div> */}
-                                </ButtonApproveReject>
-                              </div>
-                            )}
-                        </td>
-                      </tr>
-                    ))
+                                    {/* <div className="hover-text">Aprovar</div> */}
+                                  </ButtonApproveReject>
+                                </div>
+                              )}
+                          </td>
+                        </tr>
+                      ))
                   ) : (
                     <tr>
                       <td colSpan={8}>Sem arquivos</td>

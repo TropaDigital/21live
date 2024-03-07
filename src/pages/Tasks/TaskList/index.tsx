@@ -304,7 +304,7 @@ export default function TaskList() {
 
       {!isFetching && (
         <Table>
-          <TableHead>
+          <TableHead style={{ width: 'calc(100vw - 260px)' }}>
             <div className="groupTable">
               <h2>
                 Lista de tarefas{' '}
@@ -497,8 +497,8 @@ export default function TaskList() {
                       />
                     </td>
                     <td style={{ cursor: 'pointer' }} onClick={() => handleViewTask(row.task_id)}>
-                      {row.total_time !== 'undefined' && row.type !== 'Livre'
-                        ? row.total_time
+                      {row.time !== 'undefined' && row.type !== 'Livre'
+                        ? row.time
                         : row.type === 'Livre'
                         ? 'Livre'
                         : '00:00:00'}
@@ -576,7 +576,7 @@ export default function TaskList() {
                             }}
                           />
                         )}
-                        {user?.permissions?.includes('jobs_tasks_create') && (
+                        {user?.permissions?.includes('jobs_tasks_add') && (
                           <CopyButton onClick={() => handleCopyTask(row)}>
                             <BiCopy size={20} />
                           </CopyButton>
