@@ -1,8 +1,14 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable import-helpers/order-imports */
 // React
 import { useCallback, useEffect, useRef, useState } from 'react';
+
+// Icons
 import { BiCalendar, BiFilter, BiPlus, BiSearchAlt, BiShow, BiX } from 'react-icons/bi';
+import { IconClose } from '../../../assets/icons';
+import { FaDownload } from 'react-icons/fa';
+import { MdClose } from 'react-icons/md';
 
 // Services
 import api from '../../../services/api';
@@ -12,6 +18,7 @@ import { useToast } from '../../../hooks/toast';
 import useDebouncedCallback from '../../../hooks/useDebounced';
 import { useFetch } from '../../../hooks/useFetch';
 import useForm from '../../../hooks/useForm';
+import { useAuth } from '../../../hooks/AuthContext';
 
 // Utils
 import getValidationErrors from '../../../utils/getValidationErrors';
@@ -65,11 +72,6 @@ import { FinishModal, FinishModalButtons } from '../../Projects/CreateProject/st
 
 // Libraries
 import moment from 'moment';
-
-// Icons
-import { IconClose } from '../../../assets/icons';
-import { FaDownload } from 'react-icons/fa';
-import { MdClose } from 'react-icons/md';
 
 // Types
 import { UploadedFilesProps } from '../../../types';
@@ -127,6 +129,7 @@ interface RequesterProps {
 
 export default function ListMeeting() {
   const { addToast } = useToast();
+  const { user } = useAuth();
   const formRef = useRef<any>();
   const { formData, setFormValue, setData, handleOnChange, handleOnChangeCheckbox } = useForm({
     title: '',
@@ -561,15 +564,19 @@ export default function ListMeeting() {
 
   return (
     <Container>
-      <HeaderPage title="Atas de reuniões">
-        <ButtonDefault
-          typeButton="success"
-          onClick={() => setModal({ ...modal, ['isOpen']: true })}
-        >
-          <BiPlus color="#fff" />
-          Nova Ata/Reunião
-        </ButtonDefault>
-      </HeaderPage>
+      {user?.permissions?.includes('jobs_meetings_add') && (
+        <HeaderPage title="Atas de reuniões">
+          <ButtonDefault
+            typeButton="success"
+            onClick={() => setModal({ ...modal, ['isOpen']: true })}
+          >
+            <BiPlus color="#fff" />
+            Nova Ata/Reunião
+          </ButtonDefault>
+        </HeaderPage>
+      )}
+
+      {!user?.permissions?.includes('jobs_meetings_add') && <HeaderPage title="Atas de reuniões" />}
 
       {!isFetching && (
         <SectionDefault>
@@ -722,18 +729,23 @@ export default function ListMeeting() {
                         </td>
                         <td>
                           <div className="fieldTableClients">
-                            <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
                             <ButtonTable
                               typeButton="view"
                               onClick={() => handleOpenViewInfos(row)}
                             />
-                            <Alert
-                              title="Atenção"
-                              subtitle="Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita."
-                              confirmButton={() => handleOnDelete(row.meeting_id)}
-                            >
-                              <ButtonTable typeButton="delete" />
-                            </Alert>
+                            {user?.permissions?.includes('jobs_meetings_edit') && (
+                              <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
+                            )}
+
+                            {user?.permissions?.includes('jobs_meetings_delete') && (
+                              <Alert
+                                title="Atenção"
+                                subtitle="Certeza que gostaria de deletar esta Ata/Reunião? Ao excluir a acão não poderá ser desfeita."
+                                confirmButton={() => handleOnDelete(row.meeting_id)}
+                              >
+                                <ButtonTable typeButton="delete" />
+                              </Alert>
+                            )}
                           </div>
                         </td>
                       </tr>

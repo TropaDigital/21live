@@ -312,7 +312,17 @@ export default function InfoProducts({
                     </td>
                     <td>
                       <QuantityInput
-                        receiveQuantity={row.quantity && dataFilter?.length > 0 ? row.quantity : 0}
+                        receiveQuantity={
+                          row.quantity && dataFilter?.length === 0
+                            ? row.quantity
+                            : dataFilter?.filter(
+                                (obj: any) => obj.job_service_id === row.job_service_id
+                              ).length > 0
+                            ? dataFilter?.filter(
+                                (obj: any) => obj.job_service_id === row.job_service_id
+                              )[0].quantity
+                            : 0
+                        }
                         infosReceived={row}
                         handleQuantity={(value: any) => handleOnQuantity(row, value)}
                         clearQuantity={() => {

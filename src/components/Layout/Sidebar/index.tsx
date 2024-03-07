@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { BiPlus } from 'react-icons/bi';
 // import { FiPaperclip } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
@@ -139,7 +139,7 @@ export default function Sidebar({ menus, path, modalActive }: ISiderbar) {
 
   return (
     <Container modalActive={modalActive}>
-      {user?.permissions?.includes('jobs_tasks_execute') && (
+      {user?.permissions?.includes('jobs_tasks_add') && (
         <Link to={'/criar-tarefa'}>
           <ButtonDefault typeButton="primary" style={{ marginTop: '20px', width: '100%' }}>
             <BiPlus />
