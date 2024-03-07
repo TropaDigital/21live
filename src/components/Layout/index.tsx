@@ -5,7 +5,6 @@ import { Outlet, useLocation } from 'react-router-dom';
 
 // Icons
 import {
-  IconClipboard,
   // IconDash,
   IconUsers,
   IconProjects,
@@ -51,7 +50,7 @@ export default function Layout() {
               to: '/clientes',
               name: 'Clientes',
               icon: IconUsers,
-              identifier: 'jobs_clients_view'
+              identifier: 'jobs_tasks_view'
             },
             {
               to: '/projetos',
@@ -99,7 +98,7 @@ export default function Layout() {
               to: '/solicitacoes',
               name: 'Solicitações',
               icon: TicketsIcon,
-              identifier: 'ticket_cats_view'
+              identifier: 'tickets_view'
             }
             // {
             //   to: '/minhas-tarefas',
