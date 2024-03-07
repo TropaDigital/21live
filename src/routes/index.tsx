@@ -57,18 +57,18 @@ function RoutesAll() {
           </PrivateRoutes>
         }
       >
-        {user?.permissions?.includes('jobs_clients_view') && (
-          <Route
-            path="/clientes"
-            element={
-              <PrivateRoutes>
-                <Clients />
-              </PrivateRoutes>
-            }
-          />
-        )}
+        <Route
+          path="/clientes"
+          element={
+            <PrivateRoutes>
+              <Clients />
+            </PrivateRoutes>
+          }
+        />
+        {/* {user?.permissions?.includes('jobs_clients_view') && (
+        )} */}
 
-        {!user?.permissions?.includes('jobs_projects_add') && (
+        {user?.permissions?.includes('jobs_projects_add') && (
           <Route
             path="/criar-projeto"
             element={
@@ -265,7 +265,7 @@ function RoutesAll() {
           />
         )}
 
-        {user?.permissions?.includes('ticket_cats_view') && (
+        {user?.permissions?.includes('tickets_view') && (
           <Route
             path="/solicitacoes"
             element={
@@ -276,7 +276,7 @@ function RoutesAll() {
           />
         )}
 
-        {user?.permissions?.includes('ticket_cats_view') && (
+        {user?.permissions?.includes('tickets_view') && (
           <Route
             path="/solicitacao/:id"
             element={
