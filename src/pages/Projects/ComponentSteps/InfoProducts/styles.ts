@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const ProductsWrapper = styled.div`
   display: flex;
   /* flex-direction: column; */
-  gap: 30px;
+  gap: 10px;
   padding-bottom: 28px;
   margin-left: -30px;
   margin-top: -42px;
@@ -38,8 +38,8 @@ export const WrapperCard = styled.div`
   display: flex;
   flex-direction: column;
   width: fit-content;
-  min-width: 320px;
-  max-width: 320px;
+  min-width: 340px;
+  max-width: 340px;
   height: fit-content;
   border-radius: 12px;
   background: var(--background-primary);
