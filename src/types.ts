@@ -305,3 +305,22 @@ interface TaskHistoryTimeline {
   avatar: string;
   created: string;
 }
+
+export interface ClockUpdateProps {
+  step: string;
+  name: string;
+  clock: ClockProps[];
+}
+
+export interface ClockProps {
+  active: string;
+  clock_id: string;
+  first_pause: string;
+  first_play: string;
+  function: string;
+  name_user: string;
+  observation: string;
+  pause: string;
+  play: string;
+  time_lapse: string;
+}
