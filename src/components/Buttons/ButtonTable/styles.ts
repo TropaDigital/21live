@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 interface ButtonProps {
-  typeButton?: 'view' | 'delete' | 'edit' | 'work';
+  typeButton?: 'view' | 'delete' | 'edit' | 'work' | 'copy';
 }
 
 const buttonVariations = {
@@ -28,6 +28,15 @@ const buttonVariations = {
         fill: #1570ef;
       }
       background: #d1e9ff;
+      color: #fff;
+    }
+  `,
+  copy: css`
+    &:hover {
+      svg {
+        fill: #027a48;
+      }
+      background: #d1fadf;
       color: #fff;
     }
   `,

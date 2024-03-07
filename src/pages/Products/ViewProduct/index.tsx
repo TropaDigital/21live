@@ -26,7 +26,6 @@ import { UsersWrapper } from '../../Tasks/CreateTasks/styles';
 import { ProductsTable } from '../../Tasks/ComponentSteps/InfoDeliverables/styles';
 import {
   CardTitle,
-  CardWrapper,
   EstimatedTime,
   ModalButtons,
   StopWatchTimer
@@ -43,8 +42,10 @@ import { InputDefault } from '../../../components/Inputs/InputDefault';
 // Styles
 import {
   ArrowSection,
+  CardTimeInfo,
   CardsWrapper,
   CloseButton,
+  DataInfos,
   DeliveryWrapper,
   FilePreview,
   FileProductList,
@@ -89,6 +90,8 @@ import { useAuth } from '../../../hooks/AuthContext';
 
 // Types
 import {
+  ClockProps,
+  ClockUpdateProps,
   StepTimeline,
   TaskFile,
   TaskHistoric,
@@ -98,6 +101,8 @@ import {
 
 // Utils
 import { UsersNoSchedule } from '../../../utils/models';
+import { FiClock } from 'react-icons/fi';
+import { tr } from 'date-fns/locale';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -206,6 +211,8 @@ export default function ViewProductsDeliveries() {
     date_end: ''
   });
   const [modalUpdateHours, setModalUpdateHours] = useState<boolean>(false);
+  const [clockData, setClockData] = useState<ClockUpdateProps[]>();
+  // const [clockUpdateData, setClockUpdateData] = useState<ClockUpdateProps[]>();
 
   const [previewImage, setPreviewImage] = useState({
     isOpen: false,
@@ -1867,32 +1874,114 @@ export default function ViewProductsDeliveries() {
     }
   }
 
-  const handleChangeHours = (e: any) => {
-    const { name, value } = e.target;
-    console.log('log do change hours', name, value);
+  const updateClockFieldInfos = (
+    stepIndex: number,
+    clockIndex: number,
+    fieldName: keyof ClockProps,
+    value: string
+  ) => {
+    console.log('log active', stepIndex, clockIndex, fieldName, value);
+    setClockData((prevData) => {
+      const newData = [...(prevData || [])];
+      newData[stepIndex] = {
+        ...newData[stepIndex],
+        clock: [...newData[stepIndex].clock]
+      };
+      newData[stepIndex].clock[clockIndex] = {
+        ...newData[stepIndex].clock[clockIndex],
+        [fieldName]: value
+      };
+      return newData;
+    });
   };
+
+  async function getClockInfos() {
+    try {
+      setLoading(true);
+
+      const response = await api.get(`/clock/task/${dataTask.task_id}`);
+      console.log('log do response clock =>', response.data.result);
+      setClockData(response.data.result);
+      // setClockUpdateData(response.data.result);
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log error getClockInfo', error);
+      addToast({
+        title: 'Atenção',
+        description: error.message,
+        type: 'warning'
+      });
+
+      setLoading(false);
+    }
+  }
+
+  const handleGetClock = () => {
+    getClockInfos();
+    setModalUpdateHours(true);
+  };
+
+  async function handleUpdateClockInfos(infos: ClockProps, stepInfo: string) {
+    try {
+      const clockId = infos.clock_id;
+      const params = {
+        play: infos.play,
+        pause: infos.pause,
+        step: stepInfo,
+        observation: infos.observation,
+        active: infos.active
+      };
+
+      // console.log('log infos edit clock =>', infos);
+      // console.log('log stepInfos edit clock =>', stepInfo);
+
+      setLoading(true);
+
+      const response = await api.put(`/clock/edit/${clockId}`, params);
+
+      if (response.data.status === 'success') {
+        addToast({
+          title: 'Sucesso',
+          description: 'Horas atualizadas com sucesso!',
+          type: 'success'
+        });
+
+        setModalUpdateHours(false);
+      }
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log error put clock');
+
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
+
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
     // console.log('log allRejected', hasAllBeenRejected);
   }, [typeOfPlay]);
 
-  const dataHourMock: UpdateHoursProps[] = [
-    {
-      step_name: 'Plan',
-      user_name: 'Danilo Fontes',
-      user_function: 'Gerente de projeto',
-      date_start: '2024-02-16 14:00:00',
-      date_end: '2024-02-16 16:00:00',
-      alocated_time: '2:00:00',
-      description: 'Esqueceu de dar o play',
-      active: true
-    }
-  ];
-
-  // useEffect(() => {
-  //   console.log('log do location =>', location);
-  // }, [location]);
+  useEffect(() => {
+    console.log('log clockData =>', clockData);
+  }, [clockData]);
 
   return (
     <ContainerDefault>
@@ -2423,55 +2512,103 @@ export default function ViewProductsDeliveries() {
 
           <CardsWrapper>
             {dataTask?.status === 'Concluida' && (
-              <CardWrapper>
+              <CardTimeInfo
+                className={user?.permissions?.includes('jobs_tasks_edittime') ? 'pointer' : ''}
+                onClick={() =>
+                  user?.permissions?.includes('jobs_tasks_edittime') ? handleGetClock() : ''
+                }
+              >
                 <CardTitle>Atividade concluída</CardTitle>
-                <StopWatchTimer className="stopped">{dataTask?.time_consumed}</StopWatchTimer>
+                <StopWatchTimer className="stopped">
+                  {dataTask?.time_consumed}
+                  {user?.permissions?.includes('jobs_tasks_edittime') && (
+                    <div className="clock">
+                      <FiClock color="var(--primary)" />
+                    </div>
+                  )}
+                </StopWatchTimer>
                 <EstimatedTime>
                   Tempo estimado:{' '}
                   <span>
                     {dataTask?.total_time !== 'undefined' ? dataTask?.total_time : 'Livre'}
                   </span>
                 </EstimatedTime>
-              </CardWrapper>
+              </CardTimeInfo>
             )}
 
             {dataTask?.status !== 'Concluida' && !showClock && !viewProduct && (
-              <CardWrapper onClick={() => setModalUpdateHours(true)}>
+              <CardTimeInfo
+                className={user?.permissions?.includes('jobs_tasks_edittime') ? 'pointer' : ''}
+                onClick={() =>
+                  user?.permissions?.includes('jobs_tasks_edittime') ? handleGetClock() : ''
+                }
+              >
                 <CardTitle>Tempo utilizado</CardTitle>
-                <StopWatchTimer className="stopped">{dataTask?.time_consumed}</StopWatchTimer>
+                <StopWatchTimer className="stopped">
+                  {dataTask?.time_consumed}
+                  {user?.permissions?.includes('jobs_tasks_edittime') && (
+                    <div className="clock">
+                      <FiClock color="var(--primary)" />
+                    </div>
+                  )}
+                </StopWatchTimer>
                 <EstimatedTime>
                   Tempo estimado:{' '}
                   <span>
                     {dataTask?.total_time !== 'undefined' ? dataTask?.total_time : 'Livre'}
                   </span>
                 </EstimatedTime>
-              </CardWrapper>
+              </CardTimeInfo>
             )}
 
             {dataTask?.status !== 'Concluida' && !showClock && viewProduct && (
-              <CardWrapper>
+              <CardTimeInfo
+                className={user?.permissions?.includes('jobs_tasks_edittime') ? 'pointer' : ''}
+                onClick={() =>
+                  user?.permissions?.includes('jobs_tasks_edittime') ? handleGetClock() : ''
+                }
+              >
                 <CardTitle>Tempo utilizado</CardTitle>
-                <StopWatchTimer className="stopped">{dataTask?.time_consumed}</StopWatchTimer>
+                <StopWatchTimer className="stopped">
+                  {dataTask?.time_consumed}
+                  {user?.permissions?.includes('jobs_tasks_edittime') && (
+                    <div className="clock">
+                      <FiClock color="var(--primary)" />
+                    </div>
+                  )}
+                </StopWatchTimer>
                 <EstimatedTime>
                   Tempo estimado:{' '}
                   <span>
                     {dataTask?.total_time !== 'undefined' ? dataTask?.total_time : 'Livre'}
                   </span>
                 </EstimatedTime>
-              </CardWrapper>
+              </CardTimeInfo>
             )}
 
             {dataTask?.status !== 'Concluida' && showClock && !viewProduct && (
-              <CardWrapper>
+              <CardTimeInfo
+                className={user?.permissions?.includes('jobs_tasks_edittime') ? 'pointer' : ''}
+                onClick={() =>
+                  user?.permissions?.includes('jobs_tasks_edittime') ? handleGetClock() : ''
+                }
+              >
                 <CardTitle>Tempo utilizado</CardTitle>
-                <StopWatchTimer className="stopped">{dataTask?.time_consumed}</StopWatchTimer>
+                <StopWatchTimer className="stopped">
+                  {dataTask?.time_consumed}
+                  {user?.permissions?.includes('jobs_tasks_edittime') && (
+                    <div className="clock">
+                      <FiClock color="var(--primary)" />
+                    </div>
+                  )}
+                </StopWatchTimer>
                 <EstimatedTime>
                   Tempo estimado:{' '}
                   <span>
                     {dataTask?.total_time !== 'undefined' ? dataTask?.total_time : 'Livre'}
                   </span>
                 </EstimatedTime>
-              </CardWrapper>
+              </CardTimeInfo>
             )}
 
             {dataTask?.status !== 'Concluida' && showClock && viewProduct && (
@@ -3532,78 +3669,123 @@ export default function ViewProductsDeliveries() {
               </thead>
 
               <tbody>
-                {dataHourMock.map((row, index: number) => (
-                  <tr key={index}>
-                    <td>{row.step_name}</td>
-                    <td>
-                      <UserInfo>
-                        <div className="user-name">{row.user_name}</div>
-                        <div className="user-function">{row.user_function}</div>
-                      </UserInfo>
-                    </td>
-                    <td>
-                      <InputDefault
-                        label=""
-                        placeholder="Digite aqui..."
-                        name="description"
-                        value={row.description}
-                        onChange={handleChangeHours}
-                        error={''}
-                      />
-                    </td>
-                    <td>
-                      <InputDefault
-                        label=""
-                        placeholder="00/00/0000 00:00"
-                        name="date_start"
-                        type="datetime-local"
-                        max={'9999-12-31'}
-                        icon={BiCalendar}
-                        onChange={(e) => {
-                          handleChangeHours(e);
-                          // removeError('date_start');
-                        }}
-                        value={row.date_start}
-                        // onKeyDown={handleKeyDown}
-                        // error={
-                        //   errorsForm.date_start || errorsForm.allFields ? 'Data inicial é obrigatória!' : ''
-                        // }
-                      />
-                    </td>
-                    <td>
-                      <InputDefault
-                        label=""
-                        placeholder="00/00/0000 00:00"
-                        name="date_end"
-                        type="datetime-local"
-                        max={'9999-12-31'}
-                        icon={BiCalendar}
-                        onChange={(e) => {
-                          handleChangeHours(e);
-                          // removeError('date_start');
-                        }}
-                        value={row.date_end}
-                        // onKeyDown={handleKeyDown}
-                        // error={
-                        //   errorsForm.date_start || errorsForm.allFields ? 'Data inicial é obrigatória!' : ''
-                        // }
-                      />
-                    </td>
-                    <td>{row.alocated_time}</td>
-                    <td>
-                      <Switch
-                        onChange={() => console.log('log do switch button', row.description)}
-                        checked={row.active}
-                        uncheckedIcon={false}
-                        checkedIcon={false}
-                        onColor="#0046B5"
-                      />
-                    </td>
-                    <td>
-                      <ButtonDefault typeButton="primary">Salvar</ButtonDefault>
-                    </td>
-                  </tr>
-                ))}
+                {clockData &&
+                  clockData?.length > 0 &&
+                  clockData?.map((step, index: number) =>
+                    step?.clock.map((row, indexClock: number) => (
+                      <tr key={index}>
+                        <td>{step.name}</td>
+                        <td>
+                          <UserInfo>
+                            <div className="user-name">{row.name_user}</div>
+                            <div className="user-function">{row.function}</div>
+                          </UserInfo>
+                        </td>
+                        <td>
+                          <InputDefault
+                            label=""
+                            placeholder="Digite aqui..."
+                            name="observation"
+                            value={row.observation}
+                            onChange={(e) => {
+                              updateClockFieldInfos(
+                                index,
+                                indexClock,
+                                'observation',
+                                e.target.value
+                              );
+                              // removeError('date_start');
+                            }}
+                            error={''}
+                          />
+                        </td>
+                        <td>
+                          <DataInfos>
+                            {row.first_play !== '' && (
+                              <div className="prev-date">{row.first_play}</div>
+                            )}
+                            <InputDefault
+                              label=""
+                              placeholder="00/00/0000 00:00"
+                              name="play"
+                              type="datetime-local"
+                              max={'9999-12-31'}
+                              icon={BiCalendar}
+                              onChange={(e) => {
+                                updateClockFieldInfos(
+                                  index,
+                                  indexClock,
+                                  'play',
+                                  moment(e.target.value).format('YYYY-MM-DD HH:mm:ss')
+                                );
+                                // removeError('date_start');
+                              }}
+                              value={row.play}
+                              // onKeyDown={handleKeyDown}
+                              // error={
+                              //   errorsForm.date_start || errorsForm.allFields ? 'Data inicial é obrigatória!' : ''
+                              // }
+                            />
+                          </DataInfos>
+                        </td>
+                        <td>
+                          <DataInfos>
+                            {row.first_pause !== '' && (
+                              <div className="prev-date">{row.first_pause}</div>
+                            )}
+                            <InputDefault
+                              label=""
+                              placeholder="00/00/0000 00:00:00"
+                              name="pause"
+                              type="datetime-local"
+                              max={'9999-12-31'}
+                              icon={BiCalendar}
+                              onChange={(e) => {
+                                updateClockFieldInfos(
+                                  index,
+                                  indexClock,
+                                  'pause',
+                                  moment(e.target.value).format('YYYY-MM-DD HH:mm:ss')
+                                );
+                                // removeError('date_start');
+                              }}
+                              value={row.pause}
+                              // onKeyDown={handleKeyDown}
+                              // error={
+                              //   errorsForm.date_start || errorsForm.allFields ? 'Data inicial é obrigatória!' : ''
+                              // }
+                            />
+                          </DataInfos>
+                        </td>
+                        <td>{row.time_lapse}</td>
+                        <td>
+                          <Switch
+                            onChange={(e) =>
+                              updateClockFieldInfos(
+                                index,
+                                indexClock,
+                                'active',
+                                e ? 'true' : 'false'
+                              )
+                            }
+                            name="active"
+                            checked={row.active === 'true' ? true : false}
+                            uncheckedIcon={false}
+                            checkedIcon={false}
+                            onColor="#0046B5"
+                          />
+                        </td>
+                        <td>
+                          <ButtonDefault
+                            typeButton="primary"
+                            onClick={() => handleUpdateClockInfos(row, step.step)}
+                          >
+                            Salvar
+                          </ButtonDefault>
+                        </td>
+                      </tr>
+                    ))
+                  )}
               </tbody>
             </table>
           </Table>
@@ -3614,17 +3796,17 @@ export default function ViewProductsDeliveries() {
             <TimeAndDates>
               <div className="card-info">
                 Início
-                <span>12/01/2024</span>
+                <span>{moment(dataTask?.start_job).format('DD/MM/YYYY')}</span>
               </div>
 
               <div className="card-info">
                 Final
-                <span>13/01/2024</span>
+                <span>{moment(dataTask?.creation_date_end).format('DD/MM/YYYY')}</span>
               </div>
 
               <div className="card-info">
                 Tempo alocado:
-                <span>01:53:02</span>
+                <span>{dataTask?.time_consumed}</span>
               </div>
             </TimeAndDates>
           </TotalTaskHours>

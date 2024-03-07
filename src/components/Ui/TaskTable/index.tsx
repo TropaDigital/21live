@@ -163,13 +163,7 @@ export default function TaskTable({
                     </td>
                     <td>
                       <div className="column info">
-                        {/* {user.permissions.includes('jobs_tasks_essay') && (
-                          <div>
-                            <IconText /> {task.title}
-                          </div>
-                        )} */}
-
-                        {user.permissions.includes('jobs_tasks_execute') && <div>{task.title}</div>}
+                        <div>{task.title}</div>
                         <span>
                           {task.tenant} / {task.project_category} | {task.product_period}
                         </span>
