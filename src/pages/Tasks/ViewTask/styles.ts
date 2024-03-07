@@ -593,7 +593,8 @@ export const CardTitle = styled.div`
 export const StopWatchTimer = styled.div`
   display: flex;
   align-items: center;
-  width: 92px;
+  justify-content: space-between;
+  /* width: 92px; */
   height: 32px;
 
   font-size: var(--text-small-xl);
@@ -605,6 +606,12 @@ export const StopWatchTimer = styled.div`
 
   &.running {
     color: var(--success-500);
+  }
+
+  .clock {
+    svg {
+      transform: scale(1.2);
+    }
   }
 `;
 
