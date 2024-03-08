@@ -1979,9 +1979,9 @@ export default function ViewProductsDeliveries() {
     // console.log('log allRejected', hasAllBeenRejected);
   }, [typeOfPlay]);
 
-  useEffect(() => {
-    console.log('log clockData =>', clockData);
-  }, [clockData]);
+  // useEffect(() => {
+  //   console.log('log clockData =>', clockData);
+  // }, [clockData]);
 
   return (
     <ContainerDefault>
@@ -2691,6 +2691,7 @@ export default function ViewProductsDeliveries() {
           manualOverrideDate={showHoursBack || dataTask?.type === 'Livre'}
           loadingSubmit={loading}
           taskType={dataTask?.type}
+          deductHours={taskDeductHours}
         />
       </ModalDefault>
 

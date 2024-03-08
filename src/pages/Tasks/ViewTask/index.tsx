@@ -7,8 +7,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 // Icons
 import { FaArrowLeft, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { IconBigCheck } from '../../../assets/icons';
-import { BiArrowBack, BiCalendar } from 'react-icons/bi';
-import { FiCornerDownRight } from 'react-icons/fi';
+import { BiArrowBack, BiCalendar, BiX } from 'react-icons/bi';
+import { FiClock, FiCornerDownRight } from 'react-icons/fi';
 import { MdClose } from 'react-icons/md';
 
 // Components
@@ -53,15 +53,33 @@ import api from '../../../services/api';
 // Libraries
 import moment from 'moment';
 import 'moment/dist/locale/pt-br';
+import Switch from 'react-switch';
 
 // Hooks
 import { useToast } from '../../../hooks/toast';
+import { useAuth } from '../../../hooks/AuthContext';
 
 // Utils
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 
 // Types
-import { StepTimeline, TaskHistoric, TaskHistoryProps } from '../../../types';
+import {
+  ClockProps,
+  ClockUpdateProps,
+  StepTimeline,
+  TaskHistoric,
+  TaskHistoryProps
+} from '../../../types';
+import {
+  CloseButton,
+  DataInfos,
+  TimeAndDates,
+  TimeWrapper,
+  TotalTaskHours,
+  UserInfo
+} from '../../Products/ViewProduct/styles';
+import ModalDefault from '../../../components/Ui/ModalDefault';
+import { Table } from '../../../components/Table';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -118,6 +136,7 @@ export default function ViewTask() {
   const location = useLocation();
   const { addToast } = useToast();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const openRightRef = useRef<any>();
   const dateRef = useRef<any>();
   const [loading, setLoading] = useState<boolean>(false);
@@ -133,6 +152,8 @@ export default function ViewTask() {
     isOn: false,
     date_end: ''
   });
+  const [modalUpdateHours, setModalUpdateHours] = useState<boolean>(false);
+  const [clockData, setClockData] = useState<ClockUpdateProps[]>();
 
   const titleInfos = {
     idNumber: dataTask?.task_id,
@@ -335,6 +356,106 @@ export default function ViewTask() {
     }
   }
 
+  const updateClockFieldInfos = (
+    stepIndex: number,
+    clockIndex: number,
+    fieldName: keyof ClockProps,
+    value: string
+  ) => {
+    console.log('log active', stepIndex, clockIndex, fieldName, value);
+    setClockData((prevData) => {
+      const newData = [...(prevData || [])];
+      newData[stepIndex] = {
+        ...newData[stepIndex],
+        clock: [...newData[stepIndex].clock]
+      };
+      newData[stepIndex].clock[clockIndex] = {
+        ...newData[stepIndex].clock[clockIndex],
+        [fieldName]: value
+      };
+      return newData;
+    });
+  };
+
+  async function getClockInfos() {
+    try {
+      setLoading(true);
+
+      const response = await api.get(`/clock/task/${dataTask.task_id}`);
+      console.log('log do response clock =>', response.data.result);
+      setClockData(response.data.result);
+      // setClockUpdateData(response.data.result);
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log error getClockInfo', error);
+      addToast({
+        title: 'Atenção',
+        description: error.message,
+        type: 'warning'
+      });
+
+      setLoading(false);
+    }
+  }
+
+  const handleGetClock = () => {
+    getClockInfos();
+    setModalUpdateHours(true);
+  };
+
+  async function handleUpdateClockInfos(infos: ClockProps, stepInfo: string) {
+    try {
+      const clockId = infos.clock_id;
+      const params = {
+        play: infos.play,
+        pause: infos.pause,
+        step: stepInfo,
+        observation: infos.observation,
+        active: infos.active
+      };
+
+      // console.log('log infos edit clock =>', infos);
+      // console.log('log stepInfos edit clock =>', stepInfo);
+
+      setLoading(true);
+
+      const response = await api.put(`/clock/edit/${clockId}`, params);
+
+      if (response.data.status === 'success') {
+        addToast({
+          title: 'Sucesso',
+          description: 'Horas atualizadas com sucesso!',
+          type: 'success'
+        });
+
+        setModalUpdateHours(false);
+      }
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log error put clock');
+
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
+
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
     const checkIfClickedOutside = (e: any) => {
       if (
@@ -382,9 +503,21 @@ export default function ViewTask() {
 
           <CardsWrapper>
             {dataTask?.status === 'Concluida' && (
-              <CardWrapper>
+              <CardWrapper
+                className={user?.permissions?.includes('jobs_tasks_edittime') ? 'pointer' : ''}
+                onClick={() =>
+                  user?.permissions?.includes('jobs_tasks_edittime') ? handleGetClock() : ''
+                }
+              >
                 <CardTitle>Atividade concluída</CardTitle>
-                <StopWatchTimer className="stopped">{dataTask?.time_consumed}</StopWatchTimer>
+                <StopWatchTimer className="stopped">
+                  {dataTask?.time_consumed}
+                  {user?.permissions?.includes('jobs_tasks_edittime') && (
+                    <div className="clock">
+                      <FiClock color="var(--primary)" />
+                    </div>
+                  )}
+                </StopWatchTimer>
                 <EstimatedTime>
                   Tempo estimado:{' '}
                   <span>
@@ -395,9 +528,21 @@ export default function ViewTask() {
             )}
 
             {dataTask?.status !== 'Concluida' && (
-              <CardWrapper>
+              <CardWrapper
+                className={user?.permissions?.includes('jobs_tasks_edittime') ? 'pointer' : ''}
+                onClick={() =>
+                  user?.permissions?.includes('jobs_tasks_edittime') ? handleGetClock() : ''
+                }
+              >
                 <CardTitle>Tempo utilizado</CardTitle>
-                <StopWatchTimer className="stopped">{dataTask?.time_consumed}</StopWatchTimer>
+                <StopWatchTimer className="stopped">
+                  {dataTask?.time_consumed}
+                  {user?.permissions?.includes('jobs_tasks_edittime') && (
+                    <div className="clock">
+                      <FiClock color="var(--primary)" />
+                    </div>
+                  )}
+                </StopWatchTimer>
                 <EstimatedTime>
                   Tempo estimado:{' '}
                   <span>
@@ -1087,6 +1232,177 @@ export default function ViewTask() {
 
       {/* Modal loading submit */}
       <ModalLoader isOpen={loading} />
+
+      {/* Modal change hours */}
+      <ModalDefault
+        isOpen={modalUpdateHours}
+        onOpenChange={() => setModalUpdateHours(false)}
+        title="Tempo na tarefa"
+      >
+        <TimeWrapper>
+          <CloseButton onClick={() => setModalUpdateHours(false)}>
+            <BiX size={30} />
+          </CloseButton>
+
+          <Table>
+            <table>
+              <thead>
+                <tr>
+                  <th>Etapa</th>
+                  <th>Colaborador</th>
+                  <th>Observação</th>
+                  <th>Início</th>
+                  <th>Final</th>
+                  <th>Tempo alocado</th>
+                  <th>Ativo</th>
+                  <th style={{ color: '#F9FAFB' }}>-</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {clockData &&
+                  clockData?.length > 0 &&
+                  clockData?.map((step, index: number) =>
+                    step?.clock.map((row, indexClock: number) => (
+                      <tr key={index}>
+                        <td>{step.name}</td>
+                        <td>
+                          <UserInfo>
+                            <div className="user-name">{row.name_user}</div>
+                            <div className="user-function">{row.function}</div>
+                          </UserInfo>
+                        </td>
+                        <td>
+                          <InputDefault
+                            label=""
+                            placeholder="Digite aqui..."
+                            name="observation"
+                            value={row.observation}
+                            onChange={(e) => {
+                              updateClockFieldInfos(
+                                index,
+                                indexClock,
+                                'observation',
+                                e.target.value
+                              );
+                              // removeError('date_start');
+                            }}
+                            error={''}
+                          />
+                        </td>
+                        <td>
+                          <DataInfos>
+                            {row.first_play !== '' && (
+                              <div className="prev-date">{row.first_play}</div>
+                            )}
+                            <InputDefault
+                              label=""
+                              placeholder="00/00/0000 00:00"
+                              name="play"
+                              type="datetime-local"
+                              max={'9999-12-31'}
+                              icon={BiCalendar}
+                              onChange={(e) => {
+                                updateClockFieldInfos(
+                                  index,
+                                  indexClock,
+                                  'play',
+                                  moment(e.target.value).format('YYYY-MM-DD HH:mm:ss')
+                                );
+                                // removeError('date_start');
+                              }}
+                              value={row.play}
+                              // onKeyDown={handleKeyDown}
+                              // error={
+                              //   errorsForm.date_start || errorsForm.allFields ? 'Data inicial é obrigatória!' : ''
+                              // }
+                            />
+                          </DataInfos>
+                        </td>
+                        <td>
+                          <DataInfos>
+                            {row.first_pause !== '' && (
+                              <div className="prev-date">{row.first_pause}</div>
+                            )}
+                            <InputDefault
+                              label=""
+                              placeholder="00/00/0000 00:00:00"
+                              name="pause"
+                              type="datetime-local"
+                              max={'9999-12-31'}
+                              icon={BiCalendar}
+                              onChange={(e) => {
+                                updateClockFieldInfos(
+                                  index,
+                                  indexClock,
+                                  'pause',
+                                  moment(e.target.value).format('YYYY-MM-DD HH:mm:ss')
+                                );
+                                // removeError('date_start');
+                              }}
+                              value={row.pause}
+                              // onKeyDown={handleKeyDown}
+                              // error={
+                              //   errorsForm.date_start || errorsForm.allFields ? 'Data inicial é obrigatória!' : ''
+                              // }
+                            />
+                          </DataInfos>
+                        </td>
+                        <td>{row.time_lapse}</td>
+                        <td>
+                          <Switch
+                            onChange={(e) =>
+                              updateClockFieldInfos(
+                                index,
+                                indexClock,
+                                'active',
+                                e ? 'true' : 'false'
+                              )
+                            }
+                            name="active"
+                            checked={row.active === 'true' ? true : false}
+                            uncheckedIcon={false}
+                            checkedIcon={false}
+                            onColor="#0046B5"
+                          />
+                        </td>
+                        <td>
+                          <ButtonDefault
+                            typeButton="primary"
+                            onClick={() => handleUpdateClockInfos(row, step.step)}
+                          >
+                            Salvar
+                          </ButtonDefault>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+              </tbody>
+            </table>
+          </Table>
+
+          <TotalTaskHours>
+            <div className="total-task">Total tarefa</div>
+
+            <TimeAndDates>
+              <div className="card-info">
+                Início
+                <span>{moment(dataTask?.start_job).format('DD/MM/YYYY')}</span>
+              </div>
+
+              <div className="card-info">
+                Final
+                <span>{moment(dataTask?.creation_date_end).format('DD/MM/YYYY')}</span>
+              </div>
+
+              <div className="card-info">
+                Tempo alocado:
+                <span>{dataTask?.time_consumed}</span>
+              </div>
+            </TimeAndDates>
+          </TotalTaskHours>
+        </TimeWrapper>
+      </ModalDefault>
     </ContainerDefault>
   );
 }
