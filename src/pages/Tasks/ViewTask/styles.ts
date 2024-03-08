@@ -581,6 +581,10 @@ export const CardWrapper = styled.div`
   border-radius: 12px;
 
   padding: 24px;
+
+  &.pointer {
+    cursor: pointer;
+  }
 `;
 
 export const CardTitle = styled.div`
