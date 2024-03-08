@@ -161,9 +161,7 @@ export default function InfoGeral({
       });
     }
 
-    if (data.ticket_id !== '') {
-      getRequesters(data.tenant_id);
-    }
+    getRequesters(data.tenant_id);
   }, [data, clients, organizations]);
 
   return (
@@ -261,23 +259,24 @@ export default function InfoGeral({
             <div>Gerar ticket</div>
           </CreateTicketOption>
         )}
-        {data.ticket_id !== '' && (
-          <div style={{ flex: '1' }}>
-            <SelectDefault
-              label="Solicitante"
-              name="requester_id"
-              value={data.requester_id}
-              onChange={handleInputChange}
-              error={error?.requester_id}
-            >
-              {requestersList?.map((row) => (
-                <option key={row.user_id} value={row.user_id}>
-                  {row.name}
-                </option>
-              ))}
-            </SelectDefault>
-          </div>
-        )}
+        {data.gen_ticket === 'true' ||
+          (data?.ticket_id !== '' && (
+            <div style={{ flex: '1' }}>
+              <SelectDefault
+                label="Solicitante"
+                name="requester_id"
+                value={data.requester_id}
+                onChange={handleInputChange}
+                error={error?.requester_id}
+              >
+                {requestersList?.map((row) => (
+                  <option key={row.user_id} value={row.user_id}>
+                    {row.name}
+                  </option>
+                ))}
+              </SelectDefault>
+            </div>
+          ))}
       </FlexLine>
 
       {/* Select responsável flow */}
