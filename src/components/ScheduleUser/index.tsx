@@ -90,6 +90,7 @@ interface TaskExchangeProps {
   closeModal: () => void;
   manualOverrideDate?: boolean;
   loadingSubmit?: boolean;
+  deductHours?: string;
 }
 
 // interface NewTaskItem {
@@ -111,7 +112,8 @@ export default function ScheduleUser({
   closeModal,
   manualOverrideDate,
   loadingSubmit,
-  taskType
+  taskType,
+  deductHours
 }: TaskExchangeProps) {
   const { addToast } = useToast();
   const [DTOTaskSelect, setDTOTaskSelect] = useState<ScheduleProps>({
@@ -415,9 +417,9 @@ export default function ScheduleUser({
               <SubtitleInfo>
                 <div className="title">Tempo estimado:</div>
                 <div className="info">
-                  {dataUserSchedule[0]?.function === 'Criação'
+                  {deductHours === 'creation'
                     ? estimated_time.time_creation
-                    : dataUserSchedule[0]?.function === 'Redação'
+                    : deductHours === 'essay'
                     ? estimated_time.time_essay
                     : estimated_time.total_time}
                 </div>

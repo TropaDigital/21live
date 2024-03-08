@@ -369,10 +369,10 @@ export default function CreateTasks() {
   const [singleProductQuantity, setSingleProductQuantity] = useState<number>(1);
   const [cancelModal, setCancelModal] = useState<boolean>(false);
   const [pathSelected, setPathSelected] = useState<string>('');
-  const [contractDates, setContractDates] = useState<any>({
-    startDate: '',
-    endDate: ''
-  });
+  // const [contractDates, setContractDates] = useState<any>({
+  //   startDate: '',
+  //   endDate: ''
+  // });
 
   const numbers = Array.from(
     { length: quantityProductInfos?.maxValue - quantityProductInfos?.minValue + 1 },
@@ -443,14 +443,14 @@ export default function CreateTasks() {
     getParams();
   }, []);
 
-  useEffect(() => {
-    if (selectedProject) {
-      setContractDates({
-        startDate: selectedProject?.date_start,
-        endDate: selectedProject?.date_end
-      });
-    }
-  }, [selectedProject]);
+  // useEffect(() => {
+  //   if (selectedProject) {
+  //     setContractDates({
+  //       startDate: selectedProject?.date_start,
+  //       endDate: selectedProject?.date_end
+  //     });
+  //   }
+  // }, [selectedProject]);
 
   const selectedInfos: any[] = dataProjects?.filter(
     (obj: any) => obj.project_product_id === location?.state?.project_product_id
@@ -2052,19 +2052,17 @@ export default function CreateTasks() {
   }, [submitState]);
 
   const handleGenerateTicket = (value: boolean) => {
-    if (DTOForm.gen_ticket !== 'true') {
-      if (value) {
-        setDTOForm((prevState: any) => ({
-          ...prevState,
-          ['gen_ticket']: 'true'
-        }));
-      }
-      if (!value) {
-        setDTOForm((prevState: any) => ({
-          ...prevState,
-          ['gen_ticket']: 'false'
-        }));
-      }
+    if (value) {
+      setDTOForm((prevState: any) => ({
+        ...prevState,
+        ['gen_ticket']: 'true'
+      }));
+    }
+    if (!value) {
+      setDTOForm((prevState: any) => ({
+        ...prevState,
+        ['gen_ticket']: 'false'
+      }));
     }
   };
 
