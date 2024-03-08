@@ -812,7 +812,6 @@ export default function WorkingProduct({
               onClick={(e: any) => {
                 setSelectedTab(e.target.innerText);
                 setLogIsOn(false);
-                console.log('log do text =>', e.target.innerText);
               }}
               className={selectedTab === 'Arquivos (produto)' ? 'active' : ''}
             >
