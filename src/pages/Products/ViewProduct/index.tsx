@@ -319,7 +319,7 @@ export default function ViewProductsDeliveries() {
     (obj) => obj.tenant_approve === 'true'
   );
 
-  const myTaskShowHours = nextStep[0]?.show_hours;
+  // const myTaskShowHours = nextStep[0]?.show_hours;
   const taskDeductHours = nextStep[0]?.deduct_hours;
 
   const productsNames: string[] = dataTask?.files.map((file: any) => {
@@ -2610,9 +2610,9 @@ export default function ViewProductsDeliveries() {
               <CardTaskPlay
                 cardTitle={state.isRunning ? 'Atividade iniciada' : 'Iniciar atividade'}
                 dataTime={
-                  myTaskShowHours && taskDeductHours === 'creation' && dataTask?.type !== 'Livre'
+                  user.deduct_hours === 'creation' && dataTask?.type !== 'Livre'
                     ? selectedProduct.productInfo.minutes_creation
-                    : taskDeductHours === 'essay' && dataTask?.type !== 'Livre'
+                    : user.deduct_hours === 'essay' && dataTask?.type !== 'Livre'
                     ? selectedProduct.productInfo.minutes_essay
                     : dataTask?.type === 'Livre'
                     ? ''
