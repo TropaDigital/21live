@@ -10,6 +10,7 @@ import { FaArrowLeft, FaChevronDown, FaChevronUp, FaDownload } from 'react-icons
 import { IconBigCheck } from '../../../assets/icons';
 import { BiCalendar, BiShow, BiX } from 'react-icons/bi';
 import { MdClose } from 'react-icons/md';
+import { FiClock } from 'react-icons/fi';
 
 // Components
 import HeaderOpenTask from '../../../components/HeaderTaskPage';
@@ -101,8 +102,6 @@ import {
 
 // Utils
 import { UsersNoSchedule } from '../../../utils/models';
-import { FiClock } from 'react-icons/fi';
-import { tr } from 'date-fns/locale';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -296,9 +295,6 @@ export default function ViewProductsDeliveries() {
     creation_description: dataTask?.creation_description
   };
 
-  const myTaskShowHours = location?.state?.task?.show_hours;
-  const taskDeductHours = location?.state?.task?.deduct_hours;
-
   const actualDate = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
   const actualStep = timeLineData?.currentStep;
   const uploadIsTrue = timeLineData
@@ -322,6 +318,9 @@ export default function ViewProductsDeliveries() {
   const stepsWithTenantApprove: any[] | undefined = timeLineData?.steps.filter(
     (obj) => obj.tenant_approve === 'true'
   );
+
+  const myTaskShowHours = nextStep[0]?.show_hours;
+  const taskDeductHours = nextStep[0]?.deduct_hours;
 
   const productsNames: string[] = dataTask?.files.map((file: any) => {
     const matchingDelivery = dataTask?.deliverys.find((delivery: any) =>
@@ -1978,10 +1977,6 @@ export default function ViewProductsDeliveries() {
     // console.log('log do type of play', typeOfPlay);
     // console.log('log allRejected', hasAllBeenRejected);
   }, [typeOfPlay]);
-
-  // useEffect(() => {
-  //   console.log('log clockData =>', clockData);
-  // }, [clockData]);
 
   return (
     <ContainerDefault>
