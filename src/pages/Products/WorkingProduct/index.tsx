@@ -903,7 +903,7 @@ export default function WorkingProduct({
 
       <WorkSection>
         {selectedTab === 'Inputs' &&
-          user.permissions.includes('jobs_tasks_execute') &&
+          user.permissions.includes('jobs_tasks_edit') &&
           productInfos?.status !== 'Concluida' && (
             <>
               <div
@@ -955,7 +955,7 @@ export default function WorkingProduct({
 
         {selectedTab === 'Inputs' &&
           (productInfos?.status === 'Concluida' ||
-            !user.permissions.includes('jobs_tasks_execute')) && (
+            !user.permissions.includes('jobs_tasks_edit')) && (
             <>
               <div
                 style={{
@@ -988,8 +988,7 @@ export default function WorkingProduct({
 
         {selectedTab === 'Redação' && (
           <>
-            {user.permissions.includes('jobs_tasks_essay') &&
-            productInfos?.status !== 'Concluida' ? (
+            {user.deduct_hours === 'creation' && productInfos?.status !== 'Concluida' ? (
               <EssayField>
                 <WrapperEditor
                   value={essayInfo}
