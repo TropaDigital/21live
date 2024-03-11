@@ -319,6 +319,7 @@ export interface ClockProps {
   clock_id: string;
   first_pause: string;
   first_play: string;
+  first_time_lapse: string;
   function: string;
   name_user: string;
   observation: string;
