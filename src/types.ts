@@ -267,6 +267,8 @@ export interface StepTimeline {
   ticket_status: string;
   ticket_status_id: string;
   tenant_id: string;
+  deduct_hours?: string;
+  show_hours?: string;
 }
 
 export interface TaskFile {
