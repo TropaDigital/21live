@@ -269,9 +269,9 @@ export default function ScheduleUser({
   async function checkIfIsAvaliable(user: any, date: any, time: any) {
     try {
       const timeValue =
-        dataUserSchedule[0].function === 'Criação'
+        deductHours === 'creation'
           ? estimated_time.time_creation
-          : dataUserSchedule[0].function === 'Redação'
+          : deductHours === 'essay'
           ? estimated_time.time_essay
           : estimated_time.total_time;
 
