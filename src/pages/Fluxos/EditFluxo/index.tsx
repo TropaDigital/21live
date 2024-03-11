@@ -265,10 +265,6 @@ export default function EditFluxo() {
     };
   }, [editFlowName]);
 
-  useEffect(() => {
-    console.log('log column =>', column);
-  }, [column]);
-
   return (
     <Container>
       <HeaderFlow title="Fluxos" backButton={() => navigate(-1)}>
