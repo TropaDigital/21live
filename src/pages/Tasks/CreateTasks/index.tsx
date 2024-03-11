@@ -345,6 +345,7 @@ export default function CreateTasks() {
   const [estimatedTime, setEstimatedTime] = useState<string>('');
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
   const [ticketAsk, setTicketAsk] = useState<string | null>('');
+  const { data: dataCards } = useFetch<any[]>(`/card/${selectedSummaryInfos.flow.flow_id}`);
 
   const DeliveryDefault: DeliveryProps = {
     deliveryId: 1,
@@ -456,9 +457,25 @@ export default function CreateTasks() {
     (obj: any) => obj.project_product_id === location?.state?.project_product_id
   );
 
+  const multipleMinutesCreation = (() => {
+    const productsHoursArray = productsArray?.map((row) => {
+      return row?.minutes_creation;
+    });
+
+    return sumTimes(productsHoursArray || []);
+  })();
+
+  const multipleMinutesEssay = (() => {
+    const productsHoursArray = productsArray?.map((row) => {
+      return row?.minutes_essay;
+    });
+
+    return sumTimes(productsHoursArray || []);
+  })();
+
   const allEstimatedTime = {
-    time_essay: productsArray[0]?.minutes_essay,
-    time_creation: productsArray[0]?.minutes_creation,
+    time_essay: multipleMinutesEssay,
+    time_creation: multipleMinutesCreation,
     total_time: estimatedTime
   };
   
@@ -508,6 +525,11 @@ export default function CreateTasks() {
       setDTOForm((prevState: any) => ({
         ...prevState,
         ['requester_id']: location.state.userId
+      }));
+
+      setDTOForm((prevState: any) => ({
+        ...prevState,
+        ['gen_ticket']: 'true'
       }));
     }
 
@@ -2085,14 +2107,15 @@ export default function CreateTasks() {
           ...prevState,
           ticket_id: '0'
         }));
-      } else {
-        if (DTOForm.ticket_id === '') {
-          setDTOForm((prevState: any) => ({
-            ...prevState,
-            ticket_id: ''
-          }));
-        }
       }
+      // else {
+      //   if (DTOForm.ticket_id === '') {
+      //     setDTOForm((prevState: any) => ({
+      //       ...prevState,
+      //       ticket_id: ''
+      //     }));
+      //   }
+      // }
 
       if (response.data.result === 'Fluxo ok!') {
         addToast({
@@ -3002,6 +3025,7 @@ export default function CreateTasks() {
             closeModal={() => setSelectUserModal(false)}
             manualOverrideDate={tasksType === 'livre'}
             taskType={tasksType === 'livre' ? 'Livre' : ''}
+            deductHours={dataCards ? dataCards[0].deduct_hours : ''}
           />
         </ModalDefault>
 

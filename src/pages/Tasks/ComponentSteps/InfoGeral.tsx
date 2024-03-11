@@ -112,9 +112,11 @@ export default function InfoGeral({
 
   async function getRequesters(tenantId: string) {
     try {
-      const response = await api.get(`/task/requester/${tenantId}`);
-      if (response.data.result.length > 0) {
-        setRequestersList(response.data.result);
+      if (tenantId) {
+        const response = await api.get(`/task/requester/${tenantId}`);
+        if (response.data.result.length > 0) {
+          setRequestersList(response.data.result);
+        }
       }
     } catch (error) {
       console.log('log do get requesters', error);
@@ -246,7 +248,7 @@ export default function InfoGeral({
       </FlexLine>
 
       <FlexLine>
-        {(data?.ticket_id === '' || data?.ticket_id === '0') && ticketAsk === 'ask' && (
+        {ticketAsk !== 'never' && (
           <CreateTicketOption>
             <Switch
               onChange={handleTicket}
@@ -259,24 +261,23 @@ export default function InfoGeral({
             <div>Gerar ticket</div>
           </CreateTicketOption>
         )}
-        {data.gen_ticket === 'true' ||
-          (data?.ticket_id !== '' && (
-            <div style={{ flex: '1' }}>
-              <SelectDefault
-                label="Solicitante"
-                name="requester_id"
-                value={data.requester_id}
-                onChange={handleInputChange}
-                error={error?.requester_id}
-              >
-                {requestersList?.map((row) => (
-                  <option key={row.user_id} value={row.user_id}>
-                    {row.name}
-                  </option>
-                ))}
-              </SelectDefault>
-            </div>
-          ))}
+        {data.gen_ticket === 'true' && data?.ticket_id !== '' && (
+          <div style={{ flex: '1' }}>
+            <SelectDefault
+              label="Solicitante"
+              name="requester_id"
+              value={data.requester_id}
+              onChange={handleInputChange}
+              error={error?.requester_id}
+            >
+              {requestersList?.map((row) => (
+                <option key={row.user_id} value={row.user_id}>
+                  {row.name}
+                </option>
+              ))}
+            </SelectDefault>
+          </div>
+        )}
       </FlexLine>
 
       {/* Select responsável flow */}
