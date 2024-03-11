@@ -99,9 +99,21 @@ export default function EditFluxo() {
     try {
       // setLoading(true);
 
+      // const filteredColumn = [...column];
+
+      // filteredColumn.forEach((obj: any) => {
+      //   delete obj.deduct_hours;
+      //   delete obj.show_hours;
+      // });
+      column?.forEach((obj: any) => {
+        delete obj.deduct_hours;
+        delete obj.show_hours;
+      });
+
       const response = await api.post('/card', column);
       setState(response.data.result);
       setColumn(response.data.result);
+
       // if (response.data.status === 'success') {
       //   addToast({
       //     title: 'Sucesso',
@@ -136,6 +148,11 @@ export default function EditFluxo() {
   async function saveFluxo() {
     try {
       setLoading(true);
+
+      column?.forEach((obj: any) => {
+        delete obj.deduct_hours;
+        delete obj.show_hours;
+      });
 
       const response = await api.post('/card', column);
       setState(response.data.result);
@@ -247,6 +264,10 @@ export default function EditFluxo() {
       document.removeEventListener('mousedown', checkIfClickedOutside);
     };
   }, [editFlowName]);
+
+  useEffect(() => {
+    console.log('log column =>', column);
+  }, [column]);
 
   return (
     <Container>
