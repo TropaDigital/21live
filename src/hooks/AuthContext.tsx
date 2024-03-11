@@ -22,6 +22,8 @@ export interface User {
   companySince?: string;
   office?: string;
   cost_per_hour?: string;
+  deduct_hours?: string;
+  show_hours?: string;
   permissions: string[];
 }
 
