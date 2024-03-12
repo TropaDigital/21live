@@ -2,7 +2,7 @@
 import { useCallback, useState } from 'react';
 
 // Styles
-import { FilterBtnWrapper } from './styles';
+import { EssayView, FilterBtnWrapper } from './styles';
 
 // Components
 import HeaderPage from '../../components/HeaderPage';
@@ -28,10 +28,16 @@ import useDebouncedCallback from '../../hooks/useDebounced';
 // Icons
 import { BiFilter, BiSearchAlt } from 'react-icons/bi';
 import useForm from '../../hooks/useForm';
+import api from '../../services/api';
 
 interface TemplateProps {
   title: string;
   description: string;
+}
+
+interface ModalTemplateProps {
+  isOpen: boolean;
+  type: string;
 }
 
 export default function TemplateAgenda() {
@@ -46,7 +52,10 @@ export default function TemplateAgenda() {
     700
   );
   const [loading, setLoading] = useState<boolean>(false);
-  const [modalTemnplate, setModalTemplate] = useState<boolean>(false);
+  const [modalTemnplate, setModalTemplate] = useState<ModalTemplateProps>({
+    isOpen: false,
+    type: ''
+  });
   const [text, setText] = useState<string>('');
 
   const handleOnSubmit = useCallback(
@@ -74,7 +83,10 @@ export default function TemplateAgenda() {
         //   description: 'Ata de reunião criada com sucesso!'
         // });
 
-        setModalTemplate(false);
+        setModalTemplate({
+          isOpen: false,
+          type: ''
+        });
         setData({
           title: '',
           description: ''
@@ -98,13 +110,34 @@ export default function TemplateAgenda() {
   );
 
   const handleOnCancel = () => {
-    setModalTemplate(false);
+    setModalTemplate({
+      isOpen: false,
+      type: ''
+    });
     setData({
       title: '',
       description: ''
     } as TemplateProps);
     setText('');
   };
+
+  const handleCopyTemplate = (template: any) => {
+    console.log('log do copyTemplate =>', template);
+  };
+
+  // async function copyTemplate() {
+  //   try {
+  //     setLoading(true);
+
+  //     const response = await api.post(`template/copy`);
+
+  //     setLoading(false);
+  //   } catch (error: any) {
+  //     console.log('error copy template', error);
+  //     setLoading(false);
+  //   }
+
+  // }
 
   const mockTemplates = [
     {
@@ -221,12 +254,25 @@ export default function TemplateAgenda() {
                         <ButtonTable
                           typeButton="view"
                           // onClick={() => handleViewTask(row.id)}
-                          onClick={() => setModalTemplate(true)}
+                          onClick={() =>
+                            setModalTemplate({
+                              isOpen: true,
+                              type: 'view'
+                            })
+                          }
                         />
 
-                        <ButtonTable typeButton="edit" onClick={() => setModalTemplate(true)} />
+                        <ButtonTable
+                          typeButton="edit"
+                          onClick={() =>
+                            setModalTemplate({
+                              isOpen: true,
+                              type: 'edit'
+                            })
+                          }
+                        />
 
-                        <ButtonTable typeButton="copy" onClick={() => ''} />
+                        <ButtonTable typeButton="copy" onClick={() => handleCopyTemplate(row)} />
 
                         <Alert
                           title="Atenção"
@@ -260,9 +306,22 @@ export default function TemplateAgenda() {
       </SectionDefault>
 
       <ModalDefault
-        isOpen={modalTemnplate}
-        onOpenChange={() => setModalTemplate(false)}
-        title={formData.title === '' ? 'Criar template' : 'Editar template'}
+        isOpen={modalTemnplate.isOpen}
+        onOpenChange={() =>
+          setModalTemplate({
+            isOpen: false,
+            type: ''
+          })
+        }
+        title={
+          modalTemnplate.type === 'create'
+            ? 'Criar template'
+            : modalTemnplate.type === 'edit'
+            ? 'Editar template'
+            : modalTemnplate.type === 'view'
+            ? 'Ver template'
+            : ''
+        }
       >
         <form onSubmit={handleOnSubmit}>
           <FieldDefault>
@@ -273,16 +332,25 @@ export default function TemplateAgenda() {
               onChange={handleOnChange}
               value={formData.title}
               alert="Titulo é obrigatório"
+              disabled={modalTemnplate.type === 'view' ? true : false}
               // error={errors?.title}
             />
           </FieldDefault>
 
           <FieldEditor style={{ width: '600px' }}>
-            <WrapperEditor
-              mentionData={[]}
-              value={text}
-              handleOnDescription={(value: any) => setText(value)}
-            />
+            {modalTemnplate.type === 'view' && (
+              <EssayView>
+                <div dangerouslySetInnerHTML={{ __html: text }} />
+              </EssayView>
+            )}
+
+            {modalTemnplate.type !== 'view' && (
+              <WrapperEditor
+                mentionData={[]}
+                value={text}
+                handleOnDescription={(value: any) => setText(value)}
+              />
+            )}
           </FieldEditor>
 
           <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>

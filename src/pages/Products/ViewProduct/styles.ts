@@ -587,3 +587,11 @@ export const DataInfos = styled.div`
     padding-left: 8px;
   }
 `;
+
+export const ShowAllUsers = styled.div`
+  display: flex;
+  align-items: center;
+
+  padding: 6px;
+  padding-left: 24px;
+`;
