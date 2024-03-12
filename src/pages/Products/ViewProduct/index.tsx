@@ -60,6 +60,7 @@ import {
   RightInfosCard,
   RightInfosTitle,
   SelectProductField,
+  ShowAllUsers,
   ShowInfosButton,
   TaskInfoField,
   TasksInfos,
@@ -211,6 +212,9 @@ export default function ViewProductsDeliveries() {
   });
   const [modalUpdateHours, setModalUpdateHours] = useState<boolean>(false);
   const [clockData, setClockData] = useState<ClockUpdateProps[]>();
+  const [changeUser, setChangeUser] = useState<boolean>(false);
+  const [modalChangeUser, setModalChangeUser] = useState<boolean>(false);
+  const [outsideUsers, setOutsideUsers] = useState<boolean>(true);
   // const [clockUpdateData, setClockUpdateData] = useState<ClockUpdateProps[]>();
 
   const [previewImage, setPreviewImage] = useState({
@@ -1362,6 +1366,17 @@ export default function ViewProductsDeliveries() {
         stop();
       }
 
+      if (type === 'user') {
+        const response = await api.get(
+          `/task/next?flow=${dataTask?.flow_id}&project_product_id=${
+            dataTask?.project_product_id
+          }&step=${Number(actualStep)}&task_id=${dataTask?.task_id}&ignore_project=${outsideUsers}`
+        );
+        setUsersWithoutSchedule(response.data.result);
+        // setModalWithoutSchedule(true);
+        // stop();
+      }
+
       setLoading(false);
     } catch (error: any) {
       console.log('log error handleNextUser', error);
@@ -1899,7 +1914,7 @@ export default function ViewProductsDeliveries() {
       setLoading(true);
 
       const response = await api.get(`/clock/task/${dataTask.task_id}`);
-      console.log('log do response clock =>', response.data.result);
+      // console.log('log do response clock =>', response.data.result);
       setClockData(response.data.result);
       // setClockUpdateData(response.data.result);
 
@@ -1974,6 +1989,135 @@ export default function ViewProductsDeliveries() {
     }
   }
 
+  async function checkChangeUser() {
+    try {
+      setLoading(true);
+
+      const response = await api.get(
+        `/flow-function?step=${Number(actualStep)}&flow_id=${dataTask?.flow_id}`
+      );
+
+      if (response.data.result[0].show_hours === 'true') {
+        // console.log('log ShowHours!!!');
+        setChangeUser(true);
+        setModalChangeUser(true);
+      }
+
+      if (response.data.result[0].show_hours === 'false') {
+        // console.log('log NOT showHours!!!');
+        setChangeUser(true);
+        setModalWithoutSchedule(true);
+        handleNextUser('user');
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.log('log error =>', error);
+      setLoading(false);
+    }
+  }
+
+  async function updateChangeUserNoSchedule() {
+    try {
+      setLoading(true);
+
+      const next_user = {
+        user_id: selectedInitialUser?.user_id,
+        start_job: actualDate
+      };
+
+      const response = await api.put(`/task/change-user/${dataTask?.task_id}`, next_user);
+
+      if (response.data.result === 1) {
+        addToast({
+          title: 'Sucesso',
+          description: 'Usuário alterado com sucesso!',
+          type: 'success'
+        });
+        setModalWithoutSchedule(false);
+        setSelectedInitalUser({
+          function: '',
+          name: '',
+          tasks: 0,
+          user_id: ''
+        });
+        getTaskInfos();
+        getTaskHistory();
+        getTimelineData();
+      }
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log error =>', error);
+      setLoading(false);
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
+    }
+  }
+
+  async function updateChangeUserSchedule(values: any) {
+    try {
+      setLoading(true);
+
+      const next_user = {
+        user_id: values.user_id,
+        start_job: values.start_job,
+        end_job: values.end_job
+      };
+
+      const response = await api.put(`/task/change-user/${dataTask?.task_id}`, next_user);
+
+      if (response.data.result === 1) {
+        addToast({
+          title: 'Sucesso',
+          description: 'Usuário alterado com sucesso!',
+          type: 'success'
+        });
+        setModalChangeUser(false);
+        getTaskInfos();
+        getTaskHistory();
+        getTimelineData();
+      }
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log error =>', error);
+      setLoading(false);
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
+    }
+  }
+
+  useEffect(() => {
+    handleNextUser('user');
+  }, [outsideUsers]);
+
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
     // console.log('log allRejected', hasAllBeenRejected);
@@ -2013,6 +2157,7 @@ export default function ViewProductsDeliveries() {
               buttonType="send"
               nextStepInfo={timeLineData}
               backFlow={() => setModalReturnFlow(true)}
+              changeUser={() => ''}
             />
           )}
 
@@ -2152,6 +2297,7 @@ export default function ViewProductsDeliveries() {
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
                 backFlow={() => setModalReturnFlow(true)}
+                changeUser={checkChangeUser}
               />
             )}
 
@@ -2180,6 +2326,7 @@ export default function ViewProductsDeliveries() {
                 backToDelivery={() => setViewProduct(false)}
                 isInsideProduct={true}
                 backFlow={() => setModalReturnFlow(true)}
+                changeUser={checkChangeUser}
               />
             )}
 
@@ -2208,6 +2355,7 @@ export default function ViewProductsDeliveries() {
                 backToDelivery={() => setViewProduct(false)}
                 isInsideProduct={true}
                 backFlow={() => setModalReturnFlow(true)}
+                changeUser={checkChangeUser}
               />
             )}
 
@@ -2260,6 +2408,7 @@ export default function ViewProductsDeliveries() {
                 sendToNext={() => checkFlow('next')}
                 nextStepInfo={timeLineData}
                 backFlow={() => setModalReturnFlow(true)}
+                changeUser={checkChangeUser}
               />
             )}
 
@@ -2288,6 +2437,7 @@ export default function ViewProductsDeliveries() {
                 }}
                 isInsideProduct={true}
                 backFlow={() => setModalReturnFlow(true)}
+                changeUser={checkChangeUser}
               />
             )}
 
@@ -2703,7 +2853,9 @@ export default function ViewProductsDeliveries() {
             user_id: ''
           });
         }}
-        title="Escolha o usuário que receberá a tarefa"
+        title={
+          changeUser ? 'Altere o usuário da tarefa' : 'Escolha o usuário que receberá a tarefa'
+        }
       >
         <UsersWrapper>
           <ProductsTable>
@@ -2735,6 +2887,15 @@ export default function ViewProductsDeliveries() {
                 ))}
               </tbody>
             </table>
+
+            <ShowAllUsers>
+              <CheckboxDefault
+                label="Mostrar todos usuários"
+                name="outsiders"
+                onChange={() => setOutsideUsers(outsideUsers ? false : true)}
+                checked={outsideUsers}
+              />
+            </ShowAllUsers>
           </ProductsTable>
 
           <ModalButtons>
@@ -2753,7 +2914,7 @@ export default function ViewProductsDeliveries() {
             >
               Cancelar
             </ButtonDefault>
-            {!showHoursBack && (
+            {!showHoursBack && !changeUser && (
               <ButtonDefault
                 typeButton="primary"
                 loading={loading}
@@ -2766,7 +2927,7 @@ export default function ViewProductsDeliveries() {
               </ButtonDefault>
             )}
 
-            {showHoursBack && (
+            {showHoursBack && !changeUser && (
               <ButtonDefault
                 typeButton="primary"
                 loading={loading}
@@ -2782,8 +2943,40 @@ export default function ViewProductsDeliveries() {
                 Escolher
               </ButtonDefault>
             )}
+
+            {changeUser && (
+              <ButtonDefault
+                typeButton="primary"
+                loading={loading}
+                onClick={updateChangeUserNoSchedule}
+              >
+                Escolher
+              </ButtonDefault>
+            )}
           </ModalButtons>
         </UsersWrapper>
+      </ModalDefault>
+
+      {/* Modal Schedule change user */}
+      <ModalDefault
+        isOpen={modalChangeUser}
+        title="Lista de pessoas"
+        onOpenChange={() => setModalChangeUser(false)}
+      >
+        <ScheduleUser
+          task_title={dataTask?.title}
+          taskId={dataTask?.task_id}
+          estimated_time={allTimes}
+          flow={dataTask?.flow_id}
+          project_product_id={dataTask?.project_product_id}
+          step={Number(dataTask?.step)}
+          user_alocated={updateChangeUserSchedule}
+          closeModal={() => setModalChangeUser(false)}
+          manualOverrideDate={false}
+          loadingSubmit={loading}
+          taskType={dataTask?.type}
+          deductHours={taskDeductHours}
+        />
       </ModalDefault>
 
       {/* Modal upload files */}
@@ -3699,7 +3892,9 @@ export default function ViewProductsDeliveries() {
                         <td>
                           <DataInfos>
                             {row.first_play !== '' && (
-                              <div className="prev-date">{row.first_play}</div>
+                              <div className="prev-date">
+                                {row.first_play === 'Invalid date' ? '00:00:00' : row.first_play}
+                              </div>
                             )}
                             <InputDefault
                               label=""
@@ -3728,7 +3923,9 @@ export default function ViewProductsDeliveries() {
                         <td>
                           <DataInfos>
                             {row.first_pause !== '' && (
-                              <div className="prev-date">{row.first_pause}</div>
+                              <div className="prev-date">
+                                {row.first_pause === 'Invalid date' ? '00:00:00' : row.first_pause}
+                              </div>
                             )}
                             <InputDefault
                               label=""
@@ -3757,7 +3954,9 @@ export default function ViewProductsDeliveries() {
                         <td>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             <span style={{ textDecoration: 'line-through', fontSize: '12px' }}>
-                              {row.first_time_lapse}
+                              {row.first_time_lapse === 'Invalid date'
+                                ? '00:00:00'
+                                : row.first_time_lapse}
                             </span>
                             {row.time_lapse}
                           </div>

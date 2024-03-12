@@ -322,3 +322,11 @@ export const UsersWrapper = styled.div`
     }
   }
 `;
+
+export const ShowAllUsers = styled.div`
+  display: flex;
+  align-items: center;
+
+  padding: 6px;
+  padding-left: 24px;
+`;

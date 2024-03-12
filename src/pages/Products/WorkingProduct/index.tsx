@@ -988,7 +988,8 @@ export default function WorkingProduct({
 
         {selectedTab === 'Redação' && (
           <>
-            {user.deduct_hours === 'essay' && productInfos?.status !== 'Concluida' ? (            
+            {/* user.deduct_hours === 'essay' &&  */}
+            {productInfos?.status !== 'Concluida' ? (
               <EssayField>
                 <WrapperEditor
                   value={essayInfo}
