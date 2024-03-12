@@ -158,6 +158,8 @@ export const CreateTicketOption = styled.div`
   align-items: center;
   gap: 8px;
 
+  height: 62px;
+
   flex: 1;
 `;
 
