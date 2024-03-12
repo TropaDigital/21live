@@ -43,6 +43,7 @@ interface HeaderTaskProps {
   backToDelivery?: () => void;
   hideButtonNext?: boolean;
   backFlow: () => void;
+  changeUser: () => void;
 }
 
 interface TitleProps {
@@ -88,7 +89,8 @@ export default function HeaderOpenTask({
   backToDelivery,
   backFlow,
   hideButtonNext,
-  avatar_infos
+  avatar_infos,
+  changeUser
 }: HeaderTaskProps) {
   const navigate = useNavigate();
   const [nextSteps, setNextSteps] = useState<StepProps>({
@@ -159,7 +161,7 @@ export default function HeaderOpenTask({
         )}
 
         {avatar_infos.name !== '' && (
-          <AvatarButton>
+          <AvatarButton onClick={changeUser}>
             <AvatarDefault url={avatar_infos.avatar} name={avatar_infos.name} />
 
             <div className="change-user">
