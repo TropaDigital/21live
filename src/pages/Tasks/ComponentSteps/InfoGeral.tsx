@@ -261,7 +261,7 @@ export default function InfoGeral({
             <div>Gerar ticket</div>
           </CreateTicketOption>
         )}
-        {data.gen_ticket === 'true' && data?.ticket_id !== '' && (
+        {data.gen_ticket === 'true' && (
           <div style={{ flex: '1' }}>
             <SelectDefault
               label="Solicitante"

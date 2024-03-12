@@ -1,5 +1,5 @@
 // React
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 // Styles
 import { FilterBtnWrapper } from './styles';
@@ -9,17 +9,24 @@ import HeaderPage from '../../components/HeaderPage';
 import { InputDefault } from '../../components/Inputs/InputDefault';
 import { Table } from '../../components/Table';
 import { TableHead } from '../../components/Table/styles';
-import { ContainerDefault, SectionDefault } from '../../components/UiElements/styles';
+import {
+  ContainerDefault,
+  FieldDefault,
+  FooterModal,
+  SectionDefault
+} from '../../components/UiElements/styles';
 import ButtonDefault from '../../components/Buttons/ButtonDefault';
 import ButtonTable from '../../components/Buttons/ButtonTable';
 import Alert from '../../components/Ui/Alert';
+import ModalDefault from '../../components/Ui/ModalDefault';
+import { FieldEditor } from '../Meeting/ListMeeting/styles';
+import WrapperEditor from '../../components/WrapperEditor';
 
 // Hooks
 import useDebouncedCallback from '../../hooks/useDebounced';
 
 // Icons
 import { BiFilter, BiSearchAlt } from 'react-icons/bi';
-import ModalDefault from '../../components/Ui/ModalDefault';
 import useForm from '../../hooks/useForm';
 
 interface TemplateProps {
@@ -38,7 +45,66 @@ export default function TemplateAgenda() {
     (search: string) => setSearch(search),
     700
   );
+  const [loading, setLoading] = useState<boolean>(false);
   const [modalTemnplate, setModalTemplate] = useState<boolean>(false);
+  const [text, setText] = useState<string>('');
+
+  const handleOnSubmit = useCallback(
+    async (event: any) => {
+      try {
+        setLoading(true);
+        event.preventDefault();
+
+        const { title } = formData;
+
+        const newFormData = {
+          title,
+          description: text
+        };
+
+        // if (modal.type === 'Criar nova Ata de Reunião') {
+        //   await api.post(`meetings`, newFormData);
+        // } else {
+        //   await api.put(`meetings/${formData.meeting_id}`, newFormData);
+        // }
+
+        // addToast({
+        //   type: 'success',
+        //   title: 'Sucesso',
+        //   description: 'Ata de reunião criada com sucesso!'
+        // });
+
+        setModalTemplate(false);
+        setData({
+          title: '',
+          description: ''
+        } as TemplateProps);
+        setText('');
+        // fetchData();
+
+        setLoading(false);
+      } catch (e: any) {
+        console.log('ERROR =>', e);
+        // addToast({
+        //   type: 'danger',
+        //   title: 'ATENÇÃO',
+        //   description: e.response.data.message
+        // });
+
+        setLoading(false);
+      }
+    },
+    [formData, text, setData]
+  );
+
+  const handleOnCancel = () => {
+    setModalTemplate(false);
+    setData({
+      title: '',
+      description: ''
+    } as TemplateProps);
+    setText('');
+  };
 
   const mockTemplates = [
     {
@@ -193,10 +259,41 @@ export default function TemplateAgenda() {
         </div>
       </SectionDefault>
 
-      <ModalDefault isOpen={modalTemnplate} onOpenChange={() => setModalTemplate(false)}>
-        <div>
-          <span>Teste</span>
-        </div>
+      <ModalDefault
+        isOpen={modalTemnplate}
+        onOpenChange={() => setModalTemplate(false)}
+        title={formData.title === '' ? 'Criar template' : 'Editar template'}
+      >
+        <form onSubmit={handleOnSubmit}>
+          <FieldDefault>
+            <InputDefault
+              label="Titulo"
+              placeholder="Titulo da Ata/Reunião"
+              name="title"
+              onChange={handleOnChange}
+              value={formData.title}
+              alert="Titulo é obrigatório"
+              // error={errors?.title}
+            />
+          </FieldDefault>
+
+          <FieldEditor style={{ width: '600px' }}>
+            <WrapperEditor
+              mentionData={[]}
+              value={text}
+              handleOnDescription={(value: any) => setText(value)}
+            />
+          </FieldEditor>
+
+          <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
+            <ButtonDefault typeButton="dark" isOutline onClick={handleOnCancel}>
+              Descartar
+            </ButtonDefault>
+            <ButtonDefault loading={loading} typeButton="primary" isOutline type="submit">
+              Salvar
+            </ButtonDefault>
+          </FooterModal>
+        </form>
       </ModalDefault>
     </ContainerDefault>
   );
