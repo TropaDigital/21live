@@ -480,7 +480,7 @@ export default function CreateTasks() {
     time_creation: multipleMinutesCreation,
     total_time: estimatedTime
   };
-
+  
   useEffect(() => {
     if (location.state !== null && location.state.ticket_id) {
       // console.log('log do locationState =>', location.state);
