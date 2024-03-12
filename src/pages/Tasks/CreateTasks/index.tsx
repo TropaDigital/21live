@@ -46,6 +46,7 @@ import {
   ProductsModalTop,
   ProductsModalWrapper,
   SearchProductsModal,
+  ShowAllUsers,
   SplitDeliveries,
   UsersWrapper
 } from './styles';
@@ -370,6 +371,7 @@ export default function CreateTasks() {
   const [singleProductQuantity, setSingleProductQuantity] = useState<number>(1);
   const [cancelModal, setCancelModal] = useState<boolean>(false);
   const [pathSelected, setPathSelected] = useState<string>('');
+  const [outsideUsers, setOutsideUsers] = useState<boolean>(true);
   // const [contractDates, setContractDates] = useState<any>({
   //   startDate: '',
   //   endDate: ''
@@ -1941,7 +1943,7 @@ export default function CreateTasks() {
   async function handleNextUser() {
     try {
       const response = await api.get(
-        `/task/next?project_product_id=${DTOForm.project_product_id}&flow=${DTOForm.flow_id}&step=1`
+        `/task/next?project_product_id=${DTOForm.project_product_id}&flow=${DTOForm.flow_id}&step=1&ignore_project=${outsideUsers}`
       );
       setUsersWithoutSchedule(response.data.result);
       setModalWithoutSchedule(true);
@@ -1949,6 +1951,12 @@ export default function CreateTasks() {
       console.log('log error handleNextUser', error);
     }
   }
+
+  useEffect(() => {
+    if (modalWithoutSchedule) {
+      handleNextUser();
+    }
+  }, [outsideUsers]);
 
   const handleSetUserWithoutSchedule = () => {
     const actualDate = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
@@ -3065,6 +3073,15 @@ export default function CreateTasks() {
                   ))}
                 </tbody>
               </table>
+
+              <ShowAllUsers>
+                <CheckboxDefault
+                  label="Mostrar todos usuários"
+                  name="outsiders"
+                  onChange={() => setOutsideUsers(outsideUsers ? false : true)}
+                  checked={outsideUsers}
+                />
+              </ShowAllUsers>
             </ProductsTable>
 
             <ModalButtons>
