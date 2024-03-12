@@ -1947,6 +1947,7 @@ export default function ViewProductsDeliveries() {
         });
 
         setModalUpdateHours(false);
+        getTaskInfos();
       }
 
       setLoading(false);
@@ -3753,7 +3754,14 @@ export default function ViewProductsDeliveries() {
                             />
                           </DataInfos>
                         </td>
-                        <td>{row.time_lapse}</td>
+                        <td>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <span style={{ textDecoration: 'line-through', fontSize: '12px' }}>
+                              {row.first_time_lapse}
+                            </span>
+                            {row.time_lapse}
+                          </div>
+                        </td>
                         <td>
                           <Switch
                             onChange={(e) =>
