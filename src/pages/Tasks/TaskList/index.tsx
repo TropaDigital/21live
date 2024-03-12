@@ -352,7 +352,7 @@ export default function TaskList() {
             </FilterTasks>
           </TableHead>
           {!hasFilters && (
-            <FilterGroup>
+            <FilterGroup style={{ width: 'calc(100vw - 260px)' }}>
               <FilterTotal>
                 <div className="filter-title">Filtros ({countNonEmptyProperties()}):</div>
                 {filter.client !== '' ? <span>Cliente</span> : ''}
@@ -448,6 +448,7 @@ export default function TaskList() {
                 <th>Contrato</th>
                 <th>Cliente</th>
                 <th>User</th>
+                <th>Data de entrega</th>
                 <th style={{ color: '#F9FAFB' }}>-</th>
               </tr>
             </thead>
@@ -541,6 +542,9 @@ export default function TaskList() {
                     </td>
                     <td style={{ cursor: 'pointer' }} onClick={() => handleViewTask(row.task_id)}>
                       <AvatarDefault url={row.actual_user_avatar} name={row.actual_user_name} />
+                    </td>
+                    <td style={{ cursor: 'pointer' }} onClick={() => handleViewTask(row.task_id)}>
+                      {moment(row.creation_date_end).format('DD/MM/YYYY')}
                     </td>
                     <td>
                       <div className="fieldTableClients">
