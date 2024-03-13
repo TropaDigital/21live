@@ -480,7 +480,7 @@ export default function CreateTasks() {
     time_creation: multipleMinutesCreation,
     total_time: estimatedTime
   };
-  
+
   useEffect(() => {
     if (location.state !== null && location.state.ticket_id) {
       // console.log('log do locationState =>', location.state);
@@ -2251,6 +2251,22 @@ export default function CreateTasks() {
     });
   };
 
+  const handleAddTemplate = (description: string) => {
+    setDTOForm((prevState: any) => ({
+      ...prevState,
+      description: ''
+    }));
+    // setLoadingSubmit(true);
+
+    setTimeout(() => {
+      setDTOForm((prevState: any) => ({
+        ...prevState,
+        description: description
+      }));
+      // setLoadingSubmit(false);
+    }, 50);
+  };
+
   useEffect(() => {
     function handleOnBeforeUnload(event: BeforeUnloadEvent) {
       event.preventDefault();
@@ -2353,7 +2369,8 @@ export default function CreateTasks() {
                 dataFlow={dataFlow}
                 handleInputChange={selectedProjectInfos}
                 handleTicket={handleGenerateTicket}
-                ticketAsk={ticketAsk}
+                // ticketAsk={ticketAsk}
+                handleTemplate={handleAddTemplate}
                 clients={dataClient}
                 error={error}
               />
@@ -2361,13 +2378,22 @@ export default function CreateTasks() {
               <div className={error.description ? 'label-observation error' : 'label-observation'}>
                 <div className="label">
                   <p>Contexto geral</p>
-                  {error.description && <span>Contexto geral é obrigatório!</span>}
+                  {/* {error.description && <span>Contexto geral é obrigatório!</span>} */}
                 </div>
-                <InfoDescription
-                  value={DTOForm.description}
-                  handleOnDescription={(value) => handleDescription(value)}
-                  mentions={[]}
-                />
+                {DTOForm?.description === '' && (
+                  <InfoDescription
+                    value={''}
+                    handleOnDescription={handleDescription}
+                    mentions={[]}
+                  />
+                )}
+                {DTOForm?.description !== '' && (
+                  <InfoDescription
+                    value={DTOForm?.description}
+                    handleOnDescription={handleDescription}
+                    mentions={[]}
+                  />
+                )}
               </div>
             </>
           )}
@@ -2380,8 +2406,9 @@ export default function CreateTasks() {
                 dataFlow={dataFlow}
                 handleInputChange={selectedProjectInfos}
                 handleTicket={handleGenerateTicket}
-                ticketAsk={ticketAsk}
+                // ticketAsk={ticketAsk}
                 organizations={dataOrganizations}
+                handleTemplate={() => ''}
                 error={error}
               />
 
@@ -2390,11 +2417,20 @@ export default function CreateTasks() {
                   <p>Contexto geral</p>
                   {error.description && <span>Contexto geral é obrigatório!</span>}
                 </div>
-                <InfoDescription
-                  value={DTOForm.description}
-                  handleOnDescription={(value) => handleDescription(value)}
-                  mentions={[]}
-                />
+                {DTOForm?.description === '' && (
+                  <InfoDescription
+                    value={''}
+                    handleOnDescription={handleDescription}
+                    mentions={[]}
+                  />
+                )}
+                {DTOForm?.description !== '' && (
+                  <InfoDescription
+                    value={DTOForm?.description}
+                    handleOnDescription={handleDescription}
+                    mentions={[]}
+                  />
+                )}
               </div>
             </>
           )}
