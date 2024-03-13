@@ -585,7 +585,7 @@ export default function TaskList() {
                             <BiCopy size={20} />
                           </CopyButton>
                         )}
-                        {user.permissions.includes('jobs_tasks_manager') && (
+                        {user.permissions.includes('jobs_tasks_delete') && (
                           <Alert
                             title="Atenção"
                             subtitle="TODAS AS INFORMAÇÕES DESSA TAREFA SERÃO DELETADAS. NÃO SERÁ POSSÍVEL REVERTER ESTA AÇÃO!"
