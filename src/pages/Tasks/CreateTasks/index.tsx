@@ -371,7 +371,7 @@ export default function CreateTasks() {
   const [singleProductQuantity, setSingleProductQuantity] = useState<number>(1);
   const [cancelModal, setCancelModal] = useState<boolean>(false);
   const [pathSelected, setPathSelected] = useState<string>('');
-  const [outsideUsers, setOutsideUsers] = useState<boolean>(true);
+  const [outsideUsers, setOutsideUsers] = useState<boolean>(false);
   // const [contractDates, setContractDates] = useState<any>({
   //   startDate: '',
   //   endDate: ''
@@ -3073,16 +3073,15 @@ export default function CreateTasks() {
                   ))}
                 </tbody>
               </table>
-
-              <ShowAllUsers>
-                <CheckboxDefault
-                  label="Mostrar todos usuários"
-                  name="outsiders"
-                  onChange={() => setOutsideUsers(outsideUsers ? false : true)}
-                  checked={outsideUsers}
-                />
-              </ShowAllUsers>
             </ProductsTable>
+            <ShowAllUsers>
+              <CheckboxDefault
+                label="Mostrar todos usuários"
+                name="outsiders"
+                onChange={() => setOutsideUsers(outsideUsers ? false : true)}
+                checked={outsideUsers}
+              />
+            </ShowAllUsers>
 
             <ModalButtons>
               <ButtonDefault

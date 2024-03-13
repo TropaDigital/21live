@@ -21,42 +21,55 @@ import Alert from '../../components/Ui/Alert';
 import ModalDefault from '../../components/Ui/ModalDefault';
 import { FieldEditor } from '../Meeting/ListMeeting/styles';
 import WrapperEditor from '../../components/WrapperEditor';
+import Pagination from '../../components/Pagination';
+import ModalLoader from '../../components/Ui/ModalLoader';
 
 // Hooks
 import useDebouncedCallback from '../../hooks/useDebounced';
+import useForm from '../../hooks/useForm';
+import { useFetch } from '../../hooks/useFetch';
+import { useToast } from '../../hooks/toast';
 
 // Icons
-import { BiFilter, BiSearchAlt } from 'react-icons/bi';
-import useForm from '../../hooks/useForm';
+import { BiFilter, BiPlus, BiSearchAlt } from 'react-icons/bi';
+
+// Services
 import api from '../../services/api';
 
 interface TemplateProps {
   title: string;
   description: string;
+  task_template_id: string;
 }
 
 interface ModalTemplateProps {
   isOpen: boolean;
-  type: string;
+  type: 'view' | 'edit' | 'create' | 'copy' | '';
 }
 
 export default function TemplateAgenda() {
-  const { formData, setFormValue, setData, handleOnChange } = useForm({
+  const { addToast } = useToast();
+  const { formData, setData, handleOnChange } = useForm({
     title: '',
-    description: ''
+    description: '',
+    task_template_id: ''
   } as TemplateProps);
   const [searchTerm, setSearchTerm] = useState('');
   const [search, setSearch] = useState('');
+  const [selectedPage, setSelectedPage] = useState(1);
   const { isLoading, debouncedCallback } = useDebouncedCallback(
     (search: string) => setSearch(search),
     700
   );
   const [loading, setLoading] = useState<boolean>(false);
-  const [modalTemnplate, setModalTemplate] = useState<ModalTemplateProps>({
+  const [modalTemplate, setModalTemplate] = useState<ModalTemplateProps>({
     isOpen: false,
     type: ''
   });
   const [text, setText] = useState<string>('');
+  const { data, pages, isFetching, fetchData } = useFetch<TemplateProps[]>(
+    `/task/template?search=${search.replace(/[^\w ]/g, '')}teste&page=${selectedPage}`
+  );
 
   const handleOnSubmit = useCallback(
     async (event: any) => {
@@ -71,17 +84,28 @@ export default function TemplateAgenda() {
           description: text
         };
 
-        // if (modal.type === 'Criar nova Ata de Reunião') {
-        //   await api.post(`meetings`, newFormData);
-        // } else {
-        //   await api.put(`meetings/${formData.meeting_id}`, newFormData);
-        // }
-
-        // addToast({
-        //   type: 'success',
-        //   title: 'Sucesso',
-        //   description: 'Ata de reunião criada com sucesso!'
-        // });
+        if (modalTemplate.type === 'create') {
+          await api.post(`/task/template`, newFormData);
+          addToast({
+            type: 'success',
+            title: 'Sucesso',
+            description: 'Template criado com sucesso!'
+          });
+        } else if (modalTemplate.type === 'copy') {
+          await api.post(`/task/template`, newFormData);
+          addToast({
+            type: 'success',
+            title: 'Sucesso',
+            description: 'Template copiado com sucesso!'
+          });
+        } else {
+          await api.put(`/task/template/${formData.task_template_id}`, newFormData);
+          addToast({
+            type: 'success',
+            title: 'Sucesso',
+            description: 'Template editado com sucesso!'
+          });
+        }
 
         setModalTemplate({
           isOpen: false,
@@ -92,21 +116,30 @@ export default function TemplateAgenda() {
           description: ''
         } as TemplateProps);
         setText('');
-        // fetchData();
+        fetchData();
 
         setLoading(false);
-      } catch (e: any) {
-        console.log('ERROR =>', e);
-        // addToast({
-        //   type: 'danger',
-        //   title: 'ATENÇÃO',
-        //   description: e.response.data.message
-        // });
-
+      } catch (error: any) {
+        console.log('ERROR submit template =>', error);
+        if (error.response.data.result.length !== 0) {
+          error.response.data.result.map((row: any) => {
+            addToast({
+              title: 'Atenção',
+              description: row.error,
+              type: 'warning'
+            });
+          });
+        } else {
+          addToast({
+            title: 'Atenção',
+            description: error.response.data.message,
+            type: 'danger'
+          });
+        }
         setLoading(false);
       }
     },
-    [formData, text, setData]
+    [formData, text, setData, modalTemplate, addToast, fetchData]
   );
 
   const handleOnCancel = () => {
@@ -121,205 +154,211 @@ export default function TemplateAgenda() {
     setText('');
   };
 
-  const handleCopyTemplate = (template: any) => {
-    console.log('log do copyTemplate =>', template);
+  const handleCopyTemplate = (obj: TemplateProps) => {
+    setData(obj);
+    setText(obj.description);
+    setModalTemplate({
+      isOpen: true,
+      type: 'copy'
+    });
   };
 
-  // async function copyTemplate() {
-  //   try {
-  //     setLoading(true);
+  const handleOnEdit = (obj: TemplateProps) => {
+    setData(obj);
+    setText(obj.description);
+    setModalTemplate({
+      isOpen: true,
+      type: 'edit'
+    });
+  };
 
-  //     const response = await api.post(`template/copy`);
+  const handleViewTemplate = (obj: TemplateProps) => {
+    setData(obj);
+    setText(obj.description);
+    setModalTemplate({
+      isOpen: true,
+      type: 'view'
+    });
+  };
 
-  //     setLoading(false);
-  //   } catch (error: any) {
-  //     console.log('error copy template', error);
-  //     setLoading(false);
-  //   }
+  const handleOnDelete = async (id: string) => {
+    try {
+      await api.delete(`/task/template/${id}`);
 
-  // }
+      addToast({
+        type: 'success',
+        title: 'Sucesso',
+        description: 'Template deletado com sucesso!'
+      });
 
-  const mockTemplates = [
-    {
-      id: 0,
-      name: 'Object 0',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam, ipsa fugiat reiciendis alias impedit nulla enim obcaecati laudantium assumenda hic inventore. Iste neque commodi numquam ipsam delectus iure tempore ea.'
-    },
-    {
-      id: 1,
-      name: 'Object 1',
-      description: 'Description of object 1.'
-    },
-    {
-      id: 2,
-      name: 'Object 2',
-      description: 'Description of object 2.'
-    },
-    {
-      id: 3,
-      name: 'Object 3',
-      description: 'Description of object 3.'
-    },
-    {
-      id: 4,
-      name: 'Object 4',
-      description: 'Description of object 4.'
-    },
-    {
-      id: 5,
-      name: 'Object 5',
-      description: 'Description of object 5.'
-    },
-    {
-      id: 6,
-      name: 'Object 6',
-      description: 'Description of object 6.'
-    },
-    {
-      id: 7,
-      name: 'Object 7',
-      description: 'Description of object 7.'
-    },
-    {
-      id: 8,
-      name: 'Object 8',
-      description: 'Description of object 8.'
-    },
-    {
-      id: 9,
-      name: 'Object 9',
-      description: 'Description of object 9.'
+      handleOnCancel();
+      fetchData();
+    } catch (error: any) {
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
     }
-  ];
+  };
 
   return (
     <ContainerDefault>
-      <HeaderPage title="Templates" />
+      <HeaderPage title="Templates">
+        <ButtonDefault
+          typeButton="success"
+          onClick={() => setModalTemplate({ isOpen: true, type: 'create' })}
+        >
+          <BiPlus color="#fff" />
+          Novo template
+        </ButtonDefault>
+      </HeaderPage>
 
-      <SectionDefault>
-        <div style={{ margin: '-24px -30px' }}>
-          <Table>
-            <TableHead>
-              <div className="groupTable">
-                <h2>
-                  Templates <strong>0 templates</strong>
-                  {/* {pages !== null && pages?.total > 0 ? (
-                    <strong>
-                      {pages?.total <= 1 ? `${pages?.total} usuário` : `${pages?.total} usuários`}{' '}
-                    </strong>
+      {!isFetching && (
+        <SectionDefault>
+          <div style={{ margin: '-24px -30px' }}>
+            <Table>
+              <TableHead>
+                <div className="groupTable">
+                  <h2>
+                    Templates <strong>0 templates</strong>
+                    {/* {pages !== null && pages?.total > 0 ? (
+                      <strong>
+                        {pages?.total <= 1 ? `${pages?.total} usuário` : `${pages?.total} usuários`}{' '}
+                      </strong>
+                    ) : (
+                      <strong>0 usuário</strong>
+                    )} */}
+                  </h2>
+                </div>
+
+                <FilterBtnWrapper>
+                  <InputDefault
+                    label=""
+                    name="search"
+                    placeholder="Buscar..."
+                    onChange={(event) => {
+                      setSearchTerm(event.target.value);
+                      debouncedCallback(event.target.value);
+                    }}
+                    value={searchTerm}
+                    icon={BiSearchAlt}
+                    isLoading={isLoading}
+                  />
+
+                  {/* <ButtonDefault typeButton="lightWhite" isOutline onClick={() => ''}>
+                    <BiFilter />
+                    Filtros
+                  </ButtonDefault> */}
+                </FilterBtnWrapper>
+              </TableHead>
+
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Título</th>
+                    <th style={{ color: '#F9FAFB' }}>-</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {data !== null && data?.length > 0 ? (
+                    data.map((row) => (
+                      <tr key={row.task_template_id}>
+                        <td>#{String(row.task_template_id).padStart(5, '0')}</td>
+                        <td>{row.title}</td>
+                        <td>
+                          <div className="fieldTableClients">
+                            <ButtonTable
+                              typeButton="view"
+                              onClick={() => {
+                                setModalTemplate({
+                                  isOpen: true,
+                                  type: 'view'
+                                });
+                                handleViewTemplate(row);
+                              }}
+                            />
+
+                            <ButtonTable
+                              typeButton="edit"
+                              onClick={() => {
+                                setModalTemplate({
+                                  isOpen: true,
+                                  type: 'edit'
+                                });
+                                handleOnEdit(row);
+                              }}
+                            />
+
+                            <ButtonTable
+                              typeButton="copy"
+                              onClick={() => handleCopyTemplate(row)}
+                            />
+
+                            <Alert
+                              title="Atenção"
+                              subtitle="Certeza que gostaria de deletar este Template? Ao excluir a ação não poderá ser desfeita!"
+                              confirmButton={() => handleOnDelete(row.task_template_id)}
+                            >
+                              <ButtonTable typeButton="delete" />
+                            </Alert>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
                   ) : (
-                    <strong>0 usuário</strong>
-                  )} */}
-                </h2>
-              </div>
+                    <tr>
+                      <td colSpan={3} style={{ textAlign: 'center' }}>
+                        Sem templates
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
 
-              <FilterBtnWrapper>
-                <InputDefault
-                  label=""
-                  name="search"
-                  placeholder="Buscar..."
-                  onChange={(event) => {
-                    setSearchTerm(event.target.value);
-                    debouncedCallback(event.target.value);
-                  }}
-                  value={searchTerm}
-                  icon={BiSearchAlt}
-                  isLoading={isLoading}
-                />
-
-                {/* <ButtonDefault typeButton="lightWhite" isOutline onClick={() => ''}>
-                  <BiFilter />
-                  Filtros
-                </ButtonDefault> */}
-              </FilterBtnWrapper>
-            </TableHead>
-
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Nome</th>
-                  <th style={{ color: '#F9FAFB' }}>-</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {mockTemplates.map((row) => (
-                  <tr key={row.id}>
-                    <td>#{String(row.id).padStart(5, '0')}</td>
-                    <td>{row.name}</td>
-                    <td>
-                      <div className="fieldTableClients">
-                        <ButtonTable
-                          typeButton="view"
-                          // onClick={() => handleViewTask(row.id)}
-                          onClick={() =>
-                            setModalTemplate({
-                              isOpen: true,
-                              type: 'view'
-                            })
-                          }
-                        />
-
-                        <ButtonTable
-                          typeButton="edit"
-                          onClick={() =>
-                            setModalTemplate({
-                              isOpen: true,
-                              type: 'edit'
-                            })
-                          }
-                        />
-
-                        <ButtonTable typeButton="copy" onClick={() => handleCopyTemplate(row)} />
-
-                        <Alert
-                          title="Atenção"
-                          subtitle="Certeza que gostaria de deletar este Template? Ao excluir a ação não poderá ser desfeita!"
-                          confirmButton={() => ''}
-                        >
-                          <ButtonTable typeButton="delete" />
-                        </Alert>
-                      </div>
+                <tfoot>
+                  <tr>
+                    <td colSpan={100}>
+                      <Pagination
+                        total={pages.total}
+                        perPage={pages.perPage}
+                        currentPage={selectedPage}
+                        lastPage={pages.lastPage}
+                        onClickPage={(e) => setSelectedPage(e)}
+                      />
                     </td>
                   </tr>
-                ))}
-              </tbody>
+                </tfoot>
+              </table>
+            </Table>
+          </div>
+        </SectionDefault>
+      )}
 
-              {/* <tfoot>
-                <tr>
-                  <td colSpan={100}>
-                    <Pagination
-                      total={pages.total}
-                      perPage={pages.perPage}
-                      currentPage={selected}
-                      lastPage={pages.lastPage}
-                      onClickPage={(e) => setSelected(e)}
-                    />
-                  </td>
-                </tr>
-              </tfoot> */}
-            </table>
-          </Table>
-        </div>
-      </SectionDefault>
-
+      {/* Modal edit/create/show template */}
       <ModalDefault
-        isOpen={modalTemnplate.isOpen}
-        onOpenChange={() =>
-          setModalTemplate({
-            isOpen: false,
-            type: ''
-          })
-        }
+        isOpen={modalTemplate.isOpen}
+        onOpenChange={() => handleOnCancel()}
         title={
-          modalTemnplate.type === 'create'
+          modalTemplate.type === 'create'
             ? 'Criar template'
-            : modalTemnplate.type === 'edit'
+            : modalTemplate.type === 'edit'
             ? 'Editar template'
-            : modalTemnplate.type === 'view'
+            : modalTemplate.type === 'view'
             ? 'Ver template'
+            : modalTemplate.type === 'copy'
+            ? 'Copiar template'
             : ''
         }
       >
@@ -332,19 +371,19 @@ export default function TemplateAgenda() {
               onChange={handleOnChange}
               value={formData.title}
               alert="Titulo é obrigatório"
-              disabled={modalTemnplate.type === 'view' ? true : false}
+              disabled={modalTemplate.type === 'view' ? true : false}
               // error={errors?.title}
             />
           </FieldDefault>
 
           <FieldEditor style={{ width: '600px' }}>
-            {modalTemnplate.type === 'view' && (
+            {modalTemplate.type === 'view' && (
               <EssayView>
                 <div dangerouslySetInnerHTML={{ __html: text }} />
               </EssayView>
             )}
 
-            {modalTemnplate.type !== 'view' && (
+            {modalTemplate.type !== 'view' && (
               <WrapperEditor
                 mentionData={[]}
                 value={text}
@@ -354,15 +393,32 @@ export default function TemplateAgenda() {
           </FieldEditor>
 
           <FooterModal style={{ justifyContent: 'flex-end', gap: '16px' }}>
-            <ButtonDefault typeButton="dark" isOutline onClick={handleOnCancel}>
-              Descartar
-            </ButtonDefault>
-            <ButtonDefault loading={loading} typeButton="primary" isOutline type="submit">
-              Salvar
-            </ButtonDefault>
+            {modalTemplate.type === 'view' && (
+              <ButtonDefault
+                loading={loading}
+                typeButton="primary"
+                isOutline
+                onClick={handleOnCancel}
+              >
+                Fechar
+              </ButtonDefault>
+            )}
+            {modalTemplate.type !== 'view' && (
+              <>
+                <ButtonDefault typeButton="dark" isOutline onClick={handleOnCancel}>
+                  Descartar
+                </ButtonDefault>
+                <ButtonDefault loading={loading} typeButton="primary" isOutline type="submit">
+                  Salvar
+                </ButtonDefault>
+              </>
+            )}
           </FooterModal>
         </form>
       </ModalDefault>
+
+      {/* Modal loading */}
+      <ModalLoader isOpen={isFetching} />
     </ContainerDefault>
   );
 }
