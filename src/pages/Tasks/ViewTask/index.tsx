@@ -165,7 +165,7 @@ export default function ViewTask() {
   const [selectedInitialUser, setSelectedInitalUser] = useState<UsersNoSchedule>();
   const [modalChangeUser, setModalChangeUser] = useState<boolean>(false);
   const [modalWithoutSchedule, setModalWithoutSchedule] = useState<boolean>(false);
-  const [outsideUsers, setOutsideUsers] = useState<boolean>(true);
+  const [outsideUsers, setOutsideUsers] = useState<boolean>(false);
 
   const titleInfos = {
     idNumber: dataTask?.task_id,

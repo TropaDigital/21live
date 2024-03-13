@@ -68,7 +68,7 @@ export default function TemplateAgenda() {
   });
   const [text, setText] = useState<string>('');
   const { data, pages, isFetching, fetchData } = useFetch<TemplateProps[]>(
-    `/task/template?search=${search.replace(/[^\w ]/g, '')}teste&page=${selectedPage}`
+    `/task/template?search=${search.replace(/[^\w ]/g, '')}&page=${selectedPage}`
   );
 
   const handleOnSubmit = useCallback(

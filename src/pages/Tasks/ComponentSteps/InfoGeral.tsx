@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable import-helpers/order-imports */
 // React
 import { useEffect, useState } from 'react';
@@ -23,6 +24,7 @@ import { CreateTicketOption } from './styles';
 
 // Libraries
 import Switch from 'react-switch';
+import { useFetch } from '../../../hooks/useFetch';
 
 interface FormProps {
   [key: string]: any;
@@ -37,7 +39,8 @@ interface Props {
   organizations?: OrganizationsProps[] | null;
   error: FormProps;
   handleTicket: (value: any) => void;
-  ticketAsk: string | null;
+  handleTemplate: (value: any) => void;
+  // ticketAsk: string | null;
 }
 
 interface FlowProps {
@@ -54,6 +57,13 @@ interface RequesterProps {
   username: string;
 }
 
+interface TemplateProps {
+  task_template_id: string;
+  title: string;
+  description: string;
+  tenant_id: string;
+}
+
 export default function InfoGeral({
   data,
   dataProjects,
@@ -63,8 +73,9 @@ export default function InfoGeral({
   organizations,
   error,
   handleTicket,
-  ticketAsk
-}: Props) {
+  handleTemplate
+}: // ticketAsk
+Props) {
   const { user } = useAuth();
   // const { addToast } = useToast();
   const [initialValue, setInitialValue] = useState({
@@ -75,6 +86,8 @@ export default function InfoGeral({
   });
   const [requestersList, setRequestersList] = useState<RequesterProps[]>([]);
   const [projectList, setProjectList] = useState<any[]>([]);
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateProps>();
+  const { data: dataTemplates } = useFetch<TemplateProps[]>(`/task/template`);
 
   // const handleGetFlowTask = async (id: any) => {
   //   try {
@@ -123,6 +136,14 @@ export default function InfoGeral({
     }
   }
 
+  const handleSelectTemplate = (id: any) => {
+    const filteredTemplate = dataTemplates?.filter((obj) => obj.task_template_id === id);
+
+    if (filteredTemplate) {
+      setSelectedTemplate(filteredTemplate[0]);
+    }
+  };
+
   useEffect(() => {
     if (dataProjects) {
       setProjectList(dataProjects);
@@ -165,6 +186,20 @@ export default function InfoGeral({
 
     getRequesters(data.tenant_id);
   }, [data, clients, organizations]);
+
+  useEffect(() => {
+    if (selectedTemplate) {
+      handleTemplate(selectedTemplate.description);
+    }
+    // setTimeout(() => {
+    //   setSelectedTemplate({
+    //     description: '',
+    //     task_template_id: '',
+    //     tenant_id: '',
+    //     title: ''
+    //   });
+    // }, 1000);
+  }, [selectedTemplate]);
 
   return (
     <div>
@@ -248,19 +283,20 @@ export default function InfoGeral({
       </FlexLine>
 
       <FlexLine>
-        {ticketAsk !== 'never' && (
-          <CreateTicketOption>
-            <Switch
-              onChange={handleTicket}
-              checked={data.gen_ticket === 'true' ? true : false}
-              uncheckedIcon={false}
-              checkedIcon={false}
-              onColor="#0046B5"
-              className="switch-ticket"
-            />
-            <div>Gerar ticket</div>
-          </CreateTicketOption>
-        )}
+        {/* {ticketAsk !== 'never' && (
+        )} */}
+        <CreateTicketOption>
+          <Switch
+            onChange={handleTicket}
+            checked={data.gen_ticket === 'true' ? true : false}
+            uncheckedIcon={false}
+            checkedIcon={false}
+            onColor="#0046B5"
+            className="switch-ticket"
+          />
+          <div>Gerar ticket</div>
+        </CreateTicketOption>
+
         {data.gen_ticket === 'true' && (
           <div style={{ flex: '1' }}>
             <SelectDefault
@@ -278,6 +314,23 @@ export default function InfoGeral({
             </SelectDefault>
           </div>
         )}
+      </FlexLine>
+
+      <FlexLine>
+        <SelectDefault
+          label="Templates de pauta"
+          name="template"
+          value={selectedTemplate?.task_template_id}
+          onChange={(e: any) => handleSelectTemplate(e.target.value)}
+        >
+          {dataTemplates?.map((row) => (
+            <option key={row.task_template_id} value={row.task_template_id}>
+              {row.title}
+            </option>
+          ))}
+        </SelectDefault>
+
+        <div style={{ flex: '1' }} />
       </FlexLine>
 
       {/* Select responsável flow */}

@@ -214,7 +214,7 @@ export default function ViewProductsDeliveries() {
   const [clockData, setClockData] = useState<ClockUpdateProps[]>();
   const [changeUser, setChangeUser] = useState<boolean>(false);
   const [modalChangeUser, setModalChangeUser] = useState<boolean>(false);
-  const [outsideUsers, setOutsideUsers] = useState<boolean>(true);
+  const [outsideUsers, setOutsideUsers] = useState<boolean>(false);
   // const [clockUpdateData, setClockUpdateData] = useState<ClockUpdateProps[]>();
 
   const [previewImage, setPreviewImage] = useState({
@@ -325,6 +325,11 @@ export default function ViewProductsDeliveries() {
 
   // const myTaskShowHours = nextStep[0]?.show_hours;
   const taskDeductHours = nextStep[0]?.deduct_hours;
+  const actualStepInfo = timeLineData
+    ? timeLineData.steps.filter((obj) => Number(obj.step) === Number(actualStep))
+    : [];
+
+  const taskDeductHoursActual = actualStepInfo[0]?.deduct_hours;
 
   const productsNames: string[] = dataTask?.files.map((file: any) => {
     const matchingDelivery = dataTask?.deliverys.find((delivery: any) =>
@@ -2975,7 +2980,7 @@ export default function ViewProductsDeliveries() {
           manualOverrideDate={false}
           loadingSubmit={loading}
           taskType={dataTask?.type}
-          deductHours={taskDeductHours}
+          deductHours={taskDeductHoursActual}
         />
       </ModalDefault>
 
