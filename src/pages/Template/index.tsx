@@ -231,14 +231,16 @@ export default function TemplateAgenda() {
               <TableHead>
                 <div className="groupTable">
                   <h2>
-                    Templates <strong>0 templates</strong>
-                    {/* {pages !== null && pages?.total > 0 ? (
+                    Templates
+                    {pages !== null && pages?.total > 0 ? (
                       <strong>
-                        {pages?.total <= 1 ? `${pages?.total} usuário` : `${pages?.total} usuários`}{' '}
+                        {pages?.total <= 1
+                          ? `${pages?.total} template`
+                          : `${pages?.total} templates`}{' '}
                       </strong>
                     ) : (
-                      <strong>0 usuário</strong>
-                    )} */}
+                      <strong>0 templates</strong>
+                    )}
                   </h2>
                 </div>
 
