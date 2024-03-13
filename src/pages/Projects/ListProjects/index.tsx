@@ -66,9 +66,15 @@ import {
   FileList,
   FilterProjects,
   ModalShowProjectWrapper,
+  ModalTasksOnProjectWrapper,
   ProjectStatus,
+  TaskInfosItem,
+  TaskListItem,
+  TaskListOnUse,
   ViewFileBtn
 } from './styles';
+import CloseModalBtn from '../../../components/Ui/CloseModalBtn';
+import { ModalButtons } from '../../Team/ListTeam/styles';
 
 interface StateProps {
   [key: string]: any;
@@ -127,6 +133,7 @@ export default function ListProjects() {
     700
   );
   const [modalFilters, setModalFilters] = useState<boolean>(false);
+  const [modalDelete, setModalDelete] = useState<boolean>(true);
   const [filter, setFilter] = useState<FilterProps>({
     fromDate: '',
     toDate: '',
@@ -968,6 +975,40 @@ export default function ListProjects() {
             />
           )}
         </ModalShowProjectWrapper>
+      </ModalDefault>
+
+      {/* Modal delete project preview */}
+      <ModalDefault
+        isOpen={modalDelete}
+        onOpenChange={() => setModalDelete(false)}
+        title="Deletar projeto"
+      >
+        <ModalTasksOnProjectWrapper>
+          <CloseModalBtn close={() => setModalDelete(false)} marginTop={'-40px'} />
+
+          <TaskListOnUse>
+            <div className="list-title">Tarefas vinculadas a este projeto atualmente:</div>
+
+            <TaskListItem>
+              <TaskInfosItem>
+                <div className="task">
+                  <span>ID:</span> #{String(1).padStart(3, '0')}
+                </div>
+
+                <div className="task">
+                  {' '}
+                  <span>Tarefa:</span> Teste
+                </div>
+              </TaskInfosItem>
+            </TaskListItem>
+          </TaskListOnUse>
+
+          <ModalButtons>
+            <ButtonDefault typeButton="danger" isOutline>
+              Deletar
+            </ButtonDefault>
+          </ModalButtons>
+        </ModalTasksOnProjectWrapper>
       </ModalDefault>
 
       {/* Modal loading submit */}

@@ -133,3 +133,51 @@ export const FilterProjects = styled.div`
   align-items: center;
   gap: 12px;
 `;
+
+export const ModalTasksOnProjectWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+
+  padding: 12px;
+  position: relative;
+
+  min-width: 500px;
+`;
+
+export const TaskListOnUse = styled.ul`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .list-title {
+    color: var(--title-color);
+    font-weight: var(--weight-medium);
+    margin-left: -24px;
+  }
+
+  padding-left: 24px;
+`;
+
+export const TaskListItem = styled.li`
+  display: list-item;
+
+  list-style: disc !important;
+`;
+
+export const TaskInfosItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  background-color: var(--gray-100);
+  padding: 4px 6px;
+  border-radius: 4px;
+
+  .task {
+    span {
+      color: var(--gray-500);
+      font-weight: var(--weight-bold);
+    }
+  }
+`;
