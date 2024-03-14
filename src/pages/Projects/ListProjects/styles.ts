@@ -148,7 +148,12 @@ export const ModalTasksOnProjectWrapper = styled.div`
 export const TaskListOnUse = styled.ul`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+
+  margin-top: -12px;
+  max-height: 300px;
+
+  overflow-y: auto;
 
   .list-title {
     color: var(--title-color);
@@ -180,4 +185,11 @@ export const TaskInfosItem = styled.div`
       font-weight: var(--weight-bold);
     }
   }
+`;
+
+export const AlertDelete = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
 `;
