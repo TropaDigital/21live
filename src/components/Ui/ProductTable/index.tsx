@@ -141,11 +141,11 @@ export default function ProductTable({
                       }
                     >
                       <span style={{ marginBottom: '4px', display: 'block' }}>
-                        {timeData?.timeConsumed}
+                        {row?.minutes_consumed}
                       </span>
                       <ProgressBar
                         totalHours={convertToMilliseconds(row?.minutes)}
-                        restHours={convertToMilliseconds(timeData?.timeConsumed)}
+                        restHours={convertToMilliseconds(row?.minutes_consumed)}
                       />
                     </td>
                     <td
