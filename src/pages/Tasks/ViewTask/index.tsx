@@ -671,7 +671,7 @@ export default function ViewTask() {
                 : { title: '', type: '', size: '', description: '', reason_change: '', id: '' }
             }
             disableButton={true}
-            avatar_infos={visualizationType === 'product' ? userProps : { name: '', avatar: '' }}
+            avatar_infos={userProps}
             goBack
             buttonType="send"
             nextStepInfo={timeLineData}

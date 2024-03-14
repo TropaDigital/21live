@@ -160,9 +160,9 @@ export default function HeaderOpenTask({
           </HeaderProductInfos>
         )}
 
-        {avatar_infos.name !== '' && (
+        {avatar_infos?.name !== undefined && (
           <AvatarButton onClick={changeUser}>
-            <AvatarDefault url={avatar_infos.avatar} name={avatar_infos.name} />
+            <AvatarDefault url={avatar_infos?.avatar} name={avatar_infos?.name} />
 
             <div className="change-user">
               <MdOutlineChangeCircle />
