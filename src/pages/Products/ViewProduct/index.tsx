@@ -1949,12 +1949,14 @@ export default function ViewProductsDeliveries() {
 
   async function handleUpdateClockInfos() {
     try {
-      const clockHasId: ClockProps[] = [];
+      const clockHasId: any[] = [];
 
       clockData?.forEach((obj: ClockUpdateProps) => {
         obj.clock.forEach((clockObj) => {
           if (clockObj.clock_id) {
-            clockHasId.push(clockObj);
+            const { name_user, ['function']: func, first_time_lapse, ...rest } = clockObj;
+            const modifiedClockObj = { ...rest };
+            clockHasId.push(modifiedClockObj);
           }
         });
       });
@@ -2513,17 +2515,17 @@ export default function ViewProductsDeliveries() {
                       )}
 
                       {row.time_line.length > 0 &&
-                      row.time_line.some((item) => item.action === 'Concluiu Entrega') ? (
+                      row.time_line.length > 0 &&
+                      row.time_line.some((item) => item.action === 'Criou Tarefa') ? (
                         <TimelineExtraInfo>
-                          Concluído por:{' '}
+                          Tarefa aberto por:{' '}
                           {row.time_line.length > 1
-                            ? row.time_line.find((item) => item.action === 'Concluiu Entrega')?.name
+                            ? row.time_line.find((item) => item.action === 'Criou Tarefa')?.name
                             : row.time_line[0].name}
                           <div>
                             as{' '}
                             {moment(
-                              row.time_line.find((item) => item.action === 'Concluiu Entrega')
-                                ?.created
+                              row.time_line.find((item) => item.action === 'Criou Tarefa')?.created
                             ).format('HH:mm')}
                             h
                           </div>
@@ -2531,7 +2533,7 @@ export default function ViewProductsDeliveries() {
                       ) : row.time_line.length > 0 &&
                         row.time_line.some((item) => item.action === 'Criou Ticket') ? (
                         <TimelineExtraInfo>
-                          Ticket criado por:{' '}
+                          Ticket solicitado por:{' '}
                           {row.time_line.length > 1
                             ? row.time_line.find((item) => item.action === 'Criou Ticket')?.name
                             : row.time_line[0].name}
@@ -2546,7 +2548,7 @@ export default function ViewProductsDeliveries() {
                       ) : row.time_line.length > 0 &&
                         row.time_line.some((item) => item.action === 'Atualmente com a Tarefa') ? (
                         <TimelineExtraInfo>
-                          Trabalhando:{' '}
+                          {dataTask?.status === 'Concluida' ? `Concluído por: ` : `Trabalhando: `}
                           {row.time_line.length > 1
                             ? row.time_line.find(
                                 (item) => item.action === 'Atualmente com a Tarefa'
@@ -2556,6 +2558,21 @@ export default function ViewProductsDeliveries() {
                             as{' '}
                             {moment(
                               row.time_line.find((item) => item.action === 'Criou Ticket')?.created
+                            ).format('HH:mm')}
+                            h
+                          </div>
+                        </TimelineExtraInfo>
+                      ) : row.time_line.some((item) => item.action === 'Concluiu Entrega') ? (
+                        <TimelineExtraInfo>
+                          Concluído por:{' '}
+                          {row.time_line.length > 1
+                            ? row.time_line.find((item) => item.action === 'Concluiu Entrega')?.name
+                            : row.time_line[0].name}
+                          <div>
+                            as{' '}
+                            {moment(
+                              row.time_line.find((item) => item.action === 'Concluiu Entrega')
+                                ?.created
                             ).format('HH:mm')}
                             h
                           </div>
@@ -2609,6 +2626,13 @@ export default function ViewProductsDeliveries() {
                 </div>
               </TaskInfoField>
 
+              <TaskInfoField>
+                <div className="info-title">Data Inicial:</div>
+                <div className="info-description">
+                  {moment(dataTask?.created).format('DD/MM/YYYY')}
+                </div>
+              </TaskInfoField>
+
               <TaskInfoField
                 onClick={() =>
                   setUpdateDateTask({
@@ -2657,6 +2681,15 @@ export default function ViewProductsDeliveries() {
                   </div>
                 )}
               </TaskInfoField>
+
+              {dataTask?.status === 'Concluida' && (
+                <TaskInfoField>
+                  <div className="info-title">Data de conclusão:</div>
+                  <div className="info-description">
+                    {moment(dataTask?.updated).format('DD/MM/YYYY')}
+                  </div>
+                </TaskInfoField>
+              )}
             </TasksInfos>
             <ArrowSection onClick={() => setHideRightCard('hide')}>
               <MdClose />
