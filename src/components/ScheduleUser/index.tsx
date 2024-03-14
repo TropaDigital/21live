@@ -70,7 +70,7 @@ interface UserData {
 interface ScheduleProps {
   scheduleDay: string;
   user_selected: string;
-  starterHour: string;
+  starterHour: string | null;
 }
 
 interface TaskExchangeProps {
@@ -119,7 +119,7 @@ export default function ScheduleUser({
   const [DTOTaskSelect, setDTOTaskSelect] = useState<ScheduleProps>({
     scheduleDay: '',
     user_selected: '',
-    starterHour: ''
+    starterHour: null
   });
   const [dayCounter, setDayCounter] = useState<number>(0);
   const [dataUserSchedule, setDataUserSchedule] = useState<UserData[]>([]);
