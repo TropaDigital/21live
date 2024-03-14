@@ -1949,12 +1949,14 @@ export default function ViewProductsDeliveries() {
 
   async function handleUpdateClockInfos() {
     try {
-      const clockHasId: ClockProps[] = [];
+      const clockHasId: any[] = [];
 
       clockData?.forEach((obj: ClockUpdateProps) => {
         obj.clock.forEach((clockObj) => {
           if (clockObj.clock_id) {
-            clockHasId.push(clockObj);
+            const { name_user, ['function']: func, first_time_lapse, ...rest } = clockObj;
+            const modifiedClockObj = { ...rest };
+            clockHasId.push(modifiedClockObj);
           }
         });
       });
