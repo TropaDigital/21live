@@ -1276,7 +1276,13 @@ export default function ViewProductsDeliveries() {
           dataTask?.files.length > 0
         ) {
           console.log('checkFlow 7 - Final card not mandatory upload');
-          setModalSelectFinalfiles(true);
+          const filesWithouthProduct = files.filter((obj) => obj.products_delivery_id === '');
+
+          if (filesWithouthProduct.length === dataTask?.files.length) {
+            setModalFinalFile(true);
+          } else {
+            setModalSelectFinalfiles(true);
+          }
           // handleUploadApproved();
         }
 
