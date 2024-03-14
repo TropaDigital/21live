@@ -416,23 +416,24 @@ export default function ViewTask() {
     setModalUpdateHours(true);
   };
 
-  async function handleUpdateClockInfos(infos: ClockProps, stepInfo: string) {
+  async function handleUpdateClockInfos() {
     try {
-      const clockId = infos.clock_id;
-      const params = {
-        play: infos.play,
-        pause: infos.pause,
-        step: stepInfo,
-        observation: infos.observation,
-        active: infos.active
-      };
+      const clockHasId: ClockProps[] = [];
+
+      clockData?.forEach((obj: ClockUpdateProps) => {
+        obj.clock.forEach((clockObj) => {
+          if (clockObj.clock_id) {
+            clockHasId.push(clockObj);
+          }
+        });
+      });
 
       // console.log('log infos edit clock =>', infos);
       // console.log('log stepInfos edit clock =>', stepInfo);
 
       setLoading(true);
 
-      const response = await api.put(`/clock/edit/${clockId}`, params);
+      const response = await api.put(`/clock/edit/`, clockHasId);
 
       if (response.data.status === 'success') {
         addToast({
@@ -1430,7 +1431,7 @@ export default function ViewTask() {
                   <th>Final</th>
                   <th>Tempo alocado</th>
                   <th>Ativo</th>
-                  <th style={{ color: '#F9FAFB' }}>-</th>
+                  {/* <th style={{ color: '#F9FAFB' }}>-</th> */}
                 </tr>
               </thead>
 
@@ -1541,14 +1542,14 @@ export default function ViewTask() {
                             onColor="#0046B5"
                           />
                         </td>
-                        <td>
+                        {/* <td>
                           <ButtonDefault
                             typeButton="primary"
                             onClick={() => handleUpdateClockInfos(row, step.step)}
                           >
                             Salvar
                           </ButtonDefault>
-                        </td>
+                        </td> */}
                       </tr>
                     ))
                   )}
@@ -1574,6 +1575,10 @@ export default function ViewTask() {
                 Tempo alocado:
                 <span>{dataTask?.time_consumed}</span>
               </div>
+
+              <ButtonDefault typeButton="primary" onClick={handleUpdateClockInfos}>
+                Salvar
+              </ButtonDefault>
             </TimeAndDates>
           </TotalTaskHours>
         </TimeWrapper>
