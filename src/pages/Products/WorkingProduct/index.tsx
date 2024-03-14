@@ -1331,7 +1331,7 @@ export default function WorkingProduct({
                         <td>
                           {row.products_delivery_id !== '' ? row.products_delivery_id : '-----'}
                         </td>
-                        <td>{productsNames[index]}</td>
+                        <td>{row.products_delivery_id !== '' ? productsNames[index] : '-----'}</td>
                         <td>
                           {row.original_name !== ''
                             ? row.original_name

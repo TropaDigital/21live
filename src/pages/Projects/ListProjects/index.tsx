@@ -61,14 +61,21 @@ import { SummaryCard } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 import { SummaryCardTitle } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 import { SummaryCardSubtitle } from '../../Tasks/ComponentSteps/SummaryTasks/styles';
 import {
+  AlertDelete,
   DownloadFileBtn,
   FileInfo,
   FileList,
   FilterProjects,
   ModalShowProjectWrapper,
+  ModalTasksOnProjectWrapper,
   ProjectStatus,
+  TaskInfosItem,
+  TaskListItem,
+  TaskListOnUse,
   ViewFileBtn
 } from './styles';
+import CloseModalBtn from '../../../components/Ui/CloseModalBtn';
+import { ModalButtons } from '../../Team/ListTeam/styles';
 
 interface StateProps {
   [key: string]: any;
@@ -82,6 +89,37 @@ interface FilterProps {
   status: string;
   type: string;
   [key: string]: string | any; // Index signature
+}
+
+interface TaskListItem {
+  task_id: string;
+  title: string;
+  tenant_id: string;
+  project_product_id: string;
+  flow_id: string;
+  description: string;
+  creation_description: string;
+  creation_date_end: string;
+  copywriting_description: string;
+  copywriting_date_end: string;
+  step: string;
+  created: string;
+  updated: string;
+  deleted: string;
+  type: string;
+  total_time: string;
+  status: string;
+  time_consumed: string;
+  type_play: string;
+  user_id: string;
+  urgent: string;
+  ticket_id: string;
+  start_job: string;
+  end_job: string;
+  organization_id: string;
+  requester_id: string;
+  parent_id: string;
+  return_id: string;
 }
 
 export default function ListProjects() {
@@ -119,7 +157,7 @@ export default function ListProjects() {
   //   products: [],
   //   files: []
   // } as IProjectCreate);
-
+  const [loading, setLoading] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [search, setSearch] = useState('');
   const { isLoading, debouncedCallback } = useDebouncedCallback(
@@ -127,6 +165,10 @@ export default function ListProjects() {
     700
   );
   const [modalFilters, setModalFilters] = useState<boolean>(false);
+  const [modalDelete, setModalDelete] = useState({
+    isOpen: false,
+    project_id: ''
+  });
   const [filter, setFilter] = useState<FilterProps>({
     fromDate: '',
     toDate: '',
@@ -258,6 +300,7 @@ export default function ListProjects() {
       url: ''
     }
   });
+  const [taskList, setTaskList] = useState<any[]>([]);
 
   async function handleStatus(id: any) {
     try {
@@ -414,6 +457,30 @@ export default function ListProjects() {
     setModalFilters(false);
   };
 
+  async function handleDeleteProject(idProject: string) {
+    try {
+      setLoading(true);
+
+      const response = await api.get(`/project/check-delete/${idProject}`);
+      setTaskList(response.data.result);
+
+      setModalDelete({
+        isOpen: true,
+        project_id: idProject
+      });
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log error', error);
+      addToast({
+        type: 'danger',
+        title: 'ATENÇÃO',
+        description: error.response.data.message
+      });
+      setLoading(true);
+    }
+  }
+
   const countNonEmptyProperties = () => {
     let count = 0;
     for (const key in filter) {
@@ -442,7 +509,7 @@ export default function ListProjects() {
 
       {!user?.permissions?.includes('jobs_projects_add') && <HeaderPage title="Projetos" />}
 
-      {!isFetching && (
+      {!isFetching && !loading && (
         <Table>
           <TableHead style={{ width: 'calc(100vw - 260px)' }}>
             <div className="groupTable">
@@ -694,13 +761,17 @@ export default function ListProjects() {
                         <ButtonTable typeButton="edit" onClick={() => handleEditProject(row)} />
                       )}
                       {user?.permissions?.includes('jobs_projects_delete') && (
-                        <Alert
-                          title="Atenção"
-                          subtitle="Certeza que gostaria de deletar este Projeto? Ao excluir a ação não poderá ser desfeita."
-                          confirmButton={() => handleOnDelete(row.project_id)}
-                        >
-                          <ButtonTable typeButton="delete" />
-                        </Alert>
+                        <ButtonTable
+                          typeButton="delete"
+                          onClick={() => handleDeleteProject(row.project_id)}
+                        />
+                        // <Alert
+                        //   title="Atenção"
+                        //   subtitle="Certeza que gostaria de deletar este Projeto? Ao excluir a ação não poderá ser desfeita."
+                        //   confirmButton={() => handleOnDelete(row.project_id)}
+                        // >
+                        //   <ButtonTable typeButton="delete" />
+                        // </Alert>
                       )}
                     </div>
                   </td>
@@ -970,8 +1041,67 @@ export default function ListProjects() {
         </ModalShowProjectWrapper>
       </ModalDefault>
 
+      {/* Modal delete project preview */}
+      <ModalDefault
+        isOpen={modalDelete.isOpen}
+        onOpenChange={() => setModalDelete({ isOpen: false, project_id: '' })}
+        title={`Deletar projeto #${String(modalDelete.project_id).padStart(5, '0')}`}
+      >
+        <ModalTasksOnProjectWrapper>
+          <CloseModalBtn
+            close={() => setModalDelete({ isOpen: false, project_id: '' })}
+            marginTop={'-40px'}
+          />
+          {taskList.length > 0 && (
+            <TaskListOnUse>
+              <div className="list-title">
+                Tarefas vinculadas a este projeto atualmente serão impactadas:
+              </div>
+              {taskList.map((row: TaskListItem) => (
+                <TaskListItem key={row.task_id}>
+                  <TaskInfosItem>
+                    <div className="task">
+                      <span>ID:</span> #{String(row.task_id).padStart(5, '0')}
+                    </div>
+
+                    <div className="task">
+                      {' '}
+                      <span>Tarefa:</span> {row.title}
+                    </div>
+                  </TaskInfosItem>
+                </TaskListItem>
+              ))}
+            </TaskListOnUse>
+          )}
+
+          <AlertDelete>
+            <strong>Atenção</strong>
+            <div>
+              Certeza que gostaria de deletar este Projeto? Ao excluir, esta ação não poderá ser
+              desfeita.
+            </div>
+          </AlertDelete>
+
+          <ModalButtons>
+            <ButtonDefault
+              typeButton="dark"
+              isOutline
+              onClick={() => setModalDelete({ isOpen: false, project_id: '' })}
+            >
+              Cancelar
+            </ButtonDefault>
+            <ButtonDefault
+              typeButton="danger"
+              onClick={() => handleOnDelete(modalDelete.project_id)}
+            >
+              Sim, Deletar
+            </ButtonDefault>
+          </ModalButtons>
+        </ModalTasksOnProjectWrapper>
+      </ModalDefault>
+
       {/* Modal loading submit */}
-      <ModalLoader isOpen={isFetching} />
+      <ModalLoader isOpen={isFetching || loading} />
 
       {/* Modal filters */}
       <FilterModal
