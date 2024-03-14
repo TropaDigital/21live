@@ -69,7 +69,7 @@ export const TaskDate = styled.div`
 
   color: var(--gray-900);
   font-size: var(--text-small-md);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-bold);
 `;
 
 export const TasksTable = styled.div`
@@ -108,7 +108,7 @@ export const TasksTable = styled.div`
       font-size: var(--text-small-sm);
       font-weight: var(--weight-medium);
       color: var(--gray-900);
-      padding: 0 1.5rem;
+      padding: 0.75rem 1.5rem;
       background: #ffffff;
       /* border-radius: 5px; */
       border-bottom: 1px solid #eaecf0;
@@ -146,12 +146,14 @@ export const TasksTable = styled.div`
       &.info {
         color: var(--gray-900);
         font-size: var(--text-small-md);
-        font-weight: var(--weight-medium);
+        font-weight: var(--weight-semibold);
 
         div {
           display: flex;
           align-items: center;
           gap: 8px;
+
+          text-transform: uppercase;
         }
       }
 
@@ -159,6 +161,10 @@ export const TasksTable = styled.div`
         color: var(--gray-500);
         font-size: var(--text-small-sm);
         font-weight: var(--weight-medium);
+
+        &.danger {
+          color: var(--Danger);
+        }
       }
     }
 
@@ -200,16 +206,17 @@ export const TasksTable = styled.div`
         }
       }
 
+      &.delayed {
+        td {
+          background-color: var(--error-100);
+        }
+      }
+
       &:hover {
         td {
           background-color: var(--primary-025);
         }
       }
-    }
-
-    .flag-info {
-      display: flex;
-      align-items: center;
     }
 
     .container {
@@ -219,13 +226,13 @@ export const TasksTable = styled.div`
     }
   }
 
-  @media (max-width: 1600px) {
+  /* @media (max-width: 1600px) {
     table {
       td {
         padding: 0 1rem;
       }
     }
-  }
+  } */
 `;
 
 export const PaginationWrapper = styled.div`
@@ -234,4 +241,31 @@ export const PaginationWrapper = styled.div`
   justify-content: center;
 
   padding: 0 40px;
+`;
+
+export const FlagTitleWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .danger {
+    color: var(--Danger);
+  }
+
+  .column {
+    span {
+      color: var(--Danger);
+    }
+  }
+`;
+
+export const TimeWrapperCard = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid var(--gray-300);
+  border-radius: 8px;
+
+  padding: 12px;
 `;
