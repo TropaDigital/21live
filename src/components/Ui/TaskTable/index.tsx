@@ -5,10 +5,8 @@
 import { useState, useEffect } from 'react';
 
 // Icons
-import { BiPencil, BiSearchAlt } from 'react-icons/bi';
+import { BiSearchAlt } from 'react-icons/bi';
 import { FiFlag } from 'react-icons/fi';
-import { IconContext } from 'react-icons';
-import { IconText } from '../../../assets/icons';
 
 // Utils
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
@@ -25,6 +23,8 @@ import {
   TasksTable,
   TimeWrapperCard
 } from './styles';
+import { FilterGroup } from '../../Table/styles';
+import { ButtonsFilter, FilterButton } from '../../../pages/Meeting/ListMeeting/styles';
 
 // Components
 import { InputDefault } from '../../Inputs/InputDefault';
@@ -37,9 +37,6 @@ import Pagination from '../../Pagination';
 
 // Hooks
 import { useAuth } from '../../../hooks/AuthContext';
-import { FilterGroup } from '../../Table/styles';
-import { ButtonsFilter, FilterButton } from '../../../pages/Meeting/ListMeeting/styles';
-import { padding } from 'polished';
 
 interface TableProps {
   data: any;
@@ -144,8 +141,12 @@ export default function TaskTable({
                 <tr>
                   <th>ID</th>
                   <th>Tarefas</th>
-                  <th>Iniciar</th>
-                  <th>Finalizar</th>
+                  {user.deduct_hours !== '' && (
+                    <>
+                      <th>Iniciar</th>
+                      <th>Finalizar</th>
+                    </>
+                  )}
                   <th>Tempo consumido</th>
                   <th>Tempo estimado</th>
                   <th>Produtos</th>
@@ -160,7 +161,12 @@ export default function TaskTable({
                     key={task.task_id}
                     style={{ cursor: 'pointer' }}
                     onClick={() => handleGoToDelivery(task, index + 1)}
-                    className={moment(task?.end_job).isBefore(new Date()) ? 'delayed' : ''}
+                    className={
+                      moment(task?.creation_date_end).isBefore(new Date()) &&
+                      task.status !== 'Concluida'
+                        ? 'delayed'
+                        : ''
+                    }
                   >
                     <td>
                       <div className="id-column">#{String(task.task_id).padStart(5, '0')}</div>
@@ -183,12 +189,16 @@ export default function TaskTable({
                         </div>
                       </FlagTitleWrapper>
                     </td>
-                    <td>
-                      <TimeWrapperCard>08:30</TimeWrapperCard>
-                    </td>
-                    <td>
-                      <TimeWrapperCard>09:30</TimeWrapperCard>
-                    </td>
+                    {user.deduct_hours !== '' && (
+                      <>
+                        <td>
+                          <TimeWrapperCard>08:30</TimeWrapperCard>
+                        </td>
+                        <td>
+                          <TimeWrapperCard>09:30</TimeWrapperCard>
+                        </td>
+                      </>
+                    )}
 
                     <td>
                       <span style={{ marginBottom: '4px', display: 'block' }}>
@@ -234,7 +244,7 @@ export default function TaskTable({
                           : 'Pendente'}
                       </div>
                     </td>
-                    <td>{moment(task?.end_job).format('DD/MM/YYYY')}</td>
+                    <td>{moment(task?.creation_date_end).format('DD/MM/YYYY')}</td>
                   </tr>
                 ))}
               </tbody>

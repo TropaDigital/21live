@@ -208,7 +208,9 @@ export const TasksTable = styled.div`
 
       &.delayed {
         td {
-          background-color: var(--error-100);
+          background-color: var(--warning-050);
+          /* color: var(--error-500); */
+          /* font-weight: 700; */
         }
       }
 
