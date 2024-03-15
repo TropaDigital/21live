@@ -140,7 +140,7 @@ export default function Profile() {
             </label>
           </AvatarInput>
 
-          <FieldFormDefault>
+          {/* <FieldFormDefault>
             <SelectDefault
               name="language"
               label="Lingua"
@@ -154,7 +154,7 @@ export default function Profile() {
                 </option>
               ))}
             </SelectDefault>
-          </FieldFormDefault>
+          </FieldFormDefault> */}
         </SectionInfoPerfilLeft>
 
         <SectionInfoPerfilRight>
@@ -168,10 +168,11 @@ export default function Profile() {
                   onChange={(event) => handleInputChange('name', event)}
                   value={formData.name}
                   style={{ marginBottom: '14px' }}
+                  disabled={true}
                   icon={BiUser}
                 />
 
-                <InputDefault
+                {/* <InputDefault
                   name="birthday"
                   label="Data Nascimento"
                   placeholder="00/00/00"
@@ -179,17 +180,17 @@ export default function Profile() {
                   value={formData.birthday}
                   style={{ marginBottom: '14px' }}
                   icon={BiCalendar}
-                />
+                /> */}
 
-                <InputDefault
+                {/* <InputDefault
                   name="companySince"
                   label="Na empresa desde"
-                  placeholder="00/00/00"
+                  placeholder="00/00/0000"
                   onChange={(event) => handleInputChange('companySince', event)}
                   value={formData.companySince}
                   style={{ marginBottom: '14px' }}
                   icon={BiCalendar}
-                />
+                /> */}
               </FieldFormDefault>
 
               <FieldFormDefault>
@@ -199,11 +200,22 @@ export default function Profile() {
                   placeholder="Digite seu email"
                   onChange={(event) => handleInputChange('email', event)}
                   value={formData.email}
+                  disabled={true}
                   style={{ marginBottom: '14px' }}
                   icon={BiEnvelope}
                 />
 
-                <InputDefault
+                {/* <InputDefault
+                  name="email"
+                  label="E-mail"
+                  placeholder="Digite seu email"
+                  onChange={(event) => handleInputChange('email', event)}
+                  value={formData.email}
+                  style={{ marginBottom: '14px' }}
+                  icon={BiEnvelope}
+                /> */}
+
+                {/* <InputDefault
                   name="phone"
                   label="Telefone"
                   placeholder="(00) 0 0000-0000"
@@ -211,9 +223,9 @@ export default function Profile() {
                   value={formData.phone}
                   style={{ marginBottom: '14px' }}
                   icon={BiPhone}
-                />
+                /> */}
 
-                <InputDefault
+                {/* <InputDefault
                   name="office"
                   label="cargo"
                   placeholder="Seu cargo"
@@ -221,13 +233,13 @@ export default function Profile() {
                   value={formData.office}
                   style={{ marginBottom: '14px' }}
                   icon={BiBriefcase}
-                />
+                /> */}
               </FieldFormDefault>
             </FieldGroupFormDefault>
           </FieldFormDefault>
 
           <FieldGroupFormDefault>
-            <SectionCustHours>
+            {/* <SectionCustHours>
               <InputDefault
                 name="cost_per_hour"
                 label="Custo por hora"
@@ -239,9 +251,12 @@ export default function Profile() {
               <span className="custPerHoursInfo">
                 Não se preocupe, essa informação só sera vísivel para os administradores.
               </span>
-            </SectionCustHours>
+            </SectionCustHours> */}
 
             <SectionActionForm>
+              <ButtonDefault onClick={() => navigate('/dashboard')} typeButton="danger" isOutline>
+                Cancelar
+              </ButtonDefault>
               <ButtonDefault typeButton="info">
                 <HiOutlineKey size={24} color="#fff" />
                 Redefinir Senha
@@ -250,57 +265,10 @@ export default function Profile() {
                 <HiOutlineKey size={24} color="#fff" />
                 Salvar
               </ButtonDefault>
-              <ButtonDefault onClick={() => navigate('/dashboard')} typeButton="danger" isOutline>
-                Cancelar
-              </ButtonDefault>
             </SectionActionForm>
           </FieldGroupFormDefault>
         </SectionInfoPerfilRight>
       </ContentPerfil>
-
-      {/* <ModalDefault title="Novo Modelo" isOpen={modal} onOpenChange={setModal}>
-        <div className="contentNewModal" style={{ overflowY: 'auto', position: 'relative' }}>
-          {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((row: any) => (
-            <div
-              className="boxItem"
-              key={row}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'baseline',
-                gap: '10px',
-                padding: '8px',
-                border: '1px solid lightGray',
-                borderRadius: '4px'
-              }}
-            >
-              <h2
-                style={{
-                  fontSize: '18px'
-                }}
-              >
-                Nome do Usuario
-              </h2>
-              <Avatar data={avatarAll} />
-            </div>
-          ))}
-          <div
-            className="footerNewModal"
-            style={{
-              position: 'fixed',
-              bottom: '0'
-            }}
-          >
-            <div
-              className="footerButtons"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-            >
-              <ButtonDefault onClick={() => setModal(!modal)}>Descartarr</ButtonDefault>
-              <ButtonDefault typeButton="dark">Salvar</ButtonDefault>
-            </div>
-          </div>
-        </div>
-      </ModalDefault> */}
     </Container>
   );
 }
