@@ -1313,6 +1313,11 @@ export default function ViewProductsDeliveries() {
           // }
           // handleConcludeTask();
         }
+
+        if (dataTask?.ticket_id === '' && !mandatoryUpload) {
+          console.log('checkFlow 10 - Final card without upload');
+          handleConcludeTask();
+        }
       }
 
       if (checkType === 'back') {

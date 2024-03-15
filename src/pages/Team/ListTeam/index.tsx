@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable import-helpers/order-imports */
 // React
 import { useCallback, useState, useEffect, useRef } from 'react';
@@ -619,6 +620,11 @@ export default function Team() {
       {user?.permissions?.includes('jobs_team_edit') && (
         <HeaderPage title="Equipe">
           <>
+            {/* <ButtonDefault typeButton="warning" onClick={() => navigate('/acessos')}>
+              <BsKey color="#fff" />
+              Nível de acesso
+            </ButtonDefault> */}
+
             <ButtonDefault typeButton="info" onClick={() => navigate('cargos')}>
               <BiEdit color="#fff" />
               Cargos
