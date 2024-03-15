@@ -5,10 +5,8 @@
 import { useState, useEffect } from 'react';
 
 // Icons
-import { BiPencil, BiSearchAlt } from 'react-icons/bi';
+import { BiSearchAlt } from 'react-icons/bi';
 import { FiFlag } from 'react-icons/fi';
-import { IconContext } from 'react-icons';
-import { IconText } from '../../../assets/icons';
 
 // Utils
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
@@ -16,13 +14,17 @@ import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 // Styles
 import { Flag } from '../../../pages/Tasks/TaskList/styles';
 import {
+  FlagTitleWrapper,
   PaginationWrapper,
   TaskContainer,
   TaskDate,
   TaskDateWrapper,
   TaskFilter,
-  TasksTable
+  TasksTable,
+  TimeWrapperCard
 } from './styles';
+import { FilterGroup } from '../../Table/styles';
+import { ButtonsFilter, FilterButton } from '../../../pages/Meeting/ListMeeting/styles';
 
 // Components
 import { InputDefault } from '../../Inputs/InputDefault';
@@ -35,8 +37,6 @@ import Pagination from '../../Pagination';
 
 // Hooks
 import { useAuth } from '../../../hooks/AuthContext';
-import { FilterGroup } from '../../Table/styles';
-import { ButtonsFilter, FilterButton } from '../../../pages/Meeting/ListMeeting/styles';
 
 interface TableProps {
   data: any;
@@ -141,13 +141,17 @@ export default function TaskTable({
                 <tr>
                   <th>ID</th>
                   <th>Tarefas</th>
+                  {user.deduct_hours !== '' && (
+                    <>
+                      <th>Iniciar</th>
+                      <th>Finalizar</th>
+                    </>
+                  )}
                   <th>Tempo consumido</th>
                   <th>Tempo estimado</th>
-                  <th>Data inicial</th>
-                  <th>Data final</th>
-                  <th>Entregas</th>
-                  <th>Etapa</th>
+                  <th>Produtos</th>
                   <th>Status</th>
+                  <th>Data Cliente</th>
                 </tr>
               </thead>
 
@@ -157,18 +161,45 @@ export default function TaskTable({
                     key={task.task_id}
                     style={{ cursor: 'pointer' }}
                     onClick={() => handleGoToDelivery(task, index + 1)}
+                    className={
+                      moment(task?.creation_date_end).isBefore(new Date()) &&
+                      task.status !== 'Concluida'
+                        ? 'delayed'
+                        : ''
+                    }
                   >
                     <td>
                       <div className="id-column">#{String(task.task_id).padStart(5, '0')}</div>
                     </td>
                     <td>
-                      <div className="column info">
-                        <div>{task.title}</div>
-                        <span>
-                          {task.tenant} / {task.project_category} | {task.product_period}
-                        </span>
-                      </div>
+                      <FlagTitleWrapper>
+                        {task.urgent === 'true' && (
+                          <Flag
+                            style={{ textAlign: 'center' }}
+                            className={task.urgent === 'true' ? 'flagged' : ''}
+                          >
+                            <FiFlag fill="#F04438" color="#F04438" />
+                          </Flag>
+                        )}
+                        <div className="column info">
+                          <div className={task.urgent === 'true' ? 'danger' : ''}>{task.title}</div>
+                          <span className={task.urgent === 'true' ? 'danger' : ''}>
+                            {task.tenant} / {task.project_category} | {task.product_period}
+                          </span>
+                        </div>
+                      </FlagTitleWrapper>
                     </td>
+                    {user.deduct_hours !== '' && (
+                      <>
+                        <td>
+                          <TimeWrapperCard>08:30</TimeWrapperCard>
+                        </td>
+                        <td>
+                          <TimeWrapperCard>09:30</TimeWrapperCard>
+                        </td>
+                      </>
+                    )}
+
                     <td>
                       <span style={{ marginBottom: '4px', display: 'block' }}>
                         {task.time_consumed}
@@ -181,47 +212,11 @@ export default function TaskTable({
                       />
                     </td>
                     <td>
-                      <div className="flag-info">
-                        <Flag
-                          style={{ textAlign: 'center' }}
-                          className={task.urgent === 'true' ? 'flagged' : ''}
-                        >
-                          {task.urgent === 'true' ? (
-                            <IconContext.Provider
-                              value={{ color: '#F04438', className: 'global-class-name' }}
-                            >
-                              <FiFlag />
-                            </IconContext.Provider>
-                          ) : (
-                            <IconContext.Provider
-                              value={{ color: '#667085', className: 'global-class-name' }}
-                            >
-                              <FiFlag />
-                            </IconContext.Provider>
-                          )}
-                        </Flag>
-                        {task.total_time !== 'undefined' && task.type !== 'Livre'
-                          ? task.total_time
-                          : 'Livre'}
-                      </div>
+                      {task.total_time !== 'undefined' && task.type !== 'Livre'
+                        ? task.total_time
+                        : 'Livre'}
                     </td>
-                    <td style={{ textTransform: 'capitalize' }}>
-                      {moment(task.start_job).format('DD/MMM/YYYY')}
-                    </td>
-                    <td style={{ textTransform: 'capitalize' }}>
-                      {moment(task.creation_date_end).format('DD/MMM/YYYY')}
-                    </td>
-                    <td>
-                      {task?.deliverys?.length <= 1
-                        ? `${task?.deliverys?.length} entrega`
-                        : `${task?.deliverys?.length} entregas`}
-                    </td>
-                    <td>
-                      <div className="column">
-                        {task.card_name}
-                        <span>Fluxo: {task.flow}</span>
-                      </div>
-                    </td>
+                    <td style={{ textAlign: 'center' }}>{task?.deliverys[0]?.products.length}</td>
                     <td>
                       <div
                         className={
@@ -249,6 +244,7 @@ export default function TaskTable({
                           : 'Pendente'}
                       </div>
                     </td>
+                    <td>{moment(task?.creation_date_end).format('DD/MM/YYYY')}</td>
                   </tr>
                 ))}
               </tbody>

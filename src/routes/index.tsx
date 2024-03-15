@@ -18,8 +18,6 @@ import EditFluxo from '../pages/Fluxos/EditFluxo';
 import ListProjects from '../pages/Projects/ListProjects';
 import PageNotFound from '../pages/NotFound';
 import Board from '../pages/Board';
-
-// COMPONENTES
 import ListMeeting from '../pages/Meeting/ListMeeting';
 import TaskList from '../pages/Tasks/TaskList';
 import CreateProject from '../pages/Projects/CreateProject';
@@ -38,6 +36,8 @@ import CreateTaksWithRefused from '../pages/Tasks/RefusedTask';
 // Hooks
 import { useAuth } from '../hooks/AuthContext';
 import TemplateAgenda from '../pages/Template';
+import Profile from '../pages/Profile';
+import AccessLevel from '../pages/Team/LevelAccessList';
 
 function RoutesAll() {
   const { user } = useAuth();
@@ -57,6 +57,17 @@ function RoutesAll() {
           </PrivateRoutes>
         }
       >
+        {user?.permissions?.includes('jobs_team_edit') && (
+          <Route
+            path="/acessos"
+            element={
+              <PrivateRoutes>
+                <AccessLevel />
+              </PrivateRoutes>
+            }
+          />
+        )}
+
         <Route
           path="/clientes"
           element={
@@ -203,14 +214,14 @@ function RoutesAll() {
           }
         />
 
-        {/* <Route
+        <Route
           path="/perfil"
           element={
             <PrivateRoutes>
               <Profile />
             </PrivateRoutes>
           }
-        /> */}
+        />
 
         {user?.permissions?.includes('jobs_products_view') && (
           <Route

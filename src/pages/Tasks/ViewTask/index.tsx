@@ -446,6 +446,7 @@ export default function ViewTask() {
         });
 
         setModalUpdateHours(false);
+        getTaskInfos(dataTask?.task_id);
       }
 
       setLoading(false);
@@ -533,20 +534,21 @@ export default function ViewTask() {
   async function checkChangeUser() {
     try {
       setLoading(true);
+      if (dataTask?.status !== 'Concluida') {
+        const response = await api.get(
+          `/flow-function?step=${Number(actualStep)}&flow_id=${dataTask?.flow_id}`
+        );
 
-      const response = await api.get(
-        `/flow-function?step=${Number(actualStep)}&flow_id=${dataTask?.flow_id}`
-      );
+        if (response.data.result[0].show_hours === 'true') {
+          console.log('log ShowHours!!!');
+          setModalChangeUser(true);
+        }
 
-      if (response.data.result[0].show_hours === 'true') {
-        console.log('log ShowHours!!!');
-        setModalChangeUser(true);
-      }
-
-      if (response.data.result[0].show_hours === 'false') {
-        console.log('log NOT showHours!!!');
-        setModalWithoutSchedule(true);
-        handleNextUser();
+        if (response.data.result[0].show_hours === 'false') {
+          console.log('log NOT showHours!!!');
+          setModalWithoutSchedule(true);
+          handleNextUser();
+        }
       }
 
       setLoading(false);
@@ -685,7 +687,10 @@ export default function ViewTask() {
               <CardWrapper
                 className={user?.permissions?.includes('jobs_tasks_edittime') ? 'pointer' : ''}
                 onClick={() =>
-                  user?.permissions?.includes('jobs_tasks_edittime') ? handleGetClock() : ''
+                  user?.permissions?.includes('jobs_tasks_edittime') &&
+                  dataTask?.status !== 'Concluida'
+                    ? handleGetClock()
+                    : ''
                 }
               >
                 <CardTitle>Atividade concluída</CardTitle>
