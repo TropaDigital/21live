@@ -192,10 +192,12 @@ export default function TaskTable({
                     {user.deduct_hours !== '' && (
                       <>
                         <td>
-                          <TimeWrapperCard>08:30</TimeWrapperCard>
+                          <TimeWrapperCard>
+                            {moment(task?.start_job).format('HH:mm')}
+                          </TimeWrapperCard>
                         </td>
                         <td>
-                          <TimeWrapperCard>09:30</TimeWrapperCard>
+                          <TimeWrapperCard>{moment(task?.end_job).format('HH:mm')}</TimeWrapperCard>
                         </td>
                       </>
                     )}
