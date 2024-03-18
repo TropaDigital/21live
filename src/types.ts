@@ -327,3 +327,20 @@ export interface ClockProps {
   play: string;
   time_lapse: string;
 }
+
+export interface RoleProps {
+  role_id: string;
+  tenant_id: string;
+  title: string;
+  description: string;
+  level: string;
+  permissions: PermissionsProps[];
+}
+
+export interface PermissionsProps {
+  permission_id: string;
+  parent_id: string;
+  name: string;
+  title: string;
+  description: string;
+}
