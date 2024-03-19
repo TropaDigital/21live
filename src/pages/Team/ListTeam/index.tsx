@@ -19,6 +19,7 @@ import {
   BiUser,
   BiX
 } from 'react-icons/bi';
+import { BsKey } from 'react-icons/bs';
 
 // Services
 import api from '../../../services/api';
@@ -46,8 +47,7 @@ import {
   FieldDefault,
   FieldGroupFormDefault,
   FilterTotal,
-  FooterModal,
-  SectionDefault
+  FooterModal
 } from '../../../components/UiElements/styles';
 import { Table } from '../../../components/Table';
 import { FilterGroup, TableHead } from '../../../components/Table/styles';
@@ -620,10 +620,10 @@ export default function Team() {
       {user?.permissions?.includes('jobs_team_edit') && (
         <HeaderPage title="Equipe">
           <>
-            {/* <ButtonDefault typeButton="warning" onClick={() => navigate('/acessos')}>
+            <ButtonDefault typeButton="warning" onClick={() => navigate('/acessos')}>
               <BsKey color="#fff" />
               Nível de acesso
-            </ButtonDefault> */}
+            </ButtonDefault>
 
             <ButtonDefault typeButton="info" onClick={() => navigate('cargos')}>
               <BiEdit color="#fff" />
@@ -649,146 +649,136 @@ export default function Team() {
       {!user?.permissions?.includes('jobs_team_edit') && <HeaderPage title="Equipe" />}
 
       {!isFetching && (
-        <SectionDefault>
-          <div style={{ margin: '-24px -30px' }}>
-            <Table>
-              <TableHead>
-                <div className="groupTable">
-                  <h2>
-                    Equipe{' '}
-                    {pages !== null && pages?.total > 0 ? (
-                      <strong>
-                        {pages?.total <= 1 ? `${pages?.total} usuário` : `${pages?.total} usuários`}{' '}
-                      </strong>
-                    ) : (
-                      <strong>0 usuário</strong>
-                    )}
-                  </h2>
-                </div>
+        <Table>
+          <TableHead>
+            <div className="groupTable">
+              <h2>
+                Equipe{' '}
+                {pages !== null && pages?.total > 0 ? (
+                  <strong>
+                    {pages?.total <= 1 ? `${pages?.total} usuário` : `${pages?.total} usuários`}{' '}
+                  </strong>
+                ) : (
+                  <strong>0 usuário</strong>
+                )}
+              </h2>
+            </div>
 
-                <FilterTeamWrapper>
-                  <InputDefault
-                    label=""
-                    name="search"
-                    placeholder="Buscar..."
-                    onChange={(event) => {
-                      setSearchTerm(event.target.value);
-                      debouncedCallback(event.target.value);
-                    }}
-                    value={searchTerm}
-                    icon={BiSearchAlt}
-                    isLoading={isLoading}
-                  />
+            <FilterTeamWrapper>
+              <InputDefault
+                label=""
+                name="search"
+                placeholder="Buscar..."
+                onChange={(event) => {
+                  setSearchTerm(event.target.value);
+                  debouncedCallback(event.target.value);
+                }}
+                value={searchTerm}
+                icon={BiSearchAlt}
+                isLoading={isLoading}
+              />
 
-                  {!hasFilters && (
-                    <ButtonDefault typeButton="danger" isOutline onClick={handleClearFilters}>
-                      <div className="close-icon">
-                        <BiX size={30} />
-                      </div>
-                      Limpar filtros
-                    </ButtonDefault>
-                  )}
-
-                  <ButtonDefault
-                    typeButton="lightWhite"
-                    isOutline
-                    onClick={() => setModalFilters(true)}
-                  >
-                    <BiFilter />
-                    Filtros
-                  </ButtonDefault>
-                </FilterTeamWrapper>
-              </TableHead>
               {!hasFilters && (
-                <FilterGroup>
-                  <FilterTotal>
-                    <div className="filter-title">Filtros (1):</div>
-                    {filter.role !== '' ? <span>Cargo</span> : ''}
-                  </FilterTotal>
-
-                  <AppliedFilter>
-                    {filter.role !== '' ? (
-                      <div className="filter-title">
-                        Cargo:{' '}
-                        <span>{selectedRole?.length > 0 ? selectedRole[0]?.function : ''}</span>
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </AppliedFilter>
-                </FilterGroup>
+                <ButtonDefault typeButton="danger" isOutline onClick={handleClearFilters}>
+                  <div className="close-icon">
+                    <BiX size={30} />
+                  </div>
+                  Limpar filtros
+                </ButtonDefault>
               )}
-              <table>
-                <thead>
-                  <tr style={{ whiteSpace: 'nowrap' }}>
-                    <th>Avatar</th>
-                    <th>Nome</th>
-                    <th>E-mail</th>
-                    <th>Cargo</th>
-                    <th>Jornada</th>
-                    <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
-                  </tr>
-                </thead>
 
-                <tbody>
-                  {data?.map((row) => (
-                    <tr key={row.user_id}>
-                      <td style={{ padding: '1rem' }}>
-                        <AvatarDefault url={row.avatar} name={row.name} />
-                      </td>
-                      <td>{row.name}</td>
-                      <td>{row.email}</td>
-                      <td>{row.function}</td>
-                      <td>
-                        {row.journey
-                          ? `${row.journey.split(':')[0]}h${row.journey.split(':')[1]}`
-                          : ''}
-                      </td>
-                      <td>
-                        <div className="fieldTableClients">
-                          {user?.permissions?.includes('jobs_team_edit') && (
-                            <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
-                          )}
+              <ButtonDefault
+                typeButton="lightWhite"
+                isOutline
+                onClick={() => setModalFilters(true)}
+              >
+                <BiFilter />
+                Filtros
+              </ButtonDefault>
+            </FilterTeamWrapper>
+          </TableHead>
+          {!hasFilters && (
+            <FilterGroup>
+              <FilterTotal>
+                <div className="filter-title">Filtros (1):</div>
+                {filter.role !== '' ? <span>Cargo</span> : ''}
+              </FilterTotal>
 
-                          {user?.permissions?.includes('jobs_team_edit') && (
-                            <ButtonTable
-                              typeButton="work"
-                              onClick={() => handleEditWorkload(row)}
-                            />
-                          )}
+              <AppliedFilter>
+                {filter.role !== '' ? (
+                  <div className="filter-title">
+                    Cargo: <span>{selectedRole?.length > 0 ? selectedRole[0]?.function : ''}</span>
+                  </div>
+                ) : (
+                  ''
+                )}
+              </AppliedFilter>
+            </FilterGroup>
+          )}
+          <table>
+            <thead>
+              <tr style={{ whiteSpace: 'nowrap' }}>
+                <th>Avatar</th>
+                <th>Nome</th>
+                <th>E-mail</th>
+                <th>Cargo</th>
+                <th>Jornada</th>
+                <th style={{ display: 'grid', placeItems: 'center', color: '#F9FAFB' }}>-</th>
+              </tr>
+            </thead>
 
-                          {user?.permissions?.includes('jobs_team_delete') && (
-                            <Alert
-                              title="Atenção"
-                              subtitle="Certeza que gostaria de deletar esta Equipe? Ao excluir a acão não poderá ser desfeita."
-                              confirmButton={() => handleOnDelete(row.function_id)}
-                            >
-                              <ButtonTable typeButton="delete" />
-                            </Alert>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
+            <tbody>
+              {data?.map((row) => (
+                <tr key={row.user_id}>
+                  <td style={{ padding: '1rem' }}>
+                    <AvatarDefault url={row.avatar} name={row.name} />
+                  </td>
+                  <td>{row.name}</td>
+                  <td>{row.email}</td>
+                  <td>{row.function}</td>
+                  <td>
+                    {row.journey ? `${row.journey.split(':')[0]}h${row.journey.split(':')[1]}` : ''}
+                  </td>
+                  <td>
+                    <div className="fieldTableClients">
+                      {user?.permissions?.includes('jobs_team_edit') && (
+                        <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
+                      )}
 
-                <tfoot>
-                  <tr>
-                    <td colSpan={100}>
-                      <Pagination
-                        total={pages.total}
-                        perPage={pages.perPage}
-                        currentPage={selected}
-                        lastPage={pages.lastPage}
-                        onClickPage={(e) => setSelected(e)}
-                      />
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
-            </Table>
-          </div>
-        </SectionDefault>
+                      {user?.permissions?.includes('jobs_team_edit') && (
+                        <ButtonTable typeButton="work" onClick={() => handleEditWorkload(row)} />
+                      )}
+
+                      {user?.permissions?.includes('jobs_team_delete') && (
+                        <Alert
+                          title="Atenção"
+                          subtitle="Certeza que gostaria de deletar esta Equipe? Ao excluir a acão não poderá ser desfeita."
+                          confirmButton={() => handleOnDelete(row.function_id)}
+                        >
+                          <ButtonTable typeButton="delete" />
+                        </Alert>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+
+            <tfoot>
+              <tr>
+                <td colSpan={100}>
+                  <Pagination
+                    total={pages.total}
+                    perPage={pages.perPage}
+                    currentPage={selected}
+                    lastPage={pages.lastPage}
+                    onClickPage={(e) => setSelected(e)}
+                  />
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </Table>
       )}
 
       {/* Modal edit user */}

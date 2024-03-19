@@ -23,7 +23,6 @@ import ScheduleUser from '../../../components/ScheduleUser';
 import WorkingProduct from '../WorkingProduct';
 import ButtonDefault from '../../../components/Buttons/ButtonDefault';
 import UploadFilesTicket from '../../../components/UploadTicket/UploadFilex';
-import { UsersWrapper } from '../../Tasks/CreateTasks/styles';
 import { ProductsTable } from '../../Tasks/ComponentSteps/InfoDeliverables/styles';
 import {
   CardTitle,
@@ -73,7 +72,8 @@ import {
   TimelineInfo,
   TimelineStep,
   TotalTaskHours,
-  UserInfo
+  UserInfo,
+  UsersWrapper
 } from './styles';
 import { ButtonIcon } from '../WorkingProduct/styles';
 
@@ -162,10 +162,9 @@ export default function ViewProductsDeliveries() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addToast } = useToast();
-  const { stop } = useStopWatch();
   const { id } = useParams();
   const dateRef = useRef<any>();
-  const { state, setInitialTime, setTaskInfo, handleClock } = useStopWatch();
+  const { state, setInitialTime, setTaskInfo, handleClock, stop } = useStopWatch();
   const openRightRef = useRef<any>();
   const [modalSendToUser, setModalSendToUser] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -268,7 +267,7 @@ export default function ViewProductsDeliveries() {
     type: dataProducts?.products[0]?.type,
     reason_change:
       dataProducts?.products[0]?.reason_change === '1'
-        ? 'Criação'
+        ? 'Criação do zero'
         : dataProducts?.products[0]?.reason_change === '2'
         ? 'Desmembramento'
         : 'Alteração'
@@ -282,7 +281,7 @@ export default function ViewProductsDeliveries() {
     type: selectedProduct?.productInfo?.type,
     reason_change:
       selectedProduct?.productInfo?.reason_change === '1'
-        ? 'Criação'
+        ? 'Criação do zero'
         : selectedProduct?.productInfo?.reason_change === '2'
         ? 'Desmembramento'
         : 'Alteração'
@@ -1317,6 +1316,8 @@ export default function ViewProductsDeliveries() {
         if (dataTask?.ticket_id === '' && !mandatoryUpload) {
           console.log('checkFlow 10 - Final card without upload');
           handleConcludeTask();
+          stop();
+          localStorage.removeItem('stopwatchState');
         }
       }
 
@@ -1981,6 +1982,8 @@ export default function ViewProductsDeliveries() {
 
         setModalUpdateHours(false);
         getTaskInfos();
+        getTimelineData();
+        getTaskHistory();
       }
 
       setLoading(false);
@@ -2471,21 +2474,27 @@ export default function ViewProductsDeliveries() {
                 taskHistory &&
                 taskHistory.steps.map((row: TaskHistoryProps, index: number) => (
                   <TimelineStep key={index}>
-                    <TimeLineIcon
-                      className={
-                        row.step === timeLineData.currentStep && dataTask?.status !== 'Concluida'
-                          ? 'actual'
-                          : row.step <= timeLineData.currentStep
-                          ? 'checked'
-                          : ''
-                      }
-                    >
-                      {Number(row.step) >= Number(timeLineData.currentStep) &&
-                        dataTask?.status !== 'Concluida' && <div className="dot"></div>}
+                    {row.name === 'Criação da Tarefa' ? (
+                      <TimeLineIcon className="checked">
+                        <IconBigCheck />
+                      </TimeLineIcon>
+                    ) : (
+                      <TimeLineIcon
+                        className={
+                          row.step === timeLineData.currentStep && dataTask?.status !== 'Concluida'
+                            ? 'actual'
+                            : row.step <= timeLineData.currentStep
+                            ? 'checked'
+                            : ''
+                        }
+                      >
+                        {Number(row.step) >= Number(timeLineData.currentStep) &&
+                          dataTask?.status !== 'Concluida' && <div className="dot"></div>}
 
-                      {(Number(row.step) < Number(timeLineData.currentStep) ||
-                        dataTask?.status === 'Concluida') && <IconBigCheck />}
-                    </TimeLineIcon>
+                        {(Number(row.step) < Number(timeLineData.currentStep) ||
+                          dataTask?.status === 'Concluida') && <IconBigCheck />}
+                      </TimeLineIcon>
+                    )}
                     <TimelineInfo>
                       {/* {row.step < timeLineData.currentStep && (
                         <div className="info-title">Etapa anterior:</div>
@@ -2515,15 +2524,18 @@ export default function ViewProductsDeliveries() {
                           {' '}
                           - {moment(row.time_line[0]?.created).format('DD/MM/YYYY')}
                         </div>
+                      ) : row.name === 'Criação da Tarefa' ? (
+                        <div className="info-title">
+                          {' '}
+                          - {moment(row.time_line[0]?.created).format('DD/MM/YYYY')}
+                        </div>
                       ) : (
                         ''
                       )}
 
-                      {row.time_line.length > 0 &&
-                      row.time_line.length > 0 &&
-                      row.time_line.some((item) => item.action === 'Criou Tarefa') ? (
+                      {row.time_line.length > 0 && row.name === 'Criação da Tarefa' ? (
                         <TimelineExtraInfo>
-                          Tarefa aberto por:{' '}
+                          Tarefa aberta por:{' '}
                           {row.time_line.length > 1
                             ? row.time_line.find((item) => item.action === 'Criou Tarefa')?.name
                             : row.time_line[0].name}
@@ -2936,16 +2948,15 @@ export default function ViewProductsDeliveries() {
                 ))}
               </tbody>
             </table>
-
-            <ShowAllUsers>
-              <CheckboxDefault
-                label="Mostrar todos usuários"
-                name="outsiders"
-                onChange={() => setOutsideUsers(outsideUsers ? false : true)}
-                checked={outsideUsers}
-              />
-            </ShowAllUsers>
           </ProductsTable>
+          <ShowAllUsers>
+            <CheckboxDefault
+              label="Mostrar todos usuários"
+              name="outsiders"
+              onChange={() => setOutsideUsers(outsideUsers ? false : true)}
+              checked={outsideUsers}
+            />
+          </ShowAllUsers>
 
           <ModalButtons>
             <ButtonDefault
@@ -3021,7 +3032,7 @@ export default function ViewProductsDeliveries() {
           step={Number(dataTask?.step)}
           user_alocated={updateChangeUserSchedule}
           closeModal={() => setModalChangeUser(false)}
-          manualOverrideDate={false}
+          manualOverrideDate={dataTask?.type === 'Livre' ? true : false}
           loadingSubmit={loading}
           taskType={dataTask?.type}
           deductHours={taskDeductHoursActual}

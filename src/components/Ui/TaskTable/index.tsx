@@ -182,7 +182,9 @@ export default function TaskTable({
                           </Flag>
                         )}
                         <div className="column info">
-                          <div className={task.urgent === 'true' ? 'danger' : ''}>{task.title}</div>
+                          <div className={task.urgent === 'true' ? 'title danger' : 'title'}>
+                            {task.title}
+                          </div>
                           <span className={task.urgent === 'true' ? 'danger' : ''}>
                             {task.tenant} / {task.project_category} | {task.product_period}
                           </span>
@@ -192,10 +194,12 @@ export default function TaskTable({
                     {user.deduct_hours !== '' && (
                       <>
                         <td>
-                          <TimeWrapperCard>08:30</TimeWrapperCard>
+                          <TimeWrapperCard>
+                            {moment(task?.start_job).format('HH:mm')}
+                          </TimeWrapperCard>
                         </td>
                         <td>
-                          <TimeWrapperCard>09:30</TimeWrapperCard>
+                          <TimeWrapperCard>{moment(task?.end_job).format('HH:mm')}</TimeWrapperCard>
                         </td>
                       </>
                     )}

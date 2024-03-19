@@ -581,8 +581,8 @@ export default function CreateProject() {
     });
     setFinishModal(false);
     setSendFiles(false);
-    // navigate('/projetos');
     sendFilesOfProject();
+    // navigate('/projetos');
   };
 
   async function sendFilesOfProject() {
@@ -610,8 +610,13 @@ export default function CreateProject() {
       }
 
       setLoading(false);
-    } catch (error) {
+    } catch (error: any) {
       console.log('log error upload', error);
+      addToast({
+        type: 'warning',
+        title: 'Atenção',
+        description: error
+      });
       setLoading(false);
     }
   }

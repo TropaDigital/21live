@@ -4,8 +4,8 @@
 import { useState, useEffect } from 'react';
 
 // Icons
-import { IconText } from '../../../assets/icons';
-import { BiPencil, BiShow } from 'react-icons/bi';
+// import { IconText } from '../../../assets/icons';
+import { BiShow } from 'react-icons/bi';
 import { FaUpload } from 'react-icons/fa';
 import { BsChatText } from 'react-icons/bs';
 
@@ -15,14 +15,14 @@ import {
   MotiveInfos,
   ProductContainer,
   ProductDate,
-  ProductSelect,
+  // ProductSelect,
   ProductTitle,
   ProductTitleInfos,
   ProductsTable
 } from './styles';
 
 // Libraries
-import Switch from 'react-switch';
+// import Switch from 'react-switch';
 import moment from 'moment';
 import 'moment/dist/locale/pt-br';
 import ProgressBar from '../ProgressBar';
@@ -31,7 +31,7 @@ import ProgressBar from '../ProgressBar';
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 
 // Hooks
-import { useAuth } from '../../../hooks/AuthContext';
+// import { useAuth } from '../../../hooks/AuthContext';
 
 // Components
 import ModalDefault from '../ModalDefault';
@@ -51,8 +51,8 @@ interface ProductTableProps {
 
 export default function ProductTable({
   data,
-  timeData,
-  workForProduct,
+  // timeData,
+  // workForProduct,
   productSelected,
   typeOfPlay,
   uploadProduct,
@@ -60,7 +60,7 @@ export default function ProductTable({
   viewFile,
   fileList
 }: ProductTableProps) {
-  const { user } = useAuth();
+  // const { user } = useAuth();
   const [workFor, setWorkFor] = useState<string>('schedule');
   const [motiveModal, setMotiveModal] = useState<any>({
     isOpen: false,
@@ -72,15 +72,15 @@ export default function ProductTable({
     setWorkFor(typeOfPlay);
   }, [typeOfPlay]);
 
-  const handleWorkFor = (value: any) => {
-    setWorkFor(value);
-    if (value === 'product') {
-      workForProduct(true);
-    }
-    if (value === 'schedule') {
-      workForProduct(false);
-    }
-  };
+  // const handleWorkFor = (value: any) => {
+  //   setWorkFor(value);
+  //   if (value === 'product') {
+  //     workForProduct(true);
+  //   }
+  //   if (value === 'schedule') {
+  //     workForProduct(false);
+  //   }
+  // };
 
   return (
     <ProductContainer>
@@ -135,7 +135,7 @@ export default function ProductTable({
                     <td
                       style={{ cursor: 'pointer' }}
                       onClick={() =>
-                        row.status === 'Desmembrada'
+                        row.status !== 'Desmembrada'
                           ? productSelected(row)
                           : productSelected('task')
                       }
@@ -151,7 +151,7 @@ export default function ProductTable({
                     <td
                       style={{ cursor: 'pointer' }}
                       onClick={() =>
-                        row.status === 'Desmembrada'
+                        row.status !== 'Desmembrada'
                           ? productSelected(row)
                           : productSelected('task')
                       }

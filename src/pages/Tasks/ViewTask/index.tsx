@@ -192,7 +192,7 @@ export default function ViewTask() {
     type: deliveryProduct[0]?.type,
     reason_change:
       deliveryProduct[0]?.reason_change === '1'
-        ? 'Criação'
+        ? 'Criação do zero'
         : deliveryProduct[0]?.reason_change === '2'
         ? 'Desmembramento'
         : 'Alteração'
@@ -447,6 +447,8 @@ export default function ViewTask() {
 
         setModalUpdateHours(false);
         getTaskInfos(dataTask?.task_id);
+        getTimelineData(dataTask?.task_id);
+        getTaskHistory(dataTask?.task_id);
       }
 
       setLoading(false);
@@ -500,7 +502,7 @@ export default function ViewTask() {
 
   const actualStep = timeLineData?.currentStep;
   const actualStepCard = timeLineData
-    ? timeLineData.steps.filter((obj) => Number(obj.step) === Number(actualStep) + 1)
+    ? timeLineData.steps.filter((obj) => Number(obj.step) === Number(actualStep))
     : [];
   const taskDeductHours = actualStepCard[0]?.deduct_hours;
 
@@ -508,7 +510,7 @@ export default function ViewTask() {
   const allTimes = {
     time_essay: selectedProduct?.productInfo?.minutes_essay,
     time_creation: selectedProduct?.productInfo?.minutes_creation,
-    total_time: selectedProduct?.productInfo?.minutes
+    total_time: dataTask?.total_time
   };
 
   async function handleNextUser() {
@@ -687,10 +689,7 @@ export default function ViewTask() {
               <CardWrapper
                 className={user?.permissions?.includes('jobs_tasks_edittime') ? 'pointer' : ''}
                 onClick={() =>
-                  user?.permissions?.includes('jobs_tasks_edittime') &&
-                  dataTask?.status !== 'Concluida'
-                    ? handleGetClock()
-                    : ''
+                  user?.permissions?.includes('jobs_tasks_edittime') ? handleGetClock() : ''
                 }
               >
                 <CardTitle>Atividade concluída</CardTitle>
@@ -1207,21 +1206,27 @@ export default function ViewTask() {
                 taskHistory &&
                 taskHistory.steps.map((row: TaskHistoryProps, index: number) => (
                   <TimelineStep key={index}>
-                    <TimeLineIcon
-                      className={
-                        row.step === timeLineData.currentStep && dataTask?.status !== 'Concluida'
-                          ? 'actual'
-                          : row.step <= timeLineData.currentStep
-                          ? 'checked'
-                          : ''
-                      }
-                    >
-                      {Number(row.step) >= Number(timeLineData.currentStep) &&
-                        dataTask?.status !== 'Concluida' && <div className="dot"></div>}
+                    {row.name === 'Criação da Tarefa' ? (
+                      <TimeLineIcon className="checked">
+                        <IconBigCheck />
+                      </TimeLineIcon>
+                    ) : (
+                      <TimeLineIcon
+                        className={
+                          row.step === timeLineData.currentStep && dataTask?.status !== 'Concluida'
+                            ? 'actual'
+                            : row.step <= timeLineData.currentStep
+                            ? 'checked'
+                            : ''
+                        }
+                      >
+                        {Number(row.step) >= Number(timeLineData.currentStep) &&
+                          dataTask?.status !== 'Concluida' && <div className="dot"></div>}
 
-                      {(Number(row.step) < Number(timeLineData.currentStep) ||
-                        dataTask?.status === 'Concluida') && <IconBigCheck />}
-                    </TimeLineIcon>
+                        {(Number(row.step) < Number(timeLineData.currentStep) ||
+                          dataTask?.status === 'Concluida') && <IconBigCheck />}
+                      </TimeLineIcon>
+                    )}
                     <TimelineInfo>
                       {/* {row.step < timeLineData.currentStep && (
                         <div className="info-title">Etapa anterior:</div>
@@ -1251,15 +1256,18 @@ export default function ViewTask() {
                           {' '}
                           - {moment(row.time_line[0]?.created).format('DD/MM/YYYY')}
                         </div>
+                      ) : row.name === 'Criação da Tarefa' ? (
+                        <div className="info-title">
+                          {' '}
+                          - {moment(row.time_line[0]?.created).format('DD/MM/YYYY')}
+                        </div>
                       ) : (
                         ''
                       )}
 
-                      {row.time_line.length > 0 &&
-                      row.time_line.length > 0 &&
-                      row.time_line.some((item) => item.action === 'Criou Tarefa') ? (
+                      {row.time_line.length > 0 && row.name === 'Criação da Tarefa' ? (
                         <TimelineExtraInfo>
-                          Tarefa aberto por:{' '}
+                          Tarefa aberta por:{' '}
                           {row.time_line.length > 1
                             ? row.time_line.find((item) => item.action === 'Criou Tarefa')?.name
                             : row.time_line[0].name}
@@ -1722,7 +1730,7 @@ export default function ViewTask() {
           step={Number(dataTask?.step)}
           user_alocated={updateChangeUserSchedule}
           closeModal={() => setModalChangeUser(false)}
-          manualOverrideDate={false}
+          manualOverrideDate={dataTask?.type === 'Livre' ? true : false}
           loadingSubmit={loading}
           taskType={dataTask?.type}
           deductHours={taskDeductHours}
