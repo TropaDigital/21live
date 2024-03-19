@@ -826,10 +826,10 @@ export default function WorkingProduct({
               setSelectedTab(e.target.innerText);
               setLogIsOn(false);
             }}
-            className={selectedTab === 'Arquivos (todos)' ? 'active' : ''}
+            className={selectedTab === 'Arquivos de referência' ? 'active' : ''}
           >
             <BsFolder />
-            Arquivos (todos)
+            Arquivos de referência
           </TaskTab>
         )}
 
@@ -998,11 +998,7 @@ export default function WorkingProduct({
                 />
 
                 <FooterSection>
-                  <ButtonDefault
-                    typeButton="lightWhite"
-                    isOutline
-                    onClick={() => navigate('/minhas-tarefas')}
-                  >
+                  <ButtonDefault typeButton="lightWhite" isOutline onClick={goBack}>
                     Descartar
                   </ButtonDefault>
                   <ButtonDefault typeButton="primary" onClick={handleSaveEssay}>
@@ -1303,7 +1299,7 @@ export default function WorkingProduct({
           </FilesTableWrapper>
         )}
 
-        {selectedTab === 'Arquivos (todos)' && (
+        {selectedTab === 'Arquivos de referência' && (
           <FilesTableWrapper>
             <Table>
               <table>
