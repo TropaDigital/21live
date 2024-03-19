@@ -462,21 +462,33 @@ export default function ListProjects() {
       setLoading(true);
 
       const response = await api.get(`/project/check-delete/${idProject}`);
-      setTaskList(response.data.result);
 
+      if (response.data.result !== 'true') {
+        setTaskList(response.data.result);
+      }
       setModalDelete({
         isOpen: true,
         project_id: idProject
       });
 
       setLoading(false);
-    } catch (error: any) {
-      console.log('log error', error);
-      addToast({
-        type: 'danger',
-        title: 'ATENÇÃO',
-        description: error.response.data.message
-      });
+    } catch (e: any) {
+      console.log('log error', e);
+      if (e.response.data.result.length !== 0) {
+        e.response.data.result.map((row: any) => {
+          addToast({
+            type: 'danger',
+            title: 'ATENÇÃO',
+            description: row.error
+          });
+        });
+      } else {
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: e.response.data.message
+        });
+      }
       setLoading(true);
     }
   }
@@ -1052,12 +1064,12 @@ export default function ListProjects() {
             close={() => setModalDelete({ isOpen: false, project_id: '' })}
             marginTop={'-40px'}
           />
-          {taskList.length > 0 && (
+          {taskList?.length > 0 && (
             <TaskListOnUse>
               <div className="list-title">
                 Tarefas vinculadas a este projeto atualmente serão impactadas:
               </div>
-              {taskList.map((row: TaskListItem) => (
+              {taskList?.map((row: TaskListItem) => (
                 <TaskListItem key={row.task_id}>
                   <TaskInfosItem>
                     <div className="task">
