@@ -182,7 +182,9 @@ export default function TaskTable({
                           </Flag>
                         )}
                         <div className="column info">
-                          <div className={task.urgent === 'true' ? 'danger' : ''}>{task.title}</div>
+                          <div className={task.urgent === 'true' ? 'title danger' : 'title'}>
+                            {task.title}
+                          </div>
                           <span className={task.urgent === 'true' ? 'danger' : ''}>
                             {task.tenant} / {task.project_category} | {task.product_period}
                           </span>
