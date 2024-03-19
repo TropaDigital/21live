@@ -595,3 +595,23 @@ export const ShowAllUsers = styled.div`
   padding: 6px;
   padding-left: 24px;
 `;
+
+export const UsersWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  height: fit-content;
+
+  table {
+    border: 1px solid var(--gray-200);
+    border-radius: 4px;
+    tbody {
+      tr {
+        td {
+          height: 48px;
+        }
+      }
+    }
+  }
+`;
