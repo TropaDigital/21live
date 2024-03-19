@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const TaskContainer = styled.div`
-  width: 100%;
+  /* width: 100%; */
   height: 100%;
   padding-bottom: 100px;
   background: var(--background-primary);
@@ -119,7 +119,7 @@ export const TasksTable = styled.div`
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 38ch;
+      max-width: 38ch !important;
       text-transform: capitalize;
 
       .fieldTableClients {
@@ -250,11 +250,20 @@ export const FlagTitleWrapper = styled.div`
   align-items: center;
   gap: 8px;
 
+  min-width: 38ch;
+
   .danger {
     color: var(--Danger);
   }
 
   .column {
+    .title {
+      display: inline-block !important;
+      width: 350px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
     span {
       color: var(--Danger);
     }
