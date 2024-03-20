@@ -553,7 +553,7 @@ export default function TaskList() {
                         <AvatarDefault url={row.actual_user_avatar} name={row.actual_user_name} />
                         <UserHiddenInfos>
                           <div className="user-name">{row.actual_user_name}</div>
-                          <div className="user-function">Cargo ??</div>
+                          <div className="user-function">{row.actual_user_function}</div>
                         </UserHiddenInfos>
                       </UserInfos>
                     </td>
