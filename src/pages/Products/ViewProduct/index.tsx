@@ -2150,8 +2150,10 @@ export default function ViewProductsDeliveries() {
     if (clockData) {
       clockData.forEach((item) => {
         item.clock.forEach((clockItem) => {
-          const timeDifference = moment(clockItem.pause).diff(moment(clockItem.play));
-          totalMilliseconds += timeDifference;
+          if (clockItem.active === 'true') {
+            const timeDifference = moment(clockItem.pause).diff(moment(clockItem.play));
+            totalMilliseconds += timeDifference;
+          }
         });
       });
     }
