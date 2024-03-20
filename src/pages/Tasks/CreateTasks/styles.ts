@@ -308,10 +308,11 @@ export const UsersWrapper = styled.div`
   div {
     overflow-y: auto;
 
-    border-left: 1px solid var(--gray-200);
-    border-right: 1px solid var(--gray-200);
+    /* border-left: 1px solid var(--gray-200);
+    border-right: 1px solid var(--gray-200); */
 
     table {
+      border: 1px solid var(--gray-200);
       tbody {
         tr {
           td {

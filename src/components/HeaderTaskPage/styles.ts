@@ -126,9 +126,7 @@ export const AvatarButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-
-  width: 40px;
-  height: 40px;
+  gap: 12px;
 
   background-color: transparent;
   border-radius: 8px;
@@ -138,6 +136,16 @@ export const AvatarButton = styled.button`
   .change-user {
     position: absolute;
     bottom: -5px;
-    right: -5px;
+    left: 28px;
+  }
+
+  .user-infos {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    color: var(--gray-500);
+    font-size: var(--text-small-md);
+    font-weight: var(--weight-medium);
   }
 `;

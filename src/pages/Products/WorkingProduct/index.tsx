@@ -3,7 +3,7 @@
 /* eslint-disable import-helpers/order-imports */
 
 // React
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // Components
 import { useNavigate } from 'react-router-dom';
@@ -64,6 +64,7 @@ import {
   InputFieldTitle,
   MessageInfos,
   MessageList,
+  ModalDiscardChangesWrapper,
   ModalUploadWrapper,
   SectionChatComments,
   StatusTable,
@@ -77,16 +78,13 @@ import {
 // Libraries
 import moment from 'moment';
 import 'moment/dist/locale/pt-br';
-import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
 
 // Services
 import api from '../../../services/api';
 
-// Utils
-import { formatBytes } from '../../../utils/convertBytes';
-
 // types
 import { StepTimeline, UploadedFilesProps } from '../../../types';
+import { ModalButtons } from '../../Team/ListTeam/styles';
 
 interface WorkingProductProps {
   productDeliveryId?: any;
@@ -212,6 +210,7 @@ export default function WorkingProduct({
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addToast } = useToast();
+  const essayRef = useRef<any>();
   const { parameters, getParams } = useParamsHook();
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingData, setLoadingData] = useState<boolean>(false);
@@ -240,6 +239,7 @@ export default function WorkingProduct({
     isOpen: false,
     motive: ''
   });
+  const [modalDiscardEssay, setModalDiscardEssay] = useState<boolean>(false);
 
   const [previewImage, setPreviewImage] = useState({
     isOpen: false,
@@ -754,6 +754,32 @@ export default function WorkingProduct({
     return foundCard ? foundCard.name : null;
   }
 
+  const handleDiscardEssay = () => {
+    setModalDiscardEssay(false);
+    setSelectedTab('Inputs');
+    setEssayInfo(productInfos?.essay);
+  };
+
+  useEffect(() => {
+    const checkIfClickedOutside = (e: any) => {
+      console.log('log do target =>', e.target.innerText);
+      if (
+        !modalDiscardEssay &&
+        essayInfo !== '' &&
+        essayRef.current &&
+        !essayRef.current.contains(e.target)
+      ) {
+        setModalDiscardEssay(true);
+      }
+    };
+
+    document.addEventListener('mousedown', checkIfClickedOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', checkIfClickedOutside);
+    };
+  }, [modalDiscardEssay]);
+
   useEffect(() => {
     // console.log('log do ticket_id =>', ticket_id);
     // console.log('log do final card =>', finalCard);
@@ -990,7 +1016,7 @@ export default function WorkingProduct({
           <>
             {/* user.deduct_hours === 'essay' &&  */}
             {productInfos?.status !== 'Concluida' ? (
-              <EssayField>
+              <EssayField ref={essayRef}>
                 <WrapperEditor
                   value={essayInfo}
                   mentionData={[]}
@@ -1746,6 +1772,28 @@ export default function WorkingProduct({
             <ButtonDefault typeButton="primary">Fechar</ButtonDefault>
           </div>
         </MotiveInfos>
+      </ModalDefault>
+
+      {/* Modal Discard essay */}
+      <ModalDefault
+        isOpen={modalDiscardEssay}
+        onOpenChange={() => setModalDiscardEssay(false)}
+        title="Atenção!"
+      >
+        <ModalDiscardChangesWrapper>
+          <div className="warning-text">
+            Todas as alterações não salvas dessa redação serão perdidas! <br />
+            Não será possível reverter esta ação!
+          </div>
+          <ModalButtons>
+            <ButtonDefault typeButton="light" onClick={() => setModalDiscardEssay(false)}>
+              Cancelar
+            </ButtonDefault>
+            <ButtonDefault typeButton="danger" onClick={handleDiscardEssay}>
+              Sim, descartar!
+            </ButtonDefault>
+          </ModalButtons>
+        </ModalDiscardChangesWrapper>
       </ModalDefault>
 
       {/* Modal loading submit */}

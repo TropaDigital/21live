@@ -657,3 +657,15 @@ export const ImageWrapper = styled.div`
     }
   }
 `;
+
+export const ModalDiscardChangesWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  .warning-text {
+    text-transform: uppercase;
+
+    color: var(--gray-500);
+  }
+`;
