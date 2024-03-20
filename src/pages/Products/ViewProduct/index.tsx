@@ -2109,9 +2109,10 @@ export default function ViewProductsDeliveries() {
           type: 'success'
         });
         setModalChangeUser(false);
-        getTaskInfos();
-        getTaskHistory();
-        getTimelineData();
+        // getTaskInfos();
+        // getTaskHistory();
+        // getTimelineData();
+        navigate('/minhas-tarefas');
       }
 
       setLoading(false);
