@@ -181,7 +181,8 @@ export default function ViewTask() {
 
   const userProps = {
     name: dataTask?.actual_user_name,
-    avatar: dataTask?.actual_user_avatar
+    avatar: dataTask?.actual_user_avatar,
+    user_function: dataTask?.actual_user_function
   };
 
   const onlyOneProductInfo = {
@@ -1374,7 +1375,7 @@ export default function ViewTask() {
 
               <TaskInfoField>
                 <div className="info-title">Tempo consumido:</div>
-                <div className="info-description">{dataTask?.deliverys[0]?.time_consumed}</div>
+                <div className="info-description">{dataTask?.time_consumed}</div>
               </TaskInfoField>
 
               <TaskInfoField>
