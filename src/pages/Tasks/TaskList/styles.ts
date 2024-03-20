@@ -86,3 +86,17 @@ export const CopyButton = styled.div`
     background: var(--secundary-100);
   }
 `;
+
+export const UserInfos = styled.div`
+  display: flex;
+  align-items: center;
+
+  position: relative;
+`;
+
+export const UserHiddenInfos = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  padding: 8px;
+`;

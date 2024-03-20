@@ -584,9 +584,10 @@ export default function ViewTask() {
           tasks: 0,
           user_id: ''
         });
-        getTimelineData(dataTask?.task_id);
-        getTaskInfos(dataTask?.task_id);
-        getTaskHistory(dataTask?.task_id);
+        // getTimelineData(dataTask?.task_id);
+        // getTaskInfos(dataTask?.task_id);
+        // getTaskHistory(dataTask?.task_id);
+        navigate('/tarefas');
       }
 
       setLoading(false);
@@ -630,9 +631,10 @@ export default function ViewTask() {
           type: 'success'
         });
         setModalChangeUser(false);
-        getTimelineData(dataTask?.task_id);
-        getTaskInfos(dataTask?.task_id);
-        getTaskHistory(dataTask?.task_id);
+        // getTimelineData(dataTask?.task_id);
+        // getTaskInfos(dataTask?.task_id);
+        // getTaskHistory(dataTask?.task_id);
+        navigate('/tarefas');
       }
 
       setLoading(false);

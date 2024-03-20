@@ -2062,9 +2062,10 @@ export default function ViewProductsDeliveries() {
           tasks: 0,
           user_id: ''
         });
-        getTaskInfos();
-        getTaskHistory();
-        getTimelineData();
+        // getTaskInfos();
+        // getTaskHistory();
+        // getTimelineData();
+        navigate('/minhas-tarefas');
       }
 
       setLoading(false);
@@ -2108,9 +2109,10 @@ export default function ViewProductsDeliveries() {
           type: 'success'
         });
         setModalChangeUser(false);
-        getTaskInfos();
-        getTaskHistory();
-        getTimelineData();
+        // getTaskInfos();
+        // getTaskHistory();
+        // getTimelineData();
+        navigate('/minhas-tarefas');
       }
 
       setLoading(false);
@@ -2134,6 +2136,29 @@ export default function ViewProductsDeliveries() {
       }
     }
   }
+
+  function handleDiffTime(start: string, end: string) {
+    const durationMoment = moment.utc(moment(end).diff(moment(start)));
+
+    const formattedDuration = durationMoment.format('HH:mm:ss');
+    return formattedDuration;
+  }
+
+  const calculateTotalTime = () => {
+    let totalMilliseconds = 0;
+
+    if (clockData) {
+      clockData.forEach((item) => {
+        item.clock.forEach((clockItem) => {
+          const timeDifference = moment(clockItem.pause).diff(moment(clockItem.play));
+          totalMilliseconds += timeDifference;
+        });
+      });
+    }
+
+    const totalDuration = moment.utc(totalMilliseconds).format('HH:mm:ss');
+    return totalDuration;
+  };
 
   useEffect(() => {
     handleNextUser('user');
@@ -2601,6 +2626,7 @@ export default function ViewProductsDeliveries() {
                   </TimelineStep>
                 ))}
             </TimeLine>
+
             <TasksInfos>
               <RightInfosTitle>Detalhes da tarefa</RightInfosTitle>
               <TaskInfoField>
@@ -2614,7 +2640,7 @@ export default function ViewProductsDeliveries() {
 
               <TaskInfoField>
                 <div className="info-title">Tempo consumido:</div>
-                <div className="info-description">{dataTask?.deliverys[0]?.time_consumed}</div>
+                <div className="info-description">{dataTask?.time_consumed}</div>
               </TaskInfoField>
 
               <TaskInfoField>
@@ -4017,7 +4043,7 @@ export default function ViewProductsDeliveries() {
                                 ? '00:00:00'
                                 : row.first_time_lapse}
                             </span>
-                            {row.time_lapse}
+                            {handleDiffTime(row.play, row.pause)}
                           </div>
                         </td>
                         <td>
@@ -4037,14 +4063,6 @@ export default function ViewProductsDeliveries() {
                             onColor="#0046B5"
                           />
                         </td>
-                        {/* <td>
-                          <ButtonDefault
-                            typeButton="primary"
-                            onClick={() => handleUpdateClockInfos(row, step.step)}
-                          >
-                            Salvar
-                          </ButtonDefault>
-                        </td> */}
                       </tr>
                     ))
                   )}
@@ -4068,7 +4086,7 @@ export default function ViewProductsDeliveries() {
 
               <div className="card-info">
                 Tempo alocado:
-                <span>{dataTask?.time_consumed}</span>
+                <span>{calculateTotalTime()}</span>
               </div>
 
               <ButtonDefault typeButton="primary" onClick={handleUpdateClockInfos}>
