@@ -3787,62 +3787,64 @@ export default function ViewProductsDeliveries() {
                     </thead>
 
                     <tbody>
-                      {dataTask?.files.map((row: TaskFile, index: number) => (
-                        <tr key={row.task_file_id}>
-                          <td>
-                            <CheckboxDefault
-                              label=""
-                              id="subtasks"
-                              checked={
-                                filesToTenantApprove.find(
-                                  (obj) => obj.task_file_id === row.task_file_id
-                                )
-                                  ? true
-                                  : false
-                              }
-                              onChange={() => handleSelectFile(row)}
-                            />
-                          </td>
-                          <td>#{row.task_file_id}</td>
-                          <td>{row.products_delivery_id}</td>
-                          <td>{productsNames[index]}</td>
-                          <td>
-                            {row.original_name !== ''
-                              ? row.original_name
-                              : row.file_name.split('-').pop()}
-                          </td>
-                          <td>{moment(row.created).format('DD/MM/YYYY - HH:mm')}h</td>
-                          <td>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                              <ButtonIcon
-                                className="view"
-                                onClick={() =>
-                                  setPreviewImage({
-                                    isOpen: true,
-                                    imageInfos: {
-                                      bucket: row.bucket,
-                                      created: row.created,
-                                      file_name: row.file_name,
-                                      key: row.key,
-                                      task_file_id: row.task_file_id,
-                                      task_id: row.task_id,
-                                      size: row.size,
-                                      updated: row.updated,
-                                      url: row.url
-                                    }
-                                  })
+                      {dataTask?.files
+                        .filter((obj: any) => obj.products_delivery_id !== '')
+                        .map((row: TaskFile, index: number) => (
+                          <tr key={row.task_file_id}>
+                            <td>
+                              <CheckboxDefault
+                                label=""
+                                id="subtasks"
+                                checked={
+                                  filesToTenantApprove.find(
+                                    (obj) => obj.task_file_id === row.task_file_id
+                                  )
+                                    ? true
+                                    : false
                                 }
-                              >
-                                <BiShow size={20} />
-                              </ButtonIcon>
+                                onChange={() => handleSelectFile(row)}
+                              />
+                            </td>
+                            <td>#{row.task_file_id}</td>
+                            <td>{row.products_delivery_id}</td>
+                            <td>{productsNames[index]}</td>
+                            <td>
+                              {row.original_name !== ''
+                                ? row.original_name
+                                : row.file_name.split('-').pop()}
+                            </td>
+                            <td>{moment(row.created).format('DD/MM/YYYY - HH:mm')}h</td>
+                            <td>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <ButtonIcon
+                                  className="view"
+                                  onClick={() =>
+                                    setPreviewImage({
+                                      isOpen: true,
+                                      imageInfos: {
+                                        bucket: row.bucket,
+                                        created: row.created,
+                                        file_name: row.file_name,
+                                        key: row.key,
+                                        task_file_id: row.task_file_id,
+                                        task_id: row.task_id,
+                                        size: row.size,
+                                        updated: row.updated,
+                                        url: row.url
+                                      }
+                                    })
+                                  }
+                                >
+                                  <BiShow size={20} />
+                                </ButtonIcon>
 
-                              <ButtonIcon className="download" onClick={() => downloadFile(row)}>
-                                <FaDownload />
-                              </ButtonIcon>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
+                                <ButtonIcon className="download" onClick={() => downloadFile(row)}>
+                                  <FaDownload />
+                                </ButtonIcon>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
                     </tbody>
                   </table>
                 </Table>
