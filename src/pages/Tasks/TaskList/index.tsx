@@ -51,7 +51,15 @@ import api from '../../../services/api';
 import moment from 'moment';
 
 // Styles
-import { ModalShowTaskWrapper, Flag, StatusTable, FilterTasks, CopyButton } from './styles';
+import {
+  ModalShowTaskWrapper,
+  Flag,
+  StatusTable,
+  FilterTasks,
+  CopyButton,
+  UserInfos,
+  UserHiddenInfos
+} from './styles';
 import AvatarDefault from '../../../components/Ui/Avatar/avatarDefault';
 
 interface FilterProps {
@@ -541,7 +549,13 @@ export default function TaskList() {
                       {row.tenant}
                     </td>
                     <td style={{ cursor: 'pointer' }} onClick={() => handleViewTask(row.task_id)}>
-                      <AvatarDefault url={row.actual_user_avatar} name={row.actual_user_name} />
+                      <UserInfos>
+                        <AvatarDefault url={row.actual_user_avatar} name={row.actual_user_name} />
+                        <UserHiddenInfos>
+                          <div className="user-name">{row.actual_user_name}</div>
+                          <div className="user-function">Cargo ??</div>
+                        </UserHiddenInfos>
+                      </UserInfos>
                     </td>
                     <td style={{ cursor: 'pointer' }} onClick={() => handleViewTask(row.task_id)}>
                       {moment(row.creation_date_end).format('DD/MM/YYYY')}
