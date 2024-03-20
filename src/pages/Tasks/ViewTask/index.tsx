@@ -181,7 +181,8 @@ export default function ViewTask() {
 
   const userProps = {
     name: dataTask?.actual_user_name,
-    avatar: dataTask?.actual_user_avatar
+    avatar: dataTask?.actual_user_avatar,
+    user_function: dataTask?.actual_user_function
   };
 
   const onlyOneProductInfo = {
@@ -658,6 +659,31 @@ export default function ViewTask() {
       }
     }
   }
+
+  function handleDiffTime(start: string, end: string) {
+    const durationMoment = moment.utc(moment(end).diff(moment(start)));
+
+    const formattedDuration = durationMoment.format('HH:mm:ss');
+    return formattedDuration;
+  }
+
+  const calculateTotalTime = () => {
+    let totalMilliseconds = 0;
+
+    if (clockData) {
+      clockData.forEach((item) => {
+        item.clock.forEach((clockItem) => {
+          if (clockItem.active === 'true') {
+            const timeDifference = moment(clockItem.pause).diff(moment(clockItem.play));
+            totalMilliseconds += timeDifference;
+          }
+        });
+      });
+    }
+
+    const totalDuration = moment.utc(totalMilliseconds).format('HH:mm:ss');
+    return totalDuration;
+  };
 
   useEffect(() => {
     if (modalWithoutSchedule) {
@@ -1349,7 +1375,7 @@ export default function ViewTask() {
 
               <TaskInfoField>
                 <div className="info-title">Tempo consumido:</div>
-                <div className="info-description">{dataTask?.deliverys[0]?.time_consumed}</div>
+                <div className="info-description">{dataTask?.time_consumed}</div>
               </TaskInfoField>
 
               <TaskInfoField>
@@ -1574,7 +1600,16 @@ export default function ViewTask() {
                             />
                           </DataInfos>
                         </td>
-                        <td>{row.time_lapse}</td>
+                        <td>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <span style={{ textDecoration: 'line-through', fontSize: '12px' }}>
+                              {row.first_time_lapse === 'Invalid date'
+                                ? '00:00:00'
+                                : row.first_time_lapse}
+                            </span>
+                            {handleDiffTime(row.play, row.pause)}
+                          </div>
+                        </td>
                         <td>
                           <Switch
                             onChange={(e) =>
@@ -1623,7 +1658,7 @@ export default function ViewTask() {
 
               <div className="card-info">
                 Tempo alocado:
-                <span>{dataTask?.time_consumed}</span>
+                <span>{calculateTotalTime()}</span>
               </div>
 
               <ButtonDefault typeButton="primary" onClick={handleUpdateClockInfos}>

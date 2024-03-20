@@ -69,6 +69,7 @@ interface ProductsProps {
 interface UserAvatarProps {
   name: string;
   avatar: string;
+  user_function: string;
 }
 
 interface StepProps {
@@ -166,6 +167,11 @@ export default function HeaderOpenTask({
 
             <div className="change-user">
               <MdOutlineChangeCircle />
+            </div>
+
+            <div className="user-infos">
+              <div>{avatar_infos.name}</div>
+              <div>{avatar_infos.user_function}</div>
             </div>
           </AvatarButton>
         )}
