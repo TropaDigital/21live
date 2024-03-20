@@ -245,7 +245,8 @@ export default function ViewProductsDeliveries() {
 
   const userProps = {
     name: dataTask?.actual_user_name,
-    avatar: dataTask?.actual_user_avatar
+    avatar: dataTask?.actual_user_avatar,
+    user_function: dataTask?.actual_user_function
   };
 
   const titleInfos = {
