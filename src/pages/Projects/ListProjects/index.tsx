@@ -338,6 +338,10 @@ export default function ListProjects() {
       });
 
       fetchProject();
+      setModalDelete({
+        isOpen: false,
+        project_id: ''
+      });
     } catch (error: any) {
       addToast({
         type: 'danger',
