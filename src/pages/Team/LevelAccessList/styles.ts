@@ -77,3 +77,15 @@ export const DescriptionView = styled.div`
   font-weight: var(--weight-regular);
   line-height: 24px;
 `;
+
+export const DescriptionInfo = styled.div`
+  color: var(--gray-600);
+  font-size: var(--text-small-sm);
+  font-weight: var(--weight-medium);
+
+  p {
+    color: var(--gray-600);
+    font-size: var(--text-small-sm);
+    font-weight: var(--weight-medium);
+  }
+`;

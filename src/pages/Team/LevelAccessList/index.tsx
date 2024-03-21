@@ -24,6 +24,7 @@ import { TableHead } from '../../../components/Table/styles';
 import {
   ButtonIcon,
   CardPermission,
+  DescriptionInfo,
   DescriptionView,
   FilterRoles,
   ModalWrapper,
@@ -55,7 +56,7 @@ export default function AccessLevel() {
   const [selectedPage, setSelectedPage] = useState<number>(1);
   const [pages, setPages] = useState<any>();
   const [dataRoles, setDataRoles] = useState<RoleProps[]>([]);
-  const [selectedPermissions, setSelectePermissions] = useState<PermissionsProps[]>([]);
+  const [selectedPermissions, setSelectedPermissions] = useState<any[]>([]);
   const [search, setSearch] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
   const [text, setText] = useState<string>('');
@@ -101,11 +102,12 @@ export default function AccessLevel() {
         setLoading(true);
         event.preventDefault();
 
-        const { title } = formData;
+        const { title, permissions } = formData;
 
         const newFormData = {
           title,
-          description: text
+          description: text,
+          permissions
         };
 
         if (modalAccessLevel.type === 'create') {
@@ -203,9 +205,15 @@ export default function AccessLevel() {
     });
   };
 
-  const handleEditPermissions = (obj: RoleProps) => {
-    console.log('log do edit permissions', obj);
-    setSelectePermissions(obj.permissions);
+  const handleEnableEditPermissions = (obj: RoleProps) => {
+    setData(obj);
+
+    const extractPermissionIds = () => {
+      return obj.permissions.map((permission) => permission.permission_id);
+    };
+
+    setSelectedPermissions(extractPermissionIds());
+
     setModalPermissions(true);
   };
 
@@ -292,14 +300,16 @@ export default function AccessLevel() {
                 <tr key={row.role_id}>
                   <td>#{String(row.role_id).padStart(5, '0')}</td>
                   <td>{row.title}</td>
-                  <td>{row.description}</td>
+                  <td>
+                    <DescriptionInfo dangerouslySetInnerHTML={{ __html: row.description }} />
+                  </td>
                   <td>
                     <div className="fieldTableClients">
                       <ButtonTable typeButton="view" onClick={() => handleOnView(row)} />
 
                       <ButtonTable typeButton="edit" onClick={() => handleOnEdit(row)} />
 
-                      <ButtonIcon onClick={() => handleEditPermissions(row)}>
+                      <ButtonIcon onClick={() => handleEnableEditPermissions(row)}>
                         <BiLock size={20} />
                       </ButtonIcon>
 
@@ -411,195 +421,330 @@ export default function AccessLevel() {
       {/* Modal permissions */}
       <ModalDefault
         isOpen={modalPermissions}
-        onOpenChange={() => setModalPermissions(false)}
+        onOpenChange={() => {
+          setModalPermissions(false);
+          setSelectedPermissions([]);
+        }}
         title="Editar permissões do cargo"
       >
         <ModalWrapper>
           <WrapperPermissionsCard>
             <CardPermission>
               <div className="card-title">
-                <CheckboxDefault label="" id="subtasks" checked={false} onChange={() => ''} />
+                <CheckboxDefault
+                  label=""
+                  id="subtasks"
+                  checked={selectedPermissions.includes('168')}
+                  onChange={() => ''}
+                />
                 Projetos
               </div>
 
               <CheckboxDefault
                 label="Visualizar"
                 id="subtasks"
-                checked={false}
+                checked={selectedPermissions.includes('170')}
                 onChange={() => ''}
               />
               <CheckboxDefault
                 label="Visualizar todos"
                 id="subtasks"
-                checked={false}
+                checked={selectedPermissions.includes('209')}
                 onChange={() => ''}
               />
-              <CheckboxDefault label="Criar" id="subtasks" checked={false} onChange={() => ''} />
-              <CheckboxDefault label="Editar" id="subtasks" checked={false} onChange={() => ''} />
-              <CheckboxDefault label="Deletar" id="subtasks" checked={false} onChange={() => ''} />
+              <CheckboxDefault
+                label="Criar"
+                id="subtasks"
+                checked={selectedPermissions.includes('169')}
+                onChange={() => ''}
+              />
+              <CheckboxDefault
+                label="Editar"
+                id="subtasks"
+                checked={selectedPermissions.includes('171')}
+                onChange={() => ''}
+              />
+              <CheckboxDefault
+                label="Deletar"
+                id="subtasks"
+                checked={selectedPermissions.includes('172')}
+                onChange={() => ''}
+              />
             </CardPermission>
 
             <CardPermission>
               <div className="card-title">
-                <CheckboxDefault label="" id="subtasks" checked={false} onChange={() => ''} />
+                <CheckboxDefault
+                  label=""
+                  id="jobs_tasks"
+                  checked={selectedPermissions.includes('173')}
+                  onChange={() => ''}
+                />
                 Tarefas
               </div>
 
               <CheckboxDefault
                 label="Visualizar"
-                id="subtasks"
-                checked={false}
+                id="jobs_tasks_view"
+                checked={selectedPermissions.includes('175')}
                 onChange={() => ''}
               />
               <CheckboxDefault
                 label="Visualizar todos"
-                id="subtasks"
-                checked={false}
+                id="jobs_tasks_viewall"
+                checked={selectedPermissions.includes('181')}
                 onChange={() => ''}
               />
-              <CheckboxDefault label="Criar" id="subtasks" checked={false} onChange={() => ''} />
-              <CheckboxDefault label="Editar" id="subtasks" checked={false} onChange={() => ''} />
-              <CheckboxDefault label="Deletar" id="subtasks" checked={false} onChange={() => ''} />
+              <CheckboxDefault
+                label="Criar"
+                id="jobs_tasks_add"
+                checked={selectedPermissions.includes('174')}
+                onChange={() => ''}
+              />
+              <CheckboxDefault
+                label="Editar"
+                id="jobs_tasks_edit"
+                checked={selectedPermissions.includes('176')}
+                onChange={() => ''}
+              />
+              <CheckboxDefault
+                label="Deletar"
+                id="jobs_tasks_delete"
+                checked={selectedPermissions.includes('177')}
+                onChange={() => ''}
+              />
             </CardPermission>
 
             <CardPermission>
               <div className="card-title">
-                <CheckboxDefault label="" id="subtasks" checked={false} onChange={() => ''} />
+                <CheckboxDefault
+                  label=""
+                  id="jobs_products"
+                  checked={selectedPermissions.includes('182')}
+                  onChange={() => ''}
+                />
                 Produtos
               </div>
 
               <CheckboxDefault
                 label="Visualizar"
-                id="subtasks"
-                checked={false}
+                id="jobs_products_view"
+                checked={selectedPermissions.includes('184')}
                 onChange={() => ''}
               />
 
-              <CheckboxDefault label="Criar" id="subtasks" checked={false} onChange={() => ''} />
-              <CheckboxDefault label="Editar" id="subtasks" checked={false} onChange={() => ''} />
-              <CheckboxDefault label="Deletar" id="subtasks" checked={false} onChange={() => ''} />
+              <CheckboxDefault
+                label="Criar"
+                id="jobs_products_add"
+                checked={selectedPermissions.includes('183')}
+                onChange={() => ''}
+              />
+              <CheckboxDefault
+                label="Editar"
+                id="jobs_products_edit"
+                checked={selectedPermissions.includes('185')}
+                onChange={() => ''}
+              />
+              <CheckboxDefault
+                label="Deletar"
+                id="jobs_products_delete"
+                checked={selectedPermissions.includes('186')}
+                onChange={() => ''}
+              />
             </CardPermission>
 
             <CardPermission>
               <div className="card-title">
-                <CheckboxDefault label="" id="subtasks" checked={false} onChange={() => ''} />
+                <CheckboxDefault
+                  label=""
+                  id="users"
+                  checked={selectedPermissions.includes('1')}
+                  onChange={() => ''}
+                />
                 Usuário
               </div>
 
               <CheckboxDefault
                 label="Visualizar"
-                id="subtasks"
-                checked={false}
+                id="users_view"
+                checked={selectedPermissions.includes('2')}
                 onChange={() => ''}
               />
 
-              <CheckboxDefault
+              {/* <CheckboxDefault
                 label="Contabilizar horas"
                 id="subtasks"
-                checked={false}
+                checked={selectedPermissions.includes(permission.permission_id)}
+                onChange={() => ''}
+              /> */}
+
+              <CheckboxDefault
+                label="Criar"
+                id="users_add"
+                checked={selectedPermissions.includes('3')}
+                onChange={() => ''}
+              />
+              <CheckboxDefault
+                label="Editar"
+                id="users_edit"
+                checked={selectedPermissions.includes('4')}
+                onChange={() => ''}
+              />
+              <CheckboxDefault
+                label="Deletar"
+                id="users_delete"
+                checked={selectedPermissions.includes('5')}
                 onChange={() => ''}
               />
 
-              <CheckboxDefault label="Criar" id="subtasks" checked={false} onChange={() => ''} />
-              <CheckboxDefault label="Editar" id="subtasks" checked={false} onChange={() => ''} />
-              <CheckboxDefault label="Deletar" id="subtasks" checked={false} onChange={() => ''} />
-              <CheckboxDefault
+              {/* <CheckboxDefault
                 label="Horários de jornada"
                 id="subtasks"
-                checked={false}
+                checked={selectedPermissions.includes(permission.permission_id)}
                 onChange={() => ''}
-              />
+              /> */}
+
               <CheckboxDefault
                 label="Editar cargos"
-                id="subtasks"
-                checked={false}
+                id="roles_edit"
+                checked={selectedPermissions.includes('19')}
                 onChange={() => ''}
               />
             </CardPermission>
 
             <CardPermission>
               <div className="card-title">
-                <CheckboxDefault label="" id="subtasks" checked={false} onChange={() => ''} />
+                <CheckboxDefault
+                  label=""
+                  id="jobs_flow"
+                  checked={selectedPermissions.includes('197')}
+                  onChange={() => ''}
+                />
                 Fluxos
               </div>
 
               <CheckboxDefault
                 label="Visualizar"
-                id="subtasks"
-                checked={false}
+                id="jobs_flow_view"
+                checked={selectedPermissions.includes('199')}
                 onChange={() => ''}
               />
 
-              <CheckboxDefault label="Criar" id="subtasks" checked={false} onChange={() => ''} />
-              <CheckboxDefault label="Editar" id="subtasks" checked={false} onChange={() => ''} />
-              <CheckboxDefault label="Deletar" id="subtasks" checked={false} onChange={() => ''} />
+              <CheckboxDefault
+                label="Criar"
+                id="jobs_flow_add"
+                checked={selectedPermissions.includes('198')}
+                onChange={() => ''}
+              />
+              <CheckboxDefault
+                label="Editar"
+                id="jobs_flow_edit"
+                checked={selectedPermissions.includes('200')}
+                onChange={() => ''}
+              />
+              <CheckboxDefault
+                label="Deletar"
+                id="jobs_flow_delete"
+                checked={selectedPermissions.includes('201')}
+                onChange={() => ''}
+              />
             </CardPermission>
 
             <CardPermission>
               <div className="card-title">
-                <CheckboxDefault label="" id="subtasks" checked={false} onChange={() => ''} />
+                <CheckboxDefault
+                  label=""
+                  id="jobs_meetings"
+                  checked={selectedPermissions.includes('187')}
+                  onChange={() => ''}
+                />
                 Atas de reunião
               </div>
 
               <CheckboxDefault
                 label="Visualizar"
-                id="subtasks"
-                checked={false}
+                id="jobs_meetings_view"
+                checked={selectedPermissions.includes('189')}
                 onChange={() => ''}
               />
 
-              <CheckboxDefault label="Criar" id="subtasks" checked={false} onChange={() => ''} />
-              <CheckboxDefault label="Editar" id="subtasks" checked={false} onChange={() => ''} />
-              <CheckboxDefault label="Deletar" id="subtasks" checked={false} onChange={() => ''} />
+              <CheckboxDefault
+                label="Criar"
+                id="jobs_meetings_add"
+                checked={selectedPermissions.includes('188')}
+                onChange={() => ''}
+              />
+              <CheckboxDefault
+                label="Editar"
+                id="jobs_meetings_edit"
+                checked={selectedPermissions.includes('190')}
+                onChange={() => ''}
+              />
+              <CheckboxDefault
+                label="Deletar"
+                id="jobs_meetings_delete"
+                checked={selectedPermissions.includes('191')}
+                onChange={() => ''}
+              />
             </CardPermission>
 
             <CardPermission>
               <div className="card-title">
-                <CheckboxDefault label="" id="subtasks" checked={false} onChange={() => ''} />
+                <CheckboxDefault
+                  label=""
+                  id="jobs_dash_admin"
+                  checked={selectedPermissions.includes('211')}
+                  onChange={() => ''}
+                />
                 Dashboard
               </div>
 
-              <CheckboxDefault
+              {/* <CheckboxDefault
                 label="Geral total"
-                id="subtasks"
-                checked={false}
+                id="jobs_dash_manager"
+                checked={selectedPermissions.includes('202')}
                 onChange={() => ''}
-              />
+              /> */}
 
-              <CheckboxDefault
+              {/* <CheckboxDefault
                 label="Atendimento próprio"
-                id="subtasks"
-                checked={false}
+                id="dashboard_user"
+                checked={selectedPermissions.includes('103')}
                 onChange={() => ''}
-              />
+              /> */}
 
-              <CheckboxDefault
+              {/* <CheckboxDefault
                 label="Atendimento total"
-                id="subtasks"
-                checked={false}
+                id="jobs_dash_executive"
+                checked={selectedPermissions.includes('203')}
                 onChange={() => ''}
-              />
+              /> */}
 
-              <CheckboxDefault
+              {/* <CheckboxDefault
                 label="Operação próprio"
                 id="subtasks"
-                checked={false}
+                checked={selectedPermissions.includes(permission.permission_id)}
                 onChange={() => ''}
-              />
+              /> */}
 
               <CheckboxDefault
                 label="Operação total"
-                id="subtasks"
-                checked={false}
+                id="jobs_dash_operator"
+                checked={selectedPermissions.includes('205')}
                 onChange={() => ''}
               />
 
-              <CheckboxDefault label="Tráfego" id="subtasks" checked={false} onChange={() => ''} />
+              <CheckboxDefault
+                label="Tráfego"
+                id="jobs_dash_traffic"
+                checked={selectedPermissions.includes('204')}
+                onChange={() => ''}
+              />
 
               <CheckboxDefault
                 label="Gerar relatório"
-                id="subtasks"
-                checked={false}
+                id="jobs_tasks_report"
+                checked={selectedPermissions.includes('179') ? true : false}
                 onChange={() => ''}
               />
             </CardPermission>
