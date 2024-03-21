@@ -6,7 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 // Icons
 import { IconArrowLeft } from '../../assets/icons';
 import { HiOutlineArrowRight } from 'react-icons/hi';
-import { MdOutlineChangeCircle } from 'react-icons/md';
+// import { MdOutlineChangeCircle } from 'react-icons/md';
 
 // Components
 import ButtonDefault from '../Buttons/ButtonDefault';
@@ -165,9 +165,9 @@ export default function HeaderOpenTask({
           <AvatarButton onClick={changeUser}>
             <AvatarDefault url={avatar_infos?.avatar} name={avatar_infos?.name} />
 
-            <div className="change-user">
+            {/* <div className="change-user">
               <MdOutlineChangeCircle />
-            </div>
+            </div> */}
 
             <div className="user-infos">
               <div>{avatar_infos.name}</div>
