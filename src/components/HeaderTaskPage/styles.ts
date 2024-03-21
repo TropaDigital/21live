@@ -127,21 +127,26 @@ export const AvatarButton = styled.button`
   align-items: center;
   justify-content: center;
   gap: 12px;
+  padding-left: 10px;
+
+  height: 60px;
 
   background-color: transparent;
-  border-radius: 8px;
 
   position: relative;
 
+  border-left: 2px solid var(--gray-300);
+
   .change-user {
     position: absolute;
-    bottom: -5px;
-    left: 28px;
+    bottom: 1px;
+    left: 35px;
   }
 
   .user-infos {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     gap: 4px;
 
     color: var(--gray-500);

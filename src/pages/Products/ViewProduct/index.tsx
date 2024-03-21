@@ -1777,12 +1777,65 @@ export default function ViewProductsDeliveries() {
 
       const approvedFiles = dataTask?.files.filter((file: any) => file.status === 'pass');
 
-      if (approvedFiles.length < 1) {
-        setModalFinalFile(true);
-      }
+      // if (approvedFiles.length < 1) {
+      //   setModalFinalFile(true);
+      // }
 
       await Promise.all(
         approvedFiles.map(async (imageUrl: TaskFile) => {
+          const fileData = new FormData();
+
+          const response = await api.get(
+            `https://app.21live.com.br:3000/archive?bucket=${imageUrl.bucket}&key=${imageUrl.key}`,
+            { responseType: 'arraybuffer' }
+          );
+
+          const blob = new Blob([response.data]);
+          const newFile: any = new File([blob], imageUrl.file_name, { type: blob.type });
+
+          fileData.append('archive', newFile);
+          fileData.append('original_name', imageUrl.original_name);
+          // fileData.append('task_file_id', imageUrl.task_file_id);
+
+          const responseFile = await api.post(
+            `/archive/upload/final/${dataTask?.task_id}`,
+            fileData
+          );
+
+          if (responseFile.data.status === 'success') {
+            const uploadInfos = {
+              task_id: dataTask?.task_id,
+              file_name: responseFile.data.result.file_name,
+              original_name: imageUrl.original_name,
+              size: responseFile.data.result.size,
+              key: responseFile.data.result.key,
+              bucket: responseFile.data.result.bucket,
+              last_archive: 'true',
+              products_delivery_id: imageUrl.products_delivery_id
+            };
+            const response = await api.put(`/task/upload`, uploadInfos);
+
+            if (response.data.status === 'success') {
+              handleConcludeTask();
+            }
+          }
+        })
+      );
+
+      // console.log('log approvedFiles =>', approvedFiles);
+
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+    }
+  }
+
+  async function handleUploadFinalNotApproved() {
+    try {
+      setLoading(true);
+
+      await Promise.all(
+        filesToTenantApprove.map(async (imageUrl: TaskFile) => {
           const fileData = new FormData();
 
           const response = await api.get(
@@ -3915,7 +3968,11 @@ export default function ViewProductsDeliveries() {
               <ButtonDefault typeButton="dark" isOutline onClick={handleCancelSendToTenant}>
                 Cancelar
               </ButtonDefault>
-              <ButtonDefault loading={loading} typeButton="primary" onClick={handleUploadApproved}>
+              <ButtonDefault
+                loading={loading}
+                typeButton="primary"
+                onClick={handleUploadFinalNotApproved}
+              >
                 Enviar
               </ButtonDefault>
             </ModalButtons>
