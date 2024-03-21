@@ -763,12 +763,7 @@ export default function WorkingProduct({
   useEffect(() => {
     const checkIfClickedOutside = (e: any) => {
       console.log('log do target =>', e.target.innerText);
-      if (
-        !modalDiscardEssay &&
-        essayInfo !== '' &&
-        essayRef.current &&
-        !essayRef.current.contains(e.target)
-      ) {
+      if (essayInfo !== '' && essayRef.current && !essayRef.current.contains(e.target)) {
         setModalDiscardEssay(true);
       }
     };
