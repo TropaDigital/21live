@@ -11,14 +11,14 @@ import { ContainerSteps } from './styles';
 interface InfoFilesSteps {
   uploadedFiles: UploadedFilesProps[];
   setUploadedFiles: (item: any) => void;
-  tenant: any;
+  projectId: string;
   isDisabed?: boolean;
 }
 
 export default function InfoFiles({
   uploadedFiles,
   setUploadedFiles,
-  tenant,
+  projectId,
   isDisabed
 }: InfoFilesSteps) {
   const [loading, setLoading] = useState(false);
@@ -28,11 +28,11 @@ export default function InfoFiles({
         <UploadFiles
           uploadedFiles={uploadedFiles}
           setUploadedFiles={setUploadedFiles}
-          tenant={tenant}
           isDisabed={isDisabed}
           folderInfo="tasks"
           loading={loading}
           setLoading={setLoading}
+          project_id={projectId}
         />
       </FieldDefault>
     </ContainerSteps>
