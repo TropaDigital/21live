@@ -88,7 +88,7 @@ import { ModalButtons } from '../../Team/ListTeam/styles';
 
 interface WorkingProductProps {
   productInfos?: any;
-  projectId?: string;
+  projectId: string;
   taskInputs?: InputProps;
   taskId?: string;
   ticket_id?: string;
