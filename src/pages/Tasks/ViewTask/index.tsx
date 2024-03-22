@@ -1207,6 +1207,7 @@ export default function ViewTask() {
           {visualizationType === 'product' && (
             <WorkingProduct
               productInfos={selectedProduct}
+              projectId={dataTask?.project_id}
               taskInputs={InputsTask}
               taskId={dataTask?.task_id}
               taskFiles={dataTask?.files}
