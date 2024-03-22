@@ -1878,7 +1878,31 @@ export default function ViewProductsDeliveries() {
       // console.log('log approvedFiles =>', approvedFiles);
 
       setLoading(false);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.response.status === 400) {
+        addToast({
+          title: 'Atenção',
+          description: 'Error dowloading file',
+          type: 'warning'
+        });
+        setLoading(false);
+      }
+
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            title: 'Atenção',
+            description: row.error,
+            type: 'warning'
+          });
+        });
+      } else {
+        addToast({
+          title: 'Atenção',
+          description: error.response.data.message,
+          type: 'danger'
+        });
+      }
       setLoading(false);
     }
   }
@@ -2940,8 +2964,8 @@ export default function ViewProductsDeliveries() {
 
           {viewProduct && (
             <WorkingProduct
-              productDeliveryId={selectedProduct?.productInfo?.products_delivery_id}
               productInfos={selectedProduct.productInfo}
+              projectId={dataTask?.project_id}
               taskInputs={InputsTask}
               taskId={dataTask?.task_id}
               ticket_id={dataTask?.ticket_id}
@@ -3134,11 +3158,11 @@ export default function ViewProductsDeliveries() {
           <UploadFiles
             uploadedFiles={uploadedFiles}
             setUploadedFiles={setUploadedFiles}
-            tenant={dataTask?.tenant_id}
+            project_id={dataTask?.project_id}
             isDisabed={!dataTask?.tenant_id}
             loading={loading}
             setLoading={setLoading}
-            folderInfo="tasks"
+            folderInfo="projects"
           />
 
           <div className="modal-buttons">
