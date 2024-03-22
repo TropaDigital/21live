@@ -595,15 +595,27 @@ export default function CreateProject() {
         size: row.size
       }));
 
-      const upload = {
-        folder: 'projects',
-        id: projectId,
-        archives: files
+      // const upload = {
+      //   folder: 'projects',
+      //   id: projectId,
+      //   archives: files
+      // };
+
+      const teamFiltered = DTOForm?.team.map((row: any) => ({
+        user_id: row.user_id
+      }));
+
+      const updateData = {
+        title: DTOForm?.title,
+        description: DTOForm?.description,
+        team: teamFiltered,
+        files: files
       };
 
       setLoading(true);
 
-      const response = await api.post(`/archive/upload`, upload);
+      // const response = await api.post(`/archive/upload`, upload);
+      const response = await api.put(`project/${DTOForm.project_id}`, updateData);
 
       if (response.data.status === 'success') {
         navigate('/projetos');
@@ -612,11 +624,21 @@ export default function CreateProject() {
       setLoading(false);
     } catch (error: any) {
       console.log('log error upload', error);
-      addToast({
-        type: 'warning',
-        title: 'Atenção',
-        description: error
-      });
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            type: 'danger',
+            title: 'ATENÇÃO',
+            description: row.error
+          });
+        });
+      } else {
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: error.response.data.message
+        });
+      }
       setLoading(false);
     }
   }
@@ -1095,6 +1117,7 @@ export default function CreateProject() {
                 isDisabed={false}
                 loading={loading}
                 setLoading={setLoading}
+                project_id={projectId}
               />
               <FinishModalButtons>
                 <ButtonDefault
