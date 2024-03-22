@@ -151,6 +151,22 @@ interface QuantityInfos {
   maxValue: number;
 }
 
+interface ProjectProps {
+  project_product_id: string;
+  tempo_restante: string;
+  tempo_inicial: string;
+  listavel: string;
+  produto: string;
+  quantidade_restante: string;
+  quantidade_inicial: string;
+  categoria: string;
+  projeto: string;
+  tipo: string;
+  date_start: string;
+  date_end: string;
+  select: string;
+}
+
 // interface ITicketProps {
 //   ticket_id: string;
 //   tenant_id: string;
@@ -257,7 +273,7 @@ export default function CreateTasks() {
   const { data: dataProducts, fetchData: fetchProducts } = useFetch<any[]>(
     `services?search=${search}&flag=false`
   );
-  const [dataProjects, setDataProjects] = useState<ServicesProps[]>([]);
+  const [dataProjects, setDataProjects] = useState<ProjectProps[]>([]);
 
   async function getProjects(tenantId: string) {
     try {
@@ -2337,10 +2353,6 @@ export default function CreateTasks() {
   // }, [errorDeliveryDate]);
 
   // useEffect(() => {
-  //   console.log('log do info projects', infoProjects);
-  // }, [infoProjects]);
-
-  // useEffect(() => {
   //   console.log('log do location', location.state);
   // }, [location]);
 
@@ -2566,7 +2578,7 @@ export default function CreateTasks() {
                   <InfoFiles
                     uploadedFiles={uploadedFiles}
                     setUploadedFiles={setUploadedFiles}
-                    tenant={DTOForm?.tenant_id}
+                    projectId={infoProjects[0]?.project_id}
                   />
                   {/* <SummaryTasks
                     selectedProducts={productsArray}
@@ -2618,7 +2630,7 @@ export default function CreateTasks() {
                   <InfoFiles
                     uploadedFiles={uploadedFiles}
                     setUploadedFiles={setUploadedFiles}
-                    tenant={DTOForm?.tenant_id}
+                    projectId={infoProjects[0]?.project_id}
                   />
                 </>
               )}

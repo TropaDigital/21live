@@ -893,17 +893,16 @@ export default function ListMeeting() {
             />
           </FieldDefault>
 
-          <FieldDefault>
+          {/* <FieldDefault>
             <UploadFiles
               uploadedFiles={uploadedFiles}
               setUploadedFiles={setUploadedFiles}
-              tenant={formData?.tenant_id}
               isDisabed={!formData?.tenant_id}
               loading={loading}
               setLoading={setLoading}
               folderInfo="meetings"
             />
-          </FieldDefault>
+          </FieldDefault> */}
 
           <FieldEditor>
             <WrapperEditor
