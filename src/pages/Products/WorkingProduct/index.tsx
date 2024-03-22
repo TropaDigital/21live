@@ -87,8 +87,8 @@ import { StepTimeline, UploadedFilesProps } from '../../../types';
 import { ModalButtons } from '../../Team/ListTeam/styles';
 
 interface WorkingProductProps {
-  productDeliveryId?: any;
   productInfos?: any;
+  projectId: string;
   taskInputs?: InputProps;
   taskId?: string;
   ticket_id?: string;
@@ -191,6 +191,7 @@ interface TimelineProps {
 
 export default function WorkingProduct({
   productInfos,
+  projectId,
   taskInputs,
   taskId,
   taskFiles,
@@ -762,8 +763,12 @@ export default function WorkingProduct({
 
   useEffect(() => {
     const checkIfClickedOutside = (e: any) => {
-      console.log('log do target =>', e.target.innerText);
-      if (essayInfo !== '' && essayRef.current && !essayRef.current.contains(e.target)) {
+      // console.log('log do target =>', e.target.innerText);
+      if (
+        e.target.innerText !== 'Redação' &&
+        essayRef.current &&
+        !essayRef.current.contains(e.target)
+      ) {
         setModalDiscardEssay(true);
       }
     };
@@ -1516,7 +1521,7 @@ export default function WorkingProduct({
           <UploadFiles
             uploadedFiles={uploadedFiles}
             setUploadedFiles={setUploadedFiles}
-            tenant={taskTenant}
+            project_id={projectId}
             isDisabed={!taskTenant}
             loading={loading}
             setLoading={setLoading}

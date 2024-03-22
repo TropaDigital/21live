@@ -12,12 +12,14 @@ interface InfoFilesSteps {
   isDisabed?: boolean;
   loading: boolean;
   setLoading: any;
+  project_id: string;
 }
 
 export default function InfoFiles({
   uploadedFiles,
   setUploadedFiles,
   tenant,
+  project_id,
   isDisabed,
   loading,
   setLoading
@@ -28,11 +30,11 @@ export default function InfoFiles({
         <UploadFiles
           uploadedFiles={uploadedFiles}
           setUploadedFiles={setUploadedFiles}
-          tenant={tenant}
           isDisabed={isDisabed}
           loading={loading}
           setLoading={setLoading}
           folderInfo="projects"
+          project_id={project_id}
         />
       </FieldDefault>
     </ContainerSteps>

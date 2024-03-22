@@ -153,7 +153,7 @@ export default function ViewTask() {
   const [timeLineData, setTimelineData] = useState<TimelineProps>();
   const [hideTimeLine, setHideTimeLine] = useState<boolean>(false);
   const [deliveryProduct, setDeliveryProduct] = useState<ProductsProps[]>([]);
-  const [selectedProduct, setSelectedProduct] = useState<any>('');
+  const [selectedProduct, setSelectedProduct] = useState<ProductsProps>();
   const [visualizationType, setVisualizationType] = useState<string>('deliveries');
   const [taskHistory, setTaskHistory] = useState<TaskHistoric>();
   const [updateDateTask, setUpdateDateTask] = useState<UpdateDateProps>({
@@ -186,15 +186,15 @@ export default function ViewTask() {
   };
 
   const onlyOneProductInfo = {
-    title: deliveryProduct[0]?.service,
-    description: deliveryProduct[0]?.description,
-    id: deliveryProduct[0]?.products_delivery_id,
-    size: deliveryProduct[0]?.size,
-    type: deliveryProduct[0]?.type,
+    title: selectedProduct?.service,
+    description: selectedProduct?.description,
+    id: selectedProduct?.products_delivery_id,
+    size: selectedProduct?.size,
+    type: selectedProduct?.type,
     reason_change:
-      deliveryProduct[0]?.reason_change === '1'
+      selectedProduct?.reason_change === '1'
         ? 'Criação do zero'
-        : deliveryProduct[0]?.reason_change === '2'
+        : selectedProduct?.reason_change === '2'
         ? 'Desmembramento'
         : 'Alteração'
   };
@@ -281,14 +281,12 @@ export default function ViewTask() {
   }, [visualizationType]);
 
   const handleNavigateProduct = (infoProduct: any) => {
+    console.log('log selected Product =>', infoProduct);
     if (infoProduct.status === 'Desmembrada') {
       handleNavigateTask(dataTask.parents[0].task_id);
     }
-    const taskCompleteInfo = {
-      productInfo: infoProduct,
-      taskInfos: dataTask
-    };
-    setSelectedProduct(taskCompleteInfo);
+
+    setSelectedProduct(infoProduct);
   };
 
   const handleNavigateTask = (taskId: string) => {
@@ -509,8 +507,8 @@ export default function ViewTask() {
 
   const actualDate = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
   const allTimes = {
-    time_essay: selectedProduct?.productInfo?.minutes_essay,
-    time_creation: selectedProduct?.productInfo?.minutes_creation,
+    time_essay: selectedProduct?.minutes_essay,
+    time_creation: selectedProduct?.minutes_creation,
     total_time: dataTask?.total_time
   };
 
@@ -1208,8 +1206,8 @@ export default function ViewTask() {
 
           {visualizationType === 'product' && (
             <WorkingProduct
-              productDeliveryId={selectedProduct?.productInfo?.products_delivery_id}
-              productInfos={selectedProduct.productInfo}
+              productInfos={selectedProduct}
+              projectId={dataTask?.project_id}
               taskInputs={InputsTask}
               taskId={dataTask?.task_id}
               taskFiles={dataTask?.files}

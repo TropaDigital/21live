@@ -45,36 +45,26 @@ interface UpdateFileData {
   size?: string;
 }
 
-interface PostsResponse {
-  _id: string;
-  name: string;
-  readableSize: string;
-  preview: string;
-  uploaded: boolean;
-  url: string;
-  size: number;
-}
-
 interface UploadProps {
   uploadedFiles: UploadedFilesProps[];
   setUploadedFiles: (item: any) => void;
-  tenant: any;
   isDisabed?: boolean;
   loading?: boolean;
   setLoading?: any;
   folderInfo: string;
   task_file_id?: string;
+  project_id: string;
 }
 
 export default function UploadFiles({
   uploadedFiles,
   setUploadedFiles,
-  tenant,
   isDisabed,
   loading,
   setLoading,
   folderInfo,
-  task_file_id
+  task_file_id,
+  project_id
 }: UploadProps) {
   // const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
   // const size = partial({base: 2, standard: "jedec"});
@@ -136,8 +126,10 @@ export default function UploadFiles({
 
       if (!uploadedFile.file) return;
       data.append('archive', uploadedFile.file);
-      data.append('tenant', tenant);
       data.append('folder', folderInfo);
+      if (project_id) {
+        data.append('project_id', project_id);
+      }
       if (task_file_id) {
         data.append('task_file_id', task_file_id);
       }
