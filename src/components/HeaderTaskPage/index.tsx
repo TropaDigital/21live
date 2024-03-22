@@ -58,12 +58,12 @@ interface TitleProps {
 }
 
 interface ProductsProps {
-  title: string;
-  description: string;
+  title: string | any;
+  description: string | any;
   id: any;
-  size: string;
-  type: string;
-  reason_change: string;
+  size: string | any;
+  type: string | any;
+  reason_change: string | any;
 }
 
 interface UserAvatarProps {
