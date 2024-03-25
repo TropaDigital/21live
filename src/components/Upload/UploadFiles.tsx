@@ -54,6 +54,7 @@ interface UploadProps {
   folderInfo: string;
   task_file_id?: string;
   project_id: string;
+  meeting_id?: string;
 }
 
 export default function UploadFiles({
@@ -64,7 +65,8 @@ export default function UploadFiles({
   setLoading,
   folderInfo,
   task_file_id,
-  project_id
+  project_id,
+  meeting_id
 }: UploadProps) {
   // const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
   // const size = partial({base: 2, standard: "jedec"});
@@ -127,8 +129,11 @@ export default function UploadFiles({
       if (!uploadedFile.file) return;
       data.append('archive', uploadedFile.file);
       data.append('folder', folderInfo);
-      if (project_id) {
+      if (project_id && !meeting_id) {
         data.append('project_id', project_id);
+      }
+      if (project_id === '' && meeting_id) {
+        data.append('meeting_id', meeting_id);
       }
       if (task_file_id) {
         data.append('task_file_id', task_file_id);
