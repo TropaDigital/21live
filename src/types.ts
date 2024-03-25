@@ -245,7 +245,7 @@ export interface DeliveryProps {
   deliveryId: number | string;
   deliveryDescription: string;
   creation_date_end: string;
-  copywriting_date_end: string;
+  copywriting_date_end?: string;
   deliveryTitle?: string;
   deliveryProducts: any[];
   showInfo: boolean;
