@@ -344,12 +344,12 @@ export default function WorkingProduct({
 
       setLoading(false);
 
+      updateInfos();
       addToast({
         title: 'Sucesso',
         type: 'success',
         description: 'Redação salva com sucesso.'
       });
-      updateInfos();
     } catch (error) {
       console.log('log post essay', error);
       setLoading(false);
