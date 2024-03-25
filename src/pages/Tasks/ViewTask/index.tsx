@@ -36,6 +36,7 @@ import { Table } from '../../../components/Table';
 import { CheckboxDefault } from '../../../components/Inputs/CheckboxDefault';
 import ScheduleUser from '../../../components/ScheduleUser';
 import { UsersWrapper } from '../CreateTasks/styles';
+import { ProductsTable } from '../ComponentSteps/InfoDeliverables/styles';
 
 // Styles
 import {
@@ -74,6 +75,7 @@ import Switch from 'react-switch';
 // Hooks
 import { useToast } from '../../../hooks/toast';
 import { useAuth } from '../../../hooks/AuthContext';
+import { useParamsHook } from '../../../hooks/useParams';
 
 // Utils
 import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
@@ -87,7 +89,6 @@ import {
   TaskHistoric,
   TaskHistoryProps
 } from '../../../types';
-import { ProductsTable } from '../ComponentSteps/InfoDeliverables/styles';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -147,6 +148,7 @@ export default function ViewTask() {
   const { user } = useAuth();
   const openRightRef = useRef<any>();
   const dateRef = useRef<any>();
+  const { parameters } = useParamsHook();
   const [loading, setLoading] = useState<boolean>(false);
   const [hideRightCard, setHideRightCard] = useState<string>('show');
   const [dataTask, setDataTask] = useState<any>();
@@ -728,10 +730,10 @@ export default function ViewTask() {
                   )}
                 </StopWatchTimer>
                 <EstimatedTime>
-                  Tempo estimado:{' '}
-                  <span>
-                    {dataTask?.total_time !== 'undefined' ? dataTask?.total_time : 'Livre'}
-                  </span>
+                  Tempo {parameters?.input_name}: <span>{dataTask?.deliverys[0].time_essay}</span>
+                </EstimatedTime>
+                <EstimatedTime>
+                  Tempo atividade: <span>{dataTask?.deliverys[0].time_creation}</span>
                 </EstimatedTime>
               </CardWrapper>
             )}
@@ -753,10 +755,10 @@ export default function ViewTask() {
                   )}
                 </StopWatchTimer>
                 <EstimatedTime>
-                  Tempo estimado:{' '}
-                  <span>
-                    {dataTask?.total_time !== 'undefined' ? dataTask?.total_time : 'Livre'}
-                  </span>
+                  Tempo {parameters?.input_name}: <span>{dataTask?.deliverys[0].time_essay}</span>
+                </EstimatedTime>
+                <EstimatedTime>
+                  Tempo atividade: <span>{dataTask?.deliverys[0].time_creation}</span>
                 </EstimatedTime>
               </CardWrapper>
             )}
