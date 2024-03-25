@@ -257,3 +257,53 @@ export const FieldEditor = styled.div`
 
   max-width: calc(100vw - 800px);
 `;
+
+export const FinishModal = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  min-width: 400px;
+  max-width: 800px;
+  /* padding: 24px; */
+  background: var(--background-primary);
+  border-radius: 12px;
+`;
+
+export const FinishModalTitle = styled.div`
+  color: var(--title-color);
+  font-size: var(--text-headline-sm);
+  font-weight: var(--weight-bold);
+`;
+
+export const FinishModalMessage = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  .modal-title {
+    color: var(--gray-900);
+    font-size: var(--text-small-md);
+    font-weight: var(--weight-semibold);
+    line-height: 28px;
+  }
+
+  .modal-subtitle {
+    color: var(--gray-500);
+    font-size: var(--text-small-md);
+    font-weight: var(--weight-regular);
+    line-height: 20px;
+  }
+`;
+
+export const FinishModalButtons = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 60%;
+  margin: 0 auto;
+
+  button {
+    width: 100%;
+  }
+`;
