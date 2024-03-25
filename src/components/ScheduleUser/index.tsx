@@ -412,7 +412,12 @@ export default function ScheduleUser({
               <div className="title">Título da tarefa:</div>
               <div className="info">{task_title ? task_title : 'Teste'}</div>
             </SubtitleInfo>
-            <div>•</div>
+            <div>|</div>
+            <SubtitleInfo>
+              <div className="title">Tempo da tarefa:</div>
+              <div className="info">{estimated_time?.total_time}</div>
+            </SubtitleInfo>
+            <div>|</div>
             {!manualOverrideDate && (
               <SubtitleInfo>
                 <div className="title">Tempo estimado:</div>
