@@ -11,7 +11,7 @@ export const CardWrapper = styled.div<CardProps>`
 
   min-width: 264px;
   width: ${({ cardSize }) => (cardSize !== 'time' ? '100%' : '264px')};
-  height: 166px;
+  height: 198px;
 
   background: var(--background-primary);
   border: 1px solid var(--gray-200);

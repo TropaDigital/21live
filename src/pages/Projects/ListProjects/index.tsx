@@ -888,7 +888,7 @@ export default function ListProjects() {
                       {modalShowProject.project.files.map((row: any) => (
                         <FileList key={row.file_id}>
                           <FileInfo>
-                            <div className="file-name">{row.file_name}</div>
+                            <div className="file-name">{row.original_name}</div>
                             <div className="file-icons">
                               <ViewFileBtn
                                 onClick={() =>

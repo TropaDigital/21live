@@ -449,7 +449,6 @@ export default function CreateTasks() {
       deliveryId: DTODelivery.length + 1,
       deliveryDescription: '',
       creation_date_end: '',
-      copywriting_date_end: '',
       deliveryTitle: '',
       deliveryProducts: [],
       showInfo: false
@@ -1754,8 +1753,8 @@ export default function CreateTasks() {
           const deadlines = DTODelivery.map((row: DeliveryProps, index: any) => {
             return {
               date_end: row.creation_date_end,
-              creation_date_end: row.creation_date_end,
-              copywriting_date_end: row.copywriting_date_end,
+              // creation_date_end: row.creation_date_end,
+              // copywriting_date_end: row.copywriting_date_end,
               description: DTOForm?.creation_description,
               title: row.deliveryTitle !== '' ? row.deliveryTitle : `${index + 1}ª entrega`,
               products: row.deliveryProducts
@@ -1807,11 +1806,19 @@ export default function CreateTasks() {
         }
       }
 
-      addToast({
-        type: 'success',
-        title: 'Sucesso',
-        description: 'Tarefa criada com sucesso!'
-      });
+      if (location.state !== null && location.state.task_id) {
+        addToast({
+          type: 'success',
+          title: 'Sucesso',
+          description: 'Tarefa editada com sucesso!'
+        });
+      } else {
+        addToast({
+          type: 'success',
+          title: 'Sucesso',
+          description: 'Tarefa criada com sucesso!'
+        });
+      }
       setLoadingSubmit(false);
       navigate('/tarefas');
 

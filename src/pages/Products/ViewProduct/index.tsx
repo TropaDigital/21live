@@ -103,6 +103,7 @@ import {
 
 // Utils
 import { UsersNoSchedule } from '../../../utils/models';
+import { useParamsHook } from '../../../hooks/useParams';
 
 interface TimelineProps {
   steps: StepTimeline[];
@@ -164,6 +165,7 @@ export default function ViewProductsDeliveries() {
   const { addToast } = useToast();
   const { id } = useParams();
   const dateRef = useRef<any>();
+  const { parameters, getParams } = useParamsHook();
   const { state, setInitialTime, setTaskInfo, handleClock, stop } = useStopWatch();
   const openRightRef = useRef<any>();
   const [modalSendToUser, setModalSendToUser] = useState<boolean>(false);
@@ -365,6 +367,11 @@ export default function ViewProductsDeliveries() {
     dataTask.deliverys.every((delivery: any) =>
       delivery.products?.every((product: any) => product.status_interaction !== '')
     );
+
+  const bothTimes = {
+    time_essay: selectedProduct?.productInfo?.minutes_essay,
+    time_creation: selectedProduct?.productInfo?.minutes_creation
+  };
 
   // const hasTicketInteraction: any[] = dataTask?.files.filter(
   //   (obj: any) => obj.ticket_interaction_id !== ''
@@ -617,6 +624,7 @@ export default function ViewProductsDeliveries() {
     getTaskInfos();
     getTimelineData();
     getTaskHistory();
+    getParams();
   }, []);
 
   useEffect(() => {
@@ -1196,7 +1204,7 @@ export default function ViewProductsDeliveries() {
     try {
       setLoading(true);
 
-      if (checkMandatoryUpload() && mandatoryUpload) {
+      if (checkMandatoryUpload() && mandatoryUpload && checkType === 'next') {
         addToast({
           title: 'Aviso',
           description: 'Upload obrigatório antes de avançar!',
@@ -2247,7 +2255,7 @@ export default function ViewProductsDeliveries() {
   useEffect(() => {
     // console.log('log do type of play', typeOfPlay);
     // console.log('log allRejected', hasAllBeenRejected);
-  }, [typeOfPlay]);
+  }, []);
 
   return (
     <ContainerDefault>
@@ -2841,10 +2849,10 @@ export default function ViewProductsDeliveries() {
                   )}
                 </StopWatchTimer>
                 <EstimatedTime>
-                  Tempo estimado:{' '}
-                  <span>
-                    {dataTask?.total_time !== 'undefined' ? dataTask?.total_time : 'Livre'}
-                  </span>
+                  Tempo {parameters?.input_name}: <span>{dataTask?.deliverys[0].time_essay}</span>
+                </EstimatedTime>
+                <EstimatedTime>
+                  Tempo atividade: <span>{dataTask?.deliverys[0].time_creation}</span>
                 </EstimatedTime>
               </CardTimeInfo>
             )}
@@ -2865,11 +2873,17 @@ export default function ViewProductsDeliveries() {
                     </div>
                   )}
                 </StopWatchTimer>
-                <EstimatedTime>
+                {/* <EstimatedTime>
                   Tempo estimado:{' '}
                   <span>
                     {dataTask?.total_time !== 'undefined' ? dataTask?.total_time : 'Livre'}
                   </span>
+                </EstimatedTime> */}
+                <EstimatedTime>
+                  Tempo {parameters?.input_name}: <span>{dataTask?.deliverys[0].time_essay}</span>
+                </EstimatedTime>
+                <EstimatedTime>
+                  Tempo atividade: <span>{dataTask?.deliverys[0].time_creation}</span>
                 </EstimatedTime>
               </CardTimeInfo>
             )}
@@ -2890,11 +2904,18 @@ export default function ViewProductsDeliveries() {
                     </div>
                   )}
                 </StopWatchTimer>
-                <EstimatedTime>
+                {/* <EstimatedTime>
                   Tempo estimado:{' '}
                   <span>
                     {dataTask?.total_time !== 'undefined' ? dataTask?.total_time : 'Livre'}
                   </span>
+                </EstimatedTime> */}
+                <EstimatedTime>
+                  Tempo {parameters?.input_name}:{' '}
+                  <span>{selectedProduct?.productInfo?.minutes_essay}</span>
+                </EstimatedTime>
+                <EstimatedTime>
+                  Tempo atividade: <span>{selectedProduct?.productInfo?.minutes_creation}</span>
                 </EstimatedTime>
               </CardTimeInfo>
             )}
@@ -2915,11 +2936,17 @@ export default function ViewProductsDeliveries() {
                     </div>
                   )}
                 </StopWatchTimer>
-                <EstimatedTime>
+                {/* <EstimatedTime>
                   Tempo estimado:{' '}
                   <span>
                     {dataTask?.total_time !== 'undefined' ? dataTask?.total_time : 'Livre'}
                   </span>
+                </EstimatedTime> */}
+                <EstimatedTime>
+                  Tempo {parameters?.input_name}: <span>{dataTask?.deliverys[0].time_essay}</span>
+                </EstimatedTime>
+                <EstimatedTime>
+                  Tempo atividade: <span>{dataTask?.deliverys[0].time_creation}</span>
                 </EstimatedTime>
               </CardTimeInfo>
             )}
@@ -2929,9 +2956,9 @@ export default function ViewProductsDeliveries() {
                 cardTitle={state.isRunning ? 'Atividade iniciada' : 'Iniciar atividade'}
                 dataTime={
                   user.deduct_hours === 'creation' && dataTask?.type !== 'Livre'
-                    ? selectedProduct.productInfo.minutes_creation
+                    ? bothTimes
                     : user.deduct_hours === 'essay' && dataTask?.type !== 'Livre'
-                    ? selectedProduct.productInfo.minutes_essay
+                    ? bothTimes
                     : dataTask?.type === 'Livre'
                     ? ''
                     : dataTask?.total_time
@@ -3138,7 +3165,7 @@ export default function ViewProductsDeliveries() {
           step={Number(dataTask?.step)}
           user_alocated={updateChangeUserSchedule}
           closeModal={() => setModalChangeUser(false)}
-          manualOverrideDate={dataTask?.type === 'Livre' ? true : false}
+          manualOverrideDate={dataTask?.type === 'Livre' || changeUser}
           loadingSubmit={loading}
           taskType={dataTask?.type}
           deductHours={taskDeductHoursActual}

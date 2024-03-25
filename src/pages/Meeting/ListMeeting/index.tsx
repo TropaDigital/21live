@@ -61,6 +61,8 @@ import {
   FilesWrapper,
   FilterButton,
   FilterWrapper,
+  FinishModalMessage,
+  FinishModalTitle,
   ModalField,
   ModalInfosWrapper,
   NameField,
@@ -75,6 +77,7 @@ import moment from 'moment';
 
 // Types
 import { UploadedFilesProps } from '../../../types';
+import { useNavigate } from 'react-router-dom';
 
 interface FormProps {
   title: string;
@@ -105,6 +108,7 @@ interface DownloadFiles {
   bucket: string;
   created: string;
   file_name: string;
+  original_name: string;
   key: string;
   meeting_file_id: string;
   meeting_id: string;
@@ -131,6 +135,7 @@ export default function ListMeeting() {
   const { addToast } = useToast();
   const { user } = useAuth();
   const formRef = useRef<any>();
+  const navigate = useNavigate();
   const { formData, setFormValue, setData, handleOnChange, handleOnChangeCheckbox } = useForm({
     title: '',
     tenant_id: '',
@@ -172,6 +177,9 @@ export default function ListMeeting() {
   const [requestersList, setRequestersList] = useState<RequesterProps[]>([]);
   const [modalFilters, setModalFilters] = useState<boolean>(false);
   const [cancelModal, setCancelModal] = useState<boolean>(false);
+  const [finishModal, setFinishModal] = useState<boolean>(false);
+  const [sendFiles, setSendFiles] = useState<boolean>(false);
+  const [meetingId, setMeetingId] = useState<any>();
 
   // const selectedTeam = dataTeam?.filter((obj) => obj.user_id !== formData.user_id);
   // const defaultOptionsTeam = dataTeam?.filter((item) =>
@@ -218,6 +226,7 @@ export default function ListMeeting() {
       bucket: '',
       created: '',
       file_name: '',
+      original_name: '',
       key: '',
       meeting_file_id: '',
       meeting_id: '',
@@ -311,7 +320,7 @@ export default function ListMeeting() {
         setLoading(true);
         event.preventDefault();
 
-        // Inserir lógica
+        // // Inserir lógica
         const files = uploadedFiles.map((row) => ({
           bucket: row.bucket,
           file_name: row.file_name,
@@ -324,6 +333,17 @@ export default function ListMeeting() {
         const { title, tenant_id, user_id, date, email_alert, members } = formData;
 
         const newFormData = {
+          files: [],
+          title,
+          tenant_id,
+          user_id,
+          date,
+          email_alert: String(email_alert),
+          description: text,
+          members
+        };
+
+        const updateFormData = {
           files,
           title,
           tenant_id,
@@ -335,16 +355,22 @@ export default function ListMeeting() {
         };
 
         if (modal.type === 'Criar nova Ata de Reunião') {
-          await api.post(`meetings`, newFormData);
+          const response = await api.post(`meetings`, newFormData);
+          setMeetingId(response.data.result);
+          addToast({
+            type: 'success',
+            title: 'Sucesso',
+            description: 'Ata de reunião criada com sucesso!'
+          });
+          setFinishModal(true);
         } else {
-          await api.put(`meetings/${formData.meeting_id}`, newFormData);
+          await api.put(`meetings/${formData.meeting_id}`, updateFormData);
+          addToast({
+            type: 'success',
+            title: 'Sucesso',
+            description: 'Ata de reunião editada com sucesso!'
+          });
         }
-
-        addToast({
-          type: 'success',
-          title: 'Sucesso',
-          description: 'Ata de reunião criada com sucesso!'
-        });
 
         setModal({
           isOpen: false,
@@ -381,6 +407,63 @@ export default function ListMeeting() {
     },
     [uploadedFiles, formData, text, modal.type, addToast, setData, fetchData]
   );
+
+  async function handleUpdateWithFiles() {
+    try {
+      const files = uploadedFiles.map((row) => ({
+        bucket: row.bucket,
+        file_name: row.file_name,
+        original_name: row.original_name,
+        key: row.key,
+        size: row.size,
+        url: row.url
+      }));
+
+      const { title, tenant_id, user_id, date, email_alert, members } = formData;
+
+      const updateFormData = {
+        files,
+        title,
+        tenant_id,
+        user_id,
+        date,
+        email_alert: String(email_alert),
+        description: text,
+        members
+      };
+
+      setLoading(true);
+
+      const response = await api.put(`meetings/${meetingId}`, updateFormData);
+
+      if (response.data.result) {
+        setSendFiles(false);
+        setFinishModal(false);
+        handleOnCancel();
+        fetchData();
+      }
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log('log error update meetings', error);
+      if (error.response.data.result.length !== 0) {
+        error.response.data.result.map((row: any) => {
+          addToast({
+            type: 'danger',
+            title: 'ATENÇÃO',
+            description: row.error
+          });
+        });
+      } else {
+        addToast({
+          type: 'danger',
+          title: 'ATENÇÃO',
+          description: error.response.data.message
+        });
+      }
+      setLoading(false);
+    }
+  }
 
   const handleOnDelete = async (id: string) => {
     try {
@@ -462,6 +545,7 @@ export default function ListMeeting() {
         bucket: '',
         created: '',
         file_name: '',
+        original_name: '',
         key: '',
         meeting_file_id: '',
         meeting_id: '',
@@ -539,6 +623,16 @@ export default function ListMeeting() {
     if (formData.title !== '' && formRef.current && !formRef.current.contains(e.target)) {
       setCancelModal(true);
     }
+  };
+
+  const handleFinishWithoutFiles = () => {
+    // addToast({
+    //   type: 'success',
+    //   title: 'Sucesso',
+    //   description: 'Projeto criado com sucesso!'
+    // });
+    setFinishModal(false);
+    navigate('/reuniao');
   };
 
   useEffect(() => {
@@ -893,16 +987,20 @@ export default function ListMeeting() {
             />
           </FieldDefault>
 
-          {/* <FieldDefault>
-            <UploadFiles
-              uploadedFiles={uploadedFiles}
-              setUploadedFiles={setUploadedFiles}
-              isDisabed={!formData?.tenant_id}
-              loading={loading}
-              setLoading={setLoading}
-              folderInfo="meetings"
-            />
-          </FieldDefault> */}
+          {modal.type !== 'Criar nova Ata de Reunião' && (
+            <FieldDefault>
+              <UploadFiles
+                uploadedFiles={uploadedFiles}
+                setUploadedFiles={setUploadedFiles}
+                isDisabed={!formData?.tenant_id}
+                loading={loading}
+                setLoading={setLoading}
+                folderInfo="meetings"
+                project_id={''}
+                meeting_id={formData?.meeting_id}
+              />
+            </FieldDefault>
+          )}
 
           <FieldEditor>
             <WrapperEditor
@@ -968,7 +1066,7 @@ export default function ListMeeting() {
                   <FilesWrapper>
                     {modalView.meetingInfos.files.map((row: DownloadFiles) => (
                       <FileInfo key={row.meeting_file_id}>
-                        <div className="name-file">{row.file_name}</div>
+                        <div className="name-file">{row.original_name}</div>
                         <div className="file-icons">
                           <ViewFileBtn
                             onClick={() =>
@@ -978,6 +1076,7 @@ export default function ListMeeting() {
                                   bucket: row.bucket,
                                   created: row.created,
                                   file_name: row.file_name,
+                                  original_name: row.original_name,
                                   key: row.key,
                                   meeting_file_id: row.meeting_file_id,
                                   meeting_id: row.meeting_id,
@@ -1025,6 +1124,7 @@ export default function ListMeeting() {
                       bucket: '',
                       created: '',
                       file_name: '',
+                      original_name: '',
                       key: '',
                       meeting_file_id: '',
                       meeting_id: '',
@@ -1061,6 +1161,71 @@ export default function ListMeeting() {
               Descartar
             </ButtonDefault>
           </FinishModalButtons>
+        </FinishModal>
+      </ModalDefault>
+
+      {/* Modal send files */}
+      <ModalDefault isOpen={finishModal} onOpenChange={() => setFinishModal(false)}>
+        <FinishModal>
+          {!sendFiles && (
+            <>
+              <FinishModalTitle>Enviar anexos</FinishModalTitle>
+              <FinishModalMessage>
+                <div className="modal-title">Ata criada com sucesso!</div>
+                <div className="modal-subtitle">Deseja enviar arquivos para essa ata?</div>
+              </FinishModalMessage>
+              <FinishModalButtons>
+                <ButtonDefault typeButton="dark" isOutline onClick={handleFinishWithoutFiles}>
+                  Não enviar
+                </ButtonDefault>
+                <ButtonDefault
+                  typeButton="primary"
+                  onClick={() => {
+                    setSendFiles(true);
+                    setModal({
+                      isOpen: false,
+                      type: 'Upload files'
+                    });
+                  }}
+                >
+                  Enviar
+                </ButtonDefault>
+              </FinishModalButtons>
+            </>
+          )}
+
+          {sendFiles && (
+            <>
+              <FinishModalTitle>Anexos</FinishModalTitle>
+              <FieldDefault>
+                <UploadFiles
+                  uploadedFiles={uploadedFiles}
+                  setUploadedFiles={setUploadedFiles}
+                  loading={loading}
+                  setLoading={setLoading}
+                  folderInfo="meetings"
+                  project_id={''}
+                  meeting_id={meetingId}
+                />
+              </FieldDefault>
+              <FinishModalButtons>
+                <ButtonDefault
+                  typeButton="dark"
+                  isOutline
+                  onClick={() => {
+                    setFinishModal(false);
+                    setSendFiles(false);
+                    navigate('/reuniao');
+                  }}
+                >
+                  Cancelar
+                </ButtonDefault>
+                <ButtonDefault typeButton="primary" onClick={handleUpdateWithFiles}>
+                  Confirmar
+                </ButtonDefault>
+              </FinishModalButtons>
+            </>
+          )}
         </FinishModal>
       </ModalDefault>
 

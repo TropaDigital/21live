@@ -222,6 +222,7 @@ export default function FilterTask({ applyFilters, clearFilters, selectedClient 
             <option value="Em Andamento">Em progresso</option>
             <option value="Alteração Interna">Alteração interna</option>
             <option value="Alteração Externa">Alteração externa</option>
+            <option value="Atrasadas">Atrasada</option>
           </SelectDefault>
         </div>
 

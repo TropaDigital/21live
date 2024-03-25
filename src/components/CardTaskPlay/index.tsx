@@ -1,3 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+// React
+import { useEffect } from 'react';
+
 // Styles
 import {
   CardTitle,
@@ -18,12 +22,18 @@ import formatTime from '../../utils/convertSecondsToHours';
 // Hooks
 import { useStopWatch } from '../../hooks/stopWatch';
 import { useToast } from '../../hooks/toast';
+import { useParamsHook } from '../../hooks/useParams';
 
 interface CardTaskPlayProps {
   cardTitle: string;
-  dataTime?: any;
+  dataTime?: DataTimeProps;
   blockPlay: boolean;
   handlePlay: (value: any) => void;
+}
+
+interface DataTimeProps {
+  time_essay: string;
+  time_creation: string;
 }
 
 export default function CardTaskPlay({
@@ -34,6 +44,7 @@ export default function CardTaskPlay({
 }: CardTaskPlayProps) {
   const { state, start, stop } = useStopWatch();
   const { addToast } = useToast();
+  const { parameters, getParams } = useParamsHook();
   // const [startTime, setStartTime] = useState<number | null>(null);
   // const [elapsedTime, setElapsedTime] = useState<number>(0);
 
@@ -91,6 +102,10 @@ export default function CardTaskPlay({
   //   console.log('log do dataTime =>', dataTime);
   // }, [dataTime]);
 
+  useEffect(() => {
+    getParams();
+  }, []);
+
   const handlePassPlayProps = (value: any) => {
     if (value === 'play' && !blockPlay) {
       start();
@@ -138,7 +153,12 @@ export default function CardTaskPlay({
         </StopWatchTimer>
       </PlayTimer>
       <EstimatedTime>
-        Tempo estimado: <span>{dataTime !== '' ? dataTime : 'Livre'}</span>
+        Tempo {parameters?.input_name}:{' '}
+        <span>{dataTime?.time_essay !== '' ? dataTime?.time_essay : 'Livre'}</span>
+      </EstimatedTime>
+      <EstimatedTime>
+        Tempo estimado:{' '}
+        <span>{dataTime?.time_creation !== '' ? dataTime?.time_creation : 'Livre'}</span>
       </EstimatedTime>
     </CardWrapper>
   );

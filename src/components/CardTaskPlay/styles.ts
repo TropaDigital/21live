@@ -7,7 +7,6 @@ export const CardWrapper = styled.div`
 
   min-width: 264px;
   width: '264px';
-  height: 166px;
 
   background: var(--background-primary);
   border: 1px solid var(--gray-200);
