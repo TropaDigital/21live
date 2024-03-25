@@ -486,51 +486,9 @@ export default function InfoDeliveries({
                     </div>
                   )}
                   <span>-</span>
-                  {row?.copywriting_date_end !== '' ? (
-                    <DateContainer>
-                      <div className="container-title">
-                        Entrega{' '}
-                        {parameters.input_name !== '' ? parameters.input_name : 'Pré-requisito'}
-                      </div>
-                      <div
-                        className="date"
-                        onClick={() =>
-                          setDateDelivery({
-                            isOpen: true,
-                            indexDelivery: row?.deliveryId,
-                            dateType: 'essay'
-                          })
-                        }
-                      >
-                        <IconCalendar /> {moment(row.copywriting_date_end).format('DD/MM/YYYY')}
-                      </div>
-                    </DateContainer>
-                  ) : (
-                    <DateContainer>
-                      <div
-                        className={
-                          errorDelivery[index]?.id === row.deliveryId &&
-                          errorDelivery[index]?.typeError === 'copywriting'
-                            ? 'date error'
-                            : 'date add'
-                        }
-                        onClick={() =>
-                          setDateDelivery({
-                            isOpen: true,
-                            indexDelivery: row.deliveryId,
-                            dateType: 'essay'
-                          })
-                        }
-                      >
-                        <IconCalendar /> Adicionar data entrega{' '}
-                        {parameters.input_name !== '' ? parameters.input_name : 'Pré-requisito'}
-                      </div>
-                    </DateContainer>
-                  )}
-                  <span>-</span>
                   {row?.creation_date_end !== '' ? (
                     <DateContainer>
-                      <div className="container-title">Entrega de atividade</div>
+                      <div className="container-title">Data final de entrega cliente</div>
                       <div
                         className="date"
                         onClick={() =>
@@ -561,14 +519,14 @@ export default function InfoDeliveries({
                           })
                         }
                       >
-                        <IconCalendar /> Adicionar data entrega da atividade
+                        <IconCalendar /> Adicionar data final de entrega cliente
                       </div>
                     </DateContainer>
                   )}
                 </div>
                 {/* creation date */}
                 {dateDelivery.indexDelivery === row.deliveryId &&
-                  dateDelivery.isOpen === true &&
+                  dateDelivery.isOpen &&
                   dateDelivery.dateType === 'creation' && (
                     <div style={{ marginRight: 'auto', marginLeft: '16px' }} ref={creationDateRef}>
                       <InputDefault
@@ -587,7 +545,7 @@ export default function InfoDeliveries({
                   )}
 
                 {/* essay date */}
-                {dateDelivery.indexDelivery === row.deliveryId &&
+                {/* {dateDelivery.indexDelivery === row.deliveryId &&
                   dateDelivery.isOpen === true &&
                   dateDelivery.dateType === 'essay' && (
                     <div style={{ marginRight: 'auto', marginLeft: '16px' }} ref={creationDateRef}>
@@ -604,7 +562,7 @@ export default function InfoDeliveries({
                         error={errorDelivery.id === row.deliveryId ? errorDelivery.error : ''}
                       />
                     </div>
-                  )}
+                  )} */}
                 <div
                   className="icon-arrow"
                   // onClick={() =>
