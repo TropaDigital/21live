@@ -410,7 +410,7 @@ export default function CreateProject() {
             team: teamFiltered
           };
 
-          await api.put(`project/${DTOForm.project_id}`, updateData);
+          await api.put(`project/${DTOForm?.project_id}`, updateData);
           addToast({
             type: 'success',
             title: 'Sucesso',
@@ -613,9 +613,7 @@ export default function CreateProject() {
       };
 
       setLoading(true);
-
-      // const response = await api.post(`/archive/upload`, upload);
-      const response = await api.put(`project/${DTOForm.project_id}`, updateData);
+      const response = await api.put(`project/${projectId}`, updateData);
 
       if (response.data.status === 'success') {
         navigate('/projetos');
