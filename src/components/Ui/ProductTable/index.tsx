@@ -36,6 +36,7 @@ import { convertToMilliseconds } from '../../../utils/convertToMilliseconds';
 // Components
 import ModalDefault from '../ModalDefault';
 import ButtonDefault from '../../Buttons/ButtonDefault';
+import { useParamsHook } from '../../../hooks/useParams';
 
 interface ProductTableProps {
   data: any;
@@ -61,12 +62,17 @@ export default function ProductTable({
   fileList
 }: ProductTableProps) {
   // const { user } = useAuth();
+  const { parameters, getParams } = useParamsHook();
   const [workFor, setWorkFor] = useState<string>('schedule');
   const [motiveModal, setMotiveModal] = useState<any>({
     isOpen: false,
     motive: ''
   });
   // const workStatus = workFor === 'product' ? true : false;
+
+  useEffect(() => {
+    getParams();
+  }, []);
 
   useEffect(() => {
     setWorkFor(typeOfPlay);
@@ -99,7 +105,8 @@ export default function ProductTable({
               {workFor === 'product' && (
                 <>
                   <th>Tempo consumido</th>
-                  <th>Tempo estimado</th>
+                  <th>Tempo {parameters.input_name}</th>
+                  <th>Tempo Atividade</th>
                 </>
               )}
               <th>Descrição</th>
@@ -156,7 +163,17 @@ export default function ProductTable({
                           : productSelected('task')
                       }
                     >
-                      {row?.minutes}
+                      {row?.minutes_essay}
+                    </td>
+                    <td
+                      style={{ cursor: 'pointer' }}
+                      onClick={() =>
+                        row.status !== 'Desmembrada'
+                          ? productSelected(row)
+                          : productSelected('task')
+                      }
+                    >
+                      {row.minutes_creation}
                     </td>
                   </>
                 )}
