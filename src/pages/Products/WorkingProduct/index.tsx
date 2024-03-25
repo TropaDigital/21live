@@ -225,7 +225,6 @@ export default function WorkingProduct({
     creation_description: ''
   });
   const [logIsOn, setLogIsOn] = useState<boolean>(false);
-  const [productsInfo, setProductsInfo] = useState<ProductInfo>();
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesProps[]>([]);
   const [modalUpload, setModalUpload] = useState<boolean>(false);
   const [modalFinalFile, setModalFinalFile] = useState<boolean>(false);
@@ -240,7 +239,7 @@ export default function WorkingProduct({
     isOpen: false,
     motive: ''
   });
-  const [modalDiscardEssay, setModalDiscardEssay] = useState<boolean>(false);
+  // const [modalDiscardEssay, setModalDiscardEssay] = useState<boolean>(false);
 
   const [previewImage, setPreviewImage] = useState({
     isOpen: false,
@@ -282,7 +281,6 @@ export default function WorkingProduct({
 
   useEffect(() => {
     setEssayInfo(productInfos?.essay);
-    setProductsInfo(productInfos);
   }, [productInfos]);
 
   async function getComments(filter: string) {
@@ -351,6 +349,7 @@ export default function WorkingProduct({
         type: 'success',
         description: 'Redação salva com sucesso.'
       });
+      updateInfos();
     } catch (error) {
       console.log('log post essay', error);
       setLoading(false);
@@ -755,21 +754,22 @@ export default function WorkingProduct({
     return foundCard ? foundCard.name : null;
   }
 
-  const handleDiscardEssay = () => {
-    setModalDiscardEssay(false);
-    setSelectedTab('Inputs');
-    setEssayInfo(productInfos?.essay);
-  };
+  // const handleDiscardEssay = () => {
+  //   setModalDiscardEssay(false);
+  //   setSelectedTab('Inputs');
+  //   setEssayInfo(productInfos?.essay);
+  // };
 
   useEffect(() => {
     const checkIfClickedOutside = (e: any) => {
-      // console.log('log do target =>', e.target.innerText);
       if (
         e.target.innerText !== 'Redação' &&
+        essayInfo !== '' &&
         essayRef.current &&
         !essayRef.current.contains(e.target)
       ) {
-        setModalDiscardEssay(true);
+        // setModalDiscardEssay(true);
+        handleSaveEssay();
       }
     };
 
@@ -778,7 +778,7 @@ export default function WorkingProduct({
     return () => {
       document.removeEventListener('mousedown', checkIfClickedOutside);
     };
-  }, [modalDiscardEssay]);
+  }, [selectedTab, goBack]);
 
   useEffect(() => {
     // console.log('log do ticket_id =>', ticket_id);
@@ -788,7 +788,7 @@ export default function WorkingProduct({
     // console.log('log do isToApprove =>', isToApprove);
     // console.log('log allProducts =>', allProducts);
     // console.log('log do motiveRejects =>', motiveReject);
-  }, [finalCard, uploadClient, isToApprove, ticket_id, allProducts, motiveReject]);
+  }, [finalCard, uploadClient, isToApprove, ticket_id, allProducts]);
 
   return (
     <ContainerDefault>
@@ -1775,7 +1775,7 @@ export default function WorkingProduct({
       </ModalDefault>
 
       {/* Modal Discard essay */}
-      <ModalDefault
+      {/* <ModalDefault
         isOpen={modalDiscardEssay}
         onOpenChange={() => setModalDiscardEssay(false)}
         title="Atenção!"
@@ -1794,7 +1794,7 @@ export default function WorkingProduct({
             </ButtonDefault>
           </ModalButtons>
         </ModalDiscardChangesWrapper>
-      </ModalDefault>
+      </ModalDefault> */}
 
       {/* Modal loading submit */}
       <ModalLoader isOpen={loading} />
