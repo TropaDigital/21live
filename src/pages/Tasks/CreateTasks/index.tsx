@@ -93,6 +93,7 @@ import api from '../../../services/api';
 
 // Libraries
 import moment from 'moment';
+import { cp } from 'fs';
 
 interface StateProps {
   [key: string]: any;
@@ -277,7 +278,10 @@ export default function CreateTasks() {
 
   async function getProjects(tenantId: string) {
     try {
-      const response = await api.get(`project-products/${tenantId}`);
+      const response = await api.get(`/project/choose-contract/${tenantId}`);
+      // const responseProject = await api.get(`/project/choose-contract/${tenantId}`);
+
+      // console.log('log do response project =>', response.data.result);
 
       if (response.data.status === 'success') {
         setDataProjects(response.data.result);
@@ -406,6 +410,7 @@ export default function CreateTasks() {
       const transformedData = transformObjects(response.data.result);
 
       setProductsArray(transformedData);
+      setDTODelivery([{ ...DTODelivery[0], deliveryProducts: transformedData }]);
 
       setQuantityProductInfos({
         maxValue: response.data.result[0].quantity,
@@ -1570,7 +1575,6 @@ export default function CreateTasks() {
         creation_description,
         creation_date_end,
         copywriting_description,
-        copywriting_date_end,
         start_job,
         end_job,
         step,
@@ -1739,7 +1743,7 @@ export default function CreateTasks() {
           }
 
           if (ticket_id === '') {
-            delete createNewData.requester_id;
+            delete createNewData.ticket_id;
           }
 
           setLoadingSubmit(true);
@@ -1843,7 +1847,7 @@ export default function CreateTasks() {
     }
   }, [DTOForm]);
 
-  const selectedProjectInfos = (e: any) => {
+  const handleProjectInfos = (e: any) => {
     if (e.name === 'tenant_id') {
       setDTOForm({ ...DTOForm, ['tenant_id']: e.infos.value });
       const selectedClient: any = dataClient?.filter((obj: any) => obj.tenant_id === e.infos.value);
@@ -1851,27 +1855,6 @@ export default function CreateTasks() {
         ...prevState,
         ['client']: selectedClient[0]
       }));
-    } else if (e.target.name === 'project_product_id') {
-      if (user?.organizations?.length > 0) {
-        const id = e.target.value;
-        const selectedInfos: any = organizationProjects?.filter(
-          (obj: any) => obj.project_product_id === id
-        );
-        setSelectedProject(selectedInfos[0]);
-        handleChangeInput(e);
-      } else {
-        const id = e.target.value;
-        const selectedInfos: any = dataProjects?.filter(
-          (obj: any) => obj.project_product_id === id
-        );
-        setSelectedProject(selectedInfos[0]);
-        handleChangeInput(e);
-        if (selectedInfos[0].listavel === 'false') {
-          // setDisplayQuantity(true);
-          setProductsArray([]);
-          getSingleProduct(e.target.value);
-        }
-      }
     } else if (e.target.name === 'flow_id') {
       const id = e.target.value;
       const selectedFlow: any = dataFlow?.filter((obj: any) => obj.flow_id === id);
@@ -1892,6 +1875,75 @@ export default function CreateTasks() {
       handleChangeInput(e);
     } else {
       handleChangeInput(e);
+    }
+  };
+
+  const selectedProjectInfos = (e: any) => {
+    // else if (e.target.name === 'project_product_id') {
+    //   if (user?.organizations?.length > 0) {
+    //     const id = e.target.value;
+    //     const selectedInfos: any = organizationProjects?.filter(
+    //       (obj: any) => obj.project_product_id === id
+    //     );
+    //     setSelectedProject(selectedInfos[0]);
+    //     handleChangeInput(e);
+    //   } else {
+    //     const id = e.target.value;
+    //     const selectedInfos: any = dataProjects?.filter((obj: any) => obj.project_id === id);
+    //     setSelectedProject(selectedInfos[0]);
+    //     if (
+    //       selectedInfos[0].select_product.length === 1 &&
+    //       selectedInfos[0].products_quantity.length > 0
+    //     ) {
+    //       setDTOForm({
+    //         ...DTOForm,
+    //         ['project_product_id']: selectedInfos[0]?.products_quantity[0]?.project_product_id
+    //       });
+    //     } else if (
+    //       selectedInfos[0].select_product.length === 1 &&
+    //       selectedInfos[0].products_time.length > 0
+    //     ) {
+    //       setDTOForm({
+    //         ...DTOForm,
+    //         ['project_product_id']: selectedInfos[0]?.products_time[0]?.project_product_id
+    //       });
+    //     }
+
+    //     if (selectedInfos[0].listavel === 'false') {
+    //       // handleChangeInput(e);
+    //       // setDisplayQuantity(true);
+    //       setProductsArray([]);
+    //       getSingleProduct(e.target.value);
+    //     }
+    //   }
+    // }
+
+    const id = e.target.value;
+    const selectedInfos: any = dataProjects?.filter((obj: any) => obj.project_id === id);
+    setSelectedProject(selectedInfos[0]);
+    if (
+      selectedInfos[0].select_product.length === 1 &&
+      selectedInfos[0].products_quantity.length > 0
+    ) {
+      setDTOForm({
+        ...DTOForm,
+        ['project_product_id']: selectedInfos[0]?.products_quantity[0]?.project_product_id
+      });
+    } else if (
+      selectedInfos[0].select_product.length === 1 &&
+      selectedInfos[0].products_time.length > 0
+    ) {
+      setDTOForm({
+        ...DTOForm,
+        ['project_product_id']: selectedInfos[0]?.products_time[0]?.project_product_id
+      });
+    }
+
+    if (selectedInfos[0].listavel === 'false') {
+      // handleChangeInput(e);
+      // setDisplayQuantity(true);
+      setProductsArray([]);
+      getSingleProduct(e.target.value);
     }
   };
 
@@ -2331,21 +2383,21 @@ export default function CreateTasks() {
   //   console.log('log do infoProjects =>', infoProjects);
   // }, [infoProjects]);
 
-  // useEffect(() => {
-  //   console.log('log do products Array', productsArray);
-  // }, [productsArray]);
+  useEffect(() => {
+    console.log('log do products Array', productsArray);
+  }, [productsArray]);
 
-  // useEffect(() => {
-  //   console.log('log do Delivery DTO', DTODelivery);
-  // }, [DTODelivery]);
+  useEffect(() => {
+    console.log('log do Delivery DTO', DTODelivery);
+  }, [DTODelivery]);
 
-  // useEffect(() => {
-  //   console.log('Log do DTO', DTOForm);
-  // }, [DTOForm]);
+  useEffect(() => {
+    console.log('Log do DTO', DTOForm);
+  }, [DTOForm]);
 
-  // useEffect(() => {
-  //   console.log('log do selectedProject', selectedProject);
-  // }, [selectedProject]);
+  useEffect(() => {
+    console.log('log do selectedProject', selectedProject);
+  }, [selectedProject]);
 
   // useEffect(() => {
   //   console.log('log do estimated time', estimatedTime);
@@ -2386,10 +2438,11 @@ export default function CreateTasks() {
                 data={DTOForm}
                 dataProjects={dataProjects}
                 dataFlow={dataFlow}
-                handleInputChange={selectedProjectInfos}
+                handleInputChange={handleProjectInfos}
                 handleTicket={handleGenerateTicket}
                 // ticketAsk={ticketAsk}
                 handleTemplate={handleAddTemplate}
+                handleSelectProject={selectedProjectInfos}
                 clients={dataClient}
                 error={error}
               />
@@ -2423,8 +2476,9 @@ export default function CreateTasks() {
                 data={DTOForm}
                 dataProjects={organizationProjects}
                 dataFlow={dataFlow}
-                handleInputChange={selectedProjectInfos}
+                handleInputChange={handleProjectInfos}
                 handleTicket={handleGenerateTicket}
+                handleSelectProject={selectedProjectInfos}
                 // ticketAsk={ticketAsk}
                 organizations={dataOrganizations}
                 handleTemplate={() => ''}
@@ -2458,17 +2512,15 @@ export default function CreateTasks() {
               {tasksType !== 'livre' && (
                 <>
                   <FormTitle>Entregáveis</FormTitle>
-                  {tasksType === 'horas' && (
-                    <SwitchSelector>
-                      <InputSwitchDefault
-                        onChange={(e) => {
-                          handleSwitch(e.target.checked);
-                        }}
-                        isChecked={splitDeliveries}
-                      />
-                      <span>Dividir entregas</span>
-                    </SwitchSelector>
-                  )}
+                  <SwitchSelector>
+                    <InputSwitchDefault
+                      onChange={(e) => {
+                        handleSwitch(e.target.checked);
+                      }}
+                      isChecked={splitDeliveries}
+                    />
+                    <span>Dividir entregas</span>
+                  </SwitchSelector>
                   <InfoDeliveries
                     data={productsArray}
                     dataTypes={dataTypes}
