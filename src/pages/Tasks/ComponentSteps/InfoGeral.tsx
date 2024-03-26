@@ -40,6 +40,8 @@ interface Props {
   error: FormProps;
   handleTicket: (value: any) => void;
   handleTemplate: (value: any) => void;
+  handleSelectProject: (value: any) => void;
+  productsFromProject?: any[];
   // ticketAsk: string | null;
 }
 
@@ -73,7 +75,8 @@ export default function InfoGeral({
   organizations,
   error,
   handleTicket,
-  handleTemplate
+  handleTemplate,
+  productsFromProject
 }: // ticketAsk
 Props) {
   const { user } = useAuth();
@@ -256,13 +259,13 @@ Props) {
         <SelectDefault
           label="Projeto/Contrato"
           name="project_product_id"
-          value={data.project_product_id}
+          value={data.project_id}
           onChange={handleInputChange}
           error={error?.project_product_id}
         >
           {projectList?.map((row: any) => (
-            <option key={row.project_product_id} value={row.project_product_id}>
-              {row.select}
+            <option key={row.project_id} value={row.project_id}>
+              {row.title}
             </option>
           ))}
         </SelectDefault>
@@ -330,7 +333,16 @@ Props) {
           ))}
         </SelectDefault>
 
-        <div style={{ flex: '1' }} />
+        <div style={{ flex: '1' }}>
+          {/* <SelectDefault
+            label="Tipo do produto"
+            name="product_type"
+            value={''}
+            onChange={(e: any) => console.log('log do product_type', e.target.value)}
+          >
+            <option value="1">Contrato de horas</option>
+          </SelectDefault> */}
+        </div>
       </FlexLine>
 
       {/* Select responsável flow */}
