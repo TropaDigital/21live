@@ -376,18 +376,7 @@ export default function ListMeeting() {
           isOpen: false,
           type: 'Criar nova Ata de Reunião'
         });
-        setData({
-          title: '',
-          tenant_id: '',
-          email_alert: false,
-          user_id: '',
-          members: [],
-          date: '',
-          files: '',
-          description: ''
-        } as FormProps);
-        setUploadedFiles([]);
-        setText('');
+
         fetchData();
 
         setLoading(false);
