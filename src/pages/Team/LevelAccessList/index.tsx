@@ -208,11 +208,11 @@ export default function AccessLevel() {
   const handleEnableEditPermissions = (obj: RoleProps) => {
     setData(obj);
 
-    const extractPermissionIds = () => {
-      return obj.permissions.map((permission) => permission.permission_id);
-    };
+    // const extractPermissionIds = () => {
+    //   return obj.permissions.map((permission) => permission.permission_id);
+    // };
 
-    setSelectedPermissions(extractPermissionIds());
+    setSelectedPermissions(obj.permissions);
 
     setModalPermissions(true);
   };
@@ -233,9 +233,9 @@ export default function AccessLevel() {
     setText('');
   };
 
-  useEffect(() => {
-    console.log('log do selectedPermissions =>', selectedPermissions);
-  }, [selectedPermissions]);
+  // useEffect(() => {
+  //   console.log('log do selectedPermissions =>', selectedPermissions);
+  // }, [selectedPermissions]);
 
   return (
     <ContainerDefault>
@@ -433,8 +433,10 @@ export default function AccessLevel() {
               <div className="card-title">
                 <CheckboxDefault
                   label=""
-                  id="subtasks"
-                  checked={selectedPermissions.includes('168')}
+                  id="168"
+                  checked={selectedPermissions.some(
+                    (row: PermissionsProps) => row.permission_id === '168'
+                  )}
                   onChange={() => ''}
                 />
                 Projetos
@@ -442,32 +444,47 @@ export default function AccessLevel() {
 
               <CheckboxDefault
                 label="Visualizar"
-                id="subtasks"
-                checked={selectedPermissions.includes('170')}
+                id="170"
+                checked={selectedPermissions.some(
+                  (row: PermissionsProps) =>
+                    row.permission_id === '168' || row.permission_id === '170'
+                )}
                 onChange={() => ''}
               />
               <CheckboxDefault
                 label="Visualizar todos"
-                id="subtasks"
-                checked={selectedPermissions.includes('209')}
+                id="209"
+                checked={selectedPermissions.some(
+                  (row: PermissionsProps) =>
+                    row.permission_id === '168' || row.permission_id === '209'
+                )}
                 onChange={() => ''}
               />
               <CheckboxDefault
                 label="Criar"
-                id="subtasks"
-                checked={selectedPermissions.includes('169')}
+                id="169"
+                checked={selectedPermissions.some(
+                  (row: PermissionsProps) =>
+                    row.permission_id === '168' || row.permission_id === '169'
+                )}
                 onChange={() => ''}
               />
               <CheckboxDefault
                 label="Editar"
-                id="subtasks"
-                checked={selectedPermissions.includes('171')}
+                id="171"
+                checked={selectedPermissions.some(
+                  (row: PermissionsProps) =>
+                    row.permission_id === '168' || row.permission_id === '171'
+                )}
                 onChange={() => ''}
               />
               <CheckboxDefault
                 label="Deletar"
-                id="subtasks"
-                checked={selectedPermissions.includes('172')}
+                id="172"
+                checked={selectedPermissions.some(
+                  (row: PermissionsProps) =>
+                    row.permission_id === '168' || row.permission_id === '172'
+                )}
                 onChange={() => ''}
               />
             </CardPermission>
@@ -519,8 +536,10 @@ export default function AccessLevel() {
               <div className="card-title">
                 <CheckboxDefault
                   label=""
-                  id="jobs_products"
-                  checked={selectedPermissions.includes('182')}
+                  id="182"
+                  checked={selectedPermissions.some(
+                    (row: PermissionsProps) => row.permission_id === '182'
+                  )}
                   onChange={() => ''}
                 />
                 Produtos
@@ -528,27 +547,39 @@ export default function AccessLevel() {
 
               <CheckboxDefault
                 label="Visualizar"
-                id="jobs_products_view"
-                checked={selectedPermissions.includes('184')}
+                id="184"
+                checked={selectedPermissions.some(
+                  (row: PermissionsProps) =>
+                    row.permission_id === '182' || row.permission_id === '184'
+                )}
                 onChange={() => ''}
               />
 
               <CheckboxDefault
                 label="Criar"
-                id="jobs_products_add"
-                checked={selectedPermissions.includes('183')}
+                id="183"
+                checked={selectedPermissions.some(
+                  (row: PermissionsProps) =>
+                    row.permission_id === '182' || row.permission_id === '183'
+                )}
                 onChange={() => ''}
               />
               <CheckboxDefault
                 label="Editar"
-                id="jobs_products_edit"
-                checked={selectedPermissions.includes('185')}
+                id="185"
+                checked={selectedPermissions.some(
+                  (row: PermissionsProps) =>
+                    row.permission_id === '182' || row.permission_id === '185'
+                )}
                 onChange={() => ''}
               />
               <CheckboxDefault
                 label="Deletar"
-                id="jobs_products_delete"
-                checked={selectedPermissions.includes('186')}
+                id="186"
+                checked={selectedPermissions.some(
+                  (row: PermissionsProps) =>
+                    row.permission_id === '182' || row.permission_id === '186'
+                )}
                 onChange={() => ''}
               />
             </CardPermission>
