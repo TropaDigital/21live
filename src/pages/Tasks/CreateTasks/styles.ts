@@ -232,6 +232,7 @@ export const ProductGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   height: fit-content;
+  min-width: 1000px;
   border-bottom: 1px solid var(--gray-200);
   padding: 6px 12px;
 

@@ -259,7 +259,8 @@ export default function CreateTasks() {
     start_job: '',
     end_job: '',
     step: '',
-    gen_ticket: ''
+    gen_ticket: '',
+    project_id: ''
   });
   const [search, setSearch] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -298,7 +299,7 @@ export default function CreateTasks() {
   const { data: dataTypes } = useFetch<any[]>(`/task-type`);
   const { data: dataOrganizations } = useFetch<OrganizationsProps[]>('organization');
   const [productsArray, setProductsArray] = useState<ServicesProps[]>([]);
-  const [selectedProject, setSelectedProject] = useState<ProjectProductProps>({
+  const [selectedProject, setSelectedProject] = useState<any>({
     categoria: '',
     listavel: '',
     project_product_id: '',
@@ -392,15 +393,14 @@ export default function CreateTasks() {
   const [cancelModal, setCancelModal] = useState<boolean>(false);
   const [pathSelected, setPathSelected] = useState<string>('');
   const [outsideUsers, setOutsideUsers] = useState<boolean>(false);
-  // const [contractDates, setContractDates] = useState<any>({
-  //   startDate: '',
-  //   endDate: ''
-  // });
+  const [openProductSelect, setOpenProductSelect] = useState<boolean>(false);
+  const [projectProducts, setProjectProducts] = useState<any[]>([]);
 
-  const numbers = Array.from(
-    { length: quantityProductInfos?.maxValue - quantityProductInfos?.minValue + 1 },
-    (_, index) => quantityProductInfos?.minValue + index
-  );
+  const createNumberArray = (maxValue: number): number[] => {
+    const minValue = 1; // Set the minValue to 1
+    const length = maxValue - minValue + 1;
+    return Array.from({ length }, (_, index) => minValue + index);
+  };
 
   async function getSingleProduct(projectId: string) {
     try {
@@ -1053,7 +1053,10 @@ export default function CreateTasks() {
       }
 
       if (project_product_id === '') {
-        throw setErrorInput('project_product_id', 'Projeto / Contrato é obrigatório!');
+        throw setErrorInput(
+          'project_product_id',
+          'No projeto escolhido é obrigatório escolher o tipo do produto!'
+        );
       } else {
         setErrorInput('project_product_id', undefined);
       }
@@ -1878,65 +1881,41 @@ export default function CreateTasks() {
     }
   };
 
-  const selectedProjectInfos = (e: any) => {
-    // else if (e.target.name === 'project_product_id') {
-    //   if (user?.organizations?.length > 0) {
-    //     const id = e.target.value;
-    //     const selectedInfos: any = organizationProjects?.filter(
-    //       (obj: any) => obj.project_product_id === id
-    //     );
-    //     setSelectedProject(selectedInfos[0]);
-    //     handleChangeInput(e);
-    //   } else {
-    //     const id = e.target.value;
-    //     const selectedInfos: any = dataProjects?.filter((obj: any) => obj.project_id === id);
-    //     setSelectedProject(selectedInfos[0]);
-    //     if (
-    //       selectedInfos[0].select_product.length === 1 &&
-    //       selectedInfos[0].products_quantity.length > 0
-    //     ) {
-    //       setDTOForm({
-    //         ...DTOForm,
-    //         ['project_product_id']: selectedInfos[0]?.products_quantity[0]?.project_product_id
-    //       });
-    //     } else if (
-    //       selectedInfos[0].select_product.length === 1 &&
-    //       selectedInfos[0].products_time.length > 0
-    //     ) {
-    //       setDTOForm({
-    //         ...DTOForm,
-    //         ['project_product_id']: selectedInfos[0]?.products_time[0]?.project_product_id
-    //       });
-    //     }
-
-    //     if (selectedInfos[0].listavel === 'false') {
-    //       // handleChangeInput(e);
-    //       // setDisplayQuantity(true);
-    //       setProductsArray([]);
-    //       getSingleProduct(e.target.value);
-    //     }
-    //   }
-    // }
-
+  const selectedProjectInfos = (e: any, name: string) => {
+    console.log('log do selectedProjectInfo =>', e.target.value, name);
     const id = e.target.value;
     const selectedInfos: any = dataProjects?.filter((obj: any) => obj.project_id === id);
     setSelectedProject(selectedInfos[0]);
+
+    if (name === 'project_id') {
+      setDTOForm({
+        ...DTOForm,
+        ['project_id']: e.target.value
+      });
+    }
+
     if (
       selectedInfos[0].select_product.length === 1 &&
-      selectedInfos[0].products_quantity.length > 0
+      selectedInfos[0].products_quantity.length >= 1
     ) {
       setDTOForm({
         ...DTOForm,
         ['project_product_id']: selectedInfos[0]?.products_quantity[0]?.project_product_id
       });
+      setOpenProductSelect(false);
+      setProjectProducts(selectedInfos[0]?.products_quantity);
+      setTasksType('produto');
     } else if (
       selectedInfos[0].select_product.length === 1 &&
-      selectedInfos[0].products_time.length > 0
+      selectedInfos[0].products_time.length === 1
     ) {
       setDTOForm({
         ...DTOForm,
         ['project_product_id']: selectedInfos[0]?.products_time[0]?.project_product_id
       });
+      setOpenProductSelect(false);
+    } else {
+      setOpenProductSelect(true);
     }
 
     if (selectedInfos[0].listavel === 'false') {
@@ -2056,61 +2035,61 @@ export default function CreateTasks() {
   };
 
   useEffect(() => {
-    if (DTOForm.project_product_id !== '' && location.state === null && !user?.organizations) {
-      if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel === 'true') {
-        setTasksType('horas');
-      } else if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel !== 'true') {
-        setTasksType('produto');
-      } else if (infoProjects[0]?.tipo !== 'product') {
-        setTasksType('livre');
-      }
-    } else if (
-      DTOForm.project_product_id &&
-      location.state === null &&
-      user?.organizations?.length > 0
-    ) {
-      if (
-        infoOrganizationsProjects[0]?.tipo === 'product' &&
-        infoOrganizationsProjects[0]?.listavel === 'true'
-      ) {
-        setTasksType('horas');
-      } else if (
-        infoOrganizationsProjects[0]?.tipo === 'product' &&
-        infoOrganizationsProjects[0]?.listavel !== 'true'
-      ) {
-        setTasksType('produto');
-      } else if (infoOrganizationsProjects[0]?.tipo !== 'product') {
-        setTasksType('livre');
-      }
-    } else if (
-      DTOForm.project_product_id !== '' &&
-      location.state !== null &&
-      !user?.organizations
-    ) {
-      if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel === 'true') {
-        setTasksType('horas');
-      } else if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel !== 'true') {
-        setTasksType('produto');
-      } else if (infoProjects[0]?.tipo !== 'product') {
-        setTasksType('livre');
-      }
-    } else {
-      if (location.state?.type === 'Produto') {
-        setTasksType('produto');
-      } else if (location.state?.type === 'Livre') {
-        setTasksType('livre');
-      } else {
-        if (location.state !== null && location.state.ticket_id) {
-          if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel === 'true') {
-            setTasksType('horas');
-          } else if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel !== 'true') {
-            setTasksType('produto');
-          } else if (infoProjects[0]?.tipo !== 'product') {
-            setTasksType('livre');
-          }
-        }
-      }
-    }
+    // if (DTOForm.project_product_id !== '' && location.state === null && !user?.organizations) {
+    //   if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel === 'true') {
+    //     setTasksType('horas');
+    //   } else if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel !== 'true') {
+    //     setTasksType('produto');
+    //   } else if (infoProjects[0]?.tipo !== 'product') {
+    //     setTasksType('livre');
+    //   }
+    // } else if (
+    //   DTOForm.project_product_id &&
+    //   location.state === null &&
+    //   user?.organizations?.length > 0
+    // ) {
+    //   if (
+    //     infoOrganizationsProjects[0]?.tipo === 'product' &&
+    //     infoOrganizationsProjects[0]?.listavel === 'true'
+    //   ) {
+    //     setTasksType('horas');
+    //   } else if (
+    //     infoOrganizationsProjects[0]?.tipo === 'product' &&
+    //     infoOrganizationsProjects[0]?.listavel !== 'true'
+    //   ) {
+    //     setTasksType('produto');
+    //   } else if (infoOrganizationsProjects[0]?.tipo !== 'product') {
+    //     setTasksType('livre');
+    //   }
+    // } else if (
+    //   DTOForm.project_product_id !== '' &&
+    //   location.state !== null &&
+    //   !user?.organizations
+    // ) {
+    //   if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel === 'true') {
+    //     setTasksType('horas');
+    //   } else if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel !== 'true') {
+    //     setTasksType('produto');
+    //   } else if (infoProjects[0]?.tipo !== 'product') {
+    //     setTasksType('livre');
+    //   }
+    // } else {
+    //   if (location.state?.type === 'Produto') {
+    //     setTasksType('produto');
+    //   } else if (location.state?.type === 'Livre') {
+    //     setTasksType('livre');
+    //   } else {
+    //     if (location.state !== null && location.state.ticket_id) {
+    //       if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel === 'true') {
+    //         setTasksType('horas');
+    //       } else if (infoProjects[0]?.tipo === 'product' && infoProjects[0]?.listavel !== 'true') {
+    //         setTasksType('produto');
+    //       } else if (infoProjects[0]?.tipo !== 'product') {
+    //         setTasksType('livre');
+    //       }
+    //     }
+    //   }
+    // }
   }, [DTOForm, infoProjects, infoOrganizationsProjects, location]);
 
   const finishCreate = () => {
@@ -2342,6 +2321,32 @@ export default function CreateTasks() {
     }, 50);
   };
 
+  const handleTypeOfProject = (value: string) => {
+    if (value === 'quantity') {
+      setTasksType('produto');
+      setProjectProducts(selectedProject?.products_quantity);
+    }
+    if (value === 'hours') {
+      setTasksType('horas');
+    }
+  };
+
+  const handleProjectIdIfHOurs = (value: any) => {
+    console.log('log product to change quantity =>', value);
+    setDTOForm({
+      ...DTOForm,
+      ['project_product_id']: value
+    });
+  };
+
+  const handleQuantitySelectedProduct = (e: any, obj: any) => {
+    console.log('log product to change quantity =>', e.target.value, obj);
+    console.log('log do projectPrpoducts =>', projectProducts);
+    addObject(obj, e.target.value);
+    setSingleProductQuantity(e.target.value);
+    // setProjectProducts()
+  };
+
   useEffect(() => {
     function handleOnBeforeUnload(event: BeforeUnloadEvent) {
       event.preventDefault();
@@ -2375,9 +2380,9 @@ export default function CreateTasks() {
     };
   }, [DTOForm]);
 
-  // useEffect(() => {
-  //   console.log('log do tipo de task', tasksType);
-  // }, [tasksType]);
+  useEffect(() => {
+    console.log('log do tipo de task', tasksType);
+  }, [tasksType]);
 
   // useEffect(() => {
   //   console.log('log do infoProjects =>', infoProjects);
@@ -2415,6 +2420,10 @@ export default function CreateTasks() {
   //   console.log('log do location', location.state);
   // }, [location]);
 
+  useEffect(() => {
+    console.log('log projectProducts', projectProducts);
+  }, [projectProducts]);
+
   return (
     <>
       <ContainerWrapper ref={formRef}>
@@ -2443,6 +2452,10 @@ export default function CreateTasks() {
                 // ticketAsk={ticketAsk}
                 handleTemplate={handleAddTemplate}
                 handleSelectProject={selectedProjectInfos}
+                handleSelectTypeOfProduct={handleTypeOfProject}
+                handleProductId={handleProjectIdIfHOurs}
+                showProductSelect={openProductSelect}
+                productsFromProject={selectedProject?.select_product}
                 clients={dataClient}
                 error={error}
               />
@@ -2479,6 +2492,14 @@ export default function CreateTasks() {
                 handleInputChange={handleProjectInfos}
                 handleTicket={handleGenerateTicket}
                 handleSelectProject={selectedProjectInfos}
+                handleSelectTypeOfProduct={handleTypeOfProject}
+                handleProductId={(value: any) =>
+                  setDTOForm({
+                    ...DTOForm,
+                    ['project_product_id']: value
+                  })
+                }
+                showProductSelect={openProductSelect}
                 // ticketAsk={ticketAsk}
                 organizations={dataOrganizations}
                 handleTemplate={() => ''}
@@ -3256,10 +3277,11 @@ export default function CreateTasks() {
                 <div className="list-title">Descrição</div>
                 <div className="list-title">Formato</div>
                 <div className="list-title center">Quantidade</div>
+                {/* <div className="list-title">Adicionar</div> */}
               </ProductGridHeader>
 
-              {productsArray?.map((row: any, index) => (
-                <ProductGrid key={index}>
+              {projectProducts?.map((row: any, index: number) => (
+                <ProductGrid key={row.project_product_id}>
                   <div className="product">{row.service}</div>
                   <div className="category">{row.description}</div>
                   <div className="category">{row.size}</div>
@@ -3268,16 +3290,28 @@ export default function CreateTasks() {
                       label=""
                       name="quantity_info"
                       value={singleProductQuantity}
-                      onChange={handleSingleProductQuantity}
+                      onChange={(e: any) => handleQuantitySelectedProduct(e, row)}
                       error={error?.quantity_info}
                     >
-                      {numbers.map((number) => (
-                        <option key={number} value={number}>
-                          {number}
+                      {createNumberArray(row.quantity).map((row) => (
+                        <option key={row} value={row}>
+                          {row}
                         </option>
                       ))}
                     </SelectDefault>
                   </div>
+                  {/* <div className="category">
+                    <ButtonDefault
+                      typeButton="primary"
+                      onClick={() => {
+                        // setDisplayQuantity(false);
+                        getSingleProduct(row.project_product_id);
+                        // setCreateStep(createStep + 1);
+                      }}
+                    >
+                      Adicionar produto
+                    </ButtonDefault>
+                  </div> */}
                 </ProductGrid>
               ))}
             </ProductListWrapper>
@@ -3291,7 +3325,7 @@ export default function CreateTasks() {
                   setCreateStep(createStep + 1);
                 }}
               >
-                Adicionar quantidade
+                Adicionar produtos
               </ButtonDefault>
             </AddProductButton>
           </ProductsModalWrapper>
