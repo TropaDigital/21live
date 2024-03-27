@@ -40,8 +40,11 @@ interface Props {
   error: FormProps;
   handleTicket: (value: any) => void;
   handleTemplate: (value: any) => void;
-  handleSelectProject: (value: any) => void;
+  handleSelectProject: (value: any, name: string) => void;
+  handleSelectTypeOfProduct: (value: any) => void;
+  handleProductId: (value: any) => void;
   productsFromProject?: any[];
+  showProductSelect: boolean;
   // ticketAsk: string | null;
 }
 
@@ -76,6 +79,10 @@ export default function InfoGeral({
   error,
   handleTicket,
   handleTemplate,
+  handleSelectProject,
+  handleSelectTypeOfProduct,
+  handleProductId,
+  showProductSelect,
   productsFromProject
 }: // ticketAsk
 Props) {
@@ -91,6 +98,7 @@ Props) {
   const [projectList, setProjectList] = useState<any[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateProps>();
   const { data: dataTemplates } = useFetch<TemplateProps[]>(`/task/template`);
+  const [selectedProductType, setSelectedProductType] = useState();
 
   // const handleGetFlowTask = async (id: any) => {
   //   try {
@@ -145,6 +153,19 @@ Props) {
     if (filteredTemplate) {
       setSelectedTemplate(filteredTemplate[0]);
     }
+  };
+
+  const handleTypeProduct = (value: any) => {
+    console.log('log do value =>', value);
+    setSelectedProductType(value);
+    if (value.includes('Quantidade')) {
+      handleSelectTypeOfProduct('quantity');
+    } else {
+      handleSelectTypeOfProduct('hours');
+      handleProductId(value);
+    }
+    // if (value.includes('Horas')) {
+    // }
   };
 
   useEffect(() => {
@@ -204,6 +225,10 @@ Props) {
     // }, 1000);
   }, [selectedTemplate]);
 
+  useEffect(() => {
+    console.log('log productSelect =>', productsFromProject);
+  }, [productsFromProject]);
+
   return (
     <div>
       <FlexLine>
@@ -258,10 +283,10 @@ Props) {
       <FlexLine>
         <SelectDefault
           label="Projeto/Contrato"
-          name="project_product_id"
+          name="project_id"
           value={data.project_id}
-          onChange={handleInputChange}
-          error={error?.project_product_id}
+          onChange={(e: any) => handleSelectProject(e, 'project_id')}
+          // error={error?.project_product_id}
         >
           {projectList?.map((row: any) => (
             <option key={row.project_id} value={row.project_id}>
@@ -334,14 +359,24 @@ Props) {
         </SelectDefault>
 
         <div style={{ flex: '1' }}>
-          {/* <SelectDefault
-            label="Tipo do produto"
-            name="product_type"
-            value={''}
-            onChange={(e: any) => console.log('log do product_type', e.target.value)}
-          >
-            <option value="1">Contrato de horas</option>
-          </SelectDefault> */}
+          {showProductSelect && (
+            <SelectDefault
+              label="Tipo do produto dentro do contrato"
+              name="product_type"
+              value={selectedProductType || data?.project_product_id}
+              onChange={(e: any) => handleTypeProduct(e.target.value)}
+              error={error?.project_product_id}
+            >
+              {productsFromProject?.map((row) => (
+                <option
+                  key={row?.name ? row.project_product_id : row}
+                  value={row?.name ? row.project_product_id : row}
+                >
+                  {row?.name ? row?.name : row}
+                </option>
+              ))}
+            </SelectDefault>
+          )}
         </div>
       </FlexLine>
 
